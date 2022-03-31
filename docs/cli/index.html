@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/cli/index/" />
   
-<meta property="og:site_name" content="Jina 3.2.10 Documentation" />
+<meta property="og:site_name" content="Jina 3.2.11 Documentation" />
   
 <meta property="og:description" content="Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. subcommands: Use%(prog)-8s [sub-command] –help to get detailed information about each sub-command. To show all commands, run JINA_FULL_CLI=1 jina –help. cli,, Possible choices: hell..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.2.10 Documentation" />
+<meta property="og:image:alt" content="Jina 3.2.11 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Protocol Documentation" href="../proto/docs/" /><link rel="prev" title="cli.lookup module" href="../api/cli.lookup/" />
 
     <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>Command-Line Interface - Jina 3.2.10 documentation</title>
+        <title>Command-Line Interface - Jina 3.2.11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -156,13 +156,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement" id="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://www.meetup.com/jina-community-meetup/events/284243173/">Join our Office Hours on March 31st at 17:00 CET </a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header" id="mobile-header">
@@ -178,7 +172,7 @@
         </div>
         <div class="header-center">
             <a href="../">
-                <div class="brand">Jina 3.2.10 documentation</div>
+                <div class="brand">Jina 3.2.11 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -638,7 +632,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “65093d6bf6294e7d8bc51d02a6f1a42a”</p>
+<p>Default: “f3a31df90a854566aa13cd371df7a23d”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -709,7 +703,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “33772f1b6fb04103bbb6dd847656a16c”</p>
+<p>Default: “96ea34182cde4358ac01fb1c7819b1e9”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -742,7 +736,7 @@
 <dl class="option-list">
 <dt><kbd>--workdir</kbd></dt>
 <dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “6e37d22ab3a14b809e4e4508e853500e”</p>
+<p>Default: “c16e7bf4949b41609b665bda16134f94”</p>
 </dd>
 <dt><kbd>--download-proxy</kbd></dt>
 <dd><p>The proxy when downloading sample data</p>
@@ -878,7 +872,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 56613</p>
+<p>Default: 58806</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -988,7 +982,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 65318</p>
+<p>Default: 53433</p>
 </dd>
 </dl>
 </section>
@@ -1177,11 +1171,12 @@ JSON dict, {endpoint: PollingType}
              <span class="p">[</span><span class="o">--</span><span class="n">ssl</span><span class="o">-</span><span class="n">certfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssl</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">graphql</span><span class="o">-</span><span class="n">endpoint</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">conditions</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">addresses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compression</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="n">backend</span> <span class="p">{</span><span class="n">THREAD</span><span class="p">,</span> <span class="n">PROCESS</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">addresses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">compression</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="n">backend</span> <span class="p">{</span><span class="n">THREAD</span><span class="p">,</span> <span class="n">PROCESS</span><span class="p">}]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Named Arguments_repeat4">
@@ -1203,6 +1198,10 @@ JSON dict, {endpoint: PollingType}
 <dt><kbd>--deployments-addresses</kbd></dt>
 <dd><p>dictionary JSON with the input addresses of each Deployment</p>
 <p>Default: “{}”</p>
+</dd>
+<dt><kbd>--deployments-disable-reduce</kbd></dt>
+<dd><p>list JSON disabling the built-in merging mechanism for each Deployment listed</p>
+<p>Default: “[]”</p>
 </dd>
 </dl>
 </section>
@@ -1294,7 +1293,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 62340</p>
+<p>Default: 62194</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1402,7 +1401,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 49973</p>
+<p>Default: 61810</p>
 </dd>
 <dt><kbd>--compression</kbd></dt>
 <dd><p>The compression mechanism used when sending requests to Executors. Possibilites are: <cite>NoCompression, Gzip, Deflate</cite>. For more details, check <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">https://grpc.github.io/grpc/python/grpc.html#compression</a>.</p>
@@ -1439,7 +1438,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 62681</p>
+<p>Default: 65000</p>
 </dd>
 </dl>
 </section>
@@ -1730,7 +1729,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 59050</p>
+<p>Default: 61641</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1840,7 +1839,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 51616</p>
+<p>Default: 62651</p>
 </dd>
 </dl>
 </section>
@@ -1989,7 +1988,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 53386</p>
+<p>Default: 51197</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -2099,7 +2098,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 52383</p>
+<p>Default: 53298</p>
 </dd>
 </dl>
 </section>
@@ -2142,10 +2141,10 @@ Python files, data files.</p>
 <h4>Deployment arguments<a class="headerlink" href="#Deployment arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--uses-before</kbd></dt>
-<dd><p>The executor attached after the Pods described by –uses, typically before sending to all shards, accepted type follows <cite>–uses</cite></p>
+<dd><p>The executor attached before the Pods described by –uses, typically before sending to all shards, accepted type follows <cite>–uses</cite>. This argument only applies for sharded Deployments (shards &gt; 1).</p>
 </dd>
 <dt><kbd>--uses-after</kbd></dt>
-<dd><p>The executor attached after the Pods described by –uses, typically used for receiving from all shards, accepted type follows <cite>–uses</cite></p>
+<dd><p>The executor attached after the Pods described by –uses, typically used for receiving from all shards, accepted type follows <cite>–uses</cite>. This argument only applies for sharded Deployments (shards &gt; 1).</p>
 </dd>
 <dt><kbd>--when</kbd></dt>
 <dd><p>The condition that the documents need to fulfill before reaching the Executor.The condition can be defined in the form of a <cite>DocArray query condition &lt;https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions&gt;</cite></p>
@@ -2195,7 +2194,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port of the Gateway, which the client should connect to.</p>
-<p>Default: 52900</p>
+<p>Default: 60294</p>
 </dd>
 <dt><kbd>--tls</kbd></dt>
 <dd><p>If set, connect to gateway using tls encryption</p>
@@ -2262,7 +2261,7 @@ Python files, data files.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 30, 2022.
+                    Last updated on Mar 31, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

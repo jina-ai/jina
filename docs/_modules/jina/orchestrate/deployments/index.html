@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.orchestrate.deployments - Jina 3.2.10 documentation</title>
+        <title>jina.orchestrate.deployments - Jina 3.2.11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -123,13 +123,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement" id="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://www.meetup.com/jina-community-meetup/events/284243173/">Join our Office Hours on March 31st at 17:00 CET </a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header" id="mobile-header">
@@ -145,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.2.10 documentation</div>
+                <div class="brand">Jina 3.2.11 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -554,14 +548,12 @@
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_executor__</span><span class="p">,</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span><span class="p">,</span> <span class="n">helper</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DeploymentRoleType</span><span class="p">,</span> <span class="n">PodRoleType</span><span class="p">,</span> <span class="n">PollingType</span>
-<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">RuntimeFailToStart</span><span class="p">,</span> <span class="n">RuntimeRunForeverEarlyError</span><span class="p">,</span> <span class="n">ScalingFails</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">CatchAllCleanupContextManager</span>
 <span class="kn">from</span> <span class="nn">jina.hubble.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
 <span class="kn">from</span> <span class="nn">jina.jaml.helper</span> <span class="kn">import</span> <span class="n">complete_path</span>
-<span class="kn">from</span> <span class="nn">jina.orchestrate.pods</span> <span class="kn">import</span> <span class="n">Pod</span>
 <span class="kn">from</span> <span class="nn">jina.orchestrate.pods.container</span> <span class="kn">import</span> <span class="n">ContainerPod</span>
 <span class="kn">from</span> <span class="nn">jina.orchestrate.pods.factory</span> <span class="kn">import</span> <span class="n">PodFactory</span>
-<span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span><span class="p">,</span> <span class="n">host_is_local</span>
+<span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span><span class="p">,</span> <span class="n">host_is_local</span><span class="p">,</span> <span class="n">in_docker</span>
 
 
 <div class="viewcode-block" id="BaseDeployment"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment">[docs]</a><span class="k">class</span> <span class="nc">BaseDeployment</span><span class="p">(</span><span class="n">ExitStack</span><span class="p">):</span>
@@ -577,26 +569,6 @@
 <span class="sd">        .. note::</span>
 <span class="sd">            If one of the :class:`Pod` fails to start, make sure that all of them</span>
 <span class="sd">            are properly closed.</span>
-<span class="sd">        """</span>
-        <span class="o">...</span></div>
-
-<div class="viewcode-block" id="BaseDeployment.rolling_update"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment.rolling_update">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Roll update the Executors managed by the Deployment</span>
-
-<span class="sd">            .. # noqa: DAR201</span>
-<span class="sd">            .. # noqa: DAR101</span>
-<span class="sd">        """</span>
-        <span class="o">...</span></div>
-
-<div class="viewcode-block" id="BaseDeployment.scale"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment.scale">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Scale the amount of replicas of a given Executor.</span>
-
-<span class="sd">            .. # noqa: DAR201</span>
-<span class="sd">            .. # noqa: DAR101</span>
 <span class="sd">        """</span>
         <span class="o">...</span></div>
 
@@ -654,14 +626,14 @@
         <span class="sd">"""Get the host of the HeadPod of this deployment</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">host</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">host</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">head_port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Get the port of the HeadPod of this deployment</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BaseDeployment'</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">CatchAllCleanupContextManager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -772,129 +744,6 @@
             <span class="k">for</span> <span class="n">pod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">:</span>
                 <span class="n">pod</span><span class="o">.</span><span class="n">wait_start_success</span><span class="p">()</span>
 
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="c1"># TODO make rolling_update robust, in what state this ReplicaSet ends when this fails?</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">)):</span>
-                <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="n">old_pod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="k">await</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">deactivate_worker</span><span class="p">(</span>
-                    <span class="n">worker_host</span><span class="o">=</span><span class="n">Deployment</span><span class="o">.</span><span class="n">get_worker_host</span><span class="p">(</span>
-                        <span class="n">_args</span><span class="p">,</span> <span class="n">old_pod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span>
-                    <span class="p">),</span>
-                    <span class="n">worker_port</span><span class="o">=</span><span class="n">_args</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
-                    <span class="n">target_head</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-                    <span class="n">shard_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shard_id</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="n">old_pod</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-                <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="n">_args</span><span class="o">.</span><span class="n">uses_with</span> <span class="o">=</span> <span class="n">uses_with</span>
-                <span class="n">new_pod</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
-                <span class="n">new_pod</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
-                <span class="k">await</span> <span class="n">new_pod</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">()</span>
-                <span class="k">await</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">activate_worker</span><span class="p">(</span>
-                    <span class="n">worker_host</span><span class="o">=</span><span class="n">Deployment</span><span class="o">.</span><span class="n">get_worker_host</span><span class="p">(</span>
-                        <span class="n">_args</span><span class="p">,</span> <span class="n">new_pod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span>
-                    <span class="p">),</span>
-                    <span class="n">worker_port</span><span class="o">=</span><span class="n">_args</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
-                    <span class="n">target_head</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-                    <span class="n">shard_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shard_id</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">_args</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_pod</span>
-
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">_scale_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="n">new_pods</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">new_args_list</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">),</span> <span class="n">replicas</span><span class="p">):</span>
-                <span class="n">new_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="n">new_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="n">new_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">new_args</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span>
-                <span class="n">new_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
-                <span class="c1"># no exception should happen at create and enter time</span>
-                <span class="n">new_pods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">new_args</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">())</span>
-                <span class="n">new_args_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_args</span><span class="p">)</span>
-            <span class="n">exception</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">for</span> <span class="n">new_pod</span><span class="p">,</span> <span class="n">new_args</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">new_pods</span><span class="p">,</span> <span class="n">new_args_list</span><span class="p">):</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="k">await</span> <span class="n">new_pod</span><span class="o">.</span><span class="n">async_wait_start_success</span><span class="p">()</span>
-                    <span class="k">await</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">activate_worker</span><span class="p">(</span>
-                        <span class="n">worker_host</span><span class="o">=</span><span class="n">Deployment</span><span class="o">.</span><span class="n">get_worker_host</span><span class="p">(</span>
-                            <span class="n">new_args</span><span class="p">,</span> <span class="n">new_pod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span>
-                        <span class="p">),</span>
-                        <span class="n">worker_port</span><span class="o">=</span><span class="n">new_args</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
-                        <span class="n">target_head</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-                        <span class="n">shard_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shard_id</span><span class="p">,</span>
-                    <span class="p">)</span>
-                <span class="k">except</span> <span class="p">(</span>
-                    <span class="n">RuntimeFailToStart</span><span class="p">,</span>
-                    <span class="ne">TimeoutError</span><span class="p">,</span>
-                    <span class="n">RuntimeRunForeverEarlyError</span><span class="p">,</span>
-                <span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                    <span class="n">exception</span> <span class="o">=</span> <span class="n">ex</span>
-                    <span class="k">break</span>
-
-            <span class="k">if</span> <span class="n">exception</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="o">.</span><span class="n">shards</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">' Scaling fails for shard </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="o">.</span><span class="n">shard_id</span><span class="si">}</span><span class="s1">'</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="s1">' Scaling fails'</span>
-
-                <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'due to executor failing to start with exception: </span><span class="si">{</span><span class="n">exception</span><span class="si">!r}</span><span class="s1">'</span>
-                <span class="k">raise</span> <span class="n">ScalingFails</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">new_pod</span><span class="p">,</span> <span class="n">new_args</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">new_pods</span><span class="p">,</span> <span class="n">new_args_list</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_args</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_pod</span><span class="p">)</span>
-
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">_scale_down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">replicas</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">))):</span>
-                <span class="c1"># Close returns exception, but in theory `termination` should handle close properly</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="k">await</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">deactivate_worker</span><span class="p">(</span>
-                        <span class="n">worker_host</span><span class="o">=</span><span class="n">Deployment</span><span class="o">.</span><span class="n">get_worker_host</span><span class="p">(</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span>
-                        <span class="p">),</span>
-                        <span class="n">worker_port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
-                        <span class="n">target_head</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-                        <span class="n">shard_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shard_id</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-                <span class="k">finally</span><span class="p">:</span>
-                    <span class="c1"># If there is an exception at close time. Most likely the pod's terminated abruptly and therefore these</span>
-                    <span class="c1"># pods are useless</span>
-                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="sd">"""</span>
-<span class="sd">            Scale the amount of replicas of a given Executor.</span>
-
-<span class="sd">            :param replicas: The number of replicas to scale to</span>
-
-<span class="sd">                .. note: Scale is either successful or not. If one replica fails to start, the ReplicaSet remains in the same state</span>
-<span class="sd">            """</span>
-            <span class="c1"># TODO make scale robust, in what state this ReplicaSet ends when this fails?</span>
-            <span class="k">assert</span> <span class="n">replicas</span> <span class="o">&gt;</span> <span class="mi">0</span>
-            <span class="k">if</span> <span class="n">replicas</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">):</span>
-                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scale_up</span><span class="p">(</span><span class="n">replicas</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">replicas</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">):</span>
-                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scale_down</span><span class="p">(</span>
-                    <span class="n">replicas</span>
-                <span class="p">)</span>  <span class="c1"># scale down has some challenges with the exit fifo</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">=</span> <span class="n">replicas</span>
-
-        <span class="nd">@property</span>
-        <span class="k">def</span> <span class="nf">has_forked_processes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="sd">"""</span>
-<span class="sd">            Checks if any pod in this replica set is a forked process</span>
-
-<span class="sd">            :returns: True if any Pod is a forked Process, False otherwise (Containers)</span>
-<span class="sd">            """</span>
-            <span class="k">for</span> <span class="n">pod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">pod</span><span class="p">)</span> <span class="o">==</span> <span class="n">Pod</span> <span class="ow">and</span> <span class="n">pod</span><span class="o">.</span><span class="n">is_forked</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="kc">True</span>
-            <span class="k">return</span> <span class="kc">False</span>
-
         <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">,</span> <span class="s1">'noblock_on_start'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
@@ -951,8 +800,9 @@
             <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">deploy_public_sandbox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span></div>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span></div>
 
 <div class="viewcode-block" id="Deployment.update_worker_pod_args"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.update_worker_pod_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_worker_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Update args of all its worker pods based on Deployment args. Does not touch head and tail"""</span>
@@ -1022,6 +872,32 @@
 <span class="sd">        :return: the port of this deployment</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ports</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">"""Returns a list of ports exposed by this Deployment.</span>
+<span class="sd">        Exposed means these are the ports a Client/Gateway is supposed to communicate with.</span>
+<span class="sd">        For sharded deployments this will be the head_port.</span>
+<span class="sd">        For non sharded deployments it will be all replica ports</span>
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_port</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">head_port</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ports</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">replica</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'pods'</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">ports</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">replica</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ports</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dockerized_uses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">"""Checks if this Deployment uses a dockerized Executor</span>
+
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+            <span class="s1">'jinahub+docker://'</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_parse_args</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span>
@@ -1158,18 +1034,10 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_is_container_to_container</span><span class="p">(</span><span class="n">pod</span><span class="p">,</span> <span class="n">head_pod</span><span class="p">):</span>
-        <span class="k">def</span> <span class="nf">_in_docker</span><span class="p">():</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="s1">'/proc/self/cgroup'</span>
-            <span class="k">return</span> <span class="p">(</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">'/.dockerenv'</span><span class="p">)</span>
-                <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-                <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="s1">'docker'</span> <span class="ow">in</span> <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
-            <span class="p">)</span>
-
         <span class="c1"># Check if both shard_id/pod_idx and the head are containerized</span>
         <span class="c1"># if the head is not containerized, it still could mean that the deployment itself is containerized</span>
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">pod</span><span class="p">)</span> <span class="o">==</span> <span class="n">ContainerPod</span> <span class="ow">and</span> <span class="p">(</span>
-            <span class="nb">type</span><span class="p">(</span><span class="n">head_pod</span><span class="p">)</span> <span class="o">==</span> <span class="n">ContainerPod</span> <span class="ow">or</span> <span class="n">_in_docker</span><span class="p">()</span>
+            <span class="nb">type</span><span class="p">(</span><span class="n">head_pod</span><span class="p">)</span> <span class="o">==</span> <span class="n">ContainerPod</span> <span class="ow">or</span> <span class="n">in_docker</span><span class="p">()</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Deployment.start"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Deployment'</span><span class="p">:</span>
@@ -1277,68 +1145,6 @@
             <span class="n">is_ready</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span><span class="o">.</span><span class="n">is_ready</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">is_ready</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">_has_forked_processes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
-            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span><span class="o">.</span><span class="n">has_forked_processes</span> <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">]</span>
-        <span class="p">)</span>
-
-<div class="viewcode-block" id="Deployment.rolling_update"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.rolling_update">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">"""Reload all Pods of this Deployment.</span>
-
-<span class="sd">        :param uses_with: a Dictionary of arguments to restart the executor with</span>
-<span class="sd">        """</span>
-        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">asyncio</span>
-
-            <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">:</span>
-                <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span><span class="o">.</span><span class="n">rolling_update</span><span class="p">(</span><span class="n">uses_with</span><span class="o">=</span><span class="n">uses_with</span><span class="p">)</span>
-                <span class="p">)</span>
-                <span class="c1"># it is dangerous to fork new processes (pods) while grpc operations are ongoing</span>
-                <span class="c1"># while we use fork, we need to guarantee that forking/grpc status checking is done sequentially</span>
-                <span class="c1"># this is true at least when the flow process and the forked processes are running in the same OS</span>
-                <span class="c1"># thus this does not apply to K8s</span>
-                <span class="c1"># to ContainerPod it still applies due to the managing process being forked</span>
-                <span class="c1"># source: https://grpc.github.io/grpc/cpp/impl_2codegen_2fork_8h.html#a450c01a1187f69112a22058bf690e2a0</span>
-                <span class="k">await</span> <span class="n">task</span>
-                <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
-
-            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
-                    <span class="n">task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="Deployment.scale"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.scale">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Scale the amount of replicas of a given Executor.</span>
-
-<span class="sd">        :param replicas: The number of replicas to scale to</span>
-<span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">=</span> <span class="n">replicas</span>
-
-        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">asyncio</span>
-
-            <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">:</span>
-                <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">replicas</span><span class="o">=</span><span class="n">replicas</span><span class="p">)</span>
-                <span class="p">)</span>
-                <span class="c1"># see rolling_update for explanation of sequential excution</span>
-                <span class="k">await</span> <span class="n">task</span>
-                <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
-
-            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="c1"># TODO: Handle the failure of one of the shards. Unscale back all of them to the original state? Cancelling would potentially be dangerous.</span>
-            <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
-                    <span class="n">task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
-            <span class="k">raise</span></div>
-
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_set_pod_args</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Namespace</span><span class="p">]]:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1361,8 +1167,12 @@
                     <span class="n">_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">replica_id</span><span class="si">}</span><span class="s1">'</span>
 
                 <span class="c1"># the gateway needs to respect the assigned port</span>
-                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">deployment_role</span> <span class="o">==</span> <span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">deployment_role</span> <span class="o">==</span> <span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">GATEWAY</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span>
+                <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">shards</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># if there are no shards/replicas, we dont need to distribute ports randomly</span>
+                    <span class="c1"># we should rather use the pre assigned one</span>
+                    <span class="n">args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
 
@@ -1411,7 +1221,8 @@
         <span class="p">}</span>
 
         <span class="c1"># a gateway has no heads and uses</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="o">!=</span> <span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">GATEWAY</span><span class="p">:</span>
+        <span class="c1"># also there a no heads created, if there are no shards</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="o">!=</span> <span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">GATEWAY</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'shards'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'uses_before'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                 <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">uses_before</span> <span class="o">!=</span> <span class="n">__default_executor__</span>
@@ -1528,7 +1339,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 30, 2022.
+                    Last updated on Mar 31, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

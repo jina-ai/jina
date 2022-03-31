@@ -24,4 +24,4 @@ The following concepts may appear in the docs, but you don't need to master them
 
   - **Pod**: A Pod is a simple abstraction over a runtime that runs any Jina service, be it a process, a Docker container, or a Kubernetes Pod.
 
-  - **Head**: The Head is a service added to a Deployment by Jina, and it ensures that load is balanced between all replicas of a given Executor. It communicates with the Executors via `gRPC`.
+  - **Head**: The Head is a service added to a sharded Deployment by Jina. It manages the communication to the different shards based on the configured polling strategy. It communicates with the Executors via `gRPC`.

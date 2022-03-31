@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.orchestrate.flow.base - Jina 3.2.10 documentation</title>
+        <title>jina.orchestrate.flow.base - Jina 3.2.11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -123,13 +123,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement" id="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://www.meetup.com/jina-community-meetup/events/284243173/">Join our Office Hours on March 31st at 17:00 CET </a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header" id="mobile-header">
@@ -145,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.2.10 documentation</div>
+                <div class="brand">Jina 3.2.11 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -574,7 +568,7 @@
 <span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="nb">print</span>
 <span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">helper</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span><span class="p">,</span> <span class="n">helper</span>
 <span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">jina.clients.mixin</span> <span class="kn">import</span> <span class="n">AsyncPostMixin</span><span class="p">,</span> <span class="n">PostMixin</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="p">(</span>
@@ -613,6 +607,8 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Flow'</span><span class="p">]</span>
 
+<span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">host_is_local</span><span class="p">,</span> <span class="n">in_docker</span>
+
 
 <span class="k">class</span> <span class="nc">FlowType</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ExitStack</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">JAMLCompatible</span><span class="p">)):</span>
     <span class="sd">"""Type of Flow, metaclass of :class:`BaseFlow`"""</span>
@@ -642,15 +638,17 @@
     <span class="c1"># overload_inject_start_client_flow</span>
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="p">,</span>
-        <span class="n">asyncio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span> 
-        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'GRPC'</span><span class="p">,</span> 
-        <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">return_responses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">tls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">asyncio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
+        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'GRPC'</span><span class="p">,</span>
+        <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">return_responses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">tls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">"""Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.</span>
 
 <span class="sd">        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
@@ -665,59 +663,63 @@
 <span class="sd">        .. # noqa: DAR101</span>
 <span class="sd">        .. # noqa: DAR003</span>
 <span class="sd">        """</span>
+
     <span class="c1"># overload_inject_end_client_flow</span>
 
     <span class="c1"># overload_inject_start_gateway_flow</span>
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="p">,</span>
-        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'NoCompression'</span><span class="p">,</span> 
-        <span class="n">connection_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">cors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">default_swagger_ui</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">deployments_addresses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">'</span><span class="p">,</span> 
-        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">disable_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">expose_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">expose_graphql_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">'</span><span class="p">,</span> 
-        <span class="n">graph_description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">'</span><span class="p">,</span> 
-        <span class="n">grpc_server_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span> 
-        <span class="n">host_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span> 
-        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'gateway'</span><span class="p">,</span> 
-        <span class="n">native</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'ANY'</span><span class="p">,</span> 
-        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> 
-        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'GRPC'</span><span class="p">,</span> 
-        <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">replicas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
-        <span class="n">runtime_backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'PROCESS'</span><span class="p">,</span> 
-        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'GRPCGatewayRuntime'</span><span class="p">,</span> 
-        <span class="n">shards</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
-        <span class="n">ssl_certfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">ssl_keyfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span> 
-        <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span> 
-        <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">'BaseExecutor'</span><span class="p">,</span> 
-        <span class="n">uses_after_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">uses_before_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">uvicorn_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'NoCompression'</span><span class="p">,</span>
+        <span class="n">connection_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">default_swagger_ui</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">deployments_addresses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">'</span><span class="p">,</span>
+        <span class="n">deployments_disable_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'[]'</span><span class="p">,</span>
+        <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">disable_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">expose_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">expose_graphql_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">'</span><span class="p">,</span>
+        <span class="n">graph_description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">'</span><span class="p">,</span>
+        <span class="n">grpc_server_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
+        <span class="n">host_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
+        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'gateway'</span><span class="p">,</span>
+        <span class="n">native</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'ANY'</span><span class="p">,</span>
+        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'GRPC'</span><span class="p">,</span>
+        <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">replicas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">runtime_backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'PROCESS'</span><span class="p">,</span>
+        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'GRPCGatewayRuntime'</span><span class="p">,</span>
+        <span class="n">shards</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">ssl_certfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ssl_keyfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+        <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">'BaseExecutor'</span><span class="p">,</span>
+        <span class="n">uses_after_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_before_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uvicorn_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">"""Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.</span>
 
 <span class="sd">        :param compression: The compression mechanism used when sending requests to Executors. Possibilites are: `NoCompression, Gzip, Deflate`. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.</span>
@@ -725,6 +727,7 @@
 <span class="sd">        :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.</span>
 <span class="sd">        :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.</span>
 <span class="sd">        :param deployments_addresses: dictionary JSON with the input addresses of each Deployment</span>
+<span class="sd">        :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed</span>
 <span class="sd">        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
 <span class="sd">        :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</span>
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
@@ -737,22 +740,22 @@
 <span class="sd">        :param host_in: The host address for binding to, by default it is 0.0.0.0</span>
 <span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
 <span class="sd">        :param name: The name of this object.</span>
-<span class="sd">          </span>
+
 <span class="sd">          This will be used in the following places:</span>
 <span class="sd">          - how you refer to this object in Python/YAML/CLI</span>
 <span class="sd">          - visualization</span>
 <span class="sd">          - log message header</span>
 <span class="sd">          - ...</span>
-<span class="sd">          </span>
+
 <span class="sd">          When not given, then the default naming strategy will apply.</span>
 <span class="sd">        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</span>
 <span class="sd">        :param no_crud_endpoints: If set, /index, /search, /update, /delete endpoints are removed from HTTP interface.</span>
-<span class="sd">          </span>
+
 <span class="sd">                  Any executor that has `@requests(on=...)` bind with those values will receive data requests.</span>
 <span class="sd">        :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.</span>
 <span class="sd">        :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.</span>
-<span class="sd">          </span>
-<span class="sd">          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found </span>
+
+<span class="sd">          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found</span>
 <span class="sd">          `here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;`.</span>
 <span class="sd">          Defaults to retaining whatever type is returned by the Executor.</span>
 <span class="sd">        :param polling: The polling strategy of the Deployment and its endpoints (when `shards&gt;1`).</span>
@@ -764,13 +767,13 @@
 <span class="sd">              JSON dict, {endpoint: PollingType}</span>
 <span class="sd">              {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}</span>
 <span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]</span>
-<span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor. </span>
-<span class="sd">              </span>
+<span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.</span>
+
 <span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)</span>
 <span class="sd">        :param protocol: Communication protocol between server and client.</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
-<span class="sd">          </span>
+
 <span class="sd">          Note that the recommended way is to only import a single module - a simple python file, if your</span>
 <span class="sd">          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,</span>
 <span class="sd">          which should be structured as a python package. For more details, please see the</span>
@@ -792,7 +795,7 @@
 <span class="sd">                  * a docker image (must start with `docker://`)</span>
 <span class="sd">                  * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
 <span class="sd">                  * the string literal of a JSON config</span>
-<span class="sd">          </span>
+
 <span class="sd">                  When use it under Python, one can use the following values additionally:</span>
 <span class="sd">                  - a Python dict that represents the config</span>
 <span class="sd">                  - a text file stream has `.read()` interface</span>
@@ -802,7 +805,7 @@
 <span class="sd">        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`</span>
 <span class="sd">        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`</span>
 <span class="sd">        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server</span>
-<span class="sd">          </span>
+
 <span class="sd">          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
 
@@ -810,39 +813,42 @@
 <span class="sd">        .. # noqa: DAR101</span>
 <span class="sd">        .. # noqa: DAR003</span>
 <span class="sd">        """</span>
+
     <span class="c1"># overload_inject_end_gateway_flow</span>
     <span class="c1"># overload_inject_start_flow</span>
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="p">,</span>
-        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">expose_graphql_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">inspect</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'COLLECT'</span><span class="p">,</span> 
-        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'ANY'</span><span class="p">,</span> 
-        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span> 
-        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">expose_graphql_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">inspect</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'COLLECT'</span><span class="p">,</span>
+        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'ANY'</span><span class="p">,</span>
+        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">"""Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.</span>
 
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
 <span class="sd">        :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.</span>
 <span class="sd">        :param inspect: The strategy on those inspect deployments in the flow.</span>
-<span class="sd">          </span>
+
 <span class="sd">              If `REMOVE` is given then all inspect deployments are removed when building the flow.</span>
 <span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
 <span class="sd">        :param name: The name of this object.</span>
-<span class="sd">          </span>
+
 <span class="sd">          This will be used in the following places:</span>
 <span class="sd">          - how you refer to this object in Python/YAML/CLI</span>
 <span class="sd">          - visualization</span>
 <span class="sd">          - log message header</span>
 <span class="sd">          - ...</span>
-<span class="sd">          </span>
+
 <span class="sd">          When not given, then the default naming strategy will apply.</span>
 <span class="sd">        :param polling: The polling strategy of the Deployment and its endpoints (when `shards&gt;1`).</span>
 <span class="sd">              Can be defined for all endpoints of a Deployment or by endpoint.</span>
@@ -862,6 +868,7 @@
 <span class="sd">        .. # noqa: DAR101</span>
 <span class="sd">        .. # noqa: DAR003</span>
 <span class="sd">        """</span>
+
     <span class="c1"># overload_inject_end_flow</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -988,6 +995,7 @@
         <span class="n">graph_description</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
         <span class="n">deployments_addresses</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
         <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span>
+        <span class="n">deployments_disabled_reduce</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
@@ -1011,6 +1019,7 @@
         <span class="n">args</span><span class="o">.</span><span class="n">graph_description</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">graph_description</span><span class="p">)</span>
         <span class="n">args</span><span class="o">.</span><span class="n">graph_conditions</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">graph_conditions</span><span class="p">)</span>
         <span class="n">args</span><span class="o">.</span><span class="n">deployments_addresses</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">deployments_addresses</span><span class="p">)</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">deployments_disable_reduce</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">deployments_disabled_reduce</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">Deployment</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">needs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_deployments_addresses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
@@ -1018,7 +1027,15 @@
         <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">head_port</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">head_args</span><span class="p">:</span>
+                <span class="c1"># add head information</span>
+                <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">head_port</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># there is no head, add the worker connection information instead</span>
+                <span class="n">host</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">host</span>
+                <span class="k">if</span> <span class="n">host_is_local</span><span class="p">(</span><span class="n">host</span><span class="p">)</span> <span class="ow">and</span> <span class="n">in_docker</span><span class="p">()</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">dockerized_uses</span><span class="p">:</span>
+                    <span class="n">host</span> <span class="o">=</span> <span class="n">__docker_host__</span>
+                <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">ports</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">graph_dict</span>
 
@@ -1035,13 +1052,18 @@
 
             <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
                 <span class="n">deployment_k8s_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">'</span>
-            <span class="k">else</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">v</span><span class="o">.</span><span class="n">head_args</span><span class="p">:</span>
                 <span class="n">deployment_k8s_address</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">k8s_namespace</span><span class="si">}</span><span class="s1">.svc'</span>
                 <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">deployment_k8s_address</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">k8s_namespace</span><span class="si">}</span><span class="s1">.svc'</span>
+                <span class="p">)</span>
 
+            <span class="n">external_port</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">head_port</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">head_port</span> <span class="k">else</span> <span class="n">v</span><span class="o">.</span><span class="n">port</span>
             <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">deployment_k8s_address</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">head_port</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">external</span> <span class="k">else</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span><span class="si">}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">deployment_k8s_address</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">external_port</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">external</span> <span class="k">else</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">]</span>
 
         <span class="k">return</span> <span class="n">graph_dict</span> <span class="k">if</span> <span class="n">graph_dict</span> <span class="k">else</span> <span class="kc">None</span>
@@ -1054,9 +1076,14 @@
         <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="n">deployment_docker_compose_address</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
-            <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">v</span><span class="o">.</span><span class="n">head_args</span><span class="p">:</span>
+                <span class="n">deployment_docker_compose_address</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">deployment_docker_compose_address</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">to_compatible_name</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
             <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">deployment_docker_compose_address</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">graph_dict</span>
@@ -1068,6 +1095,14 @@
                 <span class="n">graph_condition</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">when</span>
 
         <span class="k">return</span> <span class="n">graph_condition</span>
+
+    <span class="k">def</span> <span class="nf">_get_disabled_reduce_deployments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="n">disabled_deployments</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">disable_reduce</span><span class="p">:</span>
+                <span class="n">disabled_deployments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">disabled_deployments</span>
 
     <span class="k">def</span> <span class="nf">_get_graph_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
         <span class="k">def</span> <span class="nf">_add_node</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
@@ -1139,65 +1174,67 @@
     <span class="c1"># overload_inject_start_deployment</span>
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="p">,</span>
-        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'NoCompression'</span><span class="p">,</span> 
-        <span class="n">connection_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">disable_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">docker_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">entrypoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">external</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">force_update</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">gpus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span> 
-        <span class="n">host_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span> 
-        <span class="n">install_requirements</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">native</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'ANY'</span><span class="p">,</span> 
-        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">pull_latest</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">quiet_remote_logs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">replicas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
-        <span class="n">runtime_backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'PROCESS'</span><span class="p">,</span> 
-        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'WorkerRuntime'</span><span class="p">,</span> 
-        <span class="n">shards</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
-        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span> 
-        <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span> 
-        <span class="n">upload_files</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">'BaseExecutor'</span><span class="p">,</span> 
-        <span class="n">uses_after</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">uses_after_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">uses_before</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">uses_before_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">volumes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">when</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Flow'</span><span class="p">,</span> <span class="s1">'AsyncFlow'</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'NoCompression'</span><span class="p">,</span>
+        <span class="n">connection_list</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">disable_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">docker_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">entrypoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">external</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">force_update</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">gpus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
+        <span class="n">host_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'0.0.0.0'</span><span class="p">,</span>
+        <span class="n">install_requirements</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">native</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'ANY'</span><span class="p">,</span>
+        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">pull_latest</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">quiet_remote_logs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">replicas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">runtime_backend</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'PROCESS'</span><span class="p">,</span>
+        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'WorkerRuntime'</span><span class="p">,</span>
+        <span class="n">shards</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">timeout_ctrl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+        <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span>
+        <span class="n">upload_files</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">'BaseExecutor'</span><span class="p">,</span>
+        <span class="n">uses_after</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_after_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_before</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_before_address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">volumes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">when</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Flow'</span><span class="p">,</span> <span class="s1">'AsyncFlow'</span><span class="p">]:</span>
         <span class="sd">"""Add an Executor to the current Flow object.</span>
 
 <span class="sd">        :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. Possibilities are `NoCompression, Gzip, Deflate`. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.</span>
 <span class="sd">        :param connection_list: dictionary JSON with a list of connections to configure</span>
 <span class="sd">        :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</span>
 <span class="sd">        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '</span>
-<span class="sd">          container. </span>
-<span class="sd">          </span>
+<span class="sd">          container.</span>
+
 <span class="sd">          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/</span>
 <span class="sd">        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</span>
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
 <span class="sd">        :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.</span>
 <span class="sd">        :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local</span>
 <span class="sd">        :param gpus: This argument allows dockerized Jina executor discover local gpu devices.</span>
-<span class="sd">          </span>
-<span class="sd">              Note, </span>
+
+<span class="sd">              Note,</span>
 <span class="sd">              - To access all gpus, use `--gpus all`.</span>
 <span class="sd">              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.</span>
 <span class="sd">              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`</span>
@@ -1208,18 +1245,18 @@
 <span class="sd">        :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local</span>
 <span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
 <span class="sd">        :param name: The name of this object.</span>
-<span class="sd">          </span>
+
 <span class="sd">          This will be used in the following places:</span>
 <span class="sd">          - how you refer to this object in Python/YAML/CLI</span>
 <span class="sd">          - visualization</span>
 <span class="sd">          - log message header</span>
 <span class="sd">          - ...</span>
-<span class="sd">          </span>
+
 <span class="sd">          When not given, then the default naming strategy will apply.</span>
 <span class="sd">        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</span>
 <span class="sd">        :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.</span>
-<span class="sd">          </span>
-<span class="sd">          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found </span>
+
+<span class="sd">          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found</span>
 <span class="sd">          `here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;`.</span>
 <span class="sd">          Defaults to retaining whatever type is returned by the Executor.</span>
 <span class="sd">        :param polling: The polling strategy of the Deployment and its endpoints (when `shards&gt;1`).</span>
@@ -1233,7 +1270,7 @@
 <span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param pull_latest: Pull the latest image before running</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
-<span class="sd">          </span>
+
 <span class="sd">          Note that the recommended way is to only import a single module - a simple python file, if your</span>
 <span class="sd">          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,</span>
 <span class="sd">          which should be structured as a python package. For more details, please see the</span>
@@ -1251,7 +1288,7 @@
 <span class="sd">          workspace. This can be useful when your Deployment has more</span>
 <span class="sd">          file dependencies beyond a single YAML file, e.g.</span>
 <span class="sd">          Python files, data files.</span>
-<span class="sd">          </span>
+
 <span class="sd">          Note,</span>
 <span class="sd">          - currently only flatten structure is supported, which means if you upload `[./foo/a.py, ./foo/b.pp, ./bar/c.yml]`, then they will be put under the _same_ workspace on the remote, losing all hierarchies.</span>
 <span class="sd">          - by default, `--uses` YAML file is always uploaded.</span>
@@ -1262,22 +1299,22 @@
 <span class="sd">                  * a docker image (must start with `docker://`)</span>
 <span class="sd">                  * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
 <span class="sd">                  * the string literal of a JSON config</span>
-<span class="sd">          </span>
+
 <span class="sd">                  When use it under Python, one can use the following values additionally:</span>
 <span class="sd">                  - a Python dict that represents the config</span>
 <span class="sd">                  - a text file stream has `.read()` interface</span>
-<span class="sd">        :param uses_after: The executor attached after the Pods described by --uses, typically used for receiving from all shards, accepted type follows `--uses`</span>
+<span class="sd">        :param uses_after: The executor attached after the Pods described by --uses, typically used for receiving from all shards, accepted type follows `--uses`. This argument only applies for sharded Deployments (shards &gt; 1).</span>
 <span class="sd">        :param uses_after_address: The address of the uses-before runtime</span>
-<span class="sd">        :param uses_before: The executor attached after the Pods described by --uses, typically before sending to all shards, accepted type follows `--uses`</span>
+<span class="sd">        :param uses_before: The executor attached before the Pods described by --uses, typically before sending to all shards, accepted type follows `--uses`. This argument only applies for sharded Deployments (shards &gt; 1).</span>
 <span class="sd">        :param uses_before_address: The address of the uses-before runtime</span>
 <span class="sd">        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`</span>
 <span class="sd">        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`</span>
 <span class="sd">        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`</span>
-<span class="sd">        :param volumes: The path on the host to be mounted inside the container. </span>
-<span class="sd">          </span>
-<span class="sd">          Note, </span>
-<span class="sd">          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system. </span>
-<span class="sd">          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container. </span>
+<span class="sd">        :param volumes: The path on the host to be mounted inside the container.</span>
+
+<span class="sd">          Note,</span>
+<span class="sd">          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.</span>
+<span class="sd">          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.</span>
 <span class="sd">          - All volumes are mounted with read-write mode.</span>
 <span class="sd">        :param when: The condition that the documents need to fulfill before reaching the Executor.The condition can be defined in the form of a `DocArray query condition &lt;https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions&gt;`</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
@@ -1287,6 +1324,7 @@
 <span class="sd">        .. # noqa: DAR101</span>
 <span class="sd">        .. # noqa: DAR003</span>
 <span class="sd">        """</span>
+
     <span class="c1"># overload_inject_end_deployment</span>
 <div class="viewcode-block" id="Flow.add"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.add">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
@@ -1530,6 +1568,7 @@
                 <span class="n">graph_description</span><span class="o">=</span><span class="n">op_flow</span><span class="o">.</span><span class="n">_get_graph_representation</span><span class="p">(),</span>
                 <span class="n">deployments_addresses</span><span class="o">=</span><span class="n">op_flow</span><span class="o">.</span><span class="n">_get_deployments_addresses</span><span class="p">(),</span>
                 <span class="n">graph_conditions</span><span class="o">=</span><span class="n">op_flow</span><span class="o">.</span><span class="n">_get_graph_conditions</span><span class="p">(),</span>
+                <span class="n">deployments_disabled_reduce</span><span class="o">=</span><span class="n">op_flow</span><span class="o">.</span><span class="n">_get_disabled_reduce_deployments</span><span class="p">(),</span>
             <span class="p">)</span>
 
         <span class="n">removed_deployments</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2267,28 +2306,13 @@
     <span class="c1"># for backward support</span>
     <span class="n">join</span> <span class="o">=</span> <span class="n">needs</span>
 
-<div class="viewcode-block" id="Flow.rolling_update"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.rolling_update">[docs]</a>    <span class="k">def</span> <span class="nf">rolling_update</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">deployment_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Reload all replicas of a deployment sequentially</span>
-
-<span class="sd">        :param deployment_name: deployment to update</span>
-<span class="sd">        :param uses_with: a Dictionary of arguments to restart the executor with</span>
-<span class="sd">        """</span>
-        <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">run_async</span>
-
-        <span class="n">run_async</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">[</span><span class="n">deployment_name</span><span class="p">]</span><span class="o">.</span><span class="n">rolling_update</span><span class="p">,</span>
-            <span class="n">uses_with</span><span class="o">=</span><span class="n">uses_with</span><span class="p">,</span>
-            <span class="n">any_event_loop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
 <div class="viewcode-block" id="Flow.to_k8s_yaml"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.to_k8s_yaml">[docs]</a>    <span class="k">def</span> <span class="nf">to_k8s_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_base_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">k8s_namespace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">"""</span>
-<span class="sd">        Converts the Flow into a set of yaml deployments to deploy in Kubernetes</span>
+<span class="sd">        Converts the Flow into a set of yaml deployments to deploy in Kubernetes.</span>
+
+<span class="sd">        If you don't want to rebuild image on Jina Hub,</span>
+<span class="sd">        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.</span>
+
 <span class="sd">        :param output_base_path: The base path where to dump all the yaml files</span>
 <span class="sd">        :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.</span>
 <span class="sd">        """</span>
@@ -2379,28 +2403,6 @@
             <span class="sa">f</span><span class="s1">'Docker compose file has been created under </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s1">. You can use it by running `</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1">`'</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Flow.scale"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.scale">[docs]</a>    <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">deployment_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="sd">"""</span>
-<span class="sd">        Scale the amount of replicas of a given Executor.</span>
-
-<span class="sd">        :param deployment_name: deployment to update</span>
-<span class="sd">        :param replicas: The number of replicas to scale to</span>
-<span class="sd">        """</span>
-
-        <span class="c1"># TODO when replicas-host is ready, needs to be passed here</span>
-
-        <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">run_async</span>
-
-        <span class="n">run_async</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">[</span><span class="n">deployment_name</span><span class="p">]</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span>
-            <span class="n">replicas</span><span class="o">=</span><span class="n">replicas</span><span class="p">,</span>
-            <span class="n">any_event_loop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">client_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">:</span>
         <span class="sd">"""Get Client settings.</span>
@@ -2438,7 +2440,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 30, 2022.
+                    Last updated on Mar 31, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

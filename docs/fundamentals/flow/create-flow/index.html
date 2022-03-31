@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/create-flow/" />
   
-<meta property="og:site_name" content="Jina 3.2.10 Documentation" />
+<meta property="og:site_name" content="Jina 3.2.11 Documentation" />
   
 <meta property="og:description" content="Creating a Flow, on its face, means instantiating a Python object. More importantly, however, creating and configuring a Flow means defining your search microservice architecture. The most trivial Flow is the empty Flow as shown below: Pythonic style Load from YAML flow.yml: Start and stop a Flow..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.2.10 Documentation" />
+<meta property="og:image:alt" content="Jina 3.2.11 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Configure a Flow from YAML" href="../flow-yaml/" /><link rel="prev" title="Flow" href="../" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>Create a Flow - Jina 3.2.10 documentation</title>
+        <title>Create a Flow - Jina 3.2.11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -156,13 +156,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement" id="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://www.meetup.com/jina-community-meetup/events/284243173/">Join our Office Hours on March 31st at 17:00 CET </a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header" id="mobile-header">
@@ -178,7 +172,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.2.10 documentation</div>
+                <div class="brand">Jina 3.2.11 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -759,7 +753,7 @@ once the event is set.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">executor3</span></code> will use an Executor docker image coming from the Hub, and will be created as a docker container of this image.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">executor4</span></code> will use a <a class="reference internal" href="../../../how-to/sandbox/#sandbox"><span class="std std-ref">Sandbox Executor</span></a> run by Hubble, in the cloud.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">executor5</span></code> will use a Docker image tagged as <code class="docutils literal notranslate"><span class="pre">sentence-encoder</span></code>, and will be created as a docker container of this image.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">executor6</span></code> will use an Executor configuration file defining the <a class="reference internal" href="../../executor/executor-in-flow/#executor-yaml-interface"><span class="std std-ref">Executor YAML interface</span></a>, and will be created as a separate process.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">executor6</span></code> will use an Executor configuration file defining the <a class="reference internal" href="../../executor/executor-in-flow/#executor-api"><span class="std std-ref">Executor YAML interface</span></a>, and will be created as a separate process.</p></li>
 </ul>
 <p>More complex Executors typically are used from Docker images or will be structured into separate Python modules.</p>
 </section>
@@ -1291,7 +1285,7 @@ Jina allows the users to specify their (<code class="docutils literal notranslat
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 30, 2022.
+                    Last updated on Mar 31, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

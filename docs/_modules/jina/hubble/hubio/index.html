@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.hubble.hubio - Jina 3.2.10 documentation</title>
+        <title>jina.hubble.hubio - Jina 3.2.11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -123,13 +123,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement" id="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://www.meetup.com/jina-community-meetup/events/284243173/">Join our Office Hours on March 31st at 17:00 CET </a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header" id="mobile-header">
@@ -145,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.2.10 documentation</div>
+                <div class="brand">Jina 3.2.11 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -555,10 +549,15 @@
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlencode</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span><span class="p">,</span> <span class="n">__version__</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">colored</span><span class="p">,</span> <span class="n">get_request_header</span><span class="p">,</span> <span class="n">get_rich_console</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ArgNamespace</span><span class="p">,</span>
+    <span class="n">colored</span><span class="p">,</span>
+    <span class="n">get_request_header</span><span class="p">,</span>
+    <span class="n">get_rich_console</span><span class="p">,</span>
+    <span class="n">retry</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">jina.hubble</span> <span class="kn">import</span> <span class="n">HubExecutor</span>
 <span class="kn">from</span> <span class="nn">jina.hubble.helper</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">archive_package</span><span class="p">,</span>
@@ -1106,6 +1105,7 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">image_required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">rebuild_image</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HubExecutor</span><span class="p">:</span>
         <span class="sd">"""Fetch the executor meta info from Jina Hub.</span>
@@ -1113,6 +1113,7 @@
 <span class="sd">        :param tag: the tag of the executor if available, otherwise, use `None` as the value</span>
 <span class="sd">        :param secret: the access secret of the executor</span>
 <span class="sd">        :param image_required: it indicates whether a Docker image is required or not</span>
+<span class="sd">        :param rebuild_image: it indicates whether Jina Hub need to rebuild image or not</span>
 <span class="sd">        :param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default</span>
 <span class="sd">            to local cache</span>
 <span class="sd">        :return: meta of executor</span>
@@ -1124,9 +1125,19 @@
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="kn">import</span> <span class="nn">requests</span>
 
+        <span class="nd">@retry</span><span class="p">(</span><span class="n">num_retry</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">_send_request_with_retry</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="n">resp</span>
+
         <span class="n">pull_url</span> <span class="o">=</span> <span class="n">get_hubble_url_v2</span><span class="p">()</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'/rpc/executor.getPackage'</span>
 
-        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s1">'include'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'code'</span><span class="p">]}</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'id'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s1">'include'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'code'</span><span class="p">],</span> <span class="s1">'rebuildImage'</span><span class="p">:</span> <span class="n">rebuild_image</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">image_required</span><span class="p">:</span>
             <span class="n">payload</span><span class="p">[</span><span class="s1">'include'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'docker'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">secret</span><span class="p">:</span>
@@ -1135,12 +1146,8 @@
             <span class="n">payload</span><span class="p">[</span><span class="s1">'tag'</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag</span>
 
         <span class="n">req_header</span> <span class="o">=</span> <span class="n">get_request_header</span><span class="p">()</span>
-        <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">pull_url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">req_header</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-            <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
 
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">_send_request_with_retry</span><span class="p">(</span><span class="n">pull_url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">req_header</span><span class="p">)</span>
         <span class="n">resp</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">'data'</span><span class="p">]</span>
 
         <span class="n">images</span> <span class="o">=</span> <span class="n">resp</span><span class="p">[</span><span class="s1">'package'</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'containers'</span><span class="p">,</span> <span class="p">[])</span>
@@ -1184,25 +1191,21 @@
         <span class="p">}</span>
 
         <span class="kn">import</span> <span class="nn">requests</span>
-        <span class="kn">from</span> <span class="nn">rich.progress</span> <span class="kn">import</span> <span class="n">Console</span>
 
         <span class="n">console</span> <span class="o">=</span> <span class="n">get_rich_console</span><span class="p">()</span>
 
         <span class="n">host</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">port</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">json_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-                <span class="n">url</span><span class="o">=</span><span class="n">get_hubble_url_v2</span><span class="p">()</span> <span class="o">+</span> <span class="s1">'/rpc/sandbox.get'</span><span class="p">,</span>
-                <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
-                <span class="n">headers</span><span class="o">=</span><span class="n">get_request_header</span><span class="p">(),</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">json_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'code'</span><span class="p">)</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
-                <span class="n">host</span> <span class="o">=</span> <span class="n">json_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'host'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                <span class="n">port</span> <span class="o">=</span> <span class="n">json_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'port'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                <span class="n">livetime</span> <span class="o">=</span> <span class="n">json_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'livetime'</span><span class="p">,</span> <span class="s1">'15 mins'</span><span class="p">)</span>
 
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">raise</span>
+        <span class="n">json_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">get_hubble_url_v2</span><span class="p">()</span> <span class="o">+</span> <span class="s1">'/rpc/sandbox.get'</span><span class="p">,</span>
+            <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">get_request_header</span><span class="p">(),</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">json_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'code'</span><span class="p">)</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="n">host</span> <span class="o">=</span> <span class="n">json_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'host'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">port</span> <span class="o">=</span> <span class="n">json_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'port'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">livetime</span> <span class="o">=</span> <span class="n">json_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'livetime'</span><span class="p">,</span> <span class="s1">'15 mins'</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">host</span> <span class="ow">and</span> <span class="n">port</span><span class="p">:</span>
             <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s2">"A sandbox already exists, reusing it."</span><span class="p">)</span>
@@ -1437,7 +1440,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 30, 2022.
+                    Last updated on Mar 31, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
