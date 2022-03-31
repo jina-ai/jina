@@ -79,7 +79,7 @@ The YAML configuration, as a minimal working example, is required to point to th
 
 ```{admonition} More YAML options
 :class: seealso
-To discover what else can be configured using Jina's YAML interface, see {ref}`here <executor-yaml-interface>`.
+To discover what else can be configured using Jina's YAML interface, see {ref}`here <executor-api>`.
 ```
 
 This is necessary for the Executor to be put inside the Docker image,
