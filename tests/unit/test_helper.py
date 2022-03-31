@@ -340,16 +340,15 @@ def test_retry():
     assert result == 'it works'
     assert try_me.tried_count == 3
 
-@pytest.mark.asyncio
-async def test_port_occupied(port_generator):
+
+def test_port_occupied(port_generator):
     port = port_generator()
     with Flow(port=port):
-        is_occupied = not (await is_port_free('localhost', port))
+        is_occupied = not (is_port_free('localhost', port))
         assert is_occupied
 
 
-@pytest.mark.asyncio
-async def test_port_free(port_generator):
+def test_port_free(port_generator):
     port = port_generator()
-    is_free = await is_port_free('localhost', port)
+    is_free = is_port_free('localhost', port)
     assert is_free
