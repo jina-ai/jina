@@ -1753,7 +1753,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
     def to_k8s_yaml(self, output_base_path: str, k8s_namespace: Optional[str] = None):
         """
-        Converts the Flow into a set of yaml deployments to deploy in Kubernetes
+        Converts the Flow into a set of yaml deployments to deploy in Kubernetes.
+
+        If you don't want to rebuild image on Jina Hub,
+        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.
+
         :param output_base_path: The base path where to dump all the yaml files
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
         """

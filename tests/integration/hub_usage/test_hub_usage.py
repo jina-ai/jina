@@ -71,7 +71,14 @@ def test_use_from_local_hub_deployment_level(
 
     mock = mocker.Mock()
 
-    def _mock_fetch(name, tag=None, secret=None, image_required=True, force=False):
+    def _mock_fetch(
+        name,
+        tag=None,
+        secret=None,
+        image_required=True,
+        rebuild_image=True,
+        force=False,
+    ):
         mock(name=name)
         return (
             HubExecutor(
@@ -99,7 +106,14 @@ def test_use_from_local_hub_flow_level(
 
     mock = mocker.Mock()
 
-    def _mock_fetch(name, tag=None, secret=None, image_required=True, force=False):
+    def _mock_fetch(
+        name,
+        tag=None,
+        secret=None,
+        image_required=True,
+        rebuild_image=True,
+        force=False,
+    ):
         mock(name=name)
         return (
             HubExecutor(

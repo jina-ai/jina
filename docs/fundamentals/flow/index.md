@@ -21,7 +21,7 @@ The most important methods of the `Flow` object are the following:
 | `.post()`                          | Sends requests to the Flow API.                                                                                                     |
 | `.block()`                         | Blocks execution until the program is terminated. This is useful to keep the Flow alive so it can be used from other places (clients, etc). |
 | `.to_docker_compose_yaml()`        | Generates a Docker-Compose file listing all its Executors as Services.                                                                       |
-| `.to_k8s_yaml(<output_directory>)` | Generates the Kubernetes configuration files in `<output_directory>`.        
+| `.to_k8s_yaml(<output_directory>)` | Generates the Kubernetes configuration files in `<output_directory>`. Based on your local Jina version, Jina Hub may rebuild the Docker image during the YAML generation process. If you do not wish to rebuild the image, set the environment variable `JINA_HUB_NO_IMAGE_REBUILD`. |
 
 ## Why should you use a Flow?
 

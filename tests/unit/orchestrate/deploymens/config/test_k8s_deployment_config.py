@@ -378,7 +378,14 @@ def test_k8s_yaml_regular_deployment(
     polling,
     monkeypatch,
 ):
-    def _mock_fetch(name, tag=None, secret=None, force=False):
+    def _mock_fetch(
+        name,
+        tag=None,
+        secret=None,
+        image_required=True,
+        rebuild_image=True,
+        force=False,
+    ):
         return (
             HubExecutor(
                 uuid='hello',

@@ -564,6 +564,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         *,
         secret: Optional[str] = None,
         image_required: bool = True,
+        rebuild_image: bool = True,
         force: bool = False,
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
@@ -571,6 +572,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         :param tag: the tag of the executor if available, otherwise, use `None` as the value
         :param secret: the access secret of the executor
         :param image_required: it indicates whether a Docker image is required or not
+        :param rebuild_image: it indicates whether Jina Hub need to rebuild image or not
         :param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default
             to local cache
         :return: meta of executor
@@ -594,7 +596,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
 
         pull_url = get_hubble_url_v2() + f'/rpc/executor.getPackage'
 
-        payload = {'id': name, 'include': ['code']}
+        payload = {'id': name, 'include': ['code'], 'rebuildImage': rebuild_image}
         if image_required:
             payload['include'].append('docker')
         if secret:
