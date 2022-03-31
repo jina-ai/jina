@@ -1630,7 +1630,8 @@ def _parse_url(host):
 
 
 def is_port_free(host, port):
-    if socket(AF_INET, SOCK_STREAM).connect_ex((host, port)) == 0:
-        return False
-    else:
-        return True
+    with socket(AF_INET, SOCK_STREAM) as session:
+        if session.connect_ex((host, port)) == 0:
+            return False
+        else:
+            return True
