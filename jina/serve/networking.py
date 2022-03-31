@@ -802,6 +802,20 @@ class GrpcConnectionPool:
         )
 
 
+def in_docker():
+    """
+    Checks if the current process is running inside Docker
+    :return: True if the current process is running inside Docker
+    """
+    path = '/proc/self/cgroup'
+    if os.path.exists('/.dockerenv'):
+        return True
+    if os.path.isfile(path):
+        with open(path) as file:
+            return any('docker' in line for line in file)
+    return False
+
+
 def host_is_local(hostname):
     """
     Check if hostname is point to localhost
@@ -814,4 +828,7 @@ def host_is_local(hostname):
     if fqn in ("localhost", "0.0.0.0") or hostname == '0.0.0.0':
         return True
 
-    return ipaddress.ip_address(hostname).is_loopback
+    try:
+        return ipaddress.ip_address(hostname).is_loopback
+    except ValueError:
+        return False

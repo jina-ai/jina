@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from jina import Document, DocumentArray, Flow, Executor, Client, requests
+from jina import Client, Document, DocumentArray, Executor, Flow, requests
 
 exposed_port = 12345
 
@@ -184,7 +184,7 @@ def test_uses_before_no_reduce_real_executor():
         .add(uses=Executor1, name='pod0')
         .add(uses=Executor2, needs='gateway', name='pod1')
         .add(uses=Executor3, needs='gateway', name='pod2')
-        .add(needs=['pod0', 'pod1', 'pod2'], name='pod3', uses_before=DummyExecutor)
+        .add(needs=['pod0', 'pod1', 'pod2'], name='pod3', uses=DummyExecutor)
     )
 
     with flow as f:
