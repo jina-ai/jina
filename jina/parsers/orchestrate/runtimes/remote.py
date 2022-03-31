@@ -72,6 +72,13 @@ def mixin_gateway_parser(parser):
         default='{}',
     )
 
+    parser.add_argument(
+        '--deployments-disable-reduce',
+        type=str,
+        help='list JSON disabling the built-in merging mechanism for each Deployment listed',
+        default='[]',
+    )
+
     gp.add_argument(
         '--compression',
         type=str,

@@ -424,6 +424,9 @@ f.to_k8s_yaml('flow_k8s_configuration')
 This will generate the necessary Kubernetes configuration files for all the `Executors` of the `Flow`.
 The generated folder can be used directly with `kubectl` to deploy the `Flow` to an existing Kubernetes cluster.
 
+Based on your local Jina version, Jina Hub may rebuild the Docker image during the YAML generation process.
+If you do not wish to rebuild the image, set the environment variable `JINA_HUB_NO_IMAGE_REBUILD`.
+
 ## See further
 
 - {ref}`Access the Flow with the Client <client>`

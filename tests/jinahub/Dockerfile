@@ -8,5 +8,5 @@ RUN python -m pip install --no-cache-dir --upgrade pip && \
     cd ..
 
 COPY app.py flow.yml /
-
+ENV JINA_LOG_LEVEL=DEBUG
 ENTRYPOINT ["python", "app.py"]

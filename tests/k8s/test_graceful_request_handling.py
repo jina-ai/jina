@@ -1,11 +1,11 @@
-import os
-import time
 import asyncio
 import multiprocessing
+import os
+import time
 
 import pytest
 
-from jina import Flow, Document
+from jina import Document, Flow
 
 cur_dir = os.path.dirname(__file__)
 
@@ -33,7 +33,6 @@ async def create_all_flow_deployments_and_wait_ready(
         else:
             assert file_set == {
                 'slow-process-executor.yml',
-                'slow-process-executor-head.yml',
             }
         for file in file_set:
             try:
@@ -49,7 +48,7 @@ async def create_all_flow_deployments_and_wait_ready(
     # wait for all the pods to be up
     while True:
         namespaced_pods = core_client.list_namespaced_pod(namespace)
-        if namespaced_pods.items is not None and len(namespaced_pods.items) == 5:
+        if namespaced_pods.items is not None and len(namespaced_pods.items) == 4:
             break
         await asyncio.sleep(1.0)
 
@@ -58,12 +57,10 @@ async def create_all_flow_deployments_and_wait_ready(
     deployment_names = set([item.metadata.name for item in resp.items])
     assert deployment_names == {
         'gateway',
-        'slow-process-executor-head',
         'slow-process-executor',
     }
     expected_replicas = {
         'gateway': 1,
-        'slow-process-executor-head': 1,
         'slow-process-executor': 3,
     }
     while len(deployment_names) > 0:
