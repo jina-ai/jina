@@ -332,6 +332,32 @@ class Deployment(BaseDeployment):
         """
         return self.first_pod_args.port
 
+    @property
+    def ports(self) -> List[int]:
+        """Returns a list of ports exposed by this Deployment.
+        Exposed means these are the ports a Client/Gateway is supposed to communicate with.
+        For sharded deployments this will be the head_port.
+        For non sharded deployments it will be all replica ports
+        .. # noqa: DAR201
+        """
+        if self.head_port:
+            return [self.head_port]
+        else:
+            ports = []
+            for replica in self.pod_args['pods'][0]:
+                ports.append(replica.port)
+            return ports
+
+    @property
+    def dockerized_uses(self) -> bool:
+        """Checks if this Deployment uses a dockerized Executor
+
+        .. # noqa: DAR201
+        """
+        return self.args.uses.startswith('docker://') or self.args.uses.startswith(
+            'jinahub+docker://'
+        )
+
     def _parse_args(
         self, args: Namespace
     ) -> Dict[str, Optional[Union[List[Namespace], Namespace]]]:

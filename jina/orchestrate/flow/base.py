@@ -135,6 +135,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         cors: Optional[bool] = False,
         default_swagger_ui: Optional[bool] = False,
         deployments_addresses: Optional[str] = '{}',
+        deployments_disable_reduce: Optional[str] = '[]',
         description: Optional[str] = None,
         disable_reduce: Optional[bool] = False,
         env: Optional[dict] = None,
@@ -490,23 +491,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 graph_dict[node] = [f'{v.protocol}://{v.host}:{v.head_port}']
             else:
                 # there is no head, add the worker connection information instead
-                worker_addresses = []
-                graph_dict[node] = worker_addresses
-                # iterate over all replica args of the first shard
-                # we can assume safely here that there is only a single shard, because it's the reason there is no head
-                for replica in v.pod_args['pods'][0]:
-                    host = replica.host
-                    # check if both Gateway and the Deployment run in docker
-                    if (
-                        host_is_local(host)
-                        and in_docker()
-                        and (
-                            v.args.uses.startswith('docker://')
-                            or v.args.uses.startswith('jinahub+docker://')
-                        )
-                    ):
-                        host = __docker_host__
-                    worker_addresses.append(f'{v.protocol}://{host}:{replica.port}')
+                host = v.host
+                if host_is_local(host) and in_docker() and v.dockerized_uses:
+                    host = __docker_host__
+                graph_dict[node] = [f'{v.protocol}://{host}:{port}' for port in v.ports]
 
         return graph_dict
 

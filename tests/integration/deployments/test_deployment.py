@@ -171,8 +171,7 @@ async def test_deployments_replicas(port_generator):
     )
     deployment.start()
 
-    ports = [args.port for args in deployment.pod_args['pods'][0]]
-    connections = [f'0.0.0.0:{port}' for port in ports]
+    connections = [f'0.0.0.0:{port}' for port in deployment.ports]
     deployments_addresses = f'{{"deployment0": {json.dumps(connections)}}}'
     gateway_deployment = _create_gateway_deployment(
         graph_description, deployments_addresses, port
@@ -253,8 +252,7 @@ async def test_deployments_with_replicas_advance_faster(port_generator):
     )
     deployment.start()
 
-    ports = [args.port for args in deployment.pod_args['pods'][0]]
-    connections = [f'0.0.0.0:{port}' for port in ports]
+    connections = [f'0.0.0.0:{port}' for port in deployment.ports]
     deployments_addresses = f'{{"deployment0": {json.dumps(connections)}}}'
 
     gateway_deployment = _create_gateway_deployment(
