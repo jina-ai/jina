@@ -38,10 +38,10 @@ class GRPCGatewayRuntime(GatewayRuntime):
             ]
         )
 
+        self._setup_monitoring()  # should come first as it is needed for this other setup
         self._set_topology_graph()
         self._set_connection_pool()
 
-        self._setup_monitoring()
         await self._async_setup_server()
 
     async def _async_setup_server(self):
@@ -51,7 +51,6 @@ class GRPCGatewayRuntime(GatewayRuntime):
                 graph=self._topology_graph, connection_pool=self._connection_pool
             ),
             result_handler=handle_result,
-            metrics_registry=self.metrics_registry,
         )
 
         self.streamer.Call = self.streamer.stream

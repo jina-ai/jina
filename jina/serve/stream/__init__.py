@@ -41,7 +41,6 @@ class RequestStreamer:
         result_handler: Callable[['Request'], Optional['Request']],
         end_of_iter_handler: Optional[Callable[[], None]] = None,
         logger: Optional['JinaLogger'] = None,
-        metrics_registry: Optional['CollectorRegistry'] = None,
     ):
         """
         :param args: args from CLI
@@ -49,7 +48,6 @@ class RequestStreamer:
         :param result_handler: The callable responsible for handling the response.
         :param end_of_iter_handler: Optional callable to handle the end of iteration if some special action needs to be taken.
         :param logger: Optional logger that can be used for logging
-        :param metrics_registry: The metrics registry, if set to None it means that the monitoring is disabled
 
         """
         self.args = args
@@ -58,18 +56,6 @@ class RequestStreamer:
         self._request_handler = request_handler
         self._result_handler = result_handler
         self._end_of_iter_handler = end_of_iter_handler
-        self._monitoring = metrics_registry is not None
-
-        if self._monitoring:
-            from prometheus_client import Summary
-
-            _summary_time = Summary(
-                'request_processing_seconds',
-                'Time spent processing request',
-                registry=metrics_registry,
-            ).time()
-
-            self._request_handler = _summary_time(self._request_handler)
 
     async def stream(self, request_iterator, *args) -> AsyncIterator['Request']:
         """
