@@ -11,6 +11,7 @@ from jina import __windows__
 from jina.importer import ImportExtensions
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.base import BaseRuntime
+from jina.serve.runtimes.mixin import MonitoringMixin
 from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
 
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
     import threading
 
 
-class AsyncNewLoopRuntime(BaseRuntime, ABC):
+class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
     """
     The async runtime to start a new event loop.
     """
@@ -61,6 +62,8 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
             win32api.SetConsoleCtrlHandler(
                 lambda *args, **kwargs: self.is_cancel.set(), True
             )
+
+        self._setup_monitoring()
         self._loop.run_until_complete(self.async_setup())
 
     def run_forever(self):

@@ -6,13 +6,10 @@ from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.runtimes.mixin import MonitoringMixin
 
 
-class GatewayRuntime(AsyncNewLoopRuntime, MonitoringMixin, ABC):
+class GatewayRuntime(AsyncNewLoopRuntime, ABC):
     """
     The Runtime from which the GatewayRuntimes need to inherit
     """
-
-    def _setup_monitoring(self):
-        MonitoringMixin._setup_monitoring_server(self)
 
     def _set_topology_graph(self):
         # check if it should be in K8s, maybe ConnectionPoolFactory to be created

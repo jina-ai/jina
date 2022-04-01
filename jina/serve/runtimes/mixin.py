@@ -1,11 +1,12 @@
 class MonitoringMixin:
     """The Monitoring Mixin for pods"""
 
-    def _setup_monitoring_server(self):
+    def _setup_monitoring(self):
         """
         Wait for the monitoring server to start
         """
-        if self.args.monitoring:  # todo refactor to add that in the mixin
+
+        if self.args.monitoring:
             from prometheus_client import CollectorRegistry
 
             self.metrics_registry = CollectorRegistry()

@@ -38,7 +38,6 @@ class GRPCGatewayRuntime(GatewayRuntime):
             ]
         )
 
-        self._setup_monitoring()  # should come first as it is needed for this other setup
         self._set_topology_graph()
         self._set_connection_pool()
 
