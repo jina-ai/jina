@@ -3,8 +3,26 @@
 
 Creating a Flow, on its face, means instantiating a Python object.
 More importantly, however, creating and configuring a Flow means defining your {ref}`search microservice architecture <architecture-overview>`.
+It defines how your Executors are tied together, and how your data, well, *flows*.
 
-The most trivial `Flow` is the empty `Flow` as shown below:
+Every Flow can be defined either purely in Python, or be loaded from a YAML file.
+
+````{admonition} Hint
+:class: hint
+
+For professional use we recommend YAML files to configure your Flows.
+This is because YAML files are:
+
+- independent of Python source code
+- easy to edit, maintain and extend
+- human-readable
+
+````
+
+## Instantiate a Flow
+
+The most trivial Flow is the empty Flow and, like any other Flow, it can be instantiated purely in Python, or from a
+YAML file:
 
 ````{tab} Pythonic style
 
@@ -17,7 +35,7 @@ with f:  # Using it as a Context Manager will start the Flow
 ```
 ````
 
-````{tab} Load from YAML
+`````{tab} Load from YAML
 `flow.yml`:
 
 ```yaml
@@ -32,7 +50,14 @@ f = Flow.load_config('flow.yml')  # Load the Flow definition from Yaml file
 with f:  # Using it as a Context Manager will start the Flow
     f.post(on='/search')  # This sends a request to the /search endpoint of the Flow
 ```
+
+````{admonition} Hint: Dump Flow configuration
+:class: hint
+
+In addition to loading a Flow from a YAML file, you can also dump an existing Flow to YAML. To do so, execute `f.save_config('path/to/flow.yml')`.
 ````
+`````
+
 
 ## Start and stop a Flow
 
@@ -124,7 +149,7 @@ with f:  # Using it as a Context Manager will start the Flow
 ```
 ````
 
-````{tab} Load from YAML
+`````{tab} Load from YAML
 `flow.yml`:
 
 ```yaml
@@ -157,6 +182,7 @@ class BarExecutor(Executor):
         docs.append(Document(text='bar was here'))
 ```
 
+`main.py`
 ```python
 from jina import Flow
 
@@ -168,8 +194,26 @@ with f:
     )  # This sends a request to the /search endpoint of the Flow
     print(response.texts)
 ```
+
+````{admonition} Hint: Load multiple Executors from the same module
+:class: hint
+
+You can override the `metas` attribute for all Executors in a Flow. This allows you to specify a single Python module
+from which you can then load all of your Executors:
+
+```yaml
+jtype: Flow
+metas:
+  py_modules:
+    - executors.py
+executors:
+  - uses: FooExecutor
+  - uses: BarExecutor
 ```
+
+In this example, both `FooExecutor` and `BarExecutor` are defined inside of `executors.py`, and both will be located and loaded by the Flow.
 ````
+`````
 
 
 The response of the `Flow` defined above is `['foo was here', 'bar was here']`, because the request was first sent to FooExecutor and then to BarExecutor.
