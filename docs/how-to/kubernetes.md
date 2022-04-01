@@ -112,7 +112,7 @@ from jina import Flow
 
 f = (
     Flow(port=8080)
-    .add(name='encoder', uses='jinahub+docker://CLIPImageEncoder', replicas=2)
+    .add(name='encoder', uses='jinahub+docker://CLIPEncoder', replicas=2)
     .add(
         name='indexer',
         uses='jinahub+docker://PQLiteIndexer',
@@ -189,7 +189,7 @@ with portforward.forward('custom-namespace', 'gateway-7df8765bd9-xf5tf', 8080, 8
     docs = client.post(
         '/index',
         inputs=DocumentArray.from_files('./imgs/*.png').apply(
-            lambda d: d.load_uri_to_image_tensor()
+            lambda d: d.convert_uri_to_datauri()
         ),
     )
 
@@ -232,7 +232,7 @@ port = 80
 client = Client(host=host, port=port)
 client.show_progress = True
 docs = DocumentArray.from_files("./imgs/*.png").apply(
-    lambda d: d.load_uri_to_image_tensor()
+    lambda d: d.convert_uri_to_datauri()
 )
 queried_docs = client.post("/search", inputs=docs)
 
