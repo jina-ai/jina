@@ -308,14 +308,14 @@ async def test_worker_runtime_slow_init_exec():
 
     # try to connect a TCP socket to the gRPC server
     # this should only succeed after the Executor is ready, which should be after 5 seconds
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    connected = False
-    while not connected:
-        try:
-            s.connect((args.host, args.port))
-            connected = True
-        except ConnectionRefusedError:
-            time.sleep(0.2)
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        connected = False
+        while not connected:
+            try:
+                s.connect((args.host, args.port))
+                connected = True
+            except ConnectionRefusedError:
+                time.sleep(0.2)
 
     # Executor sleeps 5 seconds, so at least 5 seconds need to have elapsed here
     assert time.time() - runtime_started > 5.0
