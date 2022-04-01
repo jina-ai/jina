@@ -13,7 +13,7 @@ by Kubernetes.
 Deploying a Flow in Kubernetes is the recommended way of using Jina in production.
 
 
-## Jina rely on Linkerd 
+## Jina relies on Service Mesh 
 Jina's Kubernetes support comes with a built-in integration for [Linkerd](https://linkerd.io/) as the service mesh for connecting all the Jina services in Kubernetes. All Jina deployment resources are annotated with the necessary [Linkerd annotations](https://linkerd.io/2.11/tasks/adding-your-service/#meshing-a-service-with-annotations). So we recommend every Jina user to [install Linkerd](https://linkerd.io/2.11/getting-started/#step-3-install-the-control-plane-onto-your-cluster) into the Kubernetes cluster they are using Jina in.
 
 Linkerd will automatically load balance traffic between all replicas of an Executor. It also has [additional features](https://linkerd.io/2.11/features/).
