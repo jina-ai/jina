@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from jina import Executor, __default_endpoint__
+from jina import Executor, Flow, __default_endpoint__
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.excepts import BadClientCallback, NotSupportedError
 from jina.helper import (
@@ -14,6 +14,7 @@ from jina.helper import (
     dunder_get,
     find_request_binding,
     get_ci_vendor,
+    is_port_free,
     is_yaml_filepath,
     random_port,
     reset_ports,
@@ -338,3 +339,16 @@ def test_retry():
 
     assert result == 'it works'
     assert try_me.tried_count == 3
+
+
+def test_port_occupied(port_generator):
+    port = port_generator()
+    with Flow(port=port):
+        is_occupied = not (is_port_free('localhost', port))
+        assert is_occupied
+
+
+def test_port_free(port_generator):
+    port = port_generator()
+    is_free = is_port_free('localhost', port)
+    assert is_free

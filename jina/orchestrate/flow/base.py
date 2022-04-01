@@ -39,6 +39,7 @@ from jina.enums import (
 from jina.excepts import (
     FlowMissingDeploymentError,
     FlowTopologyError,
+    PortAlreadyUsed,
     RuntimeFailToStart,
 )
 from jina.helper import (
@@ -51,6 +52,7 @@ from jina.helper import (
     get_internal_ip,
     get_public_ip,
     get_rich_console,
+    is_port_free,
     typename,
 )
 from jina.jaml import JAMLCompatible
@@ -471,6 +473,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
+
         args.noblock_on_start = True
         args.expose_graphql_endpoint = (
             self.args.expose_graphql_endpoint
@@ -1133,8 +1136,16 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :return: this instance
         """
+
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
+
+        port_gateway = self._deployment_nodes[GATEWAY_NAME].args.port
+
+        if not (
+            is_port_free(__default_host__, port_gateway)
+        ):  # we check if the port is not used at parsing time as well for robustness
+            raise PortAlreadyUsed(f'port:{port_gateway}')
 
         # set env only before the Deployment get started
         if self.args.env:
