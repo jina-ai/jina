@@ -26,9 +26,9 @@ It is also generally possible to use other service mesh providers (like [Istio](
 If you don't install a third party service mesh (like Linkerd), you will not be able to scale the number of replicas per Executor to more than one. A single replica will always handle all the traffic. No matter how many replicas will be running.
 ````
 
-## Deploy your `Flow`
+## Deploy your Flow
 
-To deploy a `Flow` on `Kubernetes`, first, you have to generate kubernetes YAML configuration files from a Jina Flow.
+To deploy a Flow on `Kubernetes`, first, you have to generate Kubernetes YAML configuration files from a Jina Flow.
 Then, you can use the `kubectl apply` command to create or update your Flow resources within your cluster.
 
 ```{caution}
@@ -70,27 +70,25 @@ You can use this to [add or remove replicas](https://kubernetes.io/docs/concepts
 
 ## Extra Kubernetes options
 
-One could see that you can't add basic kubernetes feature like `Secrets`, `ConfigMap` or `Lables` via the pythonic interface. That is intended
-and it does not mean that we don't support these features. On the contrary we allow you to fully express your kubernetes configuration by using the kubernetes API so that you can add you own kubernetes standard to jina.
+One could see that you can't add basic Kubernetes feature like `Secrets`, `ConfigMap` or `Lables` via the pythonic interface. That is intended
+and it does not mean that we don't support these features. On the contrary we allow you to fully express your Kubernetes configuration by using the Kubernetes API so that you can add you own Kubernetes standard to jina.
 
 ````{admonition} Hint
 :class: hint
-Dumping the kubernetes configuration files and edit them to add extra kubernetes option is the recommanded way to use Jina in production
+We recommend dumping the Kubernetes configuration files and then editing the files to suit your needs.
 ````
 
-You can edit the kubernetes configuration to fit your needs.
+Here are possible configuration options you may need to add or change
 
-A non-exhaustive example list of configurations you may want to adapt may include:
-
-- Add a `label selector to the `Deployment` for your own application logics
-- Add `requests` and `limits` for the resources of the different `Pod` 
-- Setup `persistent volume storage` to save your data on disk
-- Pass custom configuration to your `Executor` with `ConfigMap
-- Manage the credentials of your `Executor` with `Secret`
-- Edit the default rolling update configuration.
+- Add labels `selector`s to the Deployments to suit your case
+- Add `requests` and `limits` for the resources of the different Pods 
+- Setup persistent volume storage to save your data on disk
+- Pass custom configuration to your Executor with `ConfigMap` 
+- Manage the credentials of your Executor with secrets
+- Edit the default rolling update configuration
 
 
-## Example : Deploying a flow with kubernetes
+## Example : Deploying a Flow with Kubernetes
 
 ### Preliminaries
 
@@ -150,10 +148,11 @@ You should expect the following file structure generated:
         ├── indexer-1.yml
         └── indexer-head.yml
 ```
+You may need to edit these files to add your custom configuration
 
 As you can see, the Flow contains configuration for the gateway and the rest of executors
 
-Let's create a kubernetes namespace for our Flow:
+Let's create a Kubernetes namespace for our Flow:
 
 ```shell
 kubectl create namespace custom-namespace
@@ -203,22 +202,22 @@ with portforward.forward('custom-namespace', 'gateway-7df8765bd9-xf5tf', 8080, 8
     print(f' Indexed documents: {len(docs)}')
 ```
 
-## Exposing your `Flow`
-The previous examples use port-forwarding to index documents to the `Flow`. 
+## Exposing your Flow
+The previous examples use port-forwarding to index documents to the Flow. 
 Thinking about real world applications, 
 you might want to expose your service to make it reachable by the users, so that you can serve search requests
 
 ```{caution}
-Exposing your `Flow` only works if the environment of your `Kubernetes cluster` supports `External Loadbalancers`.
+Exposing your Flow only works if the environment of your `Kubernetes cluster` supports `External Loadbalancers`.
 ```
 
-Once the `Flow` is deployed, you can expose a service.
+Once the Flow is deployed, you can expose a service.
 ```bash
 kubectl expose deployment gateway --name=gateway-exposed --type LoadBalancer --port 80 --target-port 8080 -n custom-namespace
 sleep 60 # wait until the external ip is configured
 ```
 
-Export the external ip which is needed for the client in the next section when sending documents to the `Flow`. 
+Export the external ip which is needed for the client in the next section when sending documents to the Flow. 
 ```bash
 export EXTERNAL_IP=`kubectl get service gateway-exposed -n custom-namespace -o=jsonpath='{.status.loadBalancer.ingress[0].ip}'`
 ```
