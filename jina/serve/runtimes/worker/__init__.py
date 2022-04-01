@@ -32,13 +32,16 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         super().__init__(args, cancel_event, **kwargs)
 
-        # Keep this initialization order, otherwise readiness check is not valid
-        self._data_request_handler = DataRequestHandler(args, self.logger)
-
     async def async_setup(self):
         """
-        Wait for the GRPC server to start
+        Start the DataRequestHandler and wait for the GRPC server to start
         """
+
+        # Keep this initialization order
+        # otherwise readiness check is not valid
+        # The DataRequestHandler needs to be started BEFORE the grpc server
+        self._data_request_handler = DataRequestHandler(self.args, self.logger)
+
         self._grpc_server = grpc.aio.server(
             options=[
                 ('grpc.max_send_message_length', -1),
