@@ -123,7 +123,13 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-
+<div class="announcement" id="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/284604466/">Learn more about Robustness with Nearest Neighbor Search at our Engineering All Hands on April 12 at 16:00 CET</a>
+     
+    </aside>
+</div>
 
 <div class="page">
     <header class="mobile-header" id="mobile-header">
@@ -573,13 +579,16 @@
 <span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">cancel_event</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-        <span class="c1"># Keep this initialization order, otherwise readiness check is not valid</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data_request_handler</span> <span class="o">=</span> <span class="n">DataRequestHandler</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
-
 <div class="viewcode-block" id="WorkerRuntime.async_setup"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""</span>
-<span class="sd">        Wait for the GRPC server to start</span>
+<span class="sd">        Start the DataRequestHandler and wait for the GRPC server to start</span>
 <span class="sd">        """</span>
+
+        <span class="c1"># Keep this initialization order</span>
+        <span class="c1"># otherwise readiness check is not valid</span>
+        <span class="c1"># The DataRequestHandler needs to be started BEFORE the grpc server</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_request_handler</span> <span class="o">=</span> <span class="n">DataRequestHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">server</span><span class="p">(</span>
             <span class="n">options</span><span class="o">=</span><span class="p">[</span>
                 <span class="p">(</span><span class="s1">'grpc.max_send_message_length'</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
@@ -691,7 +700,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Mar 31, 2022.
+                    Last updated on Apr 04, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
