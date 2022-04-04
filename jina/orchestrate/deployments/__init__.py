@@ -634,6 +634,7 @@ class Deployment(BaseDeployment):
                     args.port = args.port
                 else:
                     _args.port = helper.random_port()
+                    _args.port_monitoring = helper.random_port()
 
                 # pod workspace if not set then derive from workspace
                 if not _args.workspace:
