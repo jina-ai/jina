@@ -1,0 +1,5 @@
+!FilewriterExec
+metas:
+  name: filewriter-exec
+  py_modules: executor.py
+  workspace: ./
