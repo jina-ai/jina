@@ -83,7 +83,6 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         self.logger.debug(f'Start listening on {bind_addr}')
         self._grpc_server.add_insecure_port(bind_addr)
         await self._grpc_server.start()
-        self._setup_monitoring_server()
 
     async def async_run_forever(self):
         """Block until the GRPC server is terminated"""
