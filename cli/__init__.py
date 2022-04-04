@@ -3,6 +3,14 @@ import shutil
 import subprocess
 import sys
 
+PLUGIN_INFO = {
+    'now': {  # the subcommand your project should be reachable under, e.g. "jina now ..."
+        'name': 'Jina Now',  # what your project is called
+        'pip-package': 'jina-now',  # the pip package name of your project
+        'internal-command': 'jina-now',  # the command of your project, e.g. Now's cli is reachable via "jina-now ..."
+    }
+}
+
 
 def _get_run_args(print_args: bool = True):
     from jina.helper import get_rich_console
@@ -117,22 +125,35 @@ def _is_latest_version(suppress_on_error=True):
             raise
 
 
-def _try_external_subcommand():
+def _try_plugin_command():
     """Tries to call the CLI of an external Jina project."""
     argv = sys.argv
-    if len(argv) <= 2:
+    if len(argv) < 2:
         return False
 
     def _cmd_exists(cmd):
         return shutil.which(cmd) is not None
 
-    subcommand = 'jina-' + argv[1]
-    print(subcommand)
-    if _cmd_exists(subcommand):
-        print('It exists!')
-        subprocess.run([subcommand] + argv[2:])
+    subcommand = argv[1]
+    cmd = (
+        PLUGIN_INFO[subcommand]['internal-command']
+        if subcommand in PLUGIN_INFO
+        else 'jina-' + subcommand
+    )
+    if _cmd_exists(cmd):
+        subprocess.run([cmd] + argv[2:])
         return True
-    print("doesn't exist :/")
+
+    if subcommand in PLUGIN_INFO:
+        from jina.helper import get_rich_console
+
+        cmd_info = PLUGIN_INFO[subcommand]
+        project, package = cmd_info['name'], cmd_info['pip-package']
+        console = get_rich_console()
+        console.print(
+            f"It seems like [yellow]{project}[/yellow] is not installed in your environment. To use it via the [green]'jina {subcommand}'[/green] command, install it first: [green]'pip install {package}'[/green]."
+        )
+        return True
     return False
 
 
@@ -144,9 +165,9 @@ def main():
 
     threading.Thread(target=_is_latest_version, daemon=True).start()
 
-    external_call_successful = _try_external_subcommand()
+    found_plugin = _try_plugin_command()
 
-    if not external_call_successful:
+    if not found_plugin:
         _quick_ac_lookup()
 
         from cli import api
