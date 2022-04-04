@@ -48,6 +48,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         self.connection_pool = GrpcConnectionPool(
             logger=self.logger,
             compression=args.compression,
+            metrics_registry=self.metrics_registry,
         )
         polling = getattr(args, 'polling', self.DEFAULT_POLLING.name)
         try:
