@@ -172,7 +172,8 @@ def test_push_wrong_dockerfile(
     )
 
 
-def test_fetch(mocker, monkeypatch):
+@pytest.mark.parametrize('rebuild_image', [True, False])
+def test_fetch(mocker, monkeypatch, rebuild_image):
     mock = mocker.Mock()
 
     def _mock_post(url, json, headers=None):
@@ -182,7 +183,9 @@ def test_fetch(mocker, monkeypatch):
     monkeypatch.setattr(requests, 'post', _mock_post)
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
 
-    executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', None, force=True)
+    executor, _ = HubIO(args).fetch_meta(
+        'dummy_mwu_encoder', None, rebuild_image=rebuild_image, force=True
+    )
 
     assert executor.uuid == 'dummy_mwu_encoder'
     assert executor.name == 'alias_dummy'
@@ -190,8 +193,14 @@ def test_fetch(mocker, monkeypatch):
     assert executor.image_name == 'jinahub/pod.dummy_mwu_encoder'
     assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'
 
+    _, mock_kwargs = mock.call_args_list[0]
+    assert mock_kwargs['json']['rebuildImage'] is rebuild_image
+
     executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', '', force=True)
     assert executor.tag == 'v0'
+
+    _, mock_kwargs = mock.call_args_list[1]
+    assert mock_kwargs['json']['rebuildImage'] is True  # default value must be True
 
     executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', 'v0.1', force=True)
     assert executor.tag == 'v0.1'
@@ -261,7 +270,14 @@ class DownloadMockResponse:
 def test_pull(test_envs, mocker, monkeypatch):
     mock = mocker.Mock()
 
-    def _mock_fetch(name, tag=None, secret=None, image_required=True, force=False):
+    def _mock_fetch(
+        name,
+        tag=None,
+        secret=None,
+        image_required=True,
+        rebuild_image=True,
+        force=False,
+    ):
         mock(name=name)
         return (
             HubExecutor(
@@ -318,7 +334,14 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
     version = 'v0'
 
     @disk_cache_offline(cache_file=str(tmpfile))
-    def _mock_fetch(name, tag=None, secret=None, image_required=True, force=False):
+    def _mock_fetch(
+        name,
+        tag=None,
+        secret=None,
+        image_required=True,
+        rebuild_image=True,
+        force=False,
+    ):
         mock(name=name)
         if fail_meta_fetch:
             raise urllib.error.URLError('Failed fetching meta')

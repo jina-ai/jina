@@ -4,10 +4,10 @@ import time
 
 import pytest
 
-from jina import Document, Executor, Client, requests
+from jina import Client, Document, Executor, requests
 from jina.enums import PollingType
-from jina.parsers import set_gateway_parser, set_deployment_parser
 from jina.orchestrate.deployments import Deployment
+from jina.parsers import set_deployment_parser, set_gateway_parser
 
 
 @pytest.mark.asyncio
@@ -80,6 +80,7 @@ async def test_deployments_flow_topology(
             name=f'{deployment}',
             uses_before=uses_before,
             uses_after=uses_after,
+            shards=2,
         )
 
         started_deployments.append(regular_deployment)
@@ -164,13 +165,14 @@ async def test_deployments_replicas(port_generator):
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
-    deployments_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
 
     deployment = _create_regular_deployment(
         port=head_port, name='deployment', replicas=10
     )
     deployment.start()
 
+    connections = [f'0.0.0.0:{port}' for port in deployment.ports]
+    deployments_addresses = f'{{"deployment0": {json.dumps(connections)}}}'
     gateway_deployment = _create_gateway_deployment(
         graph_description, deployments_addresses, port
     )
@@ -206,7 +208,8 @@ async def test_deployments_with_executor(port_generator):
         executor='NameChangeExecutor',
         uses_before=True,
         uses_after=True,
-        polling=PollingType.ALL,
+        polling=PollingType.ANY,
+        shards=2,
     )
     regular_deployment.start()
 
@@ -243,12 +246,14 @@ async def test_deployments_with_replicas_advance_faster(port_generator):
     graph_description = (
         '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}'
     )
-    deployments_addresses = f'{{"deployment0": ["0.0.0.0:{head_port}"]}}'
 
     deployment = _create_regular_deployment(
         port=head_port, name='deployment', executor='FastSlowExecutor', replicas=10
     )
     deployment.start()
+
+    connections = [f'0.0.0.0:{port}' for port in deployment.ports]
+    deployments_addresses = f'{{"deployment0": {json.dumps(connections)}}}'
 
     gateway_deployment = _create_gateway_deployment(
         graph_description, deployments_addresses, port

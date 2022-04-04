@@ -96,6 +96,9 @@ class DockerComposeConfig:
                     'test': f'python -m jina.resources.health_check.gateway localhost:{cargs.port} {protocol}',
                     'interval': '2s',
                 },
+                'environment': [
+                    f'JINA_LOG_LEVEL={os.getenv("JINA_LOG_LEVEL", "INFO")}'
+                ],
             }
 
         def _get_image_name(self, uses: Optional[str]):
@@ -164,6 +167,9 @@ class DockerComposeConfig:
                         'test': f'python -m jina.resources.health_check.pod localhost:{cargs.port}',
                         'interval': '2s',
                     },
+                    'environment': [
+                        f'JINA_LOG_LEVEL={os.getenv("JINA_LOG_LEVEL", "INFO")}'
+                    ],
                 }
                 if env is not None:
                     config['environment'] = [f'{k}={v}' for k, v in env.items()]
@@ -264,7 +270,7 @@ class DockerComposeConfig:
         uses_before = getattr(args, 'uses_before', None)
         uses_after = getattr(args, 'uses_after', None)
 
-        if args.name != 'gateway':
+        if args.name != 'gateway' and shards > 1:
             parsed_args['head_service'] = BaseDeployment._copy_to_head_args(self.args)
             parsed_args['head_service'].port = port
             parsed_args['head_service'].uses = None
@@ -291,7 +297,7 @@ class DockerComposeConfig:
 
             parsed_args['head_service'].connection_list = json.dumps(connection_list)
 
-        if uses_before:
+        if uses_before and shards > 1:
             uses_before_cargs = copy.deepcopy(args)
             uses_before_cargs.shard_id = 0
             uses_before_cargs.replicas = 1
@@ -314,7 +320,7 @@ class DockerComposeConfig:
             ].uses_before_address = (
                 f'{to_compatible_name(uses_before_cargs.name)}:{uses_before_cargs.port}'
             )
-        if uses_after:
+        if uses_after and shards > 1:
             uses_after_cargs = copy.deepcopy(args)
             uses_after_cargs.shard_id = 0
             uses_after_cargs.replicas = 1

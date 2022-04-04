@@ -157,6 +157,7 @@ ac_table = {
             '--graph-description',
             '--graph-conditions',
             '--deployments-addresses',
+            '--deployments-disable-reduce',
             '--compression',
             '--runtime-backend',
             '--runtime',

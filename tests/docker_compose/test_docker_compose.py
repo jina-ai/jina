@@ -143,8 +143,9 @@ def flow_with_needs(docker_images):
         )
         .add(
             name='merger',
-            uses_before=f'docker://{docker_images[1]}',
+            uses=f'docker://{docker_images[1]}',
             needs=['imageencoder', 'textencoder'],
+            disable_reduce=True,
         )
     )
     return flow

@@ -219,8 +219,9 @@ def k8s_flow_with_needs(docker_images):
         )
         .add(
             name='merger',
-            uses_before=f'docker://{docker_images[1]}',
+            uses=f'docker://{docker_images[1]}',
             needs=['imageencoder', 'textencoder'],
+            disable_reduce=True,
         )
     )
     return flow
@@ -251,13 +252,9 @@ async def test_flow_with_needs(logger, k8s_flow_with_needs, tmpdir):
         core_client=core_client,
         deployment_replicas_expected={
             'gateway': 1,
-            'segmenter-head': 1,
             'segmenter': 1,
-            'textencoder-head': 1,
             'textencoder': 1,
-            'imageencoder-head': 1,
             'imageencoder': 1,
-            'merger-head': 1,
             'merger': 1,
         },
         logger=logger,
@@ -366,7 +363,6 @@ async def test_flow_with_configmap(k8s_flow_configmap, docker_images, tmpdir, lo
         core_client=core_client,
         deployment_replicas_expected={
             'gateway': 1,
-            'test-executor-head': 1,
             'test-executor': 1,
         },
         logger=logger,
@@ -412,7 +408,6 @@ async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir, logger):
         core_client=core_client,
         deployment_replicas_expected={
             'gateway': 1,
-            'test-executor-head': 1,
             'test-executor': 1,
         },
         logger=logger,
@@ -461,7 +456,6 @@ async def test_flow_with_workspace(logger, docker_images, tmpdir):
         core_client=core_client,
         deployment_replicas_expected={
             'gateway': 1,
-            'test-executor-head': 1,
             'test-executor': 1,
         },
         logger=logger,
@@ -496,11 +490,12 @@ async def test_flow_with_external_native_deployment(logger, docker_images, tmpdi
 
     args = set_deployment_parser().parse_args(['--uses', 'DocReplaceExecutor'])
     with Deployment(args) as external_deployment:
+        ports = [args.port for args in external_deployment.pod_args['pods'][0]]
         flow = Flow(name='k8s_flow-with_external_deployment', port=9090).add(
             name='external_executor',
             external=True,
             host=f'172.17.0.1',
-            port=external_deployment.head_port,
+            port=ports[0],
         )
 
         namespace = 'test-flow-with-external-deployment'
@@ -556,7 +551,7 @@ async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
     flow = Flow(name='k8s_flow-with_external_deployment', port=9090).add(
         name='external_executor',
         external=True,
-        host='external-deployment-head.external-deployment-ns.svc',
+        host='external-deployment.external-deployment-ns.svc',
         port=GrpcConnectionPool.K8S_PORT,
     )
 

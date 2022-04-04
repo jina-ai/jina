@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Tuple, Union
 from jina import __default_executor__
 from jina.enums import PodRoleType
 from jina.excepts import NoContainerizedError
+from jina.orchestrate.deployments import BaseDeployment
 from jina.orchestrate.deployments.config.helper import (
     construct_runtime_container_args,
     get_base_executor_version,
@@ -14,7 +15,6 @@ from jina.orchestrate.deployments.config.helper import (
 )
 from jina.orchestrate.deployments.config.k8slib import kubernetes_deployment
 from jina.serve.networking import GrpcConnectionPool
-from jina.orchestrate.deployments import BaseDeployment
 
 
 class K8sDeploymentConfig:
@@ -263,41 +263,47 @@ class K8sDeploymentConfig:
         uses_after = getattr(args, 'uses_after', None)
 
         if args.name != 'gateway':
-            parsed_args['head_deployment'] = BaseDeployment._copy_to_head_args(
-                self.args
-            )
-            parsed_args['head_deployment'].gpus = None
-            parsed_args['head_deployment'].port = GrpcConnectionPool.K8S_PORT
-            parsed_args['head_deployment'].uses = None
-            parsed_args['head_deployment'].uses_metas = None
-            parsed_args['head_deployment'].uses_with = None
-            parsed_args['head_deployment'].env = None
-
-            import json
-
-            connection_list = {}
-            for i in range(shards):
-                name = (
-                    f'{to_compatible_name(self.name)}-{i}'
-                    if shards > 1
-                    else f'{to_compatible_name(self.name)}'
+            # head deployment only exists for sharded deployments
+            if shards > 1:
+                parsed_args['head_deployment'] = BaseDeployment._copy_to_head_args(
+                    self.args
                 )
-                connection_list[
-                    str(i)
-                ] = f'{name}.{self.k8s_namespace}.svc:{GrpcConnectionPool.K8S_PORT}'
+                parsed_args['head_deployment'].gpus = None
+                parsed_args['head_deployment'].port = GrpcConnectionPool.K8S_PORT
+                parsed_args['head_deployment'].uses = None
+                parsed_args['head_deployment'].uses_metas = None
+                parsed_args['head_deployment'].uses_with = None
+                parsed_args['head_deployment'].env = None
 
-            parsed_args['head_deployment'].connection_list = json.dumps(connection_list)
+                import json
 
-        if uses_before:
-            parsed_args[
-                'head_deployment'
-            ].uses_before_address = (
-                f'127.0.0.1:{GrpcConnectionPool.K8S_PORT_USES_BEFORE}'
-            )
-        if uses_after:
-            parsed_args[
-                'head_deployment'
-            ].uses_after_address = f'127.0.0.1:{GrpcConnectionPool.K8S_PORT_USES_AFTER}'
+                connection_list = {}
+                for i in range(shards):
+                    name = (
+                        f'{to_compatible_name(self.name)}-{i}'
+                        if shards > 1
+                        else f'{to_compatible_name(self.name)}'
+                    )
+                    connection_list[
+                        str(i)
+                    ] = f'{name}.{self.k8s_namespace}.svc:{GrpcConnectionPool.K8S_PORT}'
+
+                parsed_args['head_deployment'].connection_list = json.dumps(
+                    connection_list
+                )
+
+                if uses_before:
+                    parsed_args[
+                        'head_deployment'
+                    ].uses_before_address = (
+                        f'127.0.0.1:{GrpcConnectionPool.K8S_PORT_USES_BEFORE}'
+                    )
+                if uses_after:
+                    parsed_args[
+                        'head_deployment'
+                    ].uses_after_address = (
+                        f'127.0.0.1:{GrpcConnectionPool.K8S_PORT_USES_AFTER}'
+                    )
 
         for i in range(shards):
             cargs = copy.deepcopy(args)
@@ -332,7 +338,9 @@ class K8sDeploymentConfig:
                 )
             ]
         else:
-            deployments = [self.head_deployment]
+            deployments = []
+            if self.head_deployment:
+                deployments.append(self.head_deployment)
             deployments.extend(self.worker_deployments)
             return [
                 (
