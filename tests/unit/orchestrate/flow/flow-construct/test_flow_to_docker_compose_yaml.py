@@ -340,15 +340,12 @@ def test_docker_compose_set_volume(tmpdir):
         assert configuration['networks'] == {'jina-network': {'driver': 'bridge'}}
         services = configuration['services']
         assert (
-            len(services) == 7
+            len(services) == 4
         )  # gateway, executor0-head, executor0, executor1-head, executor1, executor2-head, executor2
         assert set(services.keys()) == {
             'gateway',
-            'executor0-head',
             'executor0',
-            'executor1-head',
             'executor1',
-            'executor2-head',
             'executor2',
         }
         default_workspace_abspath = os.path.abspath(default_workspace)
