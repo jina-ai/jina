@@ -387,10 +387,9 @@ def test_disable_auto_volume(tmpdir):
     assert configuration['version'] == '3.3'
     assert configuration['networks'] == {'jina-network': {'driver': 'bridge'}}
     services = configuration['services']
-    assert len(services) == 3  # gateway, executor0-head, executor0
+    assert len(services) == 2  # gateway, executor0-head, executor0
     assert set(services.keys()) == {
         'gateway',
-        'executor0-head',
         'executor0',
     }
     assert 'volumes' not in services['executor0']
