@@ -1,24 +1,23 @@
 import asyncio
 import multiprocessing
 import os
+import socket
 import time
 from multiprocessing import Process
 from threading import Event
 
 import grpc
 import pytest
-
 from docarray import Document
+
 from jina import DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_pod_parser
+from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.request_handlers.data_request_handler import (
-    DataRequestHandler,
-)
+from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.serve.runtimes.worker import WorkerRuntime
-from jina.proto import jina_pb2_grpc, jina_pb2
 
 
 @pytest.mark.slow
@@ -273,6 +272,70 @@ async def test_worker_runtime_graceful_shutdown():
     )
     assert handler_closed_event.is_set()
     assert not WorkerRuntime.is_ready(f'{args.host}:{args.port}')
+
+
+class SlowInitExecutor(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        time.sleep(5.0)
+
+    @requests
+    def foo(self, docs, **kwargs):
+        return docs
+
+
+@pytest.mark.timeout(10)
+@pytest.mark.asyncio
+async def test_worker_runtime_slow_init_exec():
+    args = set_pod_parser().parse_args(['--uses', 'SlowInitExecutor'])
+
+    cancel_event = multiprocessing.Event()
+
+    def start_runtime(args, cancel_event):
+        with WorkerRuntime(args, cancel_event) as runtime:
+            runtime.run_forever()
+
+    runtime_thread = Process(
+        target=start_runtime,
+        args=(args, cancel_event),
+        daemon=True,
+    )
+    runtime_started = time.time()
+    runtime_thread.start()
+
+    # wait a bit to the worker runtime has a chance to finish some things, but not the Executor init (5 secs)
+    time.sleep(1.0)
+
+    # try to connect a TCP socket to the gRPC server
+    # this should only succeed after the Executor is ready, which should be after 5 seconds
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        connected = False
+        while not connected:
+            try:
+                s.connect((args.host, args.port))
+                connected = True
+            except ConnectionRefusedError:
+                time.sleep(0.2)
+
+    # Executor sleeps 5 seconds, so at least 5 seconds need to have elapsed here
+    assert time.time() - runtime_started > 5.0
+
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=3.0,
+        ctrl_address=f'{args.host}:{args.port}',
+        ready_or_shutdown_event=Event(),
+    )
+
+    result = await GrpcConnectionPool.send_request_async(
+        _create_test_data_message(), f'{args.host}:{args.port}', timeout=1.0
+    )
+
+    assert len(result.docs) == 1
+
+    cancel_event.set()
+    runtime_thread.join()
+
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
 
 
 def _create_test_data_message(counter=0):
