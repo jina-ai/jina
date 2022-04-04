@@ -77,8 +77,8 @@ def test_container_pod_pass_envs(env_checker_docker_image_built):
             '',
         ),
         (
-            ['--uses', 'docker://dummy-exec', '--volumes', 'my/cool:/custom/volume'],
-            'my/cool',
+            ['--uses', 'docker://dummy-exec', '--volumes'],
+            'my/very/cool',
             '/custom/volume',
         ),
     ],
@@ -90,6 +90,11 @@ def test_container_pod_volume_setting(
     dummy_exec_docker_image_built,
     tmpdir,
 ):
+    if expected_source:
+        expected_source = os.path.join(tmpdir, expected_source)
+        volume_arg = str(expected_source) + ':' + expected_destination
+        pod_args.append(volume_arg)
+
     default_workspace = os.path.join(Path.home(), 'mock-workspace')
 
     with mock.patch.dict(
