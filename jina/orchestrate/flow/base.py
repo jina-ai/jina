@@ -788,6 +788,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """
 
     # overload_inject_end_deployment
+    @overload
     @allowed_levels([FlowBuildLevel.EMPTY])
     def add(
         self,
