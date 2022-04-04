@@ -1,4 +1,6 @@
 import os
+import shutil
+import subprocess
 import sys
 
 
@@ -115,17 +117,40 @@ def _is_latest_version(suppress_on_error=True):
             raise
 
 
+def _try_external_subcommand():
+    """Tries to call the CLI of an external Jina project."""
+    argv = sys.argv
+    if len(argv) <= 2:
+        return False
+
+    def _cmd_exists(cmd):
+        return shutil.which(cmd) is not None
+
+    subcommand = 'jina-' + argv[1]
+    print(subcommand)
+    if _cmd_exists(subcommand):
+        print('It exists!')
+        subprocess.run([subcommand] + argv[2:])
+        return True
+    print("doesn't exist :/")
+    return False
+
+
 def main():
-    """The main entrypoint of the CLI """
-    _quick_ac_lookup()
-
-    from cli import api
-
-    args = _get_run_args()
+    """The main entrypoint of the CLI"""
 
     # checking version info in another thread
     import threading
 
     threading.Thread(target=_is_latest_version, daemon=True).start()
 
-    getattr(api, args.cli.replace('-', '_'))(args)
+    external_call_successful = _try_external_subcommand()
+
+    if not external_call_successful:
+        _quick_ac_lookup()
+
+        from cli import api
+
+        args = _get_run_args()
+
+        getattr(api, args.cli.replace('-', '_'))(args)
