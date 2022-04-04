@@ -185,6 +185,8 @@ If you want your containerized Executor to operate inside one of these volumes, 
 
 If you do not specify `volumes`, Jina will automatically mount a volume into the container.
 In this case, the volume source will be your {ref}`default Executor workspace <executor-workspace>`, and the volume destination will
-be `/app`. Additionally, automatic volume setting will move the Executor's workspace into the volume destination.
+be `/app`. Additionally, automatic volume setting will try to move the Executor's workspace into the volume destination.
+Depending on the default executor workspace on your system this may not always succeed, so explicitly mounting a volume and setting
+a workspace is recommended.
 
 You can disable automatic volume setting by passing `f.add(..., disable_auto_volume=True)`.
