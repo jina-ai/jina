@@ -47,6 +47,7 @@ class DataRequestHandler:
                     'py_modules': self.args.py_modules,
                 },
                 extra_search_paths=self.args.extra_search_paths,
+                kwargs={'runtime_args': {}},
             )
         except BadConfigSource as ex:
             self.logger.error(
