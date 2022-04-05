@@ -5,6 +5,10 @@ import sys
 
 from packaging.version import Version, parse
 
+KNOWN_PLUGINS_URL = (
+    'https://raw.githubusercontent.com/jina-ai/jina/unified-cli/cli/known_plugins.json'
+)
+
 
 def _get_run_args(print_args: bool = True):
     from jina.helper import get_rich_console
@@ -126,21 +130,33 @@ def _is_latest_version(package='jina', suppress_on_error=True):
                 return False
         return True
     except:
-        # no network, two slow, api.jina.ai is down
+        # no network, too slow, PyPi is down
         if not suppress_on_error:
             raise
 
 
-def _parse_known_plugins():
-    import json
+def _fetch_known_plugins():
+    try:
+        import json
+        import warnings
+        from urllib.request import Request, urlopen
 
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    with open(os.path.join(dir_path, 'known_plugins.json')) as f:
-        return json.load(f)
+        req = Request(
+            KNOWN_PLUGINS_URL,
+            headers={'User-Agent': 'Mozilla/5.0'},
+        )
+        with urlopen(
+            req, timeout=2
+        ) as resp:  # 'with' is important to close the resource after use
+            plugin_info = json.load(resp)
+            return plugin_info
+    except:
+        # no network, too slow, github is down
+        return dict()
 
 
 def _is_latest_version_plugin(subcommand):
-    plugin_info = _parse_known_plugins()
+    plugin_info = _fetch_known_plugins()
     if subcommand in plugin_info:
         _is_latest_version(package=plugin_info[subcommand]['pip-package'])
 
@@ -172,7 +188,7 @@ def _try_plugin_command():
         subprocess.run([cmd] + argv[2:])
         return True
 
-    plugin_info = _parse_known_plugins()
+    plugin_info = _fetch_known_plugins()
     if subcommand in plugin_info:
         from jina.helper import get_rich_console
 
