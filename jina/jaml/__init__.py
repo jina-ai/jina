@@ -606,6 +606,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         uses_metas: Optional[Dict] = None,
         uses_requests: Optional[Dict] = None,
         extra_search_paths: Optional[List[str]] = None,
+        py_modules: Optional[str] = None,
         runtime_args: Optional[Dict[str, Any]] = None,
         **kwargs,
     ) -> 'JAMLCompatible':
@@ -657,10 +658,23 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param uses_metas: dictionary of parameters to overwrite from the default config's metas field
         :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
         :param extra_search_paths: extra paths used when looking for executor yaml files
-        :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config
+        :param py_modules: Optional py_module from which the object need to be loaded
+        :param runtime_args: Optional dictionary of parameters runtime_args to be directly passed without being parsed into a yaml config
+        :param : runtime_args that need to be passed to the yaml
+
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
+        if runtime_args:
+            kwargs[
+                'runtimes_args'
+            ] = (
+                dict()
+            )  # when we have runtime args it is needed to have an empty runtime args session in the yam config
+
+        if py_modules:
+            kwargs['runtimes_args']['py_modules'] = py_modules
+
         if isinstance(source, str) and os.path.exists(source):
             extra_search_paths = (extra_search_paths or []) + [os.path.dirname(source)]
 
