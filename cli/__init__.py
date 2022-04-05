@@ -162,7 +162,10 @@ def _is_latest_version_plugin(subcommand):
 
 
 def _try_plugin_command():
-    """Tries to call the CLI of an external Jina project."""
+    """Tries to call the CLI of an external Jina project.
+
+    :return: if the plugin has been found (locally or among the known plugins)
+    """
     argv = sys.argv
     if len(argv) < 2:  # no command given
         return False
