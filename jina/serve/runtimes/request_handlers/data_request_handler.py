@@ -38,14 +38,14 @@ class DataRequestHandler:
                 uses_with=self.args.uses_with,
                 uses_metas=self.args.uses_metas,
                 uses_requests=self.args.uses_requests,
-                runtime_args={
+                runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
                     'workspace': self.args.workspace,
                     'shard_id': self.args.shard_id,
                     'shards': self.args.shards,
                     'replicas': self.args.replicas,
                     'name': self.args.name,
-                    'py_modules': self.args.py_modules,
                 },
+                py_modules=self.args.py_modules,
                 extra_search_paths=self.args.extra_search_paths,
             )
         except BadConfigSource as ex:

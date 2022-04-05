@@ -2,11 +2,11 @@ import collections
 import json
 import os
 import warnings
-from typing import Union, TextIO, Dict, Tuple, Optional, List
+from typing import Any, Dict, List, Optional, TextIO, Tuple, Union
 
 from yaml import MappingNode
 from yaml.composer import Composer
-from yaml.constructor import FullConstructor, ConstructorError
+from yaml.constructor import ConstructorError, FullConstructor
 from yaml.parser import Parser
 from yaml.reader import Reader
 from yaml.resolver import Resolver
@@ -91,13 +91,29 @@ class JinaLoader(Reader, Scanner, Parser, Composer, JinaConstructor, JinaResolve
     :param stream: the stream to load.
     """
 
-    def __init__(self, stream):
+    def __init__(self, stream, runtime_args=None):
         Reader.__init__(self, stream)
         Scanner.__init__(self)
         Parser.__init__(self)
         Composer.__init__(self)
         JinaConstructor.__init__(self)
         JinaResolver.__init__(self)
+        self.runtime_args = runtime_args
+
+
+def get_jina_loader_with_runtime(runtime_args: Optional[Dict[str, Any]] = None):
+    """Create a JinaLoader init function which already stored the runtime_args in the init function, usefully for
+    `yaml.load(stream,loader=JinaLoader)` which needs a class with a init function with only one parameter
+
+    :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config
+    :return: A function that initialize a JinaLoader with the runtime_args stored within the function
+
+    """
+
+    def _get_loader(stream):
+        return JinaLoader(stream, runtime_args)
+
+    return _get_loader
 
 
 # remove on|On|ON resolver
