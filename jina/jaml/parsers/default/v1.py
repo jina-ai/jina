@@ -18,7 +18,7 @@ class V1Parser(VersionedYAMLParser):
         """
         :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type
         :param data: flow yaml file loaded as python dict
-        :param runtime_args: Optional runtime_args to be passed to the created object without coming from the JAML file
+        :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config
         :return: the YAML parser given the syntax version number
         """
         expanded_data = JAML.expand_dict(data, None)

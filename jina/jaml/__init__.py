@@ -168,7 +168,7 @@ class JAML:
         :param stream: the stream to load
         :param substitute: substitute environment, internal reference and context variables.
         :param context: context replacement variables in a dict, the value of the dict is the replacement.
-        :param runtime_args: Optional runtime_args to be passed to the created object without coming from the JAML file
+        :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config
         :return: the Python object
 
         """
@@ -569,13 +569,12 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param node: the node to traverse
         :return: the parser associated with the class
         """
-        data = constructor.construct_mapping(node, deep=True)  # todo update
+        data = constructor.construct_mapping(node, deep=True)
         from jina.jaml.parsers import get_parser
 
         return get_parser(cls, version=data.get('version', None)).parse(
             cls, data, runtime_args=constructor.runtime_args
         )
-        # return get_parser(cls, version=data.get('version', None)).parse(cls, data)
 
     def save_config(self, filename: Optional[str] = None):
         """
@@ -639,11 +638,11 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             # load Executor from yaml file and substitute environment variables
             os.environ['VAR_A'] = 'hello-world'
             b = BaseExecutor.load_config('a.yml')
-            assert b.name == hello - world
+            assert b.name == 'hello-world'
 
             # load Executor from yaml file and substitute variables from a dict
             b = BaseExecutor.load_config('a.yml', context={'VAR_A': 'hello-world'})
-            assert b.name == hello - world
+            assert b.name == 'hello-world'
 
             # disable substitute
             b = BaseExecutor.load_config('a.yml', substitute=False)
@@ -658,7 +657,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param uses_metas: dictionary of parameters to overwrite from the default config's metas field
         :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
         :param extra_search_paths: extra paths used when looking for executor yaml files
-        :param runtime_args: Optional runtime_args to be passed to the init function without parsing them into the JAML file
+        :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """

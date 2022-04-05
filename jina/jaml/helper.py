@@ -105,7 +105,7 @@ def get_jina_loader_with_runtime(runtime_args: Optional[Dict[str, Any]] = None):
     """Create a JinaLoader init function which already stored the runtime_args in the init function, usefully for
     `yaml.load(stream,loader=JinaLoader)` which needs a class with a init function with only one parameter
 
-    :param runtime_args: Optional runtime_args to be passed to the created object without coming from the JAML file
+    :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config
     :return: A function that initialize a JinaLoader with the runtime_args stored within the function
 
     """
