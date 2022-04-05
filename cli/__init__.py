@@ -5,13 +5,6 @@ import sys
 
 from packaging.version import Version, parse
 
-PLUGIN_INFO = {
-    'now': {  # the subcommand your project should be reachable under, e.g. "jina now ..."
-        'name': 'Jina Now',  # what your project is called
-        'pip-package': 'jina-now',  # the pip package name of your project
-    }
-}
-
 
 def _get_run_args(print_args: bool = True):
     from jina.helper import get_rich_console
@@ -138,9 +131,18 @@ def _is_latest_version(package='jina', suppress_on_error=True):
             raise
 
 
+def _parse_known_plugins():
+    import json
+
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    with open(os.path.join(dir_path, 'known_plugins.json')) as f:
+        return json.load(f)
+
+
 def _is_latest_version_plugin(subcommand):
-    if subcommand in PLUGIN_INFO:
-        _is_latest_version(package=PLUGIN_INFO[subcommand]['pip-package'])
+    plugin_info = _parse_known_plugins()
+    if subcommand in plugin_info:
+        _is_latest_version(package=plugin_info[subcommand]['pip-package'])
 
 
 def _try_plugin_command():
@@ -170,15 +172,16 @@ def _try_plugin_command():
         subprocess.run([cmd] + argv[2:])
         return True
 
-    if subcommand in PLUGIN_INFO:
+    plugin_info = _parse_known_plugins()
+    if subcommand in plugin_info:
         from jina.helper import get_rich_console
 
-        cmd_info = PLUGIN_INFO[subcommand]
-        project, package = cmd_info['name'], cmd_info['pip-package']
+        cmd_info = plugin_info[subcommand]
+        project, package = cmd_info['display-name'], cmd_info['pip-package']
         console = get_rich_console()
         console.print(
             f"It seems like [yellow]{project}[/yellow] is not installed in your environment."
-            f"To use it via the [green]'jina {subcommand}'[/green] command,"
+            f"To use it via the [green]'jina {subcommand}'[/green] command, "
             f"install it first: [green]'pip install {package}'[/green]."
         )
         return True
