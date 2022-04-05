@@ -11,6 +11,7 @@ from jina import __docker_host__, __windows__
 from jina.helper import random_name, slugify
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
+from jina.orchestrate.helper import generate_default_volume_and_workspace
 from jina.orchestrate.pods import BasePod, _get_worker
 from jina.orchestrate.pods.container_helper import (
     get_docker_network,
@@ -107,6 +108,16 @@ def _docker_run(
         raise BadImageNameError(f'image: {uses_img} can not be found local & remote.')
 
     _volumes = {}
+    if not args.disable_auto_volume and not args.volumes:
+        (
+            generated_volumes,
+            workspace_in_container,
+        ) = generate_default_volume_and_workspace(workspace_id=args.workspace_id)
+        args.volumes = generated_volumes
+        args.workspace = (
+            workspace_in_container if not args.workspace else args.workspace
+        )
+
     if args.volumes:
         for p in args.volumes:
             paths = p.split(':')

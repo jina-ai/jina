@@ -124,6 +124,7 @@ def test_executor_workspace_simple(test_metas_workspace_simple):
 
 
 def test_executor_workspace_simple_workspace(tmpdir):
+    runtime_workspace = os.path.join(tmpdir, 'test2')
     workspace = os.path.join(tmpdir, 'some_folder')
     name = 'test_meta'
 
@@ -133,12 +134,12 @@ def test_executor_workspace_simple_workspace(tmpdir):
     executor = Executor(metas={'name': name}, runtime_args={'workspace': workspace})
     assert executor.workspace == os.path.abspath(os.path.join(workspace, name))
 
-    # metas before runtime_args
+    # metas after runtime_args
     executor = Executor(
         metas={'name': name, 'workspace': workspace},
-        runtime_args={'workspace': 'test2'},
+        runtime_args={'workspace': runtime_workspace},
     )
-    assert executor.workspace == os.path.abspath(os.path.join(workspace, name))
+    assert executor.workspace == os.path.abspath(os.path.join(runtime_workspace, name))
 
     executor = Executor(
         metas={'name': name, 'workspace': workspace},

@@ -640,6 +640,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         *,
         compression: Optional[str] = 'NoCompression',
         connection_list: Optional[str] = None,
+        disable_auto_volume: Optional[bool] = False,
         disable_reduce: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
@@ -685,6 +686,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. Possibilities are `NoCompression, Gzip, Deflate`. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
+        :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -1823,7 +1825,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         )
 
     def to_docker_compose_yaml(
-        self, output_path: Optional[str] = None, network_name: Optional[str] = None
+        self,
+        output_path: Optional[str] = None,
+        network_name: Optional[str] = None,
     ):
         """
         Converts the Flow into a yaml file to run with `docker-compose up`

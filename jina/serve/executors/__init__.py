@@ -248,8 +248,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :return: returns the workspace of the current shard of this Executor.
         """
         workspace = (
-            getattr(self.metas, 'workspace')
-            or getattr(self.runtime_args, 'workspace', None)
+            getattr(self.runtime_args, 'workspace', None)
+            or getattr(self.metas, 'workspace')
             or os.environ.get('JINA_DEFAULT_WORKSPACE_BASE')
         )
         if workspace:
