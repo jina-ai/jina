@@ -40,7 +40,7 @@ You should see this in your terminal:
 
 ## Adding dependencies
 
-You can use any third-party Python library in Executor. Let's create `executor1/requirements.txt` and `pytorch` to it.
+You can use any third-party Python library in Executor. Let's create `executor1/requirements.txt` and add `pytorch` to it.
 
 Then in `executor.py`, let's add another endpoint `/get-tensor` as follows:
 
