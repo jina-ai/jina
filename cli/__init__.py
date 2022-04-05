@@ -6,7 +6,7 @@ import sys
 from packaging.version import Version, parse
 
 KNOWN_PLUGINS_URL = (
-    'https://raw.githubusercontent.com/jina-ai/jina/unified-cli/cli/known_plugins.json'
+    'https://raw.githubusercontent.com/jina-ai/jina/master/cli/known_plugins.json'
 )
 
 
