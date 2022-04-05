@@ -9,7 +9,6 @@ PLUGIN_INFO = {
     'now': {  # the subcommand your project should be reachable under, e.g. "jina now ..."
         'name': 'Jina Now',  # what your project is called
         'pip-package': 'jina-now',  # the pip package name of your project
-        'internal-command': 'jina-now',  # the command of your project, e.g. Now's cli is reachable via "jina-now ..."
     }
 }
 
