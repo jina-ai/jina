@@ -7,6 +7,8 @@ from urllib.parse import urlparse
 
 import grpc
 from grpc.aio import AioRpcError
+from grpc_reflection.v1alpha.reflection_pb2 import ServerReflectionRequest
+from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 
 from jina.enums import PollingType
 from jina.logging.logger import JinaLogger
@@ -821,6 +823,23 @@ class GrpcConnectionPool:
             jina_pb2_grpc.JinaControlRequestRPCStub(channel),
             channel,
         )
+
+    @staticmethod
+    def get_available_services(address: str) -> List[str]:
+        """
+        Lists available services by name, exposed at target address
+
+        :param address: the address to check for services, like 127.0.0.0.1:8080
+
+        :returns: List of services offered
+        """
+        channel = grpc.insecure_channel(address)
+        reflection_stub = ServerReflectionStub(channel)
+        response = reflection_stub.ServerReflectionInfo(
+            iter([ServerReflectionRequest(list_services="")])
+        )
+        res = next(response)
+        return [service.name for service in res.list_services_response.service]
 
 
 def in_docker():

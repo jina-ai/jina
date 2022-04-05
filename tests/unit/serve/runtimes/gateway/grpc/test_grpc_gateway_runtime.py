@@ -12,9 +12,9 @@ from jina.clients.request import request_generator
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
 from jina.serve import networking
+from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
-from jina.types.request.data import DataRequest
 
 
 def test_grpc_gateway_runtime_init_close():
@@ -427,4 +427,45 @@ def test_grpc_gateway_runtime_handle_empty_graph():
     p = Process(target=process_wrapper)
     p.start()
     p.join()
+    assert p.exitcode == 0
+
+
+def test_grpc_gateway_runtime_reflection():
+    deployment0_port = random_port()
+    deployment1_port = random_port()
+    port = random_port()
+
+    def _create_runtime():
+        with GRPCGatewayRuntime(
+            set_gateway_parser().parse_args(
+                [
+                    '--port',
+                    str(port),
+                    '--graph-description',
+                    '{"start-gateway": ["deployment0"], "deployment0": ["end-gateway"]}',
+                    '--deployments-addresses',
+                    '{"deployment0": ["0.0.0.0:'
+                    + f'{deployment0_port}'
+                    + '", "0.0.0.0:'
+                    + f'{deployment1_port}'
+                    + '"]}',
+                ]
+            )
+        ) as runtime:
+            runtime.run_forever()
+
+    p = multiprocessing.Process(target=_create_runtime)
+    p.start()
+    time.sleep(1.0)
+    assert AsyncNewLoopRuntime.is_ready(ctrl_address=f'127.0.0.1:{port}')
+
+    service_names = GrpcConnectionPool.get_available_services(f'127.0.0.1:{port}')
+    assert all(
+        service_name in service_names
+        for service_name in ['jina.JinaControlRequestRPC', 'jina.JinaRPC']
+    )
+
+    p.terminate()
+    p.join()
+
     assert p.exitcode == 0

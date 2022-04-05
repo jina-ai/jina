@@ -338,5 +338,45 @@ async def test_worker_runtime_slow_init_exec():
     assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
 
 
+def test_worker_runtime_reflection():
+    args = set_pod_parser().parse_args([])
+
+    cancel_event = multiprocessing.Event()
+
+    def start_runtime(args, cancel_event):
+        with WorkerRuntime(args, cancel_event) as runtime:
+            runtime.run_forever()
+
+    runtime_thread = Process(
+        target=start_runtime,
+        args=(args, cancel_event),
+        daemon=True,
+    )
+    runtime_thread.start()
+
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=3.0,
+        ctrl_address=f'{args.host}:{args.port}',
+        ready_or_shutdown_event=Event(),
+    )
+
+    service_names = GrpcConnectionPool.get_available_services(
+        f'{args.host}:{args.port}'
+    )
+    assert all(
+        service_name in service_names
+        for service_name in [
+            'jina.JinaControlRequestRPC',
+            'jina.JinaDataRequestRPC',
+            'jina.JinaSingleDataRequestRPC',
+        ]
+    )
+
+    cancel_event.set()
+    runtime_thread.join()
+
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+
+
 def _create_test_data_message(counter=0):
     return list(request_generator('/', DocumentArray([Document(text=str(counter))])))[0]
