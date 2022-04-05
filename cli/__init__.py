@@ -141,18 +141,19 @@ def _is_latest_version(package='jina', suppress_on_error=True):
 def _try_plugin_command():
     """Tries to call the CLI of an external Jina project."""
     argv = sys.argv
-    if len(argv) < 2:
+    if len(argv) < 2:  # no command given
+        return False
+
+    from .autocomplete import ac_table
+
+    if argv[1] in ac_table['commands']:  # native command can't be plugin command
         return False
 
     def _cmd_exists(cmd):
         return shutil.which(cmd) is not None
 
     subcommand = argv[1]
-    cmd = (
-        PLUGIN_INFO[subcommand]['internal-command']
-        if subcommand in PLUGIN_INFO
-        else 'jina-' + subcommand
-    )
+    cmd = 'jina-' + subcommand
     if _cmd_exists(cmd):
         if subcommand in PLUGIN_INFO:
             import threading
