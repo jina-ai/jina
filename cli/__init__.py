@@ -138,6 +138,11 @@ def _is_latest_version(package='jina', suppress_on_error=True):
             raise
 
 
+def _is_latest_version_plugin(subcommand):
+    if subcommand in PLUGIN_INFO:
+        _is_latest_version(package=PLUGIN_INFO[subcommand]['pip-package'])
+
+
 def _try_plugin_command():
     """Tries to call the CLI of an external Jina project."""
     argv = sys.argv
@@ -155,14 +160,13 @@ def _try_plugin_command():
     subcommand = argv[1]
     cmd = 'jina-' + subcommand
     if _cmd_exists(cmd):
-        if subcommand in PLUGIN_INFO:
-            import threading
+        import threading
 
-            threading.Thread(
-                target=_is_latest_version,
-                daemon=True,
-                args=(PLUGIN_INFO[subcommand]['pip-package'],),
-            ).start()
+        threading.Thread(
+            target=_is_latest_version_plugin,
+            daemon=True,
+            args=(subcommand,),
+        ).start()
         subprocess.run([cmd] + argv[2:])
         return True
 
