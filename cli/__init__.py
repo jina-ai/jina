@@ -131,18 +131,9 @@ def _is_latest_version(package='jina', suppress_on_error=True):
             raise
 
 
-def _load_plugin_info():
-    import json
-    import os
-
-    cur_dir = os.path.dirname(os.path.realpath(__file__))
-    with open(os.path.join(cur_dir, 'known_plugins.json')) as f:
-        plugin_info = json.load(f)
-    return plugin_info
-
-
 def _is_latest_version_plugin(subcommand):
-    plugin_info = _load_plugin_info()
+    from .known_plugins import plugin_info
+
     if subcommand in plugin_info:
         _is_latest_version(package=plugin_info[subcommand]['pip-package'])
 
@@ -177,7 +168,8 @@ def _try_plugin_command():
         subprocess.run([cmd] + argv[2:])
         return True
 
-    plugin_info = _load_plugin_info()
+    from .known_plugins import plugin_info
+
     if subcommand in plugin_info:
         from jina.helper import get_rich_console
 
