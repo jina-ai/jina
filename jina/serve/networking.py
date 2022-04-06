@@ -309,8 +309,8 @@ class GrpcConnectionPool:
             from prometheus_client import Summary
 
             self._summary_time = Summary(
-                'request_processing_seconds',
-                'Time spent processing request',
+                'sending_request_seconds',
+                'Time spent between sending a request to the pod and receiving the response',
                 registry=metrics_registry,
             ).time()
         else:

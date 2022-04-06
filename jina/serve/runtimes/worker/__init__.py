@@ -48,7 +48,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             from prometheus_client import Summary
 
             self._summary_time = Summary(
-                'request_processing_seconds',
+                'receiving_request_seconds',
                 'Time spent processing request',
                 registry=self.metrics_registry,
             ).time()
