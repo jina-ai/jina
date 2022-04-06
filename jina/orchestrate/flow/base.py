@@ -27,7 +27,7 @@ from typing import (
 from rich import print
 from rich.table import Table
 
-from jina import __default_host__, __docker_host__, helper
+from jina import __default_host__, __default_port_monitoring__, __docker_host__, helper
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, PostMixin
 from jina.enums import (
@@ -157,7 +157,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
-        port_monitoring: Optional[int] = 9090,
+        port_monitoring: Optional[int] = __default_port_monitoring__,
         prefetch: Optional[int] = 0,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
@@ -661,7 +661,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
-        port_monitoring: Optional[int] = 9090,
+        port_monitoring: Optional[int] = __default_port_monitoring__,
         pull_latest: Optional[bool] = False,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
@@ -1521,6 +1521,26 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self[GATEWAY_NAME].wait_start_success()
 
     @property
+    def monitoring(self) -> bool:
+        """Return if the monitoring is enabled
+        .. # noqa: DAR201
+        """
+        if GATEWAY_NAME in self._deployment_nodes:
+            return self[GATEWAY_NAME].args.monitoring
+        else:
+            return False
+
+    @property
+    def port_monitoring(self) -> int:
+        """Return if the monitoring is enabled
+        .. # noqa: DAR201
+        """
+        if GATEWAY_NAME in self._deployment_nodes:
+            return self[GATEWAY_NAME].args.port_monitoring
+        else:
+            return __default_port_monitoring__
+
+    @property
     def address_private(self) -> str:
         """Return the private IP address of the gateway for connecting from other machine in the same network
 
@@ -1586,6 +1606,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     'GraphQL UI',
                     f'[underline][cyan]http://localhost:{self.port}/graphql[/underline][/cyan]',
                 )
+        if self.monitoring:
+            address_table.add_row(
+                '📉️',
+                'Prometheus',
+                f'[underline][cyan]http://localhost:{self.port_monitoring}[/underline][/cyan]',
+            )
 
         return address_table
 

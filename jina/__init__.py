@@ -104,6 +104,7 @@ __jina_env__ = (
 __default_host__ = _os.environ.get(
     'JINA_DEFAULT_HOST', '127.0.0.1' if __windows__ else '0.0.0.0'
 )
+__default_port_monitoring__ = 9090
 __docker_host__ = 'host.docker.internal'
 __default_executor__ = 'BaseExecutor'
 __default_reducer_executor__ = 'ReducerExecutor'
