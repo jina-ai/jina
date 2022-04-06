@@ -540,7 +540,7 @@ f = (
     Flow()
     .add(uses=Exec1, name='exec1')
     .add(uses=Exec2, name='exec2')
-    .add(uses=MergeExec, needs=['exec1', 'exec2'])
+    .add(uses=MergeExec, needs=['exec1', 'exec2'], disable_reduce=True)
 )
 
 with f:
