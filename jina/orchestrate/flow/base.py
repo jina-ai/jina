@@ -1538,7 +1538,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if GATEWAY_NAME in self._deployment_nodes:
             return self[GATEWAY_NAME].args.port_monitoring
         else:
-            return __default_port_monitoring__
+            return self._common_kwargs.get(
+                'port_monitoring', __default_port_monitoring__
+            )
 
     @property
     def address_private(self) -> str:
