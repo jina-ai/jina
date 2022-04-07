@@ -76,6 +76,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
 
     def teardown(self):
         """Call async_teardown() and stop and close the event loop."""
+        self.teardown_monitoring()
         self._loop.run_until_complete(self.async_teardown())
         self._loop.stop()
         self._loop.close()
