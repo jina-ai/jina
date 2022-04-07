@@ -11,7 +11,7 @@ from jina import __windows__
 from jina.importer import ImportExtensions
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.base import BaseRuntime
-from jina.serve.runtimes.mixin import MonitoringMixin
+from jina.serve.runtimes.monitoring import MonitoringMixin
 from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
 
