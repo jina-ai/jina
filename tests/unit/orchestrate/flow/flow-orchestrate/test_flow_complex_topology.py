@@ -67,3 +67,33 @@ def test_flow_to_flow():
         with Flow().add(external=True, port=external_flow.port).add(uses=BarExec) as f:
             docs = f.search(Document())
             assert docs.texts == ['foobar']
+
+
+class AddBazExec(Executor):
+    @requests
+    def bar(self, docs, **kwargs):
+        docs.append(Document(text='baz'))
+
+
+def test_merging_external_executor_auto_reduce():
+    with Flow().add(uses=BarExec) as external_flow:
+        with Flow().add(uses=AddBazExec, name='exec1').add(
+            uses=AddBazExec, name='exec2'
+        ).add(external=True, port=external_flow.port, needs=['exec1', 'exec2']) as f:
+            docs = f.search(Document(text='client'))
+            assert docs.texts == ['clientbar', 'bazbar', 'bazbar']
+
+
+def test_merging_external_executor_auto_reduce_disabled():
+    with Flow().add(uses=BarExec) as external_flow:
+        with pytest.raises(ValueError):
+            with Flow().add(uses=AddBazExec, name='exec1').add(
+                uses=AddBazExec, name='exec2'
+            ).add(
+                external=True,
+                port=external_flow.port,
+                needs=['exec1', 'exec2'],
+                disable_reduce=True,
+            ) as f:
+                docs = f.search(Document(text='client'))
+                assert docs.texts == ['clientbar', 'bazbar', 'bazbar']
