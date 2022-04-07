@@ -32,6 +32,7 @@ spec:
           args: {args}
           ports:
             - containerPort: {port}
+            - containerPort: {port-monitoring}
           envFrom:
           - configMapRef:
               name: {name}-configmap
