@@ -41,6 +41,7 @@ def test_flow_external_executor_with_gateway():
         name='serve-exec',
         target=serve_exec,
         kwargs={'port_expose': external_gateway_port, 'stop_event': e},
+        daemon=True,
     )
     t.start()
     time.sleep(3)  # allow exec to start
@@ -52,7 +53,6 @@ def test_flow_external_executor_with_gateway():
         assert docs.texts == ['foo']
 
     e.set()
-    t.join()
 
 
 class BarExec(Executor):
