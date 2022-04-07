@@ -3,7 +3,6 @@ from abc import ABC
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
-from jina.serve.runtimes.mixin import MonitoringMixin
 
 
 class GatewayRuntime(AsyncNewLoopRuntime, ABC):

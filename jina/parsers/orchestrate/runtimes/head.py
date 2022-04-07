@@ -1,6 +1,5 @@
 import argparse
 
-from jina import helper
 from jina.parsers.helper import add_arg_group
 
 
