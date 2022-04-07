@@ -33,6 +33,8 @@ Then you are likely installing Jina on a less-supported system/architecture. For
 
 ## On Mac M1
 
+It is generally recommended using a conda environment on a Mac M1 and installing in particular `grpcio`, `protobuf` and `torch`  using `conda install`. See for more [Issue 4422](https://github.com/jina-ai/jina/issues/4422#issuecomment-1057663345).
+
 Some users may have difficulty to install Protobuf on MacOS from `pip`, you may try `brew install protobuf`.
 
 In general, some upstream dependencies do not yet have pre-built wheels for the M1 chip, so you are likely to encounter some issues during the install. In this case, you need to configure the development environment using [Rosetta2](https://support.apple.com/en-us/HT211861), including your terminal, `brew` and `python`. They must all be running under Rosetta2 instead of natively on M1.
