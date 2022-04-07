@@ -890,12 +890,13 @@ class GrpcConnectionPool:
 
         :returns: List of services offered
         """
-        reflection_stub = ServerReflectionStub(grpc.insecure_channel(address))
-        response = reflection_stub.ServerReflectionInfo(
-            iter([ServerReflectionRequest(list_services="")])
-        )
-        res = next(response)
-        return [service.name for service in res.list_services_response.service]
+        with grpc.insecure_channel(address) as channel:
+            reflection_stub = ServerReflectionStub(channel)
+            response = reflection_stub.ServerReflectionInfo(
+                iter([ServerReflectionRequest(list_services="")])
+            )
+            res = next(response)
+            return [service.name for service in res.list_services_response.service]
 
 
 def in_docker():
