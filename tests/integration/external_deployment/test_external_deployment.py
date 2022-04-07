@@ -275,7 +275,6 @@ def external_deployment_join_args(num_shards):
         str(num_shards),
         '--polling',
         'all',
-        '--disable-reduce',
     ]
     return set_deployment_parser().parse_args(args)
 
@@ -320,5 +319,5 @@ def test_flow_with_external_deployment_join(
         with flow:
             resp = flow.index(inputs=input_docs)
 
-        # Reducing applied for shards, not for uses, expect 100 docs
-        validate_response(resp, 100)
+        # Reducing applied everywhere, expect 50 docs, same as the input
+        validate_response(resp, len(input_docs))
