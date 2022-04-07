@@ -6,6 +6,7 @@ from typing import Dict, List
 
 import docker
 import pytest
+import requests as req
 
 from jina import Document, Flow
 
@@ -176,6 +177,33 @@ async def test_flow_with_needs(logger, flow_with_needs, tmpdir, docker_images):
         assert len(docs) == 10
         for doc in docs:
             assert set(doc.tags['traversed-executors']) == expected_traversed_executors
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['test-executor', 'executor-merger', 'jinaai/jina']],
+    indirect=True,
+)
+async def test_flow_monitoring(logger, tmpdir, docker_images, port_generator):
+    dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-monitoring.yml')
+    port1 = port_generator()
+    port2 = port_generator()
+
+    flow = Flow(
+        name='test-flow-monitoring', monitoring=True, port_monitoring=port1
+    ).add(
+        name='segmenter',
+        uses=f'docker://{docker_images[0]}',
+        monitoring=True,
+        port_monitoring=port2,
+    )
+    flow.to_docker_compose_yaml(dump_path, 'default')
+    with DockerComposeFlow(dump_path):
+        for port in [port1, port2]:
+            resp = req.get(f'http://localhost:{port}/')
+            assert resp.status_code == 200
 
 
 @pytest.mark.timeout(3600)
