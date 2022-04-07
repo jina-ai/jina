@@ -495,7 +495,7 @@ class GrpcConnectionPool:
                     request_type = type(requests[0])
                     if request_type == DataRequest and len(requests) == 1:
 
-                        call_result = stubs[0].process_single_data(  # todo investigate
+                        call_result = stubs[0].process_single_data(
                             requests[0],
                             metadata=metadata,
                             compression=self.compression,

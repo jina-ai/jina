@@ -79,10 +79,7 @@ class TopologyGraph:
                             DataRequestHandler.reduce_requests(self.parts_to_send)
                         ]
 
-                    (
-                        resp,
-                        metadata,
-                    ) = await connection_pool.send_requests_once(  # todo investigate
+                    (resp, metadata,) = await connection_pool.send_requests_once(
                         requests=self.parts_to_send,
                         deployment=self.name,
                         head=True,
