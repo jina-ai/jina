@@ -310,7 +310,7 @@ class GrpcConnectionPool:
 
             self._summary_time = Summary(
                 'sending_request_seconds',
-                'Time spent between sending a request to the pod and receiving the response',
+                'Time spent between sending a request to the Pod and receiving the response',
                 registry=metrics_registry,
             ).time()
         else:
