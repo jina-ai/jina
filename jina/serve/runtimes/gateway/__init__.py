@@ -27,7 +27,9 @@ class GatewayRuntime(AsyncNewLoopRuntime, ABC):
         deployments_addresses = json.loads(self.args.deployments_addresses)
         # add the connections needed
         self._connection_pool = GrpcConnectionPool(
-            logger=self.logger, compression=self.args.compression
+            logger=self.logger,
+            compression=self.args.compression,
+            metrics_registry=self.metrics_registry,
         )
         for deployment_name, addresses in deployments_addresses.items():
             for address in addresses:

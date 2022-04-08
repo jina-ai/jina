@@ -46,7 +46,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         self.name = args.name
         self._deployment_name = os.getenv('JINA_DEPLOYMENT_NAME', 'worker')
         self.connection_pool = GrpcConnectionPool(
-            logger=self.logger, compression=args.compression
+            logger=self.logger,
+            compression=args.compression,
+            metrics_registry=self.metrics_registry,
         )
         polling = getattr(args, 'polling', self.DEFAULT_POLLING.name)
         try:

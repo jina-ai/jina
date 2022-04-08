@@ -27,7 +27,7 @@ from typing import (
 from rich import print
 from rich.table import Table
 
-from jina import __default_host__, __docker_host__, helper
+from jina import __default_host__, __default_port_monitoring__, __docker_host__, helper
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, PostMixin
 from jina.enums import (
@@ -149,6 +149,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
+        monitoring: Optional[bool] = False,
         name: Optional[str] = 'gateway',
         native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
@@ -156,6 +157,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
+        port_monitoring: Optional[int] = 9090,
         prefetch: Optional[int] = 0,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
@@ -200,6 +202,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
+        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
           This will be used in the following places:
@@ -228,6 +231,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]
+        :param port_monitoring: The port on which the prometheus server is exposed, default port is 9090
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)
@@ -652,11 +656,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         host_in: Optional[str] = '0.0.0.0',
         install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
+        monitoring: Optional[bool] = False,
         name: Optional[str] = None,
         native: Optional[bool] = False,
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
+        port_monitoring: Optional[int] = 9090,
         pull_latest: Optional[bool] = False,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
@@ -708,6 +714,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
+        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
           This will be used in the following places:
@@ -732,6 +739,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]
+        :param port_monitoring: The port on which the prometheus server is exposed, default port is 9090
         :param pull_latest: Pull the latest image before running
         :param py_modules: The customized python modules need to be imported before loading the executor
 
@@ -1515,6 +1523,28 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self[GATEWAY_NAME].wait_start_success()
 
     @property
+    def monitoring(self) -> bool:
+        """Return if the monitoring is enabled
+        .. # noqa: DAR201
+        """
+        if GATEWAY_NAME in self._deployment_nodes:
+            return self[GATEWAY_NAME].args.monitoring
+        else:
+            return False
+
+    @property
+    def port_monitoring(self) -> int:
+        """Return if the monitoring is enabled
+        .. # noqa: DAR201
+        """
+        if GATEWAY_NAME in self._deployment_nodes:
+            return self[GATEWAY_NAME].args.port_monitoring
+        else:
+            return self._common_kwargs.get(
+                'port_monitoring', __default_port_monitoring__
+            )
+
+    @property
     def address_private(self) -> str:
         """Return the private IP address of the gateway for connecting from other machine in the same network
 
@@ -1580,6 +1610,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     'GraphQL UI',
                     f'[underline][cyan]http://localhost:{self.port}/graphql[/underline][/cyan]',
                 )
+        if self.monitoring:
+            address_table.add_row(
+                '📉️',
+                'Prometheus',
+                f'[underline][cyan]http://localhost:{self.port_monitoring}[/underline][/cyan]',
+            )
 
         return address_table
 

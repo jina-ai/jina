@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import ipaddress
 import os
 from typing import Dict, List, Optional, Tuple
@@ -15,6 +16,11 @@ from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
 
 TLS_PROTOCOL_SCHEMES = ['grpcs', 'https', 'wss']
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from prometheus_client import CollectorRegistry
 
 
 class ReplicaList:
@@ -278,6 +284,7 @@ class GrpcConnectionPool:
         self,
         logger: Optional[JinaLogger] = None,
         compression: str = 'NoCompression',
+        metrics_registry: Optional['CollectorRegistry'] = None,
     ):
         self._logger = logger or JinaLogger(self.__class__.__name__)
         self._connections = self._ConnectionPoolMap(self._logger)
@@ -297,6 +304,17 @@ class GrpcConnectionPool:
         self.compression = GRPC_COMPRESSION_MAP.get(
             compression.lower(), grpc.Compression.NoCompression
         )
+
+        if metrics_registry:
+            from prometheus_client import Summary
+
+            self._summary_time = Summary(
+                'sending_request_seconds',
+                'Time spent between sending a request to the Pod and receiving the response',
+                registry=metrics_registry,
+            ).time()
+        else:
+            self._summary_time = contextlib.nullcontext()
 
     def send_request(
         self,
@@ -482,10 +500,11 @@ class GrpcConnectionPool:
                             metadata=metadata,
                             compression=self.compression,
                         )
-                        metadata, response = (
-                            await call_result.trailing_metadata(),
-                            await call_result,
-                        )
+                        with self._summary_time:
+                            metadata, response = (
+                                await call_result.trailing_metadata(),
+                                await call_result,
+                            )
                         return response, metadata
                     if request_type == DataRequest and len(requests) > 1:
                         call_result = stubs[1].process_data(
@@ -493,10 +512,12 @@ class GrpcConnectionPool:
                             metadata=metadata,
                             compression=self.compression,
                         )
-                        metadata, response = (
-                            await call_result.trailing_metadata(),
-                            await call_result,
-                        )
+
+                        with self._summary_time:  # todo count the fact that there are multiple request
+                            metadata, response = (
+                                await call_result.trailing_metadata(),
+                                await call_result,
+                            )
                         return response, metadata
                     elif request_type == ControlRequest:
                         call_result = stubs[2].process_control(requests[0])

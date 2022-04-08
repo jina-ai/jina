@@ -1,22 +1,25 @@
-import asyncio
 import argparse
+import asyncio
+import contextlib
 from typing import (
-    List,
-    Union,
-    Iterator,
-    AsyncIterator,
     TYPE_CHECKING,
-    Callable,
-    Optional,
+    AsyncIterator,
     Awaitable,
+    Callable,
+    Iterator,
+    List,
+    Optional,
+    Union,
 )
 
-from jina.serve.stream.helper import AsyncRequestsIterator
 from jina.logging.logger import JinaLogger
+from jina.serve.stream.helper import AsyncRequestsIterator
 
 __all__ = ['RequestStreamer']
 
 if TYPE_CHECKING:
+    from prometheus_client import CollectorRegistry
+
     from jina.types.request import Request
 
 
@@ -45,6 +48,7 @@ class RequestStreamer:
         :param result_handler: The callable responsible for handling the response.
         :param end_of_iter_handler: Optional callable to handle the end of iteration if some special action needs to be taken.
         :param logger: Optional logger that can be used for logging
+
         """
         self.args = args
         self.logger = logger or JinaLogger(self.__class__.__name__, **vars(args))
@@ -71,7 +75,8 @@ class RequestStreamer:
             yield response
 
     async def _stream_requests(
-        self, request_iterator: Union[Iterator, AsyncIterator]
+        self,
+        request_iterator: Union[Iterator, AsyncIterator],
     ) -> AsyncIterator:
         """Implements request and response handling without prefetching
         :param request_iterator: requests iterator from Client

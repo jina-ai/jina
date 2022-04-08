@@ -41,6 +41,9 @@ class GRPCGatewayRuntime(GatewayRuntime):
         self._set_topology_graph()
         self._set_connection_pool()
 
+        await self._async_setup_server()
+
+    async def _async_setup_server(self):
         self.streamer = RequestStreamer(
             args=self.args,
             request_handler=handle_request(

@@ -82,16 +82,16 @@ class DockerComposeConfig:
 
             protocol = str(non_defaults.get('protocol', 'grpc')).lower()
 
+            ports = [f'{cargs.port}'] + (
+                [f'{cargs.port_monitoring}'] if cargs.monitoring else []
+            )
+
             return {
                 'image': image_name,
                 'entrypoint': ['jina'],
                 'command': container_args,
-                'expose': [
-                    f'{cargs.port}',
-                ],
-                'ports': [
-                    f'{cargs.port}:{cargs.port}',
-                ],
+                'expose': ports,
+                'ports': [f'{_port}:{_port}' for _port in ports],
                 'healthcheck': {
                     'test': f'python -m jina.resources.health_check.gateway localhost:{cargs.port} {protocol}',
                     'interval': '2s',
@@ -171,6 +171,13 @@ class DockerComposeConfig:
                         f'JINA_LOG_LEVEL={os.getenv("JINA_LOG_LEVEL", "INFO")}'
                     ],
                 }
+
+                if cargs.monitoring:
+                    config['expose'] = [cargs.port_monitoring]
+                    config['ports'] = [
+                        f'{cargs.port_monitoring}:{cargs.port_monitoring}'
+                    ]
+
                 if env is not None:
                     config['environment'] = [f'{k}={v}' for k, v in env.items()]
 
