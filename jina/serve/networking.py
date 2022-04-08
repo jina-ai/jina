@@ -855,10 +855,7 @@ class GrpcConnectionPool:
 
     @staticmethod
     def create_async_channel_stub(
-        address,
-        tls=False,
-        root_certificates: Optional[str] = None,
-        summary: Optional['Summary'] = None
+        address, tls=False, root_certificates: Optional[str] = None, summary=None
     ) -> Tuple[_ConnectionStubs, grpc.aio.Channel,]:
         """
         Creates an async GRPC Channel. This channel has to be closed eventually!
@@ -866,6 +863,7 @@ class GrpcConnectionPool:
         :param address: the address to create the connection to, like 127.0.0.0.1:8080
         :param tls: if True, use tls for the grpc channel
         :param root_certificates: the path to the root certificates for tls, only u
+        :param summary: Optional Prometheus summary object
 
         :returns: DataRequest/ControlRequest stubs and an async grpc channel
         """
