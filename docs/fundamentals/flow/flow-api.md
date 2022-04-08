@@ -1,6 +1,6 @@
 (flow)=
 
-# Configure Flow API
+# Configure Flow
 
 **Flow** ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
 Every `Flow` provides an API to receive requests over the network. Supported protocols are gRPC, HTTP and WebSocket.
@@ -18,6 +18,7 @@ This does not affect how you have to configure your Flow API, so the examples he
 For more proper use of the Client, and more information about the Client itself, see the {ref}`Client documentation <client>`.
 ```
 
+(flow-protocol)=
 ## Serve Flow with different protocols
 You can use three different protocols to serve the `Flow`: `grpc`,`http` and `websocket`
 
