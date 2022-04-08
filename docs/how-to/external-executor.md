@@ -37,6 +37,11 @@ f = Flow().add(host=exec_host, port=exec_port, external=True)
 After that, the external Executor will behave just like an internal one. And you can even add the same Executor to multiple
 Flows!
 
+````{admonition} Note
+:class: note
+If an external Executor needs multiple predecessors, reducing needs to be enabled. So setting disable_reduce=True is not allowed for these cases. 
+````
+
 ## Starting standalone Executors
 
 The example above assumes that there already is an Executor running, and you just want to access
