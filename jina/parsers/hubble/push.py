@@ -61,6 +61,13 @@ One can later fetch a tagged Executor via `jinahub[+docker]://MyExecutor/gpu`
         help='The secret for overwrite a Hub executor',
     )
 
+    gp.add_argument(
+        '--no-cache',
+        action='store_true',
+        default=False,
+        help='If set, "--no-cache" option will be added to the Docker build.',
+    )
+
     gp = add_arg_group(parser, title='Visibility')
 
     mutually_exclusive_group = gp.add_mutually_exclusive_group()

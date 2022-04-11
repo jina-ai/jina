@@ -198,6 +198,7 @@ ac_table = {
             '--force-update',
             '--force',
             '--secret',
+            '--no-cache',
             '--public',
             '--private',
         ],

@@ -370,6 +370,9 @@ metas:
                 if self.args.verbose:
                     form_data['verbose'] = 'True'
 
+                if self.args.no_cache:
+                    form_data['buildWithNoCache'] = 'True'
+
                 if exec_tags:
                     form_data['tags'] = exec_tags
 
