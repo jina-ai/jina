@@ -9,6 +9,7 @@ from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 
 from jina import __args_executor_init__, __default_endpoint__
+from jina.enums import BetterEnum
 from jina.helper import (
     ArgNamespace,
     T,
@@ -358,6 +359,96 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         )
         with f:
             f.block(stop_event)
+
+    class StandaloneExecutorType(BetterEnum):
+        """
+        Type of standalone Executors
+        """
+
+        EXTERNAL = 0  # served by a gateway
+        SHARED = 1  # not served by a gateway, served by head/worker
+
+    @staticmethod
+    def to_k8s_yaml(
+        uses: str,
+        output_base_path: str,
+        k8s_namespace: Optional[str] = None,
+        executor_type: Optional[
+            StandaloneExecutorType
+        ] = StandaloneExecutorType.EXTERNAL,
+        uses_with: Optional[Dict] = None,
+        uses_metas: Optional[Dict] = None,
+        uses_requests: Optional[Dict] = None,
+        **kwargs,
+    ):
+        """
+        Converts the Executor into a set of yaml deployments to deploy in Kubernetes.
+
+        If you don't want to rebuild image on Jina Hub,
+        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.
+
+        :param uses: the Executor to use. Has to be containerized and accessible from K8s
+        :param output_base_path: The base path where to dump all the yaml files
+        :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
+        :param executor_type: The type of Executor. Can be external or shared. External Executors include the Gateway. Shared Executors don't. Defaults to External
+        :param uses_with: dictionary of parameters to overwrite from the default config's with field
+        :param uses_metas: dictionary of parameters to overwrite from the default config's metas field
+        :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
+        :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
+        """
+        from jina import Flow
+
+        f = Flow(**kwargs).add(
+            uses=uses,
+            uses_with=uses_with,
+            uses_metas=uses_metas,
+            uses_requests=uses_requests,
+        )
+        f.to_k8s_yaml(
+            output_base_path=output_base_path,
+            k8s_namespace=k8s_namespace,
+            include_gateway=executor_type
+            == BaseExecutor.StandaloneExecutorType.EXTERNAL,
+        )
+
+    @staticmethod
+    def to_docker_compose_yaml(
+        uses: str,
+        output_path: Optional[str] = None,
+        network_name: Optional[str] = None,
+        executor_type: Optional[
+            StandaloneExecutorType
+        ] = StandaloneExecutorType.EXTERNAL,
+        uses_with: Optional[Dict] = None,
+        uses_metas: Optional[Dict] = None,
+        uses_requests: Optional[Dict] = None,
+        **kwargs,
+    ):
+        """
+        Converts the Executor into a yaml file to run with `docker-compose up`
+        :param uses: the Executor to use. Has to be containerized
+        :param output_path: The output path for the yaml file
+        :param network_name: The name of the network that will be used by the deployment name
+        :param executor_type: The type of Executor. Can be external or shared. External Executors include the Gateway. Shared Executors don't. Defaults to External
+        :param uses_with: dictionary of parameters to overwrite from the default config's with field
+        :param uses_metas: dictionary of parameters to overwrite from the default config's metas field
+        :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
+        :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
+        """
+        from jina import Flow
+
+        f = Flow(**kwargs).add(
+            uses=uses,
+            uses_with=uses_with,
+            uses_metas=uses_metas,
+            uses_requests=uses_requests,
+        )
+        f.to_docker_compose_yaml(
+            output_path=output_path,
+            network_name=network_name,
+            include_gateway=executor_type
+            == BaseExecutor.StandaloneExecutorType.EXTERNAL,
+        )
 
 
 class ReducerExecutor(BaseExecutor):
