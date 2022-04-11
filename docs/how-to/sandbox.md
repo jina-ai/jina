@@ -44,7 +44,7 @@ If all these three factors match, then it will reuse the existing sandboxes.
 
 ```{admonition} Caution
 :class: caution
-If the Jina version of Gateway is later than the latest released Jina version (things happens when you are in the master branch of jina repository), then the sandbox will always be created instead of reused.
+If the Jina version of Gateway is later than the latest released Jina version (this happens when you are in the master branch of jina repository), then the sandbox will always be created instead of reused.
 ```
 
 ## Version consistency
