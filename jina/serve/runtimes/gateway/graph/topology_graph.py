@@ -65,7 +65,7 @@ class TopologyGraph:
             if previous_task is not None:
                 result = await previous_task
                 request, metadata = result[0], result[1]
-            if 'is-error' in metadata:
+            if metadata and 'is-error' in metadata:
                 return request, metadata
             elif request is not None:
                 self.parts_to_send.append(request)
@@ -86,7 +86,7 @@ class TopologyGraph:
                         endpoint=endpoint,
                     )
                     self.end_time = datetime.utcnow()
-                    if 'is-error' in metadata:
+                    if metadata and 'is-error' in metadata:
                         self.status = resp.header.status
                     return resp, metadata
 

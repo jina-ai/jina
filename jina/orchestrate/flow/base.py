@@ -881,6 +881,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             port = helper.random_port()
             args.port = port
 
+        if len(needs) > 1 and args.external and args.disable_reduce:
+            raise ValueError(
+                'External Executors with multiple needs have to do auto reduce.'
+            )
+
         op_flow._deployment_nodes[deployment_name] = Deployment(args, needs)
 
         op_flow.last_deployment = deployment_name

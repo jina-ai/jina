@@ -9,9 +9,10 @@ from collections import defaultdict
 from typing import Dict, List, Optional, Tuple, Union
 
 import grpc
+from grpc_reflection.v1alpha import reflection
 
 from jina.enums import PollingType
-from jina.proto import jina_pb2_grpc
+from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
@@ -129,6 +130,14 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
             self, self._grpc_server
         )
+        service_names = (
+            jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaControlRequestRPC'].full_name,
+            reflection.SERVICE_NAME,
+        )
+        reflection.enable_server_reflection(service_names, self._grpc_server)
+
         bind_addr = f'0.0.0.0:{self.args.port}'
         self._grpc_server.add_insecure_port(bind_addr)
         self.logger.debug(f'Start listening on {bind_addr}')

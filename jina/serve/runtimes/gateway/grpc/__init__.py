@@ -1,11 +1,12 @@
 import os
 
 import grpc
+from grpc_reflection.v1alpha import reflection
 
 from jina import __default_host__
 from jina.excepts import PortAlreadyUsed
 from jina.helper import is_port_free
-from jina.proto import jina_pb2_grpc
+from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.gateway.request_handling import handle_request, handle_result
 from jina.serve.stream import RequestStreamer
@@ -56,6 +57,14 @@ class GRPCGatewayRuntime(GatewayRuntime):
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self.streamer, self.server)
         jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(self, self.server)
+
+        service_names = (
+            jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaControlRequestRPC'].full_name,
+            reflection.SERVICE_NAME,
+        )
+        reflection.enable_server_reflection(service_names, self.server)
+
         bind_addr = f'{__default_host__}:{self.args.port}'
 
         if self.args.ssl_keyfile and self.args.ssl_certfile:
