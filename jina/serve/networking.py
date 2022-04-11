@@ -146,7 +146,7 @@ class GrpcConnectionPool:
     K8S_PORT_USES_BEFORE = 8081
     K8S_PORT = 8080
 
-    class _ConnectionStubs:
+    class ConnectionStubs:
         """
         Maintains a list of grpc stubs available for a particular connection
         """
@@ -170,9 +170,7 @@ class GrpcConnectionPool:
             available_services = GrpcConnectionPool.get_available_services(self.address)
             stubs = defaultdict(lambda: None)
             for service in available_services:
-                # skip the reflection service, it will not be used anymore
-                if service != 'grpc.reflection.v1alpha.ServerReflection':
-                    stubs[service] = self.STUB_MAPPING[service](self.channel)
+                stubs[service] = self.STUB_MAPPING[service](self.channel)
             self.control_stub = stubs['jina.JinaControlRequestRPC']
             self.data_list_stub = stubs['jina.JinaDataRequestRPC']
             self.single_data_stub = stubs['jina.JinaSingleDataRequestRPC']
@@ -182,6 +180,16 @@ class GrpcConnectionPool:
         async def send_requests(
             self, requests: List[Request], metadata, compression
         ) -> Tuple:
+            """
+            Send requests and uses the appropriate grpc stub for this
+            Stub is chosen based on availability and type of requests
+
+            :param requests: the requests to send
+            :param metadata: the metadata to send alongside the requests
+            :param compression: defines if compression should be used
+
+            :returns: Tuple of response and metadata about the response
+            """
             if not self._initialized:
                 self._init_stubs()
             request_type = type(requests[0])
@@ -579,13 +587,13 @@ class GrpcConnectionPool:
     def _send_requests(
         self,
         requests: List[Request],
-        connection: _ConnectionStubs,
+        connection: ConnectionStubs,
         endpoint: Optional[str] = None,
     ) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
         async def task_wrapper(
-            requests, connection: GrpcConnectionPool._ConnectionStubs, endpoint
+            requests, connection: GrpcConnectionPool.ConnectionStubs, endpoint
         ):
             metadata = (('endpoint', endpoint),) if endpoint else None
             for i in range(3):
@@ -856,7 +864,7 @@ class GrpcConnectionPool:
     @staticmethod
     def create_async_channel_stub(
         address, tls=False, root_certificates: Optional[str] = None, summary=None
-    ) -> Tuple[_ConnectionStubs, grpc.aio.Channel,]:
+    ) -> Tuple[ConnectionStubs, grpc.aio.Channel]:
         """
         Creates an async GRPC Channel. This channel has to be closed eventually!
 
@@ -875,7 +883,7 @@ class GrpcConnectionPool:
         )
 
         return (
-            GrpcConnectionPool._ConnectionStubs(address, channel, summary),
+            GrpcConnectionPool.ConnectionStubs(address, channel, summary),
             channel,
         )
 
@@ -894,7 +902,11 @@ class GrpcConnectionPool:
                 iter([ServerReflectionRequest(list_services="")])
             )
             res = next(response)
-            return [service.name for service in res.list_services_response.service]
+            return [
+                service.name
+                for service in res.list_services_response.service
+                if service.name != 'grpc.reflection.v1alpha.ServerReflection'
+            ]
 
 
 def in_docker():
