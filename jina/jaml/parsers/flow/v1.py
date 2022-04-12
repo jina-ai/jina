@@ -1,11 +1,11 @@
-import os
 import argparse
-from typing import Dict, Any
+import os
+from typing import Any, Dict, Optional
 
-from jina.jaml.parsers.base import VersionedYAMLParser
 from jina import Flow
 from jina.enums import DeploymentRoleType
-from jina.helper import expand_env_var, ArgNamespace
+from jina.helper import ArgNamespace, expand_env_var
+from jina.jaml.parsers.base import VersionedYAMLParser
 from jina.parsers import set_deployment_parser, set_gateway_parser
 
 
@@ -50,10 +50,13 @@ class V1Parser(VersionedYAMLParser):
 
     version = '1'  # the version number this parser designed for
 
-    def parse(self, cls: type, data: Dict) -> 'Flow':
+    def parse(
+        self, cls: type, data: Dict, runtime_args: Optional[Dict[str, Any]] = None
+    ) -> 'Flow':
         """
         :param cls: the class registered for dumping/loading
         :param data: flow yaml file loaded as python dict
+        :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config
         :return: the Flow YAML parser given the syntax version number
         """
         p = data.get('with', {})  # type: Dict[str, Any]

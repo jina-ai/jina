@@ -8,10 +8,15 @@ import os
 import random
 from pathlib import Path
 from typing import Dict, Optional, Union
-from urllib.parse import urlencode
 
 from jina import __resources_path__, __version__
-from jina.helper import ArgNamespace, colored, get_request_header, get_rich_console
+from jina.helper import (
+    ArgNamespace,
+    colored,
+    get_request_header,
+    get_rich_console,
+    retry,
+)
 from jina.hubble import HubExecutor
 from jina.hubble.helper import (
     archive_package,
@@ -365,6 +370,9 @@ metas:
                 if self.args.verbose:
                     form_data['verbose'] = 'True'
 
+                if self.args.no_cache:
+                    form_data['buildWithNoCache'] = 'True'
+
                 if exec_tags:
                     form_data['tags'] = exec_tags
 
@@ -559,6 +567,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         *,
         secret: Optional[str] = None,
         image_required: bool = True,
+        rebuild_image: bool = True,
         force: bool = False,
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
@@ -566,6 +575,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         :param tag: the tag of the executor if available, otherwise, use `None` as the value
         :param secret: the access secret of the executor
         :param image_required: it indicates whether a Docker image is required or not
+        :param rebuild_image: it indicates whether Jina Hub need to rebuild image or not
         :param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default
             to local cache
         :return: meta of executor
@@ -577,9 +587,19 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         with ImportExtensions(required=True):
             import requests
 
+        @retry(num_retry=3)
+        def _send_request_with_retry(url, **kwargs):
+            resp = requests.post(url, **kwargs)
+            if resp.status_code != 200:
+                if resp.text:
+                    raise Exception(resp.text)
+                resp.raise_for_status()
+
+            return resp
+
         pull_url = get_hubble_url_v2() + f'/rpc/executor.getPackage'
 
-        payload = {'id': name, 'include': ['code']}
+        payload = {'id': name, 'include': ['code'], 'rebuildImage': rebuild_image}
         if image_required:
             payload['include'].append('docker')
         if secret:
@@ -588,12 +608,8 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
             payload['tag'] = tag
 
         req_header = get_request_header()
-        resp = requests.post(pull_url, json=payload, headers=req_header)
-        if resp.status_code != 200:
-            if resp.text:
-                raise Exception(resp.text)
-            resp.raise_for_status()
 
+        resp = _send_request_with_retry(pull_url, json=payload, headers=req_header)
         resp = resp.json()['data']
 
         images = resp['package'].get('containers', [])
@@ -637,36 +653,27 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         }
 
         import requests
-        from rich.progress import Console
 
         console = get_rich_console()
 
         host = None
         port = None
-        try:
-            json_response = requests.post(
-                url=get_hubble_url_v2() + '/rpc/sandbox.get',
-                json=payload,
-                headers=get_request_header(),
-            ).json()
-            if json_response.get('code') == 200:
-                host = json_response.get('data', {}).get('host', None)
-                port = json_response.get('data', {}).get('port', None)
-                livetime = json_response.get('data', {}).get('livetime', '15 mins')
 
-        except Exception:
-            raise
+        json_response = requests.post(
+            url=get_hubble_url_v2() + '/rpc/sandbox.get',
+            json=payload,
+            headers=get_request_header(),
+        ).json()
+        if json_response.get('code') == 200:
+            host = json_response.get('data', {}).get('host', None)
+            port = json_response.get('data', {}).get('port', None)
 
         if host and port:
-            console.log(f"A sandbox already exists, reusing it.")
-            console.log(
-                f"[bold green]This sandbox will be removed when there has been no traffic for {livetime}"
-            )
-
+            console.log(f"🎉 A sandbox already exists, reusing it.")
             return host, port
 
         with console.status(
-            f"[bold green]Deploying sandbox for [bold white]{name}[/bold white] since none exists..."
+            f"[bold green]🚧 Deploying sandbox for [bold white]{name}[/bold white] since none exists..."
         ):
             try:
                 json_response = requests.post(
@@ -678,16 +685,14 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
                 data = json_response.get('data') or {}
                 host = data.get('host', None)
                 port = data.get('port', None)
-                livetime = data.get('livetime', '15 mins')
                 if not host or not port:
                     raise Exception(f'Failed to deploy sandbox: {json_response}')
 
-                console.log(f"Deployment completed: {host}:{port}")
-                console.log(
-                    f"[bold green]This sandbox will be removed when no traffic during [bold white]{livetime}[/bold white]"
-                )
+                console.log(f"🎉 Deployment completed, using it.")
             except:
-                console.log("Deployment failed")
+                console.log(
+                    "🚨 Deployment failed, feel free to raise an issue. https://github.com/jina-ai/jina/issues/new"
+                )
                 raise
 
         return host, port

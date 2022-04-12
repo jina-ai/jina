@@ -200,7 +200,7 @@ f = (
 * `executor3` will use an Executor docker image coming from the Hub, and will be created as a docker container of this image.
 * `executor4` will use a {ref}`Sandbox Executor <sandbox>` run by Hubble, in the cloud.
 * `executor5` will use a Docker image tagged as `sentence-encoder`, and will be created as a docker container of this image.
-* `executor6` will use an Executor configuration file defining the {ref}`Executor YAML interface <executor-yaml-interface>`, and will be created as a separate process.
+* `executor6` will use an Executor configuration file defining the {ref}`Executor YAML interface <executor-api>`, and will be created as a separate process.
 
 More complex Executors typically are used from Docker images or will be structured into separate Python modules. 
 
@@ -649,7 +649,7 @@ This means that you can not only use this feature to build complex logic, but al
 
 For a hands-on example on how to leverage these filter conditions, see {ref}`this how-to <flow-switch>`.
 ````
-
+(replicate-executors)=
 ### Replicate Executors
 
 Replication can be used to create multiple copies of the same Executor. Each request in the Flow is then passed to only one replica (instance) of your Executor. This can be useful for a couple of challenges like performance and availability:
@@ -671,6 +671,7 @@ Flow with 3 replicas of slow_encoder and 1 replica of fast_indexer
 The above Flow will create a topology with three Replicas of Executor `slow_encoder`. The `Flow` will send every 
 request to exactly one of the three instances. Then the replica will send its result to `fast_indexer`.
 
+(partition-data-by-using-shards)=
 ### Partition data by using Shards
 
 Sharding can be used to partition data (like an Index) into several parts. This enables the distribution of data across multiple machines.

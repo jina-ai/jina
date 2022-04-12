@@ -1,13 +1,15 @@
 import argparse
 import asyncio
+import contextlib
 import multiprocessing
 import threading
 from abc import ABC
 from typing import List, Optional, Union
 
 import grpc
+from grpc_reflection.v1alpha import reflection
 
-from jina.proto import jina_pb2_grpc
+from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.control import ControlRequest
@@ -32,13 +34,33 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         super().__init__(args, cancel_event, **kwargs)
 
-        # Keep this initialization order, otherwise readiness check is not valid
-        self._data_request_handler = DataRequestHandler(args, self.logger)
-
     async def async_setup(self):
         """
-        Wait for the GRPC server to start
+        Start the DataRequestHandler and wait for the GRPC and Monitoring servers to start
         """
+        await self._async_setup_grpc_server()
+
+        if self.metrics_registry:
+            from prometheus_client import Summary
+
+            self._summary_time = Summary(
+                'receiving_request_seconds',
+                'Time spent processing request',
+                registry=self.metrics_registry,
+            ).time()
+        else:
+            self._summary_time = contextlib.nullcontext()
+
+    async def _async_setup_grpc_server(self):
+        """
+        Start the DataRequestHandler and wait for the GRPC server to start
+        """
+
+        # Keep this initialization order
+        # otherwise readiness check is not valid
+        # The DataRequestHandler needs to be started BEFORE the grpc server
+        self._data_request_handler = DataRequestHandler(self.args, self.logger)
+
         self._grpc_server = grpc.aio.server(
             options=[
                 ('grpc.max_send_message_length', -1),
@@ -53,6 +75,13 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
             self, self._grpc_server
         )
+        service_names = (
+            jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaControlRequestRPC'].full_name,
+            reflection.SERVICE_NAME,
+        )
+        reflection.enable_server_reflection(service_names, self._grpc_server)
         bind_addr = f'0.0.0.0:{self.args.port}'
         self.logger.debug(f'Start listening on {bind_addr}')
         self._grpc_server.add_insecure_port(bind_addr)
@@ -94,22 +123,25 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param context: grpc context
         :returns: the response request
         """
-        try:
-            if self.logger.debug_enabled:
-                self._log_data_request(requests[0])
 
-            return await self._data_request_handler.handle(requests=requests)
-        except (RuntimeError, Exception) as ex:
-            self.logger.error(
-                f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
-                if not self.args.quiet_error
-                else '',
-                exc_info=not self.args.quiet_error,
-            )
+        with self._summary_time:
+            try:
+                if self.logger.debug_enabled:
+                    self._log_data_request(requests[0])
 
-            requests[0].add_exception(ex, self._data_request_handler._executor)
-            context.set_trailing_metadata((('is-error', 'true'),))
-            return requests[0]
+                return await self._data_request_handler.handle(requests=requests)
+            except (RuntimeError, Exception) as ex:
+                self.logger.error(
+                    f'{ex!r}'
+                    + f'\n add "--quiet-error" to suppress the exception details'
+                    if not self.args.quiet_error
+                    else '',
+                    exc_info=not self.args.quiet_error,
+                )
+
+                requests[0].add_exception(ex, self._data_request_handler._executor)
+                context.set_trailing_metadata((('is-error', 'true'),))
+                return requests[0]
 
     async def process_control(self, request: ControlRequest, *args) -> ControlRequest:
         """

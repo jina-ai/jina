@@ -1,4 +1,4 @@
-from jina import DocumentArray, Executor, Flow, Client, requests, Document
+from jina import Client, Document, DocumentArray, Executor, Flow, requests
 
 exposed_port = 12345
 
@@ -40,6 +40,8 @@ def test_override_requests_uses_after():
     with Flow(port=exposed_port).add(
         uses=FooExecutor,
         uses_requests={'/foo': 'foo'},
+        shards=2,
+        polling='ANY',
         uses_after=OtherExecutor,
         uses_before=OtherExecutor,
     ) as f:

@@ -1,6 +1,6 @@
 import inspect
 from functools import reduce
-from typing import Dict, Type, Set
+from typing import Any, Dict, Optional, Set, Type
 
 from jina.jaml.parsers.base import VersionedYAMLParser
 from jina.serve.executors import BaseExecutor
@@ -51,10 +51,16 @@ class LegacyParser(VersionedYAMLParser):
         args = list(map(lambda x: get_class_arguments(x), all_classes))
         return set(reduce(lambda x, y: x + y, args))
 
-    def parse(self, cls: Type['BaseExecutor'], data: Dict) -> 'BaseExecutor':
+    def parse(
+        self,
+        cls: Type['BaseExecutor'],
+        data: Dict,
+        runtime_args: Optional[Dict[str, Any]] = None,
+    ) -> 'BaseExecutor':
         """
         :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type
         :param data: flow yaml file loaded as python dict
+        :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config
         :return: the Flow YAML parser given the syntax version number
         """
         from jina.logging.predefined import default_logger
@@ -70,7 +76,7 @@ class LegacyParser(VersionedYAMLParser):
             **data.get('with', {}),
             metas=data.get('metas', {}),
             requests=data.get('requests', {}),
-            runtime_args=data.get('runtime_args', {}),
+            runtime_args=runtime_args,
         )
         cls._init_from_yaml = False
 

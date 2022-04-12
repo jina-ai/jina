@@ -1,5 +1,7 @@
 import os
 import time
+from pathlib import Path
+from unittest import mock
 
 import pytest
 
@@ -16,6 +18,19 @@ def env_checker_docker_image_built():
 
     client = docker.from_env()
     client.images.build(path=os.path.join(cur_dir, 'env-checker/'), tag='env-checker')
+    client.close()
+    yield
+    time.sleep(2)
+    client = docker.from_env()
+    client.containers.prune()
+
+
+@pytest.fixture(scope='module')
+def dummy_exec_docker_image_built():
+    import docker
+
+    client = docker.from_env()
+    client.images.build(path=os.path.join(cur_dir, 'dummy-exec/'), tag='dummy-exec')
     client.close()
     yield
     time.sleep(2)
@@ -48,6 +63,63 @@ def test_container_pod_pass_envs(env_checker_docker_image_built):
     client = docker.from_env()
     containers = client.containers.list()
     assert container.id not in containers
+
+
+@pytest.mark.parametrize(
+    'pod_args,expected_source,expected_destination',
+    [
+        (
+            [
+                '--uses',
+                'docker://dummy-exec',
+            ],
+            '',
+            '',
+        ),
+        (
+            ['--uses', 'docker://dummy-exec', '--volumes'],
+            'my/very/cool',
+            '/custom/volume',
+        ),
+    ],
+)
+def test_container_pod_volume_setting(
+    pod_args,
+    expected_source,
+    expected_destination,
+    dummy_exec_docker_image_built,
+    tmpdir,
+):
+    if expected_source:
+        expected_source = os.path.join(tmpdir, expected_source)
+        volume_arg = str(expected_source) + ':' + expected_destination
+        pod_args.append(volume_arg)
+
+    default_workspace = os.path.join(Path.home(), 'mock-workspace')
+
+    with mock.patch.dict(
+        os.environ,
+        {'JINA_DEFAULT_WORKSPACE_BASE': str(os.path.join(tmpdir, default_workspace))},
+    ):
+        with ContainerPod(set_pod_parser().parse_args(pod_args)) as pod:
+            container = pod._container
+            source = container.attrs['Mounts'][0]['Source']
+            destination = container.attrs['Mounts'][0]['Destination']
+            time.sleep(
+                2
+            )  # to avoid desync between the start and close process which could lead to container never get terminated
+
+        expected_source = (
+            os.path.abspath(expected_source)
+            if expected_source
+            else os.path.abspath(default_workspace)
+        )
+        expected_destination = expected_destination if expected_destination else '/app'
+
+        assert source.startswith(
+            expected_source
+        )  # there is a random workspace id at the end!
+        assert destination == expected_destination
 
 
 @pytest.fixture(scope='module')

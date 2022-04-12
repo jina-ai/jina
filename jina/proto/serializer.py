@@ -1,4 +1,5 @@
-from typing import List, Union, Iterable
+import os
+from typing import Iterable, List, Union
 
 from jina.proto import jina_pb2
 from jina.types.request.control import ControlRequest
@@ -49,8 +50,13 @@ class DataRequestProto:
         # noqa: DAR201
         """
         if not x.is_decompressed:
-            return x.buffer
-        return x.proto.SerializePartialToString()
+            r = x.buffer
+        else:
+            r = x.proto.SerializePartialToString()
+        os.environ['JINA_GRPC_SEND_BYTES'] = str(
+            len(r) + int(os.environ.get('JINA_GRPC_SEND_BYTES', 0))
+        )
+        return r
 
     @staticmethod
     def FromString(x: bytes):
@@ -59,7 +65,9 @@ class DataRequestProto:
         # noqa: DAR102
         # noqa: DAR201
         """
-
+        os.environ['JINA_GRPC_RECV_BYTES'] = str(
+            len(x) + int(os.environ.get('JINA_GRPC_RECV_BYTES', 0))
+        )
         return DataRequest(x)
 
 

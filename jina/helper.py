@@ -15,6 +15,7 @@ from argparse import ArgumentParser, Namespace
 from collections.abc import MutableMapping
 from datetime import datetime
 from itertools import islice
+from socket import AF_INET, SOCK_STREAM, socket
 from types import SimpleNamespace
 from typing import (
     TYPE_CHECKING,
@@ -54,6 +55,7 @@ __all__ = [
     'convert_tuple_to_list',
     'run_async',
     'deprecated_alias',
+    'retry',
     'countdown',
     'CatchAllCleanupContextManager',
     'download_mermaid_url',
@@ -165,6 +167,42 @@ def deprecated_method(new_function_name):
     return deco
 
 
+def retry(
+    num_retry: int = 3,
+    message: str = 'Calling {func_name} failed, retry attempt {attempt}/{num_retry}. Error: {error!r}',
+):
+    """
+    Retry calling a function again in case of an error.
+
+    :param num_retry: number of times to retry
+    :param message: message to log when error happened
+    :return: wrapper
+    """
+    from jina.logging.predefined import default_logger
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            for i in range(num_retry):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    default_logger.warning(
+                        message.format(
+                            func_name=func.__name__,
+                            attempt=i + 1,
+                            num_retry=num_retry,
+                            error=e,
+                        )
+                    )
+                    if i + 1 == num_retry:
+                        raise
+
+        return wrapper
+
+    return decorator
+
+
 def get_readable_size(num_bytes: Union[int, float]) -> str:
     """
     Transform the bytes into readable value with different units (e.g. 1 KB, 20 MB, 30.1 GB).
@@ -175,9 +213,9 @@ def get_readable_size(num_bytes: Union[int, float]) -> str:
     num_bytes = int(num_bytes)
     if num_bytes < 1024:
         return f'{num_bytes} Bytes'
-    elif num_bytes < 1024 ** 2:
+    elif num_bytes < 1024**2:
         return f'{num_bytes / 1024:.1f} KB'
-    elif num_bytes < 1024 ** 3:
+    elif num_bytes < 1024**3:
         return f'{num_bytes / (1024 ** 2):.1f} MB'
     else:
         return f'{num_bytes / (1024 ** 3):.1f} GB'
@@ -1544,6 +1582,22 @@ def _parse_kwargs(kwargs: Dict[str, Any]) -> Dict[str, Any]:
                 elif value:
                     kwargs[key] = value
 
+    kwargs = _add_default_port_tls(kwargs)
+    kwargs = _delete_host_slash(kwargs)
+
+    return kwargs
+
+
+def _add_default_port_tls(kwargs: Dict[str, Any]) -> Dict[str, Any]:
+    if ('tls' in kwargs) and ('port' not in kwargs):
+        kwargs['port'] = 443
+    return kwargs
+
+
+def _delete_host_slash(kwargs: Dict[str, Any]) -> Dict[str, Any]:
+    if 'host' in kwargs:
+        if kwargs['host'][-1] == '/':
+            kwargs['host'] = kwargs['host'][:-1]
     return kwargs
 
 
@@ -1573,3 +1627,11 @@ def _parse_url(host):
         port = None
 
     return scheme, host, port
+
+
+def is_port_free(host, port):
+    with socket(AF_INET, SOCK_STREAM) as session:
+        if session.connect_ex((host, port)) == 0:
+            return False
+        else:
+            return True

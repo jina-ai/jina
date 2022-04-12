@@ -1,4 +1,4 @@
-from typing import Dict, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
 if TYPE_CHECKING:
     from jina.orchestrate.flow.base import Flow
@@ -16,13 +16,16 @@ class VersionedYAMLParser:
 
     version = 'legacy'  #: the version number this parser designed for
 
-    def parse(self, cls: type, data: Dict) -> Union['Flow', 'BaseExecutor']:
+    def parse(
+        self, cls: type, data: Dict, runtime_args: Optional[Dict[str, Any]]
+    ) -> Union['Flow', 'BaseExecutor']:
         """Return the Flow YAML parser given the syntax version number
 
 
         .. # noqa: DAR401
         :param cls: target class type to parse into, must be a :class:`JAMLCompatible` type
         :param data: flow yaml file loaded as python dict
+        :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config
         """
         raise NotImplementedError
 

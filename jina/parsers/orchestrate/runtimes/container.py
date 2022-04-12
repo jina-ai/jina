@@ -1,5 +1,5 @@
 """Argparser module for container runtimes"""
-from jina.parsers.helper import add_arg_group, KVAppendAction
+from jina.parsers.helper import KVAppendAction, add_arg_group
 
 
 def mixin_container_runtime_parser(parser):
@@ -60,4 +60,11 @@ Note,
     - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
     - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
     ''',
+    )
+
+    gp.add_argument(
+        '--disable-auto-volume',
+        action='store_true',
+        default=False,
+        help='Do not automatically mount a volume for dockerized Executors.',
     )

@@ -19,10 +19,6 @@ class RuntimeFailToStart(SystemError, BaseJinaException):
     """When pod/deployment is failed to started."""
 
 
-class ScalingFails(SystemError, BaseJinaException):
-    """When scaling is unsuccessful for an Executor."""
-
-
 class RuntimeTerminated(KeyboardInterrupt, BaseJinaException):
     """The event loop of BasePod ends."""
 
@@ -85,3 +81,7 @@ class DockerVersionError(SystemError, BaseJinaException):
 
 class NoContainerizedError(Exception, BaseJinaException):
     """Raised when trying to use non-containerized Executor in K8s or Docker Compose"""
+
+
+class PortAlreadyUsed(RuntimeError, BaseJinaException):
+    """Raised when to use a port which is already used"""

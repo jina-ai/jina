@@ -1,5 +1,5 @@
 (client)=
-# Client API
+# Python Client
 The most convenient way to work with the `Flow` API is the Python Client.
 It enables you to send `Documents` to a running `Flow` in a number of different ways, as shown below.
 

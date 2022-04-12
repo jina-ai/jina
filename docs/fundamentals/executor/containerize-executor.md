@@ -19,7 +19,7 @@ a [Dockerfile](https://docs.docker.com/engine/reference/builder/), and how to bu
 To reproduce the example below it is required to have Docker installed locally.
 
 
-## Installing Jina in the Docker image
+## Install Jina in the Docker image
 
 Jina **must** be installed inside the Docker image. This can be achieved in one of two ways:
 
@@ -37,7 +37,7 @@ or by including the `pip install jina` command as part of the image building pro
 RUN pip install jina==3.0
 ```
 
-## Setting Jina Executor CLI as entrypoint
+## Set Jina Executor CLI as entrypoint
 
 When a containerized Executor is run inside a Flow,
 under the hood Jina executes `docker run` with extra arguments.
@@ -54,7 +54,7 @@ ENTRYPOINT ["jina", "executor", "--uses", "PATH_TO_YOUR_EXECUTOR_CONFIGURATION"]
 Here we will show how to build a basic Executor with a dependency on another external package
 
 
-### Writing the Executor
+### Write the Executor
 
 You can define your soon-to-be-Dockerized Executor exactly like any other Executor.
 We do this here in the `my_executor.py` file.
@@ -72,14 +72,14 @@ class ContainerizedEncoder(Executor):
             doc.embedding = torch.randn(10)
 ```
 
-### Writing the Executor YAML file
+### Write the Executor YAML file
 
 The YAML configuration, as a minimal working example, is required to point to the file containing the Executor.
 
 
 ```{admonition} More YAML options
 :class: seealso
-To discover what else can be configured using Jina's YAML interface, see {ref}`here <executor-yaml-interface>`.
+To discover what else can be configured using Jina's YAML interface, see {ref}`here <executor-api>`.
 ```
 
 This is necessary for the Executor to be put inside the Docker image,
@@ -92,7 +92,7 @@ metas:
     - my_executor.py
 ```
 
-### Writing `requirements.txt`
+### Write `requirements.txt`
 
 In this case, our Executor has only one requirement besides Jina: `torch`.
 
@@ -102,7 +102,7 @@ In `requirements.txt`, we specify a single requirement:
 torch
 ```
 
-### Writing the Dockerfile
+### Write the Dockerfile
 
 The last step is to write a `Dockerfile`, which has to do little more than launching the Executor via the Jina CLI:
 
@@ -119,7 +119,7 @@ RUN pip install -r requirements.txt
 ENTRYPOINT ["jina", "executor", "--uses", "config.yml"]
 ```
 
-### Building the image
+### Build the image
 
 At this point we have a folder structure that looks like this:
 
@@ -144,7 +144,7 @@ REPOSITORY                       TAG                IMAGE ID       CREATED      
 my_containerized_executor        latest             5cead0161cb5   13 seconds ago   2.21GB
 ```
 
-### Using the containerized Executor
+### Use the containerized Executor
 
 The containerized Executor can be used like any other, the only difference being the 'docker' prefix in the `uses`
  parameter:
@@ -166,3 +166,27 @@ for doc in returned_docs:
 Document returned with text: "This Document is embedded by ContainerizedEncoder"
 Document embedding of shape torch.Size([10])
 ```
+
+### Mount volumes
+
+You can mount volumes into your dockerized Executor by passing a list of volumes to the `volumes` argument:
+
+```python
+f = Flow().add(
+    uses='docker://my_containerized_executor',
+    volumes=['host/path:/path/in/container', 'other/volume:/app'],
+)
+```
+
+````{admonition} Hint
+:class: hint
+If you want your containerized Executor to operate inside one of these volumes, remember to set its {ref}`workspace <executor-workspace>` accordingly!
+````
+
+If you do not specify `volumes`, Jina will automatically mount a volume into the container.
+In this case, the volume source will be your {ref}`default Executor workspace <executor-workspace>`, and the volume destination will
+be `/app`. Additionally, automatic volume setting will try to move the Executor's workspace into the volume destination.
+Depending on the default executor workspace on your system this may not always succeed, so explicitly mounting a volume and setting
+a workspace is recommended.
+
+You can disable automatic volume setting by passing `f.add(..., disable_auto_volume=True)`.

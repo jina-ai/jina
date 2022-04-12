@@ -5,16 +5,17 @@ import string
 import tempfile
 import warnings
 from types import SimpleNamespace
-from typing import Dict, Any, Union, TextIO, Optional, List, Tuple
+from typing import Any, Dict, List, Optional, TextIO, Tuple, Union
 
 import yaml
 from yaml.constructor import FullConstructor
 
 from jina.jaml.helper import (
-    JinaResolver,
     JinaLoader,
-    parse_config_source,
+    JinaResolver,
+    get_jina_loader_with_runtime,
     load_py_modules,
+    parse_config_source,
 )
 
 __all__ = ['JAML', 'JAMLCompatible']
@@ -73,8 +74,10 @@ class JAML:
         JAML.load(...)
         JAML.dump(...)
 
+
         class DummyClass:
             pass
+
 
         JAML.register(DummyClass)
 
@@ -125,9 +128,9 @@ class JAML:
     .. highlight:: python
     .. code-block:: python
 
-        obj = JAML.load(fp, substitute=True,
-                            context={'context_var': 3.14,
-                                    'context_var2': 'hello-world'})
+        obj = JAML.load(
+            fp, substitute=True, context={'context_var': 3.14, 'context_var2': 'hello-world'}
+        )
 
     Internal references point to other variables in the yaml file itself, and can be accessed using the following syntax:
 
@@ -148,7 +151,12 @@ class JAML:
     """
 
     @staticmethod
-    def load(stream, substitute: bool = False, context: Dict[str, Any] = None):
+    def load(
+        stream,
+        substitute: bool = False,
+        context: Dict[str, Any] = None,
+        runtime_args: Optional[Dict[str, Any]] = None,
+    ):
         """Parse the first YAML document in a stream and produce the corresponding Python object.
 
         .. note::
@@ -157,13 +165,15 @@ class JAML:
             to load YAML config into objects, please use :meth:`Flow.load_config`,
             :meth:`BaseExecutor.load_config`, etc.
 
+        :param stream: the stream to load
         :param substitute: substitute environment, internal reference and context variables.
         :param context: context replacement variables in a dict, the value of the dict is the replacement.
-        :param stream: the stream to load
+        :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config
         :return: the Python object
 
         """
-        r = yaml.load(stream, Loader=JinaLoader)
+        r = yaml.load(stream, Loader=get_jina_loader_with_runtime(runtime_args))
+
         if substitute:
             r = JAML.expand_dict(r, context)
         return r
@@ -562,7 +572,9 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         data = constructor.construct_mapping(node, deep=True)
         from jina.jaml.parsers import get_parser
 
-        return get_parser(cls, version=data.get('version', None)).parse(cls, data)
+        return get_parser(cls, version=data.get('version', None)).parse(
+            cls, data, runtime_args=constructor.runtime_args
+        )
 
     def save_config(self, filename: Optional[str] = None):
         """
@@ -594,6 +606,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         uses_metas: Optional[Dict] = None,
         uses_requests: Optional[Dict] = None,
         extra_search_paths: Optional[List[str]] = None,
+        py_modules: Optional[str] = None,
+        runtime_args: Optional[Dict[str, Any]] = None,
         **kwargs,
     ) -> 'JAMLCompatible':
         """A high-level interface for loading configuration with features
@@ -625,11 +639,11 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
             # load Executor from yaml file and substitute environment variables
             os.environ['VAR_A'] = 'hello-world'
             b = BaseExecutor.load_config('a.yml')
-            assert b.name == hello-world
+            assert b.name == 'hello-world'
 
             # load Executor from yaml file and substitute variables from a dict
             b = BaseExecutor.load_config('a.yml', context={'VAR_A': 'hello-world'})
-            assert b.name == hello-world
+            assert b.name == 'hello-world'
 
             # disable substitute
             b = BaseExecutor.load_config('a.yml', substitute=False)
@@ -644,9 +658,22 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         :param uses_metas: dictionary of parameters to overwrite from the default config's metas field
         :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
         :param extra_search_paths: extra paths used when looking for executor yaml files
+        :param py_modules: Optional py_module from which the object need to be loaded
+        :param runtime_args: Optional dictionary of parameters runtime_args to be directly passed without being parsed into a yaml config
+        :param : runtime_args that need to be passed to the yaml
+
         :param kwargs: kwargs for parse_config_source
         :return: :class:`JAMLCompatible` object
         """
+        if runtime_args:
+            kwargs[
+                'runtimes_args'
+            ] = (
+                dict()
+            )  # when we have runtime args it is needed to have an empty runtime args session in the yam config
+
+        if py_modules:
+            kwargs['runtimes_args']['py_modules'] = py_modules
 
         if isinstance(source, str) and os.path.exists(source):
             extra_search_paths = (extra_search_paths or []) + [os.path.dirname(source)]
@@ -723,7 +750,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 # revert yaml's tag and load again, this time with substitution
                 tag_yml = JAML.unescape(JAML.dump(no_tag_yml))
             # load into object, no more substitute
-            return JAML.load(tag_yml, substitute=False)
+            return JAML.load(tag_yml, substitute=False, runtime_args=runtime_args)
 
     @classmethod
     def _override_yml_params(cls, raw_yaml, field_name, override_field):

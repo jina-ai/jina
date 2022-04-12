@@ -6,7 +6,7 @@ import time
 
 import pytest
 
-from jina import Document, Executor, Client, requests
+from jina import Client, Document, Executor, requests
 from jina.enums import PollingType
 from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.networking import GrpcConnectionPool
@@ -577,6 +577,81 @@ async def test_runtimes_with_replicas_advance_faster(port_generator):
     assert head_process.exitcode == 0
     for replica_process in replica_processes:
         assert replica_process.exitcode == 0
+
+
+@pytest.mark.asyncio
+# test gateway to gateway communication
+# this mimics using an external executor, fronted by a gateway
+async def test_runtimes_gateway_to_gateway(port_generator):
+    worker_port = port_generator()
+    external_gateway_port = port_generator()
+    port = port_generator()
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["0.0.0.0:{external_gateway_port}"]}}'
+    worker_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
+
+    # create a single worker runtime
+    worker_process = multiprocessing.Process(
+        target=_create_worker_runtime, args=(worker_port,)
+    )
+    worker_process.start()
+
+    # create the "external" gateway runtime
+    external_gateway_process = multiprocessing.Process(
+        target=_create_gateway_runtime,
+        args=(graph_description, worker_addresses, external_gateway_port),
+    )
+    external_gateway_process.start()
+
+    # create a single gateway runtime
+    gateway_process = multiprocessing.Process(
+        target=_create_gateway_runtime,
+        args=(graph_description, pod_addresses, port),
+    )
+    gateway_process.start()
+
+    await asyncio.sleep(1.0)
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{external_gateway_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{worker_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    # send requests to the gateway
+    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1)
+    response_list = []
+    async for response in responses:
+        response_list.append(response)
+
+    # clean up runtimes
+    gateway_process.terminate()
+    external_gateway_process.terminate()
+    worker_process.terminate()
+
+    gateway_process.join()
+    external_gateway_process.join()
+    worker_process.join()
+
+    assert len(response_list) == 20
+    assert len(response_list[0].docs) == 1
+
+    assert gateway_process.exitcode == 0
+    assert external_gateway_process.exitcode == 0
+    assert worker_process.exitcode == 0
 
 
 class NameChangeExecutor(Executor):

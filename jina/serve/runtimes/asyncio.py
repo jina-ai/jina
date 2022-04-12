@@ -3,15 +3,15 @@ import asyncio
 import signal
 import time
 from abc import ABC, abstractmethod
-from typing import Union, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Union
 
 from grpc import RpcError
 
-from jina.serve.runtimes.base import BaseRuntime
 from jina import __windows__
 from jina.importer import ImportExtensions
-
 from jina.serve.networking import GrpcConnectionPool
+from jina.serve.runtimes.base import BaseRuntime
+from jina.serve.runtimes.monitoring import MonitoringMixin
 from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
 
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     import threading
 
 
-class AsyncNewLoopRuntime(BaseRuntime, ABC):
+class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
     """
     The async runtime to start a new event loop.
     """
@@ -37,7 +37,6 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
         self.is_cancel = cancel_event or asyncio.Event()
-
         if not __windows__:
             # TODO: windows event loops don't support signal handlers
             try:
@@ -63,6 +62,8 @@ class AsyncNewLoopRuntime(BaseRuntime, ABC):
             win32api.SetConsoleCtrlHandler(
                 lambda *args, **kwargs: self.is_cancel.set(), True
             )
+
+        self._setup_monitoring()
         self._loop.run_until_complete(self.async_setup())
 
     def run_forever(self):

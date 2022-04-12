@@ -1,9 +1,11 @@
+import cgi
 import itertools
 import json
 import os
 import shutil
 import urllib
 from argparse import Namespace
+from io import BytesIO
 from pathlib import Path
 
 import docker
@@ -60,11 +62,16 @@ class PostMockResponse:
 
 
 class FetchMetaMockResponse:
-    def __init__(self, response_code: int = 200, no_image=False):
+    def __init__(self, response_code: int = 200, no_image=False, fail_count=0):
         self.response_code = response_code
         self.no_image = no_image
+        self._tried_count = 0
+        self._fail_count = fail_count
 
     def json(self):
+        if self._tried_count <= self._fail_count:
+            return {'message': 'Internal server error'}
+
         return {
             'data': {
                 'keywords': [],
@@ -88,18 +95,23 @@ class FetchMetaMockResponse:
 
     @property
     def status_code(self):
+        self._tried_count += 1
+        if self._tried_count <= self._fail_count:
+            return 500
+
         return self.response_code
 
 
+@pytest.mark.parametrize('no_cache', [False, True])
 @pytest.mark.parametrize('tag', [None, '-t v0'])
 @pytest.mark.parametrize('force', [None, 'UUID8'])
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag):
+def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache):
     mock = mocker.Mock()
 
     def _mock_post(url, data, headers=None, stream=True):
-        mock(url=url, data=data)
+        mock(url=url, data=data, headers=headers)
         return PostMockResponse(response_code=requests.codes.created)
 
     monkeypatch.setattr(requests, 'post', _mock_post)
@@ -115,12 +127,49 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag):
     if tag:
         _args_list.append(tag)
 
+    if no_cache:
+        _args_list.append('--no-cache')
+
     args = set_hub_push_parser().parse_args(_args_list)
     result = HubIO(args).push()
 
     # remove .jina
     exec_config_path = os.path.join(exec_path, '.jina')
     shutil.rmtree(exec_config_path)
+
+    _, mock_kwargs = mock.call_args_list[0]
+
+    c_type, c_data = cgi.parse_header(mock_kwargs['headers']['Content-Type'])
+    assert c_type == 'multipart/form-data'
+
+    form_data = cgi.parse_multipart(
+        BytesIO(mock_kwargs['data']), {'boundary': c_data['boundary'].encode()}
+    )
+
+    assert 'file' in form_data
+    assert 'md5sum' in form_data
+
+    if force:
+        assert form_data['id'] == ['UUID8']
+    else:
+        assert form_data.get('id') is None
+
+    if mode == '--private':
+        assert form_data['private'] == ['True']
+        assert form_data['public'] == ['False']
+    else:
+        assert form_data['private'] == ['False']
+        assert form_data['public'] == ['True']
+
+    if tag:
+        assert form_data['tags'] == [' v0']
+    else:
+        assert form_data.get('tags') is None
+
+    if no_cache:
+        assert form_data['buildWithNoCache'] == ['True']
+    else:
+        assert form_data.get('buildWithNoCache') is None
 
 
 @pytest.mark.parametrize(
@@ -163,7 +212,8 @@ def test_push_wrong_dockerfile(
     )
 
 
-def test_fetch(mocker, monkeypatch):
+@pytest.mark.parametrize('rebuild_image', [True, False])
+def test_fetch(mocker, monkeypatch, rebuild_image):
     mock = mocker.Mock()
 
     def _mock_post(url, json, headers=None):
@@ -173,7 +223,9 @@ def test_fetch(mocker, monkeypatch):
     monkeypatch.setattr(requests, 'post', _mock_post)
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
 
-    executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', None, force=True)
+    executor, _ = HubIO(args).fetch_meta(
+        'dummy_mwu_encoder', None, rebuild_image=rebuild_image, force=True
+    )
 
     assert executor.uuid == 'dummy_mwu_encoder'
     assert executor.name == 'alias_dummy'
@@ -181,8 +233,14 @@ def test_fetch(mocker, monkeypatch):
     assert executor.image_name == 'jinahub/pod.dummy_mwu_encoder'
     assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'
 
+    _, mock_kwargs = mock.call_args_list[0]
+    assert mock_kwargs['json']['rebuildImage'] is rebuild_image
+
     executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', '', force=True)
     assert executor.tag == 'v0'
+
+    _, mock_kwargs = mock.call_args_list[1]
+    assert mock_kwargs['json']['rebuildImage'] is True  # default value must be True
 
     executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', 'v0.1', force=True)
     assert executor.tag == 'v0.1'
@@ -210,6 +268,31 @@ def test_fetch_with_no_image(mocker, monkeypatch):
     assert mock.call_count == 2
 
 
+def test_fetch_with_retry(mocker, monkeypatch):
+    mock = mocker.Mock()
+    mock_response = FetchMetaMockResponse(response_code=200, fail_count=3)
+
+    def _mock_post(url, json, headers=None):
+        mock(url=url, json=json)
+        return mock_response
+
+    monkeypatch.setattr(requests, 'post', _mock_post)
+
+    with pytest.raises(Exception) as exc_info:
+        # failing 3 times, so it should raise an error
+        HubIO.fetch_meta('dummy_mwu_encoder', tag=None, force=True)
+
+    assert exc_info.match('{"message": "Internal server error"}')
+
+    mock_response = FetchMetaMockResponse(response_code=200, fail_count=2)
+
+    # failing 2 times, it must succeed on 3rd time
+    executor, _ = HubIO.fetch_meta('dummy_mwu_encoder', tag=None, force=True)
+    assert executor.uuid == 'dummy_mwu_encoder'
+
+    assert mock.call_count == 6  # mock must be called 3+3
+
+
 class DownloadMockResponse:
     def __init__(self, response_code: int = 200):
         self.response_code = response_code
@@ -227,7 +310,14 @@ class DownloadMockResponse:
 def test_pull(test_envs, mocker, monkeypatch):
     mock = mocker.Mock()
 
-    def _mock_fetch(name, tag=None, secret=None, image_required=True, force=False):
+    def _mock_fetch(
+        name,
+        tag=None,
+        secret=None,
+        image_required=True,
+        rebuild_image=True,
+        force=False,
+    ):
         mock(name=name)
         return (
             HubExecutor(
@@ -284,7 +374,14 @@ def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
     version = 'v0'
 
     @disk_cache_offline(cache_file=str(tmpfile))
-    def _mock_fetch(name, tag=None, secret=None, image_required=True, force=False):
+    def _mock_fetch(
+        name,
+        tag=None,
+        secret=None,
+        image_required=True,
+        rebuild_image=True,
+        force=False,
+    ):
         mock(name=name)
         if fail_meta_fetch:
             raise urllib.error.URLError('Failed fetching meta')

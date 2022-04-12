@@ -1,5 +1,7 @@
 import copy
+import os
 from argparse import Namespace
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 
 from jina import __default_executor__
@@ -13,6 +15,7 @@ from jina.orchestrate.deployments.config.helper import (
     to_compatible_name,
     validate_uses,
 )
+from jina.orchestrate.helper import generate_default_volume_and_workspace
 
 port = 8081
 
@@ -79,20 +82,23 @@ class DockerComposeConfig:
 
             protocol = str(non_defaults.get('protocol', 'grpc')).lower()
 
+            ports = [f'{cargs.port}'] + (
+                [f'{cargs.port_monitoring}'] if cargs.monitoring else []
+            )
+
             return {
                 'image': image_name,
                 'entrypoint': ['jina'],
                 'command': container_args,
-                'expose': [
-                    f'{cargs.port}',
-                ],
-                'ports': [
-                    f'{cargs.port}:{cargs.port}',
-                ],
+                'expose': ports,
+                'ports': [f'{_port}:{_port}' for _port in ports],
                 'healthcheck': {
                     'test': f'python -m jina.resources.health_check.gateway localhost:{cargs.port} {protocol}',
                     'interval': '2s',
                 },
+                'environment': [
+                    f'JINA_LOG_LEVEL={os.getenv("JINA_LOG_LEVEL", "INFO")}'
+                ],
             }
 
         def _get_image_name(self, uses: Optional[str]):
@@ -116,9 +122,30 @@ class DockerComposeConfig:
                 cargs, uses_metas, uses_with, self.pod_type
             )
 
-        def get_runtime_config(
-            self,
-        ) -> List[Dict]:
+        def _update_config_with_volumes(self, config, auto_volume=True):
+            if self.service_args.volumes:  # respect custom volume definition
+                config['volumes'] = self.service_args.volumes
+                return config
+
+            if not auto_volume:
+                return config
+
+            # if no volume is given, create default volume
+            (
+                generated_volumes,
+                workspace_in_container,
+            ) = generate_default_volume_and_workspace(
+                workspace_id=self.service_args.workspace_id
+            )
+            config['volumes'] = generated_volumes
+            if (
+                '--workspace' not in config['command']
+            ):  # set workspace only of not already given
+                config['command'].append('--workspace')
+                config['command'].append(workspace_in_container)
+            return config
+
+        def get_runtime_config(self) -> List[Dict]:
             # One Dict for replica
             replica_configs = []
             for i_rep in range(self.service_args.replicas):
@@ -140,9 +167,25 @@ class DockerComposeConfig:
                         'test': f'python -m jina.resources.health_check.pod localhost:{cargs.port}',
                         'interval': '2s',
                     },
+                    'environment': [
+                        f'JINA_LOG_LEVEL={os.getenv("JINA_LOG_LEVEL", "INFO")}'
+                    ],
                 }
+
+                if cargs.monitoring:
+                    config['expose'] = [cargs.port_monitoring]
+                    config['ports'] = [
+                        f'{cargs.port_monitoring}:{cargs.port_monitoring}'
+                    ]
+
                 if env is not None:
                     config['environment'] = [f'{k}={v}' for k, v in env.items()]
+
+                if self.service_args.pod_role == PodRoleType.WORKER:
+                    config = self._update_config_with_volumes(
+                        config, auto_volume=not self.common_args.disable_auto_volume
+                    )
+
                 replica_configs.append(config)
             return replica_configs
 
@@ -234,7 +277,7 @@ class DockerComposeConfig:
         uses_before = getattr(args, 'uses_before', None)
         uses_after = getattr(args, 'uses_after', None)
 
-        if args.name != 'gateway':
+        if args.name != 'gateway' and shards > 1:
             parsed_args['head_service'] = BaseDeployment._copy_to_head_args(self.args)
             parsed_args['head_service'].port = port
             parsed_args['head_service'].uses = None
@@ -261,7 +304,7 @@ class DockerComposeConfig:
 
             parsed_args['head_service'].connection_list = json.dumps(connection_list)
 
-        if uses_before:
+        if uses_before and shards > 1:
             uses_before_cargs = copy.deepcopy(args)
             uses_before_cargs.shard_id = 0
             uses_before_cargs.replicas = 1
@@ -284,7 +327,7 @@ class DockerComposeConfig:
             ].uses_before_address = (
                 f'{to_compatible_name(uses_before_cargs.name)}:{uses_before_cargs.port}'
             )
-        if uses_after:
+        if uses_after and shards > 1:
             uses_after_cargs = copy.deepcopy(args)
             uses_after_cargs.shard_id = 0
             uses_after_cargs.replicas = 1
