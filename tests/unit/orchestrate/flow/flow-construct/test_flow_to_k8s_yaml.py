@@ -4,12 +4,17 @@ import pytest
 import yaml
 
 from jina import Flow
+from jina.serve.networking import GrpcConnectionPool
 
 
 @pytest.mark.parametrize('protocol', ['http', 'grpc'])
-def test_flow_to_k8s_yaml(tmpdir, protocol):
+@pytest.mark.parametrize('flow_port', [1234, None])
+def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
+    flow_kwargs = {'name': 'test-flow', 'protocol': protocol}
+    if flow_port:
+        flow_kwargs['port'] = flow_port
     flow = (
-        Flow(name='test-flow', port=8080, protocol=protocol)
+        Flow(**flow_kwargs)
         .add(name='executor0', uses_with={'param': 0})
         .add(name='executor1', shards=2, uses_with={'param': 0})
         .add(
@@ -85,7 +90,10 @@ def test_flow_to_k8s_yaml(tmpdir, protocol):
     ]
     assert gateway_args[0] == 'gateway'
     assert '--port' in gateway_args
-    assert gateway_args[gateway_args.index('--port') + 1] == '8080'
+    assert gateway_args[gateway_args.index('--port') + 1] == (
+        str(flow_port) if flow_port else str(GrpcConnectionPool.K8S_PORT)
+    )
+    assert gateway_args[gateway_args.index('--port') + 1] == str(flow.port)
     assert '--k8s-namespace' in gateway_args
     assert gateway_args[gateway_args.index('--k8s-namespace') + 1] == namespace
     assert '--graph-description' in gateway_args

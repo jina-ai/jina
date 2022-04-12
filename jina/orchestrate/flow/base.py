@@ -478,6 +478,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
+        # We need to check later if the port was manually set or randomly
+        args.default_port = (
+            kwargs.get('port', None) is None and kwargs.get('port_expose', None) is None
+        )
         args.noblock_on_start = True
         args.expose_graphql_endpoint = (
             self.args.expose_graphql_endpoint
@@ -1852,6 +1856,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         for node, v in self._deployment_nodes.items():
             if v.external or (node == 'gateway' and not include_gateway):
                 continue
+            if node == 'gateway' and v.args.default_port:
+                from jina.serve.networking import GrpcConnectionPool
+
+                v.args.port = GrpcConnectionPool.K8S_PORT
+                v.first_pod_args.port = GrpcConnectionPool.K8S_PORT
+                v.args.default_port = False
+
             deployment_base = os.path.join(output_base_path, node)
             k8s_deployment = K8sDeploymentConfig(
                 args=v.args,
