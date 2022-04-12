@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.orchestrate.deployments.config.docker_compose - Jina 3.2.11 documentation</title>
+        <title>jina.orchestrate.deployments.config.docker_compose - Jina 3.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.2.11 documentation</div>
+                <div class="brand">Jina 3.3.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -234,9 +234,9 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/create-flow/">Create a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/flow-yaml/">Configure a Flow from YAML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/flow-api/">Configure Flow API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/access-flow-api/">Access Flow API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/flow-api/">Configure Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/access-flow-api/">Access Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/client/">Python Client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
@@ -365,6 +365,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.orchestrate.pods.helper/">jina.orchestrate.pods.helper module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.orchestrate.helper/">jina.orchestrate.helper module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -446,6 +447,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.serve.runtimes.worker/">jina.serve.runtimes.worker package</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.serve.runtimes.asyncio/">jina.serve.runtimes.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.serve.runtimes.base/">jina.serve.runtimes.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.serve.runtimes.monitoring/">jina.serve.runtimes.monitoring module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../api/jina.serve.stream/">jina.serve.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -475,6 +477,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../api/cli.api/">cli.api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../api/cli.autocomplete/">cli.autocomplete module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../api/cli.export/">cli.export module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../api/cli.known_plugins/">cli.known_plugins module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../../../api/cli.lookup/">cli.lookup module</a></li>
 </ul>
 </li>
@@ -548,6 +551,7 @@
 <span></span><span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_executor__</span>
@@ -561,6 +565,7 @@
     <span class="n">to_compatible_name</span><span class="p">,</span>
     <span class="n">validate_uses</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">jina.orchestrate.helper</span> <span class="kn">import</span> <span class="n">generate_default_volume_and_workspace</span>
 
 <span class="n">port</span> <span class="o">=</span> <span class="mi">8081</span>
 
@@ -627,16 +632,16 @@
 
             <span class="n">protocol</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">non_defaults</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'protocol'</span><span class="p">,</span> <span class="s1">'grpc'</span><span class="p">))</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
+            <span class="n">ports</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span>
+                <span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">'</span><span class="p">]</span> <span class="k">if</span> <span class="n">cargs</span><span class="o">.</span><span class="n">monitoring</span> <span class="k">else</span> <span class="p">[]</span>
+            <span class="p">)</span>
+
             <span class="k">return</span> <span class="p">{</span>
                 <span class="s1">'image'</span><span class="p">:</span> <span class="n">image_name</span><span class="p">,</span>
                 <span class="s1">'entrypoint'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'jina'</span><span class="p">],</span>
                 <span class="s1">'command'</span><span class="p">:</span> <span class="n">container_args</span><span class="p">,</span>
-                <span class="s1">'expose'</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-                <span class="p">],</span>
-                <span class="s1">'ports'</span><span class="p">:</span> <span class="p">[</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-                <span class="p">],</span>
+                <span class="s1">'expose'</span><span class="p">:</span> <span class="n">ports</span><span class="p">,</span>
+                <span class="s1">'ports'</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">_port</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">_port</span> <span class="ow">in</span> <span class="n">ports</span><span class="p">],</span>
                 <span class="s1">'healthcheck'</span><span class="p">:</span> <span class="p">{</span>
                     <span class="s1">'test'</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'python -m jina.resources.health_check.gateway localhost:</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">protocol</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                     <span class="s1">'interval'</span><span class="p">:</span> <span class="s1">'2s'</span><span class="p">,</span>
@@ -667,9 +672,30 @@
                 <span class="n">cargs</span><span class="p">,</span> <span class="n">uses_metas</span><span class="p">,</span> <span class="n">uses_with</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_type</span>
             <span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">get_runtime_config</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+        <span class="k">def</span> <span class="nf">_update_config_with_volumes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">auto_volume</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_args</span><span class="o">.</span><span class="n">volumes</span><span class="p">:</span>  <span class="c1"># respect custom volume definition</span>
+                <span class="n">config</span><span class="p">[</span><span class="s1">'volumes'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_args</span><span class="o">.</span><span class="n">volumes</span>
+                <span class="k">return</span> <span class="n">config</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">auto_volume</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">config</span>
+
+            <span class="c1"># if no volume is given, create default volume</span>
+            <span class="p">(</span>
+                <span class="n">generated_volumes</span><span class="p">,</span>
+                <span class="n">workspace_in_container</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="n">generate_default_volume_and_workspace</span><span class="p">(</span>
+                <span class="n">workspace_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">service_args</span><span class="o">.</span><span class="n">workspace_id</span>
+            <span class="p">)</span>
+            <span class="n">config</span><span class="p">[</span><span class="s1">'volumes'</span><span class="p">]</span> <span class="o">=</span> <span class="n">generated_volumes</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="s1">'--workspace'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">'command'</span><span class="p">]</span>
+            <span class="p">):</span>  <span class="c1"># set workspace only of not already given</span>
+                <span class="n">config</span><span class="p">[</span><span class="s1">'command'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'--workspace'</span><span class="p">)</span>
+                <span class="n">config</span><span class="p">[</span><span class="s1">'command'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">workspace_in_container</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">config</span>
+
+        <span class="k">def</span> <span class="nf">get_runtime_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
             <span class="c1"># One Dict for replica</span>
             <span class="n">replica_configs</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">i_rep</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">service_args</span><span class="o">.</span><span class="n">replicas</span><span class="p">):</span>
@@ -695,8 +721,21 @@
                         <span class="sa">f</span><span class="s1">'JINA_LOG_LEVEL=</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"JINA_LOG_LEVEL"</span><span class="p">,</span> <span class="s2">"INFO"</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
                     <span class="p">],</span>
                 <span class="p">}</span>
+
+                <span class="k">if</span> <span class="n">cargs</span><span class="o">.</span><span class="n">monitoring</span><span class="p">:</span>
+                    <span class="n">config</span><span class="p">[</span><span class="s1">'expose'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">cargs</span><span class="o">.</span><span class="n">port_monitoring</span><span class="p">]</span>
+                    <span class="n">config</span><span class="p">[</span><span class="s1">'ports'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">cargs</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="p">]</span>
+
                 <span class="k">if</span> <span class="n">env</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">config</span><span class="p">[</span><span class="s1">'environment'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">env</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">service_args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">==</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">WORKER</span><span class="p">:</span>
+                    <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_config_with_volumes</span><span class="p">(</span>
+                        <span class="n">config</span><span class="p">,</span> <span class="n">auto_volume</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">common_args</span><span class="o">.</span><span class="n">disable_auto_volume</span>
+                    <span class="p">)</span>
+
                 <span class="n">replica_configs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">replica_configs</span>
 
@@ -938,7 +977,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 04, 2022.
+                    Last updated on Apr 12, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

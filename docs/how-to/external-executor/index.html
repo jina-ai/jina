@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/how-to/external-executor/" />
   
-<meta property="og:site_name" content="Jina 3.2.11 Documentation" />
+<meta property="og:site_name" content="Jina 3.3.0 Documentation" />
   
 <meta property="og:description" content="Normally, we have seen how Flow ties up Executors together, and how an Executor lives in the context of a Flow. However, this is not always the case, and sometimes you may want to launch an Executor on its own, and perhaps have the same Executor be used by different Flows. As the first step in th..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.2.11 Documentation" />
+<meta property="og:image:alt" content="Jina 3.3.0 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="How to build switches in a Flow" href="../flow-switch/" /><link rel="prev" title="How to run Executors on GPU" href="../gpu-executor/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>How to use external Executors - Jina 3.2.11 documentation</title>
+        <title>How to use external Executors - Jina 3.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -178,7 +178,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.2.11 documentation</div>
+                <div class="brand">Jina 3.3.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -267,9 +267,9 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Create a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/flow-yaml/">Configure a Flow from YAML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/flow-api/">Configure Flow API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/access-flow-api/">Access Flow API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/flow-api/">Configure Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/access-flow-api/">Access Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/client/">Python Client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
@@ -398,6 +398,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../api/jina.orchestrate.pods.helper/">jina.orchestrate.pods.helper module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/jina.orchestrate.helper/">jina.orchestrate.helper module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -479,6 +480,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../api/jina.serve.runtimes.worker/">jina.serve.runtimes.worker package</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../api/jina.serve.runtimes.asyncio/">jina.serve.runtimes.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../api/jina.serve.runtimes.base/">jina.serve.runtimes.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../api/jina.serve.runtimes.monitoring/">jina.serve.runtimes.monitoring module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../api/jina.serve.stream/">jina.serve.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -508,6 +510,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../api/cli.api/">cli.api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/cli.autocomplete/">cli.autocomplete module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/cli.export/">cli.export module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/cli.known_plugins/">cli.known_plugins module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/cli.lookup/">cli.lookup module</a></li>
 </ul>
 </li>
@@ -607,18 +610,21 @@ it does not need to start the Executor itself.:</p>
 </div>
 <p>After that, the external Executor will behave just like an internal one. And you can even add the same Executor to multiple
 Flows!</p>
+<div class="note admonition">
+<p class="admonition-title">Note</p>
+<p>If an external Executor needs multiple predecessors, reducing needs to be enabled. So setting disable_reduce=True is not allowed for these cases.</p>
+</div>
 </section>
 <section id="starting-standalone-executors">
 <h2>Starting standalone Executors<a class="headerlink" href="#starting-standalone-executors" title="Permalink to this headline">¶</a></h2>
 <p>The example above assumes that there already is an Executor running, and you just want to access
 it from your Flow.</p>
-<p>You can, however, also start your own standalone Executors, which can then be accessed from anywhere. There are two
-ways of doing this: Pulling an Executor from Jina Hub, and using a locally defined Executor. In either case, you will
-launch the Executor using the Jina command line interface (CLI).</p>
+<p>You can, however, also start your own standalone Executors, which can then be accessed from anywhere.
+In the following sections we will describe how to run standalone Executors via the Jina command line interface (CLI). For more options to run your Executor, including in Kubernetes and Docker Compose, please read the <a class="reference internal" href="../../fundamentals/executor/executor-api/#serve-executor-standalone"><span class="std std-ref">Executor API section</span></a>.</p>
 <div class="seealso admonition">
-<p class="admonition-title">Advanced CLI options</p>
+<p class="admonition-title">Advanced deployment options</p>
 <p>This tutorial walks through the basics of spawing a standalone (external) Executor. For more advanced options, refer to the
-<span class="xref std std-ref">CLI</span></p>
+<span class="xref std std-ref">CLI</span> and <a class="reference internal" href="../../fundamentals/executor/executor-api/#serve-executor-standalone"><span class="std std-ref">Executor API section</span></a></p>
 </div>
 </section>
 <section id="using-jina-hub">
@@ -756,7 +762,7 @@ We do this using a YAML file.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 04, 2022.
+                    Last updated on Apr 12, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

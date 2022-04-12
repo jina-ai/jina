@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.serve.stream - Jina 3.2.11 documentation</title>
+        <title>jina.serve.stream - Jina 3.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.2.11 documentation</div>
+                <div class="brand">Jina 3.3.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -234,9 +234,9 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/create-flow/">Create a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/flow-yaml/">Configure a Flow from YAML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/flow-api/">Configure Flow API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/access-flow-api/">Access Flow API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/flow-api/">Configure Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/access-flow-api/">Access Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/client/">Python Client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
@@ -365,6 +365,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.orchestrate.pods.helper/">jina.orchestrate.pods.helper module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.orchestrate.helper/">jina.orchestrate.helper module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -446,6 +447,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.serve.runtimes.worker/">jina.serve.runtimes.worker package</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.serve.runtimes.asyncio/">jina.serve.runtimes.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.serve.runtimes.base/">jina.serve.runtimes.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.serve.runtimes.monitoring/">jina.serve.runtimes.monitoring module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.serve.stream/">jina.serve.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -475,6 +477,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/cli.api/">cli.api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/cli.autocomplete/">cli.autocomplete module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/cli.export/">cli.export module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../api/cli.known_plugins/">cli.known_plugins module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../api/cli.lookup/">cli.lookup module</a></li>
 </ul>
 </li>
@@ -545,25 +548,28 @@
                     </label>
                 </div>
                 <h1>Source code for jina.serve.stream</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
+<span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">contextlib</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">List</span><span class="p">,</span>
-    <span class="n">Union</span><span class="p">,</span>
-    <span class="n">Iterator</span><span class="p">,</span>
-    <span class="n">AsyncIterator</span><span class="p">,</span>
     <span class="n">TYPE_CHECKING</span><span class="p">,</span>
-    <span class="n">Callable</span><span class="p">,</span>
-    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">AsyncIterator</span><span class="p">,</span>
     <span class="n">Awaitable</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Iterator</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">jina.serve.stream.helper</span> <span class="kn">import</span> <span class="n">AsyncRequestsIterator</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
+<span class="kn">from</span> <span class="nn">jina.serve.stream.helper</span> <span class="kn">import</span> <span class="n">AsyncRequestsIterator</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'RequestStreamer'</span><span class="p">]</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">CollectorRegistry</span>
+
     <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 
 
@@ -592,6 +598,7 @@
 <span class="sd">        :param result_handler: The callable responsible for handling the response.</span>
 <span class="sd">        :param end_of_iter_handler: Optional callable to handle the end of iteration if some special action needs to be taken.</span>
 <span class="sd">        :param logger: Optional logger that can be used for logging</span>
+
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
@@ -618,7 +625,8 @@
             <span class="k">yield</span> <span class="n">response</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_stream_requests</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">request_iterator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterator</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">request_iterator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterator</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">:</span>
         <span class="sd">"""Implements request and response handling without prefetching</span>
 <span class="sd">        :param request_iterator: requests iterator from Client</span>
@@ -760,7 +768,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 04, 2022.
+                    Last updated on Apr 12, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

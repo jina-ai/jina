@@ -20,6 +20,7 @@ Submodules
 
    jina.serve.runtimes.asyncio
    jina.serve.runtimes.base
+   jina.serve.runtimes.monitoring
 
 Module contents
 ---------------

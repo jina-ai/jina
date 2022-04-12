@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.jaml - Jina 3.2.11 documentation</title>
+        <title>jina.jaml - Jina 3.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.2.11 documentation</div>
+                <div class="brand">Jina 3.3.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -234,9 +234,9 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/create-flow/">Create a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/flow-yaml/">Configure a Flow from YAML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/flow-api/">Configure Flow API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/access-flow-api/">Access Flow API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/flow-api/">Configure Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/access-flow-api/">Access Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/client/">Python Client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
@@ -365,6 +365,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.orchestrate.pods.helper/">jina.orchestrate.pods.helper module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.orchestrate.helper/">jina.orchestrate.helper module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -446,6 +447,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.serve.runtimes.worker/">jina.serve.runtimes.worker package</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.serve.runtimes.asyncio/">jina.serve.runtimes.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.serve.runtimes.base/">jina.serve.runtimes.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.serve.runtimes.monitoring/">jina.serve.runtimes.monitoring module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.serve.stream/">jina.serve.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -475,6 +477,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.api/">cli.api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.autocomplete/">cli.autocomplete module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.export/">cli.export module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/cli.known_plugins/">cli.known_plugins module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.lookup/">cli.lookup module</a></li>
 </ul>
 </li>
@@ -552,16 +555,17 @@
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">yaml</span>
 <span class="kn">from</span> <span class="nn">yaml.constructor</span> <span class="kn">import</span> <span class="n">FullConstructor</span>
 
 <span class="kn">from</span> <span class="nn">jina.jaml.helper</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">JinaResolver</span><span class="p">,</span>
     <span class="n">JinaLoader</span><span class="p">,</span>
-    <span class="n">parse_config_source</span><span class="p">,</span>
+    <span class="n">JinaResolver</span><span class="p">,</span>
+    <span class="n">get_jina_loader_with_runtime</span><span class="p">,</span>
     <span class="n">load_py_modules</span><span class="p">,</span>
+    <span class="n">parse_config_source</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'JAML'</span><span class="p">,</span> <span class="s1">'JAMLCompatible'</span><span class="p">]</span>
@@ -620,8 +624,10 @@
 <span class="sd">        JAML.load(...)</span>
 <span class="sd">        JAML.dump(...)</span>
 
+
 <span class="sd">        class DummyClass:</span>
 <span class="sd">            pass</span>
+
 
 <span class="sd">        JAML.register(DummyClass)</span>
 
@@ -672,9 +678,9 @@
 <span class="sd">    .. highlight:: python</span>
 <span class="sd">    .. code-block:: python</span>
 
-<span class="sd">        obj = JAML.load(fp, substitute=True,</span>
-<span class="sd">                            context={'context_var': 3.14,</span>
-<span class="sd">                                    'context_var2': 'hello-world'})</span>
+<span class="sd">        obj = JAML.load(</span>
+<span class="sd">            fp, substitute=True, context={'context_var': 3.14, 'context_var2': 'hello-world'}</span>
+<span class="sd">        )</span>
 
 <span class="sd">    Internal references point to other variables in the yaml file itself, and can be accessed using the following syntax:</span>
 
@@ -695,7 +701,12 @@
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="JAML.load"><a class="viewcode-back" href="../../../api/jina.jaml/#jina.jaml.JAML.load">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">substitute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
+        <span class="n">stream</span><span class="p">,</span>
+        <span class="n">substitute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">context</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">"""Parse the first YAML document in a stream and produce the corresponding Python object.</span>
 
 <span class="sd">        .. note::</span>
@@ -704,13 +715,15 @@
 <span class="sd">            to load YAML config into objects, please use :meth:`Flow.load_config`,</span>
 <span class="sd">            :meth:`BaseExecutor.load_config`, etc.</span>
 
+<span class="sd">        :param stream: the stream to load</span>
 <span class="sd">        :param substitute: substitute environment, internal reference and context variables.</span>
 <span class="sd">        :param context: context replacement variables in a dict, the value of the dict is the replacement.</span>
-<span class="sd">        :param stream: the stream to load</span>
+<span class="sd">        :param runtime_args: Optional runtime_args to be directly passed without being parsed into a yaml config</span>
 <span class="sd">        :return: the Python object</span>
 
 <span class="sd">        """</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">JinaLoader</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">get_jina_loader_with_runtime</span><span class="p">(</span><span class="n">runtime_args</span><span class="p">))</span>
+
         <span class="k">if</span> <span class="n">substitute</span><span class="p">:</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">JAML</span><span class="o">.</span><span class="n">expand_dict</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">r</span></div>
@@ -1109,7 +1122,9 @@
         <span class="n">data</span> <span class="o">=</span> <span class="n">constructor</span><span class="o">.</span><span class="n">construct_mapping</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="kn">from</span> <span class="nn">jina.jaml.parsers</span> <span class="kn">import</span> <span class="n">get_parser</span>
 
-        <span class="k">return</span> <span class="n">get_parser</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'version'</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">get_parser</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'version'</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">runtime_args</span><span class="o">=</span><span class="n">constructor</span><span class="o">.</span><span class="n">runtime_args</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="JAMLCompatible.save_config"><a class="viewcode-back" href="../../../api/jina.jaml/#jina.jaml.JAMLCompatible.save_config">[docs]</a>    <span class="k">def</span> <span class="nf">save_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">"""</span>
@@ -1141,6 +1156,8 @@
         <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">extra_search_paths</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'JAMLCompatible'</span><span class="p">:</span>
         <span class="sd">"""A high-level interface for loading configuration with features</span>
@@ -1172,11 +1189,11 @@
 <span class="sd">            # load Executor from yaml file and substitute environment variables</span>
 <span class="sd">            os.environ['VAR_A'] = 'hello-world'</span>
 <span class="sd">            b = BaseExecutor.load_config('a.yml')</span>
-<span class="sd">            assert b.name == hello-world</span>
+<span class="sd">            assert b.name == 'hello-world'</span>
 
 <span class="sd">            # load Executor from yaml file and substitute variables from a dict</span>
 <span class="sd">            b = BaseExecutor.load_config('a.yml', context={'VAR_A': 'hello-world'})</span>
-<span class="sd">            assert b.name == hello-world</span>
+<span class="sd">            assert b.name == 'hello-world'</span>
 
 <span class="sd">            # disable substitute</span>
 <span class="sd">            b = BaseExecutor.load_config('a.yml', substitute=False)</span>
@@ -1191,9 +1208,22 @@
 <span class="sd">        :param uses_metas: dictionary of parameters to overwrite from the default config's metas field</span>
 <span class="sd">        :param uses_requests: dictionary of parameters to overwrite from the default config's requests field</span>
 <span class="sd">        :param extra_search_paths: extra paths used when looking for executor yaml files</span>
+<span class="sd">        :param py_modules: Optional py_module from which the object need to be loaded</span>
+<span class="sd">        :param runtime_args: Optional dictionary of parameters runtime_args to be directly passed without being parsed into a yaml config</span>
+<span class="sd">        :param : runtime_args that need to be passed to the yaml</span>
+
 <span class="sd">        :param kwargs: kwargs for parse_config_source</span>
 <span class="sd">        :return: :class:`JAMLCompatible` object</span>
 <span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">runtime_args</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span>
+                <span class="s1">'runtimes_args'</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">dict</span><span class="p">()</span>
+            <span class="p">)</span>  <span class="c1"># when we have runtime args it is needed to have an empty runtime args session in the yam config</span>
+
+        <span class="k">if</span> <span class="n">py_modules</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">'runtimes_args'</span><span class="p">][</span><span class="s1">'py_modules'</span><span class="p">]</span> <span class="o">=</span> <span class="n">py_modules</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">source</span><span class="p">):</span>
             <span class="n">extra_search_paths</span> <span class="o">=</span> <span class="p">(</span><span class="n">extra_search_paths</span> <span class="ow">or</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">source</span><span class="p">)]</span>
@@ -1270,7 +1300,7 @@
                 <span class="c1"># revert yaml's tag and load again, this time with substitution</span>
                 <span class="n">tag_yml</span> <span class="o">=</span> <span class="n">JAML</span><span class="o">.</span><span class="n">unescape</span><span class="p">(</span><span class="n">JAML</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">no_tag_yml</span><span class="p">))</span>
             <span class="c1"># load into object, no more substitute</span>
-            <span class="k">return</span> <span class="n">JAML</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tag_yml</span><span class="p">,</span> <span class="n">substitute</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">JAML</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">tag_yml</span><span class="p">,</span> <span class="n">substitute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">runtime_args</span><span class="o">=</span><span class="n">runtime_args</span><span class="p">)</span></div>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_override_yml_params</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">raw_yaml</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">override_field</span><span class="p">):</span>
@@ -1312,7 +1342,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 04, 2022.
+                    Last updated on Apr 12, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/executor/executor-in-flow/" />
   
-<meta property="og:site_name" content="Jina 3.2.11 Documentation" />
+<meta property="og:site_name" content="Jina 3.3.0 Documentation" />
   
 <meta property="og:description" content="Executors are a way to group your DocumentArray functions and processing logic into a class that can share configuration and state in a modular way. The main advantage of Executor s is using them in a Flow, which can serve, scale, and deploy them with ease. YAML and Python API: An Executor can be..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.2.11 Documentation" />
+<meta property="og:image:alt" content="Jina 3.3.0 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Executor File Structure" href="../repository-structure/" /><link rel="prev" title="Executor API" href="../executor-api/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>Executors inside a Flow - Jina 3.2.11 documentation</title>
+        <title>Executors inside a Flow - Jina 3.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -178,7 +178,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.2.11 documentation</div>
+                <div class="brand">Jina 3.3.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -267,9 +267,9 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/create-flow/">Create a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/flow-yaml/">Configure a Flow from YAML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../flow/flow-api/">Configure Flow API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../flow/access-flow-api/">Access Flow API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../flow/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/flow-api/">Configure Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/access-flow-api/">Access Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/client/">Python Client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/remarks/">Remarks</a></li>
 </ul>
 </li>
@@ -398,6 +398,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.orchestrate.pods.helper/">jina.orchestrate.pods.helper module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.orchestrate.helper/">jina.orchestrate.helper module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -479,6 +480,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.serve.runtimes.worker/">jina.serve.runtimes.worker package</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.serve.runtimes.asyncio/">jina.serve.runtimes.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.serve.runtimes.base/">jina.serve.runtimes.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.serve.runtimes.monitoring/">jina.serve.runtimes.monitoring module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.serve.stream/">jina.serve.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -508,6 +510,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.api/">cli.api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.autocomplete/">cli.autocomplete module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.export/">cli.export module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/cli.known_plugins/">cli.known_plugins module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.lookup/">cli.lookup module</a></li>
 </ul>
 </li>
@@ -595,6 +598,7 @@ executor.py<div class="sd-summary-down docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
+
 <span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter_1</span><span class="p">,</span> <span class="n">parameter_2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -619,23 +623,16 @@ The YAML file has the following format:</p>
 <p>This example shows how to start a Flow with an Executor via the Python API:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
     <span class="n">uses</span><span class="o">=</span><span class="s1">'MyExecutor'</span><span class="p">,</span>
-    <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span>
-      <span class="s2">"parameter_1"</span><span class="p">:</span> <span class="s2">"foo"</span><span class="p">,</span>
-      <span class="s2">"parameter_2"</span><span class="p">:</span> <span class="s2">"bar"</span>
-    <span class="p">},</span>
+    <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s2">"parameter_1"</span><span class="p">:</span> <span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"parameter_2"</span><span class="p">:</span> <span class="s2">"bar"</span><span class="p">},</span>
     <span class="n">uses_metas</span><span class="o">=</span><span class="p">{</span>
-      <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"MyExecutor"</span><span class="p">,</span>
-      <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"MyExecutor does a thing to the stuff in your Documents"</span><span class="p">,</span>
-      <span class="s2">"py_modules"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"executor.py"</span><span class="p">]</span>
+        <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"MyExecutor"</span><span class="p">,</span>
+        <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"MyExecutor does a thing to the stuff in your Documents"</span><span class="p">,</span>
+        <span class="s2">"py_modules"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"executor.py"</span><span class="p">],</span>
     <span class="p">},</span>
-    <span class="n">uses_requests</span><span class="o">=</span><span class="p">{</span>
-      <span class="s2">"/index"</span><span class="p">:</span> <span class="s2">"my_index"</span><span class="p">,</span>
-      <span class="s2">"/search"</span><span class="p">:</span> <span class="s2">"my_search"</span><span class="p">,</span>
-      <span class="s2">"/random"</span><span class="p">:</span> <span class="s2">"foo"</span>
-    <span class="p">},</span>
-    <span class="n">workspace</span><span class="o">=</span><span class="s2">"some_custom_path"</span>
+    <span class="n">uses_requests</span><span class="o">=</span><span class="p">{</span><span class="s2">"/index"</span><span class="p">:</span> <span class="s2">"my_index"</span><span class="p">,</span> <span class="s2">"/search"</span><span class="p">:</span> <span class="s2">"my_search"</span><span class="p">,</span> <span class="s2">"/random"</span><span class="p">:</span> <span class="s2">"foo"</span><span class="p">},</span>
+    <span class="n">workspace</span><span class="o">=</span><span class="s2">"some_custom_path"</span><span class="p">,</span>
 <span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-  <span class="o">...</span>
+    <span class="o">...</span>
 </pre></div>
 </div>
 <p>Python API-specific options:</p>
@@ -686,11 +683,13 @@ The YAML file has the following format:</p>
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">via uses_with</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span>
 
+
 <span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">foo</span><span class="p">,</span> <span class="n">bar</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'foo = </span><span class="si">{</span><span class="n">foo</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'bar = </span><span class="si">{</span><span class="n">bar</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">'foo'</span><span class="p">:</span> <span class="s1">'hello'</span><span class="p">,</span> <span class="s1">'bar'</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
 
@@ -753,6 +752,7 @@ Example<div class="sd-summary-down docutils">
 <svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
+
 
 <span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter_1</span><span class="p">,</span> <span class="n">parameter_2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -894,8 +894,8 @@ As the name suggests, <code class="docutils literal notranslate"><span class="pr
 <p>The list of the <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code> is:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name given to the <code class="docutils literal notranslate"><span class="pre">Executor</span></code>. This is dynamically adapted from the <code class="docutils literal notranslate"><span class="pre">name</span></code> in <code class="docutils literal notranslate"><span class="pre">metas</span></code> and depends on some additional arguments like <code class="docutils literal notranslate"><span class="pre">shard_id</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">replicas</span></code>: Number of replicas of the same <code class="docutils literal notranslate"><span class="pre">Executor</span></code> deployed with the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">shards</span></code>: Number of shards of the same <code class="docutils literal notranslate"><span class="pre">Executor</span></code> deployed with the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">replicas</span></code>: Number of <a class="reference internal" href="../../flow/create-flow/#replicate-executors"><span class="std std-ref">replicas</span></a> of the same <code class="docutils literal notranslate"><span class="pre">Executor</span></code> deployed with the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shards</span></code>: Number of <a class="reference internal" href="../../flow/create-flow/#partition-data-by-using-shards"><span class="std std-ref">shards</span></a> of the same <code class="docutils literal notranslate"><span class="pre">Executor</span></code> deployed with the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">shard_id</span></code>: Identifier of the <code class="docutils literal notranslate"><span class="pre">shard</span></code> corresponding to the given <code class="docutils literal notranslate"><span class="pre">Executor</span></code> instance.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code>: Path to be used by the <code class="docutils literal notranslate"><span class="pre">Executor</span></code>. Note that the actual workspace directory used by the Executor is obtained by appending <code class="docutils literal notranslate"><span class="pre">'/&lt;executor_name&gt;/&lt;shard_id&gt;/'</span></code> to this value.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code>: Path to the modules needed to import the <code class="docutils literal notranslate"><span class="pre">Executor</span></code>. This is another way to pass <code class="docutils literal notranslate"><span class="pre">py-modules</span></code> to the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> from the <code class="docutils literal notranslate"><span class="pre">Flow</span></code></p></li>
@@ -911,6 +911,7 @@ As the name suggests, <code class="docutils literal notranslate"><span class="pr
 <p>In this example, <code class="docutils literal notranslate"><span class="pre">MyExec</span></code> receives the parameter <code class="docutils literal notranslate"><span class="pre">{'top_k':</span> <span class="pre">10}</span></code> from the client, which can then be used internally.</p>
 <p>It also exposes a <code class="docutils literal notranslate"><span class="pre">status</span></code> endpoint returning internal information in the form of a <code class="docutils literal notranslate"><span class="pre">dict</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Executor</span>
+
 
 <span class="k">class</span> <span class="nc">MyExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1097,7 +1098,7 @@ One case is when an Executor receives messages from more than one upstream Execu
     <span class="n">Flow</span><span class="p">()</span>
     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">Exec1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'exec1'</span><span class="p">)</span>
     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">Exec2</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'exec2'</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MergeExec</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="p">[</span><span class="s1">'exec1'</span><span class="p">,</span> <span class="s1">'exec2'</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MergeExec</span><span class="p">,</span> <span class="n">needs</span><span class="o">=</span><span class="p">[</span><span class="s1">'exec1'</span><span class="p">,</span> <span class="s1">'exec2'</span><span class="p">],</span> <span class="n">disable_reduce</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="p">)</span>
 
 <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
@@ -1158,7 +1159,7 @@ Output<div class="sd-summary-down docutils">
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 04, 2022.
+                    Last updated on Apr 12, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

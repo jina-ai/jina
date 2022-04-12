@@ -4,19 +4,19 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<meta property="og:title" content="Access Flow API" />
+<meta property="og:title" content="Access Flow" />
   
 <meta property="og:type" content="website" />
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/access-flow-api/" />
   
-<meta property="og:site_name" content="Jina 3.2.11 Documentation" />
+<meta property="og:site_name" content="Jina 3.3.0 Documentation" />
   
-<meta property="og:description" content="Once you have configured your Flow API you can access it over the network. There are multiple ways of doing this. Jina Client: Jina offers a built-in client that supports gRPC, HTTP, and Websocket connections to a Flow. Sending a request to a Flow is as simple as calling the.post() method: gRPC H..." />
+<meta property="og:description" content="Once you have configured your Flow API you can access it over the network. There are multiple ways of doing this. HTTP access: Apart from using the Jina Client, the most common way of interacting with your deployed Flow is via HTTP. You can always use post to interact with a Flow, using the/post ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_images/swagger-ui.png" />
   
-<meta property="og:image:alt" content="Jina 3.2.11 Documentation" />
+<meta property="og:image:alt" content="Jina 3.3.0 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -35,10 +35,10 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Client API" href="../client/" /><link rel="prev" title="Configure Flow API" href="../flow-api/" />
+    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Python Client" href="../client/" /><link rel="prev" title="Configure Flow" href="../flow-api/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>Access Flow API - Jina 3.2.11 documentation</title>
+        <title>Access Flow - Jina 3.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -178,7 +178,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.2.11 documentation</div>
+                <div class="brand">Jina 3.3.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -267,9 +267,9 @@
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Flow</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../create-flow/">Create a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../flow-yaml/">Configure a Flow from YAML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../flow-api/">Configure Flow API</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Access Flow API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../flow-api/">Configure Flow</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Access Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/">Python Client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../remarks/">Remarks</a></li>
 </ul>
 </li>
@@ -398,6 +398,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.orchestrate.pods.helper/">jina.orchestrate.pods.helper module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/jina.orchestrate.helper/">jina.orchestrate.helper module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -479,6 +480,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.serve.runtimes.worker/">jina.serve.runtimes.worker package</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.serve.runtimes.asyncio/">jina.serve.runtimes.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../api/jina.serve.runtimes.base/">jina.serve.runtimes.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../api/jina.serve.runtimes.monitoring/">jina.serve.runtimes.monitoring module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../api/jina.serve.stream/">jina.serve.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -508,6 +510,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.api/">cli.api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.autocomplete/">cli.autocomplete module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.export/">cli.export module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/cli.known_plugins/">cli.known_plugins module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/cli.lookup/">cli.lookup module</a></li>
 </ul>
 </li>
@@ -577,62 +580,145 @@
                         </i>
                     </label>
                 </div>
-                <section class="tex2jax_ignore mathjax_ignore" id="access-flow-api">
-<span id="id1"></span><h1>Access Flow API<a class="headerlink" href="#access-flow-api" title="Permalink to this headline">¶</a></h1>
+                <section class="tex2jax_ignore mathjax_ignore" id="access-flow">
+<span id="access-flow-api"></span><h1>Access Flow<a class="headerlink" href="#access-flow" title="Permalink to this headline">¶</a></h1>
 <p>Once you have <span class="xref std std-ref">configured your Flow API</span> you can access it over the network.
 There are multiple ways of doing this.</p>
-<section id="jina-client">
-<h2>Jina Client<a class="headerlink" href="#jina-client" title="Permalink to this headline">¶</a></h2>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
-<p>For a more detailed description of the Jina Client, see its dedicated <a class="reference internal" href="../client/#client"><span class="std std-ref">documentation page</span></a>.</p>
+<p>This page is about accessing the Flow with external clients.
+You can also use the Jina Client, provided by us in the <code class="docutils literal notranslate"><span class="pre">jina</span></code> package.
+It supports all the protocols listed here under a convenient, simple API.
+Check its dedicated <a class="reference internal" href="../client/#client"><span class="std std-ref">documentation page</span></a>.</p>
 </div>
-<p>Jina offers a built-in client that supports gRPC, HTTP, and Websocket connections to a Flow.
-Sending a request to a Flow is as simple as calling the <code class="docutils literal notranslate"><span class="pre">.post()</span></code> method:</p>
-<div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">gRPC</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
-
-<span class="c1"># Flow exposed on host HOST and port PORT</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">HOST</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">PORT</span><span class="p">)</span>
-<span class="n">response_docs</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">())</span>
-</pre></div>
-</div>
-</div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">HTTP</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
-
-<span class="c1"># Flow exposed on host HOST and port PORT</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">HOST</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">PORT</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'http'</span><span class="p">)</span>
-<span class="n">response_docs</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">())</span>
-</pre></div>
-</div>
-</div>
-<input class="tab-input" id="tab-set--0-input--3" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--3">WebSocket</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
-
-<span class="c1"># Flow exposed on host HOST and port PORT</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">HOST</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">PORT</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">'websocket'</span><span class="p">)</span>
-<span class="n">response_docs</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/search'</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">())</span>
-</pre></div>
-</div>
-</div>
-</div>
-<p>The Client also supports a number of additional features, such as batching requests, callback functions, asynchronous calls,
-passing additional parameters, and <a class="reference internal" href="../client/#client"><span class="std std-ref">more</span></a>.</p>
-</section>
 <section id="http-access">
 <h2>HTTP access<a class="headerlink" href="#http-access" title="Permalink to this headline">¶</a></h2>
 <div class="caution admonition">
 <p class="admonition-title">Available Protocols</p>
-<p>Jina Flows can use one of three protocols: gRPC, HTTP, or Websocket. Only Flows that use HTTP can be accessed via the
-methods described below.</p>
+<p>Jina Flows can use one of <a class="reference internal" href="../flow-api/#flow-protocol"><span class="std std-ref">three protocols</span></a>: gRPC, HTTP, or Websocket.
+Only Flows that use HTTP can be accessed via the methods described below.</p>
 </div>
-<p>Outside of using the Jina Client, various forms of sending HTTP requests are the most common way of interacting with a Flow.</p>
+<p>Apart from using the <a class="reference internal" href="../client/#client"><span class="std std-ref">Jina Client</span></a>, the most common way of interacting with your deployed Flow is via HTTP.</p>
 <p>You can always use <code class="docutils literal notranslate"><span class="pre">post</span></code> to interact with a Flow, using the <code class="docutils literal notranslate"><span class="pre">/post</span></code> HTTP endpoint.</p>
+<section id="use-http-client-to-send-request">
+<h3>Use HTTP client to send request<a class="headerlink" href="#use-http-client-to-send-request" title="Permalink to this headline">¶</a></h3>
+<p>With the help of <a class="reference external" href="https://swagger.io/specification/">OpenAPI schema</a>, one can send data requests to a Flow via <code class="docutils literal notranslate"><span class="pre">cURL</span></code>, JavaScript, <a class="reference external" href="https://www.postman.com/">Postman</a>, or any other HTTP client or programming library.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">via cURL</label><div class="tab-content docutils">
+<p>Here’s an example that uses <code class="docutils literal notranslate"><span class="pre">cURL</span></code>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl --request POST <span class="s1">'http://localhost:12345/post'</span> --header <span class="s1">'Content-Type: application/json'</span> -d <span class="s1">'{"data": [{"text": "hello world"}],"execEndpoint": "/search"}'</span>
+</pre></div>
+</div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Sample response<div class="sd-summary-down docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="p">{</span>
+      <span class="s2">"requestId"</span><span class="p">:</span> <span class="s2">"e2978837-e5cb-45c6-a36d-588cf9b24309"</span><span class="p">,</span>
+      <span class="s2">"data"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"docs"</span><span class="p">:</span> <span class="p">[</span>
+          <span class="p">{</span>
+            <span class="s2">"id"</span><span class="p">:</span> <span class="s2">"84d9538e-f5be-11eb-8383-c7034ef3edd4"</span><span class="p">,</span>
+            <span class="s2">"granularity"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">"adjacency"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">"parentId"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"text"</span><span class="p">:</span> <span class="s2">"hello world"</span><span class="p">,</span>
+            <span class="s2">"chunks"</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">"weight"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">"matches"</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">"mimeType"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"tags"</span><span class="p">:</span> <span class="p">{</span>
+              <span class="s2">"mimeType"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+              <span class="s2">"parentId"</span><span class="p">:</span> <span class="s2">""</span>
+            <span class="p">},</span>
+            <span class="s2">"location"</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">"offset"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">"embedding"</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+            <span class="s2">"scores"</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s2">"modality"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"evaluations"</span><span class="p">:</span> <span class="p">{}</span>
+          <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="s2">"groundtruths"</span><span class="p">:</span> <span class="p">[]</span>
+      <span class="p">},</span>
+      <span class="s2">"header"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"execEndpoint"</span><span class="p">:</span> <span class="s2">"/index"</span><span class="p">,</span>
+        <span class="s2">"targetPeapod"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+        <span class="s2">"noPropagate"</span><span class="p">:</span> <span class="n">false</span>
+      <span class="p">},</span>
+      <span class="s2">"parameters"</span><span class="p">:</span> <span class="p">{},</span>
+      <span class="s2">"routes"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">"pod"</span><span class="p">:</span> <span class="s2">"gateway"</span><span class="p">,</span>
+          <span class="s2">"podId"</span><span class="p">:</span> <span class="s2">"5742d5dd-43f1-451f-88e7-ece0588b7557"</span><span class="p">,</span>
+          <span class="s2">"startTime"</span><span class="p">:</span> <span class="s2">"2021-08-05T07:26:58.636258+00:00"</span><span class="p">,</span>
+          <span class="s2">"endTime"</span><span class="p">:</span> <span class="s2">"2021-08-05T07:26:58.636910+00:00"</span><span class="p">,</span>
+          <span class="s2">"status"</span><span class="p">:</span> <span class="n">null</span>
+        <span class="p">}</span>
+      <span class="p">],</span>
+      <span class="s2">"status"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"code"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">"description"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+        <span class="s2">"exception"</span><span class="p">:</span> <span class="n">null</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</details></div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">via JavaScript</label><div class="tab-content docutils">
+<p>Sending a request from the front-end JavaScript code is a common use case too. Here’s how this would look like:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">fetch</span><span class="p">(</span><span class="s1">'http://localhost:12345/post'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">'POST'</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s1">'Content-Type'</span><span class="o">:</span> <span class="s1">'application/json'</span>
+    <span class="p">},</span>
+    <span class="nx">body</span><span class="o">:</span> <span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="s2">"data"</span><span class="o">:</span> <span class="p">[{</span><span class="s2">"text"</span><span class="o">:</span> <span class="s2">"hello world"</span><span class="p">}],</span><span class="s2">"execEndpoint"</span><span class="o">:</span> <span class="s2">"/search"</span><span class="p">})</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="p">=&gt;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">()).</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">));</span>
+</pre></div>
+</div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Output<div class="sd-summary-down docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">"data"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"37e6f1bc7ec82fc4ba75691315ae54a6"</span><span class="p">,</span>
+      <span class="s2">"text"</span><span class="o">:</span> <span class="s2">"hello world"</span>
+      <span class="s2">"matches"</span><span class="o">:</span> <span class="p">...</span>
+    <span class="p">},</span>
+  <span class="s2">"header"</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">"requestId"</span><span class="o">:</span> <span class="s2">"c725217aa7714de88039866fb5aa93d2"</span><span class="p">,</span>
+    <span class="s2">"execEndpoint"</span><span class="o">:</span> <span class="s2">"/index"</span><span class="p">,</span>
+    <span class="s2">"targetExecutor"</span><span class="o">:</span> <span class="s2">""</span>
+  <span class="p">},</span>
+  <span class="s2">"routes"</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"executor"</span><span class="o">:</span> <span class="s2">"gateway"</span><span class="p">,</span>
+      <span class="s2">"startTime"</span><span class="o">:</span> <span class="s2">"2022-04-01T13:11:57.992497+00:00"</span><span class="p">,</span>
+      <span class="s2">"endTime"</span><span class="o">:</span> <span class="s2">"2022-04-01T13:11:57.997802+00:00"</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">"executor"</span><span class="o">:</span> <span class="s2">"executor0"</span><span class="p">,</span>
+      <span class="s2">"startTime"</span><span class="o">:</span> <span class="s2">"2022-04-01T13:11:57.993686+00:00"</span><span class="p">,</span>
+      <span class="s2">"endTime"</span><span class="o">:</span> <span class="s2">"2022-04-01T13:11:57.997274+00:00"</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</details></div>
+</div>
+</section>
 <section id="arguments">
 <h3>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">¶</a></h3>
 <p>Your HTTP request can include the following parameters:</p>
@@ -640,7 +726,7 @@ methods described below.</p>
 <thead>
 <tr>
 <th>Name</th>
-<th>Type</th>
+<th>Required</th>
 <th>Description</th>
 <th>Example</th>
 </tr>
@@ -648,14 +734,14 @@ methods described below.</p>
 <tbody>
 <tr>
 <td><code>execEndpoint</code></td>
-<td>required</td>
-<td>Executor endpoint string to target</td>
+<td><strong>required</strong></td>
+<td>Executor endpoint to target</td>
 <td><code>"execEndpoint": "/index"</code></td>
 </tr>
 <tr>
 <td><code>data</code></td>
 <td>optional</td>
-<td>List specifying the input Documents</td>
+<td>List specifying the input <a href="https://docarray.jina.ai/fundamentals/document/">Documents</a></td>
 <td><code>"data": [{"text": "hello"}, {"text": "world"}]</code>.</td>
 </tr>
 <tr>
@@ -672,9 +758,39 @@ methods described below.</p>
 </tr>
 </tbody>
 </table></div>
-<p>Instead of using the generic <code class="docutils literal notranslate"><span class="pre">/post</span></code> endpoint, you can directly use endpoints like <code class="docutils literal notranslate"><span class="pre">/index</span></code> or <code class="docutils literal notranslate"><span class="pre">/search</span></code>.
+<p>Instead of using the generic <code class="docutils literal notranslate"><span class="pre">/post</span></code> endpoint, you can directly use endpoints like <code class="docutils literal notranslate"><span class="pre">/index</span></code> or <code class="docutils literal notranslate"><span class="pre">/search</span></code> to perform a specific operation.
 In this case your data request will be sent to the corresponding Executor endpoint, so the parameter <code class="docutils literal notranslate"><span class="pre">execEndpoint</span></code> does not need to be specified.</p>
-<p>In any case, the response you receive will include <code class="docutils literal notranslate"><span class="pre">data</span></code> (and array of Documents), as well as the fields <code class="docutils literal notranslate"><span class="pre">routes</span></code>, <code class="docutils literal notranslate"><span class="pre">parameters</span></code>, and <code class="docutils literal notranslate"><span class="pre">header</span></code>.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Example<div class="sd-summary-down docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">cURL</label><div class="tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl --request POST <span class="se">\</span>
+<span class="hll"><span class="s1">'http://localhost:12345/search'</span> <span class="se">\</span>
+</span>--header <span class="s1">'Content-Type: application/json'</span> -d <span class="s1">'{"data": [{"text": "hello world"}]}'</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">javascript</label><div class="tab-content docutils">
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">fetch</span><span class="p">(</span>
+<span class="hll">    <span class="s1">'http://localhost:12345/search'</span><span class="p">,</span> 
+</span>    <span class="p">{</span>
+        <span class="nx">method</span><span class="o">:</span> <span class="s1">'POST'</span><span class="p">,</span>
+        <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s1">'Content-Type'</span><span class="o">:</span> <span class="s1">'application/json'</span>
+    <span class="p">},</span>
+    <span class="nx">body</span><span class="o">:</span> <span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="s2">"data"</span><span class="o">:</span> <span class="p">[{</span><span class="s2">"text"</span><span class="o">:</span> <span class="s2">"hello world"</span><span class="p">}]})</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="p">=&gt;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">()).</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</details><p>The response you receive includes <code class="docutils literal notranslate"><span class="pre">data</span></code> (an array of <a class="reference external" href="https://docarray.jina.ai/fundamentals/document/">Documents</a>), as well as the fields <code class="docutils literal notranslate"><span class="pre">routes</span></code>, <code class="docutils literal notranslate"><span class="pre">parameters</span></code>, and <code class="docutils literal notranslate"><span class="pre">header</span></code>.</p>
 <div class="seealso admonition">
 <p class="admonition-title">See also: Flow REST API</p>
 <p>For a more detailed descripton of the REST API of a generic Flow, including the complete request body schema and request samples, please check</p>
@@ -691,78 +807,17 @@ In this case your data request will be sent to the corresponding Executor endpoi
 visually, through a web browser.</p>
 <div class="caution admonition">
 <p class="admonition-title">Available Protocols</p>
-<p>Only Flows that have <a class="reference internal" href="../flow-api/#cors"><span class="std std-ref">cors</span></a> enabled expose a Swagger UI interface.</p>
+<p>Only Flows that have enabled <a class="reference internal" href="../flow-api/#cors"><span class="std std-ref">CORS</span></a> expose the Swagger UI interface.</p>
 </div>
 <p>For a Flow that is exposed on port <code class="docutils literal notranslate"><span class="pre">PORT</span></code>, you can navigate to the Swagger UI via <code class="docutils literal notranslate"><span class="pre">http://localhost:PORT/docs</span></code>:</p>
 <figure class="align-center">
 <img alt="../../../_images/swagger-ui.png" src="../../../_images/swagger-ui.png"/>
 </figure>
 <p>Here you can see all the endpoints that are exposed by the Flow, such as <code class="docutils literal notranslate"><span class="pre">/search</span></code> and <code class="docutils literal notranslate"><span class="pre">/index</span></code>.</p>
-<p>To send a request, click on the endpoint you want to target, then on <code class="docutils literal notranslate"><span class="pre">try</span> <span class="pre">it</span> <span class="pre">out</span></code>.</p>
+<p>To send a request, click on the endpoint you want to target, then on <code class="docutils literal notranslate"><span class="pre">Try</span> <span class="pre">it</span> <span class="pre">out</span></code>.</p>
 <p>Now you can enter your HTTP request, and send it by clicking on <code class="docutils literal notranslate"><span class="pre">Execute</span></code>.
 You can again use the <a class="reference external" href="https://api.jina.ai/rest/">REST HTTP request schema</a>, but do not need to specify <code class="docutils literal notranslate"><span class="pre">execEndpoint</span></code>.</p>
-<p>You should see the raw response, together with a visual representation of the returned Documents.</p>
-</section>
-<section id="use-http-client-to-send-request">
-<h3>Use HTTP client to send request<a class="headerlink" href="#use-http-client-to-send-request" title="Permalink to this headline">¶</a></h3>
-<p>With the help of OpenAPI schema, one can send data requests to a Flow via cURL, Postman, or any other HTTP client. Here’s an example that uses cURL.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl --request POST <span class="s1">'http://localhost:12345/post'</span> --header <span class="s1">'Content-Type: application/json'</span> -d <span class="s1">'{"data": [{"text": "hello world"}],"execEndpoint": "/index"}'</span>
-</pre></div>
-</div>
-<details>
-<summary>Sample response</summary>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{
-  "requestId": "e2978837-e5cb-45c6-a36d-588cf9b24309",
-  "data": {
-    "docs": [
-      {
-        "id": "84d9538e-f5be-11eb-8383-c7034ef3edd4",
-        "granularity": 0,
-        "adjacency": 0,
-        "parentId": "",
-        "text": "hello world",
-        "chunks": [],
-        "weight": 0.0,
-        "matches": [],
-        "mimeType": "",
-        "tags": {
-          "mimeType": "",
-          "parentId": ""
-        },
-        "location": [],
-        "offset": 0,
-        "embedding": null,
-        "scores": {},
-        "modality": "",
-        "evaluations": {}
-      }
-    ],
-    "groundtruths": []
-  },
-  "header": {
-    "execEndpoint": "/index",
-    "targetPeapod": "",
-    "noPropagate": false
-  },
-  "parameters": {},
-  "routes": [
-    {
-      "pod": "gateway",
-      "podId": "5742d5dd-43f1-451f-88e7-ece0588b7557",
-      "startTime": "2021-08-05T07:26:58.636258+00:00",
-      "endTime": "2021-08-05T07:26:58.636910+00:00",
-      "status": null
-    }
-  ],
-  "status": {
-    "code": 0,
-    "description": "",
-    "exception": null
-  }
-}
-</pre></div>
-</div>
-</details>
+<p>Below, in <code class="docutils literal notranslate"><span class="pre">Responses</span></code>, you can see the reply, together with a visual representation of the returned Documents.</p>
 </section>
 </section>
 <section id="graphql-interface">
@@ -773,7 +828,7 @@ You can again use the <a class="reference external" href="https://api.jina.ai/re
 If you are not already familiar with GraphQL, we recommend you learn more about GraphQL from the official <a class="reference external" href="https://graphql.org/learn/">GraphQL documentation</a>.
 You may also want to learn about <a class="reference external" href="https://strawberry.rocks/">Strawberry</a>, the library that powers Jina’s GraphQL support.</p>
 </div>
-<p>Jina Flows that use the HTTP protocol can also provide a GraphQL API, which is located behind the ‘/graphql’ endpoint.
+<p>Jina Flows that use the HTTP protocol can also provide a GraphQL API, which is located behind the <code class="docutils literal notranslate"><span class="pre">/graphql</span></code> endpoint.
 GraphQL has the advantage of letting the user define their own response schema, which means that only the fields that are required
 will be sent over the wire.
 This is especially useful when the user does not need potentially large fields, like image tensors.</p>
@@ -814,19 +869,26 @@ or the <a class="reference external" href="https://docarray.jina.ai/api/docarray
 and more.</p>
 </section>
 </section>
+<section id="grpc">
+<h2>gRPC<a class="headerlink" href="#grpc" title="Permalink to this headline">¶</a></h2>
+<p>If you want to create a gRPC client in another language, you will need to compile the <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">Protobuf definitions</span></a>. In Python, you can use our <a class="reference internal" href="../client/#client"><span class="std std-ref">own client</span></a>.</p>
+</section>
 <section id="websocket">
 <h2>Websocket<a class="headerlink" href="#websocket" title="Permalink to this headline">¶</a></h2>
-<p>Websocket uses persistent connections between the Client &amp; Gateway, hence allowing streaming usecases. While you can always use the Python Client to stream requests like any other protocol, websocket allows streaming jsons from anywhere (CLI / Postman / Any other programming language). The same set of arguments as <a class="reference external" href="#arguments">HTTP</a> can be used in the json.</p>
-<p>We use <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers#subprotocols">subprotocols</a> to separate streaming json vs bytes. Gateway defaults to <code class="docutils literal notranslate"><span class="pre">json</span></code> when a subprotocol is not passed during connection establishment (Our python Client uses <code class="docutils literal notranslate"><span class="pre">bytes</span></code> streaming by using <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">jina.proto</span></a> definition)</p>
+<p>Websocket uses persistent connections between the client &amp; Flow, hence allowing streaming use cases.
+While you can always use the Python client to stream requests like any other protocol, websocket allows streaming JSON from anywhere (CLI / Postman / any other programming language).
+The same set of arguments as <a class="reference external" href="#arguments">HTTP</a> can be used in the payload.</p>
+<p>We use <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_WebSocket_servers#subprotocols">subprotocols</a> to separate streaming JSON vs bytes.
+The Flow defaults to <code class="docutils literal notranslate"><span class="pre">json</span></code> when a subprotocol is not passed during connection establishment (Our Python client uses <code class="docutils literal notranslate"><span class="pre">bytes</span></code> streaming by using <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">jina.proto</span></a> definition).</p>
 <div class="admonition-note admonition">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p>Prefer using Websocket over HTTP, if you want to stream requests.</p></li>
-<li><p>Prefer using Websocket over gRPC, if</p>
+<li><p>Choose Websocket over HTTP, if you want to stream requests.</p></li>
+<li><p>Choose Websocket over gRPC, if</p>
 <ul>
-<li><p>You want to stream using json, not bytes.</p></li>
-<li><p>Your client language doesn’t support gRPC .</p></li>
-<li><p>You’re too lazy to compile <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">jina.proto</span></a> &amp; generate a Client.</p></li>
+<li><p>you want to stream using JSON, not bytes</p></li>
+<li><p>your client language doesn’t support gRPC</p></li>
+<li><p>you don’t want to compile the <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">Protobuf definitions</span></a> for your gRPC client</p></li>
 </ul>
 </li>
 </ul>
@@ -836,7 +898,7 @@ and more.</p>
 <h2>See further<a class="headerlink" href="#see-further" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../client/#client"><span class="std std-ref">Access a Flow with the Client</span></a></p></li>
-<li><p><a class="reference internal" href="../flow-api/#flow"><span class="std std-ref">Configure Flow API</span></a></p></li>
+<li><p><a class="reference internal" href="../flow-api/#flow"><span class="std std-ref">Configure Flow</span></a></p></li>
 <li><p><a class="reference external" href="https://api.jina.ai/rest/">Flow REST API reference</a></p></li>
 </ul>
 </section>
@@ -851,7 +913,7 @@ and more.</p>
                             <div class="context">
                                 <span>Next</span>
                             </div>
-                            <div class="title">Client API</div>
+                            <div class="title">Python Client</div>
                         </div>
                         <svg>
                             <use href="#svg-arrow-right"></use>
@@ -866,7 +928,7 @@ and more.</p>
                                 <span>Previous</span>
                             </div>
                             
-                            <div class="title">Configure Flow API</div>
+                            <div class="title">Configure Flow</div>
                             
                         </div>
                     </a>
@@ -874,7 +936,7 @@ and more.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 04, 2022.
+                    Last updated on Apr 12, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -899,12 +961,11 @@ and more.</p>
                 <div class="toc-tree-container">
                     <div class="toc-tree">
                         <ul>
-<li><a class="reference internal" href="#">Access Flow API</a><ul>
-<li><a class="reference internal" href="#jina-client">Jina Client</a></li>
+<li><a class="reference internal" href="#">Access Flow</a><ul>
 <li><a class="reference internal" href="#http-access">HTTP access</a><ul>
+<li><a class="reference internal" href="#use-http-client-to-send-request">Use HTTP client to send request</a></li>
 <li><a class="reference internal" href="#arguments">Arguments</a></li>
 <li><a class="reference internal" href="#use-swagger-ui-to-send-http-request">Use Swagger UI to send HTTP request</a></li>
-<li><a class="reference internal" href="#use-http-client-to-send-request">Use HTTP client to send request</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#graphql-interface">GraphQL Interface</a><ul>
@@ -912,6 +973,7 @@ and more.</p>
 <li><a class="reference internal" href="#fields">Fields</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#grpc">gRPC</a></li>
 <li><a class="reference internal" href="#websocket">Websocket</a></li>
 <li><a class="reference internal" href="#see-further">See further</a></li>
 </ul>

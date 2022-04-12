@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>cli - Jina 3.2.11 documentation</title>
+        <title>cli - Jina 3.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.2.11 documentation</div>
+                <div class="brand">Jina 3.3.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -234,9 +234,9 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Create a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/flow-yaml/">Configure a Flow from YAML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/flow-api/">Configure Flow API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/access-flow-api/">Access Flow API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/flow-api/">Configure Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/access-flow-api/">Access Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/client/">Python Client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
@@ -365,6 +365,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../api/jina.orchestrate.pods.helper/">jina.orchestrate.pods.helper module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/jina.orchestrate.helper/">jina.orchestrate.helper module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -446,6 +447,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../api/jina.serve.runtimes.worker/">jina.serve.runtimes.worker package</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../api/jina.serve.runtimes.asyncio/">jina.serve.runtimes.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../api/jina.serve.runtimes.base/">jina.serve.runtimes.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../api/jina.serve.runtimes.monitoring/">jina.serve.runtimes.monitoring module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../api/jina.serve.stream/">jina.serve.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -475,6 +477,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../api/cli.api/">cli.api module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/cli.autocomplete/">cli.autocomplete module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/cli.export/">cli.export module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/cli.known_plugins/">cli.known_plugins module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/cli.lookup/">cli.lookup module</a></li>
 </ul>
 </li>
@@ -546,7 +549,11 @@
                 </div>
                 <h1>Source code for cli</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">packaging.version</span> <span class="kn">import</span> <span class="n">Version</span><span class="p">,</span> <span class="n">parse</span>
 
 
 <span class="k">def</span> <span class="nf">_get_run_args</span><span class="p">(</span><span class="n">print_args</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
@@ -628,54 +635,123 @@
             <span class="n">exit</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">_is_latest_version</span><span class="p">(</span><span class="n">suppress_on_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_parse_latest_release_version</span><span class="p">(</span><span class="n">resp</span><span class="p">):</span>
+    <span class="c1"># credit: https://stackoverflow.com/a/34366589</span>
+    <span class="kn">import</span> <span class="nn">json</span>
+
+    <span class="n">latest_release_ver</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="s1">'0'</span><span class="p">)</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+    <span class="n">releases</span> <span class="o">=</span> <span class="n">j</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'releases'</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">for</span> <span class="n">release</span> <span class="ow">in</span> <span class="n">releases</span><span class="p">:</span>
+        <span class="n">latest_ver</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">release</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">latest_ver</span><span class="o">.</span><span class="n">is_prerelease</span><span class="p">:</span>
+            <span class="n">latest_release_ver</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">latest_release_ver</span><span class="p">,</span> <span class="n">latest_ver</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">latest_release_ver</span>
+
+
+<span class="k">def</span> <span class="nf">_is_latest_version</span><span class="p">(</span><span class="n">package</span><span class="o">=</span><span class="s1">'jina'</span><span class="p">,</span> <span class="n">suppress_on_error</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">json</span>
         <span class="kn">import</span> <span class="nn">warnings</span>
         <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">urlopen</span>
 
-        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__version__</span>
+        <span class="kn">import</span> <span class="nn">pkg_resources</span>
+
+        <span class="n">cur_ver</span> <span class="o">=</span> <span class="n">Version</span><span class="p">(</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="n">package</span><span class="p">)</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
 
         <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span>
-            <span class="s1">'https://api.jina.ai/latest'</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">'User-Agent'</span><span class="p">:</span> <span class="s1">'Mozilla/5.0'</span><span class="p">}</span>
+            <span class="sa">f</span><span class="s1">'https://pypi.python.org/pypi/</span><span class="si">{</span><span class="n">package</span><span class="si">}</span><span class="s1">/json'</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">'User-Agent'</span><span class="p">:</span> <span class="s1">'Mozilla/5.0'</span><span class="p">},</span>
         <span class="p">)</span>
         <span class="k">with</span> <span class="n">urlopen</span><span class="p">(</span>
             <span class="n">req</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span>
         <span class="p">)</span> <span class="k">as</span> <span class="n">resp</span><span class="p">:</span>  <span class="c1"># 'with' is important to close the resource after use</span>
-            <span class="n">latest_ver</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">resp</span><span class="p">)[</span><span class="s1">'version'</span><span class="p">]</span>
-            <span class="kn">from</span> <span class="nn">packaging.version</span> <span class="kn">import</span> <span class="n">Version</span>
-
-            <span class="n">latest_ver</span> <span class="o">=</span> <span class="n">Version</span><span class="p">(</span><span class="n">latest_ver</span><span class="p">)</span>
-            <span class="n">cur_ver</span> <span class="o">=</span> <span class="n">Version</span><span class="p">(</span><span class="n">__version__</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">cur_ver</span> <span class="o">&lt;</span> <span class="n">latest_ver</span><span class="p">:</span>
+            <span class="n">latest_release_ver</span> <span class="o">=</span> <span class="n">_parse_latest_release_version</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cur_ver</span> <span class="o">&lt;</span> <span class="n">latest_release_ver</span><span class="p">:</span>
                 <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
                 <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'You are using Jina version </span><span class="si">{</span><span class="n">cur_ver</span><span class="si">}</span><span class="s1">, however version </span><span class="si">{</span><span class="n">latest_ver</span><span class="si">}</span><span class="s1"> is available. '</span>
-                    <span class="sa">f</span><span class="s1">'You should consider upgrading via the "pip install --upgrade jina" command.'</span>
+                    <span class="sa">f</span><span class="s1">'You are using </span><span class="si">{</span><span class="n">package</span><span class="si">}</span><span class="s1"> version </span><span class="si">{</span><span class="n">cur_ver</span><span class="si">}</span><span class="s1">, however version </span><span class="si">{</span><span class="n">latest_release_ver</span><span class="si">}</span><span class="s1"> is available. '</span>
+                    <span class="sa">f</span><span class="s1">'You should consider upgrading via the "pip install --upgrade </span><span class="si">{</span><span class="n">package</span><span class="si">}</span><span class="s1">" command.'</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">except</span><span class="p">:</span>
-        <span class="c1"># no network, two slow, api.jina.ai is down</span>
+        <span class="c1"># no network, too slow, PyPi is down</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">suppress_on_error</span><span class="p">:</span>
             <span class="k">raise</span>
 
 
+<span class="k">def</span> <span class="nf">_is_latest_version_plugin</span><span class="p">(</span><span class="n">subcommand</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">.known_plugins</span> <span class="kn">import</span> <span class="n">plugin_info</span>
+
+    <span class="k">if</span> <span class="n">subcommand</span> <span class="ow">in</span> <span class="n">plugin_info</span><span class="p">:</span>
+        <span class="n">_is_latest_version</span><span class="p">(</span><span class="n">package</span><span class="o">=</span><span class="n">plugin_info</span><span class="p">[</span><span class="n">subcommand</span><span class="p">][</span><span class="s1">'pip-package'</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">_try_plugin_command</span><span class="p">():</span>
+    <span class="sd">"""Tries to call the CLI of an external Jina project.</span>
+
+<span class="sd">    :return: if the plugin has been found (locally or among the known plugins)</span>
+<span class="sd">    """</span>
+    <span class="n">argv</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># no command given</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="kn">from</span> <span class="nn">.autocomplete</span> <span class="kn">import</span> <span class="n">ac_table</span>
+
+    <span class="k">if</span> <span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">ac_table</span><span class="p">[</span><span class="s1">'commands'</span><span class="p">]:</span>  <span class="c1"># native command can't be plugin command</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_cmd_exists</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+    <span class="n">subcommand</span> <span class="o">=</span> <span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s1">'jina-'</span> <span class="o">+</span> <span class="n">subcommand</span>
+    <span class="k">if</span> <span class="n">_cmd_exists</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">threading</span>
+
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="n">_is_latest_version_plugin</span><span class="p">,</span>
+            <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">subcommand</span><span class="p">,),</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="n">cmd</span><span class="p">]</span> <span class="o">+</span> <span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="kn">from</span> <span class="nn">.known_plugins</span> <span class="kn">import</span> <span class="n">plugin_info</span>
+
+    <span class="k">if</span> <span class="n">subcommand</span> <span class="ow">in</span> <span class="n">plugin_info</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_rich_console</span>
+
+        <span class="n">cmd_info</span> <span class="o">=</span> <span class="n">plugin_info</span><span class="p">[</span><span class="n">subcommand</span><span class="p">]</span>
+        <span class="n">project</span><span class="p">,</span> <span class="n">package</span> <span class="o">=</span> <span class="n">cmd_info</span><span class="p">[</span><span class="s1">'display-name'</span><span class="p">],</span> <span class="n">cmd_info</span><span class="p">[</span><span class="s1">'pip-package'</span><span class="p">]</span>
+        <span class="n">console</span> <span class="o">=</span> <span class="n">get_rich_console</span><span class="p">()</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"It seems like [yellow]</span><span class="si">{</span><span class="n">project</span><span class="si">}</span><span class="s2">[/yellow] is not installed in your environment."</span>
+            <span class="sa">f</span><span class="s2">"To use it via the [green]'jina </span><span class="si">{</span><span class="n">subcommand</span><span class="si">}</span><span class="s2">'[/green] command, "</span>
+            <span class="sa">f</span><span class="s2">"install it first: [green]'pip install </span><span class="si">{</span><span class="n">package</span><span class="si">}</span><span class="s2">'[/green]."</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../api/cli/#cli.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="sd">"""The main entrypoint of the CLI """</span>
-    <span class="n">_quick_ac_lookup</span><span class="p">()</span>
-
-    <span class="kn">from</span> <span class="nn">cli</span> <span class="kn">import</span> <span class="n">api</span>
-
-    <span class="n">args</span> <span class="o">=</span> <span class="n">_get_run_args</span><span class="p">()</span>
+    <span class="sd">"""The main entrypoint of the CLI"""</span>
 
     <span class="c1"># checking version info in another thread</span>
     <span class="kn">import</span> <span class="nn">threading</span>
 
-    <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_is_latest_version</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_is_latest_version</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">'jina'</span><span class="p">,))</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">found_plugin</span> <span class="o">=</span> <span class="n">_try_plugin_command</span><span class="p">()</span>
 
-    <span class="nb">getattr</span><span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'-'</span><span class="p">,</span> <span class="s1">'_'</span><span class="p">))(</span><span class="n">args</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">found_plugin</span><span class="p">:</span>
+        <span class="n">_quick_ac_lookup</span><span class="p">()</span>
+
+        <span class="kn">from</span> <span class="nn">cli</span> <span class="kn">import</span> <span class="n">api</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="n">_get_run_args</span><span class="p">()</span>
+
+        <span class="nb">getattr</span><span class="p">(</span><span class="n">api</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'-'</span><span class="p">,</span> <span class="s1">'_'</span><span class="p">))(</span><span class="n">args</span><span class="p">)</span></div>
 </pre></div>
             </article>
             <footer>
@@ -687,7 +763,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 04, 2022.
+                    Last updated on Apr 12, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
