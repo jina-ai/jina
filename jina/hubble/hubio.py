@@ -667,18 +667,13 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
         if json_response.get('code') == 200:
             host = json_response.get('data', {}).get('host', None)
             port = json_response.get('data', {}).get('port', None)
-            livetime = json_response.get('data', {}).get('livetime', '15 mins')
 
         if host and port:
-            console.log(f"A sandbox already exists, reusing it.")
-            console.log(
-                f"[bold green]This sandbox will be removed when there has been no traffic for {livetime}"
-            )
-
+            console.log(f"🎉 A sandbox already exists, reusing it.")
             return host, port
 
         with console.status(
-            f"[bold green]Deploying sandbox for [bold white]{name}[/bold white] since none exists..."
+            f"[bold green]🚧 Deploying sandbox for [bold white]{name}[/bold white] since none exists..."
         ):
             try:
                 json_response = requests.post(
@@ -690,16 +685,14 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
                 data = json_response.get('data') or {}
                 host = data.get('host', None)
                 port = data.get('port', None)
-                livetime = data.get('livetime', '15 mins')
                 if not host or not port:
                     raise Exception(f'Failed to deploy sandbox: {json_response}')
 
-                console.log(f"Deployment completed: {host}:{port}")
-                console.log(
-                    f"[bold green]This sandbox will be removed when no traffic during [bold white]{livetime}[/bold white]"
-                )
+                console.log(f"🎉 Deployment completed, using it.")
             except:
-                console.log("Deployment failed")
+                console.log(
+                    "🚨 Deployment failed, feel free to raise an issue. https://github.com/jina-ai/jina/issues/new"
+                )
                 raise
 
         return host, port
