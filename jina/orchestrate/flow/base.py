@@ -1421,9 +1421,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         # deepcopy causes the below error while reusing a Flow in Jupyter
         # 'Pickling an AuthenticationString object is disallowed for security reasons'
-        op_flow = copy.deepcopy(self) if copy_flow else self
+        # no need to deep copy if the Graph is built because no change will be made to the Flow
+        op_flow = (
+            copy.deepcopy(self)
+            if (copy_flow and self._build_level.value == FlowBuildLevel.EMPTY)
+            else self
+        )
 
-        if build:
+        if build and op_flow._build_level.value == FlowBuildLevel.EMPTY:
             op_flow.build(False)
 
         mermaid_str = op_flow._mermaid_str
