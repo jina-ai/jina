@@ -479,7 +479,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
 
         # We need to check later if the port was manually set or randomly
-        args.default_port = kwargs.get('port', None) is None
+        args.default_port = (
+            kwargs.get('port', None) is None and kwargs.get('port_expose', None) is None
+        )
         args.noblock_on_start = True
         args.expose_graphql_endpoint = (
             self.args.expose_graphql_endpoint
