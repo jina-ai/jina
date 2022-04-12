@@ -1818,7 +1818,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self,
         output_base_path: str,
         k8s_namespace: Optional[str] = None,
-        include_gateway: Optional[bool] = True,
+        include_gateway: bool = True,
     ):
         """
         Converts the Flow into a set of yaml deployments to deploy in Kubernetes.
@@ -1870,7 +1870,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self,
         output_path: Optional[str] = None,
         network_name: Optional[str] = None,
-        include_gateway: Optional[bool] = True,
+        include_gateway: bool = True,
     ):
         """
         Converts the Flow into a yaml file to run with `docker-compose up`
