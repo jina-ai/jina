@@ -47,7 +47,7 @@ You can, however, also start your own standalone Executors, which can then be ac
 In the following sections we will describe how to run standalone Executors via the Jina command line interface (CLI). For more options to run your Executor, including in Kubernetes and Docker Compose, please read the {ref}`Executor API section <serve-executor-standalone>`.
 
 
-````{admonition} Advanced CLI options
+````{admonition} Advanced deployment options
 :class: seealso
 This tutorial walks through the basics of spawing a standalone (external) Executor. For more advanced options, refer to the
 {ref}`CLI <api/cli>` and {ref}`Executor API section <serve-executor-standalone>`

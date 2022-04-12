@@ -372,7 +372,7 @@ the Executor, and `**kwargs` is passed to the internal `Flow()` initialisation c
 For more details on these arguments and the workings of `Flow`, see the {ref}`Flow section <flow-cookbook>`.
 ````
 
-### Run Executor in Kubernetes
+### Run Executors in Kubernetes
 You can generate Kubernetes configuration files for your containerized Executor by using the static `Executor.to_k8s_yaml()` method. This works very similar to {ref}`deploying a Flow in Kubernetes <kubernetes>`, because your Executor is wrapped automatically in a Flow and using the very same deployment techniques.
 
 ```python
@@ -389,17 +389,20 @@ Executor.to_k8s_yaml(
 kubectl apply -R -f /tmp/config_out_folder
 ```
 The above example will deploy the `DummyHubExecutor` from Jina Hub into your Kubernetes cluster.
-(external-shared-executor)=
-#### External and shared Executor
-The type of stand-alone Executors can be either external or shared. By default, it will be external. An external Executor is deployd alongside a {ref}`Gatway <architecture-overview>`. A shared Executor has no Gateway. Both types of Executor {ref}`can be used directly in any Flow <external-executor>`.
-Having a Gateway may be useful if you want to be able to access your Executor with the {ref}`Client <client>` without an additional Flow. If the Executor will only be used inside other Flows, you should define a shared Executor to save the costs of running the Gateway Pod in Kubernetes.
 
 ````{admonition} Note
 :class: note
 The Executor you are using, needs to be already containerized and stored in a registry accessible from your Kubernetes cluster. We recommend Jina Hub for this.
 ````
 
-### Run Executor with Docker Compose
+(external-shared-executor)=
+#### External and shared Executors
+The type of stand-alone Executors can be either *external* or *shared*. By default, it will be external.
+An external Executor is deployd alongside a {ref}`Gateway <architecture-overview>`. 
+A shared Executor has no Gateway. Both types of Executor {ref}`can be used directly in any Flow <external-executor>`.
+Having a Gateway may be useful if you want to be able to access your Executor with the {ref}`Client <client>` without an additional Flow. If the Executor will only be used inside other Flows, you should define a shared Executor to save the costs of running the Gateway Pod in Kubernetes.
+
+### Run Executors with Docker Compose
 You can generate a Docker Compose service file for your containerized Executor by using the static `Executor.to_docker_compose_yaml()` method. This works very similar to {ref}`running a Flow with Docker Compose <docker-compose>`, because your Executor is wrapped automatically in a Flow and using the very same deployment techniques.
 
 ```python
