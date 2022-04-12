@@ -154,6 +154,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12830,4 +12831,63 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```98a44f90```](https://github.com/jina-ai/jina/commit/98a44f90464d93ba8015482cf03b0902e74b22cc)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```eb78af6b```](https://github.com/jina-ai/jina/commit/eb78af6b5d8f2cf75a30996e36559673032b4f6f)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```5b292a3f```](https://github.com/jina-ai/jina/commit/5b292a3f67c75f8fd71d37a9f7cd4922c04a1e99)] __-__ __version__: the next version will be 3.2.10 (*Jina Dev Bot*)
+
+<a name=release-note-3-3-0></a>
+## Release Note (`3.3.0`)
+
+> Release time: 2022-04-12 12:50:25
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Tobias Jacobowitz,  Zhaofeng Miao,  joschkabraun,  Jina Dev Bot,  Delgermurun,  cristian,  samsja,  Johannes Messner,  Saba Sturua,  Han Xiao,  🙇
+
+
+### 🆕 New Features
+
+ - [[```8a8c293f```](https://github.com/jina-ai/jina/commit/8a8c293f17fba5cd24eed36754894d730997107f)] __-__ Expose Executors as first class citizens (#4597) (*Tobias Jacobowitz*)
+ - [[```fab9f073```](https://github.com/jina-ai/jina/commit/fab9f0736c8d99558d93020cb3f27108627218f1)] __-__ __hub__: add --no-cache option to &#34;jina hub push&#34; cli (#4594) (*Delgermurun*)
+ - [[```f45a6e9c```](https://github.com/jina-ai/jina/commit/f45a6e9cda3481851db6a7c37f702e41a9c10a28)] __-__ add grpc reflection support (#4585) (*Tobias Jacobowitz*)
+ - [[```8dc2999a```](https://github.com/jina-ai/jina/commit/8dc2999a588c46deca60b3f0d5c1b6278a6e165c)] __-__ expose prometheus metrics (#4526) (*samsja*)
+ - [[```2cce9a72```](https://github.com/jina-ai/jina/commit/2cce9a720b6dfe042fa141f8baa213e2292a77d0)] __-__ add support for cli plugins (#4579) (*Johannes Messner*)
+ - [[```984e7437```](https://github.com/jina-ai/jina/commit/984e743734b18c1117bbbc2eda49d7eceaa9343f)] __-__ add default volume to dockererized executors (#4554) (*Johannes Messner*)
+ - [[```12163af0```](https://github.com/jina-ai/jina/commit/12163af01009772035b2e87523663beb890a2549)] __-__ remove head for non sharded deployments (#4517) (*Tobias Jacobowitz*)
+ - [[```7c48b33c```](https://github.com/jina-ai/jina/commit/7c48b33cb1429b67c41dab5084f3975263f0c5e0)] __-__ __hubble__: add option on fetch_meta for rebuild image or not (#4566) (*Delgermurun*)
+
+### 🐞 Bug fixes
+
+ - [[```c3429154```](https://github.com/jina-ai/jina/commit/c3429154682ccf0a41efac4cfb7ba2be298d5b25)] __-__ do not copy flow if already built (#4603) (*Joan Fontanals*)
+ - [[```9ca659ed```](https://github.com/jina-ai/jina/commit/9ca659ed05b92c2c9a3c63fce111764747f32f93)] __-__ __executor__: runtime args are now passed directly without any parsing (#4581) (*samsja*)
+ - [[```1ff6940a```](https://github.com/jina-ai/jina/commit/1ff6940a4105b3ccc32cbd799e9851728c692d8b)] __-__ increase pytest timeout to 30 (#4582) (*Tobias Jacobowitz*)
+ - [[```542e40e4```](https://github.com/jina-ai/jina/commit/542e40e44cc74129d5bd955ccfba9797c5520ae2)] __-__ start DataRequestHandler before grpc server (#4571) (*Tobias Jacobowitz*)
+ - [[```d72fe218```](https://github.com/jina-ai/jina/commit/d72fe2181ddf3d10e1d1c05b50e2476a6decedf0)] __-__ check if port is occupied (#4562) (*samsja*)
+ - [[```662f2845```](https://github.com/jina-ai/jina/commit/662f2845cd969b76302167efc23454c70e6749e7)] __-__ __hubble__: retry fetch meta 3 times (#4540) (*Delgermurun*)
+
+### 🧼 Code Refactoring
+
+ - [[```639114fd```](https://github.com/jina-ai/jina/commit/639114fdc89619a2e9a60332b01e3b1667f4fce5)] __-__ __hubble__: remove livetime tip since we have long-live sandbox now (#4602) (*Zhaofeng Miao*)
+ - [[```eafd4691```](https://github.com/jina-ai/jina/commit/eafd469174dc16c845c0277af530c86df29fd826)] __-__ __docs__: clarifiy kubernetes utilisation (#4572) (*samsja*)
+ - [[```238dcc18```](https://github.com/jina-ai/jina/commit/238dcc1887dcbd1704b33713313c91fb5ebcd066)] __-__ __docs__:  flow api (#4547) (*samsja*)
+
+### 📗 Documentation
+
+ - [[```ebe43ee8```](https://github.com/jina-ai/jina/commit/ebe43ee8c7e0c5ffa7f8d547640a472b73a2940e)] __-__ __sandbox__: fixed typo in sandbox lifecycle (#4595) (*joschkabraun*)
+ - [[```5e0ee17b```](https://github.com/jina-ai/jina/commit/5e0ee17bb9d2ce44b2403f86e7b7cf5202f04a19)] __-__ added m1 installation (#4592) (*joschkabraun*)
+ - [[```bdad931a```](https://github.com/jina-ai/jina/commit/bdad931a265f2f17e5e9a0939ce2ff63dae418db)] __-__ refactor access flow page (#4573) (*cristian*)
+ - [[```5df29076```](https://github.com/jina-ai/jina/commit/5df29076a6f601d37f22cc7f62f462ca2ec3d894)] __-__ disable reduce in example (#4586) (*Joan Fontanals*)
+ - [[```ef8eacce```](https://github.com/jina-ai/jina/commit/ef8eacceacb4d223c024f9eca3f5617e4681ee45)] __-__ __executor__: add references to replicas and shards (#4584) (*Saba Sturua*)
+ - [[```76ad7779```](https://github.com/jina-ai/jina/commit/76ad7779e2d188108384dabde3d162c6e39adf27)] __-__ refactor executor in flow (#4548) (*cristian*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```70c931bf```](https://github.com/jina-ai/jina/commit/70c931bf80f2a150a1e5f8c3cea02cd9263a7cc0)] __-__ add tests for blob over http (#4536) (*Johannes Messner*)
+
+### 🍹 Other Improvements
+
+ - [[```58547ea4```](https://github.com/jina-ai/jina/commit/58547ea43416260c9c92a869c0a1247b0b8f06c0)] __-__ bump version (#4604) (*Joan Fontanals*)
+ - [[```dd8e501f```](https://github.com/jina-ai/jina/commit/dd8e501fb2fce616d7b61e2a819705e2b5713c05)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```b30b1ba6```](https://github.com/jina-ai/jina/commit/b30b1ba621e0eeb089d07ba72ea7cff8702eaacf)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```0a75d9cd```](https://github.com/jina-ai/jina/commit/0a75d9cdfd83b2400d6f1acd1ce31cba8447751b)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```f6325ee3```](https://github.com/jina-ai/jina/commit/f6325ee33e9bdbc6f05281e2a27492fef4db5e65)] __-__ update setup.py to include py310 (*Han Xiao*)
+ - [[```818e0ffa```](https://github.com/jina-ai/jina/commit/818e0ffaa9735f81aa77651ff154b897d5449f26)] __-__ __version__: the next version will be 3.2.11 (*Jina Dev Bot*)
 
