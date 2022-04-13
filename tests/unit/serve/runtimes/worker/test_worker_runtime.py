@@ -338,7 +338,8 @@ async def test_worker_runtime_slow_init_exec():
     assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
 
 
-def test_worker_runtime_reflection():
+@pytest.mark.asyncio
+async def test_worker_runtime_reflection():
     args = set_pod_parser().parse_args([])
 
     cancel_event = multiprocessing.Event()
@@ -360,9 +361,8 @@ def test_worker_runtime_reflection():
         ready_or_shutdown_event=Event(),
     )
 
-    service_names = GrpcConnectionPool.get_available_services(
-        f'{args.host}:{args.port}'
-    )
+    async with grpc.aio.insecure_channel(f'{args.host}:{args.port}') as channel:
+        service_names = await GrpcConnectionPool.get_available_services(channel)
     assert all(
         service_name in service_names
         for service_name in [
