@@ -902,12 +902,16 @@ class GrpcConnectionPool:
         response = reflection_stub.ServerReflectionInfo(
             iter([ServerReflectionRequest(list_services="")])
         )
+        service_names = []
         async for res in response:
-            return [
-                service.name
-                for service in res.list_services_response.service
-                if service.name != 'grpc.reflection.v1alpha.ServerReflection'
-            ]
+            service_names.append(
+                [
+                    service.name
+                    for service in res.list_services_response.service
+                    if service.name != 'grpc.reflection.v1alpha.ServerReflection'
+                ]
+            )
+        return service_names[0]
 
 
 def in_docker():
