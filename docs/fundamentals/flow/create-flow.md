@@ -199,7 +199,7 @@ with f:
 :class: hint
 
 You can override the `metas` attribute for all Executors in a Flow. This allows you to specify a single Python module
-from which you can then load all of your Executors:
+from which you can then load all of your Executors, without having to specify the module individually for each Executor:
 
 ```yaml
 jtype: Flow
@@ -218,7 +218,8 @@ In this example, both `FooExecutor` and `BarExecutor` are defined inside of `exe
 
 The response of the `Flow` defined above is `['foo was here', 'bar was here']`, because the request was first sent to FooExecutor and then to BarExecutor.
 
-### Executor discovery
+### Add Executors from different sources
+
 As explained above, the type of Executor is defined by providing the `uses` keyword. The source of an Executor can be code, docker images or Hub images.
 
 ```python
@@ -248,69 +249,28 @@ f = (
 
 More complex Executors typically are used from Docker images or will be structured into separate Python modules. 
 
-### Executor from configuration
-You can use Executors from module outside your `PATH` environment variable. To do this you need to define your Executor configuration in a separate configuration YAML, which will be used in the Flow:
+
+````{admonition} Hint: Load multiple Executors from the same directory
+:class: hint
+
+If you want to load multiple Executor YAMLs from the same directory, you don't need to specify the parent directory for
+each Executor.
+Instead, you can configure a common search path for all Executors:
 
 ```
 .
 ├── app
 │   └── ▶ main.py
 └── executor
-    ├── config.yml
+    ├── config1.yml
+    ├── config2.yml
     └── my_executor.py
 ```
-`executor/my_executor.py`:
-```python
-from docarray import DocumentArray
-from jina import Executor, requests
 
-
-class MyExecutor(Executor):
-    @requests
-    def foo(self, docs: DocumentArray, **kwargs):
-        pass
-```
-
-`executor/config.yml`:
-```yaml
-jtype: MyExecutor
-metas:
-  py_modules:
-    - executor.py
-```
-
-Now, in `app/main.py`, to correctly load the Executor, you can specify the directory of the Executor in Python or in a `Flow` yaml:
-````{tab} Python
 ```{code-block} python
----
-emphasize-lines: 3
----
-from docarray import Document
-from jina import Flow
-f = Flow(extra_search_paths=['../executor']).add(uses='config.yml')
-with f:
-    r = f.post('/', inputs=Document())
-```
-````
-
-````{tab} YAML
-`flow.yml`:
-```yaml
-jtype: Flow
-executors:
-  - name: executor
-    uses: ../executor/config.yml
+f = Flow(extra_search_paths=['../executor']).add(uses='config1.yml').add(uses='config2.yml')
 ```
 
-`main.py`:
-```python
-from docarray import Document
-from jina import Flow
-
-f = Flow.load_config('../flow/flow.yml')
-with f:
-    r = f.post('/', inputs=Document())
-```
 ````
 
 ### Override Executor configuration
