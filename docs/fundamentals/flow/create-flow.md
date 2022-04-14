@@ -149,7 +149,7 @@ with f:  # Using it as a Context Manager will start the Flow
 ```
 ````
 
-`````{tab} Load from YAML
+`````{tab} YAML
 `flow.yml`:
 
 ```yaml
@@ -280,7 +280,7 @@ metas:
 ```
 
 Now, in `app/main.py`, to correctly load the Executor, you can specify the directory of the Executor in Python or in a `Flow` yaml:
-````{tab} Load from Python
+````{tab} Python
 ```{code-block} python
 ---
 emphasize-lines: 3
@@ -293,7 +293,7 @@ with f:
 ```
 ````
 
-````{tab} Load from YAML
+````{tab} YAML
 `flow.yml`:
 ```yaml
 jtype: Flow
@@ -567,7 +567,7 @@ print(
 
 ````
 
-````{tab} Load from YAML
+````{tab} YAML
 `flow.yml`:
 
 ```yaml
