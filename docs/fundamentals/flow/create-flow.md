@@ -64,7 +64,7 @@ In addition to loading a Flow from a YAML file, you can also dump an existing Fl
 Creating a Flow means defining your microservice architecture, and starting a Flow means launching it.
 When a Flow starts, all its {ref}`added Executors <flow-add-executors>` will start as well, making it possible to {ref}`reach the service through its API <access-flow-api>`.
 
-Jina `Flow`s are context managers and can be started and stopped using Pythons `with` notation:
+Jina Flows are context managers and can be started and stopped using Pythons `with` notation:
 
 ```python
 from jina import Flow
@@ -249,7 +249,7 @@ f = (
 More complex Executors typically are used from Docker images or will be structured into separate Python modules. 
 
 ### Executor from configuration
-You can use Executors from code, being defined outside your current `PATH` environment variable. To do this you need to define your Executor configuration in a separate configuration yaml, which will be used in the `Flow`:
+You can use Executors from module outside your `PATH` environment variable. To do this you need to define your Executor configuration in a separate configuration YAML, which will be used in the Flow:
 
 ```
 .
