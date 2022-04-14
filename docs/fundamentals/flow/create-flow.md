@@ -3,7 +3,7 @@
 
 Creating a Flow, on its face, means instantiating a Python object.
 More importantly, however, creating and configuring a Flow means defining your {ref}`search microservice architecture <architecture-overview>`.
-It defines how your Executors are tied together, and how your data, well, *flows*.
+It defines how your Executors are connected together and how your data *flows* through them.
 
 Every Flow can be defined either purely in Python, or be loaded from a YAML file.
 
@@ -35,7 +35,7 @@ with f:  # Using it as a Context Manager will start the Flow
 ```
 ````
 
-`````{tab} Load from YAML
+`````{tab} YAML
 `flow.yml`:
 
 ```yaml
@@ -54,7 +54,7 @@ with f:  # Using it as a Context Manager will start the Flow
 ````{admonition} Hint: Dump Flow configuration
 :class: hint
 
-In addition to loading a Flow from a YAML file, you can also dump an existing Flow to YAML. To do so, execute `f.save_config('path/to/flow.yml')`.
+In addition to loading a Flow from a YAML file, you can also save an existing Flow configuration to YAML. To do so, execute `f.save_config('path/to/flow.yml')`.
 ````
 `````
 
