@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.3.2 Documentation" />
   
-<meta property="og:description" content="There are four packages shipped with Jina: jina: the framework;, daemon: a simple orchestrator for Jina;, cli: the command line interface for Jina.." />
+<meta property="og:description" content="This section includes the API documentation from the jina codebase. These are automatically extracted from the docstrings in the code. jina package- Subpackages- jina.clients package- Subpackages- jina.clients.base package- Submodules- jina.clients.base.grpc module, jina.clients.base.helper modul..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -156,13 +156,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement" id="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://www.meetup.com/jina-community-meetup/events/284604466/">Learn more about Robustness with Nearest Neighbor Search at our Engineering All Hands on April 12 at 16:00 CET</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header" id="mobile-header">
@@ -582,13 +576,432 @@
                 </div>
                 <section class="tex2jax_ignore mathjax_ignore" id="python-api">
 <h1>Python API<a class="headerlink" href="#python-api" title="Permalink to this headline">¶</a></h1>
-<p>There are four packages shipped with Jina:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">jina</span></code>: the framework;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">daemon</span></code>: a simple orchestrator for Jina;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cli</span></code>: the command line interface for Jina.</p></li>
-</ul>
+<p>This section includes the API documentation from the <code class="docutils literal notranslate"><span class="pre">jina</span></code> codebase. These are automatically extracted from the <a class="reference external" href="https://peps.python.org/pep-0257/">docstrings</a> in the code.</p>
 <div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="jina/">jina package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="jina/#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jina.clients/">jina.clients package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jina.clients/#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.clients.base/">jina.clients.base package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="jina.clients.base/#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.clients.base.helper/">jina.clients.base.helper module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.clients.base.http/">jina.clients.base.http module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.clients.base/#module-jina.clients.base">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="jina.clients.request/">jina.clients.request package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="jina.clients.request/#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.clients.request.asyncio/">jina.clients.request.asyncio module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.clients.request.helper/">jina.clients.request.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.clients.request/#module-jina.clients.request">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.clients/#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.clients.grpc/">jina.clients.grpc module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.clients.helper/">jina.clients.helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.clients.http/">jina.clients.http module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.clients.mixin/">jina.clients.mixin module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.clients.websocket/">jina.clients.websocket module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.clients/#module-jina.clients">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jina.helloworld/">jina.helloworld package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jina.helloworld/#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.helloworld.chatbot/">jina.helloworld.chatbot package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="jina.helloworld.chatbot/#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.helloworld.chatbot.app/">jina.helloworld.chatbot.app module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.helloworld.chatbot.my_executors/">jina.helloworld.chatbot.my_executors module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.helloworld.chatbot/#module-jina.helloworld.chatbot">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="jina.helloworld.fashion/">jina.helloworld.fashion package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="jina.helloworld.fashion/#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.helloworld.fashion.app/">jina.helloworld.fashion.app module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.helloworld.fashion.helper/">jina.helloworld.fashion.helper module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.helloworld.fashion.my_executors/">jina.helloworld.fashion.my_executors module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.helloworld.fashion/#module-jina.helloworld.fashion">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="jina.helloworld.multimodal/">jina.helloworld.multimodal package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="jina.helloworld.multimodal/#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.helloworld.multimodal.app/">jina.helloworld.multimodal.app module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.helloworld.multimodal.my_executors/">jina.helloworld.multimodal.my_executors module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.helloworld.multimodal/#module-jina.helloworld.multimodal">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.helloworld/#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.helloworld.fork/">jina.helloworld.fork module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.helloworld/#module-jina.helloworld">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jina.hubble/">jina.hubble package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jina.hubble/#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.hubble.helper/">jina.hubble.helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.hubble.hubio/">jina.hubble.hubio module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.hubble/#module-jina.hubble">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jina.jaml/">jina.jaml package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jina.jaml/#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.jaml.parsers/">jina.jaml.parsers package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="jina.jaml.parsers/#subpackages">Subpackages</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.jaml.parsers.default/">jina.jaml.parsers.default package</a><ul>
+<li class="toctree-l8"><a class="reference internal" href="jina.jaml.parsers.default/#submodules">Submodules</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="jina.jaml.parsers.default.v1/">jina.jaml.parsers.default.v1 module</a></li>
+</ul>
+</li>
+<li class="toctree-l8"><a class="reference internal" href="jina.jaml.parsers.default/#module-jina.jaml.parsers.default">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l7"><a class="reference internal" href="jina.jaml.parsers.executor/">jina.jaml.parsers.executor package</a><ul>
+<li class="toctree-l8"><a class="reference internal" href="jina.jaml.parsers.executor/#submodules">Submodules</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="jina.jaml.parsers.executor.legacy/">jina.jaml.parsers.executor.legacy module</a></li>
+</ul>
+</li>
+<li class="toctree-l8"><a class="reference internal" href="jina.jaml.parsers.executor/#module-jina.jaml.parsers.executor">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l7"><a class="reference internal" href="jina.jaml.parsers.flow/">jina.jaml.parsers.flow package</a><ul>
+<li class="toctree-l8"><a class="reference internal" href="jina.jaml.parsers.flow/#submodules">Submodules</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="jina.jaml.parsers.flow.v1/">jina.jaml.parsers.flow.v1 module</a></li>
+</ul>
+</li>
+<li class="toctree-l8"><a class="reference internal" href="jina.jaml.parsers.flow/#module-jina.jaml.parsers.flow">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.jaml.parsers/#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.jaml.parsers.base/">jina.jaml.parsers.base module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.jaml.parsers/#module-jina.jaml.parsers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.jaml/#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.jaml.helper/">jina.jaml.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.jaml/#module-jina.jaml">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jina.logging/">jina.logging package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jina.logging/#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.logging.formatter/">jina.logging.formatter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.logging.logger/">jina.logging.logger module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.logging.predefined/">jina.logging.predefined module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.logging.profile/">jina.logging.profile module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.logging/#module-jina.logging">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jina.orchestrate/">jina.orchestrate package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jina.orchestrate/#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.orchestrate.deployments/">jina.orchestrate.deployments package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="jina.orchestrate.deployments/#subpackages">Subpackages</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.orchestrate.deployments.config/">jina.orchestrate.deployments.config package</a><ul>
+<li class="toctree-l8"><a class="reference internal" href="jina.orchestrate.deployments.config/#subpackages">Subpackages</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="jina.orchestrate.deployments.config.k8slib/">jina.orchestrate.deployments.config.k8slib package</a><ul>
+<li class="toctree-l10"><a class="reference internal" href="jina.orchestrate.deployments.config.k8slib/#submodules">Submodules</a><ul>
+<li class="toctree-l11"><a class="reference internal" href="jina.orchestrate.deployments.config.k8slib.kubernetes_deployment/">jina.orchestrate.deployments.config.k8slib.kubernetes_deployment module</a></li>
+<li class="toctree-l11"><a class="reference internal" href="jina.orchestrate.deployments.config.k8slib.kubernetes_tools/">jina.orchestrate.deployments.config.k8slib.kubernetes_tools module</a></li>
+</ul>
+</li>
+<li class="toctree-l10"><a class="reference internal" href="jina.orchestrate.deployments.config.k8slib/#module-jina.orchestrate.deployments.config.k8slib">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l8"><a class="reference internal" href="jina.orchestrate.deployments.config/#submodules">Submodules</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="jina.orchestrate.deployments.config.docker_compose/">jina.orchestrate.deployments.config.docker_compose module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="jina.orchestrate.deployments.config.helper/">jina.orchestrate.deployments.config.helper module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="jina.orchestrate.deployments.config.k8s/">jina.orchestrate.deployments.config.k8s module</a></li>
+</ul>
+</li>
+<li class="toctree-l8"><a class="reference internal" href="jina.orchestrate.deployments.config/#module-jina.orchestrate.deployments.config">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.orchestrate.deployments/#module-jina.orchestrate.deployments">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="jina.orchestrate.flow/">jina.orchestrate.flow package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="jina.orchestrate.flow/#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.orchestrate.flow.asyncio/">jina.orchestrate.flow.asyncio module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.orchestrate.flow.base/">jina.orchestrate.flow.base module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.orchestrate.flow.builder/">jina.orchestrate.flow.builder module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.orchestrate.flow/#module-jina.orchestrate.flow">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="jina.orchestrate.pods/">jina.orchestrate.pods package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="jina.orchestrate.pods/#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.orchestrate.pods.container/">jina.orchestrate.pods.container module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.orchestrate.pods.container_helper/">jina.orchestrate.pods.container_helper module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.orchestrate.pods.factory/">jina.orchestrate.pods.factory module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.orchestrate.pods.helper/">jina.orchestrate.pods.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.orchestrate.pods/#module-jina.orchestrate.pods">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.orchestrate/#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.orchestrate.helper/">jina.orchestrate.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.orchestrate/#module-jina.orchestrate">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jina.parsers/">jina.parsers package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jina.parsers/#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.parsers.hubble/">jina.parsers.hubble package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="jina.parsers.hubble/#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.parsers.hubble.new/">jina.parsers.hubble.new module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.parsers.hubble/#module-jina.parsers.hubble">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="jina.parsers.orchestrate/">jina.parsers.orchestrate package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="jina.parsers.orchestrate/#subpackages">Subpackages</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.parsers.orchestrate.runtimes/">jina.parsers.orchestrate.runtimes package</a><ul>
+<li class="toctree-l8"><a class="reference internal" href="jina.parsers.orchestrate.runtimes/#submodules">Submodules</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="jina.parsers.orchestrate.runtimes.container/">jina.parsers.orchestrate.runtimes.container module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="jina.parsers.orchestrate.runtimes.distributed/">jina.parsers.orchestrate.runtimes.distributed module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="jina.parsers.orchestrate.runtimes.head/">jina.parsers.orchestrate.runtimes.head module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="jina.parsers.orchestrate.runtimes.remote/">jina.parsers.orchestrate.runtimes.remote module</a></li>
+<li class="toctree-l9"><a class="reference internal" href="jina.parsers.orchestrate.runtimes.worker/">jina.parsers.orchestrate.runtimes.worker module</a></li>
+</ul>
+</li>
+<li class="toctree-l8"><a class="reference internal" href="jina.parsers.orchestrate.runtimes/#module-jina.parsers.orchestrate.runtimes">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.parsers.orchestrate/#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.parsers.orchestrate.base/">jina.parsers.orchestrate.base module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.parsers.orchestrate.deployment/">jina.parsers.orchestrate.deployment module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.parsers.orchestrate.pod/">jina.parsers.orchestrate.pod module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.parsers.orchestrate/#module-jina.parsers.orchestrate">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.parsers/#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.parsers.base/">jina.parsers.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.parsers.client/">jina.parsers.client module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.parsers.create/">jina.parsers.create module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.parsers.deprecated/">jina.parsers.deprecated module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.parsers.export_api/">jina.parsers.export_api module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.parsers.flow/">jina.parsers.flow module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.parsers.helloworld/">jina.parsers.helloworld module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.parsers.helper/">jina.parsers.helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.parsers.ping/">jina.parsers.ping module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.parsers/#module-jina.parsers">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jina.proto/">jina.proto package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jina.proto/#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.proto.jina_pb2/">jina.proto.jina_pb2 module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.proto.serializer/">jina.proto.serializer module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.proto/#module-jina.proto">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jina.schemas/">jina.schemas package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jina.schemas/#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.schemas.deployment/">jina.schemas.deployment module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.schemas.executor/">jina.schemas.executor module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.schemas.flow/">jina.schemas.flow module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.schemas.helper/">jina.schemas.helper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="jina.schemas.meta/">jina.schemas.meta module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.schemas/#module-jina.schemas">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jina.serve/">jina.serve package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jina.serve/#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.serve.executors/">jina.serve.executors package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="jina.serve.executors/#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.serve.executors.decorators/">jina.serve.executors.decorators module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.serve.executors.metas/">jina.serve.executors.metas module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.serve.executors/#module-jina.serve.executors">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="jina.serve.runtimes/">jina.serve.runtimes package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="jina.serve.runtimes/#subpackages">Subpackages</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.serve.runtimes.gateway/">jina.serve.runtimes.gateway package</a><ul>
+<li class="toctree-l8"><a class="reference internal" href="jina.serve.runtimes.gateway/#subpackages">Subpackages</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="jina.serve.runtimes.gateway.graph/">jina.serve.runtimes.gateway.graph package</a><ul>
+<li class="toctree-l10"><a class="reference internal" href="jina.serve.runtimes.gateway.graph/#submodules">Submodules</a><ul>
+<li class="toctree-l11"><a class="reference internal" href="jina.serve.runtimes.gateway.graph.topology_graph/">jina.serve.runtimes.gateway.graph.topology_graph module</a></li>
+</ul>
+</li>
+<li class="toctree-l10"><a class="reference internal" href="jina.serve.runtimes.gateway.graph/#module-jina.serve.runtimes.gateway.graph">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l9"><a class="reference internal" href="jina.serve.runtimes.gateway.grpc/">jina.serve.runtimes.gateway.grpc package</a><ul>
+<li class="toctree-l10"><a class="reference internal" href="jina.serve.runtimes.gateway.grpc/#module-jina.serve.runtimes.gateway.grpc">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l9"><a class="reference internal" href="jina.serve.runtimes.gateway.http/">jina.serve.runtimes.gateway.http package</a><ul>
+<li class="toctree-l10"><a class="reference internal" href="jina.serve.runtimes.gateway.http/#submodules">Submodules</a><ul>
+<li class="toctree-l11"><a class="reference internal" href="jina.serve.runtimes.gateway.http.app/">jina.serve.runtimes.gateway.http.app module</a></li>
+<li class="toctree-l11"><a class="reference internal" href="jina.serve.runtimes.gateway.http.models/">jina.serve.runtimes.gateway.http.models module</a></li>
+</ul>
+</li>
+<li class="toctree-l10"><a class="reference internal" href="jina.serve.runtimes.gateway.http/#module-jina.serve.runtimes.gateway.http">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l9"><a class="reference internal" href="jina.serve.runtimes.gateway.websocket/">jina.serve.runtimes.gateway.websocket package</a><ul>
+<li class="toctree-l10"><a class="reference internal" href="jina.serve.runtimes.gateway.websocket/#submodules">Submodules</a><ul>
+<li class="toctree-l11"><a class="reference internal" href="jina.serve.runtimes.gateway.websocket.app/">jina.serve.runtimes.gateway.websocket.app module</a></li>
+</ul>
+</li>
+<li class="toctree-l10"><a class="reference internal" href="jina.serve.runtimes.gateway.websocket/#module-jina.serve.runtimes.gateway.websocket">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l8"><a class="reference internal" href="jina.serve.runtimes.gateway/#submodules">Submodules</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="jina.serve.runtimes.gateway.request_handling/">jina.serve.runtimes.gateway.request_handling module</a></li>
+</ul>
+</li>
+<li class="toctree-l8"><a class="reference internal" href="jina.serve.runtimes.gateway/#module-jina.serve.runtimes.gateway">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l7"><a class="reference internal" href="jina.serve.runtimes.head/">jina.serve.runtimes.head package</a><ul>
+<li class="toctree-l8"><a class="reference internal" href="jina.serve.runtimes.head/#module-jina.serve.runtimes.head">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l7"><a class="reference internal" href="jina.serve.runtimes.request_handlers/">jina.serve.runtimes.request_handlers package</a><ul>
+<li class="toctree-l8"><a class="reference internal" href="jina.serve.runtimes.request_handlers/#submodules">Submodules</a><ul>
+<li class="toctree-l9"><a class="reference internal" href="jina.serve.runtimes.request_handlers.data_request_handler/">jina.serve.runtimes.request_handlers.data_request_handler module</a></li>
+</ul>
+</li>
+<li class="toctree-l8"><a class="reference internal" href="jina.serve.runtimes.request_handlers/#module-jina.serve.runtimes.request_handlers">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l7"><a class="reference internal" href="jina.serve.runtimes.worker/">jina.serve.runtimes.worker package</a><ul>
+<li class="toctree-l8"><a class="reference internal" href="jina.serve.runtimes.worker/#module-jina.serve.runtimes.worker">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.serve.runtimes/#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.serve.runtimes.asyncio/">jina.serve.runtimes.asyncio module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.serve.runtimes.base/">jina.serve.runtimes.base module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.serve.runtimes.monitoring/">jina.serve.runtimes.monitoring module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.serve.runtimes/#module-jina.serve.runtimes">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="jina.serve.stream/">jina.serve.stream package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="jina.serve.stream/#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.serve.stream.helper/">jina.serve.stream.helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.serve.stream/#module-jina.serve.stream">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.serve/#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.serve.networking/">jina.serve.networking module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.serve/#module-jina.serve">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jina.types/">jina.types package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="jina.types/#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.types.request/">jina.types.request package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="jina.types.request/#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="jina.types.request.control/">jina.types.request.control module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="jina.types.request.data/">jina.types.request.data module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="jina.types.request/#module-jina.types.request">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.types/#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="jina.types.mixin/">jina.types.mixin module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="jina.types/#module-jina.types">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jina/#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="jina.checker/">jina.checker module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jina.enums/">jina.enums module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jina.excepts/">jina.excepts module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jina.helper/">jina.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jina.importer/">jina.importer module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="jina/#module-jina">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cli/">cli package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cli/#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cli.api/">cli.api module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.autocomplete/">cli.autocomplete module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.export/">cli.export module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.known_plugins/">cli.known_plugins module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.lookup/">cli.lookup module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cli/#module-cli">Module contents</a></li>
+</ul>
+</li>
+</ul>
 </div>
 </section>
 
@@ -624,7 +1037,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 13, 2022.
+                    Last updated on Apr 14, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

@@ -1,15 +1,9 @@
 # Python API
 
-There are four packages shipped with Jina:
-
-- `jina`: the framework;
-- `daemon`: a simple orchestrator for Jina;
-- `cli`: the command line interface for Jina.
+This section includes the API documentation from the `jina` codebase. These are automatically extracted from the [docstrings](https://peps.python.org/pep-0257/) in the code.
 
 ```{toctree}
-:hidden:
 
 api/jina
-api/daemon
 api/cli
 ```
