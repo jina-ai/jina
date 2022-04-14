@@ -166,8 +166,10 @@ class GrpcConnectionPool:
 
         # This has to be done lazily, because the target endpoint may not be available
         # when a connection is added
-        def _init_stubs(self):
-            available_services = GrpcConnectionPool.get_available_services(self.address)
+        async def _init_stubs(self):
+            available_services = await GrpcConnectionPool.get_available_services(
+                self.channel
+            )
             stubs = defaultdict(lambda: None)
             for service in available_services:
                 stubs[service] = self.STUB_MAPPING[service](self.channel)
@@ -191,7 +193,7 @@ class GrpcConnectionPool:
             :returns: Tuple of response and metadata about the response
             """
             if not self._initialized:
-                self._init_stubs()
+                await self._init_stubs()
             request_type = type(requests[0])
             if request_type == DataRequest and len(requests) == 1:
                 if self.single_data_stub:
@@ -888,25 +890,28 @@ class GrpcConnectionPool:
         )
 
     @staticmethod
-    def get_available_services(address: str) -> List[str]:
+    async def get_available_services(channel) -> List[str]:
         """
         Lists available services by name, exposed at target address
 
-        :param address: the address to check for services, like 127.0.0.0.1:8080
+        :param channel: the channel to use
 
         :returns: List of services offered
         """
-        with grpc.insecure_channel(address) as channel:
-            reflection_stub = ServerReflectionStub(channel)
-            response = reflection_stub.ServerReflectionInfo(
-                iter([ServerReflectionRequest(list_services="")])
+        reflection_stub = ServerReflectionStub(channel)
+        response = reflection_stub.ServerReflectionInfo(
+            iter([ServerReflectionRequest(list_services="")])
+        )
+        service_names = []
+        async for res in response:
+            service_names.append(
+                [
+                    service.name
+                    for service in res.list_services_response.service
+                    if service.name != 'grpc.reflection.v1alpha.ServerReflection'
+                ]
             )
-            res = next(response)
-            return [
-                service.name
-                for service in res.list_services_response.service
-                if service.name != 'grpc.reflection.v1alpha.ServerReflection'
-            ]
+        return service_names[0]
 
 
 def in_docker():

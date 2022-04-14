@@ -63,7 +63,7 @@ class LocalExecutor(Executor):
         self.foo = foo
 
     @requests
-    def foo(self, **kwargs):
+    def bar(self, **kwargs):
         print(f'foo={self.foo}')
 ```
 

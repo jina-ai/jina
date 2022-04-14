@@ -26,6 +26,7 @@ It is also generally possible to use other service mesh providers (like [Istio](
 If you don't install a third party service mesh (like Linkerd), you will not be able to scale the number of replicas per Executor to more than one. A single replica will always handle all the traffic. No matter how many replicas will be running.
 ````
 
+(kubernetes-deploy)=
 ## Deploy your Flow
 
 To deploy a Flow on `Kubernetes`, first, you have to generate Kubernetes YAML configuration files from a Jina Flow.
@@ -67,6 +68,11 @@ Jina creates a separate Deployment in Kubernetes per Shard and uses [Kubernetes 
 Once the Flow is deployed on Kubernetes, you can use all the native Kubernetes tools like `kubeclt` to perform operations on the Pods and Deployments. 
 
 You can use this to [add or remove replicas](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment), to run [rolling update](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#updating-a-deployment) operations, etc ...
+
+### Scaling the Gateway
+The Gateway is responsible for providing the API of the {ref}`Flow <flow>`. If you have a large Flow with many Clients and many replicated Executors, the Gateway can become the bottleneck. In this case you can also scale up the Gateway deployment to be backed by multiple Kubernetes Pods.
+This is done by the regular means of Kubernetes: Either increase the number of replicas in the  {ref}`generated yaml configuration files <kubernetes-deploy>` or [add replicas while running](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment).
+To expose your Gateway replicas outside Kubernetes, you can add a load balancer as described {ref}`here <kubernetes-expose>`.
 
 ## Extra Kubernetes options
 
@@ -202,6 +208,7 @@ with portforward.forward('custom-namespace', 'gateway-7df8765bd9-xf5tf', 8080, 8
     print(f' Indexed documents: {len(docs)}')
 ```
 
+(kubernetes-expose)=
 ## Exposing your Flow
 The previous examples use port-forwarding to index documents to the Flow. 
 Thinking about real world applications, 

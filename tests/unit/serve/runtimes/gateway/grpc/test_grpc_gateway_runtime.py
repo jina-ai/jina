@@ -5,6 +5,7 @@ import multiprocessing
 import time
 from multiprocessing import Process
 
+import grpc
 import pytest
 
 from jina import Document, DocumentArray
@@ -430,7 +431,8 @@ def test_grpc_gateway_runtime_handle_empty_graph():
     assert p.exitcode == 0
 
 
-def test_grpc_gateway_runtime_reflection():
+@pytest.mark.asyncio
+async def test_grpc_gateway_runtime_reflection():
     deployment0_port = random_port()
     deployment1_port = random_port()
     port = random_port()
@@ -459,7 +461,9 @@ def test_grpc_gateway_runtime_reflection():
     time.sleep(1.0)
     assert AsyncNewLoopRuntime.is_ready(ctrl_address=f'127.0.0.1:{port}')
 
-    service_names = GrpcConnectionPool.get_available_services(f'127.0.0.1:{port}')
+    async with grpc.aio.insecure_channel(f'127.0.0.1:{port}') as channel:
+        service_names = await GrpcConnectionPool.get_available_services(channel)
+
     assert all(
         service_name in service_names
         for service_name in ['jina.JinaControlRequestRPC', 'jina.JinaRPC']

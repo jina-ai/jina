@@ -155,6 +155,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -437,6 +438,8 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.2.8`)](#release-note-328)
 - [Release Note (`3.2.9`)](#release-note-329)
 - [Release Note (`3.2.10`)](#release-note-3210)
+- [Release Note (`3.3.0`)](#release-note-330)
+- [Release Note (`3.3.1`)](#release-note-331)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -12890,4 +12893,26 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```0a75d9cd```](https://github.com/jina-ai/jina/commit/0a75d9cdfd83b2400d6f1acd1ce31cba8447751b)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```f6325ee3```](https://github.com/jina-ai/jina/commit/f6325ee33e9bdbc6f05281e2a27492fef4db5e65)] __-__ update setup.py to include py310 (*Han Xiao*)
  - [[```818e0ffa```](https://github.com/jina-ai/jina/commit/818e0ffaa9735f81aa77651ff154b897d5449f26)] __-__ __version__: the next version will be 3.2.11 (*Jina Dev Bot*)
+
+<a name=release-note-3-3-1></a>
+## Release Note (`3.3.1`)
+
+> Release time: 2022-04-13 10:02:06
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Tobias Jacobowitz,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```b6d96813```](https://github.com/jina-ai/jina/commit/b6d9681380e54fec84529bace3ef5098c8976e54)] __-__ sandbox tls (#4608) (*Tobias Jacobowitz*)
+ - [[```929054e3```](https://github.com/jina-ai/jina/commit/929054e347011e9ad1f2d39db009965054b1f843)] __-__ 8080 as default gateway port in k8s (#4605) (*Tobias Jacobowitz*)
+
+### 🍹 Other Improvements
+
+ - [[```07db5544```](https://github.com/jina-ai/jina/commit/07db55449aba9fadd9f1b390f9899381094d4c01)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```e122d894```](https://github.com/jina-ai/jina/commit/e122d89420ac3f87e8c0cce06ee50fa79e036636)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```dac21509```](https://github.com/jina-ai/jina/commit/dac2150965ce2585dabd5e86283273f616c5fa73)] __-__ __version__: the next version will be 3.3.1 (*Jina Dev Bot*)
 
