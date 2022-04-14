@@ -10,7 +10,7 @@ Every Flow can be defined either purely in Python, or be loaded from a YAML file
 ````{admonition} Hint
 :class: hint
 
-For professional use we recommend YAML files to configure your Flows.
+For production use we recommend YAML files to configure your Flows.
 This is because YAML files are:
 
 - independent of Python source code
