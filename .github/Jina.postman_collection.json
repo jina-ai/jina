@@ -1,0 +1,706 @@
+{
+	"info": {
+		"_postman_id": "07347dcc-60a8-4795-8a6c-13dcb4d36037",
+		"name": "Jina",
+		"description": "### \n\nDebug\n\nDebugging interface. In production, you should hide them by setting **`--no-debug-endpoints`** in **`Flow`**/**`Gateway`**.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Debug",
+			"item": [
+				{
+					"name": "status - Get the status of Jina service",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}/status",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"status"
+							]
+						},
+						"description": "Get the status of this Jina service.\n\nThis is equivalent to running **`jina -vf`** from command line."
+					},
+					"response": [
+						{
+							"name": "200 - Successful Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}:{{port}}/status",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"status"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Accept",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [
+								{
+									"expires": "Invalid Date"
+								}
+							],
+							"body": "{\n    \"jina\": {},\n    \"envs\": {},\n    \"usedMemory\": \"string\"\n}"
+						}
+					]
+				},
+				{
+					"name": "post - Post a data request to some endpoint",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"data\": [\r\n    {\r\n      \"id\": \"b590b7a9aa8d1a004cc1788bbd721c25\",\r\n      \"text\": \"hello, world!\"\r\n    }\r\n  ],\r\n  \"targetExecutor\": \"\",\r\n  \"parameters\": {},\r\n  \"execEndpoint\": \"/foo\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/post",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"post"
+							]
+						},
+						"description": "Post a data request to some endpoint.\n\nThis is equivalent to the following:\n\n```\nfrom jina import Flow\n\nf = Flow().add(...)\n\nwith f:\n    f.post(endpoint, ...)\n```"
+					},
+					"response": [
+						{
+							"name": "200 - Successful Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"data\": [\r\n    {\r\n      \"id\": \"b590b7a9aa8d1a004cc1788bbd721c25\",\r\n      \"text\": \"hello, world!\"\r\n    }\r\n  ],\r\n  \"targetExecutor\": \"\",\r\n  \"parameters\": {},\r\n  \"execEndpoint\": \"/foo\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/post",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"post"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Accept",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"header\": {\n        \"requestId\": \"\",\n        \"status\": {\n            \"code\": 0,\n            \"description\": \"\",\n            \"exception\": {\n                \"name\": \"\",\n                \"args\": [],\n                \"stacks\": [],\n                \"executor\": \"\"\n            }\n        },\n        \"execEndpoint\": \"\",\n        \"targetExecutor\": \"\",\n        \"timeout\": 0\n    },\n    \"parameters\": {},\n    \"routes\": [\n        {\n            \"executor\": \"\",\n            \"startTime\": \"2022-04-11T14:46:23.820Z\",\n            \"endTime\": \"2022-04-11T14:46:23.820Z\",\n            \"status\": {\n                \"code\": 0,\n                \"description\": \"\",\n                \"exception\": {\n                    \"name\": \"\",\n                    \"args\": [],\n                    \"stacks\": [],\n                    \"executor\": \"\"\n                }\n            }\n        }\n    ],\n    \"data\": [\n        {\n            \"id\": \"string\",\n            \"parent_id\": \"string\",\n            \"granularity\": 0,\n            \"adjacency\": 0,\n            \"blob\": \"string\",\n            \"tensor\": \"string\",\n            \"mime_type\": \"string\",\n            \"text\": \"string\",\n            \"weight\": 0,\n            \"uri\": \"string\",\n            \"tags\": {\n                \"additionalProp1\": true,\n                \"additionalProp2\": true,\n                \"additionalProp3\": true\n            },\n            \"offset\": 0,\n            \"location\": [\n                0\n            ],\n            \"embedding\": \"string\",\n            \"modality\": \"string\",\n            \"evaluations\": {\n                \"additionalProp1\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp2\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp3\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                }\n            },\n            \"scores\": {\n                \"additionalProp1\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp2\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp3\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                }\n            },\n            \"chunks\": [\n                \"string\"\n            ],\n            \"matches\": [\n                \"string\"\n            ]\n        }\n    ]\n}"
+						},
+						{
+							"name": "422 Validation Error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"data\": [\r\n    {\r\n      \"id\": \"b590b7a9aa8d1a004cc1788bbd721c25\",\r\n      \"text\": \"hello, world!\"\r\n    }\r\n  ],\r\n  \"targetExecutor\": \"\",\r\n  \"parameters\": {},\r\n  \"execEndpoint\": \"/foo\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/post",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"post"
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Accept",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": [\n        {\n            \"loc\": [\n                \"string\"\n            ],\n            \"msg\": \"string\",\n            \"type\": \"string\"\n        }\n    ]\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "CRUD",
+			"item": [
+				{
+					"name": "index",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"data\": [\r\n    {\r\n      \"id\": \"b590b7a9aa8d1a004cc1788bbd721c25\",\r\n      \"text\": \"hello, world!\"\r\n    }\r\n  ],\r\n  \"targetExecutor\": \"\",\r\n  \"parameters\": {}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/index",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"index"
+							]
+						},
+						"description": "Post data requests to the Flow. Executors with **`@requests(on=\"/index\")`** will respond."
+					},
+					"response": [
+						{
+							"name": "200 - Successful Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"data\": [\r\n    {\r\n      \"id\": \"b590b7a9aa8d1a004cc1788bbd721c25\",\r\n      \"text\": \"hello, world!\"\r\n    }\r\n  ],\r\n  \"targetExecutor\": \"\",\r\n  \"parameters\": {}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/index",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"index"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Accept",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"header\": {\n        \"requestId\": \"\",\n        \"status\": {\n            \"code\": 0,\n            \"description\": \"\",\n            \"exception\": {\n                \"name\": \"\",\n                \"args\": [],\n                \"stacks\": [],\n                \"executor\": \"\"\n            }\n        },\n        \"execEndpoint\": \"\",\n        \"targetExecutor\": \"\",\n        \"timeout\": 0\n    },\n    \"parameters\": {},\n    \"routes\": [\n        {\n            \"executor\": \"\",\n            \"startTime\": \"2022-04-11T14:46:23.756Z\",\n            \"endTime\": \"2022-04-11T14:46:23.756Z\",\n            \"status\": {\n                \"code\": 0,\n                \"description\": \"\",\n                \"exception\": {\n                    \"name\": \"\",\n                    \"args\": [],\n                    \"stacks\": [],\n                    \"executor\": \"\"\n                }\n            }\n        }\n    ],\n    \"data\": [\n        {\n            \"id\": \"string\",\n            \"parent_id\": \"string\",\n            \"granularity\": 0,\n            \"adjacency\": 0,\n            \"blob\": \"string\",\n            \"tensor\": \"string\",\n            \"mime_type\": \"string\",\n            \"text\": \"string\",\n            \"weight\": 0,\n            \"uri\": \"string\",\n            \"tags\": {\n                \"additionalProp1\": true,\n                \"additionalProp2\": true,\n                \"additionalProp3\": true\n            },\n            \"offset\": 0,\n            \"location\": [\n                0\n            ],\n            \"embedding\": \"string\",\n            \"modality\": \"string\",\n            \"evaluations\": {\n                \"additionalProp1\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp2\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp3\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                }\n            },\n            \"scores\": {\n                \"additionalProp1\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp2\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp3\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                }\n            },\n            \"chunks\": [\n                \"string\"\n            ],\n            \"matches\": [\n                \"string\"\n            ]\n        }\n    ]\n}"
+						},
+						{
+							"name": "422 - Validation Error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"data\": [\r\n    {\r\n      \"id\": \"b590b7a9aa8d1a004cc1788bbd721c25\",\r\n      \"text\": \"hello, world!\"\r\n    }\r\n  ],\r\n  \"targetExecutor\": \"\",\r\n  \"parameters\": {}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/index",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"index"
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Accept",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": [\n        {\n            \"loc\": [\n                \"string\"\n            ],\n            \"msg\": \"string\",\n            \"type\": \"string\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "search",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"data\": [\r\n    {\r\n      \"id\": \"b590b7a9aa8d1a004cc1788bbd721c25\",\r\n      \"text\": \"hello, world!\"\r\n    }\r\n  ],\r\n  \"targetExecutor\": \"\",\r\n  \"parameters\": {}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/search",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"search"
+							]
+						},
+						"description": "Post data requests to the Flow. Executors with **`@requests(on=\"/search\")`** will respond."
+					},
+					"response": [
+						{
+							"name": "200 - Successful Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"data\": [\r\n    {\r\n      \"id\": \"b590b7a9aa8d1a004cc1788bbd721c25\",\r\n      \"text\": \"hello, world!\"\r\n    }\r\n  ],\r\n  \"targetExecutor\": \"\",\r\n  \"parameters\": {}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/search",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"search"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Accept",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [
+								{
+									"expires": "Invalid Date"
+								}
+							],
+							"body": "{\n    \"header\": {\n        \"requestId\": \"\",\n        \"status\": {\n            \"code\": 0,\n            \"description\": \"\",\n            \"exception\": {\n                \"name\": \"\",\n                \"args\": [],\n                \"stacks\": [],\n                \"executor\": \"\"\n            }\n        },\n        \"execEndpoint\": \"\",\n        \"targetExecutor\": \"\",\n        \"timeout\": 0\n    },\n    \"parameters\": {},\n    \"routes\": [\n        {\n            \"executor\": \"\",\n            \"startTime\": \"2022-04-11T14:46:23.773Z\",\n            \"endTime\": \"2022-04-11T14:46:23.773Z\",\n            \"status\": {\n                \"code\": 0,\n                \"description\": \"\",\n                \"exception\": {\n                    \"name\": \"\",\n                    \"args\": [],\n                    \"stacks\": [],\n                    \"executor\": \"\"\n                }\n            }\n        }\n    ],\n    \"data\": [\n        {\n            \"id\": \"string\",\n            \"parent_id\": \"string\",\n            \"granularity\": 0,\n            \"adjacency\": 0,\n            \"blob\": \"string\",\n            \"tensor\": \"string\",\n            \"mime_type\": \"string\",\n            \"text\": \"string\",\n            \"weight\": 0,\n            \"uri\": \"string\",\n            \"tags\": {\n                \"additionalProp1\": true,\n                \"additionalProp2\": true,\n                \"additionalProp3\": true\n            },\n            \"offset\": 0,\n            \"location\": [\n                0\n            ],\n            \"embedding\": \"string\",\n            \"modality\": \"string\",\n            \"evaluations\": {\n                \"additionalProp1\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp2\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp3\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                }\n            },\n            \"scores\": {\n                \"additionalProp1\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp2\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp3\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                }\n            },\n            \"chunks\": [\n                \"string\"\n            ],\n            \"matches\": [\n                \"string\"\n            ]\n        }\n    ]\n}"
+						},
+						{
+							"name": "422 - Validation Error",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"data\": [\r\n    {\r\n      \"id\": \"b590b7a9aa8d1a004cc1788bbd721c25\",\r\n      \"text\": \"hello, world!\"\r\n    }\r\n  ],\r\n  \"targetExecutor\": \"\",\r\n  \"parameters\": {}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/search",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"search"
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Accept",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [
+								{
+									"expires": "Invalid Date"
+								}
+							],
+							"body": "{\n    \"detail\": [\n        {\n            \"loc\": [\n                \"string\"\n            ],\n            \"msg\": \"string\",\n            \"type\": \"string\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"data\": [\r\n    {\r\n      \"id\": \"b590b7a9aa8d1a004cc1788bbd721c25\",\r\n      \"text\": \"hello, world!\"\r\n    }\r\n  ],\r\n  \"targetExecutor\": \"\",\r\n  \"parameters\": {}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/delete",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"delete"
+							]
+						},
+						"description": "Post data requests to the Flow. Executors with **`@requests(on=\"/delete\")`** will respond."
+					},
+					"response": [
+						{
+							"name": "200 - Successful Response",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"data\": [\r\n    {\r\n      \"id\": \"b590b7a9aa8d1a004cc1788bbd721c25\",\r\n      \"text\": \"hello, world!\"\r\n    }\r\n  ],\r\n  \"targetExecutor\": \"\",\r\n  \"parameters\": {}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/delete",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"delete"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Accept",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [
+								{
+									"expires": "Invalid Date"
+								}
+							],
+							"body": "{\n    \"header\": {\n        \"requestId\": \"\",\n        \"status\": {\n            \"code\": 0,\n            \"description\": \"\",\n            \"exception\": {\n                \"name\": \"\",\n                \"args\": [],\n                \"stacks\": [],\n                \"executor\": \"\"\n            }\n        },\n        \"execEndpoint\": \"\",\n        \"targetExecutor\": \"\",\n        \"timeout\": 0\n    },\n    \"parameters\": {},\n    \"routes\": [\n        {\n            \"executor\": \"\",\n            \"startTime\": \"2022-04-11T14:46:23.787Z\",\n            \"endTime\": \"2022-04-11T14:46:23.787Z\",\n            \"status\": {\n                \"code\": 0,\n                \"description\": \"\",\n                \"exception\": {\n                    \"name\": \"\",\n                    \"args\": [],\n                    \"stacks\": [],\n                    \"executor\": \"\"\n                }\n            }\n        }\n    ],\n    \"data\": [\n        {\n            \"id\": \"string\",\n            \"parent_id\": \"string\",\n            \"granularity\": 0,\n            \"adjacency\": 0,\n            \"blob\": \"string\",\n            \"tensor\": \"string\",\n            \"mime_type\": \"string\",\n            \"text\": \"string\",\n            \"weight\": 0,\n            \"uri\": \"string\",\n            \"tags\": {\n                \"additionalProp1\": true,\n                \"additionalProp2\": true,\n                \"additionalProp3\": true\n            },\n            \"offset\": 0,\n            \"location\": [\n                0\n            ],\n            \"embedding\": \"string\",\n            \"modality\": \"string\",\n            \"evaluations\": {\n                \"additionalProp1\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp2\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp3\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                }\n            },\n            \"scores\": {\n                \"additionalProp1\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp2\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp3\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                }\n            },\n            \"chunks\": [\n                \"string\"\n            ],\n            \"matches\": [\n                \"string\"\n            ]\n        }\n    ]\n}"
+						},
+						{
+							"name": "422 - Validation Error",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"data\": [\r\n    {\r\n      \"id\": \"b590b7a9aa8d1a004cc1788bbd721c25\",\r\n      \"text\": \"hello, world!\"\r\n    }\r\n  ],\r\n  \"targetExecutor\": \"\",\r\n  \"parameters\": {}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/delete",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"delete"
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Accept",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": [\n        {\n            \"loc\": [\n                \"string\"\n            ],\n            \"msg\": \"string\",\n            \"type\": \"string\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"data\": [\r\n    {\r\n      \"id\": \"b590b7a9aa8d1a004cc1788bbd721c25\",\r\n      \"text\": \"hello, world!\"\r\n    }\r\n  ],\r\n  \"targetExecutor\": \"\",\r\n  \"parameters\": {}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}:{{port}}/update",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"update"
+							]
+						},
+						"description": "Post data requests to the Flow. Executors with **`@requests(on=\"/update\")`** will respond."
+					},
+					"response": [
+						{
+							"name": "200 - Successful Response",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"data\": [\r\n    {\r\n      \"id\": \"b590b7a9aa8d1a004cc1788bbd721c25\",\r\n      \"text\": \"hello, world!\"\r\n    }\r\n  ],\r\n  \"targetExecutor\": \"\",\r\n  \"parameters\": {}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/update",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"update"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Accept",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [
+								{
+									"expires": "Invalid Date"
+								}
+							],
+							"body": "{\n    \"header\": {\n        \"requestId\": \"\",\n        \"status\": {\n            \"code\": 0,\n            \"description\": \"\",\n            \"exception\": {\n                \"name\": \"\",\n                \"args\": [],\n                \"stacks\": [],\n                \"executor\": \"\"\n            }\n        },\n        \"execEndpoint\": \"\",\n        \"targetExecutor\": \"\",\n        \"timeout\": 0\n    },\n    \"parameters\": {},\n    \"routes\": [\n        {\n            \"executor\": \"\",\n            \"startTime\": \"2022-04-11T14:46:23.800Z\",\n            \"endTime\": \"2022-04-11T14:46:23.800Z\",\n            \"status\": {\n                \"code\": 0,\n                \"description\": \"\",\n                \"exception\": {\n                    \"name\": \"\",\n                    \"args\": [],\n                    \"stacks\": [],\n                    \"executor\": \"\"\n                }\n            }\n        }\n    ],\n    \"data\": [\n        {\n            \"id\": \"string\",\n            \"parent_id\": \"string\",\n            \"granularity\": 0,\n            \"adjacency\": 0,\n            \"blob\": \"string\",\n            \"tensor\": \"string\",\n            \"mime_type\": \"string\",\n            \"text\": \"string\",\n            \"weight\": 0,\n            \"uri\": \"string\",\n            \"tags\": {\n                \"additionalProp1\": true,\n                \"additionalProp2\": true,\n                \"additionalProp3\": true\n            },\n            \"offset\": 0,\n            \"location\": [\n                0\n            ],\n            \"embedding\": \"string\",\n            \"modality\": \"string\",\n            \"evaluations\": {\n                \"additionalProp1\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp2\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp3\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                }\n            },\n            \"scores\": {\n                \"additionalProp1\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp2\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                },\n                \"additionalProp3\": {\n                    \"value\": 0,\n                    \"op_name\": \"string\",\n                    \"description\": \"string\",\n                    \"ref_id\": \"string\"\n                }\n            },\n            \"chunks\": [\n                \"string\"\n            ],\n            \"matches\": [\n                \"string\"\n            ]\n        }\n    ]\n}"
+						},
+						{
+							"name": "422 - Validation Error",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"data\": [\r\n    {\r\n      \"id\": \"b590b7a9aa8d1a004cc1788bbd721c25\",\r\n      \"text\": \"hello, world!\"\r\n    }\r\n  ],\r\n  \"targetExecutor\": \"\",\r\n  \"parameters\": {}\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}:{{port}}/update",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"update"
+									]
+								}
+							},
+							"status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+							"code": 422,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Accept",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"detail\": [\n        {\n            \"loc\": [\n                \"string\"\n            ],\n            \"msg\": \"string\",\n            \"type\": \"string\"\n        }\n    ]\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Default",
+			"item": [
+				{
+					"name": "Get Health of Jina Instance",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}:{{port}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}"
+						},
+						"description": "Get the health of this Jina service."
+					},
+					"response": [
+						{
+							"name": "200 - Successful Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}:{{port}}",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}"
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Accept",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [],
+							"body": "{}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "10.0.0.81",
+			"type": "string"
+		},
+		{
+			"key": "port",
+			"value": "1234",
+			"type": "string"
+		}
+	]
+}
