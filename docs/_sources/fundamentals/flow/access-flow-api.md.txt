@@ -234,6 +234,14 @@ You can again use the [REST HTTP request schema](https://api.jina.ai/rest/), but
 
 Below, in `Responses`, you can see the reply, together with a visual representation of the returned Documents.
 
+### Postman Collection
+
+[Postman](https://www.postman.com/) is an application that allows the testing of web APIs from a graphical interface. You can store all the templates for your REST APIs in it, using Collections. 
+
+We provide a suite of templates for the Jina Flow, in this [collection](https://github.com/jina-ai/jina/tree/master/.github/Jina.postman_collection.json). You can import it in Postman in **Collections**, with the **Import** button. It provides templates for the main operations. You need to create an Environment to define the `{{url}}` and `{{port}}` environment variables. These would be the hostname and the port where the Flow is listening. 
+
+This contribution was made by [Jonathan Rowley](https://jina-ai.slack.com/archives/C0169V26ATY/p1649689443888779?thread_ts=1649428823.420879&cid=C0169V26ATY), in our [community Slack](slack.jina.ai). 
+
 (flow-graphql)=
 ## GraphQL Interface
 

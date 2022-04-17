@@ -544,6 +544,10 @@
             <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/cas-light.svg">
             <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/cas-dark.svg">
             CLIP-as-service</a></li>
+        <li class="toctree-l1"><a class="reference external" href="https://github.com/jina-ai/jcloud">
+            <img class="sidebar-ecosys-logo only-light-line" src="../../../_static/JCloud-light.svg">
+            <img class="sidebar-ecosys-logo only-dark-line" src="../../../_static/JCloud-dark.svg">
+            JCloud</a></li>
     </ul>
 </div>
 
@@ -819,6 +823,12 @@ visually, through a web browser.</p>
 You can again use the <a class="reference external" href="https://api.jina.ai/rest/">REST HTTP request schema</a>, but do not need to specify <code class="docutils literal notranslate"><span class="pre">execEndpoint</span></code>.</p>
 <p>Below, in <code class="docutils literal notranslate"><span class="pre">Responses</span></code>, you can see the reply, together with a visual representation of the returned Documents.</p>
 </section>
+<section id="postman-collection">
+<h3>Postman Collection<a class="headerlink" href="#postman-collection" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://www.postman.com/">Postman</a> is an application that allows the testing of web APIs from a graphical interface. You can store all the templates for your REST APIs in it, using Collections.</p>
+<p>We provide a suite of templates for the Jina Flow, in this <a class="reference external" href="https://github.com/jina-ai/jina/tree/master/.github/Jina.postman_collection.json">collection</a>. You can import it in Postman in <strong>Collections</strong>, with the <strong>Import</strong> button. It provides templates for the main operations. You need to create an Environment to define the <code class="docutils literal notranslate"><span class="pre">{{url}}</span></code> and <code class="docutils literal notranslate"><span class="pre">{{port}}</span></code> environment variables. These would be the hostname and the port where the Flow is listening.</p>
+<p>This contribution was made by <a class="reference external" href="https://jina-ai.slack.com/archives/C0169V26ATY/p1649689443888779?thread_ts=1649428823.420879&amp;cid=C0169V26ATY">Jonathan Rowley</a>, in our <span class="xref myst">community Slack</span>.</p>
+</section>
 </section>
 <section id="graphql-interface">
 <span id="flow-graphql"></span><h2>GraphQL Interface<a class="headerlink" href="#graphql-interface" title="Permalink to this headline">¶</a></h2>
@@ -936,7 +946,7 @@ The Flow defaults to <code class="docutils literal notranslate"><span class="pre
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 14, 2022.
+                    Last updated on Apr 17, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -966,6 +976,7 @@ The Flow defaults to <code class="docutils literal notranslate"><span class="pre
 <li><a class="reference internal" href="#use-http-client-to-send-request">Use HTTP client to send request</a></li>
 <li><a class="reference internal" href="#arguments">Arguments</a></li>
 <li><a class="reference internal" href="#use-swagger-ui-to-send-http-request">Use Swagger UI to send HTTP request</a></li>
+<li><a class="reference internal" href="#postman-collection">Postman Collection</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#graphql-interface">GraphQL Interface</a><ul>
