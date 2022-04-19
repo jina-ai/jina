@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import contextlib
 import json
 import multiprocessing
 import os
@@ -10,6 +11,7 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import grpc
 from grpc_reflection.v1alpha import reflection
+from prometheus_client import Summary
 
 from jina.enums import PollingType
 from jina.proto import jina_pb2, jina_pb2_grpc
@@ -51,6 +53,18 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             compression=args.compression,
             metrics_registry=self.metrics_registry,
         )
+
+        self._summary = (
+            Summary(
+                'receiving_request_seconds',
+                'Time spent processing request',
+                registry=self.metrics_registry,
+                namespace='jina',
+            ).time()
+            if self.metrics_registry
+            else contextlib.nullcontext()
+        )
+
         polling = getattr(args, 'polling', self.DEFAULT_POLLING.name)
         try:
             # try loading the polling args as json
@@ -178,10 +192,11 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response request
         """
         try:
-            endpoint = dict(context.invocation_metadata()).get('endpoint')
-            response, metadata = await self._handle_data_request(requests, endpoint)
-            context.set_trailing_metadata(metadata.items())
-            return response
+            with self._summary:
+                endpoint = dict(context.invocation_metadata()).get('endpoint')
+                response, metadata = await self._handle_data_request(requests, endpoint)
+                context.set_trailing_metadata(metadata.items())
+                return response
         except (RuntimeError, Exception) as ex:
             self.logger.error(
                 f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
