@@ -66,6 +66,7 @@ class HTTPGatewayRuntime(GatewayRuntime):
                         topology_graph=self._topology_graph,
                         connection_pool=self._connection_pool,
                         logger=self.logger,
+                        metrics_registry=self.metrics_registry,
                     )
                 ),
                 host=__default_host__,

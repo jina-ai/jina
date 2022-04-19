@@ -1,5 +1,5 @@
 import argparse
-from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List
+from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional
 
 from jina.clients.request import request_generator
 from jina.enums import DataInputType, WebsocketSubProtocols
@@ -8,6 +8,8 @@ from jina.logging.logger import JinaLogger
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
+    from prometheus_client import CollectorRegistry
+
     from jina.serve.networking import GrpcConnectionPool
     from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 
@@ -17,6 +19,7 @@ def get_fastapi_app(
     topology_graph: 'TopologyGraph',
     connection_pool: 'GrpcConnectionPool',
     logger: 'JinaLogger',
+    metrics_registry: Optional['CollectorRegistry'] = None,
 ):
     """
     Get the app from FastAPI as the Websocket interface.
@@ -25,6 +28,7 @@ def get_fastapi_app(
     :param topology_graph: topology graph that manages the logic of sending to the proper executors.
     :param connection_pool: Connection Pool to handle multiple replicas and sending to different of them
     :param logger: Jina logger.
+    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler
     :return: fastapi app
     """
 
@@ -102,19 +106,19 @@ def get_fastapi_app(
 
     app = FastAPI()
 
-    from jina.serve.runtimes.gateway.request_handling import (
-        handle_request,
-        handle_result,
-    )
+    from jina.serve.runtimes.gateway.request_handling import RequestHandler
     from jina.serve.stream import RequestStreamer
+
+    request_handler = RequestHandler(metrics_registry)
 
     streamer = RequestStreamer(
         args=args,
-        request_handler=handle_request(
+        request_handler=request_handler.handle_request(
             graph=topology_graph, connection_pool=connection_pool
         ),
-        result_handler=handle_result,
+        result_handler=request_handler.handle_result(),
     )
+
     streamer.Call = streamer.stream
 
     @app.on_event('shutdown')

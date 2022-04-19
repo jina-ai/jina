@@ -16,6 +16,8 @@ from jina.logging.logger import JinaLogger
 from jina.logging.profile import used_memory_readable
 
 if TYPE_CHECKING:
+    from prometheus_client import CollectorRegistry
+
     from jina.serve.networking import GrpcConnectionPool
     from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 
@@ -25,6 +27,7 @@ def get_fastapi_app(
     topology_graph: 'TopologyGraph',
     connection_pool: 'GrpcConnectionPool',
     logger: 'JinaLogger',
+    metrics_registry: Optional['CollectorRegistry'] = None,
 ):
     """
     Get the app from FastAPI as the REST interface.
@@ -33,6 +36,7 @@ def get_fastapi_app(
     :param topology_graph: topology graph that manages the logic of sending to the proper executors.
     :param connection_pool: Connection Pool to handle multiple replicas and sending to different of them
     :param logger: Jina logger.
+    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler
     :return: fastapi app
     """
     with ImportExtensions(required=True):
@@ -78,18 +82,17 @@ def get_fastapi_app(
             'CORS is enabled. This service is now accessible from any website!'
         )
 
-    from jina.serve.runtimes.gateway.request_handling import (
-        handle_request,
-        handle_result,
-    )
+    from jina.serve.runtimes.gateway.request_handling import RequestHandler
     from jina.serve.stream import RequestStreamer
+
+    request_handler = RequestHandler(metrics_registry)
 
     streamer = RequestStreamer(
         args=args,
-        request_handler=handle_request(
+        request_handler=request_handler.handle_request(
             graph=topology_graph, connection_pool=connection_pool
         ),
-        result_handler=handle_result,
+        result_handler=request_handler.handle_result(),
     )
     streamer.Call = streamer.stream
 
@@ -262,14 +265,13 @@ def get_fastapi_app(
             from dataclasses import asdict
 
             import strawberry
+            from docarray import DocumentArray
             from docarray.document.strawberry_type import (
                 JSONScalar,
                 StrawberryDocument,
                 StrawberryDocumentInput,
             )
             from strawberry.fastapi import GraphQLRouter
-
-            from docarray import DocumentArray
 
             async def get_docs_from_endpoint(
                 data, target_executor, parameters, exec_endpoint
