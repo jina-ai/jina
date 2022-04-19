@@ -119,7 +119,9 @@ def requests(
                     executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
                     with self._get_summary(
-                        executor_instance._summary_method, fn.__name__
+                        executor_instance._summary_method,
+                        executor_instance.__class__.__name__,
+                        fn.__name__,
                     ):
                         return await fn(executor_instance, *args, **kwargs)
 
@@ -130,9 +132,10 @@ def requests(
                 def arg_wrapper(
                     executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
-
                     with self._get_summary(
-                        executor_instance._summary_method, fn.__name__
+                        executor_instance._summary_method,
+                        executor_instance.__class__.__name__,
+                        fn.__name__,
                     ):
                         return fn(executor_instance, *args, **kwargs)
 
@@ -152,10 +155,10 @@ def requests(
             setattr(owner, name, self.fn)
 
         def _get_summary(
-            self, summary: Optional['Summary'], method_name: str
+            self, summary: Optional['Summary'], executor_name: str, method_name: str
         ) -> ContextManager:
             return (
-                summary.labels(method_name).time()
+                summary.labels(method_name, executor_name).time()
                 if summary
                 else contextlib.nullcontext()
             )

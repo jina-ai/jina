@@ -31,8 +31,9 @@ def test_enable_monitoring_deployment(port_generator):
         for meth in ['bar', 'foo']:
             f.post(f'/{meth}', inputs=DocumentArray())
             resp = req.get(f'http://localhost:{port2}/')
-            assert f'process_request_seconds_created{{method="{meth}"}}' in str(
-                resp.content
+            assert (
+                f'process_request_seconds_created{{executor="DummyExecutor",method="{meth}"}}'
+                in str(resp.content)
             )
 
 

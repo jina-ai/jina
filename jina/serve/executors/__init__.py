@@ -130,7 +130,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 'Time spent when calling the executor request method',
                 registry=self.runtime_args.metrics_registry,
                 namespace='jina',
-                labelnames=('method',),
+                labelnames=('method', 'executor'),
             )
         else:
             self._summary_method = None
