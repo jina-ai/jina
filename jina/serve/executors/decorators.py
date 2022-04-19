@@ -1,12 +1,23 @@
 """Decorators and wrappers designed for wrapping :class:`BaseExecutor` functions. """
-
+import contextlib
 import functools
 import inspect
 from functools import wraps
-from typing import Callable, Union, List, Optional, Dict, Sequence, TYPE_CHECKING
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    ContextManager,
+    Dict,
+    List,
+    Optional,
+    Sequence,
+    Union,
+)
 
-from jina.serve.executors.metas import get_default_metas
+from prometheus_client import Summary
+
 from jina.helper import convert_tuple_to_list, iscoroutinefunction
+from jina.serve.executors.metas import get_default_metas
 
 if TYPE_CHECKING:
     from jina import DocumentArray
@@ -87,7 +98,7 @@ def requests(
     :param on: the endpoint string, by convention starts with `/`
     :return: decorated function
     """
-    from jina import __default_endpoint__, __args_executor_func__
+    from jina import __args_executor_func__, __default_endpoint__
 
     class FunctionMapper:
         def __init__(self, fn):
@@ -104,15 +115,29 @@ def requests(
             if iscoroutinefunction(fn):
 
                 @functools.wraps(fn)
-                async def arg_wrapper(*args, **kwargs):
-                    return await fn(*args, **kwargs)
+                async def arg_wrapper(
+                    executor_instance, *args, **kwargs
+                ):  # we need to get the summary from the executor, so we need to access the self
+                    with self._get_summary(
+                        executor_instance._summary_method,
+                        executor_instance.__class__.__name__,
+                        fn.__name__,
+                    ):
+                        return await fn(executor_instance, *args, **kwargs)
 
                 self.fn = arg_wrapper
             else:
 
                 @functools.wraps(fn)
-                def arg_wrapper(*args, **kwargs):
-                    return fn(*args, **kwargs)
+                def arg_wrapper(
+                    executor_instance, *args, **kwargs
+                ):  # we need to get the summary from the executor, so we need to access the self
+                    with self._get_summary(
+                        executor_instance._summary_method,
+                        executor_instance.__class__.__name__,
+                        fn.__name__,
+                    ):
+                        return fn(executor_instance, *args, **kwargs)
 
                 self.fn = arg_wrapper
 
@@ -128,6 +153,15 @@ def requests(
                 owner.requests[on or __default_endpoint__] = self.fn
 
             setattr(owner, name, self.fn)
+
+        def _get_summary(
+            self, summary: Optional['Summary'], executor_name: str, method_name: str
+        ) -> ContextManager:
+            return (
+                summary.labels(method_name, executor_name).time()
+                if summary
+                else contextlib.nullcontext()
+            )
 
     if func:
         return FunctionMapper(func)
