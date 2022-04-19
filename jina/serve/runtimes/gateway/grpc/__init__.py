@@ -8,7 +8,7 @@ from jina.excepts import PortAlreadyUsed
 from jina.helper import is_port_free
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.gateway import GatewayRuntime
-from jina.serve.runtimes.gateway.request_handling import handle_request, handle_result
+from jina.serve.runtimes.gateway.request_handling import RequestHandler
 from jina.serve.stream import RequestStreamer
 
 __all__ = ['GRPCGatewayRuntime']
@@ -45,12 +45,15 @@ class GRPCGatewayRuntime(GatewayRuntime):
         await self._async_setup_server()
 
     async def _async_setup_server(self):
+
+        request_handler = RequestHandler(self.metrics_registry)
+
         self.streamer = RequestStreamer(
             args=self.args,
-            request_handler=handle_request(
+            request_handler=request_handler.handle_request(
                 graph=self._topology_graph, connection_pool=self._connection_pool
             ),
-            result_handler=handle_result,
+            result_handler=request_handler.handle_result(),
         )
 
         self.streamer.Call = self.streamer.stream
