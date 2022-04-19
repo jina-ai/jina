@@ -18,6 +18,7 @@ This is a basic Executor, defined in its own file. Notice that there are no {ref
 from jina import Executor
 from docarray import DocumentArray
 
+
 class MyExecutor(Executor):
     def __init__(self, parameter_1, parameter_2, **kwargs):
         super().__init__(**kwargs)
@@ -46,23 +47,16 @@ This example shows how to start a Flow with an Executor via the Python API:
 ```python
 with Flow().add(
     uses='MyExecutor',
-    uses_with={
-      "parameter_1": "foo",
-      "parameter_2": "bar"
-    },
+    uses_with={"parameter_1": "foo", "parameter_2": "bar"},
     uses_metas={
-      "name": "MyExecutor",
-      "description": "MyExecutor does a thing to the stuff in your Documents",
-      "py_modules": ["executor.py"]
+        "name": "MyExecutor",
+        "description": "MyExecutor does a thing to the stuff in your Documents",
+        "py_modules": ["executor.py"],
     },
-    uses_requests={
-      "/index": "my_index",
-      "/search": "my_search",
-      "/random": "foo"
-    },
-    workspace="some_custom_path"
+    uses_requests={"/index": "my_index", "/search": "my_search", "/random": "foo"},
+    workspace="some_custom_path",
 ) as f:
-  ...
+    ...
 ```
 
 Python API-specific options:
@@ -117,11 +111,13 @@ When using an Executor in a Flow, there are two ways of passing arguments.
 ```python
 from jina import Executor, Flow
 
+
 class MyExecutor(Executor):
     def __init__(self, foo, bar, **kwargs):
         super().__init__(**kwargs)
         print(f'foo = {foo}')
         print(f'bar = {bar}')
+
 
 f = Flow().add(uses=MyExecutor, uses_with={'foo': 'hello', 'bar': 1})
 
@@ -176,6 +172,7 @@ The same applies to `uses_metas` and `uses_requests`. You can define them static
 
 ```python
 from jina import Executor, requests, Flow
+
 
 class MyExecutor(Executor):
     def __init__(self, parameter_1, parameter_2, **kwargs):
@@ -331,8 +328,8 @@ As the name suggests, `runtime_args` are dynamically determined during runtime, 
 The list of the `runtime_args` is:
 
 - `name`: Name given to the `Executor`. This is dynamically adapted from the `name` in `metas` and depends on some additional arguments like `shard_id`. 
-- `replicas`: Number of replicas of the same `Executor` deployed with the `Flow`.
-- `shards`: Number of shards of the same `Executor` deployed with the `Flow`.
+- `replicas`: Number of {ref}`replicas <replicate-executors>` of the same `Executor` deployed with the `Flow`.
+- `shards`: Number of {ref}`shards <partition-data-by-using-shards>` of the same `Executor` deployed with the `Flow`.
 - `shard_id`: Identifier of the `shard` corresponding to the given `Executor` instance.
 - `workspace`: Path to be used by the `Executor`. Note that the actual workspace directory used by the Executor is obtained by appending `'/<executor_name>/<shard_id>/'` to this value.
 - `py_modules`: Path to the modules needed to import the `Executor`. This is another way to pass `py-modules` to the `Executor` from the `Flow`
@@ -354,6 +351,7 @@ It also exposes a `status` endpoint returning internal information in the form o
 
 ```python
 from jina import requests, Executor
+
 
 class MyExec(Executor):
     def __init__(self, parameter=20, **kwargs):
@@ -542,7 +540,7 @@ f = (
     Flow()
     .add(uses=Exec1, name='exec1')
     .add(uses=Exec2, name='exec2')
-    .add(uses=MergeExec, needs=['exec1', 'exec2'])
+    .add(uses=MergeExec, needs=['exec1', 'exec2'], disable_reduce=True)
 )
 
 with f:

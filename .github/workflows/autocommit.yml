@@ -24,29 +24,6 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7
-      - name: Checkout wall-of-honor
-        uses: actions/checkout@v2
-        with:
-          repository: jina-ai/wall-of-honor
-          path: wall
-          token: ${{ secrets.JINA_DEV_BOT }}
-      - name: Run contributor generation
-        run: |
-          cd wall
-          npm i -D all-contributors-cli@6.17.1
-          npm list all-contributors-cli
-          cp patch.js ./node_modules/all-contributors-cli/dist/generate/index.js
-          cp ../README.md README.md
-          pip install -r requirements.txt
-          python app.py config.yml export.yml
-          cp README.md ../README.md
-          cd ..
-          rm -rf wall
-          git add README.md &> /dev/null || true
-          git commit -m 'chore(contributor): update contributors' &> /dev/null || true
-          git status
-        env:
-          PRIVATE_TOKEN: ${{ secrets.JINA_DEV_BOT }}
       - name: Generate TOC
         uses: technote-space/toc-generator@v3
         with:
@@ -56,16 +33,6 @@ jobs:
           COMMIT_EMAIL: dev-bot@jina.ai
           TOC_TITLE: ''
           TARGET_PATHS: 'CHANGELOG.md,CONTRIBUTING.md,RELEASE.md'
-          CHECK_ONLY_DEFAULT_BRANCH: true
-      - name: Generate TOC
-        uses: technote-space/toc-generator@v3
-        with:
-          MAX_HEADER_LEVEL: 4
-          GITHUB_TOKEN: ${{ secrets.JINA_DEV_BOT }}
-          COMMIT_NAME: Jina Dev Bot
-          COMMIT_EMAIL: dev-bot@jina.ai
-          TOC_TITLE: 'Table of Contents'
-          TARGET_PATHS: '.github/2.0/cookbooks/*.md'
           CHECK_ONLY_DEFAULT_BRANCH: true
       - uses: ad-m/github-push-action@v0.6.0
         with:

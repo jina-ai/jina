@@ -68,7 +68,7 @@ html_theme_options = {
     # start-announce
 
     "announcement": '''
-    <a href="https://www.meetup.com/jina-community-meetup/events/284243173/">Join our Office Hours on March 31st at 17:00 CET </a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/285054198/">Join our Office Hours on April 28th at 19:00 CET </a>
     ''',
         
     # end-announce

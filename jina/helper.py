@@ -15,6 +15,7 @@ from argparse import ArgumentParser, Namespace
 from collections.abc import MutableMapping
 from datetime import datetime
 from itertools import islice
+from socket import AF_INET, SOCK_STREAM, socket
 from types import SimpleNamespace
 from typing import (
     TYPE_CHECKING,
@@ -1533,8 +1534,8 @@ def get_rich_console():
     :return: rich console
     """
     return Console(
-        force_terminal=True, force_interactive=True
-    )  # It forces render in any terminal, especily in PyCharm
+        force_terminal=True,
+    )  # It forces render in any terminal, especially in PyCharm
 
 
 GRAPHQL_MIN_DOCARRAY_VERSION = '0.8.8'  # graphql requires this or higher
@@ -1626,3 +1627,11 @@ def _parse_url(host):
         port = None
 
     return scheme, host, port
+
+
+def is_port_free(host, port):
+    with socket(AF_INET, SOCK_STREAM) as session:
+        if session.connect_ex((host, port)) == 0:
+            return False
+        else:
+            return True

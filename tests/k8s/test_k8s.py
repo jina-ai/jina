@@ -3,6 +3,7 @@ import asyncio
 import os
 
 import pytest
+import requests as req
 import yaml
 from docarray import DocumentArray
 from pytest_kind import cluster
@@ -225,6 +226,55 @@ def k8s_flow_with_needs(docker_images):
         )
     )
     return flow
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['test-executor', 'executor-merger', 'jinaai/jina']],
+    indirect=True,
+)
+async def test_flow_with_needs(
+    logger, k8s_flow_with_needs, tmpdir, docker_images, port_generator
+):
+    dump_path = os.path.join(str(tmpdir), 'test-flow-with-needs')
+    namespace = f'test-flow-monitoring'.lower()
+
+    port1 = port_generator()
+    port2 = port_generator()
+    flow = Flow(
+        name='test-flow-monitoring', monitoring=True, port_monitoring=port1
+    ).add(
+        name='segmenter',
+        uses=f'docker://{docker_images[0]}',
+        monitoring=True,
+        port_monitoring=port2,
+    )
+
+    flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    await create_all_flow_deployments_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'segmenter': 1,
+        },
+        logger=logger,
+    )
+    for port in [port1, port2]:
+        resp = req.get(f'http://localhost:{port}/')
+        assert resp.status_code == 200
+    core_client.delete_namespace(namespace)
 
 
 @pytest.mark.asyncio

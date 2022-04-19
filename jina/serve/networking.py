@@ -1,11 +1,15 @@
 import asyncio
+import contextlib
 import ipaddress
 import os
+from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
 import grpc
 from grpc.aio import AioRpcError
+from grpc_reflection.v1alpha.reflection_pb2 import ServerReflectionRequest
+from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 
 from jina.enums import PollingType
 from jina.logging.logger import JinaLogger
@@ -16,17 +20,23 @@ from jina.types.request.data import DataRequest
 
 TLS_PROTOCOL_SCHEMES = ['grpcs', 'https', 'wss']
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from prometheus_client import CollectorRegistry
+
 
 class ReplicaList:
     """
     Maintains a list of connections to replicas and uses round robin for selecting a replica
     """
 
-    def __init__(self):
+    def __init__(self, summary):
         self._connections = []
         self._address_to_connection_idx = {}
         self._address_to_channel = {}
         self._rr_counter = 0
+        self.summary = summary
 
     def add_connection(self, address: str):
         """
@@ -42,15 +52,12 @@ class ReplicaList:
                 use_tls = False
 
             self._address_to_connection_idx[address] = len(self._connections)
-            (
-                single_data_stub,
-                data_stub,
-                control_stub,
-                channel,
-            ) = GrpcConnectionPool.create_async_channel_stub(address, tls=use_tls)
+            stubs, channel = GrpcConnectionPool.create_async_channel_stub(
+                address, tls=use_tls, summary=self.summary
+            )
             self._address_to_channel[address] = channel
 
-            self._connections.append((single_data_stub, data_stub, control_stub))
+            self._connections.append(stubs)
 
     async def remove_connection(self, address: str):
         """
@@ -139,13 +146,115 @@ class GrpcConnectionPool:
     K8S_PORT_USES_BEFORE = 8081
     K8S_PORT = 8080
 
+    class ConnectionStubs:
+        """
+        Maintains a list of grpc stubs available for a particular connection
+        """
+
+        STUB_MAPPING = {
+            'jina.JinaControlRequestRPC': jina_pb2_grpc.JinaControlRequestRPCStub,
+            'jina.JinaDataRequestRPC': jina_pb2_grpc.JinaDataRequestRPCStub,
+            'jina.JinaSingleDataRequestRPC': jina_pb2_grpc.JinaSingleDataRequestRPCStub,
+            'jina.JinaRPC': jina_pb2_grpc.JinaRPCStub,
+        }
+
+        def __init__(self, address, channel, summary):
+            self.address = address
+            self.channel = channel
+            self._summary_time = summary
+            self._initialized = False
+
+        # This has to be done lazily, because the target endpoint may not be available
+        # when a connection is added
+        async def _init_stubs(self):
+            available_services = await GrpcConnectionPool.get_available_services(
+                self.channel
+            )
+            stubs = defaultdict(lambda: None)
+            for service in available_services:
+                stubs[service] = self.STUB_MAPPING[service](self.channel)
+            self.control_stub = stubs['jina.JinaControlRequestRPC']
+            self.data_list_stub = stubs['jina.JinaDataRequestRPC']
+            self.single_data_stub = stubs['jina.JinaSingleDataRequestRPC']
+            self.stream_stub = stubs['jina.JinaRPC']
+            self._initialized = True
+
+        async def send_requests(
+            self, requests: List[Request], metadata, compression
+        ) -> Tuple:
+            """
+            Send requests and uses the appropriate grpc stub for this
+            Stub is chosen based on availability and type of requests
+
+            :param requests: the requests to send
+            :param metadata: the metadata to send alongside the requests
+            :param compression: defines if compression should be used
+
+            :returns: Tuple of response and metadata about the response
+            """
+            if not self._initialized:
+                await self._init_stubs()
+            request_type = type(requests[0])
+            if request_type == DataRequest and len(requests) == 1:
+                if self.single_data_stub:
+                    call_result = self.single_data_stub.process_single_data(
+                        requests[0],
+                        metadata=metadata,
+                        compression=compression,
+                    )
+                    with self._summary_time:
+                        metadata, response = (
+                            await call_result.trailing_metadata(),
+                            await call_result,
+                        )
+                    return response, metadata
+                elif self.stream_stub:
+                    with self._summary_time:
+                        async for resp in self.stream_stub.Call(
+                            iter(requests),
+                            compression=compression,
+                        ):
+                            return resp, None
+            if request_type == DataRequest and len(requests) > 1:
+                if self.data_list_stub:
+                    call_result = self.data_list_stub.process_data(
+                        requests,
+                        metadata=metadata,
+                        compression=compression,
+                    )
+                    with self._summary_time:
+                        metadata, response = (
+                            await call_result.trailing_metadata(),
+                            await call_result,
+                        )
+                    return response, metadata
+                else:
+                    raise ValueError(
+                        'Can not send list of DataRequests. gRPC endpoint not available.'
+                    )
+            elif request_type == ControlRequest:
+                if self.control_stub:
+                    call_result = self.control_stub.process_control(requests[0])
+                    metadata, response = (
+                        await call_result.trailing_metadata(),
+                        await call_result,
+                    )
+                    return response, metadata
+                else:
+                    raise ValueError(
+                        'Can not send ControlRequest. gRPC endpoint not available.'
+                    )
+            else:
+                raise ValueError(f'Unsupported request type {type(requests[0])}')
+
     class _ConnectionPoolMap:
-        def __init__(self, logger: Optional[JinaLogger]):
+        def __init__(self, logger: Optional[JinaLogger], summary):
             self._logger = logger
             # this maps deployments to shards or heads
             self._deployments: Dict[str, Dict[str, Dict[int, ReplicaList]]] = {}
             # dict stores last entity id used for a particular deployment, used for round robin
             self._access_count: Dict[str, int] = {}
+            self.summary = summary
 
             if os.name != 'nt':
                 os.unsetenv('http_proxy')
@@ -233,7 +342,7 @@ class GrpcConnectionPool:
         ):
             self._add_deployment(deployment)
             if entity_id not in self._deployments[deployment][type]:
-                connection_list = ReplicaList()
+                connection_list = ReplicaList(self.summary)
                 self._deployments[deployment][type][entity_id] = connection_list
 
             if not self._deployments[deployment][type][entity_id].has_connection(
@@ -278,9 +387,9 @@ class GrpcConnectionPool:
         self,
         logger: Optional[JinaLogger] = None,
         compression: str = 'NoCompression',
+        metrics_registry: Optional['CollectorRegistry'] = None,
     ):
         self._logger = logger or JinaLogger(self.__class__.__name__)
-        self._connections = self._ConnectionPoolMap(self._logger)
         GRPC_COMPRESSION_MAP = {
             'NoCompression'.lower(): grpc.Compression.NoCompression,
             'Gzip'.lower(): grpc.Compression.Gzip,
@@ -297,6 +406,18 @@ class GrpcConnectionPool:
         self.compression = GRPC_COMPRESSION_MAP.get(
             compression.lower(), grpc.Compression.NoCompression
         )
+
+        if metrics_registry:
+            from prometheus_client import Summary
+
+            self._summary_time = Summary(
+                'sending_request_seconds',
+                'Time spent between sending a request to the Pod and receiving the response',
+                registry=metrics_registry,
+            ).time()
+        else:
+            self._summary_time = contextlib.nullcontext()
+        self._connections = self._ConnectionPoolMap(self._logger, self._summary_time)
 
     def send_request(
         self,
@@ -466,49 +587,24 @@ class GrpcConnectionPool:
         await self._connections.close()
 
     def _send_requests(
-        self, requests: List[Request], connection, endpoint: Optional[str] = None
+        self,
+        requests: List[Request],
+        connection: ConnectionStubs,
+        endpoint: Optional[str] = None,
     ) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
-        async def task_wrapper(requests, stubs, endpoint):
+        async def task_wrapper(
+            requests, connection: GrpcConnectionPool.ConnectionStubs, endpoint
+        ):
             metadata = (('endpoint', endpoint),) if endpoint else None
             for i in range(3):
                 try:
-                    request_type = type(requests[0])
-                    if request_type == DataRequest and len(requests) == 1:
-
-                        call_result = stubs[0].process_single_data(
-                            requests[0],
-                            metadata=metadata,
-                            compression=self.compression,
-                        )
-                        metadata, response = (
-                            await call_result.trailing_metadata(),
-                            await call_result,
-                        )
-                        return response, metadata
-                    if request_type == DataRequest and len(requests) > 1:
-                        call_result = stubs[1].process_data(
-                            requests,
-                            metadata=metadata,
-                            compression=self.compression,
-                        )
-                        metadata, response = (
-                            await call_result.trailing_metadata(),
-                            await call_result,
-                        )
-                        return response, metadata
-                    elif request_type == ControlRequest:
-                        call_result = stubs[2].process_control(requests[0])
-                        metadata, response = (
-                            await call_result.trailing_metadata(),
-                            await call_result,
-                        )
-                        return response, metadata
-                    else:
-                        raise ValueError(
-                            f'Unsupported request type {type(requests[0])}'
-                        )
+                    return await connection.send_requests(
+                        requests=requests,
+                        metadata=metadata,
+                        compression=self.compression,
+                    )
                 except AioRpcError as e:
                     if e.code() != grpc.StatusCode.UNAVAILABLE:
                         raise
@@ -769,21 +865,15 @@ class GrpcConnectionPool:
 
     @staticmethod
     def create_async_channel_stub(
-        address,
-        tls=False,
-        root_certificates: Optional[str] = None,
-    ) -> Tuple[
-        jina_pb2_grpc.JinaSingleDataRequestRPCStub,
-        jina_pb2_grpc.JinaDataRequestRPCStub,
-        jina_pb2_grpc.JinaControlRequestRPCStub,
-        grpc.aio.Channel,
-    ]:
+        address, tls=False, root_certificates: Optional[str] = None, summary=None
+    ) -> Tuple[ConnectionStubs, grpc.aio.Channel]:
         """
         Creates an async GRPC Channel. This channel has to be closed eventually!
 
         :param address: the address to create the connection to, like 127.0.0.0.1:8080
         :param tls: if True, use tls for the grpc channel
         :param root_certificates: the path to the root certificates for tls, only u
+        :param summary: Optional Prometheus summary object
 
         :returns: DataRequest/ControlRequest stubs and an async grpc channel
         """
@@ -795,11 +885,33 @@ class GrpcConnectionPool:
         )
 
         return (
-            jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel),
-            jina_pb2_grpc.JinaDataRequestRPCStub(channel),
-            jina_pb2_grpc.JinaControlRequestRPCStub(channel),
+            GrpcConnectionPool.ConnectionStubs(address, channel, summary),
             channel,
         )
+
+    @staticmethod
+    async def get_available_services(channel) -> List[str]:
+        """
+        Lists available services by name, exposed at target address
+
+        :param channel: the channel to use
+
+        :returns: List of services offered
+        """
+        reflection_stub = ServerReflectionStub(channel)
+        response = reflection_stub.ServerReflectionInfo(
+            iter([ServerReflectionRequest(list_services="")])
+        )
+        service_names = []
+        async for res in response:
+            service_names.append(
+                [
+                    service.name
+                    for service in res.list_services_response.service
+                    if service.name != 'grpc.reflection.v1alpha.ServerReflection'
+                ]
+            )
+        return service_names[0]
 
 
 def in_docker():

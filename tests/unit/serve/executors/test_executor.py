@@ -4,6 +4,7 @@ from pathlib import Path
 from unittest import mock
 
 import pytest
+import yaml
 from docarray import Document, DocumentArray
 
 from jina import Client, Executor, Flow, requests
@@ -124,6 +125,7 @@ def test_executor_workspace_simple(test_metas_workspace_simple):
 
 
 def test_executor_workspace_simple_workspace(tmpdir):
+    runtime_workspace = os.path.join(tmpdir, 'test2')
     workspace = os.path.join(tmpdir, 'some_folder')
     name = 'test_meta'
 
@@ -133,12 +135,12 @@ def test_executor_workspace_simple_workspace(tmpdir):
     executor = Executor(metas={'name': name}, runtime_args={'workspace': workspace})
     assert executor.workspace == os.path.abspath(os.path.join(workspace, name))
 
-    # metas before runtime_args
+    # metas after runtime_args
     executor = Executor(
         metas={'name': name, 'workspace': workspace},
-        runtime_args={'workspace': 'test2'},
+        runtime_args={'workspace': runtime_workspace},
     )
-    assert executor.workspace == os.path.abspath(os.path.join(workspace, name))
+    assert executor.workspace == os.path.abspath(os.path.join(runtime_workspace, name))
 
     executor = Executor(
         metas={'name': name, 'workspace': workspace},
@@ -365,3 +367,71 @@ def test_default_workspace(tmpdir):
         assert result_workspace == os.path.join(
             os.environ['JINA_DEFAULT_WORKSPACE_BASE'], 'WorkspaceExec', '0'
         )
+
+
+@pytest.mark.parametrize(
+    'exec_type',
+    [Executor.StandaloneExecutorType.EXTERNAL, Executor.StandaloneExecutorType.SHARED],
+)
+def test_to_k8s_yaml(tmpdir, exec_type):
+    Executor.to_k8s_yaml(
+        output_base_path=tmpdir,
+        port_expose=2020,
+        uses='jinahub+docker://DummyHubExecutor',
+        executor_type=exec_type,
+    )
+
+    with open(os.path.join(tmpdir, 'executor0', 'executor0.yml')) as f:
+        exec_yaml = list(yaml.safe_load_all(f))[-1]
+        assert exec_yaml['spec']['template']['spec']['containers'][0][
+            'image'
+        ].startswith('jinahub/')
+
+    if exec_type == Executor.StandaloneExecutorType.SHARED:
+        assert set(os.listdir(tmpdir)) == {
+            'executor0',
+        }
+    else:
+        assert set(os.listdir(tmpdir)) == {
+            'executor0',
+            'gateway',
+        }
+
+        with open(os.path.join(tmpdir, 'gateway', 'gateway.yml')) as f:
+            gatewayyaml = list(yaml.safe_load_all(f))[-1]
+            assert (
+                gatewayyaml['spec']['template']['spec']['containers'][0]['ports'][0][
+                    'containerPort'
+                ]
+                == 2020
+            )
+            gateway_args = gatewayyaml['spec']['template']['spec']['containers'][0][
+                'args'
+            ]
+            assert gateway_args[gateway_args.index('--port') + 1] == '2020'
+
+
+@pytest.mark.parametrize(
+    'exec_type',
+    [Executor.StandaloneExecutorType.EXTERNAL, Executor.StandaloneExecutorType.SHARED],
+)
+def test_to_docker_compose_yaml(tmpdir, exec_type):
+    compose_file = os.path.join(tmpdir, 'compose.yml')
+    Executor.to_docker_compose_yaml(
+        output_path=compose_file,
+        port_expose=2020,
+        uses='jinahub+docker://DummyHubExecutor',
+        executor_type=exec_type,
+    )
+
+    with open(compose_file) as f:
+        services = list(yaml.safe_load_all(f))[0]['services']
+        assert services['executor0']['image'].startswith('jinahub/')
+
+        if exec_type == Executor.StandaloneExecutorType.SHARED:
+            assert len(services) == 1
+        else:
+            assert len(services) == 2
+            assert services['gateway']['ports'][0] == '2020:2020'
+            gateway_args = services['gateway']['command']
+            assert gateway_args[gateway_args.index('--port') + 1] == '2020'

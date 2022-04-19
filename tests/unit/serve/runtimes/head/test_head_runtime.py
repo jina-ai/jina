@@ -9,14 +9,14 @@ import grpc
 import pytest
 from grpc import RpcError
 
-from jina import DocumentArray, Document
+from jina import Document, DocumentArray
 from jina.clients.request import request_generator
 from jina.enums import PollingType
 from jina.parsers import set_pod_parser
+from jina.proto import jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.head import HeadRuntime
-from jina.proto import jina_pb2_grpc
 from jina.types.request import Request
 from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
@@ -242,6 +242,32 @@ def test_base_polling(polling):
 
     assert response
     assert _queue_length(handle_queue) == 4 if polling == 'all' else 2
+
+    _destroy_runtime(args, cancel_event, runtime_thread)
+
+
+@pytest.mark.asyncio
+async def test_head_runtime_reflection():
+    args = set_pod_parser().parse_args([])
+    cancel_event, handle_queue, runtime_thread = _create_runtime(args)
+
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=3.0,
+        ctrl_address=f'{args.host}:{args.port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    async with grpc.aio.insecure_channel(f'{args.host}:{args.port}') as channel:
+        service_names = await GrpcConnectionPool.get_available_services(channel)
+
+    assert all(
+        service_name in service_names
+        for service_name in [
+            'jina.JinaControlRequestRPC',
+            'jina.JinaDataRequestRPC',
+            'jina.JinaSingleDataRequestRPC',
+        ]
+    )
 
     _destroy_runtime(args, cancel_event, runtime_thread)
 

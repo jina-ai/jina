@@ -1,7 +1,9 @@
 import argparse
+
 import pytest
-from jina.parsers.hubble.push import mixin_hub_push_parser
+
 from jina.parsers.hubble.pull import mixin_hub_pull_parser
+from jina.parsers.hubble.push import mixin_hub_push_parser
 
 
 def test_push_parser(tmpdir):
@@ -17,6 +19,7 @@ def test_push_parser(tmpdir):
     assert args.force_update is None
     assert args.secret is None
     assert args.verbose is False
+    assert args.no_cache is False
     assert not hasattr(args, 'public')
     assert not hasattr(args, 'private')
 
@@ -55,6 +58,9 @@ def test_push_parser(tmpdir):
 
     args = parser.parse_args([tmpdir, '--verbose'])
     assert args.verbose is True
+
+    args = parser.parse_args([tmpdir, '--no-cache'])
+    assert args.no_cache is True
 
 
 def test_pull_parser():

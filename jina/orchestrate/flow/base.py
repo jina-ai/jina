@@ -27,7 +27,7 @@ from typing import (
 from rich import print
 from rich.table import Table
 
-from jina import __default_host__, __docker_host__, helper
+from jina import __default_host__, __default_port_monitoring__, __docker_host__, helper
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, PostMixin
 from jina.enums import (
@@ -39,6 +39,7 @@ from jina.enums import (
 from jina.excepts import (
     FlowMissingDeploymentError,
     FlowTopologyError,
+    PortAlreadyUsed,
     RuntimeFailToStart,
 )
 from jina.helper import (
@@ -51,6 +52,7 @@ from jina.helper import (
     get_internal_ip,
     get_public_ip,
     get_rich_console,
+    is_port_free,
     typename,
 )
 from jina.jaml import JAMLCompatible
@@ -147,6 +149,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
+        monitoring: Optional[bool] = False,
         name: Optional[str] = 'gateway',
         native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
@@ -154,6 +157,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
+        port_monitoring: Optional[int] = 9090,
         prefetch: Optional[int] = 0,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
@@ -198,6 +202,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
+        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
           This will be used in the following places:
@@ -226,6 +231,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]
+        :param port_monitoring: The port on which the prometheus server is exposed, default port is 9090
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)
@@ -471,6 +477,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         kwargs.update(self._common_kwargs)
         args = ArgNamespace.kwargs2namespace(kwargs, set_gateway_parser())
+
+        # We need to check later if the port was manually set or randomly
+        args.default_port = (
+            kwargs.get('port', None) is None and kwargs.get('port_expose', None) is None
+        )
         args.noblock_on_start = True
         args.expose_graphql_endpoint = (
             self.args.expose_graphql_endpoint
@@ -637,6 +648,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         *,
         compression: Optional[str] = 'NoCompression',
         connection_list: Optional[str] = None,
+        disable_auto_volume: Optional[bool] = False,
         disable_reduce: Optional[bool] = False,
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
@@ -648,11 +660,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         host_in: Optional[str] = '0.0.0.0',
         install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
+        monitoring: Optional[bool] = False,
         name: Optional[str] = None,
         native: Optional[bool] = False,
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
+        port_monitoring: Optional[int] = 9090,
         pull_latest: Optional[bool] = False,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
@@ -682,6 +696,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. Possibilities are `NoCompression, Gzip, Deflate`. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
+        :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
         :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
           container.
@@ -703,6 +718,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
+        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
           This will be used in the following places:
@@ -727,6 +743,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]
+        :param port_monitoring: The port on which the prometheus server is exposed, default port is 9090
         :param pull_latest: Pull the latest image before running
         :param py_modules: The customized python modules need to be imported before loading the executor
 
@@ -867,6 +884,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if not port:
             port = helper.random_port()
             args.port = port
+
+        if len(needs) > 1 and args.external and args.disable_reduce:
+            raise ValueError(
+                'External Executors with multiple needs have to do auto reduce.'
+            )
 
         op_flow._deployment_nodes[deployment_name] = Deployment(args, needs)
 
@@ -1133,8 +1155,16 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :return: this instance
         """
+
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
+
+        port_gateway = self._deployment_nodes[GATEWAY_NAME].args.port
+
+        if not (
+            is_port_free(__default_host__, port_gateway)
+        ):  # we check if the port is not used at parsing time as well for robustness
+            raise PortAlreadyUsed(f'port:{port_gateway}')
 
         # set env only before the Deployment get started
         if self.args.env:
@@ -1395,9 +1425,14 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         # deepcopy causes the below error while reusing a Flow in Jupyter
         # 'Pickling an AuthenticationString object is disallowed for security reasons'
-        op_flow = copy.deepcopy(self) if copy_flow else self
+        # no need to deep copy if the Graph is built because no change will be made to the Flow
+        op_flow = (
+            copy.deepcopy(self)
+            if (copy_flow and self._build_level.value == FlowBuildLevel.EMPTY)
+            else self
+        )
 
-        if build:
+        if build and op_flow._build_level.value == FlowBuildLevel.EMPTY:
             op_flow.build(False)
 
         mermaid_str = op_flow._mermaid_str
@@ -1502,6 +1537,28 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             self[GATEWAY_NAME].wait_start_success()
 
     @property
+    def monitoring(self) -> bool:
+        """Return if the monitoring is enabled
+        .. # noqa: DAR201
+        """
+        if GATEWAY_NAME in self._deployment_nodes:
+            return self[GATEWAY_NAME].args.monitoring
+        else:
+            return False
+
+    @property
+    def port_monitoring(self) -> int:
+        """Return if the monitoring is enabled
+        .. # noqa: DAR201
+        """
+        if GATEWAY_NAME in self._deployment_nodes:
+            return self[GATEWAY_NAME].args.port_monitoring
+        else:
+            return self._common_kwargs.get(
+                'port_monitoring', __default_port_monitoring__
+            )
+
+    @property
     def address_private(self) -> str:
         """Return the private IP address of the gateway for connecting from other machine in the same network
 
@@ -1567,6 +1624,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     'GraphQL UI',
                     f'[underline][cyan]http://localhost:{self.port}/graphql[/underline][/cyan]',
                 )
+        if self.monitoring:
+            address_table.add_row(
+                '📉️',
+                'Prometheus',
+                f'[underline][cyan]http://localhost:{self.port_monitoring}[/underline][/cyan]',
+            )
 
         return address_table
 
@@ -1765,7 +1828,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     # for backward support
     join = needs
 
-    def to_k8s_yaml(self, output_base_path: str, k8s_namespace: Optional[str] = None):
+    def to_k8s_yaml(
+        self,
+        output_base_path: str,
+        k8s_namespace: Optional[str] = None,
+        include_gateway: bool = True,
+    ):
         """
         Converts the Flow into a set of yaml deployments to deploy in Kubernetes.
 
@@ -1774,6 +1842,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         :param output_base_path: The base path where to dump all the yaml files
         :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
+        :param include_gateway: Defines if the gateway deployment should be included, defaults to True
         """
         import yaml
 
@@ -1785,8 +1854,15 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         k8s_namespace = k8s_namespace or self.args.name or 'default'
 
         for node, v in self._deployment_nodes.items():
-            if v.external:
+            if v.external or (node == 'gateway' and not include_gateway):
                 continue
+            if node == 'gateway' and v.args.default_port:
+                from jina.serve.networking import GrpcConnectionPool
+
+                v.args.port = GrpcConnectionPool.K8S_PORT
+                v.first_pod_args.port = GrpcConnectionPool.K8S_PORT
+                v.args.default_port = False
+
             deployment_base = os.path.join(output_base_path, node)
             k8s_deployment = K8sDeploymentConfig(
                 args=v.args,
@@ -1812,12 +1888,16 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         )
 
     def to_docker_compose_yaml(
-        self, output_path: Optional[str] = None, network_name: Optional[str] = None
+        self,
+        output_path: Optional[str] = None,
+        network_name: Optional[str] = None,
+        include_gateway: bool = True,
     ):
         """
         Converts the Flow into a yaml file to run with `docker-compose up`
         :param output_path: The output path for the yaml file
         :param network_name: The name of the network that will be used by the deployment name
+        :param include_gateway: Defines if the gateway deployment should be included, defaults to True
         """
         import yaml
 
@@ -1839,6 +1919,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         services = {}
 
         for node, v in self._deployment_nodes.items():
+            if v.external or (node == 'gateway' and not include_gateway):
+                continue
+
             docker_compose_deployment = DockerComposeConfig(
                 args=v.args,
                 deployments_addresses=self._get_docker_compose_deployments_addresses(),
