@@ -414,6 +414,7 @@ class GrpcConnectionPool:
                 'sending_request_seconds',
                 'Time spent between sending a request to the Pod and receiving the response',
                 registry=metrics_registry,
+                namespace='jina',
             ).time()
         else:
             self._summary_time = contextlib.nullcontext()

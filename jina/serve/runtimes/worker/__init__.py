@@ -47,6 +47,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 'receiving_request_seconds',
                 'Time spent processing request',
                 registry=self.metrics_registry,
+                namespace='jina',
             ).time()
         else:
             self._summary_time = contextlib.nullcontext()
