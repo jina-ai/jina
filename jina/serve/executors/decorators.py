@@ -116,21 +116,25 @@ def requests(
 
                 @functools.wraps(fn)
                 async def arg_wrapper(
-                    self2, *args, **kwargs
+                    executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
-                    with self._get_summary(self2._summary_method, fn.__name__):
-                        return await fn(self2, *args, **kwargs)
+                    with self._get_summary(
+                        executor_instance._summary_method, fn.__name__
+                    ):
+                        return await fn(executor_instance, *args, **kwargs)
 
                 self.fn = arg_wrapper
             else:
 
                 @functools.wraps(fn)
                 def arg_wrapper(
-                    self2, *args, **kwargs
+                    executor_instance, *args, **kwargs
                 ):  # we need to get the summary from the executor, so we need to access the self
 
-                    with self._get_summary(self2._summary_method, fn.__name__):
-                        return fn(self2, *args, **kwargs)
+                    with self._get_summary(
+                        executor_instance._summary_method, fn.__name__
+                    ):
+                        return fn(executor_instance, *args, **kwargs)
 
                 self.fn = arg_wrapper
 
