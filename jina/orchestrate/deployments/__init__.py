@@ -757,7 +757,8 @@ class Deployment(BaseDeployment):
                     ]  # all the uses should be the same but let's keep it this
                     # way
                     for rep_i, (name, use) in enumerate(zip(names, uses)):
-                        shard_mermaid_graph.append(f'{name}[{use}]:::pod;')
+                        escaped_uses = f'"{use}"'
+                        shard_mermaid_graph.append(f'{name}[{escaped_uses}]:::pod;')
                     shard_mermaid_graph.append('end;')
                     shard_mermaid_graph = [
                         node.replace(';', '\n') for node in shard_mermaid_graph
@@ -766,18 +767,20 @@ class Deployment(BaseDeployment):
                     mermaid_graph.append('\n')
                 if uses_before_name is not None:
                     for shard_name in shard_names:
+                        escaped_uses_before_uses = f'"{uses_before_uses}"'
                         mermaid_graph.append(
-                            f'{self.args.name}-head[{uses_before_uses}]:::HEADTAIL --> {shard_name};'
+                            f'{self.args.name}-head[{escaped_uses_before_uses}]:::HEADTAIL --> {shard_name};'
                         )
                 if uses_after_name is not None:
                     for shard_name in shard_names:
+                        escaped_uses_after_uses = f'"{uses_after_uses}"'
                         mermaid_graph.append(
-                            f'{shard_name} --> {self.args.name}-tail[{uses_after_uses}]:::HEADTAIL;'
+                            f'{shard_name} --> {self.args.name}-tail[{escaped_uses_after_uses}]:::HEADTAIL;'
                         )
             else:
                 # single shard case, no uses_before or uses_after_considered
                 name = list(self.pod_args['pods'].values())[0][0].name
-                uses = list(self.pod_args['pods'].values())[0][0].uses
+                uses = f'"{list(self.pod_args["pods"].values())[0][0].uses}"'
                 num_replicas = list(self.pod_args['pods'].values())[0][0].replicas
 
                 # just put the replicas in parallel
@@ -786,5 +789,6 @@ class Deployment(BaseDeployment):
                         mermaid_graph.append(f'{name}/rep-{rep_i}[{uses}]:::pod;')
                 else:
                     mermaid_graph.append(f'{name}[{uses}]:::pod;')
+
             mermaid_graph.append('end;')
         return mermaid_graph

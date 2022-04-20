@@ -1345,7 +1345,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         # plot subgraphs
         for node, v in self._deployment_nodes.items():
             deployment_nodes.append(v.name)
-            mermaid_graph.extend(v._mermaid_str)
+            deployment_mermaid = v._mermaid_str
+            mermaid_graph.extend(deployment_mermaid)
 
         for node, v in self._deployment_nodes.items():
             for need in sorted(v.needs):
