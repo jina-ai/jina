@@ -45,10 +45,15 @@ def test_enable_monitoring_gateway(protocol, port_generator):
 
     with Flow(protocol=protocol, monitoring=True, port_monitoring=port0).add(
         uses=DummyExecutor, monitoring=True, port_monitoring=port1
-    ).add(uses=DummyExecutor, monitoring=True, port_monitoring=port2):
+    ).add(uses=DummyExecutor, monitoring=True, port_monitoring=port2) as f:
         for port in [port0, port1, port2]:
             resp = req.get(f'http://localhost:{port}/')
             assert resp.status_code == 200
+
+        f.search(inputs=DocumentArray())
+        resp = req.get(f'http://localhost:{port0}/')
+        assert f'jina_receiving_request_seconds' in str(resp.content)
+        assert f'jina_sending_request_seconds' in str(resp.content)
 
 
 def test_monitoring_head(port_generator):
@@ -64,3 +69,8 @@ def test_monitoring_head(port_generator):
         for port in [port1, port2, port3, port4]:
             resp = req.get(f'http://localhost:{port}/')
             assert resp.status_code == 200
+
+        f.search(inputs=DocumentArray())
+        resp = req.get(f'http://localhost:{port2}/')
+        assert f'jina_receiving_request_seconds' in str(resp.content)
+        assert f'jina_sending_request_seconds' in str(resp.content)

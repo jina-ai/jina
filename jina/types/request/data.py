@@ -213,6 +213,15 @@ class DataRequest(Request):
         """
         return self.proto.header.status
 
+    @property
+    def request_id(self):
+        """
+        Returns the request_id from the header field
+
+        :return: the request_id object of this request
+        """
+        return self.proto.header.request_id
+
     @classmethod
     def from_proto(cls, request: 'jina_pb2.DataRequestProto'):
         """Creates a new DataRequest object from a given :class:`DataRequestProto` object.
