@@ -28,12 +28,15 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
     def __init__(
         self,
         args: 'argparse.Namespace',
+        cancel_event: Optional[
+            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+        ] = None,
         **kwargs,
     ):
         super().__init__(args, **kwargs)
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
-        self.is_cancel = asyncio.Event()
+        self.is_cancel = cancel_event or asyncio.Event()
         if not __windows__:
             # TODO: windows event loops don't support signal handlers
             try:
