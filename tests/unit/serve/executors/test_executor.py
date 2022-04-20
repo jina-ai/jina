@@ -452,12 +452,15 @@ def _create_test_data_message(counter=0):
 
 @pytest.mark.asyncio
 async def test_blocking_sync_exec():
+    SLEEP_TIME = 0.01
+    REQUEST_COUNT = 100
+
     class BlockingExecutor(Executor):
         @requests
         def foo(self, docs: DocumentArray, **kwargs):
-            time.sleep(1.0)
+            time.sleep(SLEEP_TIME)
             for doc in docs:
-                doc.text = str(time.time())
+                doc.text = 'BlockingExecutor'
             return docs
 
     args = set_pod_parser().parse_args(['--uses', 'BlockingExecutor'])
@@ -481,19 +484,22 @@ async def test_blocking_sync_exec():
         ready_or_shutdown_event=Event(),
     )
 
-    send_task1 = asyncio.create_task(
-        GrpcConnectionPool.send_request_async(
-            _create_test_data_message(), target=f'{args.host}:{args.port}', timeout=3.0
+    send_tasks = []
+    start_time = time.time()
+    for i in range(REQUEST_COUNT):
+        send_tasks.append(
+            asyncio.create_task(
+                GrpcConnectionPool.send_request_async(
+                    _create_test_data_message(),
+                    target=f'{args.host}:{args.port}',
+                    timeout=3.0,
+                )
+            )
         )
-    )
-    send_task2 = asyncio.create_task(
-        GrpcConnectionPool.send_request_async(
-            _create_test_data_message(), target=f'{args.host}:{args.port}', timeout=3.0
-        )
-    )
 
-    results = await asyncio.gather(send_task1, send_task2)
-    assert float(results[1].docs.texts[0]) - float(results[0].docs.texts[0]) < 1.1
+    await asyncio.gather(*send_tasks)
+    end_time = time.time()
+    assert end_time - start_time < (REQUEST_COUNT * SLEEP_TIME) + 0.2
 
     cancel_event.set()
     runtime_thread.join()
