@@ -31,7 +31,7 @@ This starts a Flow that only has one Executor, and sends a Document to it. The D
 
 ## Sandbox Lifecycle
 
-The sandbox will not be removed immediately after the Flow is closed. It will be kept alive until there is no traffic during this certain period. The default period is currently 15 minutes.
+Sandbox is serverless. It will not be removed immediately after the Flow is closed but keep alive for several minutes. If there is no traffic, it will automatiaclly scale down to 0 to save resources, but it will restart again and give the response whenever there is a new request has been sent to the same Sandbox.
 
 **Sandbox will be shared with other users**. Sometimes you will start the sandbox very quickly because the other users already started it.
 
