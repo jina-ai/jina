@@ -6,8 +6,6 @@ import warnings
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 
-from prometheus_client import Summary
-
 from jina import __args_executor_init__, __default_endpoint__
 from jina.enums import BetterEnum
 from jina.helper import ArgNamespace, T, iscoroutinefunction, typename
@@ -115,7 +113,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self.runtime_args = SimpleNamespace()
 
     def _init_monitoring(self):
-        if hasattr(self.runtime_args, 'metrics_registry'):
+        if (
+            hasattr(self.runtime_args, 'metrics_registry')
+            and self.runtime_args.metrics_registry
+        ):
+            from prometheus_client import Summary
+
             self._summary_method = Summary(
                 'process_request_seconds',
                 'Time spent when calling the executor request method',
