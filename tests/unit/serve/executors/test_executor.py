@@ -497,8 +497,10 @@ async def test_blocking_sync_exec():
             )
         )
 
-    await asyncio.gather(*send_tasks)
+    results = await asyncio.gather(*send_tasks)
     end_time = time.time()
+
+    assert all(result.docs.texts == ['BlockingExecutor'] for result in results)
     assert end_time - start_time < (REQUEST_COUNT * SLEEP_TIME) + 0.2
 
     cancel_event.set()
