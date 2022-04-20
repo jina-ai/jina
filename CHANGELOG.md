@@ -156,6 +156,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12915,4 +12916,66 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```07db5544```](https://github.com/jina-ai/jina/commit/07db55449aba9fadd9f1b390f9899381094d4c01)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```e122d894```](https://github.com/jina-ai/jina/commit/e122d89420ac3f87e8c0cce06ee50fa79e036636)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
  - [[```dac21509```](https://github.com/jina-ai/jina/commit/dac2150965ce2585dabd5e86283273f616c5fa73)] __-__ __version__: the next version will be 3.3.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-3-2></a>
+## Release Note (`3.3.2`)
+
+> Release time: 2022-04-20 14:23:02
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  samsja,  Zhaofeng Miao,  Johannes Messner,  Han Xiao,  cristian,  Jina Dev Bot,  joschkabraun,  Tobias Jacobowitz,  Roshan Jossy,  Wang Bo,  🙇
+
+
+### 🆕 New Features
+
+ - [[```daff8440```](https://github.com/jina-ai/jina/commit/daff84402a5cd8f0f2a3c17c4aa42be89bf4d658)] __-__ add receiving request second to gateway and head (#4638) (*samsja*)
+ - [[```9136be81```](https://github.com/jina-ai/jina/commit/9136be81557917c9250b77a237da6baf49a6e267)] __-__ add process request seconds for executor (#4635) (*samsja*)
+ - [[```a0844f72```](https://github.com/jina-ai/jina/commit/a0844f72c467bc07ec661202540f08b79aa1b9e3)] __-__ __client__: add total_docs to client post kwargs (*Han Xiao*)
+ - [[```dd5f08e9```](https://github.com/jina-ai/jina/commit/dd5f08e9d0c535de2f0e6b106db3b21c597752cd)] __-__ add grpc tls support on gateway (#4522) (*samsja*)
+ - [[```0ff05200```](https://github.com/jina-ai/jina/commit/0ff0520039d0b3a15ac84afeaf9575dcc52c9c05)] __-__ __client__: add total_docs to client post kwargs (#4528) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```7d9be4e2```](https://github.com/jina-ai/jina/commit/7d9be4e2969d33b251997b7f847d4ba140bea61c)] __-__ fix flow plot with private executor (#4643) (*Joan Fontanals*)
+ - [[```608670b9```](https://github.com/jina-ai/jina/commit/608670b9efbbc0e711573d2bb7abc4d024e62c32)] __-__ remove force interactive in rich console (#4614) (*samsja*)
+ - [[```ded90ea0```](https://github.com/jina-ai/jina/commit/ded90ea03ebbcb74f9aa3e65d6b482dbb617abc7)] __-__ prometheus client requirements to match conda package (#4606) (*Joan Fontanals*)
+ - [[```929054e3```](https://github.com/jina-ai/jina/commit/929054e347011e9ad1f2d39db009965054b1f843)] __-__ 8080 as default gateway port in k8s (#4605) (*Tobias Jacobowitz*)
+ - [[```59e14986```](https://github.com/jina-ai/jina/commit/59e149862342ffb59c531c0dfee4e094b3007e9d)] __-__ pin black version (#4557) (*Tobias Jacobowitz*)
+ - [[```d1f08482```](https://github.com/jina-ai/jina/commit/d1f08482f1a2cd9f871faa2b161e48b667388130)] __-__ install linkerd in cd pipeline (#4552) (*Tobias Jacobowitz*)
+ - [[```0f008bc2```](https://github.com/jina-ai/jina/commit/0f008bc281b681e779cdd2fc1daf2be9ea87271d)] __-__ client args are now parse in the client function (#4549) (*samsja*)
+
+### 🧼 Code Refactoring
+
+ - [[```73718c98```](https://github.com/jina-ai/jina/commit/73718c980fb9e1d7bf1337d71cdf8a528209beb5)] __-__ avoid threadpool (#4633) (*Joan Fontanals*)
+ - [[```94f24dc1```](https://github.com/jina-ai/jina/commit/94f24dc1ba4a471512d19ae49fbc65cca43853ca)] __-__ __monitoring__: add jina namespace to current metrics (#4636) (*samsja*)
+ - [[```2ce76751```](https://github.com/jina-ai/jina/commit/2ce767517532ebbf85ade4b84cfba0f7bb69c4f9)] __-__ remove jinad (#4550) (*Tobias Jacobowitz*)
+
+### 📗 Documentation
+
+ - [[```218a31c9```](https://github.com/jina-ai/jina/commit/218a31c9cbe2128aaaa24b1f05cf2380e3a5ea1d)] __-__ __sandbox__: sandbox is serverless now (#4639) (*Zhaofeng Miao*)
+ - [[```8e9714ee```](https://github.com/jina-ai/jina/commit/8e9714ee9e2b73e9f15894a077f84fd4b84ca717)] __-__ restructure flow yaml instructions (#4574) (*Johannes Messner*)
+ - [[```9892ae11```](https://github.com/jina-ai/jina/commit/9892ae11077c7b5578e7f0c96057bb18b167203c)] __-__ add postman collection (#4623) (*cristian*)
+ - [[```aa6238b1```](https://github.com/jina-ai/jina/commit/aa6238b13c2c49cfcc98f5ddf30cc5117f78f35b)] __-__ remove needless python api page (#4620) (*cristian*)
+ - [[```6dbcd806```](https://github.com/jina-ai/jina/commit/6dbcd806e8bcf57fd3b948877bdee121a16fa167)] __-__ renamed function to be named differently from property (#4610) (*joschkabraun*)
+ - [[```c630b515```](https://github.com/jina-ai/jina/commit/c630b5154cead90952443143ce00191bfbd5104b)] __-__ mention scaling of gateway (#4609) (*Tobias Jacobowitz*)
+ - [[```e3607334```](https://github.com/jina-ai/jina/commit/e3607334c2afd548cf74664f9e75fbe5b31767aa)] __-__ __tracking__: add scarf tracking (#4553) (*Roshan Jossy*)
+ - [[```953206fa```](https://github.com/jina-ai/jina/commit/953206fabc3984451c1d9713fce6bda33d22a70e)] __-__ explain https support (#4500) (*Johannes Messner*)
+
+### 🍹 Other Improvements
+
+ - [[```e4fba28b```](https://github.com/jina-ai/jina/commit/e4fba28b3a9aec759b7a2170262d78001c4047de)] __-__ add logo (*Han Xiao*)
+ - [[```1775edfa```](https://github.com/jina-ai/jina/commit/1775edfa3fa7b696de9858630179bcbdf7054925)] __-__ fix workflow (*Han Xiao*)
+ - [[```7f06a0a7```](https://github.com/jina-ai/jina/commit/7f06a0a773bfb9c4c0487aafec956158c53b7e02)] __-__ fix readme (*Han Xiao*)
+ - [[```9f53566e```](https://github.com/jina-ai/jina/commit/9f53566e692a73c25c6a21012d8dfa1ba846a03c)] __-__ __contributor__: update contributors (*Jina Dev Bot*)
+ - [[```49774fb2```](https://github.com/jina-ai/jina/commit/49774fb2ac419fd645d203858c9929d23b83c229)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```7363f5bf```](https://github.com/jina-ai/jina/commit/7363f5bf2b6f3e435e1b38f146d6a70215c27fb3)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```913b681a```](https://github.com/jina-ai/jina/commit/913b681a04aeacd2fb8cf3b050469074e6ed1995)] __-__ __version__: the next version will be 3.3.2 (*Jina Dev Bot*)
+ - [[```dac21509```](https://github.com/jina-ai/jina/commit/dac2150965ce2585dabd5e86283273f616c5fa73)] __-__ __version__: the next version will be 3.3.1 (*Jina Dev Bot*)
+ - [[```58547ea4```](https://github.com/jina-ai/jina/commit/58547ea43416260c9c92a869c0a1247b0b8f06c0)] __-__ bump version (#4604) (*Joan Fontanals*)
+ - [[```5b292a3f```](https://github.com/jina-ai/jina/commit/5b292a3f67c75f8fd71d37a9f7cd4922c04a1e99)] __-__ __version__: the next version will be 3.2.10 (*Jina Dev Bot*)
+ - [[```fbaad7ed```](https://github.com/jina-ai/jina/commit/fbaad7edf276cd3c74cea073cf5d0c7af95ee9af)] __-__ __docs__: add banner (*Han Xiao*)
+ - [[```e0367473```](https://github.com/jina-ai/jina/commit/e03674731a7032035cdf6019b0492a58badffeab)] __-__ remove legacy codebooks and figures (#4530) (*Wang Bo*)
+ - [[```17172d5f```](https://github.com/jina-ai/jina/commit/17172d5f8a193480ded73babd0dc4ba5cc3a51c5)] __-__ __version__: the next version will be 3.2.9 (*Jina Dev Bot*)
 
