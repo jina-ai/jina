@@ -20,6 +20,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
     """Gateway Runtime for gRPC."""
 
     async def async_setup(self):
+        print(f' Gateway envs {self.args.env}')
         """
         The async method to setup.
 

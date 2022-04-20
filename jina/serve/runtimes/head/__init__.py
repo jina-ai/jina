@@ -42,7 +42,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :param kwargs: keyword args
         """
         super().__init__(args, cancel_event, **kwargs)
-
+        print(f' Head envs {args.env}')
         if args.name is None:
             args.name = ''
         self.name = args.name
