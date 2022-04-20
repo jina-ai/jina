@@ -22,17 +22,13 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
     def __init__(
         self,
         args: argparse.Namespace,
-        cancel_event: Optional[
-            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-        ] = None,
         **kwargs,
     ):
         """Initialize grpc and data request handling.
         :param args: args from CLI
-        :param cancel_event: the cancel event used to wait for canceling
         :param kwargs: keyword args
         """
-        super().__init__(args, cancel_event, **kwargs)
+        super().__init__(args, **kwargs)
 
     async def async_setup(self):
         """
