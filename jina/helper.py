@@ -1271,12 +1271,6 @@ def iscoroutinefunction(func: Callable):
     return inspect.iscoroutinefunction(func)
 
 
-async def run_in_threadpool(func: Callable, executor=None, *args, **kwargs):
-    return await get_or_reuse_loop().run_in_executor(
-        executor, functools.partial(func, *args, **kwargs)
-    )
-
-
 def run_async(func, *args, **kwargs):
     """Generalized asyncio.run for jupyter notebook.
 
