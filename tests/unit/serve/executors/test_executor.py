@@ -493,7 +493,7 @@ async def test_blocking_sync_exec():
     )
 
     results = await asyncio.gather(send_task1, send_task2)
-    assert float(results[1].docs.texts[0]) - float(results[0].docs.texts[0]) < 0.1
+    assert float(results[1].docs.texts[0]) - float(results[0].docs.texts[0]) < 1.1
 
     cancel_event.set()
     runtime_thread.join()
