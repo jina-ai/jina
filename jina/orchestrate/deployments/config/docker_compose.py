@@ -58,7 +58,6 @@ class DockerComposeConfig:
             )
             cargs = copy.copy(self.service_args)
             cargs.deployments_addresses = self.deployments_addresses
-            cargs.env = None
             from jina.helper import ArgNamespace
             from jina.parsers import set_gateway_parser
 
@@ -87,6 +86,10 @@ class DockerComposeConfig:
                 [f'{cargs.port_monitoring}'] if cargs.monitoring else []
             )
 
+            envs = [f'JINA_LOG_LEVEL={os.getenv("JINA_LOG_LEVEL", "INFO")}']
+            if cargs.env:
+                for k, v in cargs.env.items():
+                    envs.append(f'{k}={v}')
             return {
                 'image': image_name,
                 'entrypoint': ['jina'],
@@ -97,9 +100,7 @@ class DockerComposeConfig:
                     'test': f'python -m jina.resources.health_check.gateway localhost:{cargs.port} {protocol}',
                     'interval': '2s',
                 },
-                'environment': [
-                    f'JINA_LOG_LEVEL={os.getenv("JINA_LOG_LEVEL", "INFO")}'
-                ],
+                'environment': envs,
             }
 
         def _get_image_name(self, uses: Optional[str]):
@@ -286,7 +287,6 @@ class DockerComposeConfig:
             parsed_args['head_service'].uses_with = None
             parsed_args['head_service'].uses_before = None
             parsed_args['head_service'].uses_after = None
-            parsed_args['head_service'].env = None
 
             # if the k8s connection pool is disabled, the connection pool is managed manually
             import json
