@@ -472,6 +472,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 port=self.port,
                 deployment_role=DeploymentRoleType.GATEWAY,
                 expose_endpoints=json.dumps(self._endpoints_mapping),
+                env=self.env,
             )
         )
 
@@ -1769,6 +1770,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self.args.env = value
         for k, v in self:
             v.args.env = value
+            v.update_pod_args()
 
     @overload
     def expose_endpoint(self, exec_endpoint: str, path: Optional[str] = None):

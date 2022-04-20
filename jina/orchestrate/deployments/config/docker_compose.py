@@ -72,6 +72,7 @@ class DockerComposeConfig:
                 'workspace_id',
                 'upload_files',
                 'noblock_on_start',
+                'env',
             }
 
             non_defaults = ArgNamespace.get_non_defaults_args(

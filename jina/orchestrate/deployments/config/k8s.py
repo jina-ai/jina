@@ -57,7 +57,6 @@ class K8sDeploymentConfig:
             )
 
             cargs = copy.copy(self.deployment_args)
-            cargs.env = None
             cargs.deployments_addresses = self.k8s_deployments_addresses
             from jina.helper import ArgNamespace
             from jina.parsers import set_gateway_parser
@@ -72,6 +71,7 @@ class K8sDeploymentConfig:
                 'workspace_id',
                 'upload_files',
                 'noblock_on_start',
+                'env',
             }
 
             non_defaults = ArgNamespace.get_non_defaults_args(
@@ -143,11 +143,11 @@ class K8sDeploymentConfig:
                 uses_before_cargs.uses_after = None
                 uses_before_cargs.uses_with = None
                 uses_before_cargs.uses_metas = None
-                uses_before_cargs.env = None
                 uses_before_cargs.connection_list = None
                 uses_before_cargs.runtime_cls = 'WorkerRuntime'
                 uses_before_cargs.pod_role = PodRoleType.WORKER
                 uses_before_cargs.polling = None
+                uses_before_cargs.env = None
                 container_args_uses_before = self._get_container_args(
                     uses_before_cargs, PodRoleType.WORKER
                 )
@@ -164,11 +164,11 @@ class K8sDeploymentConfig:
                 uses_after_cargs.uses_after = None
                 uses_after_cargs.uses_with = None
                 uses_after_cargs.uses_metas = None
-                uses_after_cargs.env = None
                 uses_after_cargs.connection_list = None
                 uses_after_cargs.runtime_cls = 'WorkerRuntime'
                 uses_after_cargs.pod_role = PodRoleType.WORKER
                 uses_after_cargs.polling = None
+                uses_after_cargs.env = None
                 container_args_uses_after = self._get_container_args(
                     uses_after_cargs, PodRoleType.WORKER
                 )
@@ -273,7 +273,6 @@ class K8sDeploymentConfig:
                 parsed_args['head_deployment'].uses = None
                 parsed_args['head_deployment'].uses_metas = None
                 parsed_args['head_deployment'].uses_with = None
-                parsed_args['head_deployment'].env = None
 
                 import json
 
