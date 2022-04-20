@@ -233,7 +233,6 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/create-flow/">Create a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/flow-yaml/">Configure a Flow from YAML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/flow-api/">Configure Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/access-flow-api/">Access Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/client/">Python Client</a></li>
@@ -556,21 +555,15 @@
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">Summary</span>
+
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__args_executor_init__</span><span class="p">,</span> <span class="n">__default_endpoint__</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">BetterEnum</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ArgNamespace</span><span class="p">,</span>
-    <span class="n">T</span><span class="p">,</span>
-    <span class="n">iscoroutinefunction</span><span class="p">,</span>
-    <span class="n">run_in_threadpool</span><span class="p">,</span>
-    <span class="n">typename</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">iscoroutinefunction</span><span class="p">,</span> <span class="n">typename</span>
 <span class="kn">from</span> <span class="nn">jina.jaml</span> <span class="kn">import</span> <span class="n">JAML</span><span class="p">,</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">env_var_regex</span><span class="p">,</span> <span class="n">internal_var_regex</span>
 <span class="kn">from</span> <span class="nn">jina.serve.executors.decorators</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">store_init_kwargs</span><span class="p">,</span> <span class="n">wrap_func</span>
 
@@ -663,16 +656,28 @@
 <span class="sd">        :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime</span>
 <span class="sd">        :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_thread_pool</span> <span class="o">=</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_metas</span><span class="p">(</span><span class="n">metas</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_runtime_args</span><span class="p">(</span><span class="n">runtime_args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_monitoring</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_add_runtime_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
         <span class="k">if</span> <span class="n">_runtime_args</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">(</span><span class="o">**</span><span class="n">_runtime_args</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_init_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="p">,</span> <span class="s1">'metrics_registry'</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_summary_method</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
+                <span class="s1">'process_request_seconds'</span><span class="p">,</span>
+                <span class="s1">'Time spent when calling the executor request method'</span><span class="p">,</span>
+                <span class="n">registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="s1">'jina'</span><span class="p">,</span>
+                <span class="n">labelnames</span><span class="o">=</span><span class="p">(</span><span class="s1">'method'</span><span class="p">,</span> <span class="s1">'executor'</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_summary_method</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_add_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'requests'</span><span class="p">):</span>
@@ -793,7 +798,7 @@
         <span class="k">if</span> <span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
             <span class="k">return</span> <span class="k">await</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="k">await</span> <span class="n">run_in_threadpool</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thread_pool</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">workspace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -1036,7 +1041,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 17, 2022.
+                    Last updated on Apr 20, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

@@ -264,7 +264,6 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/create-flow/">Create a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/flow-yaml/">Configure a Flow from YAML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/flow-api/">Configure Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/access-flow-api/">Access Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/client/">Python Client</a></li>
@@ -584,9 +583,19 @@
                 </div>
                 <section id="module-jina.serve.runtimes.gateway.request_handling">
 <span id="jina-serve-runtimes-gateway-request-handling-module"></span><h1>jina.serve.runtimes.gateway.request_handling module<a class="headerlink" href="#module-jina.serve.runtimes.gateway.request_handling" title="Permalink to this headline">¶</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.request_handling.handle_request">
-<span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.request_handling.</span></span><span class="sig-name descname"><span class="pre">handle_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_pool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/request_handling/#handle_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.request_handling.handle_request" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.request_handling.RequestHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.request_handling.</span></span><span class="sig-name descname"><span class="pre">RequestHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metrics_registry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/request_handling/#RequestHandler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.request_handling.RequestHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class that handles the requests arriving to the gateway and the result extracted from the requests future.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>metrics_registry</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_request">
+<span class="sig-name descname"><span class="pre">handle_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_pool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/request_handling/#RequestHandler.handle_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_request" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that handles the requests arriving to the gateway. This will be passed to the streamer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -603,18 +612,19 @@
 </dd>
 </dl>
 </dd></dl>
-<dl class="py function">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.request_handling.handle_result">
-<span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.request_handling.</span></span><span class="sig-name descname"><span class="pre">handle_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/request_handling/#handle_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.request_handling.handle_result" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_result">
+<span class="sig-name descname"><span class="pre">handle_result</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/request_handling/#RequestHandler.handle_result"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_result" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that handles the result when extracted from the request future</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>result</strong> (<a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><em>Request</em></a>) – The result returned to the gateway. It extracts the request to be returned to the client</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Returns a request to be returned to the client</p>
+<dd class="field-even"><p>Return a Function that returns a request to be returned to the client</p>
 </dd>
 </dl>
+</dd></dl>
 </dd></dl>
 </section>
 
@@ -650,7 +660,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 17, 2022.
+                    Last updated on Apr 20, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

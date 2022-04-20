@@ -233,7 +233,6 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/create-flow/">Create a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/flow-yaml/">Configure a Flow from YAML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/flow-api/">Configure Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/access-flow-api/">Access Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/client/">Python Client</a></li>
@@ -553,14 +552,25 @@
                 </div>
                 <h1>Source code for jina.serve.executors.decorators</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Decorators and wrappers designed for wrapping :class:`BaseExecutor` functions. """</span>
-
+<span class="kn">import</span> <span class="nn">contextlib</span>
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">ContextManager</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">jina.serve.executors.metas</span> <span class="kn">import</span> <span class="n">get_default_metas</span>
+<span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">Summary</span>
+
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">convert_tuple_to_list</span><span class="p">,</span> <span class="n">iscoroutinefunction</span>
+<span class="kn">from</span> <span class="nn">jina.serve.executors.metas</span> <span class="kn">import</span> <span class="n">get_default_metas</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
@@ -641,7 +651,7 @@
 <span class="sd">    :param on: the endpoint string, by convention starts with `/`</span>
 <span class="sd">    :return: decorated function</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_endpoint__</span><span class="p">,</span> <span class="n">__args_executor_func__</span>
+    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__args_executor_func__</span><span class="p">,</span> <span class="n">__default_endpoint__</span>
 
     <span class="k">class</span> <span class="nc">FunctionMapper</span><span class="p">:</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
@@ -658,15 +668,29 @@
             <span class="k">if</span> <span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
 
                 <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
-                <span class="k">async</span> <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                    <span class="k">return</span> <span class="k">await</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">async</span> <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span>
+                    <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">):</span>  <span class="c1"># we need to get the summary from the executor, so we need to access the self</span>
+                    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_summary</span><span class="p">(</span>
+                        <span class="n">executor_instance</span><span class="o">.</span><span class="n">_summary_method</span><span class="p">,</span>
+                        <span class="n">executor_instance</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                        <span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                    <span class="p">):</span>
+                        <span class="k">return</span> <span class="k">await</span> <span class="n">fn</span><span class="p">(</span><span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">arg_wrapper</span>
             <span class="k">else</span><span class="p">:</span>
 
                 <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
-                <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                    <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span>
+                    <span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">):</span>  <span class="c1"># we need to get the summary from the executor, so we need to access the self</span>
+                    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_summary</span><span class="p">(</span>
+                        <span class="n">executor_instance</span><span class="o">.</span><span class="n">_summary_method</span><span class="p">,</span>
+                        <span class="n">executor_instance</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                        <span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                    <span class="p">):</span>
+                        <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="n">executor_instance</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">arg_wrapper</span>
 
@@ -683,6 +707,15 @@
 
             <span class="nb">setattr</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
 
+        <span class="k">def</span> <span class="nf">_get_summary</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'Summary'</span><span class="p">],</span> <span class="n">executor_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">method_name</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ContextManager</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="n">summary</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">method_name</span><span class="p">,</span> <span class="n">executor_name</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">summary</span>
+                <span class="k">else</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">nullcontext</span><span class="p">()</span>
+            <span class="p">)</span>
+
     <span class="k">if</span> <span class="n">func</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">FunctionMapper</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -698,7 +731,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 17, 2022.
+                    Last updated on Apr 20, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

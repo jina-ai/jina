@@ -233,7 +233,6 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/create-flow/">Create a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/flow-yaml/">Configure a Flow from YAML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/flow-api/">Configure Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/access-flow-api/">Access Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/client/">Python Client</a></li>
@@ -570,6 +569,8 @@
 <span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="kn">import</span> <span class="n">used_memory_readable</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">CollectorRegistry</span>
+
     <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
     <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.graph.topology_graph</span> <span class="kn">import</span> <span class="n">TopologyGraph</span>
 
@@ -579,6 +580,7 @@
     <span class="n">topology_graph</span><span class="p">:</span> <span class="s1">'TopologyGraph'</span><span class="p">,</span>
     <span class="n">connection_pool</span><span class="p">:</span> <span class="s1">'GrpcConnectionPool'</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span> <span class="s1">'JinaLogger'</span><span class="p">,</span>
+    <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'CollectorRegistry'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">"""</span>
 <span class="sd">    Get the app from FastAPI as the REST interface.</span>
@@ -587,6 +589,7 @@
 <span class="sd">    :param topology_graph: topology graph that manages the logic of sending to the proper executors.</span>
 <span class="sd">    :param connection_pool: Connection Pool to handle multiple replicas and sending to different of them</span>
 <span class="sd">    :param logger: Jina logger.</span>
+<span class="sd">    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler</span>
 <span class="sd">    :return: fastapi app</span>
 <span class="sd">    """</span>
     <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -632,18 +635,17 @@
             <span class="s1">'CORS is enabled. This service is now accessible from any website!'</span>
         <span class="p">)</span>
 
-    <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.request_handling</span> <span class="kn">import</span> <span class="p">(</span>
-        <span class="n">handle_request</span><span class="p">,</span>
-        <span class="n">handle_result</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.request_handling</span> <span class="kn">import</span> <span class="n">RequestHandler</span>
     <span class="kn">from</span> <span class="nn">jina.serve.stream</span> <span class="kn">import</span> <span class="n">RequestStreamer</span>
+
+    <span class="n">request_handler</span> <span class="o">=</span> <span class="n">RequestHandler</span><span class="p">(</span><span class="n">metrics_registry</span><span class="p">)</span>
 
     <span class="n">streamer</span> <span class="o">=</span> <span class="n">RequestStreamer</span><span class="p">(</span>
         <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
-        <span class="n">request_handler</span><span class="o">=</span><span class="n">handle_request</span><span class="p">(</span>
+        <span class="n">request_handler</span><span class="o">=</span><span class="n">request_handler</span><span class="o">.</span><span class="n">handle_request</span><span class="p">(</span>
             <span class="n">graph</span><span class="o">=</span><span class="n">topology_graph</span><span class="p">,</span> <span class="n">connection_pool</span><span class="o">=</span><span class="n">connection_pool</span>
         <span class="p">),</span>
-        <span class="n">result_handler</span><span class="o">=</span><span class="n">handle_result</span><span class="p">,</span>
+        <span class="n">result_handler</span><span class="o">=</span><span class="n">request_handler</span><span class="o">.</span><span class="n">handle_result</span><span class="p">(),</span>
     <span class="p">)</span>
     <span class="n">streamer</span><span class="o">.</span><span class="n">Call</span> <span class="o">=</span> <span class="n">streamer</span><span class="o">.</span><span class="n">stream</span>
 
@@ -816,14 +818,13 @@
             <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">asdict</span>
 
             <span class="kn">import</span> <span class="nn">strawberry</span>
+            <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
             <span class="kn">from</span> <span class="nn">docarray.document.strawberry_type</span> <span class="kn">import</span> <span class="p">(</span>
                 <span class="n">JSONScalar</span><span class="p">,</span>
                 <span class="n">StrawberryDocument</span><span class="p">,</span>
                 <span class="n">StrawberryDocumentInput</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="kn">from</span> <span class="nn">strawberry.fastapi</span> <span class="kn">import</span> <span class="n">GraphQLRouter</span>
-
-            <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
             <span class="k">async</span> <span class="k">def</span> <span class="nf">get_docs_from_endpoint</span><span class="p">(</span>
                 <span class="n">data</span><span class="p">,</span> <span class="n">target_executor</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">exec_endpoint</span>
@@ -901,7 +902,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 17, 2022.
+                    Last updated on Apr 20, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

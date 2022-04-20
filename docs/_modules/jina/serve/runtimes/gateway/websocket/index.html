@@ -233,7 +233,6 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/create-flow/">Create a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/flow-yaml/">Configure a Flow from YAML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/flow-api/">Configure Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/access-flow-api/">Access Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/client/">Python Client</a></li>
@@ -619,6 +618,7 @@
                         <span class="n">topology_graph</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_topology_graph</span><span class="p">,</span>
                         <span class="n">connection_pool</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="p">,</span>
                         <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+                        <span class="n">metrics_registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="p">),</span>
                 <span class="n">host</span><span class="o">=</span><span class="n">__default_host__</span><span class="p">,</span>
@@ -662,7 +662,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 17, 2022.
+                    Last updated on Apr 20, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

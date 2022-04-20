@@ -232,7 +232,6 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/create-flow/">Create a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/flow-yaml/">Configure a Flow from YAML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/flow-api/">Configure Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/access-flow-api/">Access Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/client/">Python Client</a></li>
@@ -1336,9 +1335,9 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.handle">handle() (jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler method)</a>
 </li>
-        <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.handle_request">handle_request() (in module jina.serve.runtimes.gateway.request_handling)</a>
+        <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_request">handle_request() (jina.serve.runtimes.gateway.request_handling.RequestHandler method)</a>
 </li>
-        <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.handle_result">handle_result() (in module jina.serve.runtimes.gateway.request_handling)</a>
+        <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_result">handle_result() (jina.serve.runtimes.gateway.request_handling.RequestHandler method)</a>
 </li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.JinaLogger.handlers">handlers (jina.logging.logger.JinaLogger property)</a>
 </li>
@@ -2583,6 +2582,24 @@
 </li>
         <li><a href="../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.MergeFrom">MergeFrom() (jina.types.mixin.ProtoTypeMixin method)</a>
 </li>
+        <li><a href="../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.metrics_registry">metrics_registry (jina.serve.runtimes.asyncio.AsyncNewLoopRuntime attribute)</a>
+
+        <ul>
+          <li><a href="../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.metrics_registry">(jina.serve.runtimes.gateway.GatewayRuntime attribute)</a>
+</li>
+          <li><a href="../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.metrics_registry">(jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime attribute)</a>
+</li>
+          <li><a href="../api/jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.metrics_registry">(jina.serve.runtimes.gateway.http.HTTPGatewayRuntime attribute)</a>
+</li>
+          <li><a href="../api/jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.metrics_registry">(jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime attribute)</a>
+</li>
+          <li><a href="../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.metrics_registry">(jina.serve.runtimes.head.HeadRuntime attribute)</a>
+</li>
+          <li><a href="../api/jina.serve.runtimes.monitoring/#jina.serve.runtimes.monitoring.MonitoringMixin.metrics_registry">(jina.serve.runtimes.monitoring.MonitoringMixin attribute)</a>
+</li>
+          <li><a href="../api/jina.serve.runtimes.worker/#jina.serve.runtimes.worker.WorkerRuntime.metrics_registry">(jina.serve.runtimes.worker.WorkerRuntime attribute)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.parsers.orchestrate.deployment/#jina.parsers.orchestrate.deployment.mixin_base_deployment_parser">mixin_base_deployment_parser() (in module jina.parsers.orchestrate.deployment)</a>
 </li>
         <li><a href="../api/jina.parsers.orchestrate.base/#jina.parsers.orchestrate.base.mixin_base_ppr_parser">mixin_base_ppr_parser() (in module jina.parsers.orchestrate.base)</a>
@@ -3238,6 +3255,10 @@
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.types.request.data/#jina.types.request.data.DataRequest.request_id">request_id (jina.types.request.data.DataRequest property)</a>
+</li>
+        <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler">RequestHandler (class in jina.serve.runtimes.gateway.request_handling)</a>
+</li>
         <li><a href="../api/jina.helloworld.fashion.my_executors/#jina.helloworld.fashion.my_executors.MyConverter.requests">requests (jina.helloworld.fashion.my_executors.MyConverter attribute)</a>
 
         <ul>
@@ -3667,7 +3688,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 17, 2022.
+                    Last updated on Apr 20, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

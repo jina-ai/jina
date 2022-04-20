@@ -3,10 +3,28 @@
 
 Creating a Flow, on its face, means instantiating a Python object.
 More importantly, however, creating and configuring a Flow means defining your {ref}`search microservice architecture <architecture-overview>`.
+It defines how your Executors are connected together and how your data *flows* through them.
 
-The most trivial `Flow` is the empty `Flow` as shown below:
+Every Flow can be defined either purely in Python, or be loaded from a YAML file.
 
-````{tab} Pythonic style
+````{admonition} Hint
+:class: hint
+
+For production use we recommend YAML files to configure your Flows.
+This is because YAML files are:
+
+- independent of Python source code
+- easy to edit, maintain and extend
+- human-readable
+
+````
+
+## Instantiate a Flow
+
+The most trivial Flow is the empty Flow and, like any other Flow, it can be instantiated purely in Python, or from a
+YAML file:
+
+````{tab} Python
 
 ```python
 from jina import Flow
@@ -17,7 +35,7 @@ with f:  # Using it as a Context Manager will start the Flow
 ```
 ````
 
-````{tab} Load from YAML
+`````{tab} YAML
 `flow.yml`:
 
 ```yaml
@@ -32,14 +50,21 @@ f = Flow.load_config('flow.yml')  # Load the Flow definition from Yaml file
 with f:  # Using it as a Context Manager will start the Flow
     f.post(on='/search')  # This sends a request to the /search endpoint of the Flow
 ```
+
+````{admonition} Hint: Dump Flow configuration
+:class: hint
+
+In addition to loading a Flow from a YAML file, you can also save an existing Flow configuration to YAML. To do so, execute `f.save_config('path/to/flow.yml')`.
 ````
+`````
+
 
 ## Start and stop a Flow
 
 Creating a Flow means defining your microservice architecture, and starting a Flow means launching it.
 When a Flow starts, all its {ref}`added Executors <flow-add-executors>` will start as well, making it possible to {ref}`reach the service through its API <access-flow-api>`.
 
-Jina `Flow`s are context managers and can be started and stopped using Pythons `with` notation:
+Jina Flows are context managers and can be started and stopped using Pythons `with` notation:
 
 ```python
 from jina import Flow
@@ -92,7 +117,7 @@ e.set()  # set event and stop (unblock) the Flow
 ## Add Executors
 A `Flow` orchestrates its Executors as a graph and will send requests to all Executors in the desired order. Executors can be added with the `.add()` method of the `Flow` or be listed in the yaml configuration of a Flow. When you start a `Flow`, it will check the configured Executors and starts instances of these Executors accordingly. When adding Executors you have to define its type with the `uses` keyword. Executors can be used from various sources like code, docker images and the Hub:
 
-````{tab} Pythonic style
+````{tab} Python
 
 ```python
 from docarray import Document, DocumentArray
@@ -124,7 +149,7 @@ with f:  # Using it as a Context Manager will start the Flow
 ```
 ````
 
-````{tab} Load from YAML
+`````{tab} YAML
 `flow.yml`:
 
 ```yaml
@@ -157,6 +182,7 @@ class BarExecutor(Executor):
         docs.append(Document(text='bar was here'))
 ```
 
+`main.py`
 ```python
 from jina import Flow
 
@@ -168,13 +194,32 @@ with f:
     )  # This sends a request to the /search endpoint of the Flow
     print(response.texts)
 ```
+
+````{admonition} Hint: Load multiple Executors from the same module
+:class: hint
+
+You can override the `metas` attribute for all Executors in a Flow. This allows you to specify a single Python module
+from which you can then load all of your Executors, without having to specify the module individually for each Executor:
+
+```yaml
+jtype: Flow
+metas:
+  py_modules:
+    - executors.py
+executors:
+  - uses: FooExecutor
+  - uses: BarExecutor
 ```
+
+In this example, both `FooExecutor` and `BarExecutor` are defined inside of `executors.py`, and both will be located and loaded by the Flow.
 ````
+`````
 
 
 The response of the `Flow` defined above is `['foo was here', 'bar was here']`, because the request was first sent to FooExecutor and then to BarExecutor.
 
-### Executor discovery
+### Add Executors from different sources
+
 As explained above, the type of Executor is defined by providing the `uses` keyword. The source of an Executor can be code, docker images or Hub images.
 
 ```python
@@ -204,69 +249,28 @@ f = (
 
 More complex Executors typically are used from Docker images or will be structured into separate Python modules. 
 
-### Executor from configuration
-You can use Executors from code, being defined outside your current `PATH` environment variable. To do this you need to define your Executor configuration in a separate configuration yaml, which will be used in the `Flow`:
+
+````{admonition} Hint: Load multiple Executors from the same directory
+:class: hint
+
+If you want to load multiple Executor YAMLs from the same directory, you don't need to specify the parent directory for
+each Executor.
+Instead, you can configure a common search path for all Executors:
 
 ```
 .
 ├── app
 │   └── ▶ main.py
 └── executor
-    ├── config.yml
+    ├── config1.yml
+    ├── config2.yml
     └── my_executor.py
 ```
-`executor/my_executor.py`:
-```python
-from docarray import DocumentArray
-from jina import Executor, requests
 
-
-class MyExecutor(Executor):
-    @requests
-    def foo(self, docs: DocumentArray, **kwargs):
-        pass
-```
-
-`executor/config.yml`:
-```yaml
-jtype: MyExecutor
-metas:
-  py_modules:
-    - executor.py
-```
-
-Now, in `app/main.py`, to correctly load the Executor, you can specify the directory of the Executor in Python or in a `Flow` yaml:
-````{tab} Load from Python
 ```{code-block} python
----
-emphasize-lines: 3
----
-from docarray import Document
-from jina import Flow
-f = Flow(extra_search_paths=['../executor']).add(uses='config.yml')
-with f:
-    r = f.post('/', inputs=Document())
-```
-````
-
-````{tab} Load from YAML
-`flow.yml`:
-```yaml
-jtype: Flow
-executors:
-  - name: executor
-    uses: ../executor/config.yml
+f = Flow(extra_search_paths=['../executor']).add(uses='config1.yml').add(uses='config2.yml')
 ```
 
-`main.py`:
-```python
-from docarray import Document
-from jina import Flow
-
-f = Flow.load_config('../flow/flow.yml')
-with f:
-    r = f.post('/', inputs=Document())
-```
 ````
 
 ### Override Executor configuration
@@ -523,7 +527,7 @@ print(
 
 ````
 
-````{tab} Load from YAML
+````{tab} YAML
 `flow.yml`:
 
 ```yaml

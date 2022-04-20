@@ -142,7 +142,6 @@ Executor and Flow are the two fundamental concepts in Jina.
 :hidden:
 
 create-flow
-flow-yaml
 flow-api
 access-flow-api
 client
