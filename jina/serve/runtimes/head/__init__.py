@@ -11,7 +11,6 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import grpc
 from grpc_reflection.v1alpha import reflection
-from prometheus_client import Summary
 
 from jina.enums import PollingType
 from jina.proto import jina_pb2, jina_pb2_grpc
@@ -54,16 +53,17 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             metrics_registry=self.metrics_registry,
         )
 
-        self._summary = (
-            Summary(
+        if self.metrics_registry:
+            from prometheus_client import Summary
+
+            self._summary = Summary(
                 'receiving_request_seconds',
                 'Time spent processing request',
                 registry=self.metrics_registry,
                 namespace='jina',
             ).time()
-            if self.metrics_registry
-            else contextlib.nullcontext()
-        )
+        else:
+            self._summary = contextlib.nullcontext()
 
         polling = getattr(args, 'polling', self.DEFAULT_POLLING.name)
         try:

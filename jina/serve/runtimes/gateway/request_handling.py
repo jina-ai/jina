@@ -4,7 +4,6 @@ import time
 from typing import TYPE_CHECKING, Callable, List, Optional
 
 from docarray import DocumentArray
-from prometheus_client import Summary
 
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
@@ -25,16 +24,17 @@ class RequestHandler:
     def __init__(self, metrics_registry: Optional['CollectorRegistry'] = None):
         self.request_init_time = {} if metrics_registry else None
 
-        self._summary = (
-            Summary(
+        if metrics_registry:
+            from prometheus_client import Summary
+
+            self._summary = Summary(
                 'receiving_request_seconds',
                 'Time spent processing request',
                 registry=metrics_registry,
                 namespace='jina',
             )
-            if metrics_registry
-            else None
-        )
+        else:
+            self._summary = None
 
     def handle_request(
         self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
