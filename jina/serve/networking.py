@@ -12,6 +12,7 @@ from grpc_reflection.v1alpha.reflection_pb2 import ServerReflectionRequest
 from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 
 from jina.enums import PollingType
+from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2_grpc
 from jina.types.request import Request
@@ -408,7 +409,11 @@ class GrpcConnectionPool:
         )
 
         if metrics_registry:
-            from prometheus_client import Summary
+            with ImportExtensions(
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+            ):
+                from prometheus_client import Summary
 
             self._summary_time = Summary(
                 'sending_request_seconds',
