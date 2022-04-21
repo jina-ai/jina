@@ -71,9 +71,9 @@ class DataRequestHandler:
         except FileNotFoundError as ex:
             self.logger.error(f'fail to load file dependency')
             raise ExecutorFailToLoad from ex
-        except Exception as ex:
+        except Exception:
             self.logger.critical(f'can not load the executor from {self.args.uses}')
-            raise ExecutorFailToLoad from ex
+            raise
 
     @staticmethod
     def _parse_params(parameters: Dict, executor_name: str):
