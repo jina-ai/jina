@@ -1,6 +1,10 @@
+import asyncio
+import multiprocessing
 import os
+import time
 from copy import deepcopy
-from pathlib import Path
+from multiprocessing import Process
+from threading import Event
 from unittest import mock
 
 import pytest
@@ -8,8 +12,13 @@ import yaml
 from docarray import Document, DocumentArray
 
 from jina import Client, Executor, Flow, requests
+from jina.clients.request import request_generator
+from jina.parsers import set_pod_parser
 from jina.serve.executors import ReducerExecutor
 from jina.serve.executors.metas import get_default_metas
+from jina.serve.networking import GrpcConnectionPool
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.worker import WorkerRuntime
 
 PORT = 12350
 
@@ -435,3 +444,64 @@ def test_to_docker_compose_yaml(tmpdir, exec_type):
             assert services['gateway']['ports'][0] == '2020:2020'
             gateway_args = services['gateway']['command']
             assert gateway_args[gateway_args.index('--port') + 1] == '2020'
+
+
+def _create_test_data_message(counter=0):
+    return list(request_generator('/', DocumentArray([Document(text=str(counter))])))[0]
+
+
+@pytest.mark.asyncio
+async def test_blocking_sync_exec():
+    SLEEP_TIME = 0.01
+    REQUEST_COUNT = 100
+
+    class BlockingExecutor(Executor):
+        @requests
+        def foo(self, docs: DocumentArray, **kwargs):
+            time.sleep(SLEEP_TIME)
+            for doc in docs:
+                doc.text = 'BlockingExecutor'
+            return docs
+
+    args = set_pod_parser().parse_args(['--uses', 'BlockingExecutor'])
+
+    cancel_event = multiprocessing.Event()
+
+    def start_runtime(args, cancel_event):
+        with WorkerRuntime(args, cancel_event) as runtime:
+            runtime.run_forever()
+
+    runtime_thread = Process(
+        target=start_runtime,
+        args=(args, cancel_event),
+        daemon=True,
+    )
+    runtime_thread.start()
+
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'{args.host}:{args.port}',
+        ready_or_shutdown_event=Event(),
+    )
+
+    send_tasks = []
+    start_time = time.time()
+    for i in range(REQUEST_COUNT):
+        send_tasks.append(
+            asyncio.create_task(
+                GrpcConnectionPool.send_request_async(
+                    _create_test_data_message(),
+                    target=f'{args.host}:{args.port}',
+                    timeout=3.0,
+                )
+            )
+        )
+
+    results = await asyncio.gather(*send_tasks)
+    end_time = time.time()
+
+    assert all(result.docs.texts == ['BlockingExecutor'] for result in results)
+    assert end_time - start_time < (REQUEST_COUNT * SLEEP_TIME) + 0.2
+
+    cancel_event.set()
+    runtime_thread.join()

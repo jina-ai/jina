@@ -1,10 +1,5 @@
-from prometheus_client import CollectorRegistry
-
-
 class MonitoringMixin:
     """The Monitoring Mixin for pods"""
-
-    metrics_registry: CollectorRegistry
 
     def _setup_monitoring(self):
         """
