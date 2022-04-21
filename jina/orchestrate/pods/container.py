@@ -12,7 +12,7 @@ from jina.helper import random_name, slugify
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.orchestrate.helper import generate_default_volume_and_workspace
-from jina.orchestrate.pods import BasePod, _get_worker
+from jina.orchestrate.pods import BasePod
 from jina.orchestrate.pods.container_helper import (
     get_docker_network,
     get_gpu_device_requests,
@@ -376,8 +376,7 @@ class ContainerPod(BasePod):
         This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
-        self.worker = _get_worker(
-            args=self.args,
+        self.worker = multiprocessing.Process(
             target=run,
             kwargs={
                 'args': self.args,
@@ -390,6 +389,7 @@ class ContainerPod(BasePod):
                 'is_shutdown': self.is_shutdown,
                 'is_ready': self.is_ready,
             },
+            daemon=True,
         )
         self.worker.start()
         if not self.args.noblock_on_start:
@@ -405,14 +405,9 @@ class ContainerPod(BasePod):
             self._container.kill(signal='SIGTERM')
         finally:
             self.is_shutdown.wait(self.args.timeout_ctrl)
-            if hasattr(self.worker, 'terminate'):
-                self.logger.debug(f'terminating the runtime process')
-                self.worker.terminate()
-                self.logger.debug(f' runtime process properly terminated')
-            else:
-                self.logger.debug(f'canceling the runtime thread')
-                self.cancel_event.set()
-                self.logger.debug(f'runtime thread properly canceled')
+            self.logger.debug(f'terminating the runtime process')
+            self.worker.terminate()
+            self.logger.debug(f' runtime process properly terminated')
 
     def join(self, *args, **kwargs):
         """Joins the Pod.

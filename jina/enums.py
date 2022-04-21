@@ -276,13 +276,6 @@ class DataInputType(BetterEnum):
     DICT = 3  # the input is a dictionary representing a Document, needed while pydantic model not available
 
 
-class RuntimeBackendType(BetterEnum):
-    """Type of backend in runtime."""
-
-    THREAD = 0
-    PROCESS = 1
-
-
 class WebsocketSubProtocols(str, Enum):
     """Subprotocol supported with Websocket Gateway"""
 

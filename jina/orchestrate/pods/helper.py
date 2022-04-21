@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Callable, Dict, Optional, Union
 
 from grpc import RpcError
 
-from jina.enums import GatewayProtocolType, PodRoleType, RuntimeBackendType
+from jina.enums import GatewayProtocolType, PodRoleType
 from jina.hubble.helper import is_valid_huburi
 from jina.hubble.hubio import HubIO
 from jina.serve.networking import GrpcConnectionPool
@@ -16,30 +16,15 @@ if TYPE_CHECKING:
     from argparse import Namespace
 
 
-def _get_worker(
-    args, target: Callable, kwargs: Dict, name: Optional[str] = None
-) -> Union['threading.Thread', 'multiprocessing.Process']:
-    return {
-        RuntimeBackendType.THREAD: threading.Thread,
-        RuntimeBackendType.PROCESS: multiprocessing.Process,
-    }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))(
-        target=target, name=name, kwargs=kwargs, daemon=True
-    )
-
-
-def _get_event(obj) -> Union[multiprocessing.Event, threading.Event]:
-    if isinstance(obj, threading.Thread):
-        return threading.Event()
-    elif isinstance(obj, multiprocessing.Process) or isinstance(
+def _get_event(obj) -> multiprocessing.Event:
+    if isinstance(obj, multiprocessing.Process) or isinstance(
         obj, multiprocessing.context.ForkProcess
     ):
         return multiprocessing.Event()
     elif isinstance(obj, multiprocessing.context.SpawnProcess):
         return multiprocessing.get_context('spawn').Event()
     else:
-        raise TypeError(
-            f'{obj} is not an instance of "threading.Thread" nor "multiprocessing.Process"'
-        )
+        raise TypeError(f'{obj} is not an instance of "multiprocessing.Process"')
 
 
 class ConditionalEvent:
@@ -47,19 +32,15 @@ class ConditionalEvent:
     :class:`ConditionalEvent` provides a common interface to an event (multiprocessing or threading event)
     that gets triggered when any of the events provided in input is triggered (OR logic)
 
-    :param backend_runtime: The runtime type to decide which type of Event to instantiate
     :param events_list: The list of events that compose this composable event
     """
 
-    def __init__(self, backend_runtime: RuntimeBackendType, events_list):
+    def __init__(self, events_list):
         super().__init__()
         self.event = None
-        if backend_runtime == RuntimeBackendType.THREAD:
-            self.event = threading.Event()
-        else:
-            self.event = multiprocessing.synchronize.Event(
-                ctx=multiprocessing.get_context()
-            )
+        self.event = multiprocessing.synchronize.Event(
+            ctx=multiprocessing.get_context()
+        )
         self.event_list = events_list
         for e in events_list:
             self._setup(e, self._state_changed)
