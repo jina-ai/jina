@@ -7,12 +7,12 @@ from abc import ABC, abstractmethod
 from typing import Dict, Optional, Type, Union
 
 from jina import __ready_msg__, __stop_msg__, __windows__
-from jina.enums import PodRoleType, RuntimeBackendType
+from jina.enums import PodRoleType
 from jina.excepts import RuntimeFailToStart, RuntimeRunForeverEarlyError
 from jina.helper import typename
 from jina.jaml import JAML
 from jina.logging.logger import JinaLogger
-from jina.orchestrate.pods.helper import ConditionalEvent, _get_event, _get_worker
+from jina.orchestrate.pods.helper import ConditionalEvent, _get_event
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 
 __all__ = ['BasePod', 'Pod']
@@ -26,7 +26,6 @@ def run(
     is_started: Union['multiprocessing.Event', 'threading.Event'],
     is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
     is_ready: Union['multiprocessing.Event', 'threading.Event'],
-    cancel_event: Union['multiprocessing.Event', 'threading.Event'],
     jaml_classes: Optional[Dict] = None,
 ):
     """Method representing the :class:`BaseRuntime` activity.
@@ -57,30 +56,23 @@ def run(
     :param is_started: concurrency event to communicate runtime is properly started. Used for better logging
     :param is_shutdown: concurrency event to communicate runtime is terminated
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
-    :param cancel_event: concurrency event to receive cancelling signal from the Pod. Needed by some runtimes
     :param jaml_classes: all the `JAMLCompatible` classes imported in main process
     """
     logger = JinaLogger(name, **vars(args))
 
     def _unset_envs():
-        if envs and args.runtime_backend != RuntimeBackendType.THREAD:
+        if envs:
             for k in envs.keys():
                 os.environ.pop(k, None)
 
     def _set_envs():
         if args.env:
-            if args.runtime_backend == RuntimeBackendType.THREAD:
-                logger.warning(
-                    'environment variables should not be set when runtime="thread".'
-                )
-            else:
-                os.environ.update({k: str(v) for k, v in envs.items()})
+            os.environ.update({k: str(v) for k, v in envs.items()})
 
     try:
         _set_envs()
         runtime = runtime_cls(
             args=args,
-            cancel_event=cancel_event,
         )
     except Exception as ex:
         logger.error(
@@ -122,13 +114,6 @@ class BasePod(ABC):
         self.is_forked = False
         self.logger = JinaLogger(self.name, **vars(self.args))
 
-        if self.args.runtime_backend == RuntimeBackendType.THREAD:
-            self.logger.warning(
-                f' Using Thread as runtime backend is not recommended for production purposes. It is '
-                f'just supposed to be used for easier debugging. Besides the performance considerations, it is'
-                f'specially dangerous to mix `Executors` running in different types of `RuntimeBackends`.'
-            )
-
         self._envs = {'JINA_DEPLOYMENT_NAME': self.name}
         if self.args.quiet:
             self._envs['JINA_LOG_CONFIG'] = 'QUIET'
@@ -137,16 +122,12 @@ class BasePod(ABC):
 
         # arguments needed to create `runtime` and communicate with it in the `run` in the stack of the new process
         # or thread.f
-        test_worker = {
-            RuntimeBackendType.THREAD: threading.Thread,
-            RuntimeBackendType.PROCESS: multiprocessing.Process,
-        }.get(getattr(args, 'runtime_backend', RuntimeBackendType.THREAD))()
+        test_worker = multiprocessing.Process()
         self.is_ready = _get_event(test_worker)
         self.is_shutdown = _get_event(test_worker)
         self.cancel_event = _get_event(test_worker)
         self.is_started = _get_event(test_worker)
         self.ready_or_shutdown = ConditionalEvent(
-            getattr(args, 'runtime_backend', RuntimeBackendType.THREAD),
             events_list=[self.is_ready, self.is_shutdown],
         )
         self.runtime_ctrl_address = self._get_control_address()
@@ -158,7 +139,7 @@ class BasePod(ABC):
     def close(self) -> None:
         """Close the Pod
 
-        This method makes sure that the `Process/thread` is properly finished and its resources properly released
+        This method makes sure that the `Process` is properly finished and its resources properly released
         """
         self.logger.debug('waiting for ready or shutdown signal from runtime')
         if not self.is_shutdown.is_set() and self.is_started.is_set():
@@ -322,8 +303,7 @@ class Pod(BasePod):
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
         self.runtime_cls = self._get_runtime_cls()
-        self.worker = _get_worker(
-            args=args,
+        self.worker = multiprocessing.Process(
             target=run,
             kwargs={
                 'args': args,
@@ -332,19 +312,14 @@ class Pod(BasePod):
                 'is_started': self.is_started,
                 'is_shutdown': self.is_shutdown,
                 'is_ready': self.is_ready,
-                # the cancel event is only necessary for threads, otherwise runtimes should create and use the asyncio event
-                'cancel_event': self.cancel_event
-                if getattr(args, 'runtime_backend', RuntimeBackendType.THREAD)
-                == RuntimeBackendType.THREAD
-                else None,
                 'runtime_cls': self.runtime_cls,
                 'jaml_classes': JAML.registered_classes(),
             },
             name=self.name,
+            daemon=True,
         )
 
     def start(self):
-
         """Start the Pod.
         This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
@@ -371,14 +346,9 @@ class Pod(BasePod):
         """Terminate the Pod.
         This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         """
-        if hasattr(self.worker, 'terminate'):
-            self.logger.debug(f'terminating the runtime process')
-            self.worker.terminate()
-            self.logger.debug(f' runtime process properly terminated')
-        else:
-            self.logger.debug(f'canceling the runtime thread')
-            self.cancel_event.set()
-            self.logger.debug(f'runtime thread properly canceled')
+        self.logger.debug(f'terminating the runtime process')
+        self.worker.terminate()
+        self.logger.debug(f' runtime process properly terminated')
 
     def _get_runtime_cls(self) -> AsyncNewLoopRuntime:
         from jina.orchestrate.pods.helper import update_runtime_cls

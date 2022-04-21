@@ -2,7 +2,7 @@
 import argparse
 
 from jina import __default_port_monitoring__, helper
-from jina.enums import PodRoleType, RuntimeBackendType
+from jina.enums import PodRoleType
 from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
 
 
@@ -12,15 +12,6 @@ def mixin_pod_parser(parser):
     """
 
     gp = add_arg_group(parser, title='Pod')
-
-    gp.add_argument(
-        '--runtime-backend',
-        '--runtime',
-        type=RuntimeBackendType.from_string,
-        choices=list(RuntimeBackendType),
-        default=RuntimeBackendType.PROCESS,
-        help='The parallel backend of the runtime inside the Pod',
-    )
 
     gp.add_argument(
         '--runtime-cls',
