@@ -32,7 +32,7 @@ def test_enable_monitoring_deployment(port_generator):
             f.post(f'/{meth}', inputs=DocumentArray())
             resp = req.get(f'http://localhost:{port2}/')
             assert (
-                f'process_request_seconds_created{{executor="DummyExecutor",method="{meth}"}}'
+                f'process_request_seconds_created{{endpoint="/{meth}",executor="DummyExecutor",method="{meth}"}}'
                 in str(resp.content)
             )
 
