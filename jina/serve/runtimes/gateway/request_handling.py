@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Callable, List, Optional
 
 from docarray import DocumentArray
 
+from jina.importer import ImportExtensions
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 
@@ -25,7 +26,11 @@ class RequestHandler:
         self.request_init_time = {} if metrics_registry else None
 
         if metrics_registry:
-            from prometheus_client import Summary
+            with ImportExtensions(
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+            ):
+                from prometheus_client import Summary
 
             self._summary = Summary(
                 'receiving_request_seconds',
