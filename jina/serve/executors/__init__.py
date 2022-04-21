@@ -113,10 +113,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self.runtime_args = SimpleNamespace()
 
     def _init_monitoring(self):
-        if not hasattr(self.runtime_args, 'metrics_registry'):
-            self.runtime_args.metrics_registry = None
-
-        if self.runtime_args.metrics_registry:
+        if (
+            hasattr(self.runtime_args, 'metrics_registry')
+            and self.runtime_args.metrics_registry
+        ):
             from prometheus_client import Summary
 
             self._summary_method = Summary(
