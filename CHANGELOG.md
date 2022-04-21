@@ -157,6 +157,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -12979,4 +12980,25 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```fbaad7ed```](https://github.com/jina-ai/jina/commit/fbaad7edf276cd3c74cea073cf5d0c7af95ee9af)] __-__ __docs__: add banner (*Han Xiao*)
  - [[```e0367473```](https://github.com/jina-ai/jina/commit/e03674731a7032035cdf6019b0492a58badffeab)] __-__ remove legacy codebooks and figures (#4530) (*Wang Bo*)
  - [[```17172d5f```](https://github.com/jina-ai/jina/commit/17172d5f8a193480ded73babd0dc4ba5cc3a51c5)] __-__ __version__: the next version will be 3.2.9 (*Jina Dev Bot*)
+
+<a name=release-note-3-3-3></a>
+## Release Note (`3.3.3`)
+
+> Release time: 2022-04-21 09:43:24
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ samsja,  Jina Dev Bot,  Han Xiao,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```0f38f711```](https://github.com/jina-ai/jina/commit/0f38f711fa471abdc6e3e662b44e6e09eff6587b)] __-__ remove prometheus import from the top of the files (#4641) (*samsja*)
+
+### 🍹 Other Improvements
+
+ - [[```712cccb8```](https://github.com/jina-ai/jina/commit/712cccb86b1e07bec6b8b51598c1400333c5de99)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```abbd95a3```](https://github.com/jina-ai/jina/commit/abbd95a389eeb5e3ccc2c972e909c241baf9ed1c)] __-__ fix readme (*Han Xiao*)
+ - [[```3497abf5```](https://github.com/jina-ai/jina/commit/3497abf525914b19834342b9a5ebd2f04b75bc48)] __-__ __version__: the next version will be 3.3.3 (*Jina Dev Bot*)
 
