@@ -101,7 +101,12 @@ class DummyNoDocAccessMockConnectionPool:
 
 class DummyMockConnectionPool:
     def send_requests_once(
-        self, requests, deployment: str, head: bool, endpoint: str = None
+        self,
+        requests,
+        deployment: str,
+        head: bool,
+        endpoint: str = None,
+        timeout: float = 1.0,
     ) -> asyncio.Task:
         assert head
         request = requests[0]

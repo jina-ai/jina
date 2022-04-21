@@ -1,4 +1,5 @@
 import os
+import time
 
 import numpy as np
 import pytest
@@ -283,3 +284,24 @@ def test_flow_head_runtime_failure(monkeypatch, capfd):
     out, err = capfd.readouterr()
     assert 'NotImplementedError' in out
     assert 'Intentional error' in out
+
+
+
+class SlowExecutor(Executor):
+    @requests
+    def foo(self, *args, **kwargs):
+        time.sleep(0.2)
+
+
+@pytest.mark.timeout(50)
+def test_flow_timeout_send():
+    f = Flow(timeout_send=1000).add(uses=SlowExecutor)
+
+    with f:
+        f.index(from_ndarray(np.random.random([10, 10])))
+
+    f = Flow(timeout_send=100).add(uses=SlowExecutor)
+
+    with f:
+        with pytest.raises(Exception):
+            f.index(from_ndarray(np.random.random([10, 10])))

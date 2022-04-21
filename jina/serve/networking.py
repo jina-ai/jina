@@ -181,7 +181,11 @@ class GrpcConnectionPool:
             self._initialized = True
 
         async def send_requests(
-            self, requests: List[Request], metadata, compression
+            self,
+            requests: List[Request],
+            metadata,
+            compression,
+            timeout: Optional[float] = 1.0,
         ) -> Tuple:
             """
             Send requests and uses the appropriate grpc stub for this
@@ -190,6 +194,7 @@ class GrpcConnectionPool:
             :param requests: the requests to send
             :param metadata: the metadata to send alongside the requests
             :param compression: defines if compression should be used
+            :param timeout: defines timeout for sending request
 
             :returns: Tuple of response and metadata about the response
             """
@@ -202,6 +207,7 @@ class GrpcConnectionPool:
                         requests[0],
                         metadata=metadata,
                         compression=compression,
+                        timeout=timeout,
                     )
                     with self._summary_time:
                         metadata, response = (
@@ -212,8 +218,7 @@ class GrpcConnectionPool:
                 elif self.stream_stub:
                     with self._summary_time:
                         async for resp in self.stream_stub.Call(
-                            iter(requests),
-                            compression=compression,
+                            iter(requests), compression=compression, timeout=timeout
                         ):
                             return resp, None
             if request_type == DataRequest and len(requests) > 1:
@@ -222,6 +227,7 @@ class GrpcConnectionPool:
                         requests,
                         metadata=metadata,
                         compression=compression,
+                        timeout=timeout,
                     )
                     with self._summary_time:
                         metadata, response = (
@@ -235,7 +241,9 @@ class GrpcConnectionPool:
                     )
             elif request_type == ControlRequest:
                 if self.control_stub:
-                    call_result = self.control_stub.process_control(requests[0])
+                    call_result = self.control_stub.process_control(
+                        requests[0], timeout=timeout
+                    )
                     metadata, response = (
                         await call_result.trailing_metadata(),
                         await call_result,
@@ -433,6 +441,7 @@ class GrpcConnectionPool:
         shard_id: Optional[int] = None,
         polling_type: PollingType = PollingType.ANY,
         endpoint: Optional[str] = None,
+        timeout: Optional[float] = 1.0,
     ) -> List[asyncio.Task]:
         """Send a single message to target via one or all of the pooled connections, depending on polling_type. Convenience function wrapper around send_request.
         :param request: a single request to send
@@ -441,6 +450,7 @@ class GrpcConnectionPool:
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param polling_type: defines if the message should be send to any or all pooled connections for the target
         :param endpoint: endpoint to target with the request
+        :param timeout: timeout for sending the requests
         :return: list of asyncio.Task items for each send call
         """
         return self.send_requests(
@@ -450,6 +460,7 @@ class GrpcConnectionPool:
             shard_id=shard_id,
             polling_type=polling_type,
             endpoint=endpoint,
+            timeout=timeout,
         )
 
     def send_requests(
@@ -460,6 +471,7 @@ class GrpcConnectionPool:
         shard_id: Optional[int] = None,
         polling_type: PollingType = PollingType.ANY,
         endpoint: Optional[str] = None,
+        timeout: Optional[float] = 1.0,
     ) -> List[asyncio.Task]:
         """Send a request to target via one or all of the pooled connections, depending on polling_type
 
@@ -469,6 +481,7 @@ class GrpcConnectionPool:
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param polling_type: defines if the request should be send to any or all pooled connections for the target
         :param endpoint: endpoint to target with the requests
+        :param timeout: timeout for sending the requests
         :return: list of asyncio.Task items for each send call
         """
         results = []
@@ -485,7 +498,7 @@ class GrpcConnectionPool:
             raise ValueError(f'Unsupported polling type {polling_type}')
 
         for connection in connections:
-            task = self._send_requests(requests, connection, endpoint)
+            task = self._send_requests(requests, connection, endpoint, timeout=timeout)
             results.append(task)
 
         return results
@@ -496,16 +509,22 @@ class GrpcConnectionPool:
         deployment: str,
         head: bool = False,
         shard_id: Optional[int] = None,
+        timeout: Optional[float] = 1.0,
     ) -> asyncio.Task:
         """Send msg to target via only one of the pooled connections
         :param request: request to send
         :param deployment: name of the Jina deployment to send the message to
         :param head: If True it is send to the head, otherwise to the worker pods
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
+        :param timeout: timeout for sending the requests
         :return: asyncio.Task representing the send call
         """
         return self.send_requests_once(
-            [request], deployment=deployment, head=head, shard_id=shard_id
+            [request],
+            deployment=deployment,
+            head=head,
+            shard_id=shard_id,
+            timeout=timeout,
         )
 
     def send_requests_once(
@@ -515,6 +534,7 @@ class GrpcConnectionPool:
         head: bool = False,
         shard_id: Optional[int] = None,
         endpoint: Optional[str] = None,
+        timeout: Optional[float] = 1.0,
     ) -> asyncio.Task:
         """Send a request to target via only one of the pooled connections
 
@@ -523,12 +543,13 @@ class GrpcConnectionPool:
         :param head: If True it is send to the head, otherwise to the worker pods
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param endpoint: endpoint to target with the requests
+        :param timeout: timeout for sending the requests
         :return: asyncio.Task representing the send call
         """
         replicas = self._connections.get_replicas(deployment, head, shard_id)
         if replicas:
             connection = replicas.get_next_connection()
-            return self._send_requests(requests, connection, endpoint)
+            return self._send_requests(requests, connection, endpoint, timeout=timeout)
         else:
             self._logger.debug(
                 f'No available connections for deployment {deployment} and shard {shard_id}'
@@ -597,6 +618,7 @@ class GrpcConnectionPool:
         requests: List[Request],
         connection: ConnectionStubs,
         endpoint: Optional[str] = None,
+        timeout: Optional[float] = 1.0,
     ) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
@@ -610,6 +632,7 @@ class GrpcConnectionPool:
                         requests=requests,
                         metadata=metadata,
                         compression=self.compression,
+                        timeout=timeout,
                     )
                 except AioRpcError as e:
                     if e.code() != grpc.StatusCode.UNAVAILABLE:
