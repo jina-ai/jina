@@ -2,11 +2,11 @@ import os
 
 import numpy as np
 import pytest
+from docarray.document.generators import from_ndarray
 
-from jina import Flow, Executor, requests, Document
+from jina import Document, Executor, Flow, requests
 from jina.excepts import RuntimeFailToStart
 from jina.proto import jina_pb2
-from docarray.document.generators import from_ndarray
 from tests import validate_callback
 
 
@@ -247,6 +247,31 @@ class ExceptionExecutor2(Executor):
 def test_flow_startup_exception_not_hanging2(protocol):
     f = Flow(protocol=protocol).add(uses=ExceptionExecutor2)
     from jina.excepts import RuntimeFailToStart
+
+    with pytest.raises(RuntimeFailToStart):
+        with f:
+            pass
+
+
+@pytest.mark.timeout(10)
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow_startup_exception_not_hanging_filenotfound(protocol):
+    f = Flow(protocol=protocol).add(uses='doesntexist.yml')
+    from jina.excepts import RuntimeFailToStart
+
+    with pytest.raises(RuntimeFailToStart):
+        with f:
+            pass
+
+
+@pytest.mark.timeout(10)
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow_startup_exception_not_hanging_invalid_config(protocol):
+    this_file = os.path.dirname(os.path.abspath(__file__))
+    f = Flow(protocol=protocol).add(
+        name='importErrorExecutor',
+        uses=this_file,
+    )
 
     with pytest.raises(RuntimeFailToStart):
         with f:
