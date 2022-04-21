@@ -315,7 +315,7 @@ We use [subprotocols](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
 The Flow defaults to `json` when a subprotocol is not passed during connection establishment (Our Python client uses `bytes` streaming by using [jina.proto](../../proto/docs.md) definition).
 
 
-````{admonition} Hint
+````{Hint}
 
 - Choose Websocket over HTTP if you want to stream requests. 
 - Choose Websocket over gRPC if

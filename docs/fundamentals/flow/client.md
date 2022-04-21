@@ -221,7 +221,7 @@ with f:
     client.post('/', Document(), parameters={'hello': 'world'})
 ```
 
-````{admonition} Note
+````{hint} 
 :class: note
 You can send a parameters-only data request via:
 
@@ -245,8 +245,7 @@ For this purpose, Jina implements a promise-like interface, letting you specify 
 - `on_error` is executed whenever an error occurs in `client.post()`
 - `on_always` is always performed, no matter the success or failure of `client.post()`
 
-```{admonition} Tip
-:class: tip
+```{hint} 
 Both `on_done`and `on_always` callback won't be trigger if the failure is due to an error happening outside of 
 networking or internal jina issues. For example, if a `SIGKILL` is triggered by the OS during the handling of the request
 none of the callback will be executed.   
@@ -258,8 +257,7 @@ Callback functions in Jina expect a `Response` of the type `jina.types.request.d
 parameters, and other information.
 
 
-````{admonition} Understanding DataRequest
-:class: note
+````{hint} Understanding DataRequest
 
 `DataRequest`s are objects that are sent by Jina internally. Callback functions process DataRequests, and `client.post()`
 can return DataRequests.
@@ -346,8 +344,7 @@ By setting `return_responses=True` as an argument to `client.post(return_respons
 
 If a callback is provided, no results will be returned.
 
-```{admonition} Danger
-:class: danger
+```{caution}
 Not using a callback function and instead returning results can come with a **serious performance penalty**.
 
 Callbacks operate on each individual Request, which represents a batch of the data.
