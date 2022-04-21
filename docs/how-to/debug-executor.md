@@ -1,5 +1,5 @@
 (debug-executor)=
-# How to Debug Executor
+# How to debug an Executor
 
 ````{admonition} Caution
 :class: caution
