@@ -14,12 +14,12 @@ from typing import (
     Union,
 )
 
-from prometheus_client import Summary
-
 from jina.helper import convert_tuple_to_list, iscoroutinefunction
 from jina.serve.executors.metas import get_default_metas
 
 if TYPE_CHECKING:
+    from prometheus_client import Summary
+
     from jina import DocumentArray
 
 
