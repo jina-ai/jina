@@ -8,8 +8,8 @@ from threading import Event
 
 import grpc
 import pytest
-from docarray import Document
 
+from docarray import Document
 from jina import DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_pod_parser
@@ -28,7 +28,7 @@ def test_worker_runtime():
     cancel_event = multiprocessing.Event()
 
     def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event) as runtime:
+        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
             runtime.run_forever()
 
     runtime_thread = Process(
@@ -98,7 +98,7 @@ async def test_worker_runtime_slow_async_exec(uses):
     cancel_event = multiprocessing.Event()
 
     def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event) as runtime:
+        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
             runtime.run_forever()
 
     runtime_thread = Process(
@@ -156,7 +156,7 @@ def test_error_in_worker_runtime(monkeypatch):
     monkeypatch.setattr(DataRequestHandler, 'handle', fail)
 
     def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event) as runtime:
+        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
             runtime.run_forever()
 
     runtime_thread = Process(
@@ -207,7 +207,7 @@ async def test_worker_runtime_graceful_shutdown():
     pending_requests = 5
 
     def start_runtime(args, cancel_event, handler_closed_event):
-        with WorkerRuntime(args, cancel_event) as runtime:
+        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
             runtime._data_request_handler.handle = lambda *args, **kwargs: time.sleep(
                 slow_executor_block_time
             )
@@ -292,7 +292,7 @@ async def test_worker_runtime_slow_init_exec():
     cancel_event = multiprocessing.Event()
 
     def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event) as runtime:
+        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
             runtime.run_forever()
 
     runtime_thread = Process(
@@ -345,7 +345,7 @@ async def test_worker_runtime_reflection():
     cancel_event = multiprocessing.Event()
 
     def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event) as runtime:
+        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
             runtime.run_forever()
 
     runtime_thread = Process(

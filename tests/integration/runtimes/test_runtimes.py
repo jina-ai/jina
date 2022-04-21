@@ -71,8 +71,8 @@ async def test_runtimes_trivial_topology(port_generator):
     GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # send requests to the gateway
-    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1)
+    c = Client(host='localhost', port=port, asyncio=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1, return_responses=True)
     response_list = []
     async for response in responses:
         response_list.append(response)
@@ -193,8 +193,8 @@ async def test_runtimes_flow_topology(
     )
 
     # send requests to the gateway
-    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1)
+    c = Client(host='localhost', port=port, asyncio=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1, return_responses=True)
     response_list = []
     async for response in responses:
         response_list.append(response)
@@ -264,8 +264,8 @@ async def test_runtimes_shards(polling, port_generator):
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1)
+    c = Client(host='localhost', port=port, asyncio=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1, return_responses=True)
     response_list = []
     async for response in responses:
         response_list.append(response)
@@ -337,8 +337,8 @@ async def test_runtimes_replicas(port_generator):
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1)
+    c = Client(host='localhost', port=port, asyncio=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1, return_responses=True)
     response_list = []
     async for response in responses:
         response_list.append(response)
@@ -425,8 +425,8 @@ async def test_runtimes_with_executor(port_generator):
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1)
+    c = Client(host='localhost', port=port, asyncio=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1, return_responses=True)
     response_list = []
     async for response in responses:
         response_list.append(response.docs)
@@ -483,8 +483,8 @@ async def test_runtimes_gateway_worker_direct_connection(port_generator):
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1)
+    c = Client(host='localhost', port=port, asyncio=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1, return_responses=True)
     response_list = []
     async for response in responses:
         response_list.append(response)
@@ -548,9 +548,9 @@ async def test_runtimes_with_replicas_advance_faster(port_generator):
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
+    c = Client(host='localhost', port=port, asyncio=True)
     input_docs = [Document(text='slow'), Document(text='fast')]
-    responses = c.post('/', inputs=input_docs, request_size=1)
+    responses = c.post('/', inputs=input_docs, request_size=1, return_responses=True)
     response_list = []
     async for response in responses:
         response_list.append(response)
@@ -631,8 +631,8 @@ async def test_runtimes_gateway_to_gateway(port_generator):
     )
 
     # send requests to the gateway
-    c = Client(host='localhost', port=port, asyncio=True, return_responses=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1)
+    c = Client(host='localhost', port=port, asyncio=True)
+    responses = c.post('/', inputs=async_inputs, request_size=1, return_responses=True)
     response_list = []
     async for response in responses:
         response_list.append(response)

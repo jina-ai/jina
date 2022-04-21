@@ -32,17 +32,13 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
     def __init__(
         self,
         args: argparse.Namespace,
-        cancel_event: Optional[
-            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-        ] = None,
         **kwargs,
     ):
         """Initialize grpc server for the head runtime.
         :param args: args from CLI
-        :param cancel_event: the cancel event used to wait for canceling
         :param kwargs: keyword args
         """
-        super().__init__(args, cancel_event, **kwargs)
+        super().__init__(args, **kwargs)
 
         if args.name is None:
             args.name = ''
@@ -209,7 +205,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 else '',
                 exc_info=not self.args.quiet_error,
             )
-            raise
+            requests[0].add_exception(ex, executor=None)
+            context.set_trailing_metadata((('is-error', 'true'),))
+            return requests[0]
 
     async def process_control(self, request: ControlRequest, *args) -> ControlRequest:
         """

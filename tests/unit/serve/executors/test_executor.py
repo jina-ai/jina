@@ -9,8 +9,8 @@ from unittest import mock
 
 import pytest
 import yaml
-from docarray import Document, DocumentArray
 
+from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_pod_parser
@@ -468,7 +468,7 @@ async def test_blocking_sync_exec():
     cancel_event = multiprocessing.Event()
 
     def start_runtime(args, cancel_event):
-        with WorkerRuntime(args, cancel_event) as runtime:
+        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
             runtime.run_forever()
 
     runtime_thread = Process(
@@ -501,7 +501,7 @@ async def test_blocking_sync_exec():
     end_time = time.time()
 
     assert all(result.docs.texts == ['BlockingExecutor'] for result in results)
-    assert end_time - start_time < (REQUEST_COUNT * SLEEP_TIME) + 0.2
+    assert end_time - start_time < (REQUEST_COUNT * SLEEP_TIME) * 2.0
 
     cancel_event.set()
     runtime_thread.join()
