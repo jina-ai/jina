@@ -4,6 +4,7 @@ from docarray import DocumentArray
 
 from jina import __default_endpoint__
 from jina.excepts import BadConfigSource
+from jina.importer import ImportExtensions
 from jina.serve.executors import BaseExecutor
 from jina.types.request.data import DataRequest
 
@@ -38,6 +39,27 @@ class DataRequestHandler:
         self.logger = logger
         self._is_closed = False
         self._load_executor(metrics_registry)
+        self._init_monitoring(metrics_registry)
+
+    def _init_monitoring(self, metrics_registry: Optional['CollectorRegistry'] = None):
+
+        if metrics_registry:
+
+            with ImportExtensions(
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+            ):
+                from prometheus_client import Counter
+
+                self._counter = Counter(
+                    'document_processed',
+                    'Number of Documents that have been processed by the executor',
+                    namespace='jina',
+                    labelnames=('endpoint', 'executor'),
+                    registry=metrics_registry,
+                )
+        else:
+            self._counter = None
 
     def _load_executor(self, metrics_registry: Optional['CollectorRegistry'] = None):
         """
@@ -134,6 +156,11 @@ class DataRequestHandler:
                     f'The return type must be DocumentArray / Dict / `None`, '
                     f'but getting {return_data!r}'
                 )
+
+        if self._counter:
+            self._counter.labels(
+                requests[0].header.exec_endpoint, self._executor.__class__.__name__
+            ).inc(len(docs))
 
         DataRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
 
