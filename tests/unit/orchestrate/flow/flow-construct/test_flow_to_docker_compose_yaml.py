@@ -1,3 +1,4 @@
+import json
 import os
 from pathlib import Path
 from unittest import mock
@@ -393,3 +394,29 @@ def test_disable_auto_volume(tmpdir):
         'executor0',
     }
     assert 'volumes' not in services['executor0']
+
+
+def test_flow_to_docker_compose_sandbox(tmpdir):
+
+    flow = Flow(name='test-flow', port=8080).add(
+        uses=f'jinahub+sandbox://DummyHubExecutor'
+    )
+
+    dump_path = os.path.join(str(tmpdir), 'test_flow_docker_compose.yml')
+
+    flow.to_docker_compose_yaml(
+        output_path=dump_path,
+    )
+
+    configuration = None
+    with open(dump_path) as f:
+        configuration = yaml.safe_load(f)
+
+    services = configuration['services']
+    gateway_service = services['gateway']
+    gateway_args = gateway_service['command']
+
+    deployment_addresses = json.loads(
+        gateway_args[gateway_args.index('--deployments-addresses') + 1]
+    )
+    assert deployment_addresses['executor0'][0].startswith('grpcs://')

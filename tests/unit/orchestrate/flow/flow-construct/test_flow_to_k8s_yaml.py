@@ -1,3 +1,4 @@
+import json
 import os
 
 import pytest
@@ -104,7 +105,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     assert '--deployments-addresses' in gateway_args
     assert (
         gateway_args[gateway_args.index('--deployments-addresses') + 1]
-        == '{"executor0": ["executor0.test-flow-ns.svc:8080"], "executor1": ["executor1-head.test-flow-ns.svc:8080"], "executor2": ["executor2-head.test-flow-ns.svc:8080"]}'
+        == '{"executor0": ["grpc://executor0.test-flow-ns.svc:8080"], "executor1": ["grpc://executor1-head.test-flow-ns.svc:8080"], "executor2": ["grpc://executor2-head.test-flow-ns.svc:8080"]}'
     )
     assert '--pod-role' in gateway_args
     assert gateway_args[gateway_args.index('--pod-role') + 1] == 'GATEWAY'
@@ -449,13 +450,13 @@ def test_flow_to_k8s_yaml_external_pod(tmpdir, has_external):
         assert '--deployments-addresses' in gateway_args
         assert (
             gateway_args[gateway_args.index('--deployments-addresses') + 1]
-            == '{"executor0": ["executor0.test-flow-ns.svc:8080"], "external_executor": ["1.2.3.4:9090"]}'
+            == '{"executor0": ["grpc://executor0.test-flow-ns.svc:8080"], "external_executor": ["grpc://1.2.3.4:9090"]}'
         )
     else:
         assert '--deployments-addresses' in gateway_args
         assert (
             gateway_args[gateway_args.index('--deployments-addresses') + 1]
-            == '{"executor0": ["executor0.test-flow-ns.svc:8080"], "external_executor": ["external-executor.test-flow-ns.svc:8080"]}'
+            == '{"executor0": ["grpc://executor0.test-flow-ns.svc:8080"], "external_executor": ["grpc://external-executor.test-flow-ns.svc:8080"]}'
         )
 
 
@@ -465,3 +466,43 @@ def test_raise_exception_invalid_executor(tmpdir):
     with pytest.raises(NoContainerizedError):
         f = Flow().add(uses='A')
         f.to_k8s_yaml(str(tmpdir))
+
+
+def test_flow_to_k8s_yaml_sandbox(tmpdir):
+
+    flow = Flow(name='test-flow', port=8080).add(
+        uses=f'jinahub+sandbox://DummyHubExecutor'
+    )
+
+    dump_path = os.path.join(str(tmpdir), 'test_flow_k8s')
+
+    namespace = 'test-flow-ns'
+    flow.to_k8s_yaml(
+        output_base_path=dump_path,
+        k8s_namespace=namespace,
+    )
+
+    yaml_dicts_per_deployment = {
+        'gateway': [],
+    }
+    for pod_name in set(os.listdir(dump_path)):
+        file_set = set(os.listdir(os.path.join(dump_path, pod_name)))
+        for file in file_set:
+            with open(os.path.join(dump_path, pod_name, file)) as f:
+                yml_document_all = list(yaml.safe_load_all(f))
+            yaml_dicts_per_deployment[file[:-4]] = yml_document_all
+
+    gateway_objects = yaml_dicts_per_deployment['gateway']
+    gateway_args = gateway_objects[2]['spec']['template']['spec']['containers'][0][
+        'args'
+    ]
+    assert (
+        gateway_args[gateway_args.index('--graph-description') + 1]
+        == '{"executor0": ["end-gateway"], "start-gateway": ["executor0"]}'
+    )
+
+    assert '--deployments-addresses' in gateway_args
+    deployment_addresses = json.loads(
+        gateway_args[gateway_args.index('--deployments-addresses') + 1]
+    )
+    assert deployment_addresses['executor0'][0].startswith('grpcs://')
