@@ -501,7 +501,7 @@ async def test_blocking_sync_exec():
     end_time = time.time()
 
     assert all(result.docs.texts == ['BlockingExecutor'] for result in results)
-    assert end_time - start_time < (REQUEST_COUNT * SLEEP_TIME) + 0.2
+    assert end_time - start_time < (REQUEST_COUNT * SLEEP_TIME) * 2.0
 
     cancel_event.set()
     runtime_thread.join()
