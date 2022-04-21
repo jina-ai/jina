@@ -49,10 +49,10 @@ def test_control_message_processing():
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     # no connection registered yet
-    with pytest.raises(RpcError):
-        GrpcConnectionPool.send_request_sync(
-            _create_test_data_message(), f'{args.host}:{args.port}'
-        )
+    resp = GrpcConnectionPool.send_request_sync(
+        _create_test_data_message(), f'{args.host}:{args.port}'
+    )
+    assert resp.status.code == resp.status.ERROR
 
     _add_worker(args, 'ip1')
     # after adding a connection, sending should work
@@ -63,10 +63,10 @@ def test_control_message_processing():
 
     _remove_worker(args, 'ip1')
     # after removing the connection again, sending does not work anymore
-    with pytest.raises(RpcError):
-        GrpcConnectionPool.send_request_sync(
-            _create_test_data_message(), f'{args.host}:{args.port}'
-        )
+    resp = GrpcConnectionPool.send_request_sync(
+        _create_test_data_message(), f'{args.host}:{args.port}'
+    )
+    assert resp.status.code == resp.status.ERROR
 
     _destroy_runtime(args, cancel_event, runtime_thread)
 
