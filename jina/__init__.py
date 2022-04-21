@@ -39,13 +39,18 @@ _os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
 
 # JINA_MP_START_METHOD has higher priority than os-patch
 _start_method = _os.environ.get('JINA_MP_START_METHOD', None)
-
 if _start_method and _start_method.lower() in {'fork', 'spawn', 'forkserver'}:
     from multiprocessing import set_start_method as _set_start_method
 
-    _set_start_method(_start_method.lower())
-    _warnings.warn(f'multiprocessing start method is set to `{_start_method.lower()}`')
-    _os.environ.pop('JINA_MP_START_METHOD')
+    try:
+        _set_start_method(_start_method.lower())
+        _warnings.warn(
+            f'multiprocessing start method is set to `{_start_method.lower()}`'
+        )
+    except Exception as e:
+        _warnings.warn(
+            f'failed to set multiprocessing start_method to `{_start_method.lower()}`: {e!r}'
+        )
 elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
     # DO SOME OS-WISE PATCHES
 
@@ -54,6 +59,7 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
     from multiprocessing import set_start_method as _set_start_method
 
     _set_start_method('fork')
+
 
 # do not change this line manually
 # this is managed by git tag and updated on every release
