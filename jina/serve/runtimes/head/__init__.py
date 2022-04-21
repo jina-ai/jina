@@ -209,7 +209,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 else '',
                 exc_info=not self.args.quiet_error,
             )
-            raise
+            requests[0].add_exception(ex, executor=None)
+            context.set_trailing_metadata((('is-error', 'true'),))
+            return requests[0]
 
     async def process_control(self, request: ControlRequest, *args) -> ControlRequest:
         """
