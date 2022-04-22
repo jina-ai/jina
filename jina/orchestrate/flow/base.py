@@ -169,7 +169,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         ssl_keyfile: Optional[str] = None,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
-        timeout_send: Optional[int] = 1000,
+        timeout_send: Optional[int] = -1,
         title: Optional[str] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
         uses_metas: Optional[dict] = None,
@@ -246,7 +246,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param ssl_keyfile: the path to the key file
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
-        :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, defaults to 1 second
+        :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param uses: The config of the executor, it could be one of the followings:
                   * an Executor YAML file (.yml, .yaml, .jaml)
@@ -672,7 +672,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         shards: Optional[int] = 1,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
-        timeout_send: Optional[int] = 1000,
+        timeout_send: Optional[int] = -1,
         upload_files: Optional[List[str]] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
         uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
@@ -754,7 +754,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
-        :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, defaults to 1 second
+        :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param upload_files: The files on the host to be uploaded to the remote
           workspace. This can be useful when your Deployment has more
           file dependencies beyond a single YAML file, e.g.
