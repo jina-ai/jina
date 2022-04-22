@@ -1,5 +1,5 @@
 (scale-out)=
-# How to Scale Out Your Executor
+# How to scale out your Executor
 
 ## Overview
 

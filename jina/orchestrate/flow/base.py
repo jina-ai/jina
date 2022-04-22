@@ -532,7 +532,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
             external_port = v.head_port if v.head_port else v.port
             graph_dict[node] = [
-                f'{deployment_k8s_address}:{external_port if v.external else GrpcConnectionPool.K8S_PORT}'
+                f'{v.protocol}://{deployment_k8s_address}:{external_port if v.external else GrpcConnectionPool.K8S_PORT}'
             ]
 
         return graph_dict if graph_dict else None
@@ -545,6 +545,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         for node, v in self._deployment_nodes.items():
             if node == 'gateway':
                 continue
+
+            if v.external:
+                deployment_docker_compose_address = f'{v.protocol}://{v.host}:{v.port}'
             elif v.head_args:
                 deployment_docker_compose_address = (
                     f'{to_compatible_name(v.head_args.name)}:{port}'

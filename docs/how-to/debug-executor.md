@@ -1,5 +1,5 @@
 (debug-executor)=
-# How to Debug Executor
+# How to debug an Executor
 
 ````{admonition} Caution
 :class: caution
@@ -7,7 +7,7 @@ To debug an Executor, you need to look under the hood of Jina. This means things
 ````
 
 ````{admonition} Containerized Executor
-:class: danger
+:class: caution
 This How-To does not work for containerized Executors.
 ````
 

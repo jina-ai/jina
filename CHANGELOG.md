@@ -158,6 +158,9 @@
 
 
 
+
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -443,6 +446,9 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.3.0`)](#release-note-330)
 - [Release Note (`3.3.1`)](#release-note-331)
 - [Release Note (`3.3.2`)](#release-note-332)
+- [Release Note (`3.3.3`)](#release-note-333)
+- [Release Note (`3.3.4`)](#release-note-334)
+- [Release Note (`3.3.5`)](#release-note-335)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -13001,4 +13007,77 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```712cccb8```](https://github.com/jina-ai/jina/commit/712cccb86b1e07bec6b8b51598c1400333c5de99)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```abbd95a3```](https://github.com/jina-ai/jina/commit/abbd95a389eeb5e3ccc2c972e909c241baf9ed1c)] __-__ fix readme (*Han Xiao*)
  - [[```3497abf5```](https://github.com/jina-ai/jina/commit/3497abf525914b19834342b9a5ebd2f04b75bc48)] __-__ __version__: the next version will be 3.3.3 (*Jina Dev Bot*)
+
+<a name=release-note-3-3-4></a>
+## Release Note (`3.3.4`)
+
+> Release time: 2022-04-21 12:56:57
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ cristian,  Joan Fontanals,  felix-wang,  Tobias Jacobowitz,  Johannes Messner,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```2c72e770```](https://github.com/jina-ai/jina/commit/2c72e77077d1ff9915bce5097de09b02ca05a92a)] __-__ pass extra search paths given from args (#4651) (*felix-wang*)
+ - [[```8a3083f8```](https://github.com/jina-ai/jina/commit/8a3083f89a7b6d5a846e72c24555c76e3299f089)] __-__ relax time constraint in block exec test (#4653) (*Tobias Jacobowitz*)
+ - [[```e92e26cc```](https://github.com/jina-ai/jina/commit/e92e26cc7af3e494cbbd82721d787a1f34e10f09)] __-__ better reporting of errors in the head (#4640) (*Johannes Messner*)
+
+### 🧼 Code Refactoring
+
+ - [[```b76d4774```](https://github.com/jina-ai/jina/commit/b76d47746753310b3e8601df1c12ed0a70792f32)] __-__ remove runtime backend cli arg (#4644) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```d2161e66```](https://github.com/jina-ai/jina/commit/d2161e66e80c4a816f48ac3adc0140f011d52d29)] __-__ fix admonition in access flow page (#4655) (*cristian*)
+
+### 🍹 Other Improvements
+
+ - [[```9140b134```](https://github.com/jina-ai/jina/commit/9140b134034812a3ee3bd717c059634f89f43896)] __-__ __version__: the next version will be 3.3.4 (*Jina Dev Bot*)
+
+<a name=release-note-3-3-5></a>
+## Release Note (`3.3.5`)
+
+> Release time: 2022-04-21 14:49:03
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Tobias Jacobowitz,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```8c53323e```](https://github.com/jina-ai/jina/commit/8c53323edf2aa7d743265299e02cc20f5641cdfa)] __-__ sandbox usage from k8s/docker-compose (#4671) (*Tobias Jacobowitz*)
+
+### 🍹 Other Improvements
+
+ - [[```bf4c2be2```](https://github.com/jina-ai/jina/commit/bf4c2be225bfa8abed3aa6da768c9fdc558d5df9)] __-__ __version__: the next version will be 3.3.5 (*Jina Dev Bot*)
+
+<a name=release-note-3-3-6></a>
+## Release Note (`3.3.6`)
+
+> Release time: 2022-04-22 07:01:51
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  samsja,  Jina Dev Bot,  Johannes Messner,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```955a08d8```](https://github.com/jina-ai/jina/commit/955a08d8216eaa31f58251eb5b404a8687a82d8f)] __-__ fix circular import (#4649) (*Joan Fontanals*)
+ - [[```af81dfe9```](https://github.com/jina-ai/jina/commit/af81dfe97e6de2fa96247cc225ef96fda416d823)] __-__ reorder correctly the remark page (#4665) (*samsja*)
+
+### 📗 Documentation
+
+ - [[```4a0a878e```](https://github.com/jina-ai/jina/commit/4a0a878e130e0a52667c085c1cec8bb0911822f1)] __-__ make all how-to titles sentence case (#4663) (*Johannes Messner*)
+
+### 🍹 Other Improvements
+
+ - [[```0c8d6371```](https://github.com/jina-ai/jina/commit/0c8d6371cc64e51f5bf1a2af66120b8d99bfca26)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```d1add5a6```](https://github.com/jina-ai/jina/commit/d1add5a624e1cc474a77d4ae70cf1c82c68e5005)] __-__ __version__: the next version will be 3.3.6 (*Jina Dev Bot*)
 
