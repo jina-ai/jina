@@ -24,6 +24,7 @@ from jina.hubble.helper import (
     download_with_resume,
     get_cache_db,
     get_download_cache_dir,
+    get_hubble_error_message,
     get_hubble_url_v2,
     parse_hub_uri,
     upload_file,
@@ -413,23 +414,21 @@ metas:
                     payload = stream_msg.get('payload', '')
                     if t == 'error':
                         msg = stream_msg.get('message')
-                        if not msg and payload and isinstance(payload, dict):
-                            msg = payload.get('readableMessage') or payload.get(
-                                'message'
+                        hubble_err = payload
+                        overridden_msg = ''
+                        detail_msg = ''
+                        if isinstance(hubble_err, dict):
+                            (overridden_msg, detail_msg) = get_hubble_error_message(
+                                hubble_err
                             )
+                            if not msg:
+                                msg = detail_msg
 
-                        if 'Process(docker) exited on non-zero code' in msg:
-                            self.logger.error(
-                                '''
-                            Failed on building Docker image. Potential solutions:
-                            - If you haven't provide a Dockerfile in the executor bundle, you may want to provide one,
-                              as the auto-generated one on the cloud did not work.
-                            - If you have provided a Dockerfile, you may want to check the validity of this Dockerfile.
-                            '''
-                            )
+                        if overridden_msg and overridden_msg != detail_msg:
+                            self.logger.warning(overridden_msg)
 
                         raise Exception(
-                            f'{msg or "Unknown Error"} session_id: {session_id}'
+                            f'{overridden_msg or msg or "Unknown Error"} session_id: {session_id}'
                         )
                     if t == 'progress' and subject == 'buildWorkspace':
                         legacy_message = stream_msg.get('legacyMessage', {})
@@ -465,8 +464,7 @@ metas:
 
             except Exception as e:  # IO related errors
                 self.logger.error(
-                    f'''Please report this session_id: {colored(req_header["jinameta-session-id"], color="yellow", attrs="bold")} to https://github.com/jina-ai/jina/issues'
-                {e!r}'''
+                    f'''Please report this session_id: {colored(req_header["jinameta-session-id"], color="yellow", attrs="bold")} to https://github.com/jina-ai/jina/issues'''
                 )
                 raise e
 
