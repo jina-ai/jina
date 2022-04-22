@@ -286,7 +286,7 @@ def test_flow_head_runtime_failure(monkeypatch, capfd):
     assert 'Intentional error' in out
 
 
-class SlowExecutor(Executor):
+class TimeoutSlowExecutor(Executor):
     @requests(on='/index')
     def foo(self, *args, **kwargs):
         print(f'{time.time()} foo call')
@@ -296,12 +296,12 @@ class SlowExecutor(Executor):
 
 @pytest.mark.timeout(50)
 def test_flow_timeout_send():
-    f = Flow(timeout_send=3000).add(uses=SlowExecutor)
+    f = Flow(timeout_send=3000).add(uses=TimeoutSlowExecutor)
 
     with f:
         f.index([Document()])
 
-    f = Flow(timeout_send=100).add(uses=SlowExecutor)
+    f = Flow(timeout_send=100).add(uses=TimeoutSlowExecutor)
 
     with f:
         with pytest.raises(Exception):
