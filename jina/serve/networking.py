@@ -211,12 +211,10 @@ class GrpcConnectionPool:
                         timeout=timeout,
                     )
                     with self._summary_time:
-                        print(f'{time.time()} do gpc call')
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
                         )
-                        print(f'{time.time()} done gpc call')
                     return response, metadata
                 elif self.stream_stub:
                     with self._summary_time:

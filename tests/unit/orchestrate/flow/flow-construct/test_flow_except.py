@@ -289,9 +289,7 @@ def test_flow_head_runtime_failure(monkeypatch, capfd):
 class TimeoutSlowExecutor(Executor):
     @requests(on='/index')
     def foo(self, *args, **kwargs):
-        print(f'{time.time()} foo call')
         time.sleep(1.5)
-        print(f'{time.time()} foo called')
 
 
 @pytest.mark.timeout(50)
@@ -305,6 +303,4 @@ def test_flow_timeout_send():
 
     with f:
         with pytest.raises(Exception):
-            print(f'{time.time()} request started')
             f.index([Document()])
-            print(f'{time.time()} request ended')
