@@ -306,11 +306,13 @@ def _create_runtime(args):
 
     def start_runtime(runtime_args, handle_queue, cancel_event):
         def _send_requests_mock(
-            request: List[Request], connection, endpoint, timeout
+            request: List[Request], connection, endpoint, timeout=1.0
         ) -> asyncio.Task:
             async def mock_task_wrapper(new_requests, *args, **kwargs):
                 handle_queue.put('mock_called')
-                assert timeout == runtime_args.timeout_send
+                assert timeout == (
+                    runtime_args.timeout_send / 1000 if timeout else None
+                )
                 await asyncio.sleep(0.1)
                 return new_requests[0], grpc.aio.Metadata.from_tuple(
                     (('is-error', 'true'),)

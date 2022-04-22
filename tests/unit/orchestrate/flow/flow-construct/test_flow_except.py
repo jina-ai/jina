@@ -286,11 +286,10 @@ def test_flow_head_runtime_failure(monkeypatch, capfd):
     assert 'Intentional error' in out
 
 
-
 class SlowExecutor(Executor):
     @requests
     def foo(self, *args, **kwargs):
-        time.sleep(0.2)
+        time.sleep(0.5)
 
 
 @pytest.mark.timeout(50)
