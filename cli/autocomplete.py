@@ -96,6 +96,7 @@ ac_table = {
             '--uses-after-address',
             '--connection-list',
             '--disable-reduce',
+            '--timeout-send',
         ],
         'flow': [
             '--help',
@@ -159,6 +160,7 @@ ac_table = {
             '--deployments-addresses',
             '--deployments-disable-reduce',
             '--compression',
+            '--timeout-send',
             '--runtime-cls',
             '--timeout-ready',
             '--env',
@@ -170,10 +172,6 @@ ac_table = {
             '--port',
             '--monitoring',
             '--port-monitoring',
-            '--uses-before-address',
-            '--uses-after-address',
-            '--connection-list',
-            '--disable-reduce',
         ],
         'hub new': [
             '--help',
@@ -256,6 +254,7 @@ ac_table = {
             '--uses-after-address',
             '--connection-list',
             '--disable-reduce',
+            '--timeout-send',
         ],
         'deployment': [
             '--help',
@@ -306,6 +305,7 @@ ac_table = {
             '--uses-after-address',
             '--connection-list',
             '--disable-reduce',
+            '--timeout-send',
             '--uses-before',
             '--uses-after',
             '--when',
