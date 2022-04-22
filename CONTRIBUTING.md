@@ -254,6 +254,7 @@ Good docs make developers happy, and we love happy developers! We've got a few d
 9. If relevant, include a “**See also**” section at the end.
 10. Link to any existing explanations of the concepts you are using.
 
+Bonus: **Know when to break the rules**. Documentation writing is as much art as it is science. Sometimes you will have to deviate from these rules in order to write good documentation.
 Refer to these pages as standardized examples:
 
 * https://docs.jina.ai/fundamentals/flow/access-flow-api/ 
