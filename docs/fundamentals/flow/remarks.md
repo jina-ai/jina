@@ -1,17 +1,5 @@
 # Remarks
 
-
-## multiprocessing Spawn
-
-Few cases require to use `spawn` start method for multiprocessing. 
-(e.g.- Cannot re-initialize CUDA in forked subprocess. To use CUDA with multiprocessing, you must use the 'spawn' start method)
-
-- Please set `JINA_MP_START_METHOD=spawn` before starting the Python script to enable this.
-
-    ````{hint}
-    There's no need to set this for Windows, as it only supports spawn method for multiprocessing. 
-    ````
-
 - Define & start the Flow via an explicit function call inside `if __name__ == '__main__'`. For example
 
     ````{tab} ✅ Do
@@ -111,7 +99,22 @@ Few cases require to use `spawn` start method for multiprocessing.
     ```
     ````
 
+- **Always provide absolute path**
 
+    While passing filepaths to different jina arguments (e.g.- `uses`, `py_modules`), always pass the absolute path.
+
+
+
+## multiprocessing Spawn
+
+Few cases require to use `spawn` start method for multiprocessing. 
+(e.g.- Cannot re-initialize CUDA in forked subprocess. To use CUDA with multiprocessing, you must use the 'spawn' start method)
+
+- Please set `JINA_MP_START_METHOD=spawn` before starting the Python script to enable this.
+
+    ````{hint}
+    There's no need to set this for Windows, as it only supports spawn method for multiprocessing. 
+    ````
 - **Avoid un-picklable objects**
 
     [Here's a list of types that can be pickled in Python](https://docs.python.org/3/library/pickle.html#what-can-be-pickled-and-unpickled). Since `spawn` relies on pickling, we should avoid using code that cannot be pickled.
@@ -127,12 +130,6 @@ Few cases require to use `spawn` start method for multiprocessing.
     ````
 
     Inline functions, such as nested or lambda functions are not picklable. Use `functools.partial` instead.
-
-- **Always provide absolute path**
-
-    While passing filepaths to different jina arguments (e.g.- `uses`, `py_modules`), always pass the absolute path.
-
-
 
 
 
