@@ -3,9 +3,9 @@ import time
 
 import numpy as np
 import pytest
+from docarray import Document, DocumentArray
 from docarray.document.generators import from_ndarray
 
-from docarray import Document, DocumentArray
 from jina import Executor, Flow, requests
 from jina.logging.profile import TimeContext
 from jina.orchestrate.flow.asyncio import AsyncFlow
@@ -94,7 +94,7 @@ class Wait5s(Executor):
 
 
 async def run_async_flow_5s(protocol):
-    with Flow(protocol=protocol, asyncio=True).add(uses=Wait5s) as f:
+    with Flow(protocol=protocol, asyncio=True, timeout_send=6000).add(uses=Wait5s) as f:
         async for r in f.index(
             from_ndarray(np.random.random([num_docs, 4])),
             on_done=validate,
