@@ -38,7 +38,7 @@ class MyExecutor(Executor):
 
 
 ````{admonition} What is inside kwargs? 
-:class: tip
+:class: hint
 Here, `kwargs` are reserved for Jina to inject `metas` and `requests` (representing the request-to-function mapping) values when the Executor is used inside a Flow.
 
 You can access the values of these arguments in the `__init__` body via `self.metas`/`self.requests`/`self.runtime_args`, 
@@ -390,9 +390,9 @@ kubectl apply -R -f /tmp/config_out_folder
 ```
 The above example will deploy the `DummyHubExecutor` from Jina Hub into your Kubernetes cluster.
 
-````{admonition} Note
-:class: note
-The Executor you are using, needs to be already containerized and stored in a registry accessible from your Kubernetes cluster. We recommend Jina Hub for this.
+````{admonition} Hint
+:class: hint
+The Executor you are using needs to be already containerized and stored in a registry accessible from your Kubernetes cluster. We recommend Jina Hub for this.
 ````
 
 (external-shared-executor)=
@@ -419,9 +419,9 @@ Executor.to_docker_compose_yaml(
 ```
 The above example will run the `DummyHubExecutor` from Jina Hub locally on your computer using Docker Compose.
 
-````{admonition} Note
-:class: note
-The Executor you are using, needs to be already containerized and stored in an accessible registry. We recommend Jina Hub for this.
+````{admonition} Hint
+:class: hint
+The Executor you are using needs to be already containerized and stored in an accessible registry. We recommend Jina Hub for this.
 ````
 
 ### Use async Executors

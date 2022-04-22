@@ -38,7 +38,7 @@ After that, the external Executor will behave just like an internal one. And you
 Flows!
 
 ````{admonition} Note
-:class: note
+:class: hint
 If an external Executor needs multiple predecessors, reducing needs to be enabled. So setting disable_reduce=True is not allowed for these cases. 
 ````
 

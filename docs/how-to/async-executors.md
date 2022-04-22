@@ -7,7 +7,7 @@ Python to write concurrent code.
 
 
 ````{admonition} Example code
-:class: tip
+:class: hint
 
 Functions decorated by `requests`  can be directly implemented as async `coroutines. 
 

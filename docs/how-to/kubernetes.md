@@ -20,8 +20,8 @@ Linkerd will automatically load balance traffic between all replicas of an Execu
 
 It is also generally possible to use other service mesh providers (like [Istio](https://istio.io/)) with Jina. You need to manually change Jina's deployment configurations in the generated YAML files for this.
 
-````{admonition} Attention
-:class: attention
+````{admonition} Caution
+:class: caution
 
 If you don't install a third party service mesh (like Linkerd), you will not be able to scale the number of replicas per Executor to more than one. A single replica will always handle all the traffic. No matter how many replicas will be running.
 ````
