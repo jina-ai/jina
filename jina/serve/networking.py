@@ -2,6 +2,7 @@ import asyncio
 import contextlib
 import ipaddress
 import os
+import time
 from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse
@@ -210,10 +211,12 @@ class GrpcConnectionPool:
                         timeout=timeout,
                     )
                     with self._summary_time:
+                        print(f'{time.time()} do gpc call')
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
                         )
+                        print(f'{time.time()} done gpc call')
                     return response, metadata
                 elif self.stream_stub:
                     with self._summary_time:

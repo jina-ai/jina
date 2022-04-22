@@ -289,18 +289,22 @@ def test_flow_head_runtime_failure(monkeypatch, capfd):
 class SlowExecutor(Executor):
     @requests
     def foo(self, *args, **kwargs):
-        time.sleep(0.5)
+        print(f'{time.time()} foo call')
+        time.sleep(1.5)
+        print(f'{time.time()} foo called')
 
 
 @pytest.mark.timeout(50)
 def test_flow_timeout_send():
-    f = Flow(timeout_send=1000).add(uses=SlowExecutor)
+    f = Flow(timeout_send=3000).add(uses=SlowExecutor)
 
     with f:
-        f.index(from_ndarray(np.random.random([10, 10])))
+        f.index([Document()])
 
     f = Flow(timeout_send=100).add(uses=SlowExecutor)
 
     with f:
         with pytest.raises(Exception):
-            f.index(from_ndarray(np.random.random([10, 10])))
+            print(f'{time.time()} request started')
+            f.index([Document()])
+            print(f'{time.time()} request ended')
