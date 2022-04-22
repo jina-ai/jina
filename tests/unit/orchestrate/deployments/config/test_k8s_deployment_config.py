@@ -286,6 +286,7 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway):
         config_map,
         'gateway',
         {
+            'ENV_VAR': 'ENV_VALUE',
             'JINA_LOG_LEVEL': 'INFO',
             'pythonunbuffered': '1',
             'worker_class': 'uvicorn.workers.UvicornH11Worker',
@@ -452,6 +453,7 @@ def test_k8s_yaml_regular_deployment(
             config_map,
             'executor-head',
             {
+                'ENV_VAR': 'ENV_VALUE',
                 'JINA_LOG_LEVEL': 'INFO',
                 'pythonunbuffered': '1',
                 'worker_class': 'uvicorn.workers.UvicornH11Worker',
@@ -728,13 +730,7 @@ def test_k8s_yaml_regular_deployment(
             ]
             == '8080'
         )
-        assert '--env' in shard_container_runtime_container_args
-        assert (
-            shard_container_runtime_container_args[
-                shard_container_runtime_container_args.index('--env') + 1
-            ]
-            == '{"ENV_VAR": "ENV_VALUE"}'
-        )
+        assert '--env' not in shard_container_runtime_container_args
         assert '--connection-list' not in shard_container_runtime_container_args
 
         if uses_with is not None:

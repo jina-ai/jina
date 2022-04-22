@@ -597,11 +597,7 @@ def test_docker_compose_yaml_regular_deployment(
             assert replica_args[replica_args.index('--name') + 1] == expected_arg_name
             assert '--port' in replica_args
             assert replica_args[replica_args.index('--port') + 1] == '8081'
-            assert '--env' in replica_args
-            assert (
-                replica_args[replica_args.index('--env') + 1]
-                == '{"ENV_VAR": "ENV_VALUE"}'
-            )
+            assert '--env' not in replica_args
             assert '--connection-list' not in replica_args
             if uses_with is not None:
                 assert '--uses-with' in replica_args
