@@ -46,19 +46,18 @@ def test_grpc_ssl_with_flow(cert_pem, key_pem, error_log_level):
 
 
 def test_grpc_ssl_with_flow_and_client(cert_pem, key_pem, error_log_level):
-    port = 1234
     with Flow(
         protocol='grpc',
         ssl_certfile=cert_pem,
         ssl_keyfile=key_pem,
-        port=port,
-    ):
+    ) as flow:
         with open(cert_pem, 'rb') as f:
             creds = f.read()
 
         GrpcConnectionPool.send_request_sync(
             request=ControlRequest('STATUS'),
-            target=f'localhost:{port}',
+            target=f'localhost:{flow.port}',
             root_certificates=creds,
             tls=True,
+            timeout=1.0,
         )
