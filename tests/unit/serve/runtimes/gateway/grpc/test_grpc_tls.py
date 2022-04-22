@@ -1,4 +1,5 @@
 import os
+import time
 
 import grpc
 import pytest
@@ -40,6 +41,8 @@ def test_grpc_ssl_with_flow(cert_pem, key_pem, error_log_level):
 
         with pytest.raises(grpc.aio._call.AioRpcError):
             Client(protocol='grpc', port=f.port, tls=True).index([Document()])
+    # the openssl error from above seems to take a bit to actually terminate and may cause the next test to seg fault
+    time.sleep(1.0)
 
 
 def test_grpc_ssl_with_flow_and_client(cert_pem, key_pem, error_log_level):
