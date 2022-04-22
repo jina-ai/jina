@@ -10,6 +10,9 @@ from typing import Dict
 # this line is needed here for measuring import time accurately for 1M imports
 import_time = timeit.timeit(stmt='import jina', number=1000000)
 
+from packaging import version
+from pkg_resources import resource_filename
+
 from jina import Document, Flow, __version__
 from jina.helloworld.fashion.helper import (
     download_data,
@@ -18,8 +21,6 @@ from jina.helloworld.fashion.helper import (
 )
 from jina.logging.logger import JinaLogger
 from jina.parsers.helloworld import set_hw_parser
-from packaging import version
-from pkg_resources import resource_filename
 
 try:
     from jina.helloworld.fashion.executors import MyEncoder, MyIndexer
@@ -108,7 +109,11 @@ def _benchmark_qps() -> Dict[str, float]:
     download_data(targets, args.download_proxy)
 
     try:
-        f = Flow().add(uses=MyEncoder).add(workspace='./', uses=MyIndexer)
+        f = (
+            Flow(timeout_send=5000, prefetch=10)
+            .add(uses=MyEncoder)
+            .add(workspace='./', uses=MyIndexer)
+        )
 
         with f:
             # do index
