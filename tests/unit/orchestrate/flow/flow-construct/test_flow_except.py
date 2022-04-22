@@ -287,7 +287,7 @@ def test_flow_head_runtime_failure(monkeypatch, capfd):
 
 
 class SlowExecutor(Executor):
-    @requests
+    @requests(on='/index')
     def foo(self, *args, **kwargs):
         print(f'{time.time()} foo call')
         time.sleep(1.5)
