@@ -8,10 +8,9 @@ from typing import Optional
 
 from rich.logging import RichHandler
 
-from jina.logging import formatter
-from jina import __uptime__, __resources_path__, __windows__
 from jina.enums import LogVerbosity
 from jina.jaml import JAML
+from jina.logging import formatter
 
 
 class SysLogHandlerWrapper(logging.handlers.SysLogHandler):
@@ -53,6 +52,7 @@ class JinaLogger:
         quiet: bool = False,
         **kwargs,
     ):
+        from jina import __resources_path__, __uptime__, __windows__
 
         if not log_config:
             log_config = os.getenv(
@@ -118,6 +118,8 @@ class JinaLogger:
         :param config_path: Path of config file.
         :param kwargs: Extra parameters.
         """
+        from jina import __windows__
+
         self.logger.handlers = []
 
         with open(config_path) as fp:
