@@ -342,11 +342,9 @@ If both of these are provided, the Flow will automatically configure itself to u
 
 ## Limit outstanding requests
 
-By default, Jina's Client sens requests to the Flow as fast as possible, without any throttling.
-If a client sends his request faster than the Flow can process them, this can put a lot of loan on the Flow.
-Typically, this is most likely to happen for expensive index Flows. 
+By default, Jina’s Client sends requests to the Flow as fast as possible without any delay. If a client sends their request faster than the Flow can process them, this can put a high load on the Flow. Typically, this is most likely to happen for Flows with expensive indexing.
 
-You can control the number of in flight requests per Client with the `prefetch` argument, e.g. setting `prefetch=2` lets the API accept only 2 requests per client in parallel, hence limiting the load. By default, prefetch is disabled (set to 0).
+You can control the number of in flight requests per Client with the `prefetch` argument. E.g. setting `prefetch=2` lets the API accept only 2 requests per client in parallel, hence limiting the load. By default, prefetch is disabled (set to 0).
 
 ```{code-block} python
 ---
