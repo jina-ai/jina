@@ -186,7 +186,7 @@ class GrpcConnectionPool:
             requests: List[Request],
             metadata,
             compression,
-            timeout: Optional[float] = 1.0,
+            timeout: Optional[float] = None,
         ) -> Tuple:
             """
             Send requests and uses the appropriate grpc stub for this
@@ -442,7 +442,7 @@ class GrpcConnectionPool:
         shard_id: Optional[int] = None,
         polling_type: PollingType = PollingType.ANY,
         endpoint: Optional[str] = None,
-        timeout: Optional[float] = 1.0,
+        timeout: Optional[float] = None,
     ) -> List[asyncio.Task]:
         """Send a single message to target via one or all of the pooled connections, depending on polling_type. Convenience function wrapper around send_request.
         :param request: a single request to send
@@ -472,7 +472,7 @@ class GrpcConnectionPool:
         shard_id: Optional[int] = None,
         polling_type: PollingType = PollingType.ANY,
         endpoint: Optional[str] = None,
-        timeout: Optional[float] = 1.0,
+        timeout: Optional[float] = None,
     ) -> List[asyncio.Task]:
         """Send a request to target via one or all of the pooled connections, depending on polling_type
 
@@ -510,7 +510,7 @@ class GrpcConnectionPool:
         deployment: str,
         head: bool = False,
         shard_id: Optional[int] = None,
-        timeout: Optional[float] = 1.0,
+        timeout: Optional[float] = None,
     ) -> asyncio.Task:
         """Send msg to target via only one of the pooled connections
         :param request: request to send
@@ -535,7 +535,7 @@ class GrpcConnectionPool:
         head: bool = False,
         shard_id: Optional[int] = None,
         endpoint: Optional[str] = None,
-        timeout: Optional[float] = 1.0,
+        timeout: Optional[float] = None,
     ) -> asyncio.Task:
         """Send a request to target via only one of the pooled connections
 
@@ -619,7 +619,7 @@ class GrpcConnectionPool:
         requests: List[Request],
         connection: ConnectionStubs,
         endpoint: Optional[str] = None,
-        timeout: Optional[float] = 1.0,
+        timeout: Optional[float] = None,
     ) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall

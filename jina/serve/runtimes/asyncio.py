@@ -148,7 +148,9 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
         """
 
         try:
-            GrpcConnectionPool.send_request_sync(ControlRequest('STATUS'), ctrl_address)
+            GrpcConnectionPool.send_request_sync(
+                ControlRequest('STATUS'), ctrl_address, timeout=1.0
+            )
         except RpcError as e:
             return False
         return True
