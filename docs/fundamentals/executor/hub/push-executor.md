@@ -68,7 +68,8 @@ If you want to create a new tag for an existing Executor, you can also add the `
 jina hub push [--public/--private] --force-update <NAME> --secret <SECRET> -t TAG <path_to_executor_folder>
 ```
 
-If you want to create an immutable tag, that could not be modified again after push, you can leverage the `--immutable-tag` option:
+If you want to create an immutable tag, you can leverage the `--immutable-tag` option. 
+After being pushed for the first time, the immutable tags can not be pushed again.
 
 ```bash
 jina hub push [--public/--private] --force-update <NAME> --secret <SECRET> --immutable-tag <IMMUTABLE_TAG> <path_to_executor_folder>
