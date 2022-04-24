@@ -253,6 +253,31 @@ def test_flow_startup_exception_not_hanging2(protocol):
             pass
 
 
+@pytest.mark.timeout(10)
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow_startup_exception_not_hanging_filenotfound(protocol):
+    f = Flow(protocol=protocol).add(uses='doesntexist.yml')
+    from jina.excepts import RuntimeFailToStart
+
+    with pytest.raises(RuntimeFailToStart):
+        with f:
+            pass
+
+
+@pytest.mark.timeout(10)
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow_startup_exception_not_hanging_invalid_config(protocol):
+    this_file = os.path.dirname(os.path.abspath(__file__))
+    f = Flow(protocol=protocol).add(
+        name='importErrorExecutor',
+        uses=this_file,
+    )
+
+    with pytest.raises(RuntimeFailToStart):
+        with f:
+            pass
+
+
 def test_flow_does_not_import_exec_depencies():
     cur_dir = os.path.dirname(os.path.abspath(__file__))
     f = Flow().add(

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional
 from docarray import DocumentArray
 
 from jina import __default_endpoint__
-from jina.excepts import BadConfigSource, ExecutorFailToLoad
+from jina.excepts import BadConfigSource
 from jina.serve.executors import BaseExecutor
 from jina.types.request.data import DataRequest
 
@@ -62,18 +62,18 @@ class DataRequestHandler:
                 extra_search_paths=self.args.extra_search_paths,
             )
 
-        except BadConfigSource as ex:
+        except BadConfigSource:
             self.logger.error(
                 f'fail to load config from {self.args.uses}, if you are using docker image for --uses, '
                 f'please use "docker://YOUR_IMAGE_NAME"'
             )
-            raise ExecutorFailToLoad from ex
-        except FileNotFoundError as ex:
+            raise
+        except FileNotFoundError:
             self.logger.error(f'fail to load file dependency')
-            raise ExecutorFailToLoad from ex
-        except Exception as ex:
+            raise
+        except Exception:
             self.logger.critical(f'can not load the executor from {self.args.uses}')
-            raise ExecutorFailToLoad from ex
+            raise
 
     @staticmethod
     def _parse_params(parameters: Dict, executor_name: str):
