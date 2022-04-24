@@ -191,6 +191,7 @@ ac_table = {
             '--verbose',
             '--dockerfile',
             '--tag',
+            '--immutable-tag',
             '--force-update',
             '--force',
             '--secret',
