@@ -27,10 +27,8 @@ class GatewayRuntime(AsyncNewLoopRuntime, ABC):
     ):
         # this order is intentional: The timeout is needed in _set_topology_graph(), called by super
         self.timeout_send = args.timeout_send
-        if self.timeout_send > 0:
+        if self.timeout_send:
             self.timeout_send /= 1e3  # convert ms to seconds
-        else:
-            self.timeout_send = None
         super().__init__(args, cancel_event, **kwargs)
 
     def _set_topology_graph(self):

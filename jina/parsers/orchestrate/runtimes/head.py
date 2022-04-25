@@ -50,6 +50,6 @@ def mixin_head_parser(parser):
     gp.add_argument(
         '--timeout-send',
         type=int,
-        default=-1,
+        default=None,
         help='The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default',
     )

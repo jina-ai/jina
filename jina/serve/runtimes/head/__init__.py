@@ -112,10 +112,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
         self.uses_before_address = args.uses_before_address
         self.timeout_send = args.timeout_send
-        if self.timeout_send > 0:
+        if self.timeout_send:
             self.timeout_send /= 1e3  # convert ms to seconds
-        else:
-            self.timeout_send = None
 
         if self.uses_before_address:
             self.connection_pool.add_connection(

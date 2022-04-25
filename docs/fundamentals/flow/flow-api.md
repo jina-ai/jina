@@ -392,7 +392,7 @@ with:
 
 ## Set timeouts for requests
 
-You can set timeouts for sending requests to the Executors within a Flow by passing the `timeout_send` parameter. The timeout is specified in milliseconds and any negative value disables this timeout. By default, it is also disabled.
+You can set timeouts for sending requests to the Executors within a Flow by passing the `timeout_send` parameter. The timeout is specified in milliseconds. By default, it is `None` and the timeout is disabled.
 
 If you use timeouts, you may also need to set the {ref}`prefetch <prefetch>` option in the Flow. Otherwise, requests may queue up at an Executor and eventually time out.
 

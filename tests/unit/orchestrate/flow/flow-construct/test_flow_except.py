@@ -294,6 +294,11 @@ class TimeoutSlowExecutor(Executor):
 
 @pytest.mark.timeout(50)
 def test_flow_timeout_send():
+    f = Flow().add(uses=TimeoutSlowExecutor)
+
+    with f:
+        f.index([Document()])
+
     f = Flow(timeout_send=3000).add(uses=TimeoutSlowExecutor)
 
     with f:
