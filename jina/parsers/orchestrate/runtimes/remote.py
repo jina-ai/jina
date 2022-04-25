@@ -87,6 +87,13 @@ def mixin_gateway_parser(parser):
         'Gzip, Deflate`. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.',
     )
 
+    gp.add_argument(
+        '--timeout-send',
+        type=int,
+        default=None,
+        help='The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default',
+    )
+
 
 def _add_host(arg_group):
     arg_group.add_argument(

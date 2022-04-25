@@ -46,3 +46,10 @@ def mixin_head_parser(parser):
         default=False,
         help='Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head',
     )
+
+    gp.add_argument(
+        '--timeout-send',
+        type=int,
+        default=None,
+        help='The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default',
+    )

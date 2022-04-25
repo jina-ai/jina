@@ -339,7 +339,7 @@ f = Flow(
 
 If both of these are provided, the Flow will automatically configure itself to use TLS encryption for its communication with any Client.
 
-
+(prefetch)=
 ## Limit outstanding requests
 
 By default, Jina’s Client sends requests to the Flow as fast as possible without any delay. If a client sends their request faster than the Flow can process them, this can put a high load on the Flow. Typically, this is most likely to happen for Flows with expensive indexing.
@@ -388,7 +388,17 @@ with:
 ```
 ````
 
+## Set timeouts for requests
 
+You can set timeouts for sending requests to the Executors within a Flow by passing the `timeout_send` parameter. The timeout is specified in milliseconds. By default, it is `None` and the timeout is disabled.
+
+If you use timeouts, you may also need to set the {ref}`prefetch <prefetch>` option in the Flow. Otherwise, requests may queue up at an Executor and eventually time out.
+
+```{code-block} python
+with Flow(timeout_send=1000) as f:
+    f.post(on='/', inputs=[Document()])
+```
+The example above limits every request to the Executors in the Flow to a timeout of 1 second.
 
 ## Generate deployment configuration
 

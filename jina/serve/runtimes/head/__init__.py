@@ -110,6 +110,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                         )
 
         self.uses_before_address = args.uses_before_address
+        self.timeout_send = args.timeout_send
+        if self.timeout_send:
+            self.timeout_send /= 1e3  # convert ms to seconds
 
         if self.uses_before_address:
             self.connection_pool.add_connection(
@@ -263,7 +266,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 response,
                 uses_before_metadata,
             ) = await self.connection_pool.send_requests_once(
-                requests, deployment='uses_before'
+                requests, deployment='uses_before', timeout=self.timeout_send
             )
             requests = [response]
 
@@ -271,6 +274,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             requests=requests,
             deployment=self._deployment_name,
             polling_type=self._polling[endpoint],
+            timeout=self.timeout_send,
         )
 
         worker_results = await asyncio.gather(*worker_send_tasks)
@@ -289,7 +293,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 response_request,
                 uses_after_metadata,
             ) = await self.connection_pool.send_requests_once(
-                worker_results, deployment='uses_after'
+                worker_results, deployment='uses_after', timeout=self.timeout_send
             )
         elif len(worker_results) > 1 and self._reduce:
             DataRequestHandler.reduce_requests(worker_results)

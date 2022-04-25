@@ -30,6 +30,7 @@ class TopologyGraph:
             hanging: bool = False,
             filter_condition: dict = None,
             reduce: bool = True,
+            timeout_send: Optional[float] = None,
         ):
             self.name = name
             self.outgoing_nodes = []
@@ -41,6 +42,7 @@ class TopologyGraph:
             self.status = None
             self._filter_condition = filter_condition
             self._reduce = reduce
+            self._timeout_send = timeout_send
 
         @property
         def leaf(self):
@@ -84,6 +86,7 @@ class TopologyGraph:
                         deployment=self.name,
                         head=True,
                         endpoint=endpoint,
+                        timeout=self._timeout_send,
                     )
                     self.end_time = datetime.utcnow()
                     if metadata and 'is-error' in metadata:
@@ -183,6 +186,7 @@ class TopologyGraph:
         graph_representation: Dict,
         graph_conditions: Dict = {},
         deployments_disable_reduce: List[str] = [],
+        timeout_send: Optional[float] = 1.0,
         *args,
         **kwargs
     ):
@@ -214,6 +218,7 @@ class TopologyGraph:
                 hanging=node_name in hanging_deployment_names,
                 filter_condition=condition,
                 reduce=node_name not in deployments_disable_reduce,
+                timeout_send=timeout_send,
             )
 
         for node_name, outgoing_node_names in graph_representation.items():

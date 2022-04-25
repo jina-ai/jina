@@ -272,6 +272,28 @@ async def test_head_runtime_reflection():
     _destroy_runtime(args, cancel_event, runtime_thread)
 
 
+def test_timeout_behaviour():
+    args = set_pod_parser().parse_args(['--timeout-send', '100'])
+    args.polling = PollingType.ANY
+    cancel_event, handle_queue, runtime_thread = _create_runtime(args)
+
+    _add_worker(args)
+
+    with grpc.insecure_channel(
+        f'{args.host}:{args.port}',
+        options=GrpcConnectionPool.get_default_grpc_options(),
+    ) as channel:
+        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+        response, call = stub.process_single_data.with_call(_create_test_data_message())
+
+    assert response
+    assert 'is-error' in dict(call.trailing_metadata())
+    assert len(response.docs) == 1
+    assert not handle_queue.empty()
+
+    _destroy_runtime(args, cancel_event, runtime_thread)
+
+
 def _create_test_data_message(counter=0, endpoint='/'):
     return list(
         request_generator(endpoint, DocumentArray([Document(text=str(counter))]))
@@ -282,12 +304,15 @@ def _create_runtime(args):
     handle_queue = multiprocessing.Queue()
     cancel_event = multiprocessing.Event()
 
-    def start_runtime(args, handle_queue, cancel_event):
+    def start_runtime(runtime_args, handle_queue, cancel_event):
         def _send_requests_mock(
-            request: List[Request], connection, endpoint
+            request: List[Request], connection, endpoint, timeout=1.0
         ) -> asyncio.Task:
             async def mock_task_wrapper(new_requests, *args, **kwargs):
                 handle_queue.put('mock_called')
+                assert timeout == (
+                    runtime_args.timeout_send / 1000 if timeout else None
+                )
                 await asyncio.sleep(0.1)
                 return new_requests[0], grpc.aio.Metadata.from_tuple(
                     (('is-error', 'true'),)
@@ -295,9 +320,9 @@ def _create_runtime(args):
 
             return asyncio.create_task(mock_task_wrapper(request, connection))
 
-        if not hasattr(args, 'name') or not args.name:
-            args.name = 'testHead'
-        with HeadRuntime(args, cancel_event=cancel_event) as runtime:
+        if not hasattr(runtime_args, 'name') or not runtime_args.name:
+            runtime_args.name = 'testHead'
+        with HeadRuntime(runtime_args, cancel_event=cancel_event) as runtime:
             runtime.connection_pool._send_requests = _send_requests_mock
             runtime.run_forever()
 
