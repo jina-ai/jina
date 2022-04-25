@@ -130,10 +130,6 @@ def send_requests(
 
 
 @pytest.mark.asyncio
-@pytest.mark.skipif(
-    'GITHUB_WORKFLOW' in os.environ,
-    reason='this actually does not work, there are messages lost when shutting down k8s pods',
-)
 @pytest.mark.parametrize(
     'docker_images', [['slow-process-executor', 'jinaai/jina']], indirect=True
 )
@@ -238,10 +234,6 @@ async def test_no_message_lost_during_scaling(logger, docker_images, tmpdir):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skipif(
-    'GITHUB_WORKFLOW' in os.environ,
-    reason='this actually does not work, there are messages lost when shutting down k8s pods',
-)
 @pytest.mark.parametrize(
     'docker_images', [['slow-process-executor', 'jinaai/jina']], indirect=True
 )
