@@ -217,6 +217,8 @@ pip install ".[test]"
 pytest -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' tests
 ```
 
+Tips: If you want to run the k8s tests then you should install [linkerd cli](https://linkerd.io/2.11/getting-started/#step-1-install-the-cli) before.
+
 When you add an executor or a driver, you may introduce new dependencies to Jina. You can verify the dependencies via:
 
 ```bash
