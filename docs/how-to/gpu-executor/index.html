@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/how-to/gpu-executor/" />
   
-<meta property="og:site_name" content="Jina 3.3.6 Documentation" />
+<meta property="og:site_name" content="Jina 3.3.7 Documentation" />
   
 <meta property="og:description" content="This document will show you how to use an Executor on a GPU, both locally and in a Docker container. You will also learn how to use GPU with pre-built Hub executors. Using a GPU allows you to significantly speed up encoding for most deep learning models, reducing response latency by anything from..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.3.6 Documentation" />
+<meta property="og:image:alt" content="Jina 3.3.7 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="How to use external Executors" href="../external-executor/" /><link rel="prev" title="How to scale out your Executor" href="../scale-out/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>How to run Executors on GPU - Jina 3.3.6 documentation</title>
+        <title>How to run Executors on GPU - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -178,7 +178,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.3.6 documentation</div>
+                <div class="brand">Jina 3.3.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -589,7 +589,7 @@
 Docker container. You will also learn how to use GPU with pre-built Hub executors.</p>
 <p>Using a GPU allows you to significantly speed up encoding for most deep learning models,
 reducing response latency by anything from 5 to 100 times, depending on the model and inputs used.</p>
-<div class="important admonition">
+<div class="caution admonition">
 <p class="admonition-title">Important</p>
 <p>This tutorial assumes you are already familiar with basic Jina concepts, such as Document, Executor, and Flow. Some knowledge of the <a class="reference internal" href="../../fundamentals/executor/hub/"><span class="doc std std-doc">Hub</span></a> is also needed for the last part of the tutorial.</p>
 <p>If you’re not yet familiar with these concepts, first read the <a class="reference internal" href="../../fundamentals/executor/"><span class="doc std std-doc">Executor</span></a> and <a class="reference internal" href="../../fundamentals/executor/"><span class="doc std std-doc">Flow</span></a> documentation, and return to this tutorial once you feel comfortable performing basic operations in Jina.</p>
@@ -692,7 +692,7 @@ the deep learning framework that you use, that might be required (for local exec
 </section>
 <section id="setting-up-the-executor">
 <h2>Setting up the Executor<a class="headerlink" href="#setting-up-the-executor" title="Permalink to this headline">¶</a></h2>
-<div class="info admonition">
+<div class="hint admonition">
 <p class="admonition-title">Jina Hub</p>
 <p>In this section we create an executor using <a class="reference external" href="https://hub.jina.ai/">Jina Hub</a>. This still creates your executor locally
 and privately, but makes it quick and easy to run your
@@ -768,7 +768,7 @@ this one (we will need it in the next section). In the end, you should be greete
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -r requirements.txt
 </pre></div>
 </div>
-<div class="info admonition">
+<div class="hint admonition">
 <p class="admonition-title">Do I need to install CUDA?</p>
 <p>All machine learning frameworks rely on CUDA for running on GPU. However, whether you
 need CUDA installed on your system or not depends on the framework that you are using.</p>
@@ -776,7 +776,7 @@ need CUDA installed on your system or not depends on the framework that you are 
 CUDA binaries in its distribution. However, other frameworks, such as Tensorflow, require
 you to install CUDA yourself.</p>
 </div>
-<div class="tip admonition">
+<div class="hint admonition">
 <p class="admonition-title">Install only what you need</p>
 <p>In this example we are installing the GPU-enabled version of PyTorch, which is the default
 version when installing from PyPI. However, if you know that you only need to use your
@@ -885,7 +885,7 @@ encoder by encoding 10 thousand text documents.</p>
 <p>Running this code on a <code class="docutils literal notranslate"><span class="pre">g4dn.xlarge</span></code> AWS instance with a single NVIDIA T4 GPU attached, we can see that the embedding
 time can be decreased from 20s to 3s by running on GPU.
 That is more than a <strong>6x speedup!</strong> And that’s not even the best we can do - if we increase the batch size to max out the GPU’s memory we would get even larger speedups. But such optimizations are beyond the scope of this tutorial.</p>
-<div class="note admonition">
+<div class="hint admonition">
 <p class="admonition-title">Note</p>
 <p>You have probably noticed that there was a delay (about 3 seconds) when creating the Flow.
 This occured because the weights of our model needed to be transfered from CPU to GPU when we
@@ -895,14 +895,14 @@ so for most use cases this is not something we would worry about.</p>
 </section>
 <section id="using-gpu-in-a-container">
 <h2>Using GPU in a container<a class="headerlink" href="#using-gpu-in-a-container" title="Permalink to this headline">¶</a></h2>
-<div class="tip admonition">
+<div class="caution admonition">
 <p class="admonition-title">Using your GPU inside a container</p>
 <p>For this part of the tutorial, you need <code class="docutils literal notranslate"><span class="pre">nvidia-container-toolkit</span></code> installed on your machine.
 If you haven’t installed that already, you can find an installation guide <a class="reference external" href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html">here</a>.</p>
 </div>
 <p>When you’ll be using your Executor in production you will most likely want to put it in a Docker container, to provide proper environment isolation and to be able to use it easily on any device.</p>
 <p>Using GPU-enabled Executors in this case is no harder than using them locally. In this case we don’t even need to modify the default <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code>.</p>
-<div class="admonition-choosing-the-right-base-image admonition">
+<div class="hint admonition">
 <p class="admonition-title">Choosing the right base image</p>
 <p>In our case we are using the default <code class="docutils literal notranslate"><span class="pre">jinaai/jina:latest</span></code> base image. However, parallel to the comments about having to install CUDA locally, you might need to use a different base image, depending on the framework you are using.</p>
 <p>If you need to have CUDA installed in the image, you usually have two options: either you take the <code class="docutils literal notranslate"><span class="pre">nvidia/cuda</span></code> for the base image, or you take the official GPU-enabled image of the framework you are using, for example, <code class="docutils literal notranslate"><span class="pre">tensorflow/tensorflow:2.6.0-gpu</span></code>.</p>
@@ -965,7 +965,7 @@ If you haven’t installed that already, you can find an installation guide <a c
 </pre></div>
 </div>
 <p>You’ll see that the first time you run the script, downloading the Docker image will take some time - GPU images are large! But after that, everything will work just as it did with your local Docker image, out of the box.</p>
-<div class="important admonition">
+<div class="caution admonition">
 <p class="admonition-title">Important</p>
 <p>When using GPU encoders from Jina Hub, always use <code class="docutils literal notranslate"><span class="pre">jinahub+docker://</span></code>, and not <code class="docutils literal notranslate"><span class="pre">jinahub://</span></code>. As discussed above, these encoders might need CUDA installed (or other system dependencies), and installing that properly can be tricky. For that reason, you should prefer using Docker images, which already come with all these dependencies pre-installed.</p>
 </div>
@@ -1015,7 +1015,7 @@ If you haven’t installed that already, you can find an installation guide <a c
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 22, 2022.
+                    Last updated on Apr 25, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

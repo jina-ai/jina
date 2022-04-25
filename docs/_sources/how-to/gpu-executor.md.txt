@@ -8,7 +8,7 @@ Using a GPU allows you to significantly speed up encoding for most deep learning
 reducing response latency by anything from 5 to 100 times, depending on the model and inputs used.
 
 ```{admonition} Important
-:class: important
+:class: caution
 
 This tutorial assumes you are already familiar with basic Jina concepts, such as Document, Executor, and Flow. Some knowledge of the [Hub](../fundamentals/executor/hub/index) is also needed for the last part of the tutorial.
 
@@ -135,7 +135,7 @@ pip install jina
 
 
 ```{admonition} Jina Hub
-:class: info
+:class: hint
 
 In this section we create an executor using [Jina Hub](https://hub.jina.ai/). This still creates your executor locally
 and privately, but makes it quick and easy to run your
@@ -226,7 +226,7 @@ pip install -r requirements.txt
 ```
 
 ```{admonition} Do I need to install CUDA?
-:class: info
+:class: hint
 
 All machine learning frameworks rely on CUDA for running on GPU. However, whether you
 need CUDA installed on your system or not depends on the framework that you are using.
@@ -237,7 +237,7 @@ you to install CUDA yourself.
 ```
 
 ```{admonition} Install only what you need
-:class: tip
+:class: hint
 
 In this example we are installing the GPU-enabled version of PyTorch, which is the default
 version when installing from PyPI. However, if you know that you only need to use your
@@ -368,7 +368,7 @@ time can be decreased from 20s to 3s by running on GPU.
 That is more than a **6x speedup!** And that's not even the best we can do - if we increase the batch size to max out the GPU's memory we would get even larger speedups. But such optimizations are beyond the scope of this tutorial.
 
 ```{admonition} Note
-:class: note
+:class: hint
 
 You have probably noticed that there was a delay (about 3 seconds) when creating the Flow.
 This occured because the weights of our model needed to be transfered from CPU to GPU when we
@@ -379,7 +379,7 @@ so for most use cases this is not something we would worry about.
 ## Using GPU in a container
 
 ```{admonition} Using your GPU inside a container
-:class: tip
+:class: caution
 
 For this part of the tutorial, you need `nvidia-container-toolkit` installed on your machine.
 If you haven't installed that already, you can find an installation guide [here](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html).
@@ -390,6 +390,7 @@ When you'll be using your Executor in production you will most likely want to pu
 Using GPU-enabled Executors in this case is no harder than using them locally. In this case we don't even need to modify the default `Dockerfile`.
 
 ```{admonition} Choosing the right base image
+:class: hint
 
 In our case we are using the default `jinaai/jina:latest` base image. However, parallel to the comments about having to install CUDA locally, you might need to use a different base image, depending on the framework you are using.
 
@@ -474,7 +475,7 @@ f = Flow().add(
 You'll see that the first time you run the script, downloading the Docker image will take some time - GPU images are large! But after that, everything will work just as it did with your local Docker image, out of the box.
 
 ```{admonition} Important
-:class: important
+:class: caution
 
 When using GPU encoders from Jina Hub, always use `jinahub+docker://`, and not `jinahub://`. As discussed above, these encoders might need CUDA installed (or other system dependencies), and installing that properly can be tricky. For that reason, you should prefer using Docker images, which already come with all these dependencies pre-installed.
 ```

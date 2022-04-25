@@ -2,7 +2,7 @@
 # How to build switches in a Flow
 
 ````{admonition} Requirements
-:class: note
+:class: hint
 To follow along with this How-To, you need Jina 3.2.2 or higher.
 ````
 

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.serve.networking - Jina 3.3.6 documentation</title>
+        <title>jina.serve.networking - Jina 3.3.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.3.6 documentation</div>
+                <div class="brand">Jina 3.3.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -555,6 +555,7 @@
 <span class="kn">import</span> <span class="nn">contextlib</span>
 <span class="kn">import</span> <span class="nn">ipaddress</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
@@ -734,7 +735,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="GrpcConnectionPool.ConnectionStubs.send_requests"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.ConnectionStubs.send_requests">[docs]</a>        <span class="k">async</span> <span class="k">def</span> <span class="nf">send_requests</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Request</span><span class="p">],</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">compression</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Request</span><span class="p">],</span>
+            <span class="n">metadata</span><span class="p">,</span>
+            <span class="n">compression</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
             <span class="sd">"""</span>
 <span class="sd">            Send requests and uses the appropriate grpc stub for this</span>
@@ -743,6 +748,7 @@
 <span class="sd">            :param requests: the requests to send</span>
 <span class="sd">            :param metadata: the metadata to send alongside the requests</span>
 <span class="sd">            :param compression: defines if compression should be used</span>
+<span class="sd">            :param timeout: defines timeout for sending request</span>
 
 <span class="sd">            :returns: Tuple of response and metadata about the response</span>
 <span class="sd">            """</span>
@@ -755,6 +761,7 @@
                         <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                         <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
                         <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
+                        <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span><span class="p">:</span>
                         <span class="n">metadata</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="p">(</span>
@@ -765,8 +772,7 @@
                 <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream_stub</span><span class="p">:</span>
                     <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span><span class="p">:</span>
                         <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream_stub</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span>
-                            <span class="nb">iter</span><span class="p">(</span><span class="n">requests</span><span class="p">),</span>
-                            <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
+                            <span class="nb">iter</span><span class="p">(</span><span class="n">requests</span><span class="p">),</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span>
                         <span class="p">):</span>
                             <span class="k">return</span> <span class="n">resp</span><span class="p">,</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">request_type</span> <span class="o">==</span> <span class="n">DataRequest</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -775,6 +781,7 @@
                         <span class="n">requests</span><span class="p">,</span>
                         <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
                         <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
+                        <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span><span class="p">:</span>
                         <span class="n">metadata</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="p">(</span>
@@ -788,7 +795,9 @@
                     <span class="p">)</span>
             <span class="k">elif</span> <span class="n">request_type</span> <span class="o">==</span> <span class="n">ControlRequest</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_stub</span><span class="p">:</span>
-                    <span class="n">call_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_stub</span><span class="o">.</span><span class="n">process_control</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">call_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_stub</span><span class="o">.</span><span class="n">process_control</span><span class="p">(</span>
+                        <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span>
+                    <span class="p">)</span>
                     <span class="n">metadata</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="k">await</span> <span class="n">call_result</span><span class="o">.</span><span class="n">trailing_metadata</span><span class="p">(),</span>
                         <span class="k">await</span> <span class="n">call_result</span><span class="p">,</span>
@@ -986,6 +995,7 @@
         <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">polling_type</span><span class="p">:</span> <span class="n">PollingType</span> <span class="o">=</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]:</span>
         <span class="sd">"""Send a single message to target via one or all of the pooled connections, depending on polling_type. Convenience function wrapper around send_request.</span>
 <span class="sd">        :param request: a single request to send</span>
@@ -994,6 +1004,7 @@
 <span class="sd">        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL</span>
 <span class="sd">        :param polling_type: defines if the message should be send to any or all pooled connections for the target</span>
 <span class="sd">        :param endpoint: endpoint to target with the request</span>
+<span class="sd">        :param timeout: timeout for sending the requests</span>
 <span class="sd">        :return: list of asyncio.Task items for each send call</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_requests</span><span class="p">(</span>
@@ -1003,6 +1014,7 @@
             <span class="n">shard_id</span><span class="o">=</span><span class="n">shard_id</span><span class="p">,</span>
             <span class="n">polling_type</span><span class="o">=</span><span class="n">polling_type</span><span class="p">,</span>
             <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="GrpcConnectionPool.send_requests"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_requests">[docs]</a>    <span class="k">def</span> <span class="nf">send_requests</span><span class="p">(</span>
@@ -1013,6 +1025,7 @@
         <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">polling_type</span><span class="p">:</span> <span class="n">PollingType</span> <span class="o">=</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]:</span>
         <span class="sd">"""Send a request to target via one or all of the pooled connections, depending on polling_type</span>
 
@@ -1022,6 +1035,7 @@
 <span class="sd">        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL</span>
 <span class="sd">        :param polling_type: defines if the request should be send to any or all pooled connections for the target</span>
 <span class="sd">        :param endpoint: endpoint to target with the requests</span>
+<span class="sd">        :param timeout: timeout for sending the requests</span>
 <span class="sd">        :return: list of asyncio.Task items for each send call</span>
 <span class="sd">        """</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1038,7 +1052,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Unsupported polling type </span><span class="si">{</span><span class="n">polling_type</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">connection</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
-            <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">)</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">results</span></div>
@@ -1049,16 +1063,22 @@
         <span class="n">deployment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">head</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">:</span>
         <span class="sd">"""Send msg to target via only one of the pooled connections</span>
 <span class="sd">        :param request: request to send</span>
 <span class="sd">        :param deployment: name of the Jina deployment to send the message to</span>
 <span class="sd">        :param head: If True it is send to the head, otherwise to the worker pods</span>
 <span class="sd">        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL</span>
+<span class="sd">        :param timeout: timeout for sending the requests</span>
 <span class="sd">        :return: asyncio.Task representing the send call</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_requests_once</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">request</span><span class="p">],</span> <span class="n">deployment</span><span class="o">=</span><span class="n">deployment</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="n">head</span><span class="p">,</span> <span class="n">shard_id</span><span class="o">=</span><span class="n">shard_id</span>
+            <span class="p">[</span><span class="n">request</span><span class="p">],</span>
+            <span class="n">deployment</span><span class="o">=</span><span class="n">deployment</span><span class="p">,</span>
+            <span class="n">head</span><span class="o">=</span><span class="n">head</span><span class="p">,</span>
+            <span class="n">shard_id</span><span class="o">=</span><span class="n">shard_id</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="GrpcConnectionPool.send_requests_once"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_requests_once">[docs]</a>    <span class="k">def</span> <span class="nf">send_requests_once</span><span class="p">(</span>
@@ -1068,6 +1088,7 @@
         <span class="n">head</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">:</span>
         <span class="sd">"""Send a request to target via only one of the pooled connections</span>
 
@@ -1076,12 +1097,13 @@
 <span class="sd">        :param head: If True it is send to the head, otherwise to the worker pods</span>
 <span class="sd">        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL</span>
 <span class="sd">        :param endpoint: endpoint to target with the requests</span>
+<span class="sd">        :param timeout: timeout for sending the requests</span>
 <span class="sd">        :return: asyncio.Task representing the send call</span>
 <span class="sd">        """</span>
         <span class="n">replicas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">get_replicas</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">shard_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">replicas</span><span class="p">:</span>
             <span class="n">connection</span> <span class="o">=</span> <span class="n">replicas</span><span class="o">.</span><span class="n">get_next_connection</span><span class="p">()</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">connection</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'No available connections for deployment </span><span class="si">{</span><span class="n">deployment</span><span class="si">}</span><span class="s1"> and shard </span><span class="si">{</span><span class="n">shard_id</span><span class="si">}</span><span class="s1">'</span>
@@ -1150,6 +1172,7 @@
         <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Request</span><span class="p">],</span>
         <span class="n">connection</span><span class="p">:</span> <span class="n">ConnectionStubs</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">:</span>
         <span class="c1"># this wraps the awaitable object from grpc as a coroutine so it can be used as a task</span>
         <span class="c1"># the grpc call function is not a coroutine but some _AioCall</span>
@@ -1163,6 +1186,7 @@
                         <span class="n">requests</span><span class="o">=</span><span class="n">requests</span><span class="p">,</span>
                         <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
                         <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span>
+                        <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">except</span> <span class="n">AioRpcError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">!=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
@@ -1514,7 +1538,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 22, 2022.
+                    Last updated on Apr 25, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
