@@ -1,3 +1,4 @@
+import contextlib
 import inspect
 import multiprocessing
 import os
@@ -129,7 +130,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 'Time spent when calling the executor request method',
                 registry=self.runtime_args.metrics_registry,
                 namespace='jina',
-                labelnames=('method', 'executor'),
+                labelnames=('executor', 'endpoint'),
             )
         else:
             self._summary_method = None
@@ -250,10 +251,18 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     async def __acall_endpoint__(self, req_endpoint, **kwargs):
         func = self.requests[req_endpoint]
-        if iscoroutinefunction(func):
-            return await func(self, **kwargs)
-        else:
-            return func(self, **kwargs)
+
+        _summary = (
+            self._summary_method.labels(self.__class__.__name__, req_endpoint).time()
+            if self._summary_method
+            else contextlib.nullcontext()
+        )
+
+        with _summary:
+            if iscoroutinefunction(func):
+                return await func(self, **kwargs)
+            else:
+                return func(self, **kwargs)
 
     @property
     def workspace(self) -> Optional[str]:

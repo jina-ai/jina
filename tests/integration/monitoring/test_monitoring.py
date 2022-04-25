@@ -32,7 +32,7 @@ def test_enable_monitoring_deployment(port_generator):
             f.post(f'/{meth}', inputs=DocumentArray())
             resp = req.get(f'http://localhost:{port2}/')
             assert (
-                f'process_request_seconds_created{{executor="DummyExecutor",method="{meth}"}}'
+                f'process_request_seconds_created{{endpoint="/{meth}",executor="DummyExecutor"}}'
                 in str(resp.content)
             )
 
@@ -74,3 +74,44 @@ def test_monitoring_head(port_generator):
         resp = req.get(f'http://localhost:{port2}/')
         assert f'jina_receiving_request_seconds' in str(resp.content)
         assert f'jina_sending_request_seconds' in str(resp.content)
+
+
+def test_document_processed_total(port_generator):
+    port0 = port_generator()
+    port1 = port_generator()
+
+    with Flow(monitoring=True, port_monitoring=port0).add(
+        uses=DummyExecutor, monitoring=True, port_monitoring=port1
+    ) as f:
+
+        resp = req.get(f'http://localhost:{port1}/')
+        assert resp.status_code == 200
+
+        f.post(
+            f'/foo', inputs=DocumentArray.empty(size=4)
+        )  # process 4 documents on foo
+
+        resp = req.get(f'http://localhost:{port1}/')
+        assert (
+            f'jina_document_processed_total{{endpoint="/foo",executor="DummyExecutor"}} 4.0'  # check that we count 4 documents on foo
+            in str(resp.content)
+        )
+
+        assert not (
+            f'jina_document_processed_total{{endpoint="/bar",executor="DummyExecutor"}}'  # check that we does not start counting documents on bar as it has not been called yet
+            in str(resp.content)
+        )
+
+        f.post(
+            f'/bar', inputs=DocumentArray.empty(size=5)
+        )  # process 5 documents on bar
+
+        assert not (
+            f'jina_document_processed_total{{endpoint="/bar",executor="DummyExecutor"}} 5.0'  # check that we count 5 documents on foo
+            in str(resp.content)
+        )
+
+        assert (
+            f'jina_document_processed_total{{endpoint="/foo",executor="DummyExecutor"}} 4.0'  # check that we nothing change on bar count
+            in str(resp.content)
+        )
