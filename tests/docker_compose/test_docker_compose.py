@@ -131,6 +131,7 @@ def flow_with_needs(docker_images):
         .add(
             name='segmenter',
             uses=f'docker://{docker_images[0]}',
+            replicas=2,
         )
         .add(
             name='textencoder',
