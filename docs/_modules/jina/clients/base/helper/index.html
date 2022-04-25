@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.clients.base.helper - Jina 3.3.8 documentation</title>
+        <title>jina.clients.base.helper - Jina 3.3.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.3.8 documentation</div>
+                <div class="brand">Jina 3.3.9 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -630,7 +630,8 @@
 <span class="sd">        """</span>
         <span class="n">req_dict</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
         <span class="n">req_dict</span><span class="p">[</span><span class="s1">'exec_endpoint'</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">'header'</span><span class="p">][</span><span class="s1">'exec_endpoint'</span><span class="p">]</span>
-
+        <span class="k">if</span> <span class="s1">'target_executor'</span> <span class="ow">in</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">'header'</span><span class="p">]:</span>
+            <span class="n">req_dict</span><span class="p">[</span><span class="s1">'target_executor'</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">'header'</span><span class="p">][</span><span class="s1">'target_executor'</span><span class="p">]</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">req_dict</span><span class="p">)</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="HTTPClientlet.recv_message"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.recv_message">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">recv_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
