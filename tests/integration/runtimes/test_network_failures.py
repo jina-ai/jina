@@ -104,11 +104,10 @@ async def test_runtimes_head_topology(port_generator):
     assert worker_process.exitcode == 0
 
 
-@pytest.mark.asyncio
 # create gateway and workers manually, then terminate worker process to provoke an error
 # TODO(johannes) meaningful asserts
 # TODO(johannes) have different workers and parametrize their failure. Assert correct worker is identified in error message
-async def test_runtimes_headless_topology(port_generator):
+def test_runtimes_headless_topology(port_generator):
     worker_port = port_generator()
     gateway_port = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
@@ -120,7 +119,7 @@ async def test_runtimes_headless_topology(port_generator):
     )
     worker_process.start()
 
-    await asyncio.sleep(0.1)
+    time.sleep(0.1)
 
     # create a single gateway runtime
     gateway_process = multiprocessing.Process(
@@ -129,7 +128,7 @@ async def test_runtimes_headless_topology(port_generator):
     )
     gateway_process.start()
 
-    await asyncio.sleep(1.0)
+    time.sleep(1.0)
 
     AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
@@ -146,12 +145,12 @@ async def test_runtimes_headless_topology(port_generator):
     worker_process.terminate()
     # send requests to the gateway
     try:
-        c = Client(host='localhost', port=gateway_port, asyncio=True)
+        c = Client(host='localhost', port=gateway_port)
         responses = c.post(
             '/', inputs=async_inputs, request_size=1, return_responses=True
         )
         response_list = []
-        async for response in responses:
+        for response in responses:
             response_list.append(response)
     except grpc.aio.AioRpcError:
         gateway_process.terminate()
