@@ -450,9 +450,6 @@ async def test_runtimes_with_executor(port_generator):
     for i in range(10):
         assert doc_texts.count(f'pod0/shards/{i}') == 1
 
-    for process in runtime_processes:
-        assert process.exitcode == 0
-
 
 @pytest.mark.asyncio
 async def test_runtimes_gateway_worker_direct_connection(port_generator):

@@ -316,7 +316,7 @@ class Pod(BasePod):
                 'jaml_classes': JAML.registered_classes(),
             },
             name=self.name,
-            daemon=True,
+            daemon=False,
         )
 
     def start(self):
