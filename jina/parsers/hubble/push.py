@@ -52,7 +52,7 @@ One can later fetch a tagged Executor via `jinahub[+docker]://MyExecutor/gpu`
     gp.add_argument(
         '--immutable-tag',
         action='append',
-        help='A list of immutable tags. Like tag but immutable after first push. ',
+        help='A list of immutable tags. Like tag but immutable after first push.',
     )
 
     gp.add_argument(
