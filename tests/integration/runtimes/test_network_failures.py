@@ -4,6 +4,7 @@ import multiprocessing
 import threading
 import time
 
+import grpc.aio
 import pytest
 
 from jina import Client, Document, Executor, requests
@@ -144,11 +145,18 @@ async def test_runtimes_headless_topology(port_generator):
 
     gateway_process.terminate()
     # send requests to the gateway
-    c = Client(host='localhost', port=gateway_port, asyncio=True)
-    responses = c.post('/', inputs=async_inputs, request_size=1, return_responses=True)
-    response_list = []
-    async for response in responses:
-        response_list.append(response)
+    try:
+        c = Client(host='localhost', port=gateway_port, asyncio=True)
+        responses = c.post(
+            '/', inputs=async_inputs, request_size=1, return_responses=True
+        )
+        response_list = []
+        async for response in responses:
+            response_list.append(response)
+    except grpc.aio.AioRpcError:
+        gateway_process.terminate()
+        worker_process.terminate()
+        raise
 
     # clean up runtimes
     gateway_process.terminate()
