@@ -152,7 +152,7 @@ def test_runtimes_headless_topology(port_generator):
         response_list = []
         for response in responses:
             response_list.append(response)
-    except grpc.aio.AioRpcError:
+    except Exception:
         gateway_process.terminate()
         worker_process.terminate()
         raise
