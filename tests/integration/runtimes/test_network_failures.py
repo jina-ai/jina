@@ -143,7 +143,7 @@ async def test_runtimes_headless_topology(port_generator):
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    gateway_process.terminate()
+    worker_process.terminate()
     # send requests to the gateway
     try:
         c = Client(host='localhost', port=gateway_port, asyncio=True)
