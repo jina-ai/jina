@@ -236,10 +236,10 @@ def k8s_flow_with_needs(docker_images):
     [['test-executor', 'executor-merger', 'jinaai/jina']],
     indirect=True,
 )
-async def test_flow_with_needs(
+async def test_flow_with_monitoring(
     logger, k8s_flow_with_needs, tmpdir, docker_images, port_generator
 ):
-    dump_path = os.path.join(str(tmpdir), 'test-flow-with-needs')
+    dump_path = os.path.join(str(tmpdir), 'test-flow-with-monitoring')
     namespace = f'test-flow-monitoring'.lower()
 
     port1 = port_generator()
