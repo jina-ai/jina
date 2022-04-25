@@ -273,10 +273,10 @@ class GrpcConnectionPool:
             self, deployment: str, head: bool, entity_id: Optional[int] = None
         ) -> ReplicaList:
             if deployment in self._deployments:
-                type = 'heads' if head else 'shards'
+                type_ = 'heads' if head else 'shards'
                 if entity_id is None and head:
                     entity_id = 0
-                return self._get_connection_list(deployment, type, entity_id)
+                return self._get_connection_list(deployment, type_, entity_id)
             else:
                 self._logger.debug(
                     f'Unknown deployment {deployment}, no replicas available'
@@ -303,27 +303,27 @@ class GrpcConnectionPool:
             self._deployments.clear()
 
         def _get_connection_list(
-            self, deployment: str, type: str, entity_id: Optional[int] = None
+            self, deployment: str, type_: str, entity_id: Optional[int] = None
         ) -> ReplicaList:
             try:
-                if entity_id is None and len(self._deployments[deployment][type]) > 0:
+                if entity_id is None and len(self._deployments[deployment][type_]) > 0:
                     # select a random entity
                     self._access_count[deployment] += 1
-                    return self._deployments[deployment][type][
+                    return self._deployments[deployment][type_][
                         self._access_count[deployment]
-                        % len(self._deployments[deployment][type])
+                        % len(self._deployments[deployment][type_])
                     ]
                 else:
-                    return self._deployments[deployment][type][entity_id]
+                    return self._deployments[deployment][type_][entity_id]
             except KeyError:
                 if (
                     entity_id is None
                     and deployment in self._deployments
-                    and len(self._deployments[deployment][type])
+                    and len(self._deployments[deployment][type_])
                 ):
                     # This can happen as a race condition when removing connections while accessing it
                     # In this case we don't care for the concrete entity, so retry with the first one
-                    return self._get_connection_list(deployment, type, 0)
+                    return self._get_connection_list(deployment, type_, 0)
                 self._logger.debug(
                     f'Did not find a connection for deployment {deployment}, type {type} and entity_id {entity_id}. There are {len(self._deployments[deployment][type]) if deployment in self._deployments else 0} available connections for this deployment and type. '
                 )

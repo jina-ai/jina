@@ -560,10 +560,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         f'{to_compatible_name(v.name)}:{port}'
                     ]
                 else:
-                    deployment_docker_compose_address = [
-                        f'{to_compatible_name(v.name)}/rep-{rep_id}:{port}'
-                        for rep_id in range(v.args.replicas)
-                    ]
+                    deployment_docker_compose_address = []
+                    for rep_id in range(v.args.replicas):
+                        node_name = f'{v.name}/rep-{rep_id}'
+                        deployment_docker_compose_address.append(
+                            f'{to_compatible_name(node_name)}:{port}'
+                        )
             graph_dict[node] = deployment_docker_compose_address
 
         return graph_dict
