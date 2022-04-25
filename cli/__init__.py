@@ -158,9 +158,9 @@ def _try_plugin_command():
     subcommand = argv[1]
     cmd = 'jina-' + subcommand
     if _cmd_exists(cmd):
-        import threading
+        import multiprocessing
 
-        threading.Thread(
+        multiprocessing.Process(
             target=_is_latest_version_plugin,
             daemon=True,
             args=(subcommand,),
