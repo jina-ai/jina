@@ -161,6 +161,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -13081,4 +13082,39 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```0c8d6371```](https://github.com/jina-ai/jina/commit/0c8d6371cc64e51f5bf1a2af66120b8d99bfca26)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```d1add5a6```](https://github.com/jina-ai/jina/commit/d1add5a624e1cc474a77d4ae70cf1c82c68e5005)] __-__ __version__: the next version will be 3.3.6 (*Jina Dev Bot*)
+
+<a name=release-note-3-3-7></a>
+## Release Note (`3.3.7`)
+
+> Release time: 2022-04-25 14:16:33
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ samsja,  Tobias Jacobowitz,  Johannes Messner,  joschkabraun,  Joan Fontanals,  Jina Dev Bot,  cristian,  felix-wang,  🙇
+
+
+### 🆕 New Features
+
+ - [[```6ac879e4```](https://github.com/jina-ai/jina/commit/6ac879e4e59fffa014111abd815971dde63f900c)] __-__ add linkerd details in contributing (#4686) (*samsja*)
+ - [[```59b76269```](https://github.com/jina-ai/jina/commit/59b7626903b5e9a303eba0817191c8d6ec5b6e77)] __-__ add timeout_send (#4660) (*Tobias Jacobowitz*)
+ - [[```4c4fc9e2```](https://github.com/jina-ai/jina/commit/4c4fc9e2c1fa23a9bc39ab79906e7cb40dffc9d8)] __-__ __monitoring__: count the number of processed documents (#4672) (*samsja*)
+ - [[```b3b139be```](https://github.com/jina-ai/jina/commit/b3b139beb3df8a50ebaae1b6eee25eb9b0407d30)] __-__ pass environment to head and gateway (#4646) (*Joan Fontanals*)
+
+### 🐞 Bug fixes
+
+ - [[```9b8deaa2```](https://github.com/jina-ai/jina/commit/9b8deaa2a098be35bebaaa9bb523aed51c64bc4d)] __-__ __dependency__: prometheus client should be a core dependency (#4689) (*samsja*)
+ - [[```96a83469```](https://github.com/jina-ai/jina/commit/96a8346973ac732d5e74cf5b3ec894a0c5944d43)] __-__ better error messages when flow fails to start (#4652) (*Johannes Messner*)
+ - [[```4168d44d```](https://github.com/jina-ai/jina/commit/4168d44dfaba0fa43709eea2a3ef859f686ddeb6)] __-__ set the multiprocessing start_method spawn (#4650) (*felix-wang*)
+
+### 📗 Documentation
+
+ - [[```85b597ab```](https://github.com/jina-ai/jina/commit/85b597ab1f92c2f5596edb779d8d79196f3aa3fc)] __-__ fixed typos in limiting outstanding requests (#4611) (*joschkabraun*)
+ - [[```b6aaa3ef```](https://github.com/jina-ai/jina/commit/b6aaa3ef074713c0f74402627a121f090e28d938)] __-__ add docs guide (#4659) (*cristian*)
+ - [[```0c1468a7```](https://github.com/jina-ai/jina/commit/0c1468a7d08795b358dada91e5a81986fb16d23e)] __-__ normalize usage of admonition boxes (#4662) (*Johannes Messner*)
+
+### 🍹 Other Improvements
+
+ - [[```b086f0d9```](https://github.com/jina-ai/jina/commit/b086f0d9016cef3c925a832c33c44e779351d879)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```e7bd24ab```](https://github.com/jina-ai/jina/commit/e7bd24abce90cf1ea3973f542b25b4c632cbc2fc)] __-__ __version__: the next version will be 3.3.7 (*Jina Dev Bot*)
 
