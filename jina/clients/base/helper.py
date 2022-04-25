@@ -77,7 +77,8 @@ class HTTPClientlet(AioHttpClientlet):
         """
         req_dict = request.to_dict()
         req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
-
+        if 'target_executor' in req_dict['header']:
+            req_dict['target_executor'] = req_dict['header']['target_executor']
         return await self.session.post(url=self.url, json=req_dict).__aenter__()
 
     async def recv_message(self):
