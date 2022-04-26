@@ -1,8 +1,8 @@
 import urllib
+from pathlib import Path
 
 import pytest
 
-from pathlib import Path
 from jina.hubble import helper
 from jina.hubble.helper import disk_cache_offline
 from jina.parsers.hubble import set_hub_pull_parser
@@ -81,6 +81,18 @@ def test_install_requirements():
     helper.install_requirements(
         Path(__file__).parent / 'dummy_executor' / 'requirements.txt'
     )
+
+
+def test_parse_requirements():
+    from jina.hubble.requirements import parse_requirement
+
+    requirements = [
+        'docarray',
+        'git+https://github.com/jina-ai/jina.git',
+        'git+https://git.myproject.org/MyProject.git@v0.1#egg=MyProject[security]',
+    ]
+    for r in requirements:
+        req_spec = parse_requirement(r)
 
 
 def test_is_requirement_installed(tmpfile):
