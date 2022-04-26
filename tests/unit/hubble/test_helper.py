@@ -83,16 +83,30 @@ def test_install_requirements():
     )
 
 
-def test_parse_requirements():
+@pytest.mark.parametrize(
+    'requirement, name, specs, extras',
+    [
+        ('docarray', 'docarray', [], []),
+        ('jina[dev]', 'jina', [], ['dev']),
+        ('clip-server==0.3.0', 'clip-server', [('==', '0.3.0')], []),
+        ('git+https://github.com/jina-ai/jina.git', 'jina', [], []),
+        ('git+https://github.com/jina-ai/jina.git@v0.1', 'jina', [], []),
+        (
+            'git+https://github.com/jina-ai/jina.git@0.1#egg=jina[dev]',
+            'jina',
+            [],
+            ['dev'],
+        ),
+    ],
+)
+def test_parse_requirements(requirement, name, specs, extras):
     from jina.hubble.requirements import parse_requirement
 
-    requirements = [
-        'docarray',
-        'git+https://github.com/jina-ai/jina.git',
-        'git+https://git.myproject.org/MyProject.git@v0.1#egg=MyProject[security]',
-    ]
-    for r in requirements:
-        req_spec = parse_requirement(r)
+    req_spec = parse_requirement(requirement)
+
+    assert req_spec.project_name == name
+    assert list(req_spec.extras) == extras
+    assert req_spec.specs == specs
 
 
 def test_is_requirement_installed(tmpfile):
