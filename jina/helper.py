@@ -14,6 +14,7 @@ import warnings
 from argparse import ArgumentParser, Namespace
 from collections.abc import MutableMapping
 from datetime import datetime
+from distutils.version import LooseVersion
 from itertools import islice
 from socket import AF_INET, SOCK_STREAM, socket
 from types import SimpleNamespace
@@ -33,7 +34,6 @@ from typing import (
     Union,
 )
 
-from packaging import version as pckg_version
 from rich.console import Console
 
 from jina import __docarray_version__, __windows__
@@ -1540,8 +1540,8 @@ def docarray_graphql_compatible():
 
     :return: True if compatible, False if not
     """
-    installed_version = pckg_version.parse(__docarray_version__)
-    min_version = pckg_version.parse(GRAPHQL_MIN_DOCARRAY_VERSION)
+    installed_version = LooseVersion(__docarray_version__)
+    min_version = LooseVersion(GRAPHQL_MIN_DOCARRAY_VERSION)
     return installed_version >= min_version
 
 
