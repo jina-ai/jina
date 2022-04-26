@@ -70,7 +70,10 @@ jina hub push [--public/--private] --force-update <NAME> --secret <SECRET> -t TA
 
 ### Immutable tags
 
-If you want to create immutable tags, you can leverage the `--immutable-tag` option. 
+If you don’t want some tags to be later overwritten to keep a stable, consistent behavior, 
+immutable tags are the exact thing you are looking for.
+
+You can leverage the `--immutable-tag` option to create immutable tags. 
 After being pushed for the first time, the immutable tags can not be pushed again.
 
 ```bash
