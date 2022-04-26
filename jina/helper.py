@@ -1529,6 +1529,7 @@ def get_rich_console():
     """
     return Console(
         force_terminal=True,
+        color_system=None if 'JINA_LOG_NO_COLOR' in os.environ else 'auto',
     )  # It forces render in any terminal, especially in PyCharm
 
 
