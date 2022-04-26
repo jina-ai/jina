@@ -2,8 +2,7 @@ import os
 import shutil
 import subprocess
 import sys
-
-from packaging.version import Version, parse
+from distutils.version import LooseVersion
 
 
 def _get_run_args(print_args: bool = True):
@@ -89,13 +88,13 @@ def _parse_latest_release_version(resp):
     # credit: https://stackoverflow.com/a/34366589
     import json
 
-    latest_release_ver = parse('0')
+    latest_release_ver = LooseVersion('0')
     j = json.load(resp)
     releases = j.get('releases', [])
     for release in releases:
-        latest_ver = parse(release)
-        if not latest_ver.is_prerelease:
-            latest_release_ver = max(latest_release_ver, latest_ver)
+        if 'dev' in release:
+            continue  # pre-release should not be suggested to the user
+        latest_release_ver = max(latest_release_ver, LooseVersion(release))
     return latest_release_ver
 
 
@@ -106,7 +105,7 @@ def _is_latest_version(package='jina', suppress_on_error=True):
 
         import pkg_resources
 
-        cur_ver = Version(pkg_resources.get_distribution(package).version)
+        cur_ver = LooseVersion(pkg_resources.get_distribution(package).version)
 
         req = Request(
             f'https://pypi.python.org/pypi/{package}/json',
@@ -193,7 +192,6 @@ def main():
 
     threading.Thread(target=_is_latest_version, daemon=True, args=('jina',)).start()
     found_plugin = _try_plugin_command()
-
     if not found_plugin:
         _quick_ac_lookup()
 
