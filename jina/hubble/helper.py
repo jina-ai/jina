@@ -11,12 +11,12 @@ import tarfile
 import urllib
 import warnings
 import zipfile
+from contextlib import nullcontext
 from functools import lru_cache, wraps
 from pathlib import Path
-from typing import Tuple, Optional, Dict
-from urllib.parse import urlparse, urljoin
+from typing import Dict, Optional, Tuple
+from urllib.parse import urljoin, urlparse
 from urllib.request import Request, urlopen
-from contextlib import nullcontext
 
 from jina import __resources_path__
 from jina.importer import ImportExtensions
@@ -421,12 +421,12 @@ def is_requirements_installed(
     :param show_warning: if to show a warning when a dependency is not satisfied
     :return: True or False if not satisfied
     """
+    import pkg_resources
     from pkg_resources import (
         DistributionNotFound,
-        VersionConflict,
         RequirementParseError,
+        VersionConflict,
     )
-    import pkg_resources
 
     install_reqs, install_options = _get_install_options(requirements_file)
 
@@ -443,7 +443,7 @@ def is_requirements_installed(
 
 
 def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jina',)):
-    import pkg_resources
+    from .requirements import parse_requirement
 
     with requirements_file.open() as requirements:
         install_options = []
@@ -455,12 +455,10 @@ def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jin
             elif req.startswith('-'):
                 install_options.extend(req.split(' '))
             else:
-                for req_spec in pkg_resources.parse_requirements(req):
-                    if (
-                        req_spec.project_name not in excludes
-                        or len(req_spec.extras) > 0
-                    ):
-                        install_reqs.append(req)
+                req_spec = parse_requirement(req)
+
+                if req_spec.project_name not in excludes or len(req_spec.extras) > 0:
+                    install_reqs.append(req)
 
     return install_reqs, install_options
 
