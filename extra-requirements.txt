@@ -48,6 +48,7 @@ grpcio>=1.33.1,<1.44.0:     core
 grpcio-reflection>=1.33.1:  core
 pyyaml>=5.3.1:              core
 docarray>=0.9.10:           core
+packaging>=20.0:            core
 pytest:                     test
 pytest-timeout:             test
 pytest-mock:                test

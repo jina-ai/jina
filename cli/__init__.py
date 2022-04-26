@@ -3,6 +3,8 @@ import shutil
 import subprocess
 import sys
 
+from packaging.version import Version, parse
+
 
 def _get_run_args(print_args: bool = True):
     from jina.helper import get_rich_console
@@ -84,25 +86,27 @@ def _quick_ac_lookup():
 
 
 def _parse_latest_release_version(resp):
+    # credit: https://stackoverflow.com/a/34366589
     import json
-    from distutils.version import LooseVersion
 
-    latest_ver = json.load(resp)['version']
-    latest_ver = LooseVersion(latest_ver)
-    return latest_ver
+    latest_release_ver = parse('0')
+    j = json.load(resp)
+    releases = j.get('releases', [])
+    for release in releases:
+        latest_ver = parse(release)
+        if not latest_ver.is_prerelease:
+            latest_release_ver = max(latest_release_ver, latest_ver)
+    return latest_release_ver
 
 
 def _is_latest_version(package='jina', suppress_on_error=True):
     try:
         import warnings
-        from distutils.version import LooseVersion
         from urllib.request import Request, urlopen
 
         import pkg_resources
 
-        from jina import __version__
-
-        cur_ver = LooseVersion(__version__)
+        cur_ver = Version(pkg_resources.get_distribution(package).version)
 
         req = Request(
             f'https://pypi.python.org/pypi/{package}/json',
