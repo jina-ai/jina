@@ -106,6 +106,8 @@ def _is_latest_version(package='jina', suppress_on_error=True):
 
         import pkg_resources
 
+        from jina.logging.predefined import default_logger
+
         cur_ver = Version(pkg_resources.get_distribution(package).version)
 
         req = Request(
@@ -117,7 +119,6 @@ def _is_latest_version(package='jina', suppress_on_error=True):
         ) as resp:  # 'with' is important to close the resource after use
             latest_release_ver = _parse_latest_release_version(resp)
             if cur_ver < latest_release_ver:
-                from jina.logging.predefined import default_logger
 
                 default_logger.warning(
                     f'You are using {package} version {cur_ver}, however version {latest_release_ver} is available. '
@@ -150,6 +151,11 @@ def _try_plugin_command():
     from .autocomplete import ac_table
 
     if argv[1] in ac_table['commands']:  # native command can't be plugin command
+        import multiprocessing
+
+        multiprocessing.Process(
+            target=_is_latest_version, daemon=True, args=('jina',)
+        ).start()
         return False
 
     def _cmd_exists(cmd):
@@ -189,9 +195,6 @@ def main():
     """The main entrypoint of the CLI"""
 
     # checking version info in another thread
-    import threading
-
-    threading.Thread(target=_is_latest_version, daemon=True, args=('jina',)).start()
     found_plugin = _try_plugin_command()
 
     if not found_plugin:
