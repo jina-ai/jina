@@ -165,6 +165,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -13181,4 +13182,29 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```a8329d66```](https://github.com/jina-ai/jina/commit/a8329d66a7aabf67efc7e488b6c94e3317d488e2)] __-__ __version__: the next version will be 3.3.10 (*Jina Dev Bot*)
+
+<a name=release-note-3-3-11></a>
+## Release Note (`3.3.11`)
+
+> Release time: 2022-04-26 14:47:52
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Deepankar Mahapatro,  Tobias Jacobowitz,  Jina Dev Bot,  Joan Fontanals,  🙇
+
+
+### 🆕 New Features
+
+ - [[```25b8df17```](https://github.com/jina-ai/jina/commit/25b8df17389ac3674cfc10767d5e348974422ec1)] __-__ graceful shutdown (#4682) (*Tobias Jacobowitz*)
+
+### 🐞 Bug fixes
+
+ - [[```e23ff11a```](https://github.com/jina-ai/jina/commit/e23ff11a2f5826af4a4bb5ff40af4bebd3acf3a1)] __-__ pod does not start runtime process as daemon (#4692) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```05222069```](https://github.com/jina-ai/jina/commit/0522206909c3b743684c1aecf490e47564b860d9)] __-__ disable console color with envvar (#4697) (*Deepankar Mahapatro*)
+ - [[```655213d0```](https://github.com/jina-ai/jina/commit/655213d07258490d4a12b29adcfb5dab0e21fe3d)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```d9b5b718```](https://github.com/jina-ai/jina/commit/d9b5b7187d0e1e912cae69b1862aa7759b7c4ab5)] __-__ __version__: the next version will be 3.3.11 (*Jina Dev Bot*)
 
