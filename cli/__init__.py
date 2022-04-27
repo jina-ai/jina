@@ -118,9 +118,8 @@ def _is_latest_version(package='jina', suppress_on_error=True):
         ) as resp:  # 'with' is important to close the resource after use
             latest_release_ver = _parse_latest_release_version(resp)
             if cur_ver < latest_release_ver:
-                from jina.logging.predefined import default_logger
 
-                default_logger.warning(
+                warnings.warn(
                     f'You are using {package} version {cur_ver}, however version {latest_release_ver} is available. '
                     f'You should consider upgrading via the "pip install --upgrade {package}" command.'
                 )
@@ -159,9 +158,9 @@ def _try_plugin_command():
     subcommand = argv[1]
     cmd = 'jina-' + subcommand
     if _cmd_exists(cmd):
-        import multiprocessing
+        import threading
 
-        multiprocessing.Process(
+        threading.Thread(
             target=_is_latest_version_plugin,
             daemon=True,
             args=(subcommand,),
