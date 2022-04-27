@@ -90,7 +90,7 @@ class GRPCBaseClient(BaseClient):
             try:
                 if my_code == grpc.StatusCode.UNAVAILABLE:
                     self.logger.error(
-                        f'{msg}\nthe ongoing request is terminated as the server is not available or closed already'
+                        f'{msg}\nThe ongoing request is terminated as the server is not available or closed already.'
                     )
                     raise rpc_ex
                 elif my_code == grpc.StatusCode.INTERNAL:

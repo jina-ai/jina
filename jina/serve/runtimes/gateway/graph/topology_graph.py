@@ -4,6 +4,8 @@ from collections import defaultdict
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
+import grpc.aio  # TODO(johannes) remove
+
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest
@@ -81,13 +83,32 @@ class TopologyGraph:
                             DataRequestHandler.reduce_requests(self.parts_to_send)
                         ]
 
-                    resp, metadata = await connection_pool.send_requests_once(
-                        requests=self.parts_to_send,
-                        deployment=self.name,
-                        head=True,
-                        endpoint=endpoint,
-                        timeout=self._timeout_send,
-                    )
+                    try:
+                        resp, metadata = await connection_pool.send_requests_once(
+                            requests=self.parts_to_send,
+                            deployment=self.name,
+                            head=True,
+                            endpoint=endpoint,
+                            timeout=self._timeout_send,
+                        )
+                    except grpc.aio.AioRpcError as err:
+                        # TODO(johannes) fix this mess
+                        # #TODO(johannes) handle on client side
+                        err_code = err.code()
+                        if (
+                            err_code == grpc.StatusCode.UNAVAILABLE
+                        ):  # service unavailable
+                            deployment = self.name
+                            addr = connection_pool.get_deployment_address(deployment)
+                            raise grpc.aio.AioRpcError(
+                                code=err_code,
+                                initial_metadata=err.initial_metadata(),
+                                trailing_metadata=err.trailing_metadata(),
+                                details=f'Failed to connect to deployment {deployment} at address {addr}. The deployment may be down.',
+                            ) from None
+                        else:
+                            raise
+
                     self.end_time = datetime.utcnow()
                     if metadata and 'is-error' in metadata:
                         self.status = resp.header.status
@@ -188,7 +209,7 @@ class TopologyGraph:
         deployments_disable_reduce: List[str] = [],
         timeout_send: Optional[float] = 1.0,
         *args,
-        **kwargs
+        **kwargs,
     ):
         num_parts_per_node = defaultdict(int)
         if 'start-gateway' in graph_representation:

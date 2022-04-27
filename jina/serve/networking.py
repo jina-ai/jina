@@ -432,6 +432,7 @@ class GrpcConnectionPool:
         else:
             self._summary_time = contextlib.nullcontext()
         self._connections = self._ConnectionPoolMap(self._logger, self._summary_time)
+        self._deployment_address_map = {}
 
     def send_request(
         self,
@@ -462,6 +463,13 @@ class GrpcConnectionPool:
             endpoint=endpoint,
             timeout=timeout,
         )
+
+    def get_deployment_address(self, deployment: str):
+        """Return the address of a given deployment
+        :param deployment: name of the deployment
+        :return: address of the deployment if the deployment is known, else None
+        """
+        return self._deployment_address_map.get(deployment, None)
 
     def send_requests(
         self,
@@ -577,6 +585,7 @@ class GrpcConnectionPool:
             if shard_id is None:
                 shard_id = 0
             self._connections.add_replica(deployment, shard_id, address)
+        self._deployment_address_map[deployment] = address
 
     async def remove_connection(
         self,
