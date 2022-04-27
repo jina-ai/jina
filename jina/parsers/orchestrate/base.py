@@ -41,7 +41,7 @@ def mixin_essential_parser(parser):
     gp.add_argument(
         '--log-config',
         type=str,
-        default=os.path.join(__resources_path__, 'logging.default.yml'),
+        default='default',
         help='The YAML config of the logger used in this object.',
     )
 
