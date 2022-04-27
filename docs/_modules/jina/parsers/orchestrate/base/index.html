@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.parsers.orchestrate.base - Jina 3.3.11 documentation</title>
+        <title>jina.parsers.orchestrate.base - Jina 3.3.12 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.3.11 documentation</div>
+                <div class="brand">Jina 3.3.12 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -555,31 +555,30 @@
 <span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
-<span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">add_arg_group</span><span class="p">,</span> <span class="n">_SHOW_ALL_ARGS</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PollingType</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">random_identity</span>
+<span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_SHOW_ALL_ARGS</span><span class="p">,</span> <span class="n">add_arg_group</span>
 
 
-<div class="viewcode-block" id="mixin_base_ppr_parser"><a class="viewcode-back" href="../../../../../api/jina.parsers.orchestrate.base/#jina.parsers.orchestrate.base.mixin_base_ppr_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_base_ppr_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
-    <span class="sd">"""Mixing in arguments required by pod/deployment/runtime module into the given parser.</span>
+<div class="viewcode-block" id="mixin_essential_parser"><a class="viewcode-back" href="../../../../../api/jina.parsers.orchestrate.base/#jina.parsers.orchestrate.base.mixin_essential_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_essential_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="sd">"""Mixing in arguments required by every module into the given parser.</span>
 <span class="sd">    :param parser: the parser instance to which we add arguments</span>
 <span class="sd">    """</span>
-
     <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Essential'</span><span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--name'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
-<span class="s1">The name of this object.</span>
+<span class="s1">    The name of this object.</span>
 
-<span class="s1">This will be used in the following places:</span>
-<span class="s1">- how you refer to this object in Python/YAML/CLI</span>
-<span class="s1">- visualization</span>
-<span class="s1">- log message header</span>
-<span class="s1">- ...</span>
+<span class="s1">    This will be used in the following places:</span>
+<span class="s1">    - how you refer to this object in Python/YAML/CLI</span>
+<span class="s1">    - visualization</span>
+<span class="s1">    - log message header</span>
+<span class="s1">    - ...</span>
 
-<span class="s1">When not given, then the default naming strategy will apply.</span>
-<span class="s1">                    '''</span><span class="p">,</span>
+<span class="s1">    When not given, then the default naming strategy will apply.</span>
+<span class="s1">                        '''</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -622,9 +621,19 @@
         <span class="s1">'`workspace-id`.'</span>
         <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
         <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="p">)</span></div>
 
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+
+<div class="viewcode-block" id="mixin_base_ppr_parser"><a class="viewcode-back" href="../../../../../api/jina.parsers.orchestrate.base/#jina.parsers.orchestrate.base.mixin_base_ppr_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_base_ppr_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="sd">"""Mixing in arguments required by pod/deployment/runtime module into the given parser.</span>
+<span class="sd">    :param parser: the parser instance to which we add arguments</span>
+<span class="sd">    """</span>
+
+    <span class="n">mixin_essential_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Base Deployment'</span><span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">'--extra-search-paths'</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
@@ -676,7 +685,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 26, 2022.
+                    Last updated on Apr 27, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

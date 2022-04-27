@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.hubble.helper - Jina 3.3.11 documentation</title>
+        <title>jina.hubble.helper - Jina 3.3.12 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.3.11 documentation</div>
+                <div class="brand">Jina 3.3.12 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -564,14 +564,15 @@
 <span class="kn">import</span> <span class="nn">urllib</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">nullcontext</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span><span class="p">,</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span>
-<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span><span class="p">,</span> <span class="n">urljoin</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urljoin</span><span class="p">,</span> <span class="n">urlparse</span>
 <span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">urlopen</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">nullcontext</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
+<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">BetterEnum</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
@@ -974,12 +975,12 @@
 <span class="sd">    :param show_warning: if to show a warning when a dependency is not satisfied</span>
 <span class="sd">    :return: True or False if not satisfied</span>
 <span class="sd">    """</span>
+    <span class="kn">import</span> <span class="nn">pkg_resources</span>
     <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="p">(</span>
         <span class="n">DistributionNotFound</span><span class="p">,</span>
-        <span class="n">VersionConflict</span><span class="p">,</span>
         <span class="n">RequirementParseError</span><span class="p">,</span>
+        <span class="n">VersionConflict</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="kn">import</span> <span class="nn">pkg_resources</span>
 
     <span class="n">install_reqs</span><span class="p">,</span> <span class="n">install_options</span> <span class="o">=</span> <span class="n">_get_install_options</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">)</span>
 
@@ -1041,6 +1042,106 @@
         <span class="o">+</span> <span class="n">install_reqs</span>
         <span class="o">+</span> <span class="n">install_options</span>
     <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HubbleReturnStatus"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus">[docs]</a><span class="k">class</span> <span class="nc">HubbleReturnStatus</span><span class="p">(</span><span class="n">BetterEnum</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Type of hubble return status enum</span>
+<span class="sd">    """</span>
+
+    <span class="n">UNKNOWN_ERROR</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">OK</span> <span class="o">=</span> <span class="mi">20000</span>
+    <span class="n">PARAM_VALIDATION_ERROR</span> <span class="o">=</span> <span class="mi">40001</span>
+    <span class="n">SQL_CREATION_ERROR</span> <span class="o">=</span> <span class="mi">40002</span>
+    <span class="n">DATA_STREAM_BROKEN_ERROR</span> <span class="o">=</span> <span class="mi">40003</span>
+    <span class="n">UNEXPECTED_MIME_TYPE_ERROR</span> <span class="o">=</span> <span class="mi">40004</span>
+    <span class="n">SSO_LOGIN_REQUIRED</span> <span class="o">=</span> <span class="mi">40101</span>
+    <span class="n">AUTHENTICATION_FAILED</span> <span class="o">=</span> <span class="mi">40102</span>
+    <span class="n">AUTHENTICATION_REQUIRED</span> <span class="o">=</span> <span class="mi">40103</span>
+    <span class="n">OPERATION_NOT_ALLOWED</span> <span class="o">=</span> <span class="mi">40301</span>
+    <span class="n">INTERNAL_RESOURCE_NOT_FOUND</span> <span class="o">=</span> <span class="mi">40401</span>
+    <span class="n">RPC_METHOD_NOT_FOUND</span> <span class="o">=</span> <span class="mi">40402</span>
+    <span class="n">REQUESTED_ENTITY_NOT_FOUND</span> <span class="o">=</span> <span class="mi">40403</span>
+    <span class="n">INTERNAL_RESOURCE_METHOD_NOT_ALLOWED</span> <span class="o">=</span> <span class="mi">40501</span>
+    <span class="n">INCOMPATIBLE_METHOD_ERROR</span> <span class="o">=</span> <span class="mi">40502</span>
+    <span class="n">INTERNAL_RESOURCE_ID_CONFLICT</span> <span class="o">=</span> <span class="mi">40901</span>
+    <span class="n">RESOURCE_POLICY_DENY</span> <span class="o">=</span> <span class="mi">40902</span>
+    <span class="n">TOO_LARGE_FILE</span> <span class="o">=</span> <span class="mi">41301</span>
+    <span class="n">INTERNAL_DATA_CORRUPTION</span> <span class="o">=</span> <span class="mi">42201</span>
+    <span class="n">IDENTIFIER_NAMESPACE_OCCUPIED</span> <span class="o">=</span> <span class="mi">42202</span>
+    <span class="n">SUBMITTED_DATA_MALFORMED</span> <span class="o">=</span> <span class="mi">42203</span>
+    <span class="n">EXTERNAL_SERVICE_FAILURE</span> <span class="o">=</span> <span class="mi">42204</span>
+    <span class="n">DOWNSTREAM_SERVICE_FAILURE</span> <span class="o">=</span> <span class="mi">42205</span>
+    <span class="n">SERVER_INTERNAL_ERROR</span> <span class="o">=</span> <span class="mi">50001</span>
+    <span class="n">DOWNSTREAM_SERVICE_ERROR</span> <span class="o">=</span> <span class="mi">50002</span>
+    <span class="n">SERVER_SUBPROCESS_ERROR</span> <span class="o">=</span> <span class="mi">50003</span>
+    <span class="n">SANDBOX_BUILD_NOT_FOUND</span> <span class="o">=</span> <span class="mi">50004</span>
+    <span class="n">NOT_IMPLEMENTED_ERROR</span> <span class="o">=</span> <span class="mi">50005</span>
+    <span class="n">RESPONSE_STREAM_CLOSED</span> <span class="o">=</span> <span class="mi">50006</span></div>
+
+
+<div class="viewcode-block" id="NormalizerErrorCode"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.NormalizerErrorCode">[docs]</a><span class="k">class</span> <span class="nc">NormalizerErrorCode</span><span class="p">(</span><span class="n">BetterEnum</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Type of executor-normalizer error code enum</span>
+<span class="sd">    """</span>
+
+    <span class="n">ExecutorNotFound</span> <span class="o">=</span> <span class="mi">4000</span>
+    <span class="n">ExecutorExists</span> <span class="o">=</span> <span class="mi">4001</span>
+    <span class="n">IllegalExecutor</span> <span class="o">=</span> <span class="mi">4002</span>
+    <span class="n">BrokenDependency</span> <span class="o">=</span> <span class="mi">4003</span>
+
+    <span class="n">Others</span> <span class="o">=</span> <span class="mi">5000</span></div>
+
+
+<div class="viewcode-block" id="get_hubble_error_message"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.get_hubble_error_message">[docs]</a><span class="k">def</span> <span class="nf">get_hubble_error_message</span><span class="p">(</span><span class="n">hubble_structured_error</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">"""Override some of the hubble error messages to provide better user experience</span>
+<span class="sd">    :param hubble_structured_error: the hubble structured error response</span>
+<span class="sd">    :returns: Tuple of overridden_msg and original_msg</span>
+<span class="sd">    """</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">hubble_structured_error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="s1">'readableMessage'</span><span class="p">,</span> <span class="s1">''</span>
+    <span class="p">)</span> <span class="ow">or</span> <span class="n">hubble_structured_error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'message'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">hubble_structured_error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'status'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">original_msg</span> <span class="o">=</span> <span class="n">msg</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">status</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">status</span> <span class="o">==</span> <span class="n">HubbleReturnStatus</span><span class="o">.</span><span class="n">SERVER_SUBPROCESS_ERROR</span>
+        <span class="ow">and</span> <span class="n">hubble_structured_error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'cmd'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span> <span class="o">==</span> <span class="s1">'docker'</span>
+    <span class="p">):</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">'''</span>
+<span class="s1">Failed on building Docker image. Potential solutions:</span>
+<span class="s1">  - If you haven't provide a Dockerfile in the executor bundle, you may want to provide one,</span>
+<span class="s1">    as the auto-generated one on the cloud did not work.</span>
+<span class="s1">  - If you have provided a Dockerfile, you may want to check the validity of this Dockerfile.</span>
+<span class="s1">'''</span>
+    <span class="k">elif</span> <span class="p">(</span>
+        <span class="n">status</span> <span class="o">==</span> <span class="n">HubbleReturnStatus</span><span class="o">.</span><span class="n">DOWNSTREAM_SERVICE_FAILURE</span>
+        <span class="ow">and</span> <span class="n">hubble_structured_error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'service'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span> <span class="o">==</span> <span class="s1">'normalizer'</span>
+    <span class="p">):</span>
+
+        <span class="n">normalizer_error</span> <span class="o">=</span> <span class="n">hubble_structured_error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'err'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">normalizer_error</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">normalizer_error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'code'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="o">==</span> <span class="n">NormalizerErrorCode</span><span class="o">.</span><span class="n">ExecutorNotFound</span>
+        <span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">'''</span>
+<span class="s1">We can not discover any Executor in your uploaded bundle. This is often due to one of the following errors:</span>
+<span class="s1">  - The bundle did not contain any valid executor.</span>
+<span class="s1">  - The config.yml's `jtype` is mismatched with the actual Executor class name.</span>
+<span class="s1">    For more information about the expected bundle structure, please refer to the documentation.</span>
+<span class="s1">    https://docs.jina.ai/fundamentals/executor/repository-structure/</span>
+<span class="s1">'''</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s1">'''</span>
+<span class="s1">For more detailed information, you can try the `executor-normalizer` locally to see the root cause.</span>
+<span class="s1">    https://github.com/jina-ai/executor-normalizer</span>
+<span class="s1">'''</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">original_msg</span><span class="p">)</span></div>
 </pre></div>
             </article>
             <footer>
@@ -1052,7 +1153,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 26, 2022.
+                    Last updated on Apr 27, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
