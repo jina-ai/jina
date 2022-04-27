@@ -60,7 +60,6 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 
     _set_start_method('fork')
 
-
 # do not change this line manually
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
@@ -84,23 +83,23 @@ __uptime__ = _datetime.datetime.now().isoformat()
 # 2. grep -rohEI --exclude-dir=jina/hub --exclude-dir=tests --include \*.py "\'JINA_.*?\'" jina  | sort -u | sed "s/$/,/g"
 # 3. copy all lines EXCEPT the first (which is the grep command in the last line)
 __jina_env__ = (
-    'JINA_ARRAY_QUANT',
-    'JINA_CONTROL_PORT',
     'JINA_DEFAULT_HOST',
     'JINA_DEFAULT_TIMEOUT_CTRL',
+    'JINA_DEFAULT_WORKSPACE_BASE',
+    'JINA_DEPLOYMENT_NAME',
     'JINA_DISABLE_UVLOOP',
     'JINA_FULL_CLI',
+    'JINA_GATEWAY_IMAGE',
+    'JINA_GRPC_RECV_BYTES',
+    'JINA_GRPC_SEND_BYTES',
     'JINA_HUBBLE_REGISTRY',
     'JINA_HUB_CACHE_DIR',
+    'JINA_HUB_NO_IMAGE_REBUILD',
     'JINA_HUB_ROOT',
-    'JINA_GATEWAY_IMAGE',
     'JINA_LOG_CONFIG',
     'JINA_LOG_LEVEL',
     'JINA_LOG_NO_COLOR',
-    'JINA_LOG_WORKSPACE',
     'JINA_MP_START_METHOD',
-    'JINA_OPTIMIZER_TRIAL_WORKSPACE',
-    'JINA_DEPLOYMENT_NAME',
     'JINA_RANDOM_PORT_MAX',
     'JINA_RANDOM_PORT_MIN',
     'JINA_VCS_VERSION',

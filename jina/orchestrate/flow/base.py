@@ -44,11 +44,9 @@ from jina.excepts import (
     RuntimeFailToStart,
 )
 from jina.helper import (
-    GRAPHQL_MIN_DOCARRAY_VERSION,
     ArgNamespace,
     CatchAllCleanupContextManager,
     colored_rich,
-    docarray_graphql_compatible,
     download_mermaid_url,
     get_internal_ip,
     get_public_ip,
