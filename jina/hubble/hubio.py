@@ -735,7 +735,6 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
 
     def _load_docker_client(self):
         with ImportExtensions(required=True):
-            import docker
             import docker.errors
             from docker import APIClient
 

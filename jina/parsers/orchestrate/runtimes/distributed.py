@@ -1,7 +1,6 @@
 """Argparser module for distributed runtimes"""
-import argparse
 
-from jina.parsers.helper import _SHOW_ALL_ARGS, add_arg_group
+from jina.parsers.helper import add_arg_group
 
 
 def mixin_distributed_feature_parser(parser):

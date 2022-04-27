@@ -2,7 +2,6 @@ import asyncio
 import contextlib
 import ipaddress
 import os
-import time
 from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlparse

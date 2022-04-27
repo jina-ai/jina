@@ -1,8 +1,7 @@
 import multiprocessing
-import threading
 from copy import deepcopy
 from functools import partial
-from typing import TYPE_CHECKING, Callable, Dict, Optional, Union
+from typing import TYPE_CHECKING
 
 from grpc import RpcError
 

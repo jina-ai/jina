@@ -1,28 +1,28 @@
 import os
-from pathlib import Path
 from functools import partial
+from pathlib import Path
 
 from jina import Flow
 from jina.parsers.helloworld import set_hw_parser
 
 if __name__ == '__main__':
     from helper import (
-        print_result,
-        write_html,
         download_data,
-        index_generator,
-        query_generator,
         get_groundtruths,
+        index_generator,
+        print_result,
+        query_generator,
+        write_html,
     )
     from my_executors import MyEncoder, MyIndexer
 else:
     from .helper import (
-        print_result,
-        write_html,
         download_data,
-        index_generator,
-        query_generator,
         get_groundtruths,
+        index_generator,
+        print_result,
+        query_generator,
+        write_html,
     )
     from .my_executors import MyEncoder, MyIndexer
 

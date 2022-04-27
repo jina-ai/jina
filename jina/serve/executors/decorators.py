@@ -2,16 +2,7 @@
 import functools
 import inspect
 from functools import wraps
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    ContextManager,
-    Dict,
-    List,
-    Optional,
-    Sequence,
-    Union,
-)
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Sequence, Union
 
 from jina.helper import convert_tuple_to_list, iscoroutinefunction
 from jina.serve.executors.metas import get_default_metas

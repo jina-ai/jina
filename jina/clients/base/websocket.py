@@ -1,12 +1,11 @@
 """A module for the websockets-based Client for Jina."""
 import asyncio
-from contextlib import AsyncExitStack, nullcontext
+from contextlib import AsyncExitStack
 from typing import TYPE_CHECKING, Dict, Optional
 
 from jina.clients.base import BaseClient
 from jina.clients.base.helper import WebsocketClientlet
 from jina.clients.helper import callback_exec, callback_exec_on_error
-from jina.excepts import BadClient
 from jina.helper import get_or_reuse_loop
 from jina.importer import ImportExtensions
 from jina.logging.profile import ProgressBar
