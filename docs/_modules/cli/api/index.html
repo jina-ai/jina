@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>cli.api - Jina 3.3.15 documentation</title>
+        <title>cli.api - Jina 3.3.16 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.3.15 documentation</div>
+                <div class="brand">Jina 3.3.16 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -554,7 +554,6 @@
                 <h1>Source code for cli.api</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
-
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 
@@ -615,7 +614,7 @@
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="s1">'_data_request_handler'</span><span class="p">)</span>
             <span class="k">else</span> <span class="n">rt</span><span class="o">.</span><span class="n">name</span>
         <span class="p">)</span>
-        <span class="n">rt</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="sa">f</span><span class="s1">' Executor </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> started'</span><span class="p">)</span>
+        <span class="n">rt</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Executor </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> started'</span><span class="p">)</span>
         <span class="n">rt</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span></div>
 
 
@@ -642,8 +641,8 @@
     <span class="kn">from</span> <span class="nn">jina.serve.runtimes.worker</span> <span class="kn">import</span> <span class="n">WorkerRuntime</span>
 
     <span class="k">with</span> <span class="n">WorkerRuntime</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">runtime</span><span class="p">:</span>
-        <span class="n">runtime</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">' Executor </span><span class="si">{</span><span class="n">runtime</span><span class="o">.</span><span class="n">_data_request_handler</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> started'</span>
+        <span class="n">runtime</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'Executor </span><span class="si">{</span><span class="n">runtime</span><span class="o">.</span><span class="n">_data_request_handler</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> started'</span>
         <span class="p">)</span>
         <span class="n">runtime</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span></div>
 
@@ -665,8 +664,8 @@
     <span class="n">runtime_cls</span> <span class="o">=</span> <span class="n">get_runtime</span><span class="p">(</span><span class="n">gateway_runtime_dict</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">])</span>
 
     <span class="k">with</span> <span class="n">runtime_cls</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">runtime</span><span class="p">:</span>
-        <span class="n">runtime</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">success</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">' Gateway with protocol </span><span class="si">{</span><span class="n">gateway_runtime_dict</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">]</span><span class="si">}</span><span class="s1"> started'</span>
+        <span class="n">runtime</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'Gateway with protocol </span><span class="si">{</span><span class="n">gateway_runtime_dict</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">]</span><span class="si">}</span><span class="s1"> started'</span>
         <span class="p">)</span>
         <span class="n">runtime</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span></div>
 
@@ -700,9 +699,10 @@
 <span class="sd">    :param args: arguments coming from the CLI.</span>
 <span class="sd">    """</span>
     <span class="kn">import</span> <span class="nn">json</span>
+
     <span class="kn">from</span> <span class="nn">cli.export</span> <span class="kn">import</span> <span class="n">api_to_dict</span>
-    <span class="kn">from</span> <span class="nn">jina.jaml</span> <span class="kn">import</span> <span class="n">JAML</span>
     <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__version__</span>
+    <span class="kn">from</span> <span class="nn">jina.jaml</span> <span class="kn">import</span> <span class="n">JAML</span>
     <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
     <span class="kn">from</span> <span class="nn">jina.schemas</span> <span class="kn">import</span> <span class="n">get_full_schema</span>
 
@@ -788,7 +788,9 @@
 <span class="sd">    Create a new jina project</span>
 <span class="sd">    :param args:  arguments coming from the CLI.</span>
 <span class="sd">    """</span>
-    <span class="kn">import</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">shutil</span>
+
     <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
 
     <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span>

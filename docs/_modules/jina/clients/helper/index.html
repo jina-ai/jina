@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.clients.helper - Jina 3.3.15 documentation</title>
+        <title>jina.clients.helper - Jina 3.3.16 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.3.15 documentation</div>
+                <div class="brand">Jina 3.3.16 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -555,15 +555,13 @@
 <span></span><span class="sd">"""Helper functions for clients in Jina."""</span>
 
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
-<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadClientCallback</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_rich_console</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">Response</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_rich_console</span>
 
 
 <div class="viewcode-block" id="pprint_routes"><a class="viewcode-back" href="../../../../api/jina.clients.helper/#jina.clients.helper.pprint_routes">[docs]</a><span class="k">def</span> <span class="nf">pprint_routes</span><span class="p">(</span><span class="n">resp</span><span class="p">:</span> <span class="s1">'Response'</span><span class="p">,</span> <span class="n">stack_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">):</span>
@@ -574,8 +572,8 @@
 <span class="sd">    """</span>
     <span class="n">routes</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">routes</span>
 
-    <span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
     <span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">box</span>
+    <span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
 
     <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">box</span><span class="o">=</span><span class="n">box</span><span class="o">.</span><span class="n">SIMPLE</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'Executor'</span><span class="p">,</span> <span class="s1">'Time'</span><span class="p">,</span> <span class="s1">'Exception'</span><span class="p">):</span>
