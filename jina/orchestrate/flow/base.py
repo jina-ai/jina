@@ -199,13 +199,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
-          This will be used in the following places:
-          - how you refer to this object in Python/YAML/CLI
-          - visualization
-          - log message header
-          - ...
+              This will be used in the following places:
+              - how you refer to this object in Python/YAML/CLI
+              - visualization
+              - log message header
+              - ...
 
-          When not given, then the default naming strategy will apply.
+              When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param no_crud_endpoints: If set, /index, /search, /update, /delete endpoints are removed from HTTP interface.
 
@@ -278,19 +278,35 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self,
         *,
         env: Optional[dict] = None,
-        expose_graphql_endpoint: Optional[bool] = False,
         inspect: Optional[str] = 'COLLECT',
+        log_config: Optional[str] = None,
+        name: Optional[str] = None,
+        quiet: Optional[bool] = False,
+        quiet_error: Optional[bool] = False,
         uses: Optional[str] = None,
+        workspace: Optional[str] = None,
         **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.
 
         :param env: The map of environment variables that are available inside runtime
-        :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param inspect: The strategy on those inspect deployments in the flow.
 
               If `REMOVE` is given then all inspect deployments are removed when building the flow.
+        :param log_config: The YAML config of the logger used in this object.
+        :param name: The name of this object.
+
+              This will be used in the following places:
+              - how you refer to this object in Python/YAML/CLI
+              - visualization
+              - log message header
+              - ...
+
+              When not given, then the default naming strategy will apply.
+        :param quiet: If set, then no log will be emitted from this object.
+        :param quiet_error: If set, then exception stack information will not be added to the log
         :param uses: The YAML file represents a flow
+        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
         .. # noqa: DAR202
         .. # noqa: DAR101
@@ -684,13 +700,13 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
-          This will be used in the following places:
-          - how you refer to this object in Python/YAML/CLI
-          - visualization
-          - log message header
-          - ...
+              This will be used in the following places:
+              - how you refer to this object in Python/YAML/CLI
+              - visualization
+              - log message header
+              - ...
 
-          When not given, then the default naming strategy will apply.
+              When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
