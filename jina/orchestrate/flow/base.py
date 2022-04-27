@@ -825,8 +825,12 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         # set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`
         for key, value in op_flow._common_kwargs.items():
-            # do not inherit the port argument from the flow
-            if key not in kwargs and key != 'port':
+            # do not inherit from all the argument from the flow
+            if key not in kwargs and key not in [
+                'port',
+                'port_monitoring',
+                'monitoring',
+            ]:
                 kwargs[key] = value
 
         # update kwargs of this Deployment
