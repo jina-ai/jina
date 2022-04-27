@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>cli - Jina 3.3.13 documentation</title>
+        <title>cli - Jina 3.3.14 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.3.13 documentation</div>
+                <div class="brand">Jina 3.3.14 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -672,9 +672,8 @@
         <span class="p">)</span> <span class="k">as</span> <span class="n">resp</span><span class="p">:</span>  <span class="c1"># 'with' is important to close the resource after use</span>
             <span class="n">latest_release_ver</span> <span class="o">=</span> <span class="n">_parse_latest_release_version</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">cur_ver</span> <span class="o">&lt;</span> <span class="n">latest_release_ver</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
-                <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'You are using </span><span class="si">{</span><span class="n">package</span><span class="si">}</span><span class="s1"> version </span><span class="si">{</span><span class="n">cur_ver</span><span class="si">}</span><span class="s1">, however version </span><span class="si">{</span><span class="n">latest_release_ver</span><span class="si">}</span><span class="s1"> is available. '</span>
                     <span class="sa">f</span><span class="s1">'You should consider upgrading via the "pip install --upgrade </span><span class="si">{</span><span class="n">package</span><span class="si">}</span><span class="s1">" command.'</span>
                 <span class="p">)</span>
@@ -713,9 +712,9 @@
     <span class="n">subcommand</span> <span class="o">=</span> <span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">cmd</span> <span class="o">=</span> <span class="s1">'jina-'</span> <span class="o">+</span> <span class="n">subcommand</span>
     <span class="k">if</span> <span class="n">_cmd_exists</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
-        <span class="kn">import</span> <span class="nn">multiprocessing</span>
+        <span class="kn">import</span> <span class="nn">threading</span>
 
-        <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
             <span class="n">target</span><span class="o">=</span><span class="n">_is_latest_version_plugin</span><span class="p">,</span>
             <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">subcommand</span><span class="p">,),</span>
