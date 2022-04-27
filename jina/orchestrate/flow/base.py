@@ -280,14 +280,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         env: Optional[dict] = None,
         expose_graphql_endpoint: Optional[bool] = False,
         inspect: Optional[str] = 'COLLECT',
-        log_config: Optional[str] = None,
-        name: Optional[str] = None,
-        polling: Optional[str] = 'ANY',
-        quiet: Optional[bool] = False,
-        quiet_error: Optional[bool] = False,
-        timeout_ctrl: Optional[int] = 60,
         uses: Optional[str] = None,
-        workspace: Optional[str] = None,
         **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina flow` CLI.
@@ -297,29 +290,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param inspect: The strategy on those inspect deployments in the flow.
 
               If `REMOVE` is given then all inspect deployments are removed when building the flow.
-        :param log_config: The YAML config of the logger used in this object.
-        :param name: The name of this object.
-
-          This will be used in the following places:
-          - how you refer to this object in Python/YAML/CLI
-          - visualization
-          - log message header
-          - ...
-
-          When not given, then the default naming strategy will apply.
-        :param polling: The polling strategy of the Deployment and its endpoints (when `shards>1`).
-              Can be defined for all endpoints of a Deployment or by endpoint.
-              Define per Deployment:
-              - ANY: only one (whoever is idle) Pod polls the message
-              - ALL: all Pods poll the message (like a broadcast)
-              Define per Endpoint:
-              JSON dict, {endpoint: PollingType}
-              {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param quiet: If set, then no log will be emitted from this object.
-        :param quiet_error: If set, then exception stack information will not be added to the log
-        :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param uses: The YAML file represents a flow
-        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
         .. # noqa: DAR202
         .. # noqa: DAR101
