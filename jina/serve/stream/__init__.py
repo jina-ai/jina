@@ -59,7 +59,7 @@ class RequestStreamer:
         self._end_of_iter_handler = end_of_iter_handler
 
     async def stream(
-        self, request_iterator, context, *args
+        self, request_iterator, context=None, *args
     ) -> AsyncIterator['Request']:
         """
         stream requests from client iterator and stream responses back.
