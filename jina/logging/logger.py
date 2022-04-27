@@ -138,7 +138,7 @@ class JinaLogger:
             if h == 'StreamHandler':
                 handler = logging.StreamHandler(sys.stdout)
                 handler.setFormatter(fmt(cfg['format'].format_map(kwargs)))
-            if h == 'RichHandler':
+            elif h == 'RichHandler':
                 kwargs_handler = copy.deepcopy(cfg)
                 kwargs_handler.pop('format')
 

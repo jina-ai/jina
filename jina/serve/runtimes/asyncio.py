@@ -189,10 +189,10 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
 
     def _log_control_request(self, request: ControlRequest):
         self.logger.debug(
-            f'recv ControlRequest {request.header.request_id} {request.command}'
+            f'recv ControlRequest {request.command} with id: {request.header.request_id}'
         )
 
     def _log_data_request(self, request: DataRequest):
-        info_msg = f'recv DataRequest '
-        info_msg += f'({request.header.exec_endpoint}) - ({request.header.request_id}) '
-        self.logger.debug(info_msg)
+        self.logger.debug(
+            f'recv DataRequest at {request.header.exec_endpoint} with id: {request.header.request_id}'
+        )
