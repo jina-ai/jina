@@ -26,7 +26,7 @@ def get_deployment_yamls(
     container_cmd_uses_after: Optional[str] = None,
     container_args_uses_before: Optional[str] = None,
     container_args_uses_after: Optional[str] = None,
-    monitoring=False,
+    monitoring: bool = False,
     port_monitoring: Optional[int] = None,
 ) -> List[Dict]:
     """Get the yaml description of a service on Kubernetes
