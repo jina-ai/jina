@@ -1,7 +1,7 @@
 from itertools import chain
 from typing import Dict, List
 
-from jina import Executor, requests, DocumentArray, Document
+from jina import Document, DocumentArray, Executor, requests
 
 
 class ExecMerger(Executor):
@@ -14,7 +14,7 @@ class ExecMerger(Executor):
     @requests
     def debug(self, docs_matrix: List[DocumentArray], **kwargs):
         self.logger.debug(
-            f'Received doc matrix in exec-merger with length {len(docs_matrix)}.'
+            f'received doc matrix in exec-merger with length {len(docs_matrix)}.'
         )
 
         result = DocumentArray()

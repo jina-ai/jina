@@ -25,6 +25,7 @@ from typing import (
 )
 
 from rich import print
+from rich.panel import Panel
 from rich.table import Table
 
 from jina import __default_host__, __default_port_monitoring__, __docker_host__, helper
@@ -43,11 +44,9 @@ from jina.excepts import (
     RuntimeFailToStart,
 )
 from jina.helper import (
-    GRAPHQL_MIN_DOCARRAY_VERSION,
     ArgNamespace,
     CatchAllCleanupContextManager,
     colored_rich,
-    docarray_graphql_compatible,
     download_mermaid_url,
     get_internal_ip,
     get_public_ip,
@@ -1117,7 +1116,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         self._build_level = FlowBuildLevel.EMPTY
 
-        self.logger.debug('Flow is closed!')
+        self.logger.debug('flow is closed!')
         self.logger.close()
 
     def start(self):
@@ -1237,7 +1236,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         if addr_table:
             print(
-                addr_table
+                Panel(
+                    addr_table,
+                    title=':tada: [b]Flow is ready to serve![/]',
+                    expand=False,
+                )
             )  # can't use logger here see : https://github.com/Textualize/rich/discussions/2024
         self.logger.debug(
             f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
@@ -1437,7 +1440,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if output:
             download_mermaid_url(url, output)
         elif not showed:
-            op_flow.logger.info(f'flow visualization: {url}')
+            print(f'[link={url}]Click here to see the visualization in browser[/]')
 
         return self
 
@@ -1566,48 +1569,48 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return table
 
     def _get_address_table(self, address_table):
-        address_table.add_row('🔗', 'Protocol', f'{self.protocol}')
+        address_table.add_row(':link:', 'Protocol', f'{self.protocol}')
         address_table.add_row(
-            '🏠',
+            ':house:',
             'Local access',
-            f'[underline]{self.host}:{self.port}[/underline]',
+            f'[link={self.protocol}://{self.host}:{self.port}]{self.host}:{self.port}[/]',
         )
         address_table.add_row(
-            '🔒',
+            ':lock:',
             'Private network',
-            f'[underline]{self.address_private}:{self.port}[/underline]',
+            f'[link={self.protocol}://{self.address_private}:{self.port}]{self.address_private}:{self.port}[/]',
         )
 
         if self.address_public:
             address_table.add_row(
-                '🌐',
+                ':earth_africa:',
                 'Public address',
-                f'[underline]{self.address_public}:{self.port}[/underline]',
+                f'[link={self.protocol}://{self.address_public}:{self.port}]{self.address_public}:{self.port}[/]',
             )
 
         if self.protocol == GatewayProtocolType.HTTP:
             address_table.add_row(
-                '💬',
+                ':speech_balloon:',
                 'Swagger UI',
-                f'[underline]http://localhost:{self.port}/docs[/underline]',
+                f'[link=http://localhost:{self.port}/docs]http://localhost:{self.port}/docs[/]',
             )
 
             address_table.add_row(
-                '📚',
+                ':books:',
                 'Redoc',
-                f'[underline]http://localhost:{self.port}/redoc[/underline]',
+                f'[link=http://localhost:{self.port}/redoc]http://localhost:{self.port}/redoc[/]',
             )
             if self.gateway_args.expose_graphql_endpoint:
                 address_table.add_row(
-                    '💬',
+                    ':strawberry:',
                     'GraphQL UI',
-                    f'[underline][cyan]http://localhost:{self.port}/graphql[/underline][/cyan]',
+                    f'[link=http://localhost:{self.port}/graphql]http://localhost:{self.port}/graphql[/]',
                 )
         if self.monitoring:
             address_table.add_row(
-                '📉️',
+                ':bar_chart:',
                 'Prometheus',
-                f'[underline][cyan]http://localhost:{self.port_monitoring}[/underline][/cyan]',
+                f'[link=http://localhost:{self.port_monitoring}]http://localhost:{self.port_monitoring}[/]',
             )
 
         return address_table
@@ -1863,8 +1866,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         if i < len(k8s_objects) - 1:
                             fp.write('---\n')
 
-        self.logger.info(
-            f'K8s yaml files have been created under {output_base_path}. You can use it by running `kubectl apply -R -f {output_base_path}`'
+        print(
+            f'K8s yaml files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'
         )
 
     def to_docker_compose_yaml(
@@ -1921,8 +1924,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             else f'docker-compose -f {output_path} up'
         )
 
-        self.logger.info(
-            f'Docker compose file has been created under {output_path}. You can use it by running `{command}`'
+        print(
+            f'Docker compose file has been created under [b]{output_path}[/b]. You can use it by running [b]{command}[/b]'
         )
 
     @property

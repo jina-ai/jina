@@ -43,23 +43,27 @@ def _get_run_args(print_args: bool = True):
             with open(os.path.join(__resources_path__, 'jina.logo')) as fp:
                 logo_str = fp.read()
 
-            param_str = Table(title=None, box=box.ROUNDED, highlight=True)
-            param_str.add_column('')
-            param_str.add_column('Parameters', justify='right')
+            param_str = Table(
+                title=' '.join(sys.argv),
+                box=box.ROUNDED,
+                highlight=True,
+                title_justify='left',
+            )
+            param_str.add_column('Argument', justify='right')
             param_str.add_column('Value', justify='left')
 
             for k, v in sorted(vars(args).items()):
-                sign = ' ' if default_args.get(k, None) == v else '🔧️'
                 param = k.replace('_', '-')
                 value = str(v)
 
-                style = None if default_args.get(k, None) == v else 'blue on yellow'
+                if not default_args.get(k, None) == v:
+                    value = f'[b]{value}[/]'
 
-                param_str.add_row(sign, param, value, style=style)
+                param_str.add_row(param, value)
 
             if 'JINA_LOG_NO_COLOR' not in os.environ:
                 print(f'\n{logo_str}\n')
-            console.print(f'▶️  {" ".join(sys.argv)}', param_str)
+            console.print(param_str)
         return args
     else:
         parser.print_help()

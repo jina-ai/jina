@@ -58,11 +58,11 @@ def get_fastapi_app(
                 else:
                     subprotocol = WebsocketSubProtocols.JSON
                     logger.debug(
-                        f'No protocol headers passed. Choosing default subprotocol {WebsocketSubProtocols.JSON}'
+                        f'no protocol headers passed. Choosing default subprotocol {WebsocketSubProtocols.JSON}'
                     )
             except Exception as e:
                 logger.debug(
-                    f'Got an exception while setting user\'s subprotocol, defaulting to JSON {e}'
+                    f'got an exception while setting user\'s subprotocol, defaulting to JSON {e}'
                 )
                 subprotocol = WebsocketSubProtocols.JSON
             return subprotocol
