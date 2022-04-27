@@ -3,6 +3,7 @@ import shutil
 import subprocess
 import sys
 
+import pkg_resources
 from packaging.version import Version, parse
 
 
@@ -109,8 +110,6 @@ def _is_latest_version(package='jina', suppress_on_error=True):
         import warnings
         from urllib.request import Request, urlopen
 
-        import pkg_resources
-
         cur_ver = Version(pkg_resources.get_distribution(package).version)
 
         req = Request(
@@ -136,7 +135,7 @@ def _is_latest_version(package='jina', suppress_on_error=True):
 
 
 def _is_latest_version_plugin(subcommand):
-    from .known_plugins import plugin_info
+    from cli.known_plugins import plugin_info
 
     if subcommand in plugin_info:
         _is_latest_version(package=plugin_info[subcommand]['pip-package'])
