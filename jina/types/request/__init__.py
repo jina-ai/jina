@@ -1,8 +1,8 @@
 import traceback
 from typing import Optional
 
-from jina.serve.executors import BaseExecutor
 from jina.proto import jina_pb2
+from jina.serve.executors import BaseExecutor
 from jina.types.mixin import ProtoTypeMixin
 
 

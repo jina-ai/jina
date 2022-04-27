@@ -2,8 +2,9 @@ import os
 from typing import Dict
 
 import numpy as np
-from jina import Executor, requests
+
 from docarray import DocumentArray
+from jina import Executor, requests
 
 
 class MyIndexer(Executor):

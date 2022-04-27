@@ -1,5 +1,5 @@
 import asyncio
-from contextlib import AsyncExitStack, nullcontext
+from contextlib import AsyncExitStack
 from typing import TYPE_CHECKING, Optional
 
 from jina.clients.base import BaseClient

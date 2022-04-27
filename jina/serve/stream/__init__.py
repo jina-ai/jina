@@ -1,6 +1,5 @@
 import argparse
 import asyncio
-import contextlib
 from typing import (
     TYPE_CHECKING,
     AsyncIterator,
@@ -18,8 +17,6 @@ from jina.serve.stream.helper import AsyncRequestsIterator
 __all__ = ['RequestStreamer']
 
 if TYPE_CHECKING:
-    from prometheus_client import CollectorRegistry
-
     from jina.types.request import Request
 
 

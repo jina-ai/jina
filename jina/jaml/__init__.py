@@ -21,7 +21,6 @@ from jina.jaml.helper import (
 __all__ = ['JAML', 'JAMLCompatible']
 
 from jina.excepts import BadConfigSource
-from jina.helper import expand_env_var
 
 internal_var_regex = re.compile(
     r'{.+}|\$[a-zA-Z0-9_]*\b'

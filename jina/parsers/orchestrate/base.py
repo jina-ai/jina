@@ -36,8 +36,6 @@ def mixin_essential_parser(parser):
         'If not set, then derive from its parent `workspace`.',
     )
 
-    from jina import __resources_path__
-
     gp.add_argument(
         '--log-config',
         type=str,

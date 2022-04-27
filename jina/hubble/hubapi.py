@@ -1,7 +1,6 @@
 """Module wrapping interactions with the local executor packages."""
 
 import json
-import os
 import shutil
 from pathlib import Path
 from typing import Tuple

@@ -1,9 +1,9 @@
 import json
 from argparse import Namespace
-from typing import Dict, Optional, Tuple, Union, List
+from typing import Dict, List, Optional, Tuple, Union
 
-from jina.serve.networking import GrpcConnectionPool
 from jina.orchestrate.deployments.config.k8slib import kubernetes_tools
+from jina.serve.networking import GrpcConnectionPool
 
 
 def get_deployment_yamls(
