@@ -18,4 +18,4 @@ configs:
   RichHandler:
     format: '[dim]{name:>15}@%(process)2d[/dim] %(message)s'
     markup: true
-    rich_tracebacks: True
+    rich_tracebacks: true

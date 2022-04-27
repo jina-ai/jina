@@ -8,6 +8,7 @@ from typing import Optional
 
 from rich.logging import RichHandler
 
+from jina import __resources_path__, __uptime__, __windows__
 from jina.enums import LogVerbosity
 from jina.jaml import JAML
 from jina.logging import formatter
@@ -52,16 +53,15 @@ class JinaLogger:
         quiet: bool = False,
         **kwargs,
     ):
-        from jina import __resources_path__, __uptime__, __windows__
 
         if not log_config:
             log_config = os.getenv(
                 'JINA_LOG_CONFIG',
-                os.path.join(__resources_path__, 'logging.default.yml'),
+                'default',
             )
 
         if quiet or os.getenv('JINA_LOG_CONFIG', None) == 'QUIET':
-            log_config = os.path.join(__resources_path__, 'logging.quiet.yml')
+            log_config = 'quiet'
 
         if not name:
             name = os.getenv('JINA_DEPLOYMENT_NAME', context)
@@ -118,9 +118,19 @@ class JinaLogger:
         :param config_path: Path of config file.
         :param kwargs: Extra parameters.
         """
-        from jina import __windows__
 
         self.logger.handlers = []
+
+        if not os.path.exists(config_path):
+            old_config_path = config_path
+            if 'logging.' in config_path and '.yml' in config_path:
+                config_path = os.path.join(__resources_path__, config_path)
+            else:
+                config_path = os.path.join(
+                    __resources_path__, f'logging.{config_path}.yml'
+                )
+            if not os.path.exists(config_path):
+                config_path = old_config_path
 
         with open(config_path) as fp:
             config = JAML.load(fp)

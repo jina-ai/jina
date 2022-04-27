@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING
 
-
 if TYPE_CHECKING:
     from argparse import Namespace
 
@@ -61,7 +60,7 @@ def executor_native(args: 'Namespace'):
             if hasattr(rt, '_data_request_handler')
             else rt.name
         )
-        rt.logger.success(f' Executor {name} started')
+        rt.logger.info(f'Executor {name} started')
         rt.run_forever()
 
 
@@ -88,8 +87,8 @@ def worker_runtime(args: 'Namespace'):
     from jina.serve.runtimes.worker import WorkerRuntime
 
     with WorkerRuntime(args) as runtime:
-        runtime.logger.success(
-            f' Executor {runtime._data_request_handler._executor.metas.name} started'
+        runtime.logger.info(
+            f'Executor {runtime._data_request_handler._executor.metas.name} started'
         )
         runtime.run_forever()
 
@@ -111,8 +110,8 @@ def gateway(args: 'Namespace'):
     runtime_cls = get_runtime(gateway_runtime_dict[args.protocol])
 
     with runtime_cls(args) as runtime:
-        runtime.logger.success(
-            f' Gateway with protocol {gateway_runtime_dict[args.protocol]} started'
+        runtime.logger.info(
+            f'Gateway with protocol {gateway_runtime_dict[args.protocol]} started'
         )
         runtime.run_forever()
 
@@ -146,9 +145,10 @@ def export_api(args: 'Namespace'):
     :param args: arguments coming from the CLI.
     """
     import json
+
     from cli.export import api_to_dict
-    from jina.jaml import JAML
     from jina import __version__
+    from jina.jaml import JAML
     from jina.logging.predefined import default_logger
     from jina.schemas import get_full_schema
 
@@ -234,7 +234,9 @@ def new(args: 'Namespace'):
     Create a new jina project
     :param args:  arguments coming from the CLI.
     """
-    import shutil, os
+    import os
+    import shutil
+
     from jina import __resources_path__
 
     shutil.copytree(

@@ -27,12 +27,7 @@ More details can be found in the Docker SDK docs:  https://docker-py.readthedocs
 
 ''',
     )
-    gp.add_argument(
-        '--pull-latest',
-        action='store_true',
-        default=False,
-        help='Pull the latest image before running',
-    )
+
     gp.add_argument(
         '--volumes',
         type=str,
