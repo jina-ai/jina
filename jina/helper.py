@@ -33,10 +33,9 @@ from typing import (
     Union,
 )
 
-from packaging import version as pckg_version
 from rich.console import Console
 
-from jina import __docarray_version__, __windows__
+from jina import __windows__
 
 __all__ = [
     'batch_iterator',
@@ -63,11 +62,7 @@ __all__ = [
     'get_or_reuse_loop',
     'T',
     'get_rich_console',
-    'docarray_graphql_compatible',
 ]
-
-if TYPE_CHECKING:
-    from docarray import DocumentArray
 
 T = TypeVar('T')
 
@@ -1533,20 +1528,6 @@ def get_rich_console():
     )  # It forces render in any terminal, especially in PyCharm
 
 
-GRAPHQL_MIN_DOCARRAY_VERSION = '0.8.8'  # graphql requires this or higher
-
-
-def docarray_graphql_compatible():
-    """Check if installed docarray version is compatible with GraphQL features.
-
-    :return: True if compatible, False if not
-    """
-    installed_version = pckg_version.parse(__docarray_version__)
-    min_version = pckg_version.parse(GRAPHQL_MIN_DOCARRAY_VERSION)
-    return installed_version >= min_version
-
-
-from jina.helper import ArgNamespace
 from jina.parsers import set_client_cli_parser
 
 
@@ -1558,7 +1539,6 @@ def parse_client(kwargs):
 
 
 def _parse_kwargs(kwargs: Dict[str, Any]) -> Dict[str, Any]:
-
     if 'host' in kwargs.keys():
         return_scheme = dict()
         (

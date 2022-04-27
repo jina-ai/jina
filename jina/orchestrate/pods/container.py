@@ -281,7 +281,7 @@ def run(
                 f' Process terminated, the container fails to start, check the arguments or entrypoint'
             )
         is_shutdown.set()
-        logger.debug(f' Process terminated')
+        logger.debug(f'process terminated')
 
 
 class ContainerPod(BasePod):
@@ -407,7 +407,7 @@ class ContainerPod(BasePod):
             self.is_shutdown.wait(self.args.timeout_ctrl)
             self.logger.debug(f'terminating the runtime process')
             self.worker.terminate()
-            self.logger.debug(f' runtime process properly terminated')
+            self.logger.debug(f'runtime process properly terminated')
 
     def join(self, *args, **kwargs):
         """Joins the Pod.
@@ -428,6 +428,6 @@ class ContainerPod(BasePod):
                 containers = client.containers.list()
         except docker.errors.NotFound:
             pass
-        self.logger.debug(f' Joining the process')
+        self.logger.debug(f'joining the process')
         self.worker.join(*args, **kwargs)
-        self.logger.debug(f' Successfully joined the process')
+        self.logger.debug(f'successfully joined the process')

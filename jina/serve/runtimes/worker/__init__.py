@@ -87,7 +87,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         )
         reflection.enable_server_reflection(service_names, self._grpc_server)
         bind_addr = f'0.0.0.0:{self.args.port}'
-        self.logger.debug(f'Start listening on {bind_addr}')
+        self.logger.debug(f'start listening on {bind_addr}')
         self._grpc_server.add_insecure_port(bind_addr)
         await self._grpc_server.start()
 
@@ -97,12 +97,12 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_cancel(self):
         """Stop the GRPC server"""
-        self.logger.debug('Cancel WorkerRuntime')
+        self.logger.debug('cancel WorkerRuntime')
 
         # 0.5 gives the runtime some time to complete outstanding responses
         # this should be handled better, 1.0 is a rather random number
         await self._grpc_server.stop(1.0)
-        self.logger.debug('Stopped GRPC Server')
+        self.logger.debug('stopped GRPC Server')
 
     async def async_teardown(self):
         """Close the data request handler"""

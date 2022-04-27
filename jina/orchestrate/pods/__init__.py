@@ -91,7 +91,7 @@ def run(
     finally:
         _unset_envs()
         is_shutdown.set()
-        logger.debug(f' Process terminated')
+        logger.debug(f'process terminated')
 
 
 class BasePod(ABC):
@@ -338,9 +338,9 @@ class Pod(BasePod):
         :param args: extra positional arguments to pass to join
         :param kwargs: extra keyword arguments to pass to join
         """
-        self.logger.debug(f' Joining the process')
+        self.logger.debug(f'joining the process')
         self.worker.join(*args, **kwargs)
-        self.logger.debug(f' Successfully joined the process')
+        self.logger.debug(f'successfully joined the process')
 
     def _terminate(self):
         """Terminate the Pod.
@@ -348,7 +348,7 @@ class Pod(BasePod):
         """
         self.logger.debug(f'terminating the runtime process')
         self.worker.terminate()
-        self.logger.debug(f' runtime process properly terminated')
+        self.logger.debug(f'runtime process properly terminated')
 
     def _get_runtime_cls(self) -> AsyncNewLoopRuntime:
         from jina.orchestrate.pods.helper import update_runtime_cls

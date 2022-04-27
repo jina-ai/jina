@@ -1,16 +1,11 @@
 import argparse
 import json
-import warnings
 from typing import TYPE_CHECKING, Dict, List, Optional
 
 from jina import __version__
 from jina.clients.request import request_generator
 from jina.enums import DataInputType
-from jina.helper import (
-    GRAPHQL_MIN_DOCARRAY_VERSION,
-    docarray_graphql_compatible,
-    get_full_version,
-)
+from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.logging.profile import used_memory_readable
@@ -61,14 +56,6 @@ def get_fastapi_app(
         version=__version__,
         docs_url=docs_url if args.default_swagger_ui else None,
     )
-
-    if args.expose_graphql_endpoint and not docarray_graphql_compatible():
-        args.expose_graphql_endpoint = False
-        warnings.warn(
-            'DocArray version is incompatible with GraphQL features.'
-            'Setting expose_graphql_endpoint=False.'
-            f'To use GraphQL features, install docarray>={GRAPHQL_MIN_DOCARRAY_VERSION}'
-        )
 
     if args.cors:
         app.add_middleware(
@@ -265,13 +252,14 @@ def get_fastapi_app(
             from dataclasses import asdict
 
             import strawberry
-            from docarray import DocumentArray
             from docarray.document.strawberry_type import (
                 JSONScalar,
                 StrawberryDocument,
                 StrawberryDocumentInput,
             )
             from strawberry.fastapi import GraphQLRouter
+
+            from docarray import DocumentArray
 
             async def get_docs_from_endpoint(
                 data, target_executor, parameters, exec_endpoint

@@ -93,7 +93,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
             )
         else:
             self.server.add_insecure_port(bind_addr)
-        self.logger.debug(f' Start server bound to {bind_addr}')
+        self.logger.debug(f'start server bound to {bind_addr}')
         await self.server.start()
 
     async def async_teardown(self):
@@ -125,5 +125,5 @@ class GRPCGatewayRuntime(GatewayRuntime):
         if self.logger.debug_enabled:
             self._log_control_request(request)
         if request.command != 'STATUS':
-            raise ValueError('Gateway only support STATUS ControlRequests')
+            raise ValueError('gateway only support STATUS ControlRequests')
         return request
