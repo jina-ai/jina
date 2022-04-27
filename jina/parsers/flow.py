@@ -1,7 +1,8 @@
 """Argparser module for Flow"""
 from jina.parsers.base import set_base_parser
+from jina.parsers.helper import KVAppendAction, add_arg_group
+from jina.parsers.orchestrate.base import mixin_essential_parser
 from jina.parsers.orchestrate.runtimes.remote import mixin_graphql_parser
-from jina.parsers.helper import add_arg_group, KVAppendAction
 
 
 def mixin_flow_features_parser(parser):
@@ -46,8 +47,7 @@ def set_flow_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    mixin_base_ppr_parser(parser)
-    mixin_graphql_parser(parser)
+    mixin_essential_parser(parser)
     mixin_flow_features_parser(parser)
 
     return parser
