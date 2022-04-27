@@ -1238,7 +1238,11 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         if addr_table:
             print(
-                Panel(addr_table, title=':tada: Flow is ready to serve!', expand=False)
+                Panel(
+                    addr_table,
+                    title=':tada: [b]Flow is ready to serve![/]',
+                    expand=False,
+                )
             )  # can't use logger here see : https://github.com/Textualize/rich/discussions/2024
         self.logger.debug(
             f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
