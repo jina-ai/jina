@@ -444,7 +444,7 @@ def is_requirements_installed(
 
 
 def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jina',)):
-    import pkg_resources
+    from .requirements import parse_requirement
 
     with requirements_file.open() as requirements:
         install_options = []
@@ -456,12 +456,10 @@ def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jin
             elif req.startswith('-'):
                 install_options.extend(req.split(' '))
             else:
-                for req_spec in pkg_resources.parse_requirements(req):
-                    if (
-                        req_spec.project_name not in excludes
-                        or len(req_spec.extras) > 0
-                    ):
-                        install_reqs.append(req)
+                req_spec = parse_requirement(req)
+
+                if req_spec.project_name not in excludes or len(req_spec.extras) > 0:
+                    install_reqs.append(req)
 
     return install_reqs, install_options
 
