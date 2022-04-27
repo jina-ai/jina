@@ -171,6 +171,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -13312,4 +13313,22 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```955adb40```](https://github.com/jina-ai/jina/commit/955adb405990bb64dd97d0b81b467028c8937142)] __-__ __version__: the next version will be 3.3.16 (*Jina Dev Bot*)
+
+<a name=release-note-3-3-17></a>
+## Release Note (`3.3.17`)
+
+> Release time: 2022-04-27 21:10:33
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🍹 Other Improvements
+
+ - [[```9f83ab6b```](https://github.com/jina-ai/jina/commit/9f83ab6b881dcc2f7adb17c0108d074316a121f4)] __-__ readme badge (*Han Xiao*)
+ - [[```b2e11974```](https://github.com/jina-ai/jina/commit/b2e11974685b706e8a46ea61b648850df3c47c43)] __-__ sort and optimize imports (#4713) (*Han Xiao*)
+ - [[```22d5ce67```](https://github.com/jina-ai/jina/commit/22d5ce67b2ba7959cdd2706b8f508b2a9b56a15c)] __-__ update readme (*Han Xiao*)
+ - [[```d2423b27```](https://github.com/jina-ai/jina/commit/d2423b27265fca2d0aa440c160f87ab16af2beb6)] __-__ __version__: the next version will be 3.3.17 (*Jina Dev Bot*)
 
