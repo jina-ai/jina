@@ -420,3 +420,25 @@ def test_flow_to_docker_compose_sandbox(tmpdir):
         gateway_args[gateway_args.index('--deployments-addresses') + 1]
     )
     assert deployment_addresses['executor0'][0].startswith('grpcs://')
+
+
+@pytest.mark.parametrize('count', [1, 'all'])
+def test_flow_to_docker_compose_gpus(tmpdir, count):
+    flow = Flow().add(name='encoder', gpus=count)
+    dump_path = os.path.join(str(tmpdir), 'test_flow_docker_compose_gpus.yml')
+
+    flow.to_docker_compose_yaml(
+        output_path=dump_path,
+    )
+
+    configuration = None
+    with open(dump_path) as f:
+        configuration = yaml.safe_load(f)
+
+    services = configuration['services']
+    encoder_service = services['encoder']
+    assert encoder_service['deploy'] == {
+        'reservations': {
+            'devices': [{'driver': 'nvidia', 'count': count, 'capabilities': ['gpu']}]
+        }
+    }

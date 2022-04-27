@@ -1,7 +1,6 @@
 import copy
 import os
 from argparse import Namespace
-from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 
 from jina import __default_executor__
@@ -173,6 +172,24 @@ class DockerComposeConfig:
                         f'JINA_LOG_LEVEL={os.getenv("JINA_LOG_LEVEL", "INFO")}'
                     ],
                 }
+
+                if cargs.gpus:
+                    try:
+                        count = int(cargs.gpus)
+                    except ValueError:
+                        count = cargs.gpus
+
+                    config['deploy'] = {
+                        'reservations': {
+                            'devices': [
+                                {
+                                    'driver': 'nvidia',
+                                    'count': count,
+                                    'capabilities': ['gpu'],
+                                }
+                            ]
+                        }
+                    }
 
                 if cargs.monitoring:
                     config['expose'] = [cargs.port_monitoring]
