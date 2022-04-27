@@ -11,9 +11,9 @@
 
 <p align=center>
 <a href="https://pypi.org/project/jina/"><img alt="PyPI" src="https://img.shields.io/pypi/v/jina?label=PyPI&logo=pypi&logoColor=white&style=flat-square"></a>
-<a href="https://hub.docker.com/r/jinaai/jina/tags"><img src="https://img.shields.io/docker/v/jinaai/jina?color=%23099cec&amp;label=Docker&amp;logo=docker&amp;logoColor=white&amp;sort=semver&style=flat-square" alt="Docker Image Version (latest semver)"></a>
 <a href="https://codecov.io/gh/jina-ai/jina"><img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/jina-ai/jina/master?logo=Codecov&logoColor=white&style=flat-square"></a>
 <a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-2.8k-blueviolet?logo=slack&amp;logoColor=white&style=flat-square"></a>
+<a href="https://hub.docker.com/r/jinaai/jina/tags"><img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/jinaai/jina?logo=Docker&style=social"></a>
 </p>
 
 <!-- start jina-description -->
