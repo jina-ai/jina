@@ -11,14 +11,15 @@ import tarfile
 import urllib
 import warnings
 import zipfile
+from contextlib import nullcontext
 from functools import lru_cache, wraps
 from pathlib import Path
-from typing import Tuple, Optional, Dict
-from urllib.parse import urlparse, urljoin
+from typing import Dict, Optional, Tuple
+from urllib.parse import urljoin, urlparse
 from urllib.request import Request, urlopen
-from contextlib import nullcontext
 
 from jina import __resources_path__
+from jina.enums import BetterEnum
 from jina.importer import ImportExtensions
 from jina.logging.predefined import default_logger
 
@@ -421,12 +422,12 @@ def is_requirements_installed(
     :param show_warning: if to show a warning when a dependency is not satisfied
     :return: True or False if not satisfied
     """
+    import pkg_resources
     from pkg_resources import (
         DistributionNotFound,
-        VersionConflict,
         RequirementParseError,
+        VersionConflict,
     )
-    import pkg_resources
 
     install_reqs, install_options = _get_install_options(requirements_file)
 
@@ -488,3 +489,103 @@ def install_requirements(requirements_file: 'Path', timeout: int = 1000):
         + install_reqs
         + install_options
     )
+
+
+class HubbleReturnStatus(BetterEnum):
+    """
+    Type of hubble return status enum
+    """
+
+    UNKNOWN_ERROR = -1
+    OK = 20000
+    PARAM_VALIDATION_ERROR = 40001
+    SQL_CREATION_ERROR = 40002
+    DATA_STREAM_BROKEN_ERROR = 40003
+    UNEXPECTED_MIME_TYPE_ERROR = 40004
+    SSO_LOGIN_REQUIRED = 40101
+    AUTHENTICATION_FAILED = 40102
+    AUTHENTICATION_REQUIRED = 40103
+    OPERATION_NOT_ALLOWED = 40301
+    INTERNAL_RESOURCE_NOT_FOUND = 40401
+    RPC_METHOD_NOT_FOUND = 40402
+    REQUESTED_ENTITY_NOT_FOUND = 40403
+    INTERNAL_RESOURCE_METHOD_NOT_ALLOWED = 40501
+    INCOMPATIBLE_METHOD_ERROR = 40502
+    INTERNAL_RESOURCE_ID_CONFLICT = 40901
+    RESOURCE_POLICY_DENY = 40902
+    TOO_LARGE_FILE = 41301
+    INTERNAL_DATA_CORRUPTION = 42201
+    IDENTIFIER_NAMESPACE_OCCUPIED = 42202
+    SUBMITTED_DATA_MALFORMED = 42203
+    EXTERNAL_SERVICE_FAILURE = 42204
+    DOWNSTREAM_SERVICE_FAILURE = 42205
+    SERVER_INTERNAL_ERROR = 50001
+    DOWNSTREAM_SERVICE_ERROR = 50002
+    SERVER_SUBPROCESS_ERROR = 50003
+    SANDBOX_BUILD_NOT_FOUND = 50004
+    NOT_IMPLEMENTED_ERROR = 50005
+    RESPONSE_STREAM_CLOSED = 50006
+
+
+class NormalizerErrorCode(BetterEnum):
+    """
+    Type of executor-normalizer error code enum
+    """
+
+    ExecutorNotFound = 4000
+    ExecutorExists = 4001
+    IllegalExecutor = 4002
+    BrokenDependency = 4003
+
+    Others = 5000
+
+
+def get_hubble_error_message(hubble_structured_error: dict) -> Tuple[str, str]:
+    """Override some of the hubble error messages to provide better user experience
+    :param hubble_structured_error: the hubble structured error response
+    :returns: Tuple of overridden_msg and original_msg
+    """
+    msg = hubble_structured_error.get(
+        'readableMessage', ''
+    ) or hubble_structured_error.get('message', '')
+    status = hubble_structured_error.get('status', None)
+    original_msg = msg
+
+    if not status:
+        return (msg, msg)
+
+    if (
+        status == HubbleReturnStatus.SERVER_SUBPROCESS_ERROR
+        and hubble_structured_error.get('cmd', '') == 'docker'
+    ):
+
+        msg = '''
+Failed on building Docker image. Potential solutions:
+  - If you haven't provide a Dockerfile in the executor bundle, you may want to provide one,
+    as the auto-generated one on the cloud did not work.
+  - If you have provided a Dockerfile, you may want to check the validity of this Dockerfile.
+'''
+    elif (
+        status == HubbleReturnStatus.DOWNSTREAM_SERVICE_FAILURE
+        and hubble_structured_error.get('service', '') == 'normalizer'
+    ):
+
+        normalizer_error = hubble_structured_error.get('err', '')
+        if (
+            isinstance(normalizer_error, dict)
+            and normalizer_error.get('code', None)
+            == NormalizerErrorCode.ExecutorNotFound
+        ):
+            msg = '''
+We can not discover any Executor in your uploaded bundle. This is often due to one of the following errors:
+  - The bundle did not contain any valid executor.
+  - The config.yml's `jtype` is mismatched with the actual Executor class name.
+    For more information about the expected bundle structure, please refer to the documentation.
+    https://docs.jina.ai/fundamentals/executor/repository-structure/
+'''
+        msg += '''
+For more detailed information, you can try the `executor-normalizer` locally to see the root cause.
+    https://github.com/jina-ai/executor-normalizer
+'''
+
+    return (msg, original_msg)
