@@ -166,6 +166,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -13208,4 +13209,25 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```05222069```](https://github.com/jina-ai/jina/commit/0522206909c3b743684c1aecf490e47564b860d9)] __-__ disable console color with envvar (#4697) (*Deepankar Mahapatro*)
  - [[```655213d0```](https://github.com/jina-ai/jina/commit/655213d07258490d4a12b29adcfb5dab0e21fe3d)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```d9b5b718```](https://github.com/jina-ai/jina/commit/d9b5b7187d0e1e912cae69b1862aa7759b7c4ab5)] __-__ __version__: the next version will be 3.3.11 (*Jina Dev Bot*)
+
+<a name=release-note-3-3-12></a>
+## Release Note (`3.3.12`)
+
+> Release time: 2022-04-27 08:57:34
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Yanlong Wang,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```a3b71c72```](https://github.com/jina-ai/jina/commit/a3b71c7208b3cd48aa7bc978c3343a074947e3d9)] __-__ __parsers__: clearify flow args (#4701) (*Han Xiao*)
+ - [[```babd97d0```](https://github.com/jina-ai/jina/commit/babd97d041063f5193b1478c35acc8579b78aae2)] __-__ __hubio__: improve error message from hubble (#4674) (*Yanlong Wang*)
+
+### 🍹 Other Improvements
+
+ - [[```524bedd5```](https://github.com/jina-ai/jina/commit/524bedd564b85bfd5dd6018514098bb2816b77e6)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```7649d5d9```](https://github.com/jina-ai/jina/commit/7649d5d9ff451154be08d319bb7450ce49eb9f49)] __-__ __version__: the next version will be 3.3.12 (*Jina Dev Bot*)
 
