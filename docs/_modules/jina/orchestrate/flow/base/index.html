@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.orchestrate.flow.base - Jina 3.3.14 documentation</title>
+        <title>jina.orchestrate.flow.base - Jina 3.3.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.3.14 documentation</div>
+                <div class="brand">Jina 3.3.15 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -579,6 +579,7 @@
 <span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="nb">print</span>
+<span class="kn">from</span> <span class="nn">rich.panel</span> <span class="kn">import</span> <span class="n">Panel</span>
 <span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__default_port_monitoring__</span><span class="p">,</span> <span class="n">__docker_host__</span><span class="p">,</span> <span class="n">helper</span>
@@ -597,11 +598,9 @@
     <span class="n">RuntimeFailToStart</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">GRAPHQL_MIN_DOCARRAY_VERSION</span><span class="p">,</span>
     <span class="n">ArgNamespace</span><span class="p">,</span>
     <span class="n">CatchAllCleanupContextManager</span><span class="p">,</span>
     <span class="n">colored_rich</span><span class="p">,</span>
-    <span class="n">docarray_graphql_compatible</span><span class="p">,</span>
     <span class="n">download_mermaid_url</span><span class="p">,</span>
     <span class="n">get_internal_ip</span><span class="p">,</span>
     <span class="n">get_public_ip</span><span class="p">,</span>
@@ -1671,7 +1670,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'Flow is closed!'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'flow is closed!'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Flow.start"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1791,7 +1790,11 @@
 
         <span class="k">if</span> <span class="n">addr_table</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span>
-                <span class="n">addr_table</span>
+                <span class="n">Panel</span><span class="p">(</span>
+                    <span class="n">addr_table</span><span class="p">,</span>
+                    <span class="n">title</span><span class="o">=</span><span class="s1">':tada: [b]Flow is ready to serve![/]'</span><span class="p">,</span>
+                    <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="p">)</span>  <span class="c1"># can't use logger here see : https://github.com/Textualize/rich/discussions/2024</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_deployments</span><span class="si">}</span><span class="s1"> Deployments (i.e. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_pods</span><span class="si">}</span><span class="s1"> Pods) are running in this Flow'</span>
@@ -1991,7 +1994,7 @@
         <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
             <span class="n">download_mermaid_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">showed</span><span class="p">:</span>
-            <span class="n">op_flow</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'flow visualization: </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">]Click here to see the visualization in browser[/]'</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
@@ -2120,48 +2123,48 @@
         <span class="k">return</span> <span class="n">table</span>
 
     <span class="k">def</span> <span class="nf">_get_address_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address_table</span><span class="p">):</span>
-        <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">'🔗'</span><span class="p">,</span> <span class="s1">'Protocol'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':link:'</span><span class="p">,</span> <span class="s1">'Protocol'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-            <span class="s1">'🏠'</span><span class="p">,</span>
+            <span class="s1">':house:'</span><span class="p">,</span>
             <span class="s1">'Local access'</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s1">'[underline]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/underline]'</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/]'</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-            <span class="s1">'🔒'</span><span class="p">,</span>
+            <span class="s1">':lock:'</span><span class="p">,</span>
             <span class="s1">'Private network'</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s1">'[underline]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/underline]'</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/]'</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="p">:</span>
             <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                <span class="s1">'🌐'</span><span class="p">,</span>
+                <span class="s1">':earth_africa:'</span><span class="p">,</span>
                 <span class="s1">'Public address'</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s1">'[underline]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/underline]'</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/]'</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">==</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">:</span>
             <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                <span class="s1">'💬'</span><span class="p">,</span>
+                <span class="s1">':speech_balloon:'</span><span class="p">,</span>
                 <span class="s1">'Swagger UI'</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s1">'[underline]http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/docs[/underline]'</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">'[link=http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/docs]http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/docs[/]'</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                <span class="s1">'📚'</span><span class="p">,</span>
+                <span class="s1">':books:'</span><span class="p">,</span>
                 <span class="s1">'Redoc'</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s1">'[underline]http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/redoc[/underline]'</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">'[link=http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/redoc]http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/redoc[/]'</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_args</span><span class="o">.</span><span class="n">expose_graphql_endpoint</span><span class="p">:</span>
                 <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                    <span class="s1">'💬'</span><span class="p">,</span>
+                    <span class="s1">':strawberry:'</span><span class="p">,</span>
                     <span class="s1">'GraphQL UI'</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s1">'[underline][cyan]http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/graphql[/underline][/cyan]'</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">'[link=http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/graphql]http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/graphql[/]'</span><span class="p">,</span>
                 <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitoring</span><span class="p">:</span>
             <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                <span class="s1">'📉️'</span><span class="p">,</span>
+                <span class="s1">':bar_chart:'</span><span class="p">,</span>
                 <span class="s1">'Prometheus'</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s1">'[underline][cyan]http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">[/underline][/cyan]'</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">'[link=http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">]http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">[/]'</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">address_table</span>
@@ -2417,8 +2420,8 @@
                         <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">k8s_objects</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
                             <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'---</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'K8s yaml files have been created under </span><span class="si">{</span><span class="n">output_base_path</span><span class="si">}</span><span class="s1">. You can use it by running `kubectl apply -R -f </span><span class="si">{</span><span class="n">output_base_path</span><span class="si">}</span><span class="s1">`'</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'K8s yaml files have been created under [b]</span><span class="si">{</span><span class="n">output_base_path</span><span class="si">}</span><span class="s1">[/]. You can use it by running [b]kubectl apply -R -f </span><span class="si">{</span><span class="n">output_base_path</span><span class="si">}</span><span class="s1">[/]'</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Flow.to_docker_compose_yaml"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.to_docker_compose_yaml">[docs]</a>    <span class="k">def</span> <span class="nf">to_docker_compose_yaml</span><span class="p">(</span>
@@ -2475,8 +2478,8 @@
             <span class="k">else</span> <span class="sa">f</span><span class="s1">'docker-compose -f </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s1"> up'</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'Docker compose file has been created under </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s1">. You can use it by running `</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1">`'</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'Docker compose file has been created under [b]</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s1">[/b]. You can use it by running [b]</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1">[/b]'</span>
         <span class="p">)</span></div>
 
     <span class="nd">@property</span>

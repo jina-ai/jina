@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.helper - Jina 3.3.14 documentation</title>
+        <title>jina.helper - Jina 3.3.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.3.14 documentation</div>
+                <div class="brand">Jina 3.3.15 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -587,10 +587,9 @@
     <span class="n">Union</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">packaging</span> <span class="kn">import</span> <span class="n">version</span> <span class="k">as</span> <span class="n">pckg_version</span>
 <span class="kn">from</span> <span class="nn">rich.console</span> <span class="kn">import</span> <span class="n">Console</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__docarray_version__</span><span class="p">,</span> <span class="n">__windows__</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__windows__</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">'batch_iterator'</span><span class="p">,</span>
@@ -617,11 +616,7 @@
     <span class="s1">'get_or_reuse_loop'</span><span class="p">,</span>
     <span class="s1">'T'</span><span class="p">,</span>
     <span class="s1">'get_rich_console'</span><span class="p">,</span>
-    <span class="s1">'docarray_graphql_compatible'</span><span class="p">,</span>
 <span class="p">]</span>
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">'T'</span><span class="p">)</span>
 
@@ -2087,20 +2082,6 @@
     <span class="p">)</span>  <span class="c1"># It forces render in any terminal, especially in PyCharm</span></div>
 
 
-<span class="n">GRAPHQL_MIN_DOCARRAY_VERSION</span> <span class="o">=</span> <span class="s1">'0.8.8'</span>  <span class="c1"># graphql requires this or higher</span>
-
-
-<div class="viewcode-block" id="docarray_graphql_compatible"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.docarray_graphql_compatible">[docs]</a><span class="k">def</span> <span class="nf">docarray_graphql_compatible</span><span class="p">():</span>
-    <span class="sd">"""Check if installed docarray version is compatible with GraphQL features.</span>
-
-<span class="sd">    :return: True if compatible, False if not</span>
-<span class="sd">    """</span>
-    <span class="n">installed_version</span> <span class="o">=</span> <span class="n">pckg_version</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">__docarray_version__</span><span class="p">)</span>
-    <span class="n">min_version</span> <span class="o">=</span> <span class="n">pckg_version</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">GRAPHQL_MIN_DOCARRAY_VERSION</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">installed_version</span> <span class="o">&gt;=</span> <span class="n">min_version</span></div>
-
-
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">ArgNamespace</span>
 <span class="kn">from</span> <span class="nn">jina.parsers</span> <span class="kn">import</span> <span class="n">set_client_cli_parser</span>
 
 
@@ -2112,7 +2093,6 @@
 
 
 <span class="k">def</span> <span class="nf">_parse_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-
     <span class="k">if</span> <span class="s1">'host'</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="n">return_scheme</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="p">(</span>
