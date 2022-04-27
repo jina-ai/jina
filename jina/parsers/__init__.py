@@ -162,18 +162,13 @@ def get_main_parser():
 
     sp = parser.add_subparsers(
         dest='cli',
-        description='''
-        Use `%(prog)-8s [sub-command] --help` to get detailed information about each sub-command.
-
-        To show all commands, run `JINA_FULL_CLI=1 jina --help`.
-        ''',
         required=True,
     )
 
     set_hello_parser(
         sp.add_parser(
             'hello',
-            help='👋 Hello Jina!',
+            help='Hello Jina!',
             description='Start hello world demos.',
             formatter_class=_chf,
         )

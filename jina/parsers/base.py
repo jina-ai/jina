@@ -10,7 +10,7 @@ def set_base_parser():
     :return: the parser
     """
     from jina import __version__
-    from jina.helper import colored, get_full_version, format_full_version_info
+    from jina.helper import colored, format_full_version_info, get_full_version
 
     # create the top-level parser
     urls = {
@@ -32,7 +32,6 @@ Jina (v{colored(__version__, "green")}) is the cloud-native neural search framew
 
 ''',
         formatter_class=_chf,
-        description='Command Line Interface of `%(prog)s`',
     )
     parser.add_argument(
         '-v',
