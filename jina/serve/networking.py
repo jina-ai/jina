@@ -334,7 +334,7 @@ class GrpcConnectionPool:
                     # In this case we don't care for the concrete entity, so retry with the first one
                     return self._get_connection_list(deployment, type_, 0)
                 self._logger.debug(
-                    f'Did not find a connection for deployment {deployment}, type {type} and entity_id {entity_id}. There are {len(self._deployments[deployment][type]) if deployment in self._deployments else 0} available connections for this deployment and type. '
+                    f'did not find a connection for deployment {deployment}, type {type} and entity_id {entity_id}. There are {len(self._deployments[deployment][type]) if deployment in self._deployments else 0} available connections for this deployment and type. '
                 )
                 return None
 
@@ -359,12 +359,12 @@ class GrpcConnectionPool:
                 address
             ):
                 self._logger.debug(
-                    f'Adding connection for deployment {deployment}/{type}/{entity_id} to {address}'
+                    f'adding connection for deployment {deployment}/{type}/{entity_id} to {address}'
                 )
                 self._deployments[deployment][type][entity_id].add_connection(address)
             else:
                 self._logger.debug(
-                    f'Ignoring activation of pod, {address} already known'
+                    f'ignoring activation of pod, {address} already known'
                 )
 
         async def remove_head(self, deployment, address, head_id: Optional[int] = 0):
@@ -383,7 +383,7 @@ class GrpcConnectionPool:
                 and entity_id in self._deployments[deployment][type]
             ):
                 self._logger.debug(
-                    f'Removing connection for deployment {deployment}/{type}/{entity_id} to {address}'
+                    f'removing connection for deployment {deployment}/{type}/{entity_id} to {address}'
                 )
                 connection = await self._deployments[deployment][type][
                     entity_id
@@ -553,7 +553,7 @@ class GrpcConnectionPool:
             return self._send_requests(requests, connection, endpoint, timeout=timeout)
         else:
             self._logger.debug(
-                f'No available connections for deployment {deployment} and shard {shard_id}'
+                f'no available connections for deployment {deployment} and shard {shard_id}'
             )
             return None
 

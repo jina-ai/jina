@@ -157,7 +157,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
         bind_addr = f'0.0.0.0:{self.args.port}'
         self._grpc_server.add_insecure_port(bind_addr)
-        self.logger.debug(f'Start listening on {bind_addr}')
+        self.logger.debug(f'start listening on {bind_addr}')
         await self._grpc_server.start()
 
     async def async_run_forever(self):
@@ -167,7 +167,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_cancel(self):
         """Stop the GRPC server"""
-        self.logger.debug('Cancel HeadRuntime')
+        self.logger.debug('cancel HeadRuntime')
 
         await self._grpc_server.stop(0)
 

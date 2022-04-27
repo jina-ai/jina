@@ -1116,7 +1116,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         self._build_level = FlowBuildLevel.EMPTY
 
-        self.logger.debug('Flow is closed!')
+        self.logger.debug('flow is closed!')
         self.logger.close()
 
     def start(self):
@@ -1440,7 +1440,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if output:
             download_mermaid_url(url, output)
         elif not showed:
-            op_flow.logger.info(f'flow visualization: {url}')
+            print(f'[link={url}]Click here to see the visualization in browser[/]')
 
         return self
 
@@ -1866,8 +1866,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         if i < len(k8s_objects) - 1:
                             fp.write('---\n')
 
-        self.logger.info(
-            f'K8s yaml files have been created under {output_base_path}. You can use it by running `kubectl apply -R -f {output_base_path}`'
+        print(
+            f'K8s yaml files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'
         )
 
     def to_docker_compose_yaml(
@@ -1924,8 +1924,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             else f'docker-compose -f {output_path} up'
         )
 
-        self.logger.info(
-            f'Docker compose file has been created under {output_path}. You can use it by running `{command}`'
+        print(
+            f'Docker compose file has been created under [b]{output_path}[/b]. You can use it by running [b]{command}[/b]'
         )
 
     @property
