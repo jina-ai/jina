@@ -342,17 +342,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             GATEWAY_NAME
         ]  #: default first deployment is gateway, will add when build()
         self._update_args(args, **kwargs)
-        if (
-            self.protocol == GatewayProtocolType.HTTP
-            and self.args.expose_graphql_endpoint
-            and not docarray_graphql_compatible()
-        ):
-            self.args.expose_graphql_endpoint = False
-            warnings.warn(
-                'DocArray version is incompatible with GraphQL features. '
-                'Automatically setting expose_graphql_endpoint=False. '
-                f'To use GraphQL features, install docarray>={GRAPHQL_MIN_DOCARRAY_VERSION}'
-            )
 
         if isinstance(self.args, argparse.Namespace):
             self.logger = JinaLogger(
@@ -476,9 +465,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             kwargs.get('port', None) is None and kwargs.get('port_expose', None) is None
         )
         args.noblock_on_start = True
-        args.expose_graphql_endpoint = (
-            self.args.expose_graphql_endpoint
-        )  # also used in Flow, thus not in kwargs
         args.graph_description = json.dumps(graph_description)
         args.graph_conditions = json.dumps(graph_conditions)
         args.deployments_addresses = json.dumps(deployments_addresses)
@@ -884,7 +870,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             args.workspace = self.workspace
 
         args.noblock_on_start = True
-        args.extra_search_paths = self.args.extra_search_paths
 
         port = kwargs.get('port', None)
         if not port:
@@ -1625,7 +1610,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 'Redoc',
                 f'[underline]http://localhost:{self.port}/redoc[/underline]',
             )
-            if self.args.expose_graphql_endpoint:
+            if self.gateway_args.expose_graphql_endpoint:
                 address_table.add_row(
                     '💬',
                     'GraphQL UI',
