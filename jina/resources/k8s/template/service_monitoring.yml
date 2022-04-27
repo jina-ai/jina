@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {name}
+  namespace: {namespace}
+  labels:
+    app: {target}
+spec:
+  type: {type}
+  ports:
+    - port: {port}
+      targetPort: {port}
+      name: port
+      protocol: TCP
+    - port: {port_monitoring}
+      targetPort: {port_monitoring}
+      name: monitoring
+      protocol: TCP
+  selector:
+    app: {target}

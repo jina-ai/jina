@@ -91,6 +91,8 @@ class K8sDeploymentConfig:
                 pod_type=self.pod_type,
                 port=self.common_args.port,
                 env=cargs.env,
+                monitoring=self.common_args.monitoring,
+                port_monitoring=self.common_args.port_monitoring,
             )
 
         def _get_image_name(self, uses: Optional[str]):
@@ -192,6 +194,8 @@ class K8sDeploymentConfig:
                 shard_id=self.shard_id,
                 env=cargs.env,
                 gpus=cargs.gpus if hasattr(cargs, 'gpus') else None,
+                monitoring=cargs.monitoring,
+                port_monitoring=cargs.port_monitoring,
             )
 
     def __init__(
