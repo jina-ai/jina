@@ -25,6 +25,7 @@ from typing import (
 )
 
 from rich import print
+from rich.panel import Panel
 from rich.table import Table
 
 from jina import __default_host__, __default_port_monitoring__, __docker_host__, helper
@@ -1237,7 +1238,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         if addr_table:
             print(
-                addr_table
+                Panel(addr_table, title=':tada: Flow is ready to serve!', expand=False)
             )  # can't use logger here see : https://github.com/Textualize/rich/discussions/2024
         self.logger.debug(
             f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
@@ -1566,48 +1567,48 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return table
 
     def _get_address_table(self, address_table):
-        address_table.add_row('🔗', 'Protocol', f'{self.protocol}')
+        address_table.add_row(':link:', 'Protocol', f'{self.protocol}')
         address_table.add_row(
-            '🏠',
+            ':house:',
             'Local access',
-            f'[underline]{self.host}:{self.port}[/underline]',
+            f'[link={self.protocol}://{self.host}:{self.port}]{self.host}:{self.port}[/]',
         )
         address_table.add_row(
-            '🔒',
+            ':lock:',
             'Private network',
-            f'[underline]{self.address_private}:{self.port}[/underline]',
+            f'[link={self.protocol}://{self.address_private}:{self.port}]{self.address_private}:{self.port}[/]',
         )
 
         if self.address_public:
             address_table.add_row(
-                '🌐',
+                ':earth_africa:',
                 'Public address',
-                f'[underline]{self.address_public}:{self.port}[/underline]',
+                f'[link={self.protocol}://{self.address_public}:{self.port}]{self.address_public}:{self.port}[/]',
             )
 
         if self.protocol == GatewayProtocolType.HTTP:
             address_table.add_row(
-                '💬',
+                ':speech_balloon:',
                 'Swagger UI',
-                f'[underline]http://localhost:{self.port}/docs[/underline]',
+                f'[link=http://localhost:{self.port}/docs]http://localhost:{self.port}/docs[/]',
             )
 
             address_table.add_row(
-                '📚',
+                ':books:',
                 'Redoc',
-                f'[underline]http://localhost:{self.port}/redoc[/underline]',
+                f'[link=http://localhost:{self.port}/redoc]http://localhost:{self.port}/redoc[/]',
             )
             if self.gateway_args.expose_graphql_endpoint:
                 address_table.add_row(
-                    '💬',
+                    ':strawberry:',
                     'GraphQL UI',
-                    f'[underline][cyan]http://localhost:{self.port}/graphql[/underline][/cyan]',
+                    f'[link=http://localhost:{self.port}/graphql]http://localhost:{self.port}/graphql[/]',
                 )
         if self.monitoring:
             address_table.add_row(
-                '📉️',
+                ':bar_chart:',
                 'Prometheus',
-                f'[underline][cyan]http://localhost:{self.port_monitoring}[/underline][/cyan]',
+                f'[link=http://localhost:{self.port_monitoring}]http://localhost:{self.port_monitoring}[/]',
             )
 
         return address_table
