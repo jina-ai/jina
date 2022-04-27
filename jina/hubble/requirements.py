@@ -81,24 +81,21 @@ def parse_requirement(line: str) -> 'Requirement':
 
     if vcs_match is not None:
         groups = vcs_match.groupdict()
-
+        name = os.path.basename(groups['path']).split('.')[0]
+        egg = None
         if groups['fragment']:
             fragment = _parse_fragment(groups['fragment'])
             egg = fragment.get('egg')
-            if egg:
-                line = f'{egg} @ {line}'
-        else:
-            name = os.path.basename(groups['path']).split('.')[0]
-            line = f'{name} @ {line}'
+
+        line = f'{egg or name} @ {line}'
     elif uri_match is not None:
         groups = uri_match.groupdict()
+        name = os.path.basename(groups['path']).split('.')[0]
+        egg = None
         if groups['fragment']:
             fragment = _parse_fragment(groups['fragment'])
             egg = fragment.get('egg')
-            if egg:
-                line = f'{egg} @ {line}'
-        else:
-            name = os.path.basename(groups['path']).split('.')[0]
-            line = f'{name} @ {line}'
+
+        line = f'{egg or name} @ {line}'
 
     return Requirement.parse(line)

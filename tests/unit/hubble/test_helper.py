@@ -97,6 +97,7 @@ def test_install_requirements():
             [],
             ['dev'],
         ),
+        ('http://pypi.python.org/packages/source/p/jina/jina.tar.gz', 'jina', [], []),
     ],
 )
 def test_parse_requirements(requirement, name, specs, extras):
