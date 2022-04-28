@@ -180,14 +180,16 @@ class DockerComposeConfig:
                         count = cargs.gpus
 
                     config['deploy'] = {
-                        'reservations': {
-                            'devices': [
-                                {
-                                    'driver': 'nvidia',
-                                    'count': count,
-                                    'capabilities': ['gpu'],
-                                }
-                            ]
+                        'resources': {
+                            'reservations': {
+                                'devices': [
+                                    {
+                                        'driver': 'nvidia',
+                                        'count': count,
+                                        'capabilities': ['gpu'],
+                                    }
+                                ]
+                            }
                         }
                     }
 
