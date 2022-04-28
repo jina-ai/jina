@@ -68,14 +68,14 @@ If you want to create a new tag for an existing Executor, you can also add the `
 jina hub push [--public/--private] --force-update <NAME> --secret <SECRET> -t TAG <path_to_executor_folder>
 ```
 
-### Immutable tags
+### Protected tags
 
 If you don’t want some tags to be later overwritten to keep a stable, consistent behavior, 
-immutable tags are the exact thing you are looking for.
+protected tags are the exact thing you are looking for.
 
-You can leverage the `--immutable-tag` option to create immutable tags. 
-After being pushed for the first time, the immutable tags can not be pushed again.
+You can leverage the `--protected-tag` option to create protected tags. 
+After being pushed for the first time, the protected tags can not be pushed again.
 
 ```bash
-jina hub push [--public/--private] --force-update <NAME> --secret <SECRET> --immutable-tag <IMMUTABLE_TAG_1> --immutable-tag <IMMUTABLE_TAG_2> <path_to_executor_folder>
+jina hub push [--public/--private] --force-update <NAME> --secret <SECRET> --protected-tag <PROTECTED_TAG_1> --protected-tag <PROTECTED_TAG_2> <path_to_executor_folder>
 ```
