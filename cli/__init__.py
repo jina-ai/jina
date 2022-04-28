@@ -2,9 +2,17 @@ import os
 import shutil
 import subprocess
 import sys
+from typing import TYPE_CHECKING
 
 import pkg_resources
 from packaging.version import Version, parse
+
+import jina
+
+if TYPE_CHECKING:
+    print(
+        jina.__version__
+    )  # avoid someone optimized the import. Importing jina on top should fix deadlock for good
 
 
 def _get_run_args(print_args: bool = True):
