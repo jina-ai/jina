@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/executor/hub/push-executor/" />
   
-<meta property="og:site_name" content="Jina 3.3.18 Documentation" />
+<meta property="og:site_name" content="Jina 3.3.19 Documentation" />
   
 <meta property="og:description" content="If you want to share your Executor, you can push it to Jina Hub. There are two types of sharing: Public(default): Anyone can use public Executors without any restrictions., Private: Only people that have the secret can use private Executors.. First publish: It will return NAME& SECRET, which you ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_images/hub-push.gif" />
   
-<meta property="og:image:alt" content="Jina 3.3.18 Documentation" />
+<meta property="og:image:alt" content="Jina 3.3.19 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" /><link rel="next" title="Use Hub Executors Locally" href="../use-hub-executor/" /><link rel="prev" title="Create Executor" href="../create-hub-executor/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>Publish Executor - Jina 3.3.18 documentation</title>
+        <title>Publish Executor - Jina 3.3.19 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -178,7 +178,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.3.18 documentation</div>
+                <div class="brand">Jina 3.3.19 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -638,6 +638,16 @@ jina hub push . -t v1.0.0 -t latest <span class="c1"># Result in two tags: v1.0.
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub push <span class="o">[</span>--public/--private<span class="o">]</span> --force-update &lt;NAME&gt; --secret &lt;SECRET&gt; -t TAG &lt;path_to_executor_folder&gt;
 </pre></div>
 </div>
+<section id="protected-tags">
+<h3>Protected tags<a class="headerlink" href="#protected-tags" title="Permalink to this headline">¶</a></h3>
+<p>If you don’t want some tags to be later overwritten to keep a stable, consistent behavior,
+protected tags are the exact thing you are looking for.</p>
+<p>You can leverage the <code class="docutils literal notranslate"><span class="pre">--protected-tag</span></code> option to create protected tags.
+After being pushed for the first time, the protected tags can not be pushed again.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub push <span class="o">[</span>--public/--private<span class="o">]</span> --force-update &lt;NAME&gt; --secret &lt;SECRET&gt; --protected-tag &lt;PROTECTED_TAG_1&gt; --protected-tag &lt;PROTECTED_TAG_2&gt; &lt;path_to_executor_folder&gt;
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -701,7 +711,10 @@ jina hub push . -t v1.0.0 -t latest <span class="c1"># Result in two tags: v1.0.
 <li><a class="reference internal" href="#">Publish Executor</a><ul>
 <li><a class="reference internal" href="#first-publish">First publish</a></li>
 <li><a class="reference internal" href="#update-published-executors">Update published Executors</a></li>
-<li><a class="reference internal" href="#tagging-an-executor">Tagging an Executor</a></li>
+<li><a class="reference internal" href="#tagging-an-executor">Tagging an Executor</a><ul>
+<li><a class="reference internal" href="#protected-tags">Protected tags</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
