@@ -183,7 +183,7 @@ ac_table = {
             '--verbose',
             '--dockerfile',
             '--tag',
-            '--immutable-tag',
+            '--protected-tag',
             '--force-update',
             '--force',
             '--secret',

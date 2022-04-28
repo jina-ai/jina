@@ -336,8 +336,8 @@ metas:
         exec_immutable_tags = None
         if self.args.tag:
             exec_tags = ','.join(self.args.tag)
-        if self.args.immutable_tag:
-            exec_immutable_tags = ','.join(self.args.immutable_tag)
+        if self.args.protected_tag:
+            exec_immutable_tags = ','.join(self.args.protected_tag)
 
         dockerfile = None
         if self.args.dockerfile:
