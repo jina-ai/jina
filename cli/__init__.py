@@ -135,12 +135,16 @@ def main():
         def __init__(self, key, value):
             self.key = key
             self.value = value
+            self.unset = False
 
         def __enter__(self):
-            os.environ[self.key] = self.value
+            if self.key not in os.environ:
+                self.unset = True
+                os.environ[self.key] = self.value
 
         def __exit__(self, exc_type, exc_val, exc_tb):
-            os.unsetenv(self.key)
+            if self.unset:
+                os.unsetenv(self.key)
 
     with EnvVariableSet('JINA_CHECK_VERSION', 'True'):
         found_plugin = _try_plugin_command()

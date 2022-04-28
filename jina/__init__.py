@@ -128,7 +128,7 @@ __resources_path__ = _os.path.join(
     _os.path.dirname(_sys.modules['jina'].__file__), 'resources'
 )
 
-if _os.environ.get('JINA_CHECK_VERSION', None):
+if 'JINA_CHECK_VERSION' in _os.environ:
     _warnings.warn(
         f'Your version of jina is {__version__}. You may want to check if there are newer versions released in https://pypi.org/project/jina/#history'
     )
