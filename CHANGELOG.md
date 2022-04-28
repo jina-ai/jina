@@ -173,6 +173,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -13362,4 +13363,28 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```e75efaef```](https://github.com/jina-ai/jina/commit/e75efaefb426d0e952a55cc9b84c5920cd91e6fe)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```87b4b035```](https://github.com/jina-ai/jina/commit/87b4b035f56b54954eb3f791b0678578ee906245)] __-__ __version__: the next version will be 3.3.18 (*Jina Dev Bot*)
+
+<a name=release-note-3-3-19></a>
+## Release Note (`3.3.19`)
+
+> Release time: 2022-04-28 16:14:00
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Yanlong Wang,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```93bda042```](https://github.com/jina-ai/jina/commit/93bda042aae15732bacec6f89427b6df49b9533f)] __-__ allow user not to print version check print (#4720) (*Joan Fontanals*)
+ - [[```19e5cd7e```](https://github.com/jina-ai/jina/commit/19e5cd7e5be84f755c418c2c7c57a4e0f9f49f6c)] __-__ immutable tags for executors (#4676) (*Yanlong Wang*)
+
+### 🐞 Bug fixes
+
+ - [[```ac204dcb```](https://github.com/jina-ai/jina/commit/ac204dcbce0a3fa2a32d4fd02b8ae377f4804b5a)] __-__ rename immutable-tag to protected-tag (#4721) (*Yanlong Wang*)
+
+### 🍹 Other Improvements
+
+ - [[```a884f616```](https://github.com/jina-ai/jina/commit/a884f616bfc79a40b87a5b80fbd66c4d148a88a8)] __-__ __version__: the next version will be 3.3.19 (*Jina Dev Bot*)
 
