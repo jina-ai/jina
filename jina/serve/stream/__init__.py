@@ -79,12 +79,17 @@ class RequestStreamer:
             async for response in async_iter:
                 yield response
         except grpc.aio.AioRpcError as err:
-            context.set_details(err.details())
-            context.set_code(err.code())
-            self.logger.error(
-                f'Error while getting responses from deployments: {err.details()}'
-            )
-            yield Response()
+            if (
+                context is not None
+            ):  # inside GrpcGateway we can handle the error directly here through its grpc context
+                context.set_details(err.details())
+                context.set_code(err.code())
+                self.logger.error(
+                    f'Error while getting responses from deployments: {err.details()}'
+                )
+                yield Response()
+            else:
+                raise
 
     async def _stream_requests(
         self,

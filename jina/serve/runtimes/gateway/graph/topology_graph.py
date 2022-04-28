@@ -92,8 +92,6 @@ class TopologyGraph:
                             timeout=self._timeout_send,
                         )
                     except grpc.aio.AioRpcError as err:
-                        # TODO(johannes) fix this mess
-                        # #TODO(johannes) handle on client side
                         err_code = err.code()
                         if (
                             err_code == grpc.StatusCode.UNAVAILABLE
@@ -104,7 +102,7 @@ class TopologyGraph:
                                 code=err_code,
                                 initial_metadata=err.initial_metadata(),
                                 trailing_metadata=err.trailing_metadata(),
-                                details=f'Failed to connect to deployment {deployment} at address {addr}. The deployment may be down.',
+                                details=f'Gateway failed to connect to deployment {deployment} at address {addr}. The deployment may be down.',
                             ) from None
                         else:
                             raise
