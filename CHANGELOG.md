@@ -172,6 +172,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -13337,4 +13338,28 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```b2e11974```](https://github.com/jina-ai/jina/commit/b2e11974685b706e8a46ea61b648850df3c47c43)] __-__ sort and optimize imports (#4713) (*Han Xiao*)
  - [[```22d5ce67```](https://github.com/jina-ai/jina/commit/22d5ce67b2ba7959cdd2706b8f508b2a9b56a15c)] __-__ update readme (*Han Xiao*)
  - [[```d2423b27```](https://github.com/jina-ai/jina/commit/d2423b27265fca2d0aa440c160f87ab16af2beb6)] __-__ __version__: the next version will be 3.3.17 (*Jina Dev Bot*)
+
+<a name=release-note-3-3-18></a>
+## Release Note (`3.3.18`)
+
+> Release time: 2022-04-28 13:17:43
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  samsja,  Johannes Messner,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```0def13df```](https://github.com/jina-ai/jina/commit/0def13dfa83fab625516ee8045f49a960b87ffe1)] __-__ add resource layer in docker compose gpu (#4718) (*Joan Fontanals*)
+ - [[```e57f9524```](https://github.com/jina-ai/jina/commit/e57f9524499db19cb1d78312a5c07b523cf759a6)] __-__ remove version check from cli (#4716) (*Joan Fontanals*)
+ - [[```07ae316d```](https://github.com/jina-ai/jina/commit/07ae316d75d6bb85d80f2feffd4a684672ccae31)] __-__ fix grpcio-reflection version (#4715) (*Joan Fontanals*)
+ - [[```917604de```](https://github.com/jina-ai/jina/commit/917604dead545fd810022785628e9aeaee1f649b)] __-__ update failing test (#4711) (*samsja*)
+ - [[```59340e05```](https://github.com/jina-ai/jina/commit/59340e05b185b0354e0bd2297a597d2cb5328871)] __-__ the cd (#4714) (*Johannes Messner*)
+
+### 🍹 Other Improvements
+
+ - [[```e75efaef```](https://github.com/jina-ai/jina/commit/e75efaefb426d0e952a55cc9b84c5920cd91e6fe)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```87b4b035```](https://github.com/jina-ai/jina/commit/87b4b035f56b54954eb3f791b0678578ee906245)] __-__ __version__: the next version will be 3.3.18 (*Jina Dev Bot*)
 
