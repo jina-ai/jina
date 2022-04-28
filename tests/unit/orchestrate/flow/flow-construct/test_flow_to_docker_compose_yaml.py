@@ -397,7 +397,6 @@ def test_disable_auto_volume(tmpdir):
 
 
 def test_flow_to_docker_compose_sandbox(tmpdir):
-
     flow = Flow(name='test-flow', port=8080).add(
         uses=f'jinahub+sandbox://DummyHubExecutor'
     )
@@ -438,7 +437,11 @@ def test_flow_to_docker_compose_gpus(tmpdir, count):
     services = configuration['services']
     encoder_service = services['encoder']
     assert encoder_service['deploy'] == {
-        'reservations': {
-            'devices': [{'driver': 'nvidia', 'count': count, 'capabilities': ['gpu']}]
+        'resources': {
+            'reservations': {
+                'devices': [
+                    {'driver': 'nvidia', 'count': count, 'capabilities': ['gpu']}
+                ]
+            }
         }
     }
