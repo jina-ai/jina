@@ -2,17 +2,6 @@ import os
 import shutil
 import subprocess
 import sys
-from typing import TYPE_CHECKING
-
-import pkg_resources
-from packaging.version import Version, parse
-
-import jina
-
-if TYPE_CHECKING:
-    print(
-        jina.__version__
-    )  # avoid someone optimized the import. Importing jina on top should fix deadlock for good
 
 
 def _get_run_args(print_args: bool = True):
@@ -99,56 +88,6 @@ def _quick_ac_lookup():
             exit()
 
 
-def _parse_latest_release_version(resp):
-    # credit: https://stackoverflow.com/a/34366589
-    import json
-
-    latest_release_ver = parse('0')
-    j = json.load(resp)
-    releases = j.get('releases', [])
-    for release in releases:
-        latest_ver = parse(release)
-        if not latest_ver.is_prerelease:
-            latest_release_ver = max(latest_release_ver, latest_ver)
-    return latest_release_ver
-
-
-def _is_latest_version(package='jina', suppress_on_error=True):
-    try:
-        import warnings
-        from urllib.request import Request, urlopen
-
-        cur_ver = Version(pkg_resources.get_distribution(package).version)
-
-        req = Request(
-            f'https://pypi.python.org/pypi/{package}/json',
-            headers={'User-Agent': 'Mozilla/5.0'},
-        )
-        with urlopen(
-            req, timeout=5
-        ) as resp:  # 'with' is important to close the resource after use
-            latest_release_ver = _parse_latest_release_version(resp)
-            if cur_ver < latest_release_ver:
-
-                warnings.warn(
-                    f'You are using {package} version {cur_ver}, however version {latest_release_ver} is available. '
-                    f'You should consider upgrading via the "pip install --upgrade {package}" command.'
-                )
-                return False
-        return True
-    except:
-        # no network, too slow, PyPi is down
-        if not suppress_on_error:
-            raise
-
-
-def _is_latest_version_plugin(subcommand):
-    from cli.known_plugins import plugin_info
-
-    if subcommand in plugin_info:
-        _is_latest_version(package=plugin_info[subcommand]['pip-package'])
-
-
 def _try_plugin_command():
     """Tries to call the CLI of an external Jina project.
 
@@ -158,7 +97,7 @@ def _try_plugin_command():
     if len(argv) < 2:  # no command given
         return False
 
-    from .autocomplete import ac_table
+    from cli.autocomplete import ac_table
 
     if argv[1] in ac_table['commands']:  # native command can't be plugin command
         return False
@@ -169,17 +108,10 @@ def _try_plugin_command():
     subcommand = argv[1]
     cmd = 'jina-' + subcommand
     if _cmd_exists(cmd):
-        import threading
-
-        threading.Thread(
-            target=_is_latest_version_plugin,
-            daemon=True,
-            args=(subcommand,),
-        ).start()
         subprocess.run([cmd] + argv[2:])
         return True
 
-    from .known_plugins import plugin_info
+    from cli.known_plugins import plugin_info
 
     if subcommand in plugin_info:
         from jina.helper import get_rich_console
@@ -196,20 +128,28 @@ def _try_plugin_command():
     return False
 
 
+class EnvVariableSet:
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+
+    def __enter__(self):
+        os.environ[self.key] = self.value
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        os.unsetenv(self.key)
+
+
 def main():
     """The main entrypoint of the CLI"""
+    with EnvVariableSet('JINA_CHECK_VERSION', 'True'):
+        found_plugin = _try_plugin_command()
 
-    # checking version info in another thread
-    import threading
+        if not found_plugin:
+            _quick_ac_lookup()
 
-    threading.Thread(target=_is_latest_version, daemon=True, args=('jina',)).start()
-    found_plugin = _try_plugin_command()
+            from cli import api
 
-    if not found_plugin:
-        _quick_ac_lookup()
+            args = _get_run_args()
 
-        from cli import api
-
-        args = _get_run_args()
-
-        getattr(api, args.cli.replace('-', '_'))(args)
+            getattr(api, args.cli.replace('-', '_'))(args)
