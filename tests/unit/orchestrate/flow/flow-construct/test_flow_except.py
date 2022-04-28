@@ -308,7 +308,7 @@ def test_flow_head_runtime_failure(monkeypatch, capfd):
 
     out, err = capfd.readouterr()
     assert 'NotImplementedError' in out
-    assert 'Intentional error' in out
+    assert 'Intentional' in out and 'error' in out
 
 
 class TimeoutSlowExecutor(Executor):

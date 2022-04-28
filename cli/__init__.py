@@ -128,20 +128,20 @@ def _try_plugin_command():
     return False
 
 
-class EnvVariableSet:
-    def __init__(self, key, value):
-        self.key = key
-        self.value = value
-
-    def __enter__(self):
-        os.environ[self.key] = self.value
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        os.unsetenv(self.key)
-
-
 def main():
     """The main entrypoint of the CLI"""
+
+    class EnvVariableSet:
+        def __init__(self, key, value):
+            self.key = key
+            self.value = value
+
+        def __enter__(self):
+            os.environ[self.key] = self.value
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            os.unsetenv(self.key)
+
     with EnvVariableSet('JINA_CHECK_VERSION', 'True'):
         found_plugin = _try_plugin_command()
 
