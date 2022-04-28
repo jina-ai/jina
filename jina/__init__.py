@@ -103,6 +103,7 @@ __jina_env__ = (
     'JINA_RANDOM_PORT_MAX',
     'JINA_RANDOM_PORT_MIN',
     'JINA_VCS_VERSION',
+    'JINA_CHECK_VERSION',
 )
 
 __default_host__ = _os.environ.get(
@@ -126,6 +127,11 @@ __root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
 __resources_path__ = _os.path.join(
     _os.path.dirname(_sys.modules['jina'].__file__), 'resources'
 )
+
+if _os.environ.get('JINA_CHECK_VERSION', None):
+    _warnings.warn(
+        f'Your version of jina is {__version__}. You may want to check if there are newer versions released in https://pypi.org/project/jina/#history'
+    )
 
 _names_with_underscore = [
     '__version__',
