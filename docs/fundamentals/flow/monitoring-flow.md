@@ -81,6 +81,36 @@ See also the  {ref}`how-to <monitoring>`
 
 ## Available metrics
 
+We support different metrics in the Flow, and we will later allow users to define their own.
+
+Because all the Pods don't have the same role, they expose different kind of metrics:
+
+
+### Gateway Pods
+
+| Metrics name                       | Metrics type | Description                                                                                                                                                                                                                                                                |
+|------------------------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `jina_receiving_request_seconds`   |   Summary    | Measure the time elapsed between receiving a request from the client and the sending back the response.                                                                                                                                                                    |
+| `jina_sending_request_seconds`     |   Summary    | Measure the time elapsed between sending a downstream request to an Executor/Head and receiving the response back.                                                                                                                                                         |
+
+### Head Pods
+
+| Metrics name                       | Metrics type | Description                                                                                                     |
+|------------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------|
+| `jina_receiving_request_seconds`   |   Summary    | Measure the time elapsed between receiving a request from the gateway and the sending back the response.        |
+| `jina_sending_request_seconds`     |   Summary    | Measure the time elapsed between sending a downstream request to an Executor and receiving the response back.   |
+
+### Executor Pods
+
+| Metrics name                     | Metrics type | Description                                                                                                           |
+|----------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------------|
+| `jina_receiving_request_seconds` | Summary      | Measure the time elapsed between receiving a request from the gateway(or the head) and the sending back the response. |
+| `jina_process_request_seconds`   | Summary      | Measure the time spend calling the requested method                                                                   |
+| `jina_document_processed_total`  | Counter      | Count the number of Document processed by an Executor                                                                 |
+
+```{hint} 
+ `jina_receiving_request_seconds` is different from `jina_process_request_seconds` because it includes the gRPC communication overhead whereas `jina_process_request_seconds` is only about the time spend calling the function 
+```
 
 
 ## See further
