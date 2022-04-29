@@ -1,18 +1,8 @@
 """This modules defines all kinds of exceptions raised in Jina."""
-from jina.helper import deprecated_method
 
 
 class BaseJinaException(BaseException):
     """A base class for all exceptions raised by Jina"""
-
-
-@deprecated_method('BaseJinaException')
-class BaseJinaExeception(BaseException):
-    """A base class for all exceptions raised by Jina"""
-
-
-class ExecutorFailToLoad(SystemError, BaseJinaException):
-    """When the executor can not be loaded in pod/deployment."""
 
 
 class RuntimeFailToStart(SystemError, BaseJinaException):
@@ -52,10 +42,6 @@ class BadClientInput(BadClient, BaseJinaException):
 
 
 class BadRequestType(TypeError, BaseJinaException):
-    """Exception when can not construct a request object from given data."""
-
-
-class BadClientResponse(Exception, BaseJinaException):
     """Exception when can not construct a request object from given data."""
 
 
