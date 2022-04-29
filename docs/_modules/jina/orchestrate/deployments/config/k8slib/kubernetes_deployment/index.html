@@ -580,6 +580,8 @@
     <span class="n">container_cmd_uses_after</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">container_args_uses_before</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">container_args_uses_after</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">monitoring</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
     <span class="sd">"""Get the yaml description of a service on Kubernetes</span>
 
@@ -602,6 +604,8 @@
 <span class="sd">    :param container_cmd_uses_after: command executed in the uses_after container on the k8s pods</span>
 <span class="sd">    :param container_args_uses_before: arguments used for uses_before container on the k8s pod</span>
 <span class="sd">    :param container_args_uses_after: arguments used for uses_after container on the k8s pod</span>
+<span class="sd">    :param monitoring: enable monitoring on the deployment</span>
+<span class="sd">    :param port_monitoring: port which will be exposed, for the prometheus server, by the deployed containers</span>
 <span class="sd">    :return: Return a dictionary with all the yaml configuration needed for a deployment</span>
 <span class="sd">    """</span>
     <span class="c1"># we can always assume the ports are the same for all executors since they run on different k8s pods</span>
@@ -643,6 +647,40 @@
     <span class="k">elif</span> <span class="n">image_name_uses_after</span><span class="p">:</span>
         <span class="n">template_name</span> <span class="o">=</span> <span class="s1">'deployment-uses-after'</span>
 
+    <span class="k">if</span> <span class="n">monitoring</span><span class="p">:</span>
+        <span class="n">service_yaml</span> <span class="o">=</span> <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">get_yaml</span><span class="p">(</span>
+            <span class="s1">'service_monitoring'</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s1">'target'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s1">'namespace'</span><span class="p">:</span> <span class="n">namespace</span><span class="p">,</span>
+                <span class="s1">'port'</span><span class="p">:</span> <span class="n">port</span><span class="p">,</span>
+                <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'ClusterIP'</span><span class="p">,</span>
+                <span class="s1">'port_monitoring'</span><span class="p">:</span> <span class="n">port_monitoring</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="n">service_monitor_yaml</span> <span class="o">=</span> <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">get_yaml</span><span class="p">(</span>
+            <span class="s1">'service_monitor'</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s1">'target'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s1">'namespace'</span><span class="p">:</span> <span class="n">namespace</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">service_yaml</span> <span class="o">=</span> <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">get_yaml</span><span class="p">(</span>
+            <span class="s1">'service'</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s1">'target'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s1">'namespace'</span><span class="p">:</span> <span class="n">namespace</span><span class="p">,</span>
+                <span class="s1">'port'</span><span class="p">:</span> <span class="n">port</span><span class="p">,</span>
+                <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'ClusterIP'</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">service_monitor_yaml</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="n">yamls</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">get_yaml</span><span class="p">(</span>
             <span class="s1">'configmap'</span><span class="p">,</span>
@@ -652,18 +690,12 @@
                 <span class="s1">'data'</span><span class="p">:</span> <span class="n">env</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">),</span>
-        <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">get_yaml</span><span class="p">(</span>
-            <span class="s1">'service'</span><span class="p">,</span>
-            <span class="p">{</span>
-                <span class="s1">'name'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-                <span class="s1">'target'</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-                <span class="s1">'namespace'</span><span class="p">:</span> <span class="n">namespace</span><span class="p">,</span>
-                <span class="s1">'port'</span><span class="p">:</span> <span class="n">port</span><span class="p">,</span>
-                <span class="s1">'type'</span><span class="p">:</span> <span class="s1">'ClusterIP'</span><span class="p">,</span>
-            <span class="p">},</span>
-        <span class="p">),</span>
+        <span class="n">service_yaml</span><span class="p">,</span>
         <span class="n">kubernetes_tools</span><span class="o">.</span><span class="n">get_yaml</span><span class="p">(</span><span class="n">template_name</span><span class="p">,</span> <span class="n">deployment_params</span><span class="p">),</span>
     <span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">service_monitor_yaml</span><span class="p">:</span>
+        <span class="n">yamls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">service_monitor_yaml</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">yamls</span></div>
 

@@ -1379,8 +1379,12 @@
 
         <span class="c1"># set the kwargs inherit from `Flow(kwargs1=..., kwargs2=)`</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="c1"># do not inherit the port argument from the flow</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="s1">'port'</span><span class="p">:</span>
+            <span class="c1"># do not inherit from all the argument from the flow</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s1">'port'</span><span class="p">,</span>
+                <span class="s1">'port_monitoring'</span><span class="p">,</span>
+                <span class="s1">'monitoring'</span><span class="p">,</span>
+            <span class="p">]:</span>
                 <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
         <span class="c1"># update kwargs of this Deployment</span>
