@@ -67,6 +67,10 @@ html_theme_options = {
 
     # start-announce
 
+    "announcement": '''
+    <a href="https://www.meetup.com/jina-community-meetup/events/285271110/">Learn more about Pet Breed Classification on May 10th at 18:00 CET </a>
+    ''',
+        
     # end-announce
 }
 
