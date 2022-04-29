@@ -1523,9 +1523,9 @@ def get_rich_console():
     :return: rich console
     """
     return Console(
-        force_terminal=True if os.getenv("PYCHARM_HOSTED") else None,
+        force_terminal=True if os.getenv('PYCHARM_HOSTED') else None,
         color_system=None if 'JINA_LOG_NO_COLOR' in os.environ else 'auto',
-    )  # It forces render in any terminal, especially in PyCharm
+    )
 
 
 from jina.parsers import set_client_cli_parser
