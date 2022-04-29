@@ -26,6 +26,8 @@ def get_deployment_yamls(
     container_cmd_uses_after: Optional[str] = None,
     container_args_uses_before: Optional[str] = None,
     container_args_uses_after: Optional[str] = None,
+    monitoring: bool = False,
+    port_monitoring: Optional[int] = None,
 ) -> List[Dict]:
     """Get the yaml description of a service on Kubernetes
 
@@ -48,6 +50,8 @@ def get_deployment_yamls(
     :param container_cmd_uses_after: command executed in the uses_after container on the k8s pods
     :param container_args_uses_before: arguments used for uses_before container on the k8s pod
     :param container_args_uses_after: arguments used for uses_after container on the k8s pod
+    :param monitoring: enable monitoring on the deployment
+    :param port_monitoring: port which will be exposed, for the prometheus server, by the deployed containers
     :return: Return a dictionary with all the yaml configuration needed for a deployment
     """
     # we can always assume the ports are the same for all executors since they run on different k8s pods
@@ -89,6 +93,40 @@ def get_deployment_yamls(
     elif image_name_uses_after:
         template_name = 'deployment-uses-after'
 
+    if monitoring:
+        service_yaml = kubernetes_tools.get_yaml(
+            'service_monitoring',
+            {
+                'name': name,
+                'target': name,
+                'namespace': namespace,
+                'port': port,
+                'type': 'ClusterIP',
+                'port_monitoring': port_monitoring,
+            },
+        )
+
+        service_monitor_yaml = kubernetes_tools.get_yaml(
+            'service_monitor',
+            {
+                'name': name,
+                'target': name,
+                'namespace': namespace,
+            },
+        )
+    else:
+        service_yaml = kubernetes_tools.get_yaml(
+            'service',
+            {
+                'name': name,
+                'target': name,
+                'namespace': namespace,
+                'port': port,
+                'type': 'ClusterIP',
+            },
+        )
+        service_monitor_yaml = None
+
     yamls = [
         kubernetes_tools.get_yaml(
             'configmap',
@@ -98,18 +136,12 @@ def get_deployment_yamls(
                 'data': env,
             },
         ),
-        kubernetes_tools.get_yaml(
-            'service',
-            {
-                'name': name,
-                'target': name,
-                'namespace': namespace,
-                'port': port,
-                'type': 'ClusterIP',
-            },
-        ),
+        service_yaml,
         kubernetes_tools.get_yaml(template_name, deployment_params),
     ]
+
+    if service_monitor_yaml:
+        yamls.append(service_monitor_yaml)
 
     return yamls
 

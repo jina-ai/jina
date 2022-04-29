@@ -236,10 +236,8 @@ def k8s_flow_with_needs(docker_images):
     [['test-executor', 'executor-merger', 'jinaai/jina']],
     indirect=True,
 )
-async def test_flow_with_needs(
-    logger, k8s_flow_with_needs, tmpdir, docker_images, port_generator
-):
-    dump_path = os.path.join(str(tmpdir), 'test-flow-with-needs')
+async def test_flow_with_monitoring(logger, tmpdir, docker_images, port_generator):
+    dump_path = os.path.join(str(tmpdir), 'test-flow-with-monitoring')
     namespace = f'test-flow-monitoring'.lower()
 
     port1 = port_generator()
@@ -272,9 +270,24 @@ async def test_flow_with_needs(
         },
         logger=logger,
     )
-    for port in [port1, port2]:
-        resp = req.get(f'http://localhost:{port}/')
-        assert resp.status_code == 200
+    import portforward
+
+    config_path = os.environ['KUBECONFIG']
+    gateway_pod_name = (
+        core_client.list_namespaced_pod(
+            namespace=namespace, label_selector='app=gateway'
+        )
+        .items[0]
+        .metadata.name
+    )
+
+    pod_port_ref = [(gateway_pod_name, port1)]
+
+    for (pod_name, port) in pod_port_ref:
+        with portforward.forward(namespace, pod_name, port, port, config_path):
+            resp = req.get(f'http://localhost:{port}/')
+            assert resp.status_code == 200
+
     core_client.delete_namespace(namespace)
 
 
