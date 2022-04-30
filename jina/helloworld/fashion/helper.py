@@ -6,9 +6,8 @@ import webbrowser
 from collections import defaultdict
 
 import numpy as np
-from docarray import Document
 
-from jina.helper import colored
+from docarray import Document
 from jina.logging.predefined import default_logger
 from jina.logging.profile import ProgressBar
 
@@ -164,11 +163,8 @@ def write_html(html_path):
             f'if not you may open {url_html_path} manually'
         )
 
-    colored_url = colored(
-        'https://github.com/jina-ai/jina', color='cyan', attrs='underline'
-    )
     default_logger.info(
-        f'🤩 Intrigued? Play with `jina hello fashion --help` and learn more about Jina at {colored_url}'
+        f'🤩 Intrigued? Play with `jina hello fashion --help` and [link=https://github.com/jina-ai/jina]learn more about Jina[/]'
     )
 
 

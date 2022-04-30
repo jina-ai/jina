@@ -470,7 +470,7 @@ metas:
 
             except Exception as e:  # IO related errors
                 self.logger.error(
-                    f'''Please report this session_id: {colored(req_header["jinameta-session-id"], color="yellow", attrs="bold")} to https://github.com/jina-ai/jina/issues'''
+                    f'''Please report this session_id: [yellow bold]{req_header["jinameta-session-id"]}[/] to https://github.com/jina-ai/jina/issues'''
                 )
                 raise e
 
