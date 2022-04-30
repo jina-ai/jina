@@ -176,6 +176,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -13435,4 +13436,25 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```2b2b2e61```](https://github.com/jina-ai/jina/commit/2b2b2e612be7cea7c959992f9be3d3a4cfccf043)] __-__ remove redundant code (*Han Xiao*)
  - [[```5ad319ef```](https://github.com/jina-ai/jina/commit/5ad319efc1b688346bc39a22511a81fd8804bbec)] __-__ __version__: the next version will be 3.3.21 (*Jina Dev Bot*)
+
+<a name=release-note-3-3-22></a>
+## Release Note (`3.3.22`)
+
+> Release time: 2022-04-30 18:43:18
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```1516c276```](https://github.com/jina-ai/jina/commit/1516c276d4554d5fd620f0b804714303e466c3db)] __-__ __flow__: early stop (#4726) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```930d4bab```](https://github.com/jina-ai/jina/commit/930d4babc61a58d4593de9725594eb8604ef22e7)] __-__ remove redundant colored (*Han Xiao*)
+ - [[```5152c983```](https://github.com/jina-ai/jina/commit/5152c98347ba8f10d2c8d46992a0427f31a2eecb)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```bca843ad```](https://github.com/jina-ai/jina/commit/bca843ad42ec6473a4a84270c943eb1da116894f)] __-__ __version__: the next version will be 3.3.22 (*Jina Dev Bot*)
 
