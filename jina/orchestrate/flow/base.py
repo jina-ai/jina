@@ -24,6 +24,14 @@ from typing import (
 
 from rich import print
 from rich.panel import Panel
+from rich.progress import (
+    BarColumn,
+    MofNCompleteColumn,
+    Progress,
+    SpinnerColumn,
+    TextColumn,
+    TimeElapsedColumn,
+)
 from rich.table import Table
 
 from jina import __default_host__, __default_port_monitoring__, __docker_host__, helper
@@ -48,7 +56,6 @@ from jina.helper import (
     download_mermaid_url,
     get_internal_ip,
     get_public_ip,
-    get_rich_console,
     is_port_free,
     typename,
 )
@@ -1171,45 +1178,63 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             except Exception as ex:
                 results[_deployment_name] = repr(ex)
 
-        def _polling_status(status):
+        def _polling_status(progress, task):
+
+            progress.update(task, total=len(results))
+            progress.start_task(task)
 
             while True:
-                num_all = len(results)
                 num_done = 0
                 pendings = []
                 for _k, _v in results.items():
                     sys.stdout.flush()
                     if _v == 'pending':
                         pendings.append(_k)
-                    else:
+                    elif _v == 'done':
                         num_done += 1
-                pending_str = colored_rich(' '.join(pendings)[:50], 'yellow')
+                    else:
+                        if 'JINA_EARLY_STOP' in os.environ:
+                            self.logger.error(f'Flow is aborted due to {_k} {_v}.')
+                            os._exit(1)
 
-                status.update(
-                    f'{num_done}/{num_all} waiting {pending_str} to be ready...'
-                )
+                pending_str = ' '.join(pendings)
+
+                progress.update(task, completed=num_done, pending_str=pending_str)
 
                 if not pendings:
                     break
                 time.sleep(0.1)
 
-        # kick off all deployments wait-ready threads
-        for k, v in self:
-            t = threading.Thread(
-                target=_wait_ready,
-                args=(
-                    k,
-                    v,
-                ),
-                daemon=True,
+        progress = Progress(
+            SpinnerColumn(),
+            TextColumn('Waiting [b]{task.fields[pending_str]}[/]', justify='right'),
+            BarColumn(),
+            MofNCompleteColumn(),
+            TimeElapsedColumn(),
+            transient=True,
+        )
+        with progress:
+            task = progress.add_task(
+                'wait', total=len(threads), pending_str='', start=False
             )
-            threads.append(t)
-            t.start()
 
-        console = get_rich_console()
-        with console.status('Working...') as status:
+            # kick off all deployments wait-ready threads
+            for k, v in self:
+                t = threading.Thread(
+                    target=_wait_ready,
+                    args=(
+                        k,
+                        v,
+                    ),
+                    daemon=True,
+                )
+                threads.append(t)
+                t.start()
+
             # kick off spinner thread
-            t_m = threading.Thread(target=_polling_status, args=[status], daemon=True)
+            t_m = threading.Thread(
+                target=_polling_status, args=(progress, task), daemon=True
+            )
             t_m.start()
 
             # kick off ip getter thread
