@@ -1008,7 +1008,16 @@ def get_or_reuse_loop():
     :return: A new eventloop or reuse the current opened eventloop.
     """
     _update_policy()
-    return asyncio.get_event_loop()
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_closed():
+            raise RuntimeError
+    except RuntimeError:
+        # no event loop
+        # create a new loop
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    return loop
 
 
 def typename(obj):
