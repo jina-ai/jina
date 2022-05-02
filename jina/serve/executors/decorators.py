@@ -147,6 +147,8 @@ def monitor(
     monitoring on your Executor. It will track the time spend calling the function and the number of times it has been
     called. Under the hood it will create a prometheus [Summary](https://prometheus.io/docs/practices/histograms/).
 
+    :warning: Don't use this decorator with the @request decorator as it already handle monitoring under the hood
+
     :param name: the name of the metrics, by default it is based on the name of the method it decorates
     :param documentation:  the description of the metrics, by default it is based on the name of the method it decorates
 
