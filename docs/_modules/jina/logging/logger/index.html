@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.logging.logger - Jina 3.3.22 documentation</title>
+        <title>jina.logging.logger - Jina 3.3.23 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.3.22 documentation</div>
+                <div class="brand">Jina 3.3.23 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -560,12 +560,78 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">rich.logging</span> <span class="kn">import</span> <span class="n">RichHandler</span>
+<span class="kn">from</span> <span class="nn">rich.logging</span> <span class="kn">import</span> <span class="n">LogRender</span> <span class="k">as</span> <span class="n">_LogRender</span>
+<span class="kn">from</span> <span class="nn">rich.logging</span> <span class="kn">import</span> <span class="n">RichHandler</span> <span class="k">as</span> <span class="n">_RichHandler</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span><span class="p">,</span> <span class="n">__uptime__</span><span class="p">,</span> <span class="n">__windows__</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">LogVerbosity</span>
 <span class="kn">from</span> <span class="nn">jina.jaml</span> <span class="kn">import</span> <span class="n">JAML</span>
 <span class="kn">from</span> <span class="nn">jina.logging</span> <span class="kn">import</span> <span class="n">formatter</span>
+
+
+<span class="k">class</span> <span class="nc">_MyLogRender</span><span class="p">(</span><span class="n">_LogRender</span><span class="p">):</span>
+    <span class="sd">"""Override the original rich log record for more compact layout."""</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">console</span><span class="p">,</span>
+        <span class="n">renderables</span><span class="p">,</span>
+        <span class="n">log_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">time_format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">level</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">line_no</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">link_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">rich.containers</span> <span class="kn">import</span> <span class="n">Renderables</span>
+        <span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
+        <span class="kn">from</span> <span class="nn">rich.text</span> <span class="kn">import</span> <span class="n">Text</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="n">Table</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">padding</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">expand</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_level</span><span class="p">:</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">"log.level"</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="n">output</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="n">ratio</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">'log.message'</span><span class="p">,</span> <span class="n">overflow</span><span class="o">=</span><span class="s1">'ellipsis'</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_time</span><span class="p">:</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">"log.path"</span><span class="p">)</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_level</span><span class="p">:</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+
+        <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Renderables</span><span class="p">(</span><span class="n">renderables</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_time</span><span class="p">:</span>
+            <span class="n">log_time</span> <span class="o">=</span> <span class="n">log_time</span> <span class="ow">or</span> <span class="n">console</span><span class="o">.</span><span class="n">get_datetime</span><span class="p">()</span>
+            <span class="n">time_format</span> <span class="o">=</span> <span class="n">time_format</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_format</span>
+            <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">time_format</span><span class="p">):</span>
+                <span class="n">log_time_display</span> <span class="o">=</span> <span class="n">time_format</span><span class="p">(</span><span class="n">log_time</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log_time_display</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="n">log_time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">time_format</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">log_time_display</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_time</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">omit_repeated_times</span><span class="p">:</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Text</span><span class="p">(</span><span class="s2">" "</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">log_time_display</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log_time_display</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_last_time</span> <span class="o">=</span> <span class="n">log_time_display</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="o">*</span><span class="n">row</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span>
+
+
+<div class="viewcode-block" id="RichHandler"><a class="viewcode-back" href="../../../../api/jina.logging.logger/#jina.logging.logger.RichHandler">[docs]</a><span class="k">class</span> <span class="nc">RichHandler</span><span class="p">(</span><span class="n">_RichHandler</span><span class="p">):</span>
+    <span class="sd">"""Override the original rich handler for more compact layout."""</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_render</span> <span class="o">=</span> <span class="n">_MyLogRender</span><span class="p">(</span>
+            <span class="n">show_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_render</span><span class="o">.</span><span class="n">show_time</span><span class="p">,</span>
+            <span class="n">show_level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_render</span><span class="o">.</span><span class="n">show_level</span><span class="p">,</span>
+            <span class="n">show_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_render</span><span class="o">.</span><span class="n">show_path</span><span class="p">,</span>
+            <span class="n">time_format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_render</span><span class="o">.</span><span class="n">time_format</span><span class="p">,</span>
+            <span class="n">omit_repeated_times</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_render</span><span class="o">.</span><span class="n">omit_repeated_times</span><span class="p">,</span>
+            <span class="n">level_width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SysLogHandlerWrapper"><a class="viewcode-back" href="../../../../api/jina.logging.logger/#jina.logging.logger.SysLogHandlerWrapper">[docs]</a><span class="k">class</span> <span class="nc">SysLogHandlerWrapper</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">SysLogHandler</span><span class="p">):</span>
@@ -753,7 +819,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Apr 30, 2022.
+                    Last updated on May 02, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
