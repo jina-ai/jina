@@ -132,8 +132,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 namespace='jina',
                 labelnames=('executor', 'endpoint'),
             )
+            self._metrics_buffer = {'process_request_seconds': self._summary_method}
+
         else:
             self._summary_method = None
+            self._metrics_buffer = None
 
     def _add_requests(self, _requests: Optional[Dict]):
         if not hasattr(self, 'requests'):

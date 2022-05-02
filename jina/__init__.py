@@ -206,7 +206,7 @@ from jina.orchestrate.flow.base import Flow
 
 # Executor
 from jina.serve.executors import BaseExecutor as Executor
-from jina.serve.executors.decorators import requests
+from jina.serve.executors.decorators import monitor, requests
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend(_names_with_underscore)
