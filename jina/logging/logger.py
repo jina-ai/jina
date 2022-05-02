@@ -6,12 +6,20 @@ import platform
 import sys
 from typing import Optional
 
-from rich.logging import RichHandler
+from rich.logging import RichHandler as _RichHandler
 
 from jina import __resources_path__, __uptime__, __windows__
 from jina.enums import LogVerbosity
 from jina.jaml import JAML
 from jina.logging import formatter
+
+
+class RichHandler(_RichHandler):
+    """Override the original rich handler for more compact layout."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._log_render.level_width = 5
 
 
 class SysLogHandlerWrapper(logging.handlers.SysLogHandler):
