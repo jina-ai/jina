@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional
 
 from jina.clients.request import request_generator
 from jina.enums import DataInputType, WebsocketSubProtocols
+from jina.excepts import NetworkError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.types.request.data import DataRequest
@@ -35,7 +36,7 @@ def get_fastapi_app(
     from jina.serve.runtimes.gateway.http.models import JinaEndpointRequestModel
 
     with ImportExtensions(required=True):
-        from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+        from fastapi import FastAPI, Response, WebSocket, WebSocketDisconnect, status
 
     class ConnectionManager:
         def __init__(self):
@@ -126,7 +127,7 @@ def get_fastapi_app(
         await connection_pool.close()
 
     @app.websocket('/')
-    async def websocket_endpoint(websocket: WebSocket):
+    async def websocket_endpoint(websocket: WebSocket, response: Response):
         await manager.connect(websocket)
 
         async def req_iter():
@@ -155,8 +156,37 @@ def get_fastapi_app(
         try:
             async for msg in streamer.stream(request_iterator=req_iter()):
                 await manager.send(websocket, msg)
+        except NetworkError as err:
+            response.status_code = status.WS_1011_INTERNAL_ERROR
+            result = DataRequest().to_dict()
+            result['header'] = _generate_exception_header(
+                err
+            )  # attach exception details to response header
+            logger.error(
+                f'Error while getting responses from deployments: {err.details()}'
+            )
+            await manager.send(websocket, DataRequest(result))
+            manager.disconnect(websocket)
         except WebSocketDisconnect:
             logger.info('Client successfully disconnected from server')
             manager.disconnect(websocket)
+
+    def _generate_exception_header(error: NetworkError):
+        import traceback
+
+        exception_dict = {
+            'name': str(error.__class__),
+            'stacks': [
+                str(x) for x in traceback.extract_tb(error.og_exception.__traceback__)
+            ],
+            'executor': '',
+        }
+        status_dict = {
+            'code': 3,  # status error
+            'description': error.details() if error.details() else '',
+            'exception': exception_dict,
+        }
+        header_dict = {'request_id': error.request_id, 'status': status_dict}
+        return header_dict
 
     return app

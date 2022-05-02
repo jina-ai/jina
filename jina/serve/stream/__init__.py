@@ -11,8 +11,7 @@ from typing import (
     Union,
 )
 
-import grpc.aio  # TODO(johannes) remove
-
+from jina.excepts import NetworkError
 from jina.logging.logger import JinaLogger
 from jina.serve.stream.helper import AsyncRequestsIterator
 
@@ -78,7 +77,7 @@ class RequestStreamer:
         try:
             async for response in async_iter:
                 yield response
-        except grpc.aio.AioRpcError as err:
+        except NetworkError as err:
             if (
                 context is not None
             ):  # inside GrpcGateway we can handle the error directly here through its grpc context
@@ -87,8 +86,10 @@ class RequestStreamer:
                 self.logger.error(
                     f'Error while getting responses from deployments: {err.details()}'
                 )
-                yield Response()
-            else:
+                r = Response()
+                r.header.request_id = err.request_id
+                yield r
+            else:  # HTTP and WS need different treatment further up the stack
                 raise
 
     async def _stream_requests(

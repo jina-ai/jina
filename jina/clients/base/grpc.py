@@ -5,7 +5,7 @@ import grpc
 
 from jina.clients.base import BaseClient
 from jina.clients.helper import callback_exec, callback_exec_on_error
-from jina.excepts import BadClient, BadClientInput, BaseJinaException
+from jina.excepts import BadClient, BadClientInput, BaseJinaException, NetworkError
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
@@ -81,10 +81,10 @@ class GRPCBaseClient(BaseClient):
             self.logger.warning('user cancel the process')
         except asyncio.CancelledError as ex:
             self.logger.warning(f'process error: {ex!r}')
-        except grpc.aio._call.AioRpcError as rpc_ex:
+        except (grpc.aio._call.AioRpcError, NetworkError) as err:
             # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.
-            my_code = rpc_ex.code()
-            my_details = rpc_ex.details()
+            my_code = err.code()
+            my_details = err.details()
             msg = f'gRPC error: {my_code} {my_details}'
 
             try:
@@ -92,10 +92,10 @@ class GRPCBaseClient(BaseClient):
                     self.logger.error(
                         f'{msg}\nThe ongoing request is terminated as the server is not available or closed already.'
                     )
-                    raise rpc_ex
+                    raise err
                 elif my_code == grpc.StatusCode.INTERNAL:
                     self.logger.error(f'{msg}\ninternal error on the server side')
-                    raise rpc_ex
+                    raise err
                 elif (
                     my_code == grpc.StatusCode.UNKNOWN
                     and 'asyncio.exceptions.TimeoutError' in my_details
@@ -104,9 +104,9 @@ class GRPCBaseClient(BaseClient):
                         f'{msg}\n'
                         'often the case is that you define/send a bad input iterator to jina, '
                         'please double check your input iterator'
-                    ) from rpc_ex
+                    ) from err
                 else:
-                    raise BadClient(msg) from rpc_ex
+                    raise BadClient(msg) from err
 
             except (
                 grpc.aio._call.AioRpcError,

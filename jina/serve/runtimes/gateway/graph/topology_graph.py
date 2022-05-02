@@ -4,8 +4,9 @@ from collections import defaultdict
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
-import grpc.aio  # TODO(johannes) remove
+import grpc.aio
 
+from jina.excepts import NetworkError
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest
@@ -91,19 +92,17 @@ class TopologyGraph:
                             endpoint=endpoint,
                             timeout=self._timeout_send,
                         )
-                    except grpc.aio.AioRpcError as err:
+                    except NetworkError as err:
                         err_code = err.code()
                         if (
                             err_code == grpc.StatusCode.UNAVAILABLE
                         ):  # service unavailable
                             deployment = self.name
-                            addr = connection_pool.get_deployment_address(deployment)
-                            raise grpc.aio.AioRpcError(
-                                code=err_code,
-                                initial_metadata=err.initial_metadata(),
-                                trailing_metadata=err.trailing_metadata(),
-                                details=f'Gateway failed to connect to deployment {deployment} at address {addr}. The deployment may be down.',
-                            ) from None
+                            err.dest_addr = connection_pool.get_deployment_address(
+                                deployment
+                            )
+                            err._details = f'Gateway failed to connect to deployment {deployment} at address {err.dest_addr}. The deployment may be down.'
+                            raise err
                         else:
                             raise
 

@@ -2,11 +2,10 @@ import argparse
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional
 
-import grpc
-
 from jina import __version__
 from jina.clients.request import request_generator
 from jina.enums import DataInputType
+from jina.excepts import NetworkError
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
@@ -171,23 +170,25 @@ def get_fastapi_app(
                 result = await _get_singleton_result(
                     request_generator(**req_generator_input)
                 )
-            except grpc.aio.AioRpcError as err:
+            except NetworkError as err:
                 response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
                 result = bd  # send back the request
                 result['header'] = _generate_exception_header(
                     err
-                )  # attach exception details to its header
+                )  # attach exception details to response header
                 logger.error(
                     f'Error while getting responses from deployments: {err.details()}'
                 )
             return result
 
-    def _generate_exception_header(error: grpc.aio.AioRpcError):
+    def _generate_exception_header(error: NetworkError):
         import traceback
 
         exception_dict = {
             'name': str(error.__class__),
-            'stacks': [str(x) for x in traceback.extract_tb(error.__traceback__)],
+            'stacks': [
+                str(x) for x in traceback.extract_tb(error.og_exception.__traceback__)
+            ],
             'executor': '',
         }
         status_dict = {
@@ -195,7 +196,7 @@ def get_fastapi_app(
             'description': error.details() if error.details() else '',
             'exception': exception_dict,
         }
-        header_dict = {'request_id': '', 'status': status_dict}
+        header_dict = {'request_id': error.request_id, 'status': status_dict}
         return header_dict
 
     def expose_executor_endpoint(exec_endpoint, http_path=None, **kwargs):
@@ -280,14 +281,13 @@ def get_fastapi_app(
             from dataclasses import asdict
 
             import strawberry
+            from docarray import DocumentArray
             from docarray.document.strawberry_type import (
                 JSONScalar,
                 StrawberryDocument,
                 StrawberryDocumentInput,
             )
             from strawberry.fastapi import GraphQLRouter
-
-            from docarray import DocumentArray
 
             async def get_docs_from_endpoint(
                 data, target_executor, parameters, exec_endpoint

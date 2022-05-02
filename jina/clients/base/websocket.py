@@ -64,6 +64,13 @@ class WebSocketBaseClient(BaseClient):
                         if response.header.request_id in request_buffer:
                             future = request_buffer.pop(response.header.request_id)
                             future.set_result(response)
+                            if (
+                                response.header.status.code
+                                == response.header.status.ERROR
+                            ):
+                                raise ConnectionError(
+                                    response.header.status.description
+                                )
                         else:
                             self.logger.warning(
                                 f'discarding unexpected response with request id {response.header.request_id}'

@@ -107,7 +107,8 @@ async def test_runtimes_head_topology(port_generator):
 # create gateway and workers manually, then terminate worker process to provoke an error
 # TODO(johannes) meaningful asserts
 # TODO(johannes) have different workers and parametrize their failure. Assert correct worker is identified in error message
-def test_runtimes_headless_topology(port_generator):
+@pytest.mark.parametrize('protocol', ['grpc'])  # ['http', 'websocket', 'websocket'])
+def test_runtimes_headless_topology(port_generator, protocol):
     worker_port = port_generator()
     gateway_port = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
@@ -124,7 +125,7 @@ def test_runtimes_headless_topology(port_generator):
     # create a single gateway runtime
     gateway_process = multiprocessing.Process(
         target=_create_gateway_runtime,
-        args=(graph_description, pod_addresses, gateway_port),
+        args=(graph_description, pod_addresses, gateway_port, protocol),
     )
     gateway_process.start()
 
@@ -145,9 +146,9 @@ def test_runtimes_headless_topology(port_generator):
     worker_process.terminate()
     # send requests to the gateway
     try:
-        c = Client(host='localhost', port=gateway_port)
+        c = Client(host='localhost', port=gateway_port, protocol=protocol)
         responses = c.post(
-            '/', inputs=async_inputs, request_size=1, return_responses=True
+            '/', inputs=[Document()], request_size=1, return_responses=True
         )
         response_list = []
         for response in responses:
@@ -163,9 +164,3 @@ def test_runtimes_headless_topology(port_generator):
 
     gateway_process.join()
     worker_process.join()
-
-    assert len(response_list) == 20
-    assert len(response_list[0].docs) == 1
-
-    assert gateway_process.exitcode == 0
-    assert worker_process.exitcode == 0
