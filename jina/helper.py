@@ -1322,7 +1322,10 @@ def run_async(func, *args, **kwargs):
                 'please report this issue here: https://github.com/jina-ai/jina'
             )
     else:
-        return get_or_reuse_loop().run_until_complete(func(*args, **kwargs))
+        loop = get_or_reuse_loop()
+        result = loop.run_until_complete(func(*args, **kwargs))
+        loop.close()
+        return result
 
 
 def slugify(value):
