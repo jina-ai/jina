@@ -1000,7 +1000,7 @@ def _update_policy():
             )
 
 
-class ManagedLoop(object):
+class ManagedLoop:
     def __enter__(self):
         self._loop, self._is_new = _get_or_reuse_loop_with_info()
         return self._loop
