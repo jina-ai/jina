@@ -20,4 +20,4 @@ configs:
     markup: true
     rich_tracebacks: true
     show_path: false
-    log_time_format: '%x %X'
+    log_time_format: '[%x %X]'
