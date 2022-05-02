@@ -134,6 +134,8 @@ class WebSocketBaseClient(BaseClient):
                         p_bar.update()
                     yield response
 
+                await receive_task
+
             except aiohttp.ClientError as e:
                 self.logger.error(
                     f'Error while streaming response from websocket server {e!r}'

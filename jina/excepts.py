@@ -75,7 +75,10 @@ class PortAlreadyUsed(RuntimeError, BaseJinaException):
 
 
 class NetworkError(Exception, BaseJinaException):
-    """Raised when communication between microservices fails"""
+    """
+    Raised when communication between microservices fails.
+    Needed to propagate information about the root cause event, such as request_id and dest_addr.
+    """
 
     def __init__(
         self,
@@ -94,6 +97,9 @@ class NetworkError(Exception, BaseJinaException):
         self.request_id = request_id
         self.dest_addr = dest_addr
         self._details = details
+
+    def __str__(self):
+        return self.details()
 
     def code(self):
         """

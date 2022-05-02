@@ -92,7 +92,7 @@ class GRPCBaseClient(BaseClient):
                     self.logger.error(
                         f'{msg}\nThe ongoing request is terminated as the server is not available or closed already.'
                     )
-                    raise err
+                    raise ConnectionError(my_details) from None
                 elif my_code == grpc.StatusCode.INTERNAL:
                     self.logger.error(f'{msg}\ninternal error on the server side')
                     raise err
