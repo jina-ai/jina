@@ -145,7 +145,7 @@ def monitor(
     """
     `@monitor()` allow to monitor internal method of your executor. You can acces these metrics by enabling the
     monitoring on your Executor. It will track the time spend calling the function and the number of times it has been
-    called. Under the hood it will create a prometheus [Summary](https://prometheus.io/docs/practices/histograms/).
+    called. Under the hood it will create a prometheus Summary : https://prometheus.io/docs/practices/histograms/.
 
     :warning: Don't use this decorator with the @request decorator as it already handle monitoring under the hood
 
