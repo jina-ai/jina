@@ -993,42 +993,12 @@ def _update_policy():
         try:
             import uvloop
 
-            asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+            if not isinstance(asyncio.get_event_loop_policy(), uvloop.EventLoopPolicy):
+                asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
         except ModuleNotFoundError:
             warnings.warn(
                 'Install `uvloop` via `pip install "jina[uvloop]"` for better performance.'
             )
-
-
-class ManagedLoop:
-    def __enter__(self):
-        self._loop, self._is_new = _get_or_reuse_loop_with_info()
-        return self._loop
-
-    def __exit__(self, type, value, traceback):
-        if self._is_new:
-            self._loop.close()
-
-
-def _get_or_reuse_loop_with_info():
-    """
-    Get a new eventloop or reuse the current opened eventloop.
-
-    :return: Tuple of new eventloop or reuse the current opened eventloop and boolean to indicate if the loop was just created
-    """
-    new_loop_created = False
-    try:
-        loop = asyncio.get_running_loop()
-        if loop.is_closed():
-            raise RuntimeError
-    except RuntimeError:
-        _update_policy()
-        # no running event loop
-        # create a new loop
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        new_loop_created = True
-    return loop, new_loop_created
 
 
 def get_or_reuse_loop():
@@ -1037,7 +1007,8 @@ def get_or_reuse_loop():
 
     :return: A new eventloop or reuse the current opened eventloop.
     """
-    return _get_or_reuse_loop_with_info()[0]
+    _update_policy()
+    return asyncio.get_event_loop()
 
 
 def typename(obj):
@@ -1343,8 +1314,7 @@ def run_async(func, *args, **kwargs):
                 'please report this issue here: https://github.com/jina-ai/jina'
             )
     else:
-        with ManagedLoop() as loop:
-            return loop.run_until_complete(func(*args, **kwargs))
+        return get_or_reuse_loop().run_until_complete(func(*args, **kwargs))
 
 
 def slugify(value):
