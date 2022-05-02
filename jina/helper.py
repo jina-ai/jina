@@ -1000,12 +1000,13 @@ def _update_policy():
             )
 
 
-def get_or_reuse_loop():
+def get_or_reuse_loop_with_info():
     """
     Get a new eventloop or reuse the current opened eventloop.
 
-    :return: A new eventloop or reuse the current opened eventloop.
+    :return: Tuple of new eventloop or reuse the current opened eventloop and boolean to indicate if the loop was just created
     """
+    new_loop_created = False
     try:
         loop = asyncio.get_running_loop()
         if loop.is_closed():
@@ -1016,7 +1017,17 @@ def get_or_reuse_loop():
         # create a new loop
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-    return loop
+        new_loop_created = True
+    return loop, new_loop_created
+
+
+def get_or_reuse_loop():
+    """
+    Get a new eventloop or reuse the current opened eventloop.
+
+    :return: A new eventloop or reuse the current opened eventloop.
+    """
+    return get_or_reuse_loop_with_info()[0]
 
 
 def typename(obj):
@@ -1322,9 +1333,10 @@ def run_async(func, *args, **kwargs):
                 'please report this issue here: https://github.com/jina-ai/jina'
             )
     else:
-        loop = get_or_reuse_loop()
+        loop, is_new_loop = get_or_reuse_loop_with_info()
         result = loop.run_until_complete(func(*args, **kwargs))
-        loop.close()
+        if is_new_loop:
+            loop.close()
         return result
 
 
