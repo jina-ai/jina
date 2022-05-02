@@ -1523,7 +1523,7 @@ def get_rich_console():
     :return: rich console
     """
     return Console(
-        force_terminal=True if os.getenv('PYCHARM_HOSTED') else None,
+        force_terminal=True if 'PYCHARM_HOSTED' in os.environ else None,
         color_system=None if 'JINA_LOG_NO_COLOR' in os.environ else 'auto',
     )
 
