@@ -1000,7 +1000,17 @@ def _update_policy():
             )
 
 
-def get_or_reuse_loop_with_info():
+class ManagedLoop(object):
+    def __enter__(self):
+        self._loop, self._is_new = _get_or_reuse_loop_with_info()
+        return self._loop
+
+    def __exit__(self, type, value, traceback):
+        if self._is_new:
+            self._loop.close()
+
+
+def _get_or_reuse_loop_with_info():
     """
     Get a new eventloop or reuse the current opened eventloop.
 
@@ -1027,7 +1037,7 @@ def get_or_reuse_loop():
 
     :return: A new eventloop or reuse the current opened eventloop.
     """
-    return get_or_reuse_loop_with_info()[0]
+    return _get_or_reuse_loop_with_info()[0]
 
 
 def typename(obj):
@@ -1333,11 +1343,8 @@ def run_async(func, *args, **kwargs):
                 'please report this issue here: https://github.com/jina-ai/jina'
             )
     else:
-        loop, is_new_loop = get_or_reuse_loop_with_info()
-        result = loop.run_until_complete(func(*args, **kwargs))
-        if is_new_loop:
-            loop.close()
-        return result
+        with ManagedLoop() as loop:
+            return loop.run_until_complete(func(*args, **kwargs))
 
 
 def slugify(value):
