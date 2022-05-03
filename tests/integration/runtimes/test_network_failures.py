@@ -25,13 +25,14 @@ def test_runtimes_headless_topology(port_generator, protocol):
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
 
-    # create a single worker runtime
-    worker_process = multiprocessing.Process(
-        target=_create_worker_runtime, args=(worker_port,)
-    )
-    worker_process.start()
+    def _create_worker():
+        # create a single worker runtime
+        p = multiprocessing.Process(target=_create_worker_runtime, args=(worker_port,))
+        p.start()
+        time.sleep(1)
+        return p
 
-    time.sleep(0.1)
+    worker_process = _create_worker()
 
     # create a single gateway runtime
     gateway_process = multiprocessing.Process(
@@ -55,23 +56,28 @@ def test_runtimes_headless_topology(port_generator, protocol):
     )
 
     worker_process.terminate()  # kill worker
+    worker_process.join()
 
-    def _send_request_test_error():
+    def _send_request():
         """send request to gateway and see what happens"""
+        c = Client(host='localhost', port=gateway_port, protocol=protocol)
+        return c.post(
+            '/', inputs=[Document(text='hi')], request_size=1, return_responses=True
+        )
+
+    def _test_error():
         with pytest.raises(ConnectionError) as err_info:
-            c = Client(host='localhost', port=gateway_port, protocol=protocol)
-            responses = c.post(
-                '/', inputs=[Document(text='hi')], request_size=1, return_responses=True
-            )
+            _send_request()
         # assert error message contains useful info
         assert 'pod0' in err_info.value.args[0]
         assert str(worker_port) in err_info.value.args[0]
 
     try:
         # ----------- 1. test that useful errors are given -----------
-        _send_request_test_error()
+        _test_error()
         # ----------- 2. test that gateways remain alive -----------
-        _send_request_test_error()  # just repeat the test, expecting the same result
+        _test_error()  # just repeat the test, expecting the same result
+
     finally:  # clean up runtimes
         gateway_process.terminate()
         worker_process.terminate()
