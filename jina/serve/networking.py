@@ -660,7 +660,10 @@ class GrpcConnectionPool:
                         from jina.excepts import NetworkError
 
                         raise NetworkError(
-                            og_exception=e, request_id=requests[0].request_id
+                            og_exception=e,
+                            request_id=requests[0].request_id,
+                            dest_addr=connection.address,
+                            details=e.details(),
                         )
                     else:
                         self._logger.debug(

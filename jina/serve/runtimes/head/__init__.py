@@ -11,13 +11,14 @@ import grpc
 from grpc_reflection.v1alpha import reflection
 
 from jina.enums import PollingType
+from jina.excepts import NetworkError
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.control import ControlRequest
-from jina.types.request.data import DataRequest
+from jina.types.request.data import DataRequest, Response
 
 
 class HeadRuntime(AsyncNewLoopRuntime, ABC):
@@ -198,7 +199,21 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 response, metadata = await self._handle_data_request(requests, endpoint)
                 context.set_trailing_metadata(metadata.items())
                 return response
-        except (RuntimeError, Exception) as ex:
+        except NetworkError as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
+            context.set_details(
+                f'|Head: Failed to connect to worker (Executor) pod at address {err.dest_addr}. It may be down.'
+            )
+            context.set_code(err.code())
+            self.logger.error(
+                f'Error while getting responses from Pods: {err.details()}'
+            )
+            r = Response()
+            r.header.request_id = err.request_id
+            return r
+        except (
+            RuntimeError,
+            Exception,
+        ) as ex:  # some other error, keep streaming going just add error info
             self.logger.error(
                 f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
                 if not self.args.quiet_error

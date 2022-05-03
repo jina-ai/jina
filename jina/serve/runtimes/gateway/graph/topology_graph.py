@@ -94,14 +94,11 @@ class TopologyGraph:
                         )
                     except NetworkError as err:
                         err_code = err.code()
-                        if (
-                            err_code == grpc.StatusCode.UNAVAILABLE
-                        ):  # service unavailable
-                            deployment = self.name
-                            err.dest_addr = connection_pool.get_deployment_address(
-                                deployment
+                        if err_code == grpc.StatusCode.UNAVAILABLE:
+                            err._details = (
+                                err.details()
+                                + f' |Gateway: Communication error with deployment {self.name} at address {err.dest_addr}. Head or worker may be down.'
                             )
-                            err._details = f'Gateway failed to connect to deployment {deployment} at address {err.dest_addr}. The deployment may be down.'
                             raise err
                         else:
                             raise
