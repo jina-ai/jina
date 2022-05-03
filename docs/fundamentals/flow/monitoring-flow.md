@@ -31,7 +31,7 @@ This example shows how to start a Flow with monitoring enable via the Python API
 from jina import Flow
 
 with Flow(monitoring=True, port_monitoring=9090).add(
-    uses='jinahub://SimpleIndexer', monitoring=True, port_monitoring=9091
+    uses='jinahub://SimpleIndexer', port_monitoring=9091
 ) as f:
     f.block()
 ```
@@ -48,7 +48,6 @@ with:
   port_monitoring: 9090
 executors:
 - uses: jinahub://SimpleIndexer
-  monitoring: true
   port_monitoring: 9091
 ```
 
@@ -65,10 +64,12 @@ metrics endpoint:
 
 ```{admonition} Monitoring is disabled by default
 :class: caution
-By default the monitoring is disabled. To use it you need to enable it on every deployment by passing 
-`monitoring = True` to the Flow init function and when adding Executor. 
-Note that the monitoring is an independant feature on each Pods, you can enable it on only of subset of your Executors
+By default the monitoring is disabled. To enable it you need to add `monitoring = True` when creating the Flow. This will
+enable the monitoring for all of the Pods of the Flow, including the Gateway and all of the Executor. You can as well 
+only enable it an Executor by passing `monitoring = True` to the add function.
+Note that the monitoring is an independant feature on each Pods, you can enable it on only of subset of your Pods.
 ```
+
 ```{hint} Default Monitoring port
 The default monitoring port is `9090`, if you want to enable the monitoring on both the Gateway and the Executors you need to specifiy
 the `prometheus_port` for the Executors. 

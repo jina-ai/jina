@@ -63,7 +63,7 @@ Let's now deploy the Flow that we want to monitor
 ```python
 from jina import Flow
 
-f = Flow(monitoring=True).add(uses='jinahub://SimpleIndexer', monitoring=True)
+f = Flow(monitoring=True).add(uses='jinahub://SimpleIndexer')
 f.to_k8s_yaml('config')
 ```
 
