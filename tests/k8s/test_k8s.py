@@ -1,12 +1,18 @@
 # kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
 # You need to install linkerd cli on your local machine if you want to run the k8s tests https://linkerd.io/2.11/getting-started/#step-1-install-the-cli
 import asyncio
+import datetime
+import functools
 import os
+import subprocess
+import time
+from typing import Set
 
 import pytest
 import requests as req
 import yaml
 from docarray import DocumentArray
+from kubernetes.client import ApiException
 from pytest_kind import cluster
 
 from jina import Document, Executor, Flow, requests
@@ -630,6 +636,285 @@ async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
     docs = resp[0].docs
     for doc in docs:
         assert 'workspace' in doc.tags
+
+
+def scale(
+    deployment_name: str,
+    desired_replicas: int,
+    app_client,
+    k8s_namespace,
+    core_client,
+    logger,
+):
+    app_client.patch_namespaced_deployment_scale(
+        deployment_name,
+        namespace=k8s_namespace,
+        body={'spec': {'replicas': desired_replicas}},
+    )
+    # wait for replicas to be dead
+    while True:
+        pods = core_client.list_namespaced_pod(
+            namespace=k8s_namespace,
+            label_selector=f'app={deployment_name}',
+        )
+        if len(pods.items) == desired_replicas:
+            # still continue for a bit to hit the new replica only
+            logger.info(
+                f'Scale {deployment_name} to {desired_replicas} replicas complete'
+            )
+            time.sleep(1.0)
+            break
+        logger.info(f'waiting for scaling of {deployment_name} to be complete')
+        time.sleep(2.0)
+
+
+def restart_deployment(deployment, app_client, core_client, k8s_namespace, logger):
+    now = datetime.datetime.utcnow()
+    now = str(now.isoformat("T") + "Z")
+    body = {
+        'spec': {
+            'template': {
+                'metadata': {'annotations': {'kubectl.kubernetes.io/restartedAt': now}}
+            }
+        }
+    }
+
+    pods = core_client.list_namespaced_pod(
+        namespace=k8s_namespace,
+        label_selector=f'app={deployment}',
+    )
+    old_pod_names = [p.metadata.name for p in pods.items]
+    logger.info(f'Restart deployment {deployment}')
+    app_client.patch_namespaced_deployment(
+        deployment, k8s_namespace, body, pretty='true'
+    )
+    while True:
+        pods = core_client.list_namespaced_pod(
+            namespace=k8s_namespace,
+            label_selector=f'app={deployment}',
+        )
+        current_pod_names = [p.metadata.name for p in pods.items]
+        if not any(i in current_pod_names for i in old_pod_names):
+            logger.info(f'All pods in deployment {deployment} have been restarted')
+            break
+        logger.info(f'Waiting for all pods in deployment {deployment} to be restarted')
+        time.sleep(2.0)
+
+
+def delete_pod(deployment, core_client, k8s_namespace, logger):
+    pods = core_client.list_namespaced_pod(
+        namespace=k8s_namespace,
+        label_selector=f'app={deployment}',
+    )
+    api_response = core_client.delete_namespaced_pod(
+        pods.items[0].metadata.name, k8s_namespace
+    )
+    while True:
+        current_pods = core_client.list_namespaced_pod(
+            namespace=k8s_namespace,
+            label_selector=f'app={deployment}',
+        )
+        current_pod_names = [p.metadata.name for p in current_pods.items]
+        if pods.items[0].metadata.name not in current_pod_names:
+            logger.info(
+                f'Pod {pods.items[0].metadata.name} in deployment {deployment} has been deleted'
+            )
+            while True:
+                current_pods = core_client.list_namespaced_pod(
+                    namespace=k8s_namespace,
+                    label_selector=f'app={deployment}',
+                )
+                if len(current_pods.items) == len(pods.items):
+                    logger.info(
+                        f'All pods in deployment {deployment} are be ready after deleting a Pod'
+                    )
+                    break
+                logger.info(
+                    f'Waiting for {len(current_pods.items)} pods in deployment {deployment} to be ready after deleting a Pod'
+                )
+                time.sleep(2.0)
+        logger.info(
+            f'Waiting for pod {pods.items[0].metadata.name} in deployment {deployment} to be deleted'
+        )
+        time.sleep(2.0)
+
+
+async def run_test_until_event(
+    flow, core_client, namespace, endpoint, stop_event, logger, sleep_time=0.05
+):
+    # start port forwarding
+    from jina.clients import Client
+
+    gateway_pod_name = (
+        core_client.list_namespaced_pod(
+            namespace=namespace, label_selector='app=gateway'
+        )
+        .items[0]
+        .metadata.name
+    )
+    config_path = os.environ['KUBECONFIG']
+    import portforward
+
+    with portforward.forward(
+        namespace, gateway_pod_name, flow.port, flow.port, config_path
+    ):
+        client_kwargs = dict(
+            host='localhost',
+            port=flow.port,
+            return_responses=True,
+            asyncio=True,
+        )
+        client_kwargs.update(flow._common_kwargs)
+
+        client = Client(**client_kwargs)
+        client.show_progress = True
+
+        async def async_inputs(sent_ids: Set[int], sleep_time: float = 0.05):
+            i = 0
+            while True:
+                sent_ids.add(i)
+                yield Document(text=f'{i}')
+                if stop_event.is_set():
+                    logger.info(f'stop sending new requests after {i} requests')
+                    return
+                elif sleep_time:
+                    await asyncio.sleep(sleep_time)
+                i += 1
+
+        responses = []
+        sent_ids = set()
+        async for resp in client.post(
+            endpoint,
+            inputs=functools.partial(async_inputs, sent_ids, sleep_time),
+            request_size=1,
+        ):
+            responses.append(resp)
+
+    return responses, sent_ids
+
+
+def injct_failures(kind_cluster, logger):
+    proc = subprocess.Popen(
+        [str(kind_cluster.kubectl_path), 'apply', '-f', 'file'],
+        env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
+    )
+    returncode = proc.poll()
+    logger.info(
+        f'Injecting failures into cluster ended with returned code {returncode}'
+    )
+    if returncode is not None and returncode != 0:
+        raise Exception(f"Injecting failures failed with {returncode}")
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['test-executor', 'jinaai/jina']],
+    indirect=True,
+)
+async def test_failure_scenarios(logger, docker_images, tmpdir, kind_cluster):
+    namespace = 'test-failure-scenarios'
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+
+    flow = Flow().add(replicas=3, uses='docker://set-text-executor:latest')
+
+    dump_path = os.path.join(str(tmpdir), namespace)
+    flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+
+    await create_all_flow_deployments_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'set-text-executor': 3,
+        },
+        logger=logger,
+    )
+    stop_event = asyncio.Event()
+    send_task = asyncio.create_task(
+        run_test_until_event(
+            flow=flow,
+            namespace=namespace,
+            core_client=core_client,
+            endpoint='/',
+            stop_event=stop_event,
+            logger=logger,
+            sleep_time=None,
+        )
+    )
+    # Scale down the Executor to 2 replicas
+    scale(
+        deployment_name='executor0',
+        desired_replicas=2,
+        core_client=core_client,
+        app_client=app_client,
+        k8s_namespace=namespace,
+        logger=logger,
+    )
+    # Scale back up to 3 replicas
+    scale(
+        deployment_name='executor0',
+        desired_replicas=3,
+        core_client=core_client,
+        app_client=app_client,
+        k8s_namespace=namespace,
+        logger=logger,
+    )
+    # restart all pods in the deployment
+    restart_deployment(
+        deployment='executor0',
+        app_client=app_client,
+        core_client=core_client,
+        k8s_namespace=namespace,
+        logger=logger,
+    )
+    delete_pod(
+        deployment='executor0',
+        core_client=core_client,
+        k8s_namespace=namespace,
+        logger=logger,
+    )
+
+    stop_event.set()
+    responses, sent_ids = await send_task
+    assert len(sent_ids) == len(responses)
+    doc_ids = set()
+    pod_ids = set()
+    for response in responses:
+        doc_id, pod_id = response.docs.texts[0].split('_')
+        doc_ids.add(doc_id)
+        pod_ids.add(pod_id)
+    assert len(sent_ids) == len(doc_ids)
+    assert len(pod_ids) == 8  # 3 original + 3 restarted + 1 scaled up + 1 deleted
+
+    # do the random failure test
+    # start sending
+    stop_event.clear()
+    send_task = asyncio.create_task(
+        run_test_until_event(
+            flow=flow,
+            namespace=namespace,
+            core_client=core_client,
+            endpoint='/',
+            stop_event=stop_event,
+            logger=logger,
+        )
+    )
+    # inject failures
+    injct_failures(kind_cluster, logger)
+    # wait a bit
+    await asyncio.sleep(3.0)
+    # check that no message was lost
+    responses, sent_ids = await send_task
+    assert len(sent_ids) == len(responses)
 
 
 async def _create_external_deployment(api_client, app_client, docker_images, tmpdir):
