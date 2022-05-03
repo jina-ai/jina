@@ -82,7 +82,8 @@ html_css_files = [
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css',
 ]
 html_js_files = [
-    'https://cdn.jsdelivr.net/npm/qabot@0.4'
+    'https://cdn.jsdelivr.net/npm/qabot@0.4',
+    'source-in-links.js'
 ]
 htmlhelp_basename = slug
 html_show_sourcelink = False
