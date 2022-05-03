@@ -21,8 +21,8 @@ def test_enable_monitoring_deployment(port_generator):
     port1 = port_generator()
     port2 = port_generator()
 
-    with Flow().add(uses=DummyExecutor, monitoring=True, port_monitoring=port1).add(
-        uses=DummyExecutor, monitoring=True, port_monitoring=port2
+    with Flow().add(uses=DummyExecutor, port_monitoring=port1, monitoring=True).add(
+        uses=DummyExecutor, port_monitoring=port2, monitoring=True
     ) as f:
         for port in [port1, port2]:
             resp = req.get(f'http://localhost:{port}/')
@@ -44,8 +44,8 @@ def test_enable_monitoring_gateway(protocol, port_generator):
     port2 = port_generator()
 
     with Flow(protocol=protocol, monitoring=True, port_monitoring=port0).add(
-        uses=DummyExecutor, monitoring=True, port_monitoring=port1
-    ).add(uses=DummyExecutor, monitoring=True, port_monitoring=port2) as f:
+        uses=DummyExecutor, port_monitoring=port1
+    ).add(uses=DummyExecutor, port_monitoring=port2) as f:
         for port in [port0, port1, port2]:
             resp = req.get(f'http://localhost:{port}/')
             assert resp.status_code == 200
@@ -60,8 +60,8 @@ def test_monitoring_head(port_generator):
     port1 = port_generator()
     port2 = port_generator()
 
-    with Flow().add(uses=DummyExecutor, monitoring=True, port_monitoring=port1).add(
-        uses=DummyExecutor, port_monitoring=port2, monitoring=True, shards=2
+    with Flow(monitoring=True).add(uses=DummyExecutor, port_monitoring=port1).add(
+        uses=DummyExecutor, port_monitoring=port2, shards=2
     ) as f:
         port3 = f._deployment_nodes['executor0'].pod_args['pods'][0][0].port_monitoring
         port4 = f._deployment_nodes['executor1'].pod_args['pods'][0][0].port_monitoring
@@ -81,7 +81,7 @@ def test_document_processed_total(port_generator):
     port1 = port_generator()
 
     with Flow(monitoring=True, port_monitoring=port0).add(
-        uses=DummyExecutor, monitoring=True, port_monitoring=port1
+        uses=DummyExecutor, port_monitoring=port1
     ) as f:
 
         resp = req.get(f'http://localhost:{port1}/')
@@ -115,3 +115,35 @@ def test_document_processed_total(port_generator):
             f'jina_document_processed_total{{endpoint="/foo",executor="DummyExecutor"}} 4.0'  # check that we nothing change on bar count
             in str(resp.content)
         )
+
+
+def test_disable_monitoring_on_pods(port_generator):
+    port0 = port_generator()
+    port1 = port_generator()
+
+    with Flow(monitoring=True, port_monitoring=port0).add(
+        uses=DummyExecutor,
+        port_monitoring=port1,
+        monitoring=False,
+    ):
+        with pytest.raises(req.exceptions.ConnectionError):  # disable on port1
+            resp = req.get(f'http://localhost:{port1}/')
+
+        resp = req.get(f'http://localhost:{port0}/')  # enable on port0
+        assert resp.status_code == 200
+
+
+def test_disable_monitoring_on_gatway_only(port_generator):
+    port0 = port_generator()
+    port1 = port_generator()
+
+    with Flow(monitoring=False, port_monitoring=port0).add(
+        uses=DummyExecutor,
+        port_monitoring=port1,
+        monitoring=True,
+    ):
+        with pytest.raises(req.exceptions.ConnectionError):  # disable on port1
+            resp = req.get(f'http://localhost:{port0}/')
+
+        resp = req.get(f'http://localhost:{port1}/')  # enable on port0
+        assert resp.status_code == 200
