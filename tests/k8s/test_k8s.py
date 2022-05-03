@@ -795,7 +795,7 @@ async def run_test_until_event(
 
 def injct_failures(kind_cluster, logger):
     proc = subprocess.Popen(
-        [str(kind_cluster.kubectl_path), 'apply', '-f', 'file'],
+        [str(kind_cluster.kubectl_path), 'apply', '-f', './fault-inject.yml'],
         env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
     )
     returncode = proc.poll()
