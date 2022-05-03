@@ -15,8 +15,9 @@ from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.serve.executors.decorators import requests, store_init_kwargs, wrap_func
 
 if TYPE_CHECKING:
-    from jina import DocumentArray
+    from prometheus_client import Summary
 
+    from jina import DocumentArray
 
 __all__ = ['BaseExecutor', 'ReducerExecutor']
 
@@ -475,6 +476,31 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             include_gateway=executor_type
             == BaseExecutor.StandaloneExecutorType.EXTERNAL,
         )
+
+    def get_metrics(
+        self, name: Optional[str] = None, documentation: Optional[str] = None
+    ) -> Optional['Summary']:
+        """
+        Get a given prometheus metric, if it does not exist yet, it will create it and store it in a buffer.
+        :param name: the name of the metrics
+        :param documentation:  the description of the metrics
+
+        :return: the given prometheus metrics or None if monitoring is not enable.
+        """
+
+        if self._metrics_buffer:
+            if name not in self._metrics_buffer:
+                from prometheus_client import Summary
+
+                self._metrics_buffer[name] = Summary(
+                    name,
+                    documentation,
+                    registry=self.runtime_args.metrics_registry,
+                    namespace='jina',
+                )
+            return self._metrics_buffer[name]
+        else:
+            return None
 
 
 class ReducerExecutor(BaseExecutor):

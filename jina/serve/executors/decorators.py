@@ -143,7 +143,7 @@ def monitor(
     documentation: Optional[str] = None,
 ):
     """
-    `@monitor()` allow to monitor internal method of your executor. You can acces these metrics by enabling the
+    `@monitor()` allow to monitor internal method of your executor. You can access these metrics by enabling the
     monitoring on your Executor. It will track the time spend calling the function and the number of times it has been
     called. Under the hood it will create a prometheus Summary : https://prometheus.io/docs/practices/histograms/.
 
@@ -166,20 +166,11 @@ def monitor(
 
         @functools.wraps(func)
         def _f(self, *args, **kwargs):
-            if self._metrics_buffer:
-                if name_ not in self._metrics_buffer:
-                    from prometheus_client import Summary
+            metric = self.get_metrics(name_, documentation_)
 
-                    self._metrics_buffer[name_] = Summary(
-                        name_,
-                        documentation_,
-                        registry=self.runtime_args.metrics_registry,
-                        namespace='jina',
-                    )
-
-                with self._metrics_buffer[name_].time():
+            if metric:
+                with metric.time():
                     return func(self, *args, **kwargs)
-
             else:  # should raise a warning or log something about the fact the monitoring is disabled
                 return func(self, *args, **kwargs)
 
