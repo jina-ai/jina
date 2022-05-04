@@ -65,9 +65,11 @@ class WebSocketBaseClient(BaseClient):
                             future = request_buffer.pop(response.header.request_id)
                             future.set_result(response)
                             if (
-                                response.header.status.code
-                                == response.header.status.ERROR
-                            ):
+                                response.header.status.exception.name
+                                == "<class 'jina.excepts.NetworkError'>"
+                            ):  # This is a bit hacky.
+                                # If you use a different ws client, you should instead check if it closes with code 1011
+                                # (INTERNAL_ERROR), which is equivalent but doesn't work in this client implementation
                                 raise ConnectionError(
                                     response.header.status.description
                                 )
@@ -136,7 +138,7 @@ class WebSocketBaseClient(BaseClient):
 
                 await receive_task
 
-            except aiohttp.ClientError as e:
+            except (aiohttp.ClientError, ConnectionError) as e:
                 self.logger.error(
                     f'Error while streaming response from websocket server {e!r}'
                 )

@@ -2,14 +2,13 @@ from typing import Optional
 
 import aiohttp
 import grpc
-
-from jina.excepts import BadClientCallback
-from jina import Flow, Client
-
 import numpy as np
 import pytest
 from docarray import DocumentArray
 from docarray.document.generators import from_ndarray
+
+from jina import Client, Flow
+from jina.excepts import BadClientCallback
 
 
 def validate(x):
@@ -55,7 +54,7 @@ def test_client_on_error(protocol):
     'protocol,exception',
     [
         ('websocket', aiohttp.ClientError),
-        ('grpc', grpc.aio._call.AioRpcError),
+        ('grpc', ConnectionError),
         ('http', aiohttp.ClientError),
     ],
 )

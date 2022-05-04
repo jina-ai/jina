@@ -110,7 +110,7 @@ class HTTPBaseClient(BaseClient):
                         p_bar.update()
                     yield resp
 
-            except aiohttp.ClientError as e:
+            except (aiohttp.ClientError, ValueError, ConnectionError) as e:
                 self.logger.error(
                     f'Error while fetching response from HTTP server {e!r}'
                 )

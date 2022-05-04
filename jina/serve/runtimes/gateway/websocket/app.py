@@ -167,6 +167,7 @@ def get_fastapi_app(
             )
             await manager.send(websocket, DataRequest(result))
             manager.disconnect(websocket)
+            await websocket.close(code=status.WS_1011_INTERNAL_ERROR)
         except WebSocketDisconnect:
             logger.info('Client successfully disconnected from server')
             manager.disconnect(websocket)
