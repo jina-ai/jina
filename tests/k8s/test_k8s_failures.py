@@ -187,7 +187,7 @@ def injct_failures(kind_cluster, logger):
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize(
     'docker_images',
-    [['test-executor', 'jinaai/jina']],
+    [['set-text-executor', 'jinaai/jina']],
     indirect=True,
 )
 async def test_failure_scenarios(logger, docker_images, tmpdir, kind_cluster):
