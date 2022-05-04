@@ -188,7 +188,6 @@ def injct_failures(kind_cluster, logger):
 @pytest.mark.parametrize(
     'docker_images',
     [['set-text-executor', 'jinaai/jina']],
-    indirect=True,
 )
 async def test_failure_scenarios(logger, docker_images, tmpdir, kind_cluster):
     namespace = 'test-failure-scenarios'
@@ -198,7 +197,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, kind_cluster):
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
 
-    flow = Flow().add(replicas=3, uses='docker://set-text-executor:latest')
+    flow = Flow().add(replicas=3, uses=f'docker://{docker_images[0]}')
 
     dump_path = os.path.join(str(tmpdir), namespace)
     flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
