@@ -80,7 +80,7 @@ Wait for a couple of minutes, and you should see that the pods are ready:
 kubectl get pods
 ```
 
-```{figure} ../../../.github/2.0/kubectl_pods.png
+```{figure} ../../.github/2.0/kubectl_pods.png
 :align: center
 ```
 
@@ -89,7 +89,7 @@ Then you can see that the new metrics endpoints are automatically discovered:
 kubectl port-forward svc/prometheus-operated 9090:9090
 ```
 
-```{figure} ../../../.github/2.0/prometheus_targets.png
+```{figure} ../../.github/2.0/prometheus_target.png
 :align: center
 ```
 
