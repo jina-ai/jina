@@ -5,10 +5,10 @@
 The monitoring feature is still in Beta and the API is not stable yet.
 ```
 
-Before starting showing you how to monitor a Flow, let me gave you some context on the monitoring stack.
+Before starting showing you how to monitor a Flow, let have some context on the monitoring stack.
 To leverage the {ref}`metrics <monitoring-flow>` that Jina expose we recommend to use the Prometheus/Grafana stack. In this setup, Jina will expose different {ref}`metrics endpoint <monitoring-flow>`  , Prometheus will then be in charge of scrapping these endpoints and
 to collect, aggregate and stored the different metrics. Prometheus will then allow external entity (like Grafana) to access these aggregated metrics via a query language [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/).
-Then the role of Grafana here will be to allow users to visualize these metrics by creating dashboard.
+Then the role of Grafana here will be to allow users to visualize these metrics by creating dashboards.
 
 ```{hint} 
 Jina supports exposing the metrics, you are in charge of installing and managed your Prometheus/Grafana instance
@@ -28,24 +28,19 @@ Deploying your Jina Flow on Kubernetes in the recommanded way to leverage the fu
 * You can extend your monitoring with the rich built-in Kubernetes metrics
 ```
 
-### Deploying Prometheus and Grafana
-
 You need to have access to a kubernetes cluster to follow the rest of this guide.
 
-```{hint} Local k8s Cluster
-You can can easily have a kubernetes cluster on your local machine:
+You can easily have a kubernetes cluster on your local machine:
 - [minikube](https://minikube.sigs.k8s.io/docs/)
 - [microk8s](https://microk8s.io/)
-``` 
 
-```{hint} Cloud managed k8s cluster
-You can use managed kubernetes solution:
+Or you can use a  managed kubernetes solution on the Cloud:
 - [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine),
 - [Amazon EKS](https://aws.amazon.com/eks),
 - [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service),
-```
 
-#### 1 - Deploying Prometheus and Grafana
+
+### 1 - Deploying Prometheus and Grafana
 
 Deploying Prometheus and Grafana on your k8s cluster is as easy as executing the following line:
 
@@ -56,17 +51,22 @@ helm install prometheus prometheus-community/kube-prometheus-stack --set prometh
 setting the `serviceMonitorSelectorNilUsesHelmValues` to false allow the Prometheus Operator to discover metrics endpoint outside of the helm scope which will be needed to discover the Flow metrics endpoints.
 ```
 
-#### 2 - Deploying the Flow
+### 2 - Deploying the Flow
 
 Let's now deploy the Flow that we want to monitor
 
 ```python
 from jina import Flow
 
-f = Flow(monitoring=True).add(uses='jinahub://SimpleIndexer')
+f = Flow(monitoring=True).add(uses='jinahub+docker://SimpleIndexer')
 f.to_k8s_yaml('config')
 ```
 
+This will create a `config` folder containing the kubernetes yaml definition of the Flow.
+
+```{seealso}
+You can see indepth how to deploy a Flow on kubernetes {ref}`here <kubernetes>`
+```
 
 Then deploy the Flow
 
@@ -93,7 +93,7 @@ kubectl port-forward svc/prometheus-operated 9090:9090
 :align: center
 ```
 
-Now to acces Grafana just do
+Now to access Grafana just do
 
 ```bash
 kb port-forward svc/prometheus-grafana 3000:80
