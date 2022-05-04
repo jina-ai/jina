@@ -57,6 +57,39 @@ class KindClusterWrapper:
 
         print(f'linkerd check yields {out.decode() if out else "nothing"}')
 
+    def install_linkderd_smi(self, kind_cluster):
+        self._log.info('Installing Linkerd SMI to Cluster...')
+        proc = subprocess.Popen(
+            [f'{Path.home()}/.linkerd2/bin/linkerd', 'smi', 'install'],
+            stdout=subprocess.PIPE,
+            env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
+        )
+        kube_out = subprocess.check_output(
+            (
+                str(kind_cluster.kubectl_path),
+                'apply',
+                '-f',
+                '-',
+            ),
+            stdin=proc.stdout,
+            env=os.environ,
+        )
+        self._log.info('Poll status of linkerd smi install')
+        returncode = proc.poll()
+        self._log.info(
+            f'Installing Linkerd to Cluster returned code {returncode}, kubectl output was {kube_out}'
+        )
+        if returncode is not None and returncode != 0:
+            raise Exception(f"Installing linkerd failed with {returncode}")
+
+        self._log.info('check linkerd status')
+        out = subprocess.check_output(
+            [f'{Path.home()}/.linkerd2/bin/linkerd', 'smi', 'check'],
+            env=os.environ,
+        )
+
+        print(f'linkerd check yields {out.decode() if out else "nothing"}')
+
     def _set_kube_config(self):
         self._log.info(f'Setting KUBECONFIG to {self._kube_config_path}')
         os.environ['KUBECONFIG'] = self._kube_config_path

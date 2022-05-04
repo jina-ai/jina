@@ -154,7 +154,7 @@ async def run_test_until_event(
                 sent_ids.add(i)
                 yield Document(text=f'{i}')
                 if stop_event.is_set():
-                    logger.info(f'stop sending new requests after {i} requests')
+                    logger.info(f'stop yielding new requests after {i} requests')
                     return
                 elif sleep_time:
                     await asyncio.sleep(sleep_time)
@@ -169,12 +169,22 @@ async def run_test_until_event(
         ):
             responses.append(resp)
 
+    logger.info(
+        f'Client sent {len(sent_ids)} and received {(len(responses))} responses'
+    )
     return responses, sent_ids
 
 
 def inject_failures(k8s_cluster, logger):
+    k8s_cluster.install_linkderd_smi()
+    logger.info(f'Inject random failures into test cluster')
     proc = subprocess.Popen(
-        [str(k8s_cluster._kube_config_path), 'apply', '-f', './fault-inject.yml'],
+        [
+            str(k8s_cluster._cluster.kubectl_path),
+            'apply',
+            '-f',
+            './tests/k8s/fault-inject.yml',
+        ],
         env={"KUBECONFIG": str(k8s_cluster._kube_config_path)},
     )
     returncode = proc.poll()
@@ -200,7 +210,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
 
-    flow = Flow().add(replicas=3, uses=f'docker://{docker_images[0]}')
+    flow = Flow(prefetch=100).add(replicas=3, uses=f'docker://{docker_images[0]}')
 
     dump_path = os.path.join(str(tmpdir), namespace)
     flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
@@ -229,6 +239,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
             sleep_time=None,
         )
     )
+    await asyncio.sleep(5.0)
     # Scale down the Executor to 2 replicas
     await scale(
         deployment_name='executor0',
@@ -247,6 +258,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
         k8s_namespace=namespace,
         logger=logger,
     )
+    await asyncio.sleep(5.0)
     # restart all pods in the deployment
     await restart_deployment(
         deployment='executor0',
@@ -255,12 +267,14 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
         k8s_namespace=namespace,
         logger=logger,
     )
+    await asyncio.sleep(5.0)
     await delete_pod(
         deployment='executor0',
         core_client=core_client,
         k8s_namespace=namespace,
         logger=logger,
     )
+    await asyncio.sleep(5.0)
 
     stop_event.set()
     responses, sent_ids = await send_task
@@ -275,7 +289,8 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
     assert len(pod_ids) == 8  # 3 original + 3 restarted + 1 scaled up + 1 deleted
 
     # do the random failure test
-    # start sending
+    # start sending again
+    logger.info('Start sending for random failure test')
     stop_event.clear()
     send_task = asyncio.create_task(
         run_test_until_event(
