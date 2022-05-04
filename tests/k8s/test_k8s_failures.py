@@ -170,10 +170,10 @@ async def run_test_until_event(
     return responses, sent_ids
 
 
-def injct_failures(kind_cluster, logger):
+def injct_failures(k8s_cluster, logger):
     proc = subprocess.Popen(
-        [str(kind_cluster.kubectl_path), 'apply', '-f', './fault-inject.yml'],
-        env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
+        [str(k8s_cluster._kube_config_path), 'apply', '-f', './fault-inject.yml'],
+        env={"KUBECONFIG": str(k8s_cluster._kube_config_path)},
     )
     returncode = proc.poll()
     logger.info(
@@ -188,8 +188,9 @@ def injct_failures(kind_cluster, logger):
 @pytest.mark.parametrize(
     'docker_images',
     [['set-text-executor', 'jinaai/jina']],
+    indirect=True,
 )
-async def test_failure_scenarios(logger, docker_images, tmpdir, kind_cluster):
+async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
     namespace = 'test-failure-scenarios'
     from kubernetes import client
 
@@ -285,7 +286,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, kind_cluster):
         )
     )
     # inject failures
-    injct_failures(kind_cluster, logger)
+    injct_failures(k8s_cluster, logger)
     # wait a bit
     await asyncio.sleep(3.0)
     # check that no message was lost
