@@ -178,6 +178,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -13484,4 +13485,25 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```1ddc3953```](https://github.com/jina-ai/jina/commit/1ddc3953f9500475a362005692ded31d2e2ed87d)] __-__ fix rich log format string (*Han Xiao*)
  - [[```f8b994dc```](https://github.com/jina-ai/jina/commit/f8b994dce3914dfd596c487103237e3b713657a4)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```2f08c1b6```](https://github.com/jina-ai/jina/commit/2f08c1b652f399f251e4da09e7d633c90cbd23ff)] __-__ __version__: the next version will be 3.3.23 (*Jina Dev Bot*)
+
+<a name=release-note-3-3-24></a>
+## Release Note (`3.3.24`)
+
+> Release time: 2022-05-04 14:52:39
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Deepankar Mahapatro,  samsja,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```f9f86004```](https://github.com/jina-ai/jina/commit/f9f860043063cc5517a50c2a23bf327120c86f4f)] __-__ inherit monitoring arg from Flow (#4738) (*samsja*)
+
+### 🍹 Other Improvements
+
+ - [[```58847187```](https://github.com/jina-ai/jina/commit/588471873a48e1e58fe3830a599a20baecd578fc)] __-__ grpc version&gt;=1.46.0 (#4746) (*Deepankar Mahapatro*)
+ - [[```e3c45bf5```](https://github.com/jina-ai/jina/commit/e3c45bf5a3cf4e97c44f3e0463950f9c24d41a0a)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```c4175f95```](https://github.com/jina-ai/jina/commit/c4175f9518fe394fc0812d10728e3f578634e830)] __-__ __version__: the next version will be 3.3.24 (*Jina Dev Bot*)
 
