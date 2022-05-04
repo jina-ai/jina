@@ -7,12 +7,12 @@ The monitoring feature is still in Beta and the API is not stable yet.
 
 A Jina {ref}`Flow <flow-cookbook>` exposes several core metrics that allow you to have a deeper look
 on what is happening inside it. Metrics are particularly useful for building dashboards and alerts, with them, you can, for example, monitor the overall performance 
-of your Flow, detect bottleneck, alert your team when some component of your Flow are down.
+of your Flow, detect bottlenecks, alert your team when some component of your Flow is down.
 
 Jina Flow expose metrics in the [prometheus format](https://prometheus.io/docs/instrumenting/exposition_formats/) which
-is plain text that is both understandable by human and machine. These metrics are intended to be scrap by
+is plain text that is both understandable by human and machine. These metrics are intended to be scraped by
 [prometheus](https://prometheus.io/) which is an industry standard for monitoring. 
-We encourage you to visualize metrics with [grafana](https://grafana.com/)
+We recommend you to visualize metrics with [grafana](https://grafana.com/)
 
 
 ## Using the monitoring in a Flow
@@ -22,11 +22,11 @@ see the {ref}`architecture overview <architecture-overview>` for more details. E
 by gRPC. They will expose their own metrics using the [prometheus client](https://prometheus.io/docs/instrumenting/clientlibs/).
 It means that they are as many metrics endpoints that they are Pods in your Flow. 
 
-Lets gave an example to illustrate it :
+Let's give an example to illustrate it :
 
 ````{tab} via Python API
 
-This example shows how to start a Flow with monitoring enable via the Python API:
+This example shows how to start a Flow with monitoring enabled via the Python API:
 
 ```python
 from jina import Flow
@@ -39,7 +39,7 @@ with Flow(monitoring=True, port_monitoring=9090).add(
 ````
 
 ````{tab} via YAML
-This example shows how to start a Flow with monitoring enable via yaml:
+This example shows how to start a Flow with monitoring enabled via yaml:
 
 In a `flow.yaml` file
 ```yaml
@@ -58,7 +58,7 @@ jina flow --uses flow.yaml
 ````
 
 This Flow will create two Pods, one for the Gateway, one for the SimpleIndexer Executor, and therefore it will create two 
-metrics endpoint:
+metrics endpoints:
 
 * `http://localhost:9090  ` for the gateway
 * `http://localhost:9091  ` for the SimpleIndexer
@@ -108,8 +108,8 @@ Because all the Pods don't have the same role, they expose different kind of met
 
 | Metrics name                       | Metrics type                                                         | Description                                                                                                                                                                                                                                                                |
 |------------------------------------|----------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `jina_receiving_request_seconds`   | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measure the time elapsed between receiving a request from the client and the sending back the response.                                                                                                                                                                    |
-| `jina_sending_request_seconds`     | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measure the time elapsed between sending a downstream request to an Executor/Head and receiving the response back.                                                                                                                                                         |
+| `jina_receiving_request_seconds`   | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measures the time elapsed between receiving a request from the client and the sending back the response.                                                                                                                                                                    |
+| `jina_sending_request_seconds`     | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measures the time elapsed between sending a downstream request to an Executor/Head and receiving the response back.                                                                                                                                                         |
 
 ### Head Pods
 

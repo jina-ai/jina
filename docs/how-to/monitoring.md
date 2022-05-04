@@ -5,9 +5,9 @@
 The monitoring feature is still in Beta and the API is not stable yet.
 ```
 
-Before starting showing you how to monitor a Flow, let have some context on the monitoring stack.
-To leverage the {ref}`metrics <monitoring-flow>` that Jina expose we recommend to use the Prometheus/Grafana stack. In this setup, Jina will expose different {ref}`metrics endpoint <monitoring-flow>`  , Prometheus will then be in charge of scrapping these endpoints and
-to collect, aggregate and stored the different metrics. Prometheus will then allow external entity (like Grafana) to access these aggregated metrics via a query language [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/).
+ a Flow, let's have some context on the monitoring stack.
+To leverage the {ref}`metrics <monitoring-flow>` that Jina exposes we recommend to use the Prometheus/Grafana stack. In this setup, Jina will expose different {ref}`metrics endpoint <monitoring-flow>`  , Prometheus will then be in charge of scraping these endpoints and
+to collect, aggregate and store the different metrics. Prometheus will then allow external entities (like Grafana) to access these aggregated metrics via a query language [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/).
 Then the role of Grafana here will be to allow users to visualize these metrics by creating dashboards.
 
 ```{hint} 
@@ -19,11 +19,11 @@ We will show you in this guide how to easily deploy the Prometheus/Grafana stack
 ## Use Prometheus and Grafana to monitor a Flow on Kubernetes
 
 
-One of the challenge of monitoring a Flow is to communicate to Prometheus the different metrics endpoints that the Flow expose.
-Fortunately the [Prometheus operator for kubernetes](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/getting-started.md) makes all the process fairly easy because it can automatically discover new metrics endpoints to scrap.
+One of the challenge of monitoring a Flow is to communicate to Prometheus the different metrics endpoints that the Flow exposes.
+Fortunately the [Prometheus operator for kubernetes](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/getting-started.md) makes the process fairly easy, because it can automatically discover new metrics endpoints to scrap.
 
 ```{hint} 
-Deploying your Jina Flow on Kubernetes in the recommanded way to leverage the full potential of the monitoring feature because:
+Deploying your Jina Flow on Kubernetes is the recommended way to leverage the full potential of the monitoring feature because:
 * The Prometheus operator can automatically discover new endpoint to scrap
 * You can extend your monitoring with the rich built-in Kubernetes metrics
 ```
