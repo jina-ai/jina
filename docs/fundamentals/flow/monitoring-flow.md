@@ -1,5 +1,5 @@
 (monitoring-flow)=
-# Monitoring Flow
+# Monitor Flow
 
 ```{caution} 
 The monitoring feature is still in Beta and the API is not stable yet.
@@ -62,23 +62,35 @@ metrics endpoint:
 * `http://localhost:9090  ` for the gateway
 * `http://localhost:9091  ` for the SimpleIndexer
 
-```{admonition} Monitoring is disabled by default
-:class: caution
-By default the monitoring is disabled. To enable it you need to add `monitoring = True` when creating the Flow. This will
-enable the monitoring for all of the Pods of the Flow, including the Gateway and all of the Executor. You can as well 
-only enable it an Executor by passing `monitoring = True` to the add function.
-Note that the monitoring is an independant feature on each Pods, you can enable it on only of subset of your Pods.
-```
-
-```{hint} Default Monitoring port
+````{admonition} Default Monitoring port
+:class: hint
 The default monitoring port is `9090`, if you want to enable the monitoring on both the Gateway and the Executors you need to specifiy
 the `prometheus_port` for the Executors. 
-```
-````{admonition} See Also
-:class: seealso
-See also the  {ref}`how-to <monitoring>`
- on deploying the monitoring for a fully detailed tutorials on how to setup and use the monitoring
 ````
+
+
+Because each Pods in a Flow expose its own metrics the monitoring feature could be used independently on each Pod.
+It means that you are not forced to always monitor each Pods of your Flow. For example, you could be only interested in
+metrics coming from the Gateway, and therefore you only activate the monitoring on it. On the other hand you might be only
+interested in monitoring a single Executor. Note that by default the monitoring is disabled everywhere.
+
+To enable the monitoring you need to pass `monitoring = True` when creating the Flow.
+```python
+Flow(monitoring=True).add(...)
+```
+This will enable the monitoring on *all the Pods* of your Flow. 
+
+If you want to enable the monitoring only on the Gateway you should once you enabled it on the Flow level, disable it for 
+all the other Executor.
+
+```python
+Flow(monitoring=True).add(monitoring=False, ...).add(monitoring=False, ...)
+```
+
+On the other hand, If you want to only enable the monitoring on a given Executor you should do:
+```python
+Flow().add(...).add(uses=MyExecutor, monitoring=True)
+```
 
 ## Available metrics
 
