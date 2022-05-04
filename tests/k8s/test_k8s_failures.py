@@ -211,7 +211,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, kind_cluster):
         core_client=core_client,
         deployment_replicas_expected={
             'gateway': 1,
-            'set-text-executor': 3,
+            'executor0': 3,
         },
         logger=logger,
     )
