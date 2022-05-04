@@ -15,7 +15,7 @@ from tests.k8s.test_k8s import create_all_flow_deployments_and_wait_ready
 cluster.KIND_VERSION = 'v0.11.1'
 
 
-def scale(
+async def scale(
     deployment_name: str,
     desired_replicas: int,
     app_client,
@@ -39,13 +39,15 @@ def scale(
             logger.info(
                 f'Scale {deployment_name} to {desired_replicas} replicas complete'
             )
-            time.sleep(1.0)
+            await asyncio.sleep(2.0)
             break
         logger.info(f'waiting for scaling of {deployment_name} to be complete')
-        time.sleep(2.0)
+        await asyncio.sleep(2.0)
 
 
-def restart_deployment(deployment, app_client, core_client, k8s_namespace, logger):
+async def restart_deployment(
+    deployment, app_client, core_client, k8s_namespace, logger
+):
     now = datetime.datetime.utcnow()
     now = str(now.isoformat("T") + "Z")
     body = {
@@ -75,10 +77,10 @@ def restart_deployment(deployment, app_client, core_client, k8s_namespace, logge
             logger.info(f'All pods in deployment {deployment} have been restarted')
             break
         logger.info(f'Waiting for all pods in deployment {deployment} to be restarted')
-        time.sleep(2.0)
+        await asyncio.sleep(2.0)
 
 
-def delete_pod(deployment, core_client, k8s_namespace, logger):
+async def delete_pod(deployment, core_client, k8s_namespace, logger):
     pods = core_client.list_namespaced_pod(
         namespace=k8s_namespace,
         label_selector=f'app={deployment}',
@@ -109,11 +111,11 @@ def delete_pod(deployment, core_client, k8s_namespace, logger):
                 logger.info(
                     f'Waiting for {len(current_pods.items)} pods in deployment {deployment} to be ready after deleting a Pod'
                 )
-                time.sleep(2.0)
+                await asyncio.sleep(2.0)
         logger.info(
             f'Waiting for pod {pods.items[0].metadata.name} in deployment {deployment} to be deleted'
         )
-        time.sleep(2.0)
+        await asyncio.sleep(2.0)
 
 
 async def run_test_until_event(
@@ -170,7 +172,7 @@ async def run_test_until_event(
     return responses, sent_ids
 
 
-def injct_failures(k8s_cluster, logger):
+def inject_failures(k8s_cluster, logger):
     proc = subprocess.Popen(
         [str(k8s_cluster._kube_config_path), 'apply', '-f', './fault-inject.yml'],
         env={"KUBECONFIG": str(k8s_cluster._kube_config_path)},
@@ -228,7 +230,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
         )
     )
     # Scale down the Executor to 2 replicas
-    scale(
+    await scale(
         deployment_name='executor0',
         desired_replicas=2,
         core_client=core_client,
@@ -237,7 +239,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
         logger=logger,
     )
     # Scale back up to 3 replicas
-    scale(
+    await scale(
         deployment_name='executor0',
         desired_replicas=3,
         core_client=core_client,
@@ -246,14 +248,14 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
         logger=logger,
     )
     # restart all pods in the deployment
-    restart_deployment(
+    await restart_deployment(
         deployment='executor0',
         app_client=app_client,
         core_client=core_client,
         k8s_namespace=namespace,
         logger=logger,
     )
-    delete_pod(
+    await delete_pod(
         deployment='executor0',
         core_client=core_client,
         k8s_namespace=namespace,
@@ -286,7 +288,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
         )
     )
     # inject failures
-    injct_failures(k8s_cluster, logger)
+    inject_failures(k8s_cluster, logger)
     # wait a bit
     await asyncio.sleep(3.0)
     # check that no message was lost
