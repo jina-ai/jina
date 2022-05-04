@@ -7,22 +7,26 @@ from docarray import DocumentArray
 from jina import Executor, Flow, requests
 
 
-class DummyExecutor(Executor):
-    @requests(on='/foo')
-    def foo(self, docs, **kwargs):
-        ...
+@pytest.fixture()
+def executor():
+    class DummyExecutor(Executor):
+        @requests(on='/foo')
+        def foo(self, docs, **kwargs):
+            ...
 
-    @requests(on='/bar')
-    def bar(self, docs, **kwargs):
-        ...
+        @requests(on='/bar')
+        def bar(self, docs, **kwargs):
+            ...
+
+    return DummyExecutor
 
 
-def test_enable_monitoring_deployment(port_generator):
+def test_enable_monitoring_deployment(port_generator, executor):
     port1 = port_generator()
     port2 = port_generator()
 
-    with Flow().add(uses=DummyExecutor, port_monitoring=port1, monitoring=True).add(
-        uses=DummyExecutor, port_monitoring=port2, monitoring=True
+    with Flow().add(uses=executor, port_monitoring=port1, monitoring=True).add(
+        uses=executor, port_monitoring=port2, monitoring=True
     ) as f:
         for port in [port1, port2]:
             resp = req.get(f'http://localhost:{port}/')
@@ -38,14 +42,14 @@ def test_enable_monitoring_deployment(port_generator):
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_enable_monitoring_gateway(protocol, port_generator):
+def test_enable_monitoring_gateway(protocol, port_generator, executor):
     port0 = port_generator()
     port1 = port_generator()
     port2 = port_generator()
 
     with Flow(protocol=protocol, monitoring=True, port_monitoring=port0).add(
-        uses=DummyExecutor, port_monitoring=port1
-    ).add(uses=DummyExecutor, port_monitoring=port2) as f:
+        uses=executor, port_monitoring=port1
+    ).add(uses=executor, port_monitoring=port2) as f:
         for port in [port0, port1, port2]:
             resp = req.get(f'http://localhost:{port}/')
             assert resp.status_code == 200
@@ -56,13 +60,13 @@ def test_enable_monitoring_gateway(protocol, port_generator):
         assert f'jina_sending_request_seconds' in str(resp.content)
 
 
-def test_monitoring_head(port_generator):
+def test_monitoring_head(port_generator, executor):
     port1 = port_generator()
     port2 = port_generator()
 
-    with Flow(monitoring=True).add(uses=DummyExecutor, port_monitoring=port1).add(
-        uses=DummyExecutor, port_monitoring=port2, shards=2
-    ) as f:
+    with Flow(monitoring=True, port_monitoring=port_generator()).add(
+        uses=executor, port_monitoring=port1
+    ).add(uses=executor, port_monitoring=port2, shards=2) as f:
         port3 = f._deployment_nodes['executor0'].pod_args['pods'][0][0].port_monitoring
         port4 = f._deployment_nodes['executor1'].pod_args['pods'][0][0].port_monitoring
 
@@ -76,12 +80,12 @@ def test_monitoring_head(port_generator):
         assert f'jina_sending_request_seconds' in str(resp.content)
 
 
-def test_document_processed_total(port_generator):
+def test_document_processed_total(port_generator, executor):
     port0 = port_generator()
     port1 = port_generator()
 
     with Flow(monitoring=True, port_monitoring=port0).add(
-        uses=DummyExecutor, port_monitoring=port1
+        uses=executor, port_monitoring=port1
     ) as f:
 
         resp = req.get(f'http://localhost:{port1}/')
@@ -117,12 +121,12 @@ def test_document_processed_total(port_generator):
         )
 
 
-def test_disable_monitoring_on_pods(port_generator):
+def test_disable_monitoring_on_pods(port_generator, executor):
     port0 = port_generator()
     port1 = port_generator()
 
     with Flow(monitoring=True, port_monitoring=port0).add(
-        uses=DummyExecutor,
+        uses=executor,
         port_monitoring=port1,
         monitoring=False,
     ):
@@ -133,12 +137,12 @@ def test_disable_monitoring_on_pods(port_generator):
         assert resp.status_code == 200
 
 
-def test_disable_monitoring_on_gatway_only(port_generator):
+def test_disable_monitoring_on_gatway_only(port_generator, executor):
     port0 = port_generator()
     port1 = port_generator()
 
     with Flow(monitoring=False, port_monitoring=port0).add(
-        uses=DummyExecutor,
+        uses=executor,
         port_monitoring=port1,
         monitoring=True,
     ):

@@ -19,32 +19,7 @@ def test_prometheus_interface(port_generator):
                 ...
 
     port = port_generator()
-    with Flow(monitoring=True).add(
-        uses=DummyExecutor, monitoring=True, port_monitoring=port
-    ) as f:
-        f.post('/foo', inputs=DocumentArray.empty(4))
-
-        resp = req.get(f'http://localhost:{port}/')
-        assert f'a_count 1.0' in str(  # check that we count 4 documents on foo
-            resp.content
-        )
-
-
-def test_prometheus_interface(port_generator):
-    class DummyExecutor(Executor):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.summary = Summary(
-                'a', 'A', registry=self.runtime_args.metrics_registry
-            )
-
-        @requests(on='/foo')
-        def foo(self, docs, **kwargs):
-            with self.summary.time():
-                ...
-
-    port = port_generator()
-    with Flow(monitoring=True).add(
+    with Flow(monitoring=True, port_monitoring=port_generator()).add(
         uses=DummyExecutor, monitoring=True, port_monitoring=port
     ) as f:
         f.post('/foo', inputs=DocumentArray.empty(4))
@@ -71,7 +46,7 @@ def test_decorator_interface(port_generator):
             ...
 
     port = port_generator()
-    with Flow(monitoring=True).add(
+    with Flow(monitoring=True, port_monitoring=port_generator()).add(
         uses=DummyExecutor, monitoring=True, port_monitoring=port
     ) as f:
         f.post('/foo', inputs=DocumentArray.empty(4))
