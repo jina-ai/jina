@@ -5,7 +5,7 @@
 The monitoring feature is still in Beta and the API is not stable yet.
 ```
 
- a Flow, let's have some context on the monitoring stack.
+First, let's have some context on the monitoring stack that we will be using during this guide.
 To leverage the {ref}`metrics <monitoring-flow>` that Jina exposes we recommend to use the Prometheus/Grafana stack. In this setup, Jina will expose different {ref}`metrics endpoint <monitoring-flow>`  , Prometheus will then be in charge of scraping these endpoints and
 to collect, aggregate and store the different metrics. Prometheus will then allow external entities (like Grafana) to access these aggregated metrics via a query language [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/).
 Then the role of Grafana here will be to allow users to visualize these metrics by creating dashboards.
