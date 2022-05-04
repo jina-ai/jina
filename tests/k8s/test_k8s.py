@@ -95,7 +95,12 @@ async def create_all_flow_deployments_and_wait_ready(
                 api_response.status.ready_replicas is not None
                 and api_response.status.ready_replicas == expected_num_replicas
             ):
+                logger.info(f'Deploymnt {deployment_name} is now ready')
                 deployments_ready.append(deployment_name)
+            else:
+                logger.info(
+                    f'Deploymnt {deployment_name} is not ready yet: ready_replicas is {api_response.status.ready_replicas} not equal to {expected_num_replicas}'
+                )
 
         for deployment_name in deployments_ready:
             deployment_names.remove(deployment_name)
