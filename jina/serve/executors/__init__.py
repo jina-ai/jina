@@ -502,22 +502,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         else:
             return None
 
-    def log(
-        self,
-        value: Any,
-        name: Optional[str] = None,
-        documentation: Optional[str] = None,
-    ):
-        """
-        observe a value to a metric, if the metric does not exist yet, it will create it and store it in a buffer.
-        :param value: value to be observe by the metric,
-        :param name: the name of the metrics
-        :param documentation:  the description of the metrics
-        """
-        metric = self.get_metrics(name, documentation)
-        if metric:
-            metric.observe(value)
-
 
 class ReducerExecutor(BaseExecutor):
     """
