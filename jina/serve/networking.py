@@ -14,7 +14,7 @@ from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 from jina.enums import PollingType
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
-from jina.proto import jina_pb2_grpc
+from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.types.request import Request
 from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
@@ -156,6 +156,7 @@ class GrpcConnectionPool:
             'jina.JinaControlRequestRPC': jina_pb2_grpc.JinaControlRequestRPCStub,
             'jina.JinaDataRequestRPC': jina_pb2_grpc.JinaDataRequestRPCStub,
             'jina.JinaSingleDataRequestRPC': jina_pb2_grpc.JinaSingleDataRequestRPCStub,
+            'jina.JinaDiscoverEndpointsRPC': jina_pb2_grpc.JinaDiscoverEndpointsRPC,
             'jina.JinaRPC': jina_pb2_grpc.JinaRPCStub,
         }
 
@@ -178,6 +179,7 @@ class GrpcConnectionPool:
             self.data_list_stub = stubs['jina.JinaDataRequestRPC']
             self.single_data_stub = stubs['jina.JinaSingleDataRequestRPC']
             self.stream_stub = stubs['jina.JinaRPC']
+            self.endpoints_discovery_stub = stubs['jina.JinaDiscoverEndpointsRPC']
             self._initialized = True
 
         async def send_requests(
@@ -560,7 +562,7 @@ class GrpcConnectionPool:
         self,
         deployment: str,
         address: str,
-        head: Optional[bool] = False,
+        head: bool = False,
         shard_id: Optional[int] = None,
     ):
         """
@@ -582,7 +584,7 @@ class GrpcConnectionPool:
         self,
         deployment: str,
         address: str,
-        head: Optional[bool] = False,
+        head: bool = False,
         shard_id: Optional[int] = None,
     ):
         """
@@ -651,7 +653,7 @@ class GrpcConnectionPool:
                         raise
                     else:
                         self._logger.debug(
-                            f'GRPC call failed with code {e.code()}, retry attempt {i+1}/3'
+                            f'GRPC call failed with code {e.code()}, retry attempt {i + 1}/3'
                         )
 
         return asyncio.create_task(task_wrapper(requests, connection, endpoint))
@@ -660,8 +662,8 @@ class GrpcConnectionPool:
     def get_grpc_channel(
         address: str,
         options: Optional[list] = None,
-        asyncio: Optional[bool] = False,
-        tls: Optional[bool] = False,
+        asyncio: bool = False,
+        tls: bool = False,
         root_certificates: Optional[str] = None,
     ) -> grpc.Channel:
         """
@@ -769,6 +771,38 @@ class GrpcConnectionPool:
         return await GrpcConnectionPool.send_request_async(
             activate_request, target_head
         )
+
+    @staticmethod
+    def send_endpoint_discovery_request_sync(
+        target: str,
+        timeout=100.0,
+        tls=False,
+        root_certificates: Optional[str] = None,
+    ) -> jina_pb2.EndpointsProto:
+        """
+        Sends a request synchronically to the target via grpc to discover its Endpoints
+
+        :param target: where to send the request to, like 127.0.0.1:8080
+        :param timeout: timeout for the send
+        :param tls: if True, use tls encryption for the grpc channel
+        :param root_certificates: the path to the root certificates for tls, only used if tls is True
+
+        :returns: the response request
+        """
+
+        for i in range(3):
+            try:
+                with GrpcConnectionPool.get_grpc_channel(
+                    target,
+                    tls=tls,
+                    root_certificates=root_certificates,
+                ) as channel:
+                    stub = jina_pb2_grpc.JinaDiscoverEndpointsRPCStub(channel)
+                    response = stub.endPointDiscovery(None, timeout=timeout)
+                    return response
+            except grpc.RpcError as e:
+                if e.code() != grpc.StatusCode.UNAVAILABLE or i == 2:
+                    raise
 
     @staticmethod
     def send_request_sync(

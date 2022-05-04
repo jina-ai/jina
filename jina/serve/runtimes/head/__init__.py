@@ -145,10 +145,14 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
             self, self._grpc_server
         )
+        jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server(
+            self, self._grpc_server
+        )
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaControlRequestRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaDiscoverEndpointsRPC'].full_name,
             reflection.SERVICE_NAME,
         )
         reflection.enable_server_reflection(service_names, self._grpc_server)
@@ -250,6 +254,15 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 exc_info=not self.args.quiet_error,
             )
             raise
+
+    async def endpoint_discovery(self, context) -> jina_pb2.EndpointsProto:
+        """
+        Process the received requests and return the result as a new request
+
+        :param context: grpc context
+        :returns: the response request
+        """
+        return self.connection_pool.send_endpoint_discovery_request_sync()
 
     async def _handle_data_request(
         self, requests: List[DataRequest], endpoint: Optional[str]
