@@ -103,9 +103,9 @@ def delete_pod(deployment, core_client, k8s_namespace, logger):
                 )
                 if len(current_pods.items) == len(pods.items):
                     logger.info(
-                        f'All pods in deployment {deployment} are be ready after deleting a Pod'
+                        f'All pods in deployment {deployment} are ready after deleting a Pod'
                     )
-                    break
+                    return
                 logger.info(
                     f'Waiting for {len(current_pods.items)} pods in deployment {deployment} to be ready after deleting a Pod'
                 )
