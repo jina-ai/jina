@@ -10,7 +10,8 @@ on what is happening inside it. Metrics are particularly useful for building das
 of your Flow, detect bottleneck, alert your team when some component of your Flow are down.
 
 Jina Flow expose metrics in the [prometheus format](https://prometheus.io/docs/instrumenting/exposition_formats/) which
-is plain text that is both understandable by human and machine. These metrics are intended to be scrap by [prometheus](https://prometheus.io/). 
+is plain text that is both understandable by human and machine. These metrics are intended to be scrap by
+[prometheus](https://prometheus.io/) which is an industry standard for monitoring. 
 We encourage you to visualize metrics with [grafana](https://grafana.com/)
 
 
@@ -78,10 +79,14 @@ To enable the monitoring you need to pass `monitoring = True` when creating the 
 ```python
 Flow(monitoring=True).add(...)
 ```
-This will enable the monitoring on *all the Pods* of your Flow. 
+
+````{admonition} Enabling Flow
+:class: hint
+Passing `monitoring = True` when creating the Flow will enable the monitoring on **all the Pods** of your Flow. 
+````
 
 If you want to enable the monitoring only on the Gateway you should once you enabled it on the Flow level, disable it for 
-all the other Executor.
+all the other Executors.
 
 ```python
 Flow(monitoring=True).add(monitoring=False, ...).add(monitoring=False, ...)
@@ -101,30 +106,33 @@ Because all the Pods don't have the same role, they expose different kind of met
 
 ### Gateway Pods
 
-| Metrics name                       | Metrics type | Description                                                                                                                                                                                                                                                                |
-|------------------------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `jina_receiving_request_seconds`   |   Summary    | Measure the time elapsed between receiving a request from the client and the sending back the response.                                                                                                                                                                    |
-| `jina_sending_request_seconds`     |   Summary    | Measure the time elapsed between sending a downstream request to an Executor/Head and receiving the response back.                                                                                                                                                         |
+| Metrics name                       | Metrics type                                                         | Description                                                                                                                                                                                                                                                                |
+|------------------------------------|----------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `jina_receiving_request_seconds`   | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measure the time elapsed between receiving a request from the client and the sending back the response.                                                                                                                                                                    |
+| `jina_sending_request_seconds`     | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measure the time elapsed between sending a downstream request to an Executor/Head and receiving the response back.                                                                                                                                                         |
 
 ### Head Pods
 
-| Metrics name                       | Metrics type | Description                                                                                                     |
-|------------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------|
-| `jina_receiving_request_seconds`   |   Summary    | Measure the time elapsed between receiving a request from the gateway and the sending back the response.        |
-| `jina_sending_request_seconds`     |   Summary    | Measure the time elapsed between sending a downstream request to an Executor and receiving the response back.   |
+| Metrics name                       | Metrics type                                                          | Description                                                                                                     |
+|------------------------------------|-----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| `jina_receiving_request_seconds`   | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)  | Measure the time elapsed between receiving a request from the gateway and the sending back the response.        |
+| `jina_sending_request_seconds`     | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)  | Measure the time elapsed between sending a downstream request to an Executor and receiving the response back.   |
 
 ### Executor Pods
 
-| Metrics name                     | Metrics type | Description                                                                                                           |
-|----------------------------------|--------------|-----------------------------------------------------------------------------------------------------------------------|
-| `jina_receiving_request_seconds` | Summary      | Measure the time elapsed between receiving a request from the gateway(or the head) and the sending back the response. |
-| `jina_process_request_seconds`   | Summary      | Measure the time spend calling the requested method                                                                   |
-| `jina_document_processed_total`  | Counter      | Count the number of Document processed by an Executor                                                                 |
+| Metrics name                     | Metrics type                                                         | Description                                                                                                           |
+|----------------------------------|----------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `jina_receiving_request_seconds` | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measure the time elapsed between receiving a request from the gateway(or the head) and the sending back the response. |
+| `jina_process_request_seconds`   | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measure the time spend calling the requested method                                                                   |
+| `jina_document_processed_total`  | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter) | Count the number of Document processed by an Executor                                                                 |
 
 ```{hint} 
  `jina_receiving_request_seconds` is different from `jina_process_request_seconds` because it includes the gRPC communication overhead whereas `jina_process_request_seconds` is only about the time spend calling the function 
 ```
 
+```{seealso} 
+You can find more information on the different type of metrics in prometheus [here](https://prometheus.io/docs/concepts/metric_types/#metric-types)
+```
 
 ## See further
 
