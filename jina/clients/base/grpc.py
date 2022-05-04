@@ -111,6 +111,7 @@ class GRPCBaseClient(BaseClient):
             except (
                 grpc.aio._call.AioRpcError,
                 BaseJinaException,
+                ConnectionError,
             ) as e:  # depending on if there are callbacks we catch or not the exception
                 if on_error or on_always:
                     if on_error:

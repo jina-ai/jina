@@ -71,7 +71,7 @@ def test_client_on_error_call(protocol, exception):
     'protocol,exception',
     [
         ('websocket', aiohttp.client_exceptions.ClientConnectorError),
-        ('grpc', grpc.aio._call.AioRpcError),
+        ('grpc', ConnectionError),
         ('http', aiohttp.client_exceptions.ClientConnectorError),
     ],
 )

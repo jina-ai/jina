@@ -47,24 +47,25 @@ def _create_head(port, polling):
     return p
 
 
-def _send_request(gateway_port, protocol):
+async def _send_request(gateway_port, protocol):
     """send request to gateway and see what happens"""
-    c = Client(host='localhost', port=gateway_port, protocol=protocol)
+    c = Client(host='localhost', port=gateway_port, protocol=protocol, asyncio=True)
     return c.post(
         '/', inputs=[Document(text='hi')], request_size=1, return_responses=True
     )
 
 
-def _test_error(gateway_port, error_port, protocol):
+async def _test_error(gateway_port, error_port, protocol):
     with pytest.raises(ConnectionError) as err_info:
-        _send_request(gateway_port, protocol)
+        await _send_request(gateway_port, protocol)
     # assert error message contains useful info
     assert 'pod0' in err_info.value.args[0]
     assert str(error_port) in err_info.value.args[0]
 
 
 @pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
-def test_runtimes_headless_topology(port_generator, protocol):
+@pytest.mark.asyncio
+async def test_runtimes_headless_topology(port_generator, protocol):
     # create gateway and workers manually, then terminate worker process to provoke an error
     worker_port = port_generator()
     gateway_port = port_generator()
@@ -111,7 +112,8 @@ def test_runtimes_headless_topology(port_generator, protocol):
 
 @pytest.mark.parametrize('terminate_head', [True, False])
 @pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
-def test_runtimes_headful_topology(port_generator, protocol, terminate_head):
+@pytest.mark.asyncio
+async def test_runtimes_headful_topology(port_generator, protocol, terminate_head):
     # create gateway and workers manually, then terminate worker process to provoke an error
     worker_port = port_generator()
     gateway_port = port_generator()
@@ -121,12 +123,18 @@ def test_runtimes_headful_topology(port_generator, protocol, terminate_head):
 
     head_process = _create_head(head_port, 'ANY')
     worker_process = _create_worker(worker_port)
-    asyncio.run(_activate_runtimes(head_port, [worker_port]))
+    await (_activate_runtimes(head_port, [worker_port]))
     gateway_process = _create_gateway(
         gateway_port, graph_description, pod_addresses, protocol
     )
 
     time.sleep(1.0)
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{head_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
 
     AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
         timeout=5.0,
@@ -139,6 +147,11 @@ def test_runtimes_headful_topology(port_generator, protocol, terminate_head):
         ctrl_address=f'0.0.0.0:{gateway_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
+
+    # this would be done by the Pod, its adding the worker to the head
+    activate_msg = ControlRequest(command='ACTIVATE')
+    activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
+    GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # terminate pod, either head or worker behind the head
     if terminate_head:
