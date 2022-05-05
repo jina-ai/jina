@@ -1001,6 +1001,12 @@ def _update_policy():
             )
 
 
+# workaround for asyncio loop and fork issue: https://github.com/python/cpython/issues/66197
+# we close the loop after forking to avoid reusing the parents process loop
+# a new loop should be created in the child process
+os.register_at_fork(after_in_child=lambda: get_or_reuse_loop().close())
+
+
 def get_or_reuse_loop():
     """
     Get a new eventloop or reuse the current opened eventloop.
