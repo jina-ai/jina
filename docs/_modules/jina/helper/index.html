@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.helper - Jina 3.3.24 documentation</title>
+        <title>jina.helper - Jina 3.3.25 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.3.24 documentation</div>
+                <div class="brand">Jina 3.3.25 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -1547,11 +1547,28 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">uvloop</span>
 
-            <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop_policy</span><span class="p">(</span><span class="n">uvloop</span><span class="o">.</span><span class="n">EventLoopPolicy</span><span class="p">())</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop_policy</span><span class="p">(),</span> <span class="n">uvloop</span><span class="o">.</span><span class="n">EventLoopPolicy</span><span class="p">):</span>
+                <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop_policy</span><span class="p">(</span><span class="n">uvloop</span><span class="o">.</span><span class="n">EventLoopPolicy</span><span class="p">())</span>
         <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s1">'Install `uvloop` via `pip install "jina[uvloop]"` for better performance.'</span>
             <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_close_loop</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">loop</span><span class="o">.</span><span class="n">is_closed</span><span class="p">():</span>
+            <span class="n">loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+        <span class="c1"># there is no loop, so nothing to do here</span>
+        <span class="k">pass</span>
+
+
+<span class="c1"># workaround for asyncio loop and fork issue: https://github.com/python/cpython/issues/66197</span>
+<span class="c1"># we close the loop after forking to avoid reusing the parents process loop</span>
+<span class="c1"># a new loop should be created in the child process</span>
+<span class="n">os</span><span class="o">.</span><span class="n">register_at_fork</span><span class="p">(</span><span class="n">after_in_child</span><span class="o">=</span><span class="n">_close_loop</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_or_reuse_loop"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.get_or_reuse_loop">[docs]</a><span class="k">def</span> <span class="nf">get_or_reuse_loop</span><span class="p">():</span>
@@ -1560,13 +1577,13 @@
 
 <span class="sd">    :return: A new eventloop or reuse the current opened eventloop.</span>
 <span class="sd">    """</span>
+    <span class="n">_update_policy</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span>
+        <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">loop</span><span class="o">.</span><span class="n">is_closed</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span>
     <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
-        <span class="n">_update_policy</span><span class="p">()</span>
-        <span class="c1"># no running event loop</span>
+        <span class="c1"># no event loop</span>
         <span class="c1"># create a new loop</span>
         <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
         <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="n">loop</span><span class="p">)</span>
@@ -2175,7 +2192,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 04, 2022.
+                    Last updated on May 05, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -2226,5 +2243,6 @@
         });
         </script>
     <script src="https://cdn.jsdelivr.net/npm/qabot@0.4"></script>
+    <script src="../../../_static/source-in-links.js"></script>
     </body>
 </html>
