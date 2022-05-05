@@ -307,5 +307,6 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
     # wait a bit
     await asyncio.sleep(3.0)
     # check that no message was lost
+    stop_event.set()
     responses, sent_ids = await send_task
     assert len(sent_ids) == len(responses)
