@@ -109,7 +109,7 @@ def get_fastapi_app(
     from jina.serve.runtimes.gateway.request_handling import RequestHandler
     from jina.serve.stream import RequestStreamer
 
-    request_handler = RequestHandler(metrics_registry)
+    request_handler = RequestHandler(metrics_registry, args.name)
 
     streamer = RequestStreamer(
         args=args,
