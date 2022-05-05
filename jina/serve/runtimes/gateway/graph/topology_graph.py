@@ -55,12 +55,16 @@ class TopologyGraph:
                 copy_req.data.docs = filtered_docs
                 self.parts_to_send[i] = copy_req
 
+        def get_endpoints(self, connection_pool: GrpcConnectionPool):
+            return connection_pool.send_discover_endpoint(self.name)
+
         async def _wait_previous_and_send(
             self,
             request: DataRequest,
             previous_task: Optional[asyncio.Task],
             connection_pool: GrpcConnectionPool,
             endpoint: Optional[str],
+            executor_endpoint_mapping: Optional[Dict] = None,
         ):
             # Check my condition and send request with the condition
             metadata = {}
@@ -80,6 +84,12 @@ class TopologyGraph:
                         self.parts_to_send = [
                             DataRequestHandler.reduce_requests(self.parts_to_send)
                         ]
+
+                    # avoid sending to executor which does not bind to this endpoint
+                    if endpoint is not None:
+                        if executor_endpoint_mapping is not None:
+                            if endpoint not in executor_endpoint_mapping[self.name]:
+                                return request, metadata
 
                     resp, metadata = await connection_pool.send_requests_once(
                         requests=self.parts_to_send,
@@ -101,6 +111,7 @@ class TopologyGraph:
             request_to_send: Optional[DataRequest],
             previous_task: Optional[asyncio.Task],
             endpoint: Optional[str] = None,
+            executor_endpoint_mapping: Optional[Dict] = None,
         ) -> List[Tuple[bool, asyncio.Task]]:
             """
             Gets all the tasks corresponding from all the subgraphs born from this node
@@ -109,6 +120,7 @@ class TopologyGraph:
             :param request_to_send: Optional request to be sent when the node is an origin of a graph
             :param previous_task: Optional task coming from the predecessor of the Node
             :param endpoint: Optional string defining the endpoint of this request
+            :param executor_endpoint_mapping: Optional map that maps the name of a Deployment with the endpoints that it binds to so that they can be skipped if needed
 
             .. note:
                 deployment1 -> outgoing_nodes: deployment2

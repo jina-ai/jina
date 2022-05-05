@@ -189,7 +189,7 @@ service JinaRPC {
  * jina gRPC service for DataRequests.
  */
 service JinaDiscoverEndpointsRPC {
-    rpc endPointDiscovery (google.protobuf.Empty) returns (EndpointsProto) {
+    rpc endpoint_discovery (google.protobuf.Empty) returns (EndpointsProto) {
     }
 }
 

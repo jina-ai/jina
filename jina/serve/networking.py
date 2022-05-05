@@ -156,7 +156,7 @@ class GrpcConnectionPool:
             'jina.JinaControlRequestRPC': jina_pb2_grpc.JinaControlRequestRPCStub,
             'jina.JinaDataRequestRPC': jina_pb2_grpc.JinaDataRequestRPCStub,
             'jina.JinaSingleDataRequestRPC': jina_pb2_grpc.JinaSingleDataRequestRPCStub,
-            'jina.JinaDiscoverEndpointsRPC': jina_pb2_grpc.JinaDiscoverEndpointsRPC,
+            'jina.JinaDiscoverEndpointsRPC': jina_pb2_grpc.JinaDiscoverEndpointsRPCStub,
             'jina.JinaRPC': jina_pb2_grpc.JinaRPCStub,
         }
 
@@ -181,6 +181,31 @@ class GrpcConnectionPool:
             self.stream_stub = stubs['jina.JinaRPC']
             self.endpoints_discovery_stub = stubs['jina.JinaDiscoverEndpointsRPC']
             self._initialized = True
+
+        async def send_discover_endpoint(
+            self,
+            timeout: Optional[float] = None,
+        ) -> Tuple:
+            """
+            Send requests and uses the appropriate grpc stub for this
+            Stub is chosen based on availability and type of requests
+
+            :param timeout: defines timeout for sending request
+
+            :returns: Tuple of response and metadata about the response
+            """
+            if not self._initialized:
+                await self._init_stubs()
+
+            call_result = self.endpoints_discovery_stub.endpoint_discovery(
+                jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(),
+                timeout=timeout,
+            )
+            metadata, response = (
+                await call_result.trailing_metadata(),
+                await call_result,
+            )
+            return response, metadata
 
         async def send_requests(
             self,
@@ -505,6 +530,28 @@ class GrpcConnectionPool:
 
         return results
 
+    def send_discover_endpoint(
+        self,
+        deployment: str,
+        head: bool = True,
+        shard_id: Optional[int] = None,
+        timeout: Optional[float] = None,
+    ) -> asyncio.Task:
+        """Send a request to target via one or all of the pooled connections, depending on polling_type
+
+        :param deployment: name of the Jina deployment to send the request to
+        :param head: If True it is send to the head, otherwise to the worker pods
+        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
+        :param timeout: timeout for sending the requests
+        :return: asyncio.Task items for send call
+        """
+        connection = None
+        connection_list = self._connections.get_replicas(deployment, head, shard_id)
+        if connection_list:
+            connection = connection_list.get_next_connection()
+
+        return self._send_discover_endpoint(connection, timeout=timeout)
+
     def send_request_once(
         self,
         request: Request,
@@ -624,9 +671,7 @@ class GrpcConnectionPool:
     ) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
-        async def task_wrapper(
-            requests, connection: GrpcConnectionPool.ConnectionStubs, endpoint
-        ):
+        async def task_wrapper():
             metadata = (('endpoint', endpoint),) if endpoint else None
             for i in range(3):
                 try:
@@ -656,7 +701,42 @@ class GrpcConnectionPool:
                             f'GRPC call failed with code {e.code()}, retry attempt {i + 1}/3'
                         )
 
-        return asyncio.create_task(task_wrapper(requests, connection, endpoint))
+        return asyncio.create_task(task_wrapper())
+
+    def _send_discover_endpoint(
+        self,
+        connection: ConnectionStubs,
+        timeout: Optional[float] = None,
+    ) -> asyncio.Task:
+        # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
+        # the grpc call function is not a coroutine but some _AioCall
+        async def task_wrapper():
+            for i in range(3):
+                try:
+                    return await connection.send_discover_endpoint(
+                        timeout=timeout,
+                    )
+                except AioRpcError as e:
+                    # connection failures and cancelled requests should be retried
+                    # all other cases should not be retried and will be raised immediately
+                    # connection failures have the code grpc.StatusCode.UNAVAILABLE
+                    # cancelled requests have the code grpc.StatusCode.CANCELLED
+                    # requests usually gets cancelled when the server shuts down
+                    # retries for cancelled requests will hit another replica in K8s
+                    if (
+                        e.code() != grpc.StatusCode.UNAVAILABLE
+                        and e.code() != grpc.StatusCode.CANCELLED
+                    ):
+                        raise
+                    elif e.code() == grpc.StatusCode.UNAVAILABLE and i == 2:
+                        self._logger.debug(f'GRPC call failed, retries exhausted')
+                        raise
+                    else:
+                        self._logger.debug(
+                            f'GRPC call failed with code {e.code()}, retry attempt {i + 1}/3'
+                        )
+
+        return asyncio.create_task(task_wrapper())
 
     @staticmethod
     def get_grpc_channel(
@@ -771,38 +851,6 @@ class GrpcConnectionPool:
         return await GrpcConnectionPool.send_request_async(
             activate_request, target_head
         )
-
-    @staticmethod
-    def send_endpoint_discovery_request_sync(
-        target: str,
-        timeout=100.0,
-        tls=False,
-        root_certificates: Optional[str] = None,
-    ) -> jina_pb2.EndpointsProto:
-        """
-        Sends a request synchronically to the target via grpc to discover its Endpoints
-
-        :param target: where to send the request to, like 127.0.0.1:8080
-        :param timeout: timeout for the send
-        :param tls: if True, use tls encryption for the grpc channel
-        :param root_certificates: the path to the root certificates for tls, only used if tls is True
-
-        :returns: the response request
-        """
-
-        for i in range(3):
-            try:
-                with GrpcConnectionPool.get_grpc_channel(
-                    target,
-                    tls=tls,
-                    root_certificates=root_certificates,
-                ) as channel:
-                    stub = jina_pb2_grpc.JinaDiscoverEndpointsRPCStub(channel)
-                    response = stub.endPointDiscovery(None, timeout=timeout)
-                    return response
-            except grpc.RpcError as e:
-                if e.code() != grpc.StatusCode.UNAVAILABLE or i == 2:
-                    raise
 
     @staticmethod
     def send_request_sync(

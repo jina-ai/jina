@@ -4,7 +4,6 @@ import time
 from typing import TYPE_CHECKING, Callable, List, Optional
 
 from docarray import DocumentArray
-
 from jina.importer import ImportExtensions
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
@@ -24,6 +23,7 @@ class RequestHandler:
 
     def __init__(self, metrics_registry: Optional['CollectorRegistry'] = None):
         self.request_init_time = {} if metrics_registry else None
+        self._executor_endpoint_mapping = None
 
         if metrics_registry:
             with ImportExtensions(
@@ -52,11 +52,39 @@ class RequestHandler:
         :return: Return a Function that given a Request will return a Future from where to extract the response
         """
 
+        async def gather_endpoints(request_graph):
+            def _get_all_nodes(node, accum, accum_names):
+                if node.name not in accum_names:
+                    accum.append(node)
+                    accum_names.append(node.name)
+                for n in node.outgoing_nodes:
+                    _get_all_nodes(n, accum, accum_names)
+                return accum, accum_names
+
+            nodes = []
+            node_names = []
+            for origin_node in request_graph.origin_nodes:
+                subtree_nodes, subtree_node_names = _get_all_nodes(origin_node, [], [])
+                for st_node, st_node_name in zip(subtree_nodes, subtree_node_names):
+                    if st_node_name not in node_names:
+                        nodes.append(st_node)
+                        node_names.append(st_node_name)
+
+            tasks_to_get_endpoints = [
+                node.get_endpoints(connection_pool) for node in nodes
+            ]
+            endpoints = await asyncio.gather(*tasks_to_get_endpoints)
+
+            self._executor_endpoint_mapping = {}
+            for node, (endp, _) in zip(nodes, endpoints):
+                self._executor_endpoint_mapping[node.name] = endp.endpoints
+
         def _handle_request(request: 'Request') -> 'asyncio.Future':
             if self._summary:
                 self.request_init_time[request.request_id] = time.time()
-            request_graph = copy.deepcopy(graph)
             # important that the gateway needs to have an instance of the graph per request
+            request_graph = copy.deepcopy(graph)
+
             if graph.has_filter_conditions:
                 request_doc_ids = request.data.docs[
                     :, 'id'
@@ -67,7 +95,8 @@ class RequestHandler:
             r = request.routes.add()
             r.executor = 'gateway'
             r.start_time.GetCurrentTime()
-            # If the request is targeting a specific deployment, we can send directly to the deployment instead of querying the graph
+            # If the request is targeting a specific deployment, we can send directly to the deployment instead of
+            # querying the graph
             if request.header.target_executor:
                 tasks_to_respond.extend(
                     connection_pool.send_request(
@@ -104,6 +133,8 @@ class RequestHandler:
             async def _process_results_at_end_gateway(
                 tasks: List[asyncio.Task], request_graph: TopologyGraph
             ) -> asyncio.Future:
+                if self._executor_endpoint_mapping is None:
+                    await asyncio.gather(gather_endpoints(request_graph))
 
                 partial_responses = await asyncio.gather(*tasks)
                 partial_responses, metadatas = zip(*partial_responses)

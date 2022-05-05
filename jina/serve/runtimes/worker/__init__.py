@@ -120,7 +120,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         return await self.process_data([request], context)
 
-    async def endpoint_discovery(self, context) -> DataRequest:
+    async def endpoint_discovery(
+        self, context, *args, **kwargs
+    ) -> jina_pb2.EndpointsProto:
         """
         Process the received requests and return the result as a new request
 
@@ -128,8 +130,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response request
         """
         endpointsProto = jina_pb2.EndpointsProto()
-        endpointsProto.endpoints = list(
-            self._data_request_handler._executor.requests.keys()
+        endpointsProto.endpoints.extend(
+            list(self._data_request_handler._executor.requests.keys())
         )
         return endpointsProto
 

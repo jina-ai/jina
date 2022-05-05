@@ -340,8 +340,8 @@ class JinaDiscoverEndpointsRPCStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.endPointDiscovery = channel.unary_unary(
-            '/jina.JinaDiscoverEndpointsRPC/endPointDiscovery',
+        self.endpoint_discovery = channel.unary_unary(
+            '/jina.JinaDiscoverEndpointsRPC/endpoint_discovery',
             request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             response_deserializer=jina__pb2.EndpointsProto.FromString,
         )
@@ -352,7 +352,7 @@ class JinaDiscoverEndpointsRPCServicer(object):
     jina gRPC service for DataRequests.
     """
 
-    def endPointDiscovery(self, request, context):
+    def endpoint_discovery(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -361,8 +361,8 @@ class JinaDiscoverEndpointsRPCServicer(object):
 
 def add_JinaDiscoverEndpointsRPCServicer_to_server(servicer, server):
     rpc_method_handlers = {
-        'endPointDiscovery': grpc.unary_unary_rpc_method_handler(
-            servicer.endPointDiscovery,
+        'endpoint_discovery': grpc.unary_unary_rpc_method_handler(
+            servicer.endpoint_discovery,
             request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             response_serializer=jina__pb2.EndpointsProto.SerializeToString,
         ),
@@ -380,7 +380,7 @@ class JinaDiscoverEndpointsRPC(object):
     """
 
     @staticmethod
-    def endPointDiscovery(
+    def endpoint_discovery(
         request,
         target,
         options=(),
@@ -395,7 +395,7 @@ class JinaDiscoverEndpointsRPC(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/jina.JinaDiscoverEndpointsRPC/endPointDiscovery',
+            '/jina.JinaDiscoverEndpointsRPC/endpoint_discovery',
             google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             jina__pb2.EndpointsProto.FromString,
             options,
