@@ -60,7 +60,7 @@ class KindClusterWrapper:
     def install_linkderd_smi(self):
         self._log.info('Installing Linkerd SMI to Cluster...')
         proc = subprocess.Popen(
-            [f'{Path.home()}/.linkerd2/bin/linkerd', 'smi', 'install'],
+            [f'{Path.home()}/.linkerd2/bin/linkerd-smi', 'install'],
             stdout=subprocess.PIPE,
             env={"KUBECONFIG": str(self._cluster.kubeconfig_path)},
         )
@@ -84,7 +84,7 @@ class KindClusterWrapper:
 
         self._log.info('check linkerd status')
         out = subprocess.check_output(
-            [f'{Path.home()}/.linkerd2/bin/linkerd', 'smi', 'check'],
+            [f'{Path.home()}/.linkerd2/bin/linkerd-smi', 'check'],
             env=os.environ,
         )
 
