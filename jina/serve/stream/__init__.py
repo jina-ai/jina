@@ -80,7 +80,7 @@ class RequestStreamer:
         except NetworkError as err:
             if (
                 context is not None
-            ):  # inside GrpcGateway we can handle the error directly here through its grpc context
+            ):  # inside GrpcGateway we can handle the error directly here through the grpc context
                 context.set_details(err.details())
                 context.set_code(err.code())
                 self.logger.error(

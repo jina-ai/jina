@@ -1,10 +1,9 @@
-import asyncio
 import multiprocessing
 import time
 
 import pytest
 
-from jina import Client, Document
+from jina import Client, Document, helper
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.types.request.control import ControlRequest
@@ -47,17 +46,17 @@ def _create_head(port, polling):
     return p
 
 
-async def _send_request(gateway_port, protocol):
+def _send_request(gateway_port, protocol):
     """send request to gateway and see what happens"""
-    c = Client(host='localhost', port=gateway_port, protocol=protocol, asyncio=True)
+    c = Client(host='localhost', port=gateway_port, protocol=protocol)
     return c.post(
         '/', inputs=[Document(text='hi')], request_size=1, return_responses=True
     )
 
 
-async def _test_error(gateway_port, error_port, protocol):
-    with pytest.raises(ConnectionError) as err_info:
-        await _send_request(gateway_port, protocol)
+def _test_error(gateway_port, error_port, protocol):
+    with pytest.raises(ConnectionError) as err_info:  # assert correct error is thrown
+        _send_request(gateway_port, protocol)
     # assert error message contains useful info
     assert 'pod0' in err_info.value.args[0]
     assert str(error_port) in err_info.value.args[0]
@@ -96,11 +95,25 @@ async def test_runtimes_headless_topology(port_generator, protocol):
 
     try:
         # ----------- 1. test that useful errors are given -----------
-        _test_error(gateway_port, worker_port, protocol)
+        # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+        p = multiprocessing.Process(
+            target=_test_error, args=(gateway_port, worker_port, protocol)
+        )
+        p.start()
+        p.join()
+        assert (
+            p.exitcode == 0
+        )  # if exitcode != 0 then test in other process did not pass and this should fail
         # ----------- 2. test that gateways remain alive -----------
-        _test_error(
-            gateway_port, worker_port, protocol
-        )  # just repeat the test, expecting the same result
+        # just do the same again, expecting the same outcome
+        p = multiprocessing.Process(
+            target=_test_error, args=(gateway_port, worker_port, protocol)
+        )
+        p.start()
+        p.join()
+        assert (
+            p.exitcode == 0
+        )  # if exitcode != 0 then test in other process did not pass and this should fail
     except Exception:
         assert False
     finally:  # clean up runtimes
@@ -123,7 +136,6 @@ async def test_runtimes_headful_topology(port_generator, protocol, terminate_hea
 
     head_process = _create_head(head_port, 'ANY')
     worker_process = _create_worker(worker_port)
-    await (_activate_runtimes(head_port, [worker_port]))
     gateway_process = _create_gateway(
         gateway_port, graph_description, pod_addresses, protocol
     )
@@ -165,13 +177,27 @@ async def test_runtimes_headful_topology(port_generator, protocol, terminate_hea
 
     try:
         # ----------- 1. test that useful errors are given -----------
-        _test_error(gateway_port, error_port, protocol)
+        # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+        p = multiprocessing.Process(
+            target=_test_error, args=(gateway_port, error_port, protocol)
+        )
+        p.start()
+        p.join()
+        assert (
+            p.exitcode == 0
+        )  # if exitcode != 0 then test in other process did not pass and this should fail
         # ----------- 2. test that gateways remain alive -----------
-        _test_error(
-            gateway_port, error_port, protocol
-        )  # just repeat the test, expecting the same result
+        # just do the same again, expecting the same outcome
+        p = multiprocessing.Process(
+            target=_test_error, args=(gateway_port, error_port, protocol)
+        )
+        p.start()
+        p.join()
+        assert (
+            p.exitcode == 0
+        )  # if exitcode != 0 then test in other process did not pass and this should fail
     except Exception:
-        assert False
+        raise
     finally:  # clean up runtimes
         gateway_process.terminate()
         worker_process.terminate()
