@@ -76,3 +76,4 @@ pytest-kind==21.1.3:        test
 pytest-lazy-fixture:        test
 sgqlc:                      cicd, graphql
 prometheus_client:          perf
+psutil:                     test
