@@ -549,7 +549,6 @@ class GrpcConnectionPool:
         connection_list = self._connections.get_replicas(deployment, head, shard_id)
         if connection_list:
             connection = connection_list.get_next_connection()
-
         return self._send_discover_endpoint(connection, timeout=timeout)
 
     def send_request_once(

@@ -255,14 +255,17 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             )
             raise
 
-    async def endpoint_discovery(self, context) -> jina_pb2.EndpointsProto:
+    async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
         """
         Process the received requests and return the result as a new request
 
         :param context: grpc context
         :returns: the response request
         """
-        return self.connection_pool.send_endpoint_discovery_request_sync()
+        response, metadata = await self.connection_pool.send_discover_endpoint(
+            deployment=self._deployment_name, head=False
+        )
+        return response
 
     async def _handle_data_request(
         self, requests: List[DataRequest], endpoint: Optional[str]

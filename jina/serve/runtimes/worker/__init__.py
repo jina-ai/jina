@@ -120,9 +120,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         return await self.process_data([request], context)
 
-    async def endpoint_discovery(
-        self, context, *args, **kwargs
-    ) -> jina_pb2.EndpointsProto:
+    async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
         """
         Process the received requests and return the result as a new request
 
