@@ -17,7 +17,7 @@ from jina.serve.executors.decorators import requests, store_init_kwargs, wrap_fu
 if TYPE_CHECKING:
     from prometheus_client import Summary
 
-    from jina import DocumentArray
+    from docarray import DocumentArray
 
 __all__ = ['BaseExecutor', 'ReducerExecutor']
 
