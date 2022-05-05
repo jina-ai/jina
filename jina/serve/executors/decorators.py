@@ -172,7 +172,7 @@ def monitor(
             if metric:
                 with metric.time():
                     return func(self, *args, **kwargs)
-            else:  # should raise a warning or log something about the fact the monitoring is disabled
+            else:
                 return func(self, *args, **kwargs)
 
         return _f
