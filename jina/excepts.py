@@ -74,7 +74,7 @@ class PortAlreadyUsed(RuntimeError, BaseJinaException):
     """Raised when to use a port which is already used"""
 
 
-class NetworkError(Exception, BaseJinaException):
+class InternalNetworkError(grpc.aio.AioRpcError, BaseJinaException):
     """
     Raised when communication between microservices fails.
     Needed to propagate information about the root cause event, such as request_id and dest_addr.
@@ -97,9 +97,19 @@ class NetworkError(Exception, BaseJinaException):
         self.request_id = request_id
         self.dest_addr = dest_addr
         self._details = details
+        super().__init__(
+            og_exception.code(),
+            og_exception.initial_metadata(),
+            og_exception.trailing_metadata(),
+            self.details(),
+            og_exception.debug_error_string(),
+        )
 
     def __str__(self):
         return self.details()
+
+    def __repr__(self):
+        return self.__str__()
 
     def code(self):
         """

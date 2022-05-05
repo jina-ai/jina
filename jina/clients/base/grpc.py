@@ -5,7 +5,12 @@ import grpc
 
 from jina.clients.base import BaseClient
 from jina.clients.helper import callback_exec, callback_exec_on_error
-from jina.excepts import BadClient, BadClientInput, BaseJinaException, NetworkError
+from jina.excepts import (
+    BadClient,
+    BadClientInput,
+    BaseJinaException,
+    InternalNetworkError,
+)
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
@@ -81,7 +86,7 @@ class GRPCBaseClient(BaseClient):
             self.logger.warning('user cancel the process')
         except asyncio.CancelledError as ex:
             self.logger.warning(f'process error: {ex!r}')
-        except (grpc.aio._call.AioRpcError, NetworkError) as err:
+        except (grpc.aio._call.AioRpcError, InternalNetworkError) as err:
             # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.
             my_code = err.code()
             my_details = err.details()

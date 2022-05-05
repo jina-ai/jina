@@ -657,9 +657,9 @@ class GrpcConnectionPool:
                         raise
                     elif e.code() == grpc.StatusCode.UNAVAILABLE and i == 2:
                         self._logger.debug(f'GRPC call failed, retries exhausted')
-                        from jina.excepts import NetworkError
+                        from jina.excepts import InternalNetworkError
 
-                        raise NetworkError(
+                        raise InternalNetworkError(
                             og_exception=e,
                             request_id=requests[0].request_id,
                             dest_addr=connection.address,

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional
 from jina import __version__
 from jina.clients.request import request_generator
 from jina.enums import DataInputType
-from jina.excepts import NetworkError
+from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
@@ -170,7 +170,7 @@ def get_fastapi_app(
                 result = await _get_singleton_result(
                     request_generator(**req_generator_input)
                 )
-            except NetworkError as err:
+            except InternalNetworkError as err:
                 response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
                 result = bd  # send back the request
                 result['header'] = _generate_exception_header(
@@ -181,7 +181,7 @@ def get_fastapi_app(
                 )
             return result
 
-    def _generate_exception_header(error: NetworkError):
+    def _generate_exception_header(error: InternalNetworkError):
         import traceback
 
         exception_dict = {

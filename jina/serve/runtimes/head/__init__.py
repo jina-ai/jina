@@ -11,7 +11,7 @@ import grpc
 from grpc_reflection.v1alpha import reflection
 
 from jina.enums import PollingType
-from jina.excepts import NetworkError
+from jina.excepts import InternalNetworkError
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
@@ -199,7 +199,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 response, metadata = await self._handle_data_request(requests, endpoint)
                 context.set_trailing_metadata(metadata.items())
                 return response
-        except NetworkError as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
+        except InternalNetworkError as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
             context.set_details(
                 f'|Head: Failed to connect to worker (Executor) pod at address {err.dest_addr}. It may be down.'
             )

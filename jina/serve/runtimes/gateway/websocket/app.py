@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional
 
 from jina.clients.request import request_generator
 from jina.enums import DataInputType, WebsocketSubProtocols
-from jina.excepts import NetworkError
+from jina.excepts import InternalNetworkError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.types.request.data import DataRequest
@@ -156,7 +156,7 @@ def get_fastapi_app(
         try:
             async for msg in streamer.stream(request_iterator=req_iter()):
                 await manager.send(websocket, msg)
-        except NetworkError as err:
+        except InternalNetworkError as err:
             response.status_code = status.WS_1011_INTERNAL_ERROR
             result = DataRequest().to_dict()
             result['header'] = _generate_exception_header(
@@ -172,7 +172,7 @@ def get_fastapi_app(
             logger.info('Client successfully disconnected from server')
             manager.disconnect(websocket)
 
-    def _generate_exception_header(error: NetworkError):
+    def _generate_exception_header(error: InternalNetworkError):
         import traceback
 
         exception_dict = {

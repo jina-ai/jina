@@ -66,7 +66,7 @@ class WebSocketBaseClient(BaseClient):
                             future.set_result(response)
                             if (
                                 response.header.status.exception.name
-                                == "<class 'jina.excepts.NetworkError'>"
+                                == "<class 'jina.excepts.InternalNetworkError'>"
                             ):  # This is a bit hacky.
                                 # If you use a different ws client, you should instead check if it closes with code 1011
                                 # (INTERNAL_ERROR), which is equivalent but doesn't work in this client implementation

@@ -6,7 +6,7 @@ from typing import Dict, List, Optional, Tuple
 
 import grpc.aio
 
-from jina.excepts import NetworkError
+from jina.excepts import InternalNetworkError
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest
@@ -92,7 +92,7 @@ class TopologyGraph:
                             endpoint=endpoint,
                             timeout=self._timeout_send,
                         )
-                    except NetworkError as err:
+                    except InternalNetworkError as err:
                         err_code = err.code()
                         if err_code == grpc.StatusCode.UNAVAILABLE:
                             err._details = (

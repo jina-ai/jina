@@ -11,7 +11,7 @@ from typing import (
     Union,
 )
 
-from jina.excepts import NetworkError
+from jina.excepts import InternalNetworkError
 from jina.logging.logger import JinaLogger
 from jina.serve.stream.helper import AsyncRequestsIterator
 
@@ -77,7 +77,7 @@ class RequestStreamer:
         try:
             async for response in async_iter:
                 yield response
-        except NetworkError as err:
+        except InternalNetworkError as err:
             if (
                 context is not None
             ):  # inside GrpcGateway we can handle the error directly here through the grpc context
