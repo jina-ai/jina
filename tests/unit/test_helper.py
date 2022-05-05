@@ -2,6 +2,7 @@ import os
 from types import SimpleNamespace
 
 import numpy as np
+import psutil
 import pytest
 
 from jina import Executor, Flow, __default_endpoint__
@@ -19,6 +20,7 @@ from jina.helper import (
     random_port,
     reset_ports,
     retry,
+    run_async,
 )
 from jina.hubble.helper import _get_hubble_base_url
 from jina.jaml.helper import complete_path
@@ -352,3 +354,19 @@ def test_port_free(port_generator):
     port = port_generator()
     is_free = is_port_free('localhost', port)
     assert is_free
+
+
+def test_run_async():
+    async def dummy():
+        pass
+
+    p = psutil.Process()
+
+    run_async(dummy)
+    first_fd_count = p.num_fds()
+
+    for i in range(10):
+        run_async(dummy)
+
+    end_fd_count = p.num_fds()
+    assert first_fd_count == end_fd_count
