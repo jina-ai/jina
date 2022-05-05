@@ -55,7 +55,7 @@ class DataRequestHandler:
                     'document_processed',
                     'Number of Documents that have been processed by the executor',
                     namespace='jina',
-                    labelnames=('endpoint', 'executor', 'pods_name'),
+                    labelnames=('endpoint', 'executor', 'pod_name'),
                     registry=metrics_registry,
                 )
         else:

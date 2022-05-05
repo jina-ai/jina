@@ -47,7 +47,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                     'Time spent processing request',
                     registry=self.metrics_registry,
                     namespace='jina',
-                    labelnames=('pods_name',),
+                    labelnames=('pod_name',),
                 )
                 .labels(self.args.name)
                 .time()
