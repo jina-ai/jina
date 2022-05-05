@@ -149,3 +149,5 @@ jobs:
             PY_VERSION=${{matrix.py_version}}
             PIP_TAG=${{matrix.pip_tag}}
           target: ${{env.BUILD_TARGET}}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

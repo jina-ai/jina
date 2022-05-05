@@ -144,6 +144,8 @@ jobs:
           push: true
           tags: localhost:5000/jina/multiarch:latest
           target: jina
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - run: |
           docker run --platform ${{ matrix.test-arch }} localhost:5000/jina/multiarch:latest -v
 
