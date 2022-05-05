@@ -4,8 +4,10 @@ import time
 import pytest
 
 from jina import Client, Document, helper
+from jina.parsers import set_gateway_parser
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
 from jina.types.request.control import ControlRequest
 
 from .test_runtimes import (
@@ -205,3 +207,113 @@ async def test_runtimes_headful_topology(port_generator, protocol, terminate_hea
         gateway_process.join()
         worker_process.join()
         head_process.join()
+
+
+def _send_gql_request(gateway_port):
+    """send request to gateway and see what happens"""
+    mutation = (
+        f'mutation {{'
+        + '''docs(data: {text: "abcd"}) { 
+                    id 
+                } 
+            }
+    '''
+    )
+    c = Client(host='localhost', port=gateway_port, protocol='http')
+    return c.mutate(mutation=mutation)
+
+
+def _test_gql_error(gateway_port, error_port):
+    with pytest.raises(ConnectionError) as err_info:  # assert correct error is thrown
+        _send_gql_request(gateway_port)
+    # assert error message contains useful info
+    assert 'pod0' in err_info.value.args[0]
+    assert str(error_port) in err_info.value.args[0]
+
+
+def _create_gqlgateway_runtime(graph_description, pod_addresses, port):
+    with HTTPGatewayRuntime(
+        set_gateway_parser().parse_args(
+            [
+                '--graph-description',
+                graph_description,
+                '--deployments-addresses',
+                pod_addresses,
+                '--port',
+                str(port),
+                '--expose-graphql-endpoint',
+            ]
+        )
+    ) as runtime:
+        runtime.run_forever()
+
+
+def _create_gqlgateway(port, graph, pod_addr):
+    # create a single worker runtime
+    # create a single gateway runtime
+    p = multiprocessing.Process(
+        target=_create_gqlgateway_runtime,
+        args=(graph, pod_addr, port),
+    )
+    p.start()
+    time.sleep(0.1)
+    return p
+
+
+@pytest.mark.asyncio
+async def test_runtimes_graphql(port_generator):
+    # create gateway and workers manually, then terminate worker process to provoke an error
+    protocol = 'http'
+    worker_port = port_generator()
+    gateway_port = port_generator()
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
+
+    worker_process = _create_worker(worker_port)
+    gateway_process = _create_gqlgateway(gateway_port, graph_description, pod_addresses)
+
+    time.sleep(1.0)
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{worker_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{gateway_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    worker_process.terminate()  # kill worker
+    worker_process.join()
+
+    try:
+        # ----------- 1. test that useful errors are given -----------
+        # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+        p = multiprocessing.Process(
+            target=_test_gql_error, args=(gateway_port, worker_port)
+        )
+        p.start()
+        p.join()
+        assert (
+            p.exitcode == 0
+        )  # if exitcode != 0 then test in other process did not pass and this should fail
+        # ----------- 2. test that gateways remain alive -----------
+        # just do the same again, expecting the same outcome
+        p = multiprocessing.Process(
+            target=_test_gql_error, args=(gateway_port, worker_port)
+        )
+        p.start()
+        p.join()
+        assert (
+            p.exitcode == 0
+        )  # if exitcode != 0 then test in other process did not pass and this should fail
+    except Exception:
+        raise
+    finally:  # clean up runtimes
+        gateway_process.terminate()
+        worker_process.terminate()
+        gateway_process.join()
+        worker_process.join()
