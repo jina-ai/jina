@@ -139,6 +139,7 @@ def requests(
 
 
 def monitor(
+    *,
     name: Optional[str] = None,
     documentation: Optional[str] = None,
 ):

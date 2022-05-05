@@ -37,7 +37,7 @@ def test_decorator_interface(port_generator):
             self._proces(docs)
             self.proces_2(docs)
 
-        @monitor('metrics_name', 'metrics description')
+        @monitor(name='metrics_name', documentation='metrics description')
         def _proces(self, docs):
             ...
 
