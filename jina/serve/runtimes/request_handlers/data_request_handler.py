@@ -55,7 +55,7 @@ class DataRequestHandler:
                     'document_processed',
                     'Number of Documents that have been processed by the executor',
                     namespace='jina',
-                    labelnames=('endpoint', 'executor'),
+                    labelnames=('endpoint', 'executor', 'pods_name'),
                     registry=metrics_registry,
                 )
         else:
@@ -159,7 +159,9 @@ class DataRequestHandler:
 
         if self._counter:
             self._counter.labels(
-                requests[0].header.exec_endpoint, self._executor.__class__.__name__
+                requests[0].header.exec_endpoint,
+                self._executor.__class__.__name__,
+                self.args.name,
             ).inc(len(docs))
 
         DataRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)

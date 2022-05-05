@@ -131,7 +131,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 'Time spent when calling the executor request method',
                 registry=self.runtime_args.metrics_registry,
                 namespace='jina',
-                labelnames=('executor', 'endpoint'),
+                labelnames=('executor', 'endpoint', 'pods_name'),
             )
             self._metrics_buffer = {'process_request_seconds': self._summary_method}
 
@@ -256,8 +256,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     async def __acall_endpoint__(self, req_endpoint, **kwargs):
         func = self.requests[req_endpoint]
 
+        pods_name = (
+            self.runtime_args.name if hasattr(self.runtime_args, 'name') else None
+        )
+
         _summary = (
-            self._summary_method.labels(self.__class__.__name__, req_endpoint).time()
+            self._summary_method.labels(
+                self.__class__.__name__, req_endpoint, pods_name
+            ).time()
             if self._summary_method
             else contextlib.nullcontext()
         )

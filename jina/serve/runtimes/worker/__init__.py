@@ -41,12 +41,17 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             ):
                 from prometheus_client import Summary
 
-            self._summary_time = Summary(
-                'receiving_request_seconds',
-                'Time spent processing request',
-                registry=self.metrics_registry,
-                namespace='jina',
-            ).time()
+            self._summary_time = (
+                Summary(
+                    'receiving_request_seconds',
+                    'Time spent processing request',
+                    registry=self.metrics_registry,
+                    namespace='jina',
+                    labelnames=('pods_name',),
+                )
+                .labels(self.args.name)
+                .time()
+            )
         else:
             self._summary_time = contextlib.nullcontext()
 
