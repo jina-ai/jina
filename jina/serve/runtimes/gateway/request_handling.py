@@ -109,7 +109,11 @@ class RequestHandler:
             else:
                 for origin_node in request_graph.origin_nodes:
                     leaf_tasks = origin_node.get_leaf_tasks(
-                        connection_pool, request, None, endpoint=endpoint
+                        connection_pool,
+                        request,
+                        None,
+                        endpoint=endpoint,
+                        executor_endpoint_mapping=self._executor_endpoint_mapping,
                     )
                     # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their
                     # subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous

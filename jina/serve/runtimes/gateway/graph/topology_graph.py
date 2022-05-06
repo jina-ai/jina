@@ -4,6 +4,7 @@ from collections import defaultdict
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
+from jina import __default_endpoint__
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest
@@ -86,10 +87,13 @@ class TopologyGraph:
                         ]
 
                     # avoid sending to executor which does not bind to this endpoint
-                    if endpoint is not None:
-                        if executor_endpoint_mapping is not None:
-                            if endpoint not in executor_endpoint_mapping[self.name]:
-                                return request, metadata
+                    if endpoint is not None and executor_endpoint_mapping is not None:
+                        if (
+                            endpoint not in executor_endpoint_mapping[self.name]
+                            and __default_endpoint__
+                            not in executor_endpoint_mapping[self.name]
+                        ):
+                            return request, metadata
 
                     resp, metadata = await connection_pool.send_requests_once(
                         requests=self.parts_to_send,
@@ -146,7 +150,11 @@ class TopologyGraph:
             """
             wait_previous_and_send_task = asyncio.create_task(
                 self._wait_previous_and_send(
-                    request_to_send, previous_task, connection_pool, endpoint=endpoint
+                    request_to_send,
+                    previous_task,
+                    connection_pool,
+                    endpoint=endpoint,
+                    executor_endpoint_mapping=executor_endpoint_mapping,
                 )
             )
             if self.leaf:  # I am like a leaf
@@ -160,6 +168,7 @@ class TopologyGraph:
                     None,
                     wait_previous_and_send_task,
                     endpoint=endpoint,
+                    executor_endpoint_mapping=executor_endpoint_mapping,
                 )
                 # We are interested in the last one, that will be the task that awaits all the previous
                 hanging_tasks_tuples.extend(t)
