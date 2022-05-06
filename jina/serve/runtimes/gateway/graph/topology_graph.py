@@ -66,6 +66,7 @@ class TopologyGraph:
             connection_pool: GrpcConnectionPool,
             endpoint: Optional[str],
             executor_endpoint_mapping: Optional[Dict] = None,
+            target_executor_pattern: Optional[str] = None,
         ):
             # Check my condition and send request with the condition
             metadata = {}
@@ -95,6 +96,12 @@ class TopologyGraph:
                         ):
                             return request, metadata
 
+                    if (
+                        target_executor_pattern is not None
+                        and self.name != target_executor_pattern
+                    ):
+                        return request, metadata
+
                     resp, metadata = await connection_pool.send_requests_once(
                         requests=self.parts_to_send,
                         deployment=self.name,
@@ -116,6 +123,7 @@ class TopologyGraph:
             previous_task: Optional[asyncio.Task],
             endpoint: Optional[str] = None,
             executor_endpoint_mapping: Optional[Dict] = None,
+            target_executor_pattern: Optional[str] = None,
         ) -> List[Tuple[bool, asyncio.Task]]:
             """
             Gets all the tasks corresponding from all the subgraphs born from this node
@@ -125,6 +133,7 @@ class TopologyGraph:
             :param previous_task: Optional task coming from the predecessor of the Node
             :param endpoint: Optional string defining the endpoint of this request
             :param executor_endpoint_mapping: Optional map that maps the name of a Deployment with the endpoints that it binds to so that they can be skipped if needed
+            :param target_executor_pattern: Optional regex pattern for the target executor to decide wether or not the Executor should receive the request
 
             .. note:
                 deployment1 -> outgoing_nodes: deployment2
@@ -155,6 +164,7 @@ class TopologyGraph:
                     connection_pool,
                     endpoint=endpoint,
                     executor_endpoint_mapping=executor_endpoint_mapping,
+                    target_executor_pattern=target_executor_pattern,
                 )
             )
             if self.leaf:  # I am like a leaf

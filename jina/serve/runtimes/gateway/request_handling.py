@@ -97,31 +97,20 @@ class RequestHandler:
             r.start_time.GetCurrentTime()
             # If the request is targeting a specific deployment, we can send directly to the deployment instead of
             # querying the graph
-            if request.header.target_executor:
-                tasks_to_respond.extend(
-                    connection_pool.send_request(
-                        request=request,
-                        deployment=request.header.target_executor,
-                        head=True,
-                        endpoint=endpoint,
-                    )
+            for origin_node in request_graph.origin_nodes:
+                leaf_tasks = origin_node.get_leaf_tasks(
+                    connection_pool,
+                    request,
+                    None,
+                    endpoint=endpoint,
+                    executor_endpoint_mapping=self._executor_endpoint_mapping,
+                    target_executor_pattern=request.header.target_executor,
                 )
-            else:
-                for origin_node in request_graph.origin_nodes:
-                    leaf_tasks = origin_node.get_leaf_tasks(
-                        connection_pool,
-                        request,
-                        None,
-                        endpoint=endpoint,
-                        executor_endpoint_mapping=self._executor_endpoint_mapping,
-                    )
-                    # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their
-                    # subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous
-                    # nodes
-                    tasks_to_respond.extend([task for ret, task in leaf_tasks if ret])
-                    tasks_to_ignore.extend(
-                        [task for ret, task in leaf_tasks if not ret]
-                    )
+                # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their
+                # subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous
+                # nodes
+                tasks_to_respond.extend([task for ret, task in leaf_tasks if ret])
+                tasks_to_ignore.extend([task for ret, task in leaf_tasks if not ret])
 
             def _sort_response_docs(response):
                 # sort response docs according to their order in the initial request
