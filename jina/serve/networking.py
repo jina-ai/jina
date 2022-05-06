@@ -635,18 +635,7 @@ class GrpcConnectionPool:
                         timeout=timeout,
                     )
                 except AioRpcError as e:
-                    # connection failures and cancelled requests should be retried
-                    # all other cases should not be retried and will be raised immediately
-                    # connection failures have the code grpc.StatusCode.UNAVAILABLE
-                    # cancelled requests have the code grpc.StatusCode.CANCELLED
-                    # requests usually gets cancelled when the server shuts down
-                    # retries for cancelled requests will hit another replica in K8s
-                    if (
-                        e.code() != grpc.StatusCode.UNAVAILABLE
-                        and e.code() != grpc.StatusCode.CANCELLED
-                    ):
-                        raise
-                    elif e.code() == grpc.StatusCode.UNAVAILABLE and i == 2:
+                    if i == 2:
                         self._logger.debug(f'GRPC call failed, retries exhausted')
                         raise
                     else:
