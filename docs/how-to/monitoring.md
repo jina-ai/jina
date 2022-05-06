@@ -6,35 +6,33 @@ The monitoring feature is still in Beta and the API is not stable yet.
 ```
 
 First, let's have some context on the monitoring stack that we will be using during this guide.
-To leverage the {ref}`metrics <monitoring-flow>` that Jina exposes we recommend to use the Prometheus/Grafana stack. In this setup, Jina will expose different {ref}`metrics endpoint <monitoring-flow>`  , Prometheus will then be in charge of scraping these endpoints and
-to collect, aggregate and store the different metrics. Prometheus will then allow external entities (like Grafana) to access these aggregated metrics via a query language [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/).
+To leverage the {ref}`metrics <monitoring-flow>` that Jina exposes, we recommend to use the Prometheus/Grafana stack. In this setup, Jina will expose different {ref}`metrics endpoint <monitoring-flow>`, and Prometheus will then be in charge of scraping these endpoints, as well as
+collecting, aggregating and storing the different metrics. Prometheus will then allow external entities (like Grafana) to access these aggregated metrics via the query language [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/).
 Then the role of Grafana here will be to allow users to visualize these metrics by creating dashboards.
 
 ```{hint} 
-Jina supports exposing the metrics, you are in charge of installing and managed your Prometheus/Grafana instance
-```
+Jina supports exposing the metrics, you are in charge of installing and manageing your Prometheus/Grafana instances.
 
 We will show you in this guide how to easily deploy the Prometheus/Grafana stack and used them to monitor a Flow.
 
 ## Use Prometheus and Grafana to monitor a Flow on Kubernetes
 
 
-One of the challenge of monitoring a Flow is to communicate to Prometheus the different metrics endpoints that the Flow exposes.
-Fortunately the [Prometheus operator for kubernetes](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/getting-started.md) makes the process fairly easy, because it can automatically discover new metrics endpoints to scrap.
+One of the challenges of monitoring a Flow is communicating its different metrics endpoints to Prometheus.
+Fortunately, the [Prometheus operator for Kubernetes](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/getting-started.md) makes the process fairly easy, because it can automatically discover new metrics endpoints to scrape.
 
 ```{hint} 
 Deploying your Jina Flow on Kubernetes is the recommended way to leverage the full potential of the monitoring feature because:
-* The Prometheus operator can automatically discover new endpoint to scrap
+* The Prometheus operator can automatically discover new endpoints to scrape
 * You can extend your monitoring with the rich built-in Kubernetes metrics
-```
 
-You need to have access to a kubernetes cluster to follow the rest of this guide.
+You need to have access to a Kubernetes cluster to follow the rest of this guide.
 
-You can easily have a kubernetes cluster on your local machine:
+You can easily have a Kubernetes cluster on your local machine:
 - [minikube](https://minikube.sigs.k8s.io/docs/)
 - [microk8s](https://microk8s.io/)
 
-Or you can use a  managed kubernetes solution on the Cloud:
+Or you can use a  managed Kubernetes solution on the cloud:
 - [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine),
 - [Amazon EKS](https://aws.amazon.com/eks),
 - [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service),
@@ -53,7 +51,7 @@ setting the `serviceMonitorSelectorNilUsesHelmValues` to false allow the Prometh
 
 ### 2 - Deploying the Flow
 
-Let's now deploy the Flow that we want to monitor
+Let's now deploy the Flow that we want to monitor:
 
 ```python
 from jina import Flow
@@ -62,13 +60,13 @@ f = Flow(monitoring=True).add(uses='jinahub+docker://SimpleIndexer')
 f.to_k8s_yaml('config')
 ```
 
-This will create a `config` folder containing the kubernetes yaml definition of the Flow.
+This will create a `config` folder containing the Kubernetes YAML definition of the Flow.
 
 ```{seealso}
 You can see indepth how to deploy a Flow on kubernetes {ref}`here <kubernetes>`
 ```
 
-Then deploy the Flow
+Then deploy the Flow:
 
 ```bash
 kubectl apply -R -f config

@@ -6,21 +6,19 @@ The monitoring feature is still in Beta and the API is not stable yet.
 ```
 
 A Jina {ref}`Flow <flow-cookbook>` exposes several core metrics that allow you to have a deeper look
-on what is happening inside it. Metrics are particularly useful for building dashboards and alerts, with them, you can, for example, monitor the overall performance 
-of your Flow, detect bottlenecks, alert your team when some component of your Flow is down.
+at what is happening inside it. Metrics allow you to, for example, monitor the overall performance 
+of your Flow, detect bottlenecks, or alert your team when some component of your Flow is down.
 
-Jina Flow expose metrics in the [prometheus format](https://prometheus.io/docs/instrumenting/exposition_formats/) which
-is plain text that is both understandable by human and machine. These metrics are intended to be scraped by
-[prometheus](https://prometheus.io/) which is an industry standard for monitoring. 
-We recommend you to visualize metrics with [grafana](https://grafana.com/)
+Jina Flows expose metrics in the [Prometheus format](https://prometheus.io/docs/instrumenting/exposition_formats/). This is a plain text format that is understandable by both human and machine. These metrics are intended to be scraped by
+[Prometheus](https://prometheus.io/),an industry standard tool for collecting and monitoring metrics.
+
+To visualize your metrics through a dashboard, we recommend [Grafana](https://grafana.com/)
 
 
 ## Using the monitoring in a Flow
 
-A {ref}`Flow <flow-cookbook>` is composed of several Pods namely the Gateway and the Executors (potentially a Head as well). 
-see the {ref}`architecture overview <architecture-overview>` for more details. Each of these Pods are microservices which communicate 
-by gRPC. They will expose their own metrics using the [prometheus client](https://prometheus.io/docs/instrumenting/clientlibs/).
-It means that they are as many metrics endpoints that they are Pods in your Flow. 
+A {ref}`Flow <flow-cookbook>` is composed of several Pods, namely the Gateway, the Executors, and potentially a Head (see the {ref}`architecture overview <architecture-overview>` for more details). Each of these Pods is its own microservice. These services expose their own metrics using the [Prometheus client](https://prometheus.io/docs/instrumenting/clientlibs/).
+This means that they are as many metrics endpoints as there are Pods in your Flow. 
 
 Let's give an example to illustrate it :
 
@@ -70,9 +68,9 @@ the `prometheus_port` for the Executors.
 ````
 
 
-Because each Pods in a Flow expose its own metrics the monitoring feature could be used independently on each Pod.
-It means that you are not forced to always monitor each Pods of your Flow. For example, you could be only interested in
-metrics coming from the Gateway, and therefore you only activate the monitoring on it. On the other hand you might be only
+Because each Pods in a Flow exposes its own metrics, the monitoring feature can be used independently on each Pod.
+This means that you are not forced to always monitor every Pods of your Flow. For example, you could be only interested in
+metrics coming from the Gateway, and therefore you only activate the monitoring on it. On the other hand, you might be only
 interested in monitoring a single Executor. Note that by default the monitoring is disabled everywhere.
 
 To enable the monitoring you need to pass `monitoring = True` when creating the Flow.
@@ -85,8 +83,7 @@ Flow(monitoring=True).add(...)
 Passing `monitoring = True` when creating the Flow will enable the monitoring on **all the Pods** of your Flow. 
 ````
 
-If you want to enable the monitoring only on the Gateway you should once you enabled it on the Flow level, disable it for 
-all the other Executors.
+If you want to enable the monitoring only on the Gateway, you need to first enable the feature for then entire Flow, and then disable it for the Executor which you are not interested in.
 
 ```python
 Flow(monitoring=True).add(monitoring=False, ...).add(monitoring=False, ...)
@@ -99,9 +96,9 @@ Flow().add(...).add(uses=MyExecutor, monitoring=True)
 
 ## Available metrics
 
-We support different metrics in the Flow, and we will later allow users to define their own.
+Flows support different metrics out of the box, in addition to allowing the user to define their own custom metrics.
 
-Because all the Pods don't have the same role, they expose different kind of metrics:
+Because not all Pods have the same role, they expose different kind of metrics:
 
 
 ### Gateway Pods
@@ -131,7 +128,7 @@ Because all the Pods don't have the same role, they expose different kind of met
 ```
 
 ```{seealso} 
-You can find more information on the different type of metrics in prometheus [here](https://prometheus.io/docs/concepts/metric_types/#metric-types)
+You can find more information on the different type of metrics in Prometheus [here](https://prometheus.io/docs/concepts/metric_types/#metric-types)
 ```
 
 ## See further
