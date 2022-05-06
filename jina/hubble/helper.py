@@ -20,6 +20,7 @@ from urllib.request import Request, urlopen
 
 from jina import __resources_path__
 from jina.enums import BetterEnum
+from jina.helper import get_request_header as _get_request_header_main
 from jina.importer import ImportExtensions
 from jina.logging.predefined import default_logger
 
@@ -32,6 +33,16 @@ def _get_hub_root() -> Path:
         hub_root.mkdir(parents=True, exist_ok=True)
 
     return hub_root
+
+
+@lru_cache()
+def _get_hub_config() -> Optional[Dict]:
+    hub_root = _get_hub_root()
+
+    config_file = hub_root.joinpath('config.json')
+    if config_file.exists():
+        with open(config_file) as f:
+            return json.load(f)
 
 
 @lru_cache()
@@ -104,6 +115,37 @@ def _get_hubble_base_url() -> str:
             raise
 
     return u
+
+
+@lru_cache()
+def _get_auth_token() -> Optional[str]:
+    """Get user auth token.
+    .. note:: We first check `JINA_AUTH_TOKEN` environment variable.
+        if token is not None, use env token. Otherwise, we get token from config.
+
+    :return: user auth token
+    """
+    token_from_env = os.environ.get('JINA_AUTH_TOKEN')
+    if token_from_env:
+        return token_from_env
+
+    config = _get_hub_config()
+    if config:
+        return config.get('auth_token')
+
+
+def get_request_header() -> Dict:
+    """Return the header of request with an authorization token.
+
+    :return: request header
+    """
+    headers = _get_request_header_main()
+
+    auth_token = _get_auth_token()
+    if auth_token:
+        headers['Authorization'] = f'token {auth_token}'
+
+    return headers
 
 
 def get_hubble_url_v1() -> str:
