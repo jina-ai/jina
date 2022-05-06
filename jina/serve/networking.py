@@ -734,6 +734,13 @@ class GrpcConnectionPool:
                         self._logger.debug(
                             f'GRPC call failed with code {e.code()}, retry attempt {i + 1}/3'
                         )
+                except AttributeError:
+                    # in gateway2gateway communication, gateway does not expose this endpoint. So just send empty list which corresponds to all endpoints valid
+                    from jina import __default_endpoint__
+
+                    ep = jina_pb2.EndpointsProto()
+                    ep.endpoints.extend([__default_endpoint__])
+                    return ep, None
 
         return asyncio.create_task(task_wrapper())
 
