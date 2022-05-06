@@ -2,6 +2,8 @@ import argparse
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional
 
+from docarray import Document
+
 from jina import __version__
 from jina.clients.request import request_generator
 from jina.enums import DataInputType
@@ -305,10 +307,15 @@ def get_fastapi_app(
                     and 'docs' in req_generator_input['data']
                 ):
                     req_generator_input['data'] = req_generator_input['data']['docs']
-
-                response = await _get_singleton_result(
-                    request_generator(**req_generator_input)
-                )
+                try:
+                    response = await _get_singleton_result(
+                        request_generator(**req_generator_input)
+                    )
+                except InternalNetworkError as err:
+                    logger.error(
+                        f'Error while getting responses from deployments: {err.details()}'
+                    )
+                    raise err  # will be handled by Strawberry
                 return DocumentArray.from_dict(response['data']).to_strawberry_type()
 
             @strawberry.type
