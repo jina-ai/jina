@@ -81,28 +81,3 @@ jobs:
           inputs: '{ "release_token": "${{ env.release_token }}", "triggered_by": "TAG"}'
         env:
           release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
-
-  create-release:
-    needs: update-doc
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          ref: 'master'
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-      - run: |
-          python scripts/get-last-release-note.py
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: 💫 Patch ${{ github.ref }}
-          body_path: 'tmp.md'
-          draft: false
-          prerelease: false
