@@ -1,5 +1,6 @@
 import asyncio
 import copy
+import re
 from collections import defaultdict
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
@@ -96,9 +97,8 @@ class TopologyGraph:
                         ):
                             return request, metadata
 
-                    if (
-                        target_executor_pattern is not None
-                        and self.name != target_executor_pattern
+                    if target_executor_pattern is not None and not re.match(
+                        target_executor_pattern, self.name
                     ):
                         return request, metadata
 
