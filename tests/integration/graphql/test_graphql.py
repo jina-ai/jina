@@ -330,19 +330,16 @@ def test_target_exec(req_type, target):
 
 
 def test_disable_graphql_endpoint():
-    response = graphql_query(
-        (
-            '''mutation {
-               docs(data: {text: "abcd"}) { 
-                id 
-            } 
-        }
-    '''
-        ),
-        use_nogql_flow=True,
-    )
-    assert 'errors' in response
-    assert isinstance(response['errors'], list)
-    assert 'exception' in response['errors'][0]
-    assert isinstance(response['errors'][0]['exception'], urllib.error.HTTPError)
-    assert response['errors'][0]['exception'].code == 404
+    with pytest.raises(ConnectionError) as err_info:
+        response = graphql_query(
+            (
+                '''mutation {
+                   docs(data: {text: "abcd"}) { 
+                    id 
+                } 
+            }
+        '''
+            ),
+            use_nogql_flow=True,
+        )
+    assert '404' in err_info.value.args[0]
