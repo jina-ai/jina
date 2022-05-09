@@ -15,9 +15,8 @@ from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.serve.executors.decorators import requests, store_init_kwargs, wrap_func
 
 if TYPE_CHECKING:
-    from prometheus_client import Summary
-
     from docarray import DocumentArray
+    from prometheus_client import Summary
 
 __all__ = ['BaseExecutor', 'ReducerExecutor']
 
@@ -131,7 +130,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 'Time spent when calling the executor request method',
                 registry=self.runtime_args.metrics_registry,
                 namespace='jina',
-                labelnames=('executor', 'endpoint'),
+                labelnames=('executor', 'endpoint', 'runtime_name'),
             )
             self._metrics_buffer = {'process_request_seconds': self._summary_method}
 
@@ -256,8 +255,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     async def __acall_endpoint__(self, req_endpoint, **kwargs):
         func = self.requests[req_endpoint]
 
+        runtime_name = (
+            self.runtime_args.name if hasattr(self.runtime_args, 'name') else None
+        )
+
         _summary = (
-            self._summary_method.labels(self.__class__.__name__, req_endpoint).time()
+            self._summary_method.labels(
+                self.__class__.__name__, req_endpoint, runtime_name
+            ).time()
             if self._summary_method
             else contextlib.nullcontext()
         )
@@ -497,7 +502,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     documentation,
                     registry=self.runtime_args.metrics_registry,
                     namespace='jina',
-                )
+                    labelnames=('runtime_name',),
+                ).labels(self.runtime_args.name)
             return self._metrics_buffer[name]
         else:
             return None

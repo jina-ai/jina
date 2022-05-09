@@ -72,7 +72,7 @@ def get_fastapi_app(
     from jina.serve.runtimes.gateway.request_handling import RequestHandler
     from jina.serve.stream import RequestStreamer
 
-    request_handler = RequestHandler(metrics_registry)
+    request_handler = RequestHandler(metrics_registry, args.name)
 
     streamer = RequestStreamer(
         args=args,
@@ -252,14 +252,13 @@ def get_fastapi_app(
             from dataclasses import asdict
 
             import strawberry
+            from docarray import DocumentArray
             from docarray.document.strawberry_type import (
                 JSONScalar,
                 StrawberryDocument,
                 StrawberryDocumentInput,
             )
             from strawberry.fastapi import GraphQLRouter
-
-            from docarray import DocumentArray
 
             async def get_docs_from_endpoint(
                 data, target_executor, parameters, exec_endpoint

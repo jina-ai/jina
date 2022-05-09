@@ -19,9 +19,14 @@ class RequestHandler:
     Class that handles the requests arriving to the gateway and the result extracted from the requests future.
 
     :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler
+    :param runtime_name: optional runtime_name that will be registered during monitoring
     """
 
-    def __init__(self, metrics_registry: Optional['CollectorRegistry'] = None):
+    def __init__(
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        runtime_name: Optional[str] = None,
+    ):
         self.request_init_time = {} if metrics_registry else None
         self._executor_endpoint_mapping = None
 
@@ -37,7 +42,9 @@ class RequestHandler:
                 'Time spent processing request',
                 registry=metrics_registry,
                 namespace='jina',
-            )
+                labelnames=('runtime_name',),
+            ).labels(runtime_name)
+
         else:
             self._summary = None
 

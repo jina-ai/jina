@@ -52,5 +52,10 @@ def test_decorator_interface(port_generator):
         f.post('/foo', inputs=DocumentArray.empty(4))
 
         resp = req.get(f'http://localhost:{port}/')
-        assert f'jina_metrics_name_count 1.0' in str(resp.content)
-        assert f'jina_proces_2_seconds_count 1.0' in str(resp.content)
+        assert f'jina_metrics_name_count{{runtime_name="executor0/rep-0"}} 1.0' in str(
+            resp.content
+        )
+        assert (
+            f'jina_proces_2_seconds_count{{runtime_name="executor0/rep-0"}} 1.0'
+            in str(resp.content)
+        )

@@ -46,7 +46,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
 
     async def _async_setup_server(self):
 
-        request_handler = RequestHandler(self.metrics_registry)
+        request_handler = RequestHandler(self.metrics_registry, self.name)
 
         self.streamer = RequestStreamer(
             args=self.args,

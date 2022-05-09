@@ -433,12 +433,12 @@ async def test_decorator_monitoring(port_generator):
         ready_or_shutdown_event=Event(),
     )
 
-    result = await GrpcConnectionPool.send_request_async(
+    await GrpcConnectionPool.send_request_async(
         _create_test_data_message(), f'{args.host}:{args.port}', timeout=1.0
     )
 
     resp = req.get(f'http://localhost:{port}/')
-    assert f'jina_metrics_name_count 1.0' in str(resp.content)
+    assert f'jina_metrics_name_count{{runtime_name="None"}} 1.0' in str(resp.content)
 
     cancel_event.set()
     runtime_thread.join()
