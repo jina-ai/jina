@@ -1632,10 +1632,19 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                     f'[link=http://localhost:{self.port}/graphql]http://localhost:{self.port}/graphql[/]',
                 )
         if self.monitoring:
-            address_table.add_row(
-                ':bar_chart:',
-                'Prometheus',
-                f'[link=http://localhost:{self.port_monitoring}]http://localhost:{self.port_monitoring}[/]',
+
+            for name, deployment in self:
+                if deployment.args.monitoring:
+                    address_table.add_row(
+                        ':bar_chart:',
+                        f'Monitor {name}',
+                        f'[link=http://localhost:{deployment.args.port_monitoring}]http://localhost:{deployment.args.port_monitoring}[/]',
+                    )
+
+            return self[GATEWAY_NAME].args.port_monitoring
+        else:
+            return self._common_kwargs.get(
+                'port_monitoring', __default_port_monitoring__
             )
 
         return address_table
