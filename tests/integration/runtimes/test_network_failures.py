@@ -125,6 +125,61 @@ async def test_runtimes_headless_topology(port_generator, protocol):
         worker_process.join()
 
 
+@pytest.mark.parametrize('protocol', ['grpc'])  # , 'http', 'websocket'])
+@pytest.mark.asyncio
+async def test_runtimes_replicas(port_generator, protocol):
+    # create gateway and workers manually, then terminate worker process to provoke an error
+    worker_ports = [port_generator() for _ in range(3)]
+    worker0_port, worker1_port, worker2_port = worker_ports
+    gateway_port = port_generator()
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["0.0.0.0:{worker0_port}", "0.0.0.0:{worker1_port}", "0.0.0.0:{worker2_port}"]}}'
+
+    worker_processes = []
+    for p in worker_ports:
+        worker_processes.append(_create_worker(p))
+        time.sleep(0.1)
+        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ctrl_address=f'0.0.0.0:{p}',
+            ready_or_shutdown_event=multiprocessing.Event(),
+        )
+
+    gateway_process = _create_gateway(
+        gateway_port, graph_description, pod_addresses, protocol
+    )
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{gateway_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    worker_processes[0].terminate()  # kill 'middle' worker
+    worker_processes[0].join()
+
+    try:
+        # await _send_request(gateway_port, protocol)
+        # ----------- 1. test that useful errors are given -----------
+        # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+        p = multiprocessing.Process(
+            target=_test_error, args=(gateway_port, worker0_port, protocol)
+        )
+        p.start()
+        p.join()
+        assert (
+            p.exitcode == 0
+        )  # if exitcode != 0 then test in other process did not pass and this should fail
+        # no retry in the case with replicas, because round robin retry mechanism will pick different replica now
+    except Exception:
+        assert False
+    finally:  # clean up runtimes
+        gateway_process.terminate()
+        gateway_process.join()
+        for p in worker_processes:
+            p.terminate()
+            p.join()
+
+
 @pytest.mark.parametrize('terminate_head', [True, False])
 @pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
 @pytest.mark.asyncio

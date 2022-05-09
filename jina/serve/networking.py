@@ -36,7 +36,7 @@ class ReplicaList:
         self._connections = []
         self._address_to_connection_idx = {}
         self._address_to_channel = {}
-        self._rr_counter = 0
+        self._rr_counter = 0  # round robin counter
         self.summary = summary
 
     def add_connection(self, address: str):
