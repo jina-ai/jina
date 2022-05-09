@@ -55,12 +55,17 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             ):
                 from prometheus_client import Summary
 
-            self._summary = Summary(
-                'receiving_request_seconds',
-                'Time spent processing request',
-                registry=self.metrics_registry,
-                namespace='jina',
-            ).time()
+            self._summary = (
+                Summary(
+                    'receiving_request_seconds',
+                    'Time spent processing request',
+                    registry=self.metrics_registry,
+                    namespace='jina',
+                    labelnames=('runtime_name',),
+                )
+                .labels(self.args.name)
+                .time()
+            )
         else:
             self._summary = contextlib.nullcontext()
 
@@ -146,10 +151,14 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
             self, self._grpc_server
         )
+        jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server(
+            self, self._grpc_server
+        )
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaControlRequestRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaDiscoverEndpointsRPC'].full_name,
             reflection.SERVICE_NAME,
         )
         reflection.enable_server_reflection(service_names, self._grpc_server)
@@ -208,7 +217,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 f'Error while getting responses from Pods: {err.details()}'
             )
             r = Response()
-            r.header.request_id = err.request_id
+            if err.request_id:
+                r.header.request_id = err.request_id
             return r
         except (
             RuntimeError,
@@ -265,6 +275,33 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 exc_info=not self.args.quiet_error,
             )
             raise
+
+    async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
+        """
+        USes the connection pool to send a discover endpoint call to the workers
+
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
+        """
+        response = jina_pb2.EndpointsProto()
+        if self.uses_before_address:
+            uses_before_response, _ = await self.connection_pool.send_discover_endpoint(
+                deployment='uses_before', head=False
+            )
+            response.endpoints.extend(uses_before_response.endpoints)
+        if self.uses_after_address:
+            uses_after_response, _ = await self.connection_pool.send_discover_endpoint(
+                deployment='uses_after', head=False
+            )
+            response.endpoints.extend(uses_after_response.endpoints)
+
+        worker_response, _ = await self.connection_pool.send_discover_endpoint(
+            deployment=self._deployment_name, head=False
+        )
+        response.endpoints.extend(worker_response.endpoints)
+
+        return response
 
     async def _handle_data_request(
         self, requests: List[DataRequest], endpoint: Optional[str]

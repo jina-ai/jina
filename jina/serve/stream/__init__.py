@@ -87,7 +87,8 @@ class RequestStreamer:
                     f'Error while getting responses from deployments: {err.details()}'
                 )
                 r = Response()
-                r.header.request_id = err.request_id
+                if err.request_id:
+                    r.header.request_id = err.request_id
                 yield r
             else:  # HTTP and WS need different treatment further up the stack
                 raise

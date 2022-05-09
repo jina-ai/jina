@@ -1,6 +1,7 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
+import "google/protobuf/empty.proto";
 import "docarray.proto";
 
 package jina;
@@ -38,6 +39,15 @@ message HeaderProto {
     optional uint32 timeout = 5; // epoch time in seconds after which the request should be dropped
 }
 
+
+/**
+ * Represents the set of Endpoints exposed by an Executor
+ */
+message EndpointsProto {
+
+    // list of endpoints exposed by an Executor
+    repeated string endpoints = 1;
+}
 
 /**
  * Represents a Status
@@ -172,6 +182,14 @@ service JinaSingleDataRequestRPC {
 service JinaRPC {
     // Pass in a Request and a filled Request with matches will be returned.
     rpc Call (stream DataRequestProto) returns (stream DataRequestProto) {
+    }
+}
+
+/**
+ * jina gRPC service to expose Endpoints from Executors.
+ */
+service JinaDiscoverEndpointsRPC {
+    rpc endpoint_discovery (google.protobuf.Empty) returns (EndpointsProto) {
     }
 }
 

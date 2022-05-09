@@ -993,11 +993,28 @@ def _update_policy():
         try:
             import uvloop
 
-            asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+            if not isinstance(asyncio.get_event_loop_policy(), uvloop.EventLoopPolicy):
+                asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
         except ModuleNotFoundError:
             warnings.warn(
                 'Install `uvloop` via `pip install "jina[uvloop]"` for better performance.'
             )
+
+
+def _close_loop():
+    try:
+        loop = asyncio.get_event_loop()
+        if not loop.is_closed():
+            loop.close()
+    except RuntimeError:
+        # there is no loop, so nothing to do here
+        pass
+
+
+# workaround for asyncio loop and fork issue: https://github.com/python/cpython/issues/66197
+# we close the loop after forking to avoid reusing the parents process loop
+# a new loop should be created in the child process
+os.register_at_fork(after_in_child=_close_loop)
 
 
 def get_or_reuse_loop():
@@ -1006,13 +1023,13 @@ def get_or_reuse_loop():
 
     :return: A new eventloop or reuse the current opened eventloop.
     """
+    _update_policy()
     try:
-        loop = asyncio.get_running_loop()
+        loop = asyncio.get_event_loop()
         if loop.is_closed():
             raise RuntimeError
     except RuntimeError:
-        _update_policy()
-        # no running event loop
+        # no event loop
         # create a new loop
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -1523,9 +1540,9 @@ def get_rich_console():
     :return: rich console
     """
     return Console(
-        force_terminal=True,
+        force_terminal=True if 'PYCHARM_HOSTED' in os.environ else None,
         color_system=None if 'JINA_LOG_NO_COLOR' in os.environ else 'auto',
-    )  # It forces render in any terminal, especially in PyCharm
+    )
 
 
 from jina.parsers import set_client_cli_parser

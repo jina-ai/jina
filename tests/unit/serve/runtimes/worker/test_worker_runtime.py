@@ -8,8 +8,9 @@ from threading import Event
 
 import grpc
 import pytest
-
+import requests as req
 from docarray import Document
+
 from jina import DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_pod_parser
@@ -380,3 +381,66 @@ async def test_worker_runtime_reflection():
 
 def _create_test_data_message(counter=0):
     return list(request_generator('/', DocumentArray([Document(text=str(counter))])))[0]
+
+
+@pytest.mark.asyncio
+@pytest.mark.slow
+@pytest.mark.timeout(5)
+async def test_decorator_monitoring(port_generator):
+    from jina import monitor
+
+    class DummyExecutor(Executor):
+        @requests
+        def foo(self, docs, **kwargs):
+            self._proces(docs)
+            self.proces_2(docs)
+
+        @monitor(name='metrics_name', documentation='metrics description')
+        def _proces(self, docs):
+            ...
+
+        @monitor()
+        def proces_2(self, docs):
+            ...
+
+    port = port_generator()
+    args = set_pod_parser().parse_args(
+        ['--monitoring', '--port-monitoring', str(port), '--uses', 'DummyExecutor']
+    )
+
+    cancel_event = multiprocessing.Event()
+
+    def start_runtime(args, cancel_event):
+        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
+            runtime.run_forever()
+
+    runtime_thread = Process(
+        target=start_runtime,
+        args=(args, cancel_event),
+        daemon=True,
+    )
+    runtime_thread.start()
+
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'{args.host}:{args.port}',
+        ready_or_shutdown_event=Event(),
+    )
+
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'{args.host}:{args.port}',
+        ready_or_shutdown_event=Event(),
+    )
+
+    await GrpcConnectionPool.send_request_async(
+        _create_test_data_message(), f'{args.host}:{args.port}', timeout=1.0
+    )
+
+    resp = req.get(f'http://localhost:{port}/')
+    assert f'jina_metrics_name_count{{runtime_name="None"}} 1.0' in str(resp.content)
+
+    cancel_event.set()
+    runtime_thread.join()
+
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')

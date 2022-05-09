@@ -136,3 +136,45 @@ def requests(
         return FunctionMapper(func)
     else:
         return FunctionMapper
+
+
+def monitor(
+    *,
+    name: Optional[str] = None,
+    documentation: Optional[str] = None,
+):
+    """
+    `@monitor()` allow to monitor internal method of your executor. You can access these metrics by enabling the
+    monitoring on your Executor. It will track the time spend calling the function and the number of times it has been
+    called. Under the hood it will create a prometheus Summary : https://prometheus.io/docs/practices/histograms/.
+
+    :warning: Don't use this decorator with the @request decorator as it already handle monitoring under the hood
+
+    :param name: the name of the metrics, by default it is based on the name of the method it decorates
+    :param documentation:  the description of the metrics, by default it is based on the name of the method it decorates
+
+    :return: decorator which takes as an input a single callable
+    """
+
+    def _decorator(func: Callable):
+
+        name_ = name if name else f'{func.__name__}_seconds'
+        documentation_ = (
+            documentation
+            if documentation
+            else f'Time spent calling method {func.__name__}'
+        )
+
+        @functools.wraps(func)
+        def _f(self, *args, **kwargs):
+            metric = self.get_metrics(name_, documentation_)
+
+            if metric:
+                with metric.time():
+                    return func(self, *args, **kwargs)
+            else:
+                return func(self, *args, **kwargs)
+
+        return _f
+
+    return _decorator

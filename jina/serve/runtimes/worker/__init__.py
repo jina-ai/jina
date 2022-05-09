@@ -41,12 +41,17 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             ):
                 from prometheus_client import Summary
 
-            self._summary_time = Summary(
-                'receiving_request_seconds',
-                'Time spent processing request',
-                registry=self.metrics_registry,
-                namespace='jina',
-            ).time()
+            self._summary_time = (
+                Summary(
+                    'receiving_request_seconds',
+                    'Time spent processing request',
+                    registry=self.metrics_registry,
+                    namespace='jina',
+                    labelnames=('runtime_name',),
+                )
+                .labels(self.args.name)
+                .time()
+            )
         else:
             self._summary_time = contextlib.nullcontext()
 
@@ -76,10 +81,14 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
             self, self._grpc_server
         )
+        jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server(
+            self, self._grpc_server
+        )
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaControlRequestRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaDiscoverEndpointsRPC'].full_name,
             reflection.SERVICE_NAME,
         )
         reflection.enable_server_reflection(service_names, self._grpc_server)
@@ -115,6 +124,20 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response request
         """
         return await self.process_data([request], context)
+
+    async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
+        """
+        Process the the call requested and return the list of Endpoints exposed by the Executor wrapped inside this Runtime
+
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
+        """
+        endpointsProto = jina_pb2.EndpointsProto()
+        endpointsProto.endpoints.extend(
+            list(self._data_request_handler._executor.requests.keys())
+        )
+        return endpointsProto
 
     async def process_data(self, requests: List[DataRequest], context) -> DataRequest:
         """

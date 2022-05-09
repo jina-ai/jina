@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: error-injector
+  namespace: test-failure-scenarios
+data:
+ nginx.conf: |-
+    events {}
+    http {
+        server {
+          listen 9090;
+            location / {
+                return 500;
+            }
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: error-injector
+  namespace: test-failure-scenarios
+  labels:
+    app: error-injector
+spec:
+  selector:
+    matchLabels:
+      app: error-injector
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        app: error-injector
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: error-injector
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: error-injector
+  namespace: test-failure-scenarios
+spec:
+  ports:
+  - name: service
+    port: 9090
+  selector:
+    app: error-injector
+---
+apiVersion: split.smi-spec.io/v1alpha1
+kind: TrafficSplit
+metadata:
+  name: error-split
+  namespace: test-failure-scenarios
+spec:
+  service: executor0
+  backends:
+  - service: executor0
+    weight: 950m
+  - service: error-injector
+    weight: 50m

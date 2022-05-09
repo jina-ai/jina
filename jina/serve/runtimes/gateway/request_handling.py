@@ -4,7 +4,6 @@ import time
 from typing import TYPE_CHECKING, Callable, List, Optional
 
 from docarray import DocumentArray
-
 from jina.importer import ImportExtensions
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
@@ -20,10 +19,16 @@ class RequestHandler:
     Class that handles the requests arriving to the gateway and the result extracted from the requests future.
 
     :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler
+    :param runtime_name: optional runtime_name that will be registered during monitoring
     """
 
-    def __init__(self, metrics_registry: Optional['CollectorRegistry'] = None):
+    def __init__(
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        runtime_name: Optional[str] = None,
+    ):
         self.request_init_time = {} if metrics_registry else None
+        self._executor_endpoint_mapping = None
 
         if metrics_registry:
             with ImportExtensions(
@@ -37,7 +42,9 @@ class RequestHandler:
                 'Time spent processing request',
                 registry=metrics_registry,
                 namespace='jina',
-            )
+                labelnames=('runtime_name',),
+            ).labels(runtime_name)
+
         else:
             self._summary = None
 
@@ -52,11 +59,39 @@ class RequestHandler:
         :return: Return a Function that given a Request will return a Future from where to extract the response
         """
 
+        async def gather_endpoints(request_graph):
+            def _get_all_nodes(node, accum, accum_names):
+                if node.name not in accum_names:
+                    accum.append(node)
+                    accum_names.append(node.name)
+                for n in node.outgoing_nodes:
+                    _get_all_nodes(n, accum, accum_names)
+                return accum, accum_names
+
+            nodes = []
+            node_names = []
+            for origin_node in request_graph.origin_nodes:
+                subtree_nodes, subtree_node_names = _get_all_nodes(origin_node, [], [])
+                for st_node, st_node_name in zip(subtree_nodes, subtree_node_names):
+                    if st_node_name not in node_names:
+                        nodes.append(st_node)
+                        node_names.append(st_node_name)
+
+            tasks_to_get_endpoints = [
+                node.get_endpoints(connection_pool) for node in nodes
+            ]
+            endpoints = await asyncio.gather(*tasks_to_get_endpoints)
+
+            self._executor_endpoint_mapping = {}
+            for node, (endp, _) in zip(nodes, endpoints):
+                self._executor_endpoint_mapping[node.name] = endp.endpoints
+
         def _handle_request(request: 'Request') -> 'asyncio.Future':
             if self._summary:
                 self.request_init_time[request.request_id] = time.time()
-            request_graph = copy.deepcopy(graph)
             # important that the gateway needs to have an instance of the graph per request
+            request_graph = copy.deepcopy(graph)
+
             if graph.has_filter_conditions:
                 request_doc_ids = request.data.docs[
                     :, 'id'
@@ -67,28 +102,22 @@ class RequestHandler:
             r = request.routes.add()
             r.executor = 'gateway'
             r.start_time.GetCurrentTime()
-            # If the request is targeting a specific deployment, we can send directly to the deployment instead of querying the graph
-            if request.header.target_executor:
-                tasks_to_respond.extend(
-                    connection_pool.send_request(
-                        request=request,
-                        deployment=request.header.target_executor,
-                        head=True,
-                        endpoint=endpoint,
-                    )
+            # If the request is targeting a specific deployment, we can send directly to the deployment instead of
+            # querying the graph
+            for origin_node in request_graph.origin_nodes:
+                leaf_tasks = origin_node.get_leaf_tasks(
+                    connection_pool,
+                    request,
+                    None,
+                    endpoint=endpoint,
+                    executor_endpoint_mapping=self._executor_endpoint_mapping,
+                    target_executor_pattern=request.header.target_executor,
                 )
-            else:
-                for origin_node in request_graph.origin_nodes:
-                    leaf_tasks = origin_node.get_leaf_tasks(
-                        connection_pool, request, None, endpoint=endpoint
-                    )
-                    # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their
-                    # subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous
-                    # nodes
-                    tasks_to_respond.extend([task for ret, task in leaf_tasks if ret])
-                    tasks_to_ignore.extend(
-                        [task for ret, task in leaf_tasks if not ret]
-                    )
+                # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their
+                # subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous
+                # nodes
+                tasks_to_respond.extend([task for ret, task in leaf_tasks if ret])
+                tasks_to_ignore.extend([task for ret, task in leaf_tasks if not ret])
 
             def _sort_response_docs(response):
                 # sort response docs according to their order in the initial request
@@ -104,6 +133,8 @@ class RequestHandler:
             async def _process_results_at_end_gateway(
                 tasks: List[asyncio.Task], request_graph: TopologyGraph
             ) -> asyncio.Future:
+                if self._executor_endpoint_mapping is None:
+                    await asyncio.gather(gather_endpoints(request_graph))
 
                 partial_responses = await asyncio.gather(*tasks)
                 partial_responses, metadatas = zip(*partial_responses)

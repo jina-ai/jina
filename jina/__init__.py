@@ -64,11 +64,11 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '3.3.23'
+__version__ = '3.3.26'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
-__proto_version__ = '0.1.8'
+__proto_version__ = '0.1.10'
 try:
     __docarray_version__ = _docarray.__version__
 except AttributeError as e:
@@ -206,7 +206,7 @@ from jina.orchestrate.flow.base import Flow
 
 # Executor
 from jina.serve.executors import BaseExecutor as Executor
-from jina.serve.executors.decorators import requests
+from jina.serve.executors.decorators import monitor, requests
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend(_names_with_underscore)

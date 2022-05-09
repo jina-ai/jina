@@ -44,8 +44,8 @@ lz4<3.1.2:                  perf, standard,devel
 uvloop:                     perf, standard,devel
 numpy:                      core
 protobuf>=3.19.1:           core
-grpcio>=1.33.1,<1.44.0:     core
-grpcio-reflection>=1.33.1,<1.44.0:  core
+grpcio>=1.46.0:             core
+grpcio-reflection>=1.46.0:  core
 pyyaml>=5.3.1:              core
 docarray>=0.9.10:           core
 packaging>=20.0:            core
@@ -75,4 +75,5 @@ kubernetes>=18.20.0:        test
 pytest-kind==21.1.3:        test
 pytest-lazy-fixture:        test
 sgqlc:                      cicd, graphql
-prometheus_client:          core
+prometheus_client:          perf
+psutil:                     test
