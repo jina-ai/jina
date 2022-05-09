@@ -196,7 +196,8 @@ with f:  # Using it as a Context Manager will start the Flow
     docs = client.post(on='/', target_executor='bar*')
     print(docs.texts)
 ```
-
+This will send the request to all Executors whose names start with 'bar', such as 'barExecutor'.
+In the simplest case, you can specify a precise Executor name, and the request will be sent only to that single Executor.
 ### Request parameters
 
 The Client can also send parameters to the Executors as shown below:
