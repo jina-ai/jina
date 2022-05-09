@@ -60,7 +60,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                     'Time spent processing request',
                     registry=self.metrics_registry,
                     namespace='jina',
-                    labelnames=('pod_name',),
+                    labelnames=('runtime_name',),
                 )
                 .labels(self.args.name)
                 .time()

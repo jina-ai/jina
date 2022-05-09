@@ -438,7 +438,7 @@ async def test_decorator_monitoring(port_generator):
     )
 
     resp = req.get(f'http://localhost:{port}/')
-    assert f'jina_metrics_name_count{{pod_name="None"}} 1.0' in str(resp.content)
+    assert f'jina_metrics_name_count{{runtime_name="None"}} 1.0' in str(resp.content)
 
     cancel_event.set()
     runtime_thread.join()
