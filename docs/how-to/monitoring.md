@@ -99,10 +99,72 @@ kb port-forward svc/prometheus-grafana 3000:80
 
 and open `http://localhost:3000` in your browser
 
+User is `admin`, password is `prom-operator`
 
-## Use Prometheus and Grafana to monitor a Flow with Docker compose
+You should see the grafana home page.
 
-## Use Prometheus and Grafana to monitor a Flow locally
+Then go to `Browse` then `import` and copy and paste the json file from https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json 
+
+You should see the following dashboard :
+
+```{figure} ../../.github/2.0/grafana.png
+:align: center
+```
+
+## Use Prometheus and Grafana to monitor a Flow locally 
+
+Let's first deploy the Flow that we want to monitor:
+
+
+````{tab} via Python code
+```python
+from jina import Flow
+
+with Flow(monitoring=True, port_monitoring=8000).add(
+    uses='jinahub://SimpleIndexer', port_monitoring=9000
+) as f:
+    f.block()
+```
+````
+
+````{tab} via docker compose
+```python
+from jina import Flow
+
+Flow(monitoring=True, port_monitoring=8000).add(
+    uses='jinahub+docker://SimpleIndexer', port_monitoring=9000
+).to_docker_compose_yaml('config.yaml')
+```
+```bash
+docker-compose -f config.yaml up
+```
+````
+
+To monitor a flow locally you will need to install prometheus and grafana locally. The easiest way to do it is by using
+docker-compose.
+
+First clone the repo which contain the config file:
+
+```bash
+git clone https://github.com/jina-ai/example-grafana-prometheus
+cd prometheus-grafana-local
+```
+
+then 
+
+```bash
+docker-compose up
+```
+
+You can access the grafana dashboard at `http://localhost:3000`. the username is `admin` and password `foobar`.
+
+You should then set up the dashboard by following the end of the how-to on kubernetes and the monitoring.
+
+```{caution}
+This example is working locally because the prometheus is configure so taht it listen to port 8000 and 9000. However
+in contrast with deploying on kubernetes, you need to tell prometheus which port to look at. You can change these
+port by modifying this [file](https://github.com/jina-ai/example-grafana-prometheus/blob/8baf519f7258da68cfe224775fc90537a749c305/prometheus-grafana-local/prometheus/prometheus.yml#L64)
+```
 
 ## See further
 
