@@ -304,13 +304,19 @@ class GrpcConnectionPool:
             self._add_connection(deployment, head_id, address, 'heads')
 
         def get_replicas(
-            self, deployment: str, head: bool, entity_id: Optional[int] = None
+            self,
+            deployment: str,
+            head: bool,
+            entity_id: Optional[int] = None,
+            increase_access_count: bool = True,
         ) -> ReplicaList:
             if deployment in self._deployments:
                 type_ = 'heads' if head else 'shards'
                 if entity_id is None and head:
                     entity_id = 0
-                return self._get_connection_list(deployment, type_, entity_id)
+                return self._get_connection_list(
+                    deployment, type_, entity_id, increase_access_count
+                )
             else:
                 self._logger.debug(
                     f'Unknown deployment {deployment}, no replicas available'
@@ -337,12 +343,17 @@ class GrpcConnectionPool:
             self._deployments.clear()
 
         def _get_connection_list(
-            self, deployment: str, type_: str, entity_id: Optional[int] = None
+            self,
+            deployment: str,
+            type_: str,
+            entity_id: Optional[int] = None,
+            increase_access_count: bool = True,
         ) -> ReplicaList:
             try:
                 if entity_id is None and len(self._deployments[deployment][type_]) > 0:
                     # select a random entity
-                    self._access_count[deployment] += 1
+                    if increase_access_count:
+                        self._access_count[deployment] += 1
                     return self._deployments[deployment][type_][
                         self._access_count[deployment]
                         % len(self._deployments[deployment][type_])
@@ -357,7 +368,9 @@ class GrpcConnectionPool:
                 ):
                     # This can happen as a race condition when removing connections while accessing it
                     # In this case we don't care for the concrete entity, so retry with the first one
-                    return self._get_connection_list(deployment, type_, 0)
+                    return self._get_connection_list(
+                        deployment, type_, 0, increase_access_count
+                    )
                 self._logger.debug(
                     f'did not find a connection for deployment {deployment}, type {type} and entity_id {entity_id}. There are {len(self._deployments[deployment][type]) if deployment in self._deployments else 0} available connections for this deployment and type. '
                 )
@@ -545,7 +558,9 @@ class GrpcConnectionPool:
         :return: asyncio.Task items to send call
         """
         connection = None
-        connection_list = self._connections.get_replicas(deployment, head, shard_id)
+        connection_list = self._connections.get_replicas(
+            deployment, head, shard_id, False
+        )
         if connection_list:
             connection = connection_list.get_next_connection()
         return self._send_discover_endpoint(connection, timeout=timeout)
