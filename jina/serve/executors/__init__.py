@@ -15,9 +15,8 @@ from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.serve.executors.decorators import requests, store_init_kwargs, wrap_func
 
 if TYPE_CHECKING:
-    from prometheus_client import Summary
-
     from docarray import DocumentArray
+    from prometheus_client import Summary
 
 __all__ = ['BaseExecutor', 'ReducerExecutor']
 
@@ -503,7 +502,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     documentation,
                     registry=self.runtime_args.metrics_registry,
                     namespace='jina',
-                )
+                    labelnames=('pod_name',),
+                ).labels(self.runtime_args.name)
             return self._metrics_buffer[name]
         else:
             return None
