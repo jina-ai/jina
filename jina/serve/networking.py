@@ -187,8 +187,7 @@ class GrpcConnectionPool:
             timeout: Optional[float] = None,
         ) -> Tuple:
             """
-            Send requests and uses the appropriate grpc stub for this
-            Stub is chosen based on availability and type of requests
+            Use the endpoint discovery stub to request for the Endpoints Exposed by an Executor
 
             :param timeout: defines timeout for sending request
 
@@ -537,13 +536,13 @@ class GrpcConnectionPool:
         shard_id: Optional[int] = None,
         timeout: Optional[float] = None,
     ) -> asyncio.Task:
-        """Send a request to target via one or all of the pooled connections, depending on polling_type
+        """Sends a discover Endpoint call to target.
 
         :param deployment: name of the Jina deployment to send the request to
         :param head: If True it is send to the head, otherwise to the worker pods
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param timeout: timeout for sending the requests
-        :return: asyncio.Task items for send call
+        :return: asyncio.Task items to send call
         """
         connection = None
         connection_list = self._connections.get_replicas(deployment, head, shard_id)
@@ -868,7 +867,7 @@ class GrpcConnectionPool:
         endpoint: Optional[str] = None,
     ) -> Request:
         """
-        Sends a request synchronically to the target via grpc
+        Sends a request synchronously to the target via grpc
 
         :param request: the request to send
         :param target: where to send the request to, like 127.0.0.1:8080

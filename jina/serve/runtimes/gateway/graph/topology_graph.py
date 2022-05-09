@@ -133,7 +133,7 @@ class TopologyGraph:
             :param previous_task: Optional task coming from the predecessor of the Node
             :param endpoint: Optional string defining the endpoint of this request
             :param executor_endpoint_mapping: Optional map that maps the name of a Deployment with the endpoints that it binds to so that they can be skipped if needed
-            :param target_executor_pattern: Optional regex pattern for the target executor to decide wether or not the Executor should receive the request
+            :param target_executor_pattern: Optional regex pattern for the target executor to decide whether or not the Executor should receive the request
 
             .. note:
                 deployment1 -> outgoing_nodes: deployment2

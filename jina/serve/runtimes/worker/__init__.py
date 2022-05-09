@@ -122,8 +122,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
         """
-        Process the received requests and return the result as a new request
+        Process the the call requested and return the list of Endpoints exposed by the Executor wrapped inside this Runtime
 
+        :param empty: The service expects an empty protobuf message
         :param context: grpc context
         :returns: the response request
         """
