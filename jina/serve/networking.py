@@ -14,7 +14,7 @@ from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 from jina.enums import PollingType
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
-from jina.proto import jina_pb2_grpc
+from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.types.request import Request
 from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
@@ -156,6 +156,7 @@ class GrpcConnectionPool:
             'jina.JinaControlRequestRPC': jina_pb2_grpc.JinaControlRequestRPCStub,
             'jina.JinaDataRequestRPC': jina_pb2_grpc.JinaDataRequestRPCStub,
             'jina.JinaSingleDataRequestRPC': jina_pb2_grpc.JinaSingleDataRequestRPCStub,
+            'jina.JinaDiscoverEndpointsRPC': jina_pb2_grpc.JinaDiscoverEndpointsRPCStub,
             'jina.JinaRPC': jina_pb2_grpc.JinaRPCStub,
         }
 
@@ -178,7 +179,32 @@ class GrpcConnectionPool:
             self.data_list_stub = stubs['jina.JinaDataRequestRPC']
             self.single_data_stub = stubs['jina.JinaSingleDataRequestRPC']
             self.stream_stub = stubs['jina.JinaRPC']
+            self.endpoints_discovery_stub = stubs['jina.JinaDiscoverEndpointsRPC']
             self._initialized = True
+
+        async def send_discover_endpoint(
+            self,
+            timeout: Optional[float] = None,
+        ) -> Tuple:
+            """
+            Use the endpoint discovery stub to request for the Endpoints Exposed by an Executor
+
+            :param timeout: defines timeout for sending request
+
+            :returns: Tuple of response and metadata about the response
+            """
+            if not self._initialized:
+                await self._init_stubs()
+
+            call_result = self.endpoints_discovery_stub.endpoint_discovery(
+                jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(),
+                timeout=timeout,
+            )
+            metadata, response = (
+                await call_result.trailing_metadata(),
+                await call_result,
+            )
+            return response, metadata
 
         async def send_requests(
             self,
@@ -278,13 +304,19 @@ class GrpcConnectionPool:
             self._add_connection(deployment, head_id, address, 'heads')
 
         def get_replicas(
-            self, deployment: str, head: bool, entity_id: Optional[int] = None
+            self,
+            deployment: str,
+            head: bool,
+            entity_id: Optional[int] = None,
+            increase_access_count: bool = True,
         ) -> ReplicaList:
             if deployment in self._deployments:
                 type_ = 'heads' if head else 'shards'
                 if entity_id is None and head:
                     entity_id = 0
-                return self._get_connection_list(deployment, type_, entity_id)
+                return self._get_connection_list(
+                    deployment, type_, entity_id, increase_access_count
+                )
             else:
                 self._logger.debug(
                     f'Unknown deployment {deployment}, no replicas available'
@@ -311,12 +343,17 @@ class GrpcConnectionPool:
             self._deployments.clear()
 
         def _get_connection_list(
-            self, deployment: str, type_: str, entity_id: Optional[int] = None
+            self,
+            deployment: str,
+            type_: str,
+            entity_id: Optional[int] = None,
+            increase_access_count: bool = True,
         ) -> ReplicaList:
             try:
                 if entity_id is None and len(self._deployments[deployment][type_]) > 0:
                     # select a random entity
-                    self._access_count[deployment] += 1
+                    if increase_access_count:
+                        self._access_count[deployment] += 1
                     return self._deployments[deployment][type_][
                         self._access_count[deployment]
                         % len(self._deployments[deployment][type_])
@@ -331,7 +368,9 @@ class GrpcConnectionPool:
                 ):
                     # This can happen as a race condition when removing connections while accessing it
                     # In this case we don't care for the concrete entity, so retry with the first one
-                    return self._get_connection_list(deployment, type_, 0)
+                    return self._get_connection_list(
+                        deployment, type_, 0, increase_access_count
+                    )
                 self._logger.debug(
                     f'did not find a connection for deployment {deployment}, type {type} and entity_id {entity_id}. There are {len(self._deployments[deployment][type]) if deployment in self._deployments else 0} available connections for this deployment and type. '
                 )
@@ -503,6 +542,29 @@ class GrpcConnectionPool:
 
         return results
 
+    def send_discover_endpoint(
+        self,
+        deployment: str,
+        head: bool = True,
+        shard_id: Optional[int] = None,
+        timeout: Optional[float] = None,
+    ) -> asyncio.Task:
+        """Sends a discover Endpoint call to target.
+
+        :param deployment: name of the Jina deployment to send the request to
+        :param head: If True it is send to the head, otherwise to the worker pods
+        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
+        :param timeout: timeout for sending the requests
+        :return: asyncio.Task items to send call
+        """
+        connection = None
+        connection_list = self._connections.get_replicas(
+            deployment, head, shard_id, False
+        )
+        if connection_list:
+            connection = connection_list.get_next_connection()
+        return self._send_discover_endpoint(connection, timeout=timeout)
+
     def send_request_once(
         self,
         request: Request,
@@ -560,7 +622,7 @@ class GrpcConnectionPool:
         self,
         deployment: str,
         address: str,
-        head: Optional[bool] = False,
+        head: bool = False,
         shard_id: Optional[int] = None,
     ):
         """
@@ -582,7 +644,7 @@ class GrpcConnectionPool:
         self,
         deployment: str,
         address: str,
-        head: Optional[bool] = False,
+        head: bool = False,
         shard_id: Optional[int] = None,
     ):
         """
@@ -622,9 +684,7 @@ class GrpcConnectionPool:
     ) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
-        async def task_wrapper(
-            requests, connection: GrpcConnectionPool.ConnectionStubs, endpoint
-        ):
+        async def task_wrapper():
             metadata = (('endpoint', endpoint),) if endpoint else None
             for i in range(3):
                 try:
@@ -640,17 +700,59 @@ class GrpcConnectionPool:
                         raise
                     else:
                         self._logger.debug(
-                            f'GRPC call failed with code {e.code()}, retry attempt {i+1}/3'
+                            f'GRPC call failed with code {e.code()}, retry attempt {i + 1}/3'
                         )
 
-        return asyncio.create_task(task_wrapper(requests, connection, endpoint))
+        return asyncio.create_task(task_wrapper())
+
+    def _send_discover_endpoint(
+        self,
+        connection: ConnectionStubs,
+        timeout: Optional[float] = None,
+    ) -> asyncio.Task:
+        # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
+        # the grpc call function is not a coroutine but some _AioCall
+        async def task_wrapper():
+            for i in range(3):
+                try:
+                    return await connection.send_discover_endpoint(
+                        timeout=timeout,
+                    )
+                except AioRpcError as e:
+                    # connection failures and cancelled requests should be retried
+                    # all other cases should not be retried and will be raised immediately
+                    # connection failures have the code grpc.StatusCode.UNAVAILABLE
+                    # cancelled requests have the code grpc.StatusCode.CANCELLED
+                    # requests usually gets cancelled when the server shuts down
+                    # retries for cancelled requests will hit another replica in K8s
+                    if (
+                        e.code() != grpc.StatusCode.UNAVAILABLE
+                        and e.code() != grpc.StatusCode.CANCELLED
+                    ):
+                        raise
+                    elif e.code() == grpc.StatusCode.UNAVAILABLE and i == 2:
+                        self._logger.debug(f'GRPC call failed, retries exhausted')
+                        raise
+                    else:
+                        self._logger.debug(
+                            f'GRPC call failed with code {e.code()}, retry attempt {i + 1}/3'
+                        )
+                except AttributeError:
+                    # in gateway2gateway communication, gateway does not expose this endpoint. So just send empty list which corresponds to all endpoints valid
+                    from jina import __default_endpoint__
+
+                    ep = jina_pb2.EndpointsProto()
+                    ep.endpoints.extend([__default_endpoint__])
+                    return ep, None
+
+        return asyncio.create_task(task_wrapper())
 
     @staticmethod
     def get_grpc_channel(
         address: str,
         options: Optional[list] = None,
-        asyncio: Optional[bool] = False,
-        tls: Optional[bool] = False,
+        asyncio: bool = False,
+        tls: bool = False,
         root_certificates: Optional[str] = None,
     ) -> grpc.Channel:
         """
@@ -769,7 +871,7 @@ class GrpcConnectionPool:
         endpoint: Optional[str] = None,
     ) -> Request:
         """
-        Sends a request synchronically to the target via grpc
+        Sends a request synchronously to the target via grpc
 
         :param request: the request to send
         :param target: where to send the request to, like 127.0.0.1:8080

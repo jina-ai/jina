@@ -108,3 +108,30 @@ class DataRequestListProto:
             requests.append(DataRequest.from_proto(request))
 
         return requests
+
+
+class EndpointsProto:
+    """Since the serializer is replacing the `jina_pb2 to know how to exactly serialize messages, this is just a placeholder that
+    delegates the serializing and deserializing to the internal protobuf structure with no extra optimization.
+    """
+
+    @staticmethod
+    def SerializeToString(x):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        return x.SerializeToString()
+
+    @staticmethod
+    def FromString(x: bytes):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+        # noqa: DAR201
+        """
+        ep = jina_pb2.EndpointsProto()
+        ep.ParseFromString(x)
+
+        return ep

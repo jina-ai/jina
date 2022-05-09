@@ -1,9 +1,11 @@
 import asyncio
 import copy
+import re
 from collections import defaultdict
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
+from jina import __default_endpoint__
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest
@@ -55,12 +57,17 @@ class TopologyGraph:
                 copy_req.data.docs = filtered_docs
                 self.parts_to_send[i] = copy_req
 
+        def get_endpoints(self, connection_pool: GrpcConnectionPool):
+            return connection_pool.send_discover_endpoint(self.name)
+
         async def _wait_previous_and_send(
             self,
             request: DataRequest,
             previous_task: Optional[asyncio.Task],
             connection_pool: GrpcConnectionPool,
             endpoint: Optional[str],
+            executor_endpoint_mapping: Optional[Dict] = None,
+            target_executor_pattern: Optional[str] = None,
         ):
             # Check my condition and send request with the condition
             metadata = {}
@@ -80,6 +87,20 @@ class TopologyGraph:
                         self.parts_to_send = [
                             DataRequestHandler.reduce_requests(self.parts_to_send)
                         ]
+
+                    # avoid sending to executor which does not bind to this endpoint
+                    if endpoint is not None and executor_endpoint_mapping is not None:
+                        if (
+                            endpoint not in executor_endpoint_mapping[self.name]
+                            and __default_endpoint__
+                            not in executor_endpoint_mapping[self.name]
+                        ):
+                            return request, metadata
+
+                    if target_executor_pattern is not None and not re.match(
+                        target_executor_pattern, self.name
+                    ):
+                        return request, metadata
 
                     resp, metadata = await connection_pool.send_requests_once(
                         requests=self.parts_to_send,
@@ -101,6 +122,8 @@ class TopologyGraph:
             request_to_send: Optional[DataRequest],
             previous_task: Optional[asyncio.Task],
             endpoint: Optional[str] = None,
+            executor_endpoint_mapping: Optional[Dict] = None,
+            target_executor_pattern: Optional[str] = None,
         ) -> List[Tuple[bool, asyncio.Task]]:
             """
             Gets all the tasks corresponding from all the subgraphs born from this node
@@ -109,6 +132,8 @@ class TopologyGraph:
             :param request_to_send: Optional request to be sent when the node is an origin of a graph
             :param previous_task: Optional task coming from the predecessor of the Node
             :param endpoint: Optional string defining the endpoint of this request
+            :param executor_endpoint_mapping: Optional map that maps the name of a Deployment with the endpoints that it binds to so that they can be skipped if needed
+            :param target_executor_pattern: Optional regex pattern for the target executor to decide whether or not the Executor should receive the request
 
             .. note:
                 deployment1 -> outgoing_nodes: deployment2
@@ -134,7 +159,12 @@ class TopologyGraph:
             """
             wait_previous_and_send_task = asyncio.create_task(
                 self._wait_previous_and_send(
-                    request_to_send, previous_task, connection_pool, endpoint=endpoint
+                    request_to_send,
+                    previous_task,
+                    connection_pool,
+                    endpoint=endpoint,
+                    executor_endpoint_mapping=executor_endpoint_mapping,
+                    target_executor_pattern=target_executor_pattern,
                 )
             )
             if self.leaf:  # I am like a leaf
@@ -148,6 +178,8 @@ class TopologyGraph:
                     None,
                     wait_previous_and_send_task,
                     endpoint=endpoint,
+                    executor_endpoint_mapping=executor_endpoint_mapping,
+                    target_executor_pattern=target_executor_pattern,
                 )
                 # We are interested in the last one, that will be the task that awaits all the previous
                 hanging_tasks_tuples.extend(t)
