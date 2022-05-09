@@ -179,6 +179,7 @@ class TopologyGraph:
                     wait_previous_and_send_task,
                     endpoint=endpoint,
                     executor_endpoint_mapping=executor_endpoint_mapping,
+                    target_executor_pattern=target_executor_pattern,
                 )
                 # We are interested in the last one, that will be the task that awaits all the previous
                 hanging_tasks_tuples.extend(t)
