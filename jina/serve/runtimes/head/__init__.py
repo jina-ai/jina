@@ -263,9 +263,23 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :param context: grpc context
         :returns: the response request
         """
-        response, metadata = await self.connection_pool.send_discover_endpoint(
+        response = jina_pb2.EndpointsProto()
+        if self.uses_before_address:
+            uses_before_response, _ = await self.connection_pool.send_discover_endpoint(
+                deployment='uses_before', head=False
+            )
+            response.endpoints.extend(uses_before_response.endpoints)
+        if self.uses_after_address:
+            uses_after_response, _ = await self.connection_pool.send_discover_endpoint(
+                deployment='uses_after', head=False
+            )
+            response.endpoints.extend(uses_after_response.endpoints)
+
+        worker_response, _ = await self.connection_pool.send_discover_endpoint(
             deployment=self._deployment_name, head=False
         )
+        response.endpoints.extend(worker_response.endpoints)
+
         return response
 
     async def _handle_data_request(
