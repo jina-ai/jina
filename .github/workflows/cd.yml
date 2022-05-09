@@ -283,7 +283,6 @@ jobs:
           fail_ci_if_error: false
 
   k8s-failures-test:
-    needs: [ commit-lint, lint-flake-8, code-injection ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
