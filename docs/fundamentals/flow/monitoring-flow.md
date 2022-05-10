@@ -11,7 +11,7 @@ Jina Flows exposes metrics in the [Prometheus format](https://prometheus.io/docs
 To visualize your metrics through a dashboard, we recommend [Grafana](https://grafana.com/)
 
 
-## Using the monitoring in a Flow
+## Enabling the monitoring in a Flow
 
 A {ref}`Flow <flow-cookbook>` is composed of several Pods, namely the Gateway, the Executors, and potentially a Head (see the {ref}`architecture overview <architecture-overview>` for more details). Each of these Pods is its own microservice. These services expose their own metrics using the [Prometheus client](https://prometheus.io/docs/instrumenting/clientlibs/).
 This means that they are as many metrics endpoints as there are Pods in your Flow. 
