@@ -65,7 +65,7 @@ the `prometheus_port` for the Executors.
 
 
 Because each Pod in a Flow exposes its own metrics, the monitoring feature can be used independently on each Pod.
-This means that you are not forced to always monitor every Pods of your Flow. For example, you could be only interested in
+This means that you are not forced to always monitor every Pod of your Flow. For example, you could be only interested in
 metrics coming from the Gateway, and therefore you only activate the monitoring on it. On the other hand, you might be only
 interested in monitoring a single Executor. Note that by default the monitoring is disabled everywhere.
 

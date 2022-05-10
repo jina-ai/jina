@@ -6,7 +6,7 @@ This section documents the ability to add custom monitoring to the Executor.
 
 Custom metrics are useful when you want to monitor each subpart of your Executors. Jina allows you to leverage
 the full power of the [prometheus-client](https://github.com/prometheus/client_python) to define useful metrics 
-for each of your Executor. We provide a convenient wrapper as well, i.e `@monitor()`, which let you easily monitor
+for each of your Executors. We provide a convenient wrapper as well, i.e `@monitor()`, which let you easily monitor
 sub-method of your Executor. 
 
 
@@ -17,7 +17,7 @@ please refer to {ref}`this <monitoring-flow>` section.
 ```
 
 When the monitoring is enabled each Executor will expose its 
-own metrics. It means that in practice each of the Executors will expose a Prometheus endpoint using the [prometheus-client](https://github.com/prometheus/client_python).
+own metrics. This means that in practice each of the Executors will expose a Prometheus endpoint using the [Prometheus Client](https://github.com/prometheus/client_python).
 
 By default, every method which is decorated by the `@request` decorator will be monitored, it will create a
 [Prometheus Summary](https://prometheus.io/docs/concepts/metric_types/#summary) which will keep track of the time of 
@@ -28,8 +28,8 @@ the execution of the method.
 Sometimes monitoring the `encoding` method is not enough, you need to break it up into multiple parts that you want to 
 monitor one by one.
 
-It could be useful if your encoding phase for example is composed of two tasks: image processing and
-image embedding. By using custom metrics on these two tasks you could identify potential bottlenecks.
+It could be useful if your encoding phase is composed of two tasks: image processing and
+image embedding. By using custom metrics on these two tasks you can identify potential bottlenecks.
 
 Overall the ability to add custom metrics allows you to have the full flexibility on the monitoring of your Executor.
 
@@ -54,7 +54,7 @@ This will create a [Prometheus summary](https://prometheus.io/docs/concepts/metr
 `jina_my_method_inference_seconds` which will keep track of the time of execution of `my_method
 
 By default, the name and the documentation of the metric created by `@monitor` are auto-generated based on the name
-of the function. However, you can precise it by yourself by doing :
+of the function. However, you can name it by yourself by doing :
 
 ```python
 @monitor(
@@ -94,10 +94,10 @@ class MyExecutor(Executor):
 ```
 
 This Executor encodes is composed of two sub-functions.
-* `preprocessing` which takes raw bytes from a DocumentArray and put them into a torch tensor. 
+* `preprocessing` which takes raw bytes from a DocumentArray and put them into a PyTorch tensor. 
 * `model inference` calls the forward function of a deep learning model.
 
-By default, only the encode function will be monitored. 
+By default, only the `encode` function will be monitored. 
 
 ```{code-block} python
 ---
@@ -126,11 +126,11 @@ class MyExecutor(Executor):
 ### Defining custom metrics directly with the Prometheus client
 
 Under the hood, the monitoring feature of the Executor is handled by the 
-python [Prometheus-client](https://github.com/prometheus/client_python). The `@monitor` decorator is a convenient tool
-to monitor sub-method of an Executor, but you might need more flexibility and that is why you can access the Prometheus
-client directly from the executor to define every kind of metric supported by Prometheus.
+Python [Prometheus-client](https://github.com/prometheus/client_python). The `@monitor` decorator is a convenient tool
+to monitor sub-methods of an Executor, but you might need more flexibility and that is why you can access the Prometheus
+client directly from the Executor to define every kind of metric supported by Prometheus.
 
-let's see it in an example
+Let's see it in an example
 
 
 ```python
