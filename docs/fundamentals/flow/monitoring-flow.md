@@ -5,8 +5,8 @@ A Jina {ref}`Flow <flow-cookbook>` exposes several core metrics that allow you t
 at what is happening inside it. Metrics allow you to, for example, monitor the overall performance 
 of your Flow, detect bottlenecks, or alert your team when some component of your Flow is down.
 
-Jina Flows expose metrics in the [Prometheus format](https://prometheus.io/docs/instrumenting/exposition_formats/). This is a plain text format that is understandable by both human and machine. These metrics are intended to be scraped by
-[Prometheus](https://prometheus.io/),an industry standard tool for collecting and monitoring metrics.
+Jina Flows exposes metrics in the [Prometheus format](https://prometheus.io/docs/instrumenting/exposition_formats/). This is a plain text format that is understandable by both humans and machines. These metrics are intended to be scraped by
+[Prometheus](https://prometheus.io/), an industry-standard tool for collecting and monitoring metrics.
 
 To visualize your metrics through a dashboard, we recommend [Grafana](https://grafana.com/)
 
@@ -51,7 +51,7 @@ jina flow --uses flow.yaml
 ```
 ````
 
-This Flow will create two Pods, one for the Gateway, one for the SimpleIndexer Executor, and therefore it will create two 
+This Flow will create two Pods, one for the Gateway, and one for the SimpleIndexer Executor, therefore it will create two 
 metrics endpoints:
 
 * `http://localhost:9090  ` for the gateway
@@ -59,7 +59,7 @@ metrics endpoints:
 
 ````{admonition} Default Monitoring port
 :class: hint
-The default monitoring port is `9090`, if you want to enable the monitoring on both the Gateway and the Executors you need to specifiy
+The default monitoring port is `9090`, if you want to enable the monitoring on both the Gateway and the Executors you need to specify
 the `prometheus_port` for the Executors. 
 ````
 
@@ -79,7 +79,7 @@ Flow(monitoring=True).add(...)
 Passing `monitoring = True` when creating the Flow will enable the monitoring on **all the Pods** of your Flow. 
 ````
 
-If you want to enable the monitoring only on the Gateway, you need to first enable the feature for then entire Flow, and then disable it for the Executor which you are not interested in.
+If you want to enable the monitoring only on the Gateway, you need to first enable the feature for the entire Flow, and then disable it for the Executor which you are not interested in.
 
 ```python
 Flow(monitoring=True).add(monitoring=False, ...).add(monitoring=False, ...)
@@ -94,7 +94,7 @@ Flow().add(...).add(uses=MyExecutor, monitoring=True)
 
 Flows support different metrics out of the box, in addition to allowing the user to define their own custom metrics.
 
-Because not all Pods have the same role, they expose different kind of metrics:
+Because not all Pods have the same role, they expose different kinds of metrics:
 
 
 
@@ -132,10 +132,6 @@ Executor.
 ```{hint} 
  `jina_receiving_request_seconds` is different from `jina_process_request_seconds` because it includes the gRPC communication overhead whereas `jina_process_request_seconds` is only about the time spend calling the function 
 ```
-
-
-
-
 
 ## See further
 

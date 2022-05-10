@@ -2,12 +2,12 @@
 # How to deploy and use the monitoring with Jina
 
 First, let's have some context on the monitoring stack that we will be using during this guide.
-To leverage the {ref}`metrics <monitoring-flow>` that Jina exposes, we recommend to use the Prometheus/Grafana stack. In this setup, Jina will expose different {ref}`metrics endpoint <monitoring-flow>`, and Prometheus will then be in charge of scraping these endpoints, as well as
-collecting, aggregating and storing the different metrics. Prometheus will then allow external entities (like Grafana) to access these aggregated metrics via the query language [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/).
+To leverage the {ref}`metrics <monitoring-flow>` that Jina exposes, we recommend using the Prometheus/Grafana stack. In this setup, Jina will expose different {ref}`metrics endpoint <monitoring-flow>`, and Prometheus will then be in charge of scraping these endpoints, as well as
+collecting, aggregating, and storing the different metrics. Prometheus will then allow external entities (like Grafana) to access these aggregated metrics via the query language [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/).
 Then the role of Grafana here will be to allow users to visualize these metrics by creating dashboards.
 
 ```{hint} 
-Jina supports exposing the metrics, you are in charge of installing and manageing your Prometheus/Grafana instances.
+Jina supports exposing the metrics, you are in charge of installing and managing your Prometheus/Grafana instances.
 
 We will show you in this guide how to easily deploy the Prometheus/Grafana stack and used them to monitor a Flow.
 
@@ -42,7 +42,7 @@ Deploying Prometheus and Grafana on your k8s cluster is as easy as executing the
 helm install prometheus prometheus-community/kube-prometheus-stack --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false
 ```
 ```{hint} 
-setting the `serviceMonitorSelectorNilUsesHelmValues` to false allow the Prometheus Operator to discover metrics endpoint outside of the helm scope which will be needed to discover the Flow metrics endpoints.
+setting the `serviceMonitorSelectorNilUsesHelmValues` to false allows the Prometheus Operator to discover metrics endpoint outside of the helm scope which will be needed to discover the Flow metrics endpoints.
 ```
 
 ### 2 - Deploying the Flow
@@ -59,7 +59,7 @@ f.to_k8s_yaml('config')
 This will create a `config` folder containing the Kubernetes YAML definition of the Flow.
 
 ```{seealso}
-You can see indepth how to deploy a Flow on kubernetes {ref}`here <kubernetes>`
+You can see in-depth how to deploy a Flow on kubernetes {ref}`here <kubernetes>`
 ```
 
 Then deploy the Flow:
@@ -97,9 +97,9 @@ and open `http://localhost:3000` in your browser
 
 User is `admin`, password is `prom-operator`
 
-You should see the grafana home page.
+You should see the Grafana home page.
 
-Then go to `Browse` then `import` and copy and paste the json file from https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json 
+Then go to `Browse` then `import` and copy and paste the JSON file from https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json 
 
 You should see the following dashboard :
 
@@ -123,7 +123,7 @@ with Flow(monitoring=True, port_monitoring=8000).add(
 ```
 ````
 
-````{tab} via docker compose
+````{tab} via docker-compose
 ```python
 from jina import Flow
 
@@ -136,10 +136,10 @@ docker-compose -f config.yaml up
 ```
 ````
 
-To monitor a flow locally you will need to install Prometheus and grafana locally. The easiest way to do it is by using
+To monitor a flow locally you will need to install Prometheus and Grafana locally. The easiest way to do it is by using
 docker-compose.
 
-First clone the repo which contain the config file:
+First clone the repo which contains the config file:
 
 ```bash
 git clone https://github.com/jina-ai/example-grafana-prometheus
@@ -152,13 +152,13 @@ then
 docker-compose up
 ```
 
-You can access the grafana dashboard at `http://localhost:3000`. the username is `admin` and password `foobar`.
+You can access the Grafana dashboard at `http://localhost:3000`. the username is `admin` and the password `foobar`.
 
-You should then set up the dashboard by following the end of the how-to on kubernetes and the monitoring.
+You should then set up the dashboard by following the end of the how-to on Kubernetes and the monitoring.
 
 ```{caution}
-This example is working locally because Prometheus is configure so that it listen to port 8000 and 9000. However
-in contrast with deploying on kubernetes, you need to tell Prometheus which port to look at. You can change these
+This example is working locally because Prometheus is configured so that it listens to ports 8000 and 9000. However,
+in contrast with deploying on Kubernetes, you need to tell Prometheus which port to look at. You can change these
 ports by modifying this [file](https://github.com/jina-ai/example-grafana-prometheus/blob/8baf519f7258da68cfe224775fc90537a749c305/prometheus-grafana-local/prometheus/prometheus.yml#L64)
 ```
 
