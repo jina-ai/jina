@@ -8,16 +8,18 @@ Then the role of Grafana here will be to allow users to visualize these metrics 
 
 ```{hint} 
 Jina supports exposing the metrics, you are in charge of installing and managing your Prometheus/Grafana instances.
+```
 
 We will show you in this guide how to easily deploy the Prometheus/Grafana stack and used them to monitor a Flow.
 
-## Use Prometheus and Grafana to monitor a Flow on Kubernetes
+## 1 - Deploying the Flow and the monitoring stack
+
+### Deploying on Kubernetes
 
 
 One of the challenges of monitoring a Flow is communicating its different metrics endpoints to Prometheus.
 Fortunately, the [Prometheus operator for Kubernetes](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/getting-started.md) makes the process fairly easy, because it can automatically discover new metrics endpoints to scrape.
 
-```{hint} 
 Deploying your Jina Flow on Kubernetes is the recommended way to leverage the full potential of the monitoring feature because:
 * The Prometheus operator can automatically discover new endpoints to scrape
 * You can extend your monitoring with the rich built-in Kubernetes metrics
@@ -34,7 +36,6 @@ Or you can use a  managed Kubernetes solution on the cloud:
 - [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service),
 
 
-### 1 - Deploying Prometheus and Grafana
 
 Deploying Prometheus and Grafana on your k8s cluster is as easy as executing the following line:
 
@@ -44,9 +45,6 @@ helm install prometheus prometheus-community/kube-prometheus-stack --set prometh
 ```{hint} 
 setting the `serviceMonitorSelectorNilUsesHelmValues` to false allows the Prometheus Operator to discover metrics endpoint outside of the helm scope which will be needed to discover the Flow metrics endpoints.
 ```
-## 1 - Deploying the Flow and the monitoring stack
-
-### Deploying on Kubernetes
 
 Let's now deploy the Flow that we want to monitor:
 
