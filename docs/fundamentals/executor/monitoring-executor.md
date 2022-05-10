@@ -18,7 +18,9 @@ More details on the monitoring {ref}`here <monitoring-flow>`
 When the monitoring is enabled each Executor will expose its 
 own metrics. It means that in practice each of the Executors will expose a Prometheus endpoint using the [prometheus-client](https://github.com/prometheus/client_python).
 
-By default, every method which is decorated by the `@request` decorator will be monitored
+By default, every method which is decorated by the `@request` decorator will be monitored, it will create a
+[Prometheus Summary](https://prometheus.io/docs/concepts/metric_types/#summary) which will keep track of the time of 
+the execution of the method.
 
 ````{admonition} Only use this feature to do custom monitoring
 :class: caution
