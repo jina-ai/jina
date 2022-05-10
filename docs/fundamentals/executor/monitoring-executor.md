@@ -93,7 +93,7 @@ class MyExecutor(Executor):
         docs.embedding = self.model_inference(docs.tensors)
 ```
 
-This Executor encodes is composed of two sub-functions.
+The encode function is composed of two sub-functions.
 * `preprocessing` which takes raw bytes from a DocumentArray and put them into a PyTorch tensor. 
 * `model inference` calls the forward function of a deep learning model.
 
