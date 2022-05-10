@@ -12,7 +12,7 @@ sub-method of your Executor.
 
 ```{admonition} Full detail on monitoring
 :class: seealso
-More details on the monitoring {ref}`here <monitoring-flow>`
+More details on the monitoring feature can be found {ref}`here <monitoring-flow>`
 ```
 
 When the monitoring is enabled each Executor will expose its 
@@ -28,7 +28,7 @@ This section describes how to define and use **custom** metrics. To use the defa
 please refer to {ref}`this <monitoring-flow>` section.
 ````
 
-## Defining custom metrics
+## Define custom metrics
 
 Sometimes monitoring the `encoding` method is not enough, you need to break it up into multiple parts that you want to 
 monitor one by one.
@@ -78,7 +78,7 @@ your metrics name should finish with `seconds`
 
 ## Example
 
-Let's take an example to illustrate the custom metrics
+Let's take an example to illustrate custom metrics:
 
 ```python
 from jina import requests, Executor
