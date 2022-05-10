@@ -40,6 +40,44 @@ Overall the ability to add custom metrics allows you to have the full flexibilit
 
 ### Defining custom metrics with `@monitor`
 
+````{admonition} Using @monitor
+:class: hint
+Adding the custom monitoring on a method is as straightforward as decorating the method with `@monitor` 
+````
+
+```python
+from jina import Executor, monitor
+
+
+class MyExecutor(Executor):
+    @monitor()
+    def my_method(self):
+        ...
+```
+
+This will create a [Prometheus summary](https://prometheus.io/docs/concepts/metric_types/#summary)
+`jina_my_method_inference_seconds` which will keep track of the time of execution of `my_method
+
+By default, the name and the documentation of the metric created by `@monitor` are auto-generated based on the name
+of the function. However, you can precise it by yourself by doing :
+
+```python
+@monitor(
+    name='my_custom_metrics_seconds', documentation='This is my custom documentation'
+)
+def method(self):
+    ...
+```
+
+````{admonition} respect Prometheus naming
+:class: caution
+You should respect Prometheus naming [conventions](https://prometheus.io/docs/practices/naming/#metric-names). 
+therefore because `@monitor` creates a [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) under the hood
+your metrics name should finish with `seconds`
+````
+
+## Example
+
 Let's take an example to illustrate the custom metrics
 
 ```python
@@ -66,12 +104,6 @@ This Executor encodes is composed of two sub-functions.
 
 By default, only the encode function will be monitored. 
 
-````{admonition} Using @monitor
-:class: hint
-Adding the custom monitoring on a method is as straightforward as decorating the method with `@monitor` 
-````
-
-
 ```{code-block} python
 ---
 emphasize-lines: 6, 10
@@ -95,27 +127,6 @@ class MyExecutor(Executor):
         docs.embedding = self.model_inference(docs.tensors)
 ```
 
-This will create two [Prometheus summaries](https://prometheus.io/docs/concepts/metric_types/#summary)
-`jina_model_inference_seconds`and `jina_preprocessing_seconds` which will keep track of the time of execution of these
-methods.
-
-By default, the name and the documentation of the metric created by `@monitor` are auto-generated based on the name
-of the function. However, you can precise it by yourself by doing :
-
-```python
-@monitor(
-    name='my_custom_metrics_seconds', documentation='This is my custom documentation'
-)
-def method(self):
-    ...
-``` 
-
-````{admonition} respect Prometheus naming
-:class: caution
-You should respect Prometheus naming [conventions](https://prometheus.io/docs/practices/naming/#metric-names). 
-therefore because `@monitor` creates a [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) under the hood
-your metrics name should finish with `seconds`
-````
 
 ### Defining custom metrics directly with the Prometheus client
 
