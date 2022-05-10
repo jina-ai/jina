@@ -12,7 +12,8 @@ sub-method of your Executor.
 
 ```{admonition} Full detail on monitoring
 :class: seealso
-More details on the monitoring feature can be found {ref}`here <monitoring-flow>`
+This section describes how to define and use **custom** metrics. To use the default metrics exposed by the Executor 
+please refer to {ref}`this <monitoring-flow>` section.
 ```
 
 When the monitoring is enabled each Executor will expose its 
@@ -21,12 +22,6 @@ own metrics. It means that in practice each of the Executors will expose a Prome
 By default, every method which is decorated by the `@request` decorator will be monitored, it will create a
 [Prometheus Summary](https://prometheus.io/docs/concepts/metric_types/#summary) which will keep track of the time of 
 the execution of the method.
-
-````{admonition} Only use this feature to do custom monitoring
-:class: caution
-This section describes how to define and use **custom** metrics. To use the default metrics exposed by the Executor 
-please refer to {ref}`this <monitoring-flow>` section.
-````
 
 ## Define custom metrics
 
