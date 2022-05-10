@@ -154,6 +154,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: benc-uk/workflow-dispatch@v1
+        if: ${{ inputs.triggered_by == 'TAG' }}
         with:
           workflow: Create Release
           token: ${{ secrets.JINA_DEV_BOT }}
