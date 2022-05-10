@@ -372,6 +372,8 @@ jobs:
           JINA_PIP_INSTALL_PERF: ${{ matrix.perf }}
       - name: Test basic import
         run: python -c 'from jina import Executor,requests'
+      - name: Test import all
+        run: python -c 'from jina import *'
 
 
   # just for blocking the merge until all parallel core-test are successful
