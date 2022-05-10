@@ -143,7 +143,7 @@ First clone the repo which contains the config file:
 
 ```bash
 git clone https://github.com/jina-ai/example-grafana-prometheus
-cd prometheus-grafana-local
+cd example-grafana-prometheus/prometheus-grafana-local
 ```
 
 then 
