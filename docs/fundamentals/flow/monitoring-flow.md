@@ -1,9 +1,5 @@
 (monitoring-flow)=
 # Monitor Flow
-
-```{caution} 
-The monitoring feature is still in Beta and the API is not stable yet.
-```
  
 A Jina {ref}`Flow <flow-cookbook>` exposes several core metrics that allow you to have a deeper look
 at what is happening inside it. Metrics allow you to, for example, monitor the overall performance 
