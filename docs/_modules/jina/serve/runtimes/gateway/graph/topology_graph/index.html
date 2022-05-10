@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.serve.runtimes.gateway.graph.topology_graph - Jina 3.3.25 documentation</title>
+        <title>jina.serve.runtimes.gateway.graph.topology_graph - Jina 3.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../../">
-                <div class="brand">Jina 3.3.25 documentation</div>
+                <div class="brand">Jina 3.4.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -229,6 +229,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/executor/containerize-executor/">Dockerize your Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/executor/monitoring-executor/">Monitor Executor with Custom Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -236,6 +237,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/flow-api/">Configure Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/access-flow-api/">Access Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/client/">Python Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/monitoring-flow/">Monitor Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
@@ -246,6 +248,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../how-to/deploy/">Deploy</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/docker-compose/">How to run Jina with Docker Compose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/kubernetes/">How to deploy Jina on Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../how-to/monitoring/">How to deploy and use the monitoring with Jina</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../../how-to/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -554,10 +557,12 @@
                 <h1>Source code for jina.serve.runtimes.gateway.graph.topology_graph</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_endpoint__</span>
 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.request_handlers.data_request_handler</span> <span class="kn">import</span> <span class="n">DataRequestHandler</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
@@ -609,12 +614,17 @@
                 <span class="n">copy_req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">filtered_docs</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy_req</span>
 
+        <span class="k">def</span> <span class="nf">get_endpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_pool</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">send_discover_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
         <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_previous_and_send</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span>
             <span class="n">previous_task</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">],</span>
             <span class="n">connection_pool</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span><span class="p">,</span>
             <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+            <span class="n">executor_endpoint_mapping</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">target_executor_pattern</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="c1"># Check my condition and send request with the condition</span>
             <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
@@ -634,6 +644,20 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span> <span class="o">=</span> <span class="p">[</span>
                             <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">reduce_requests</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">)</span>
                         <span class="p">]</span>
+
+                    <span class="c1"># avoid sending to executor which does not bind to this endpoint</span>
+                    <span class="k">if</span> <span class="n">endpoint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">executor_endpoint_mapping</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="n">endpoint</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">executor_endpoint_mapping</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                            <span class="ow">and</span> <span class="n">__default_endpoint__</span>
+                            <span class="ow">not</span> <span class="ow">in</span> <span class="n">executor_endpoint_mapping</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                        <span class="p">):</span>
+                            <span class="k">return</span> <span class="n">request</span><span class="p">,</span> <span class="n">metadata</span>
+
+                    <span class="k">if</span> <span class="n">target_executor_pattern</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span>
+                        <span class="n">target_executor_pattern</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+                    <span class="p">):</span>
+                        <span class="k">return</span> <span class="n">request</span><span class="p">,</span> <span class="n">metadata</span>
 
                     <span class="n">resp</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">send_requests_once</span><span class="p">(</span>
                         <span class="n">requests</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">,</span>
@@ -655,6 +679,8 @@
             <span class="n">request_to_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataRequest</span><span class="p">],</span>
             <span class="n">previous_task</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">],</span>
             <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">executor_endpoint_mapping</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">target_executor_pattern</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]]:</span>
             <span class="sd">"""</span>
 <span class="sd">            Gets all the tasks corresponding from all the subgraphs born from this node</span>
@@ -663,6 +689,8 @@
 <span class="sd">            :param request_to_send: Optional request to be sent when the node is an origin of a graph</span>
 <span class="sd">            :param previous_task: Optional task coming from the predecessor of the Node</span>
 <span class="sd">            :param endpoint: Optional string defining the endpoint of this request</span>
+<span class="sd">            :param executor_endpoint_mapping: Optional map that maps the name of a Deployment with the endpoints that it binds to so that they can be skipped if needed</span>
+<span class="sd">            :param target_executor_pattern: Optional regex pattern for the target executor to decide whether or not the Executor should receive the request</span>
 
 <span class="sd">            .. note:</span>
 <span class="sd">                deployment1 -&gt; outgoing_nodes: deployment2</span>
@@ -688,7 +716,12 @@
 <span class="sd">            """</span>
             <span class="n">wait_previous_and_send_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_wait_previous_and_send</span><span class="p">(</span>
-                    <span class="n">request_to_send</span><span class="p">,</span> <span class="n">previous_task</span><span class="p">,</span> <span class="n">connection_pool</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span>
+                    <span class="n">request_to_send</span><span class="p">,</span>
+                    <span class="n">previous_task</span><span class="p">,</span>
+                    <span class="n">connection_pool</span><span class="p">,</span>
+                    <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
+                    <span class="n">executor_endpoint_mapping</span><span class="o">=</span><span class="n">executor_endpoint_mapping</span><span class="p">,</span>
+                    <span class="n">target_executor_pattern</span><span class="o">=</span><span class="n">target_executor_pattern</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaf</span><span class="p">:</span>  <span class="c1"># I am like a leaf</span>
@@ -702,6 +735,8 @@
                     <span class="kc">None</span><span class="p">,</span>
                     <span class="n">wait_previous_and_send_task</span><span class="p">,</span>
                     <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
+                    <span class="n">executor_endpoint_mapping</span><span class="o">=</span><span class="n">executor_endpoint_mapping</span><span class="p">,</span>
+                    <span class="n">target_executor_pattern</span><span class="o">=</span><span class="n">target_executor_pattern</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="c1"># We are interested in the last one, that will be the task that awaits all the previous</span>
                 <span class="n">hanging_tasks_tuples</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
@@ -815,7 +850,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 05, 2022.
+                    Last updated on May 10, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

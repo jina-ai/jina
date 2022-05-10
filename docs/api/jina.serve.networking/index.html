@@ -10,11 +10,11 @@
   
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.networking/" />
   
-<meta property="og:site_name" content="Jina 3.3.25 Documentation" />
+<meta property="og:site_name" content="Jina 3.4.0 Documentation" />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.3.25 Documentation" />
+<meta property="og:image:alt" content="Jina 3.4.0 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.types package" href="../jina.types/" /><link rel="prev" title="jina.serve.stream.helper module" href="../jina.serve.stream.helper/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.serve.networking module - Jina 3.3.25 documentation</title>
+        <title>jina.serve.networking module - Jina 3.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -176,7 +176,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.3.25 documentation</div>
+                <div class="brand">Jina 3.4.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -260,6 +260,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/containerize-executor/">Dockerize your Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor Executor with Custom Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -267,6 +268,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/flow-api/">Configure Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/access-flow-api/">Access Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/client/">Python Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
@@ -277,6 +279,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/deploy/">Deploy</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/docker-compose/">How to run Jina with Docker Compose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/kubernetes/">How to deploy Jina on Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/monitoring/">How to deploy and use the monitoring with Jina</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -670,8 +673,24 @@
 <p>Maintains a list of grpc stubs available for a particular connection</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.serve.networking.GrpcConnectionPool.ConnectionStubs.STUB_MAPPING">
-<span class="sig-name descname"><span class="pre">STUB_MAPPING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'jina.JinaControlRequestRPC':</span> <span class="pre">&lt;class</span> <span class="pre">'jina.proto.jina_pb2_grpc.JinaControlRequestRPCStub'&gt;,</span> <span class="pre">'jina.JinaDataRequestRPC':</span> <span class="pre">&lt;class</span> <span class="pre">'jina.proto.jina_pb2_grpc.JinaDataRequestRPCStub'&gt;,</span> <span class="pre">'jina.JinaRPC':</span> <span class="pre">&lt;class</span> <span class="pre">'jina.proto.jina_pb2_grpc.JinaRPCStub'&gt;,</span> <span class="pre">'jina.JinaSingleDataRequestRPC':</span> <span class="pre">&lt;class</span> <span class="pre">'jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPCStub'&gt;}</span></em><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.ConnectionStubs.STUB_MAPPING" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">STUB_MAPPING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'jina.JinaControlRequestRPC':</span> <span class="pre">&lt;class</span> <span class="pre">'jina.proto.jina_pb2_grpc.JinaControlRequestRPCStub'&gt;,</span> <span class="pre">'jina.JinaDataRequestRPC':</span> <span class="pre">&lt;class</span> <span class="pre">'jina.proto.jina_pb2_grpc.JinaDataRequestRPCStub'&gt;,</span> <span class="pre">'jina.JinaDiscoverEndpointsRPC':</span> <span class="pre">&lt;class</span> <span class="pre">'jina.proto.jina_pb2_grpc.JinaDiscoverEndpointsRPCStub'&gt;,</span> <span class="pre">'jina.JinaRPC':</span> <span class="pre">&lt;class</span> <span class="pre">'jina.proto.jina_pb2_grpc.JinaRPCStub'&gt;,</span> <span class="pre">'jina.JinaSingleDataRequestRPC':</span> <span class="pre">&lt;class</span> <span class="pre">'jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPCStub'&gt;}</span></em><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.ConnectionStubs.STUB_MAPPING" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.networking.GrpcConnectionPool.ConnectionStubs.send_discover_endpoint">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_discover_endpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#GrpcConnectionPool.ConnectionStubs.send_discover_endpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.ConnectionStubs.send_discover_endpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the endpoint discovery stub to request for the Endpoints Exposed by an Executor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – defines timeout for sending request</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Tuple of response and metadata about the response</p>
+</dd>
+</dl>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.networking.GrpcConnectionPool.ConnectionStubs.send_requests">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_requests</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#GrpcConnectionPool.ConnectionStubs.send_requests"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.ConnectionStubs.send_requests" title="Permalink to this definition">¶</a></dt>
@@ -741,6 +760,27 @@ Stub is chosen based on availability and type of requests</p>
 </dl>
 </dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.networking.GrpcConnectionPool.send_discover_endpoint">
+<span class="sig-name descname"><span class="pre">send_discover_endpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deployment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shard_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#GrpcConnectionPool.send_discover_endpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.send_discover_endpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a discover Endpoint call to target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>deployment</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – name of the Jina deployment to send the request to</p></li>
+<li><p><strong>head</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If True it is send to the head, otherwise to the worker pods</p></li>
+<li><p><strong>shard_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Send to a specific shard of the deployment, ignored for polling ALL</p></li>
+<li><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – timeout for sending the requests</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>asyncio.Task items to send call</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.networking.GrpcConnectionPool.send_request_once">
 <span class="sig-name descname"><span class="pre">send_request_once</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shard_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#GrpcConnectionPool.send_request_once"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.send_request_once" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send msg to target via only one of the pooled connections
@@ -788,7 +828,7 @@ Stub is chosen based on availability and type of requests</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>deployment</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The deployment the connection belongs to, like ‘encoder’</p></li>
-<li><p><strong>head</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – True if the connection is for a head</p></li>
+<li><p><strong>head</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – True if the connection is for a head</p></li>
 <li><p><strong>address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Address used for the grpc connection, format is &lt;host&gt;:&lt;port&gt;</p></li>
 <li><p><strong>shard_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Optional parameter to indicate this connection belongs to a shard, ignored for heads</p></li>
 </ul>
@@ -804,7 +844,7 @@ Stub is chosen based on availability and type of requests</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>deployment</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The deployment the connection belongs to, like ‘encoder’</p></li>
 <li><p><strong>address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Address used for the grpc connection, format is &lt;host&gt;:&lt;port&gt;</p></li>
-<li><p><strong>head</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – True if the connection is for a head</p></li>
+<li><p><strong>head</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – True if the connection is for a head</p></li>
 <li><p><strong>shard_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Optional parameter to indicate this connection belongs to a shard, ignored for heads</p></li>
 </ul>
 </dd>
@@ -832,8 +872,8 @@ Stub is chosen based on availability and type of requests</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The address to connect to, format is &lt;host&gt;:&lt;port&gt;</p></li>
 <li><p><strong>options</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]) – A list of options to pass to the grpc channel</p></li>
-<li><p><strong>asyncio</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – If True, use the asyncio implementation of the grpc channel</p></li>
-<li><p><strong>tls</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]) – If True, use tls encryption for the grpc channel</p></li>
+<li><p><strong>asyncio</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If True, use the asyncio implementation of the grpc channel</p></li>
+<li><p><strong>tls</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If True, use tls encryption for the grpc channel</p></li>
 <li><p><strong>root_certificates</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The path to the root certificates for tls, only used if tls is True</p></li>
 </ul>
 </dd>
@@ -911,7 +951,7 @@ Stub is chosen based on availability and type of requests</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.networking.GrpcConnectionPool.send_request_sync">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_request_sync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_certificates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#GrpcConnectionPool.send_request_sync"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.GrpcConnectionPool.send_request_sync" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends a request synchronically to the target via grpc</p>
+<dd><p>Sends a request synchronously to the target via grpc</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1068,7 +1108,7 @@ Documentation is here <a class="reference external" href="https://github.com/grp
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 05, 2022.
+                    Last updated on May 10, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

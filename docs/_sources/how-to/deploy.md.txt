@@ -5,4 +5,5 @@
 
 docker-compose
 kubernetes
+monitoring
 ```

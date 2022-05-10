@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/client/" />
   
-<meta property="og:site_name" content="Jina 3.3.25 Documentation" />
+<meta property="og:site_name" content="Jina 3.4.0 Documentation" />
   
 <meta property="og:description" content="The most convenient way to work with the Flow API is the Python Client. It enables you to send Documents to a running Flow in a number of different ways, as shown below. HTTP, gRPC, and WebSocket: Jina Flows and Clients support three different networking protocols: HTTP, gRPC, and WebSocket. For ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.3.25 Documentation" />
+<meta property="og:image:alt" content="Jina 3.4.0 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -35,10 +35,10 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Remarks" href="../remarks/" /><link rel="prev" title="Access Flow" href="../access-flow-api/" />
+    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Monitor Flow" href="../monitoring-flow/" /><link rel="prev" title="Access Flow" href="../access-flow-api/" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>Python Client - Jina 3.3.25 documentation</title>
+        <title>Python Client - Jina 3.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -178,7 +178,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.3.25 documentation</div>
+                <div class="brand">Jina 3.4.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -262,6 +262,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/containerize-executor/">Dockerize your Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/monitoring-executor/">Monitor Executor with Custom Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Flow</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -269,6 +270,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../flow-api/">Configure Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../access-flow-api/">Access Flow</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Python Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring-flow/">Monitor Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../remarks/">Remarks</a></li>
 </ul>
 </li>
@@ -279,6 +281,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../how-to/deploy/">Deploy</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/docker-compose/">How to run Jina with Docker Compose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/kubernetes/">How to deploy Jina on Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/monitoring/">How to deploy and use the monitoring with Jina</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../how-to/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -726,7 +729,7 @@ The default <code class="docutils literal notranslate"><span class="pre">request
 </section>
 <section id="targeting-a-specific-executor">
 <h3>Targeting a specific Executor<a class="headerlink" href="#targeting-a-specific-executor" title="Permalink to this headline">¶</a></h3>
-<p>Usually a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> will send each request to all Executors with matching endpoints as configured. But the <code class="docutils literal notranslate"><span class="pre">Client</span></code> also allows you to only target a specific Executor in a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> using the <code class="docutils literal notranslate"><span class="pre">target_executor</span></code> keyword. The request will then only be processed by the Executor with the provided name. Its usage is shown in the listing below.</p>
+<p>Usually a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> will send each request to all Executors with matching endpoints as configured. But the <code class="docutils literal notranslate"><span class="pre">Client</span></code> also allows you to only target specific Executors in a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> using the <code class="docutils literal notranslate"><span class="pre">target_executor</span></code> keyword. The request will then only be processed by the Executors which match the provided target_executor regex. Its usage is shown in the listing below.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span>
 
@@ -751,10 +754,12 @@ The default <code class="docutils literal notranslate"><span class="pre">request
 
 <span class="k">with</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># Using it as a Context Manager will start the Flow</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
-    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">target_executor</span><span class="o">=</span><span class="s1">'barExecutor'</span><span class="p">)</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">'/'</span><span class="p">,</span> <span class="n">target_executor</span><span class="o">=</span><span class="s1">'bar*'</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>This will send the request to all Executors whose names start with ‘bar’, such as ‘barExecutor’.
+In the simplest case, you can specify a precise Executor name, and the request will be sent only to that single Executor.</p>
 </section>
 <section id="request-parameters">
 <h3>Request parameters<a class="headerlink" href="#request-parameters" title="Permalink to this headline">¶</a></h3>
@@ -1030,12 +1035,12 @@ This means you can iterate over Responses one by one, as they come in.</p>
             <footer>
                 
                 <div class="related-pages">
-                    <a class="next-page" href="../remarks/">
+                    <a class="next-page" href="../monitoring-flow/">
                         <div class="page-info">
                             <div class="context">
                                 <span>Next</span>
                             </div>
-                            <div class="title">Remarks</div>
+                            <div class="title">Monitor Flow</div>
                         </div>
                         <svg>
                             <use href="#svg-arrow-right"></use>
@@ -1058,7 +1063,7 @@ This means you can iterate over Responses one by one, as they come in.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 05, 2022.
+                    Last updated on May 10, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

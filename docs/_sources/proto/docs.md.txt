@@ -11,6 +11,7 @@
     - [DataRequestListProto](#jina-DataRequestListProto)
     - [DataRequestProto](#jina-DataRequestProto)
     - [DataRequestProto.DataContentProto](#jina-DataRequestProto-DataContentProto)
+    - [EndpointsProto](#jina-EndpointsProto)
     - [HeaderProto](#jina-HeaderProto)
     - [RelatedEntity](#jina-RelatedEntity)
     - [RouteProto](#jina-RouteProto)
@@ -22,6 +23,7 @@
   
     - [JinaControlRequestRPC](#jina-JinaControlRequestRPC)
     - [JinaDataRequestRPC](#jina-JinaDataRequestRPC)
+    - [JinaDiscoverEndpointsRPC](#jina-JinaDiscoverEndpointsRPC)
     - [JinaRPC](#jina-JinaRPC)
     - [JinaSingleDataRequestRPC](#jina-JinaSingleDataRequestRPC)
   
@@ -123,6 +125,21 @@ Represents a DataRequest
 | ----- | ---- | ----- | ----------- |
 | docs | [docarray.DocumentArrayProto](#docarray-DocumentArrayProto) |  | the docs in this request |
 | docs_bytes | [bytes](#bytes) |  | the docs in this request as bytes |
+
+
+
+
+
+
+<a name="jina-EndpointsProto"></a>
+
+### EndpointsProto
+Represents the set of Endpoints exposed by an Executor
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| endpoints | [string](#string) | repeated | list of endpoints exposed by an Executor |
 
 
 
@@ -280,6 +297,16 @@ jina gRPC service for DataRequests.
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | process_data | [DataRequestListProto](#jina-DataRequestListProto) | [DataRequestProto](#jina-DataRequestProto) | Used for passing DataRequests to the Executors |
+
+
+<a name="jina-JinaDiscoverEndpointsRPC"></a>
+
+### JinaDiscoverEndpointsRPC
+jina gRPC service to expose Endpoints from Executors.
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| endpoint_discovery | [.google.protobuf.Empty](#google-protobuf-Empty) | [EndpointsProto](#jina-EndpointsProto) |  |
 
 
 <a name="jina-JinaRPC"></a>

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.serve.runtimes.gateway.request_handling - Jina 3.3.25 documentation</title>
+        <title>jina.serve.runtimes.gateway.request_handling - Jina 3.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -145,7 +145,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.3.25 documentation</div>
+                <div class="brand">Jina 3.4.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -229,6 +229,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/executor/containerize-executor/">Dockerize your Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/executor/monitoring-executor/">Monitor Executor with Custom Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -236,6 +237,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/flow-api/">Configure Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/access-flow-api/">Access Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/client/">Python Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/monitoring-flow/">Monitor Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
@@ -246,6 +248,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../how-to/deploy/">Deploy</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../how-to/docker-compose/">How to run Jina with Docker Compose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../how-to/kubernetes/">How to deploy Jina on Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../how-to/monitoring/">How to deploy and use the monitoring with Jina</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../how-to/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -558,7 +561,6 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
-
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.graph.topology_graph</span> <span class="kn">import</span> <span class="n">TopologyGraph</span>
@@ -574,10 +576,16 @@
 <span class="sd">    Class that handles the requests arriving to the gateway and the result extracted from the requests future.</span>
 
 <span class="sd">    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler</span>
+<span class="sd">    :param runtime_name: optional runtime_name that will be registered during monitoring</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'CollectorRegistry'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'CollectorRegistry'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">runtime_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">request_init_time</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">metrics_registry</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_executor_endpoint_mapping</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">metrics_registry</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
@@ -591,7 +599,9 @@
                 <span class="s1">'Time spent processing request'</span><span class="p">,</span>
                 <span class="n">registry</span><span class="o">=</span><span class="n">metrics_registry</span><span class="p">,</span>
                 <span class="n">namespace</span><span class="o">=</span><span class="s1">'jina'</span><span class="p">,</span>
-            <span class="p">)</span>
+                <span class="n">labelnames</span><span class="o">=</span><span class="p">(</span><span class="s1">'runtime_name'</span><span class="p">,),</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">runtime_name</span><span class="p">)</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_summary</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -606,11 +616,39 @@
 <span class="sd">        :return: Return a Function that given a Request will return a Future from where to extract the response</span>
 <span class="sd">        """</span>
 
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">gather_endpoints</span><span class="p">(</span><span class="n">request_graph</span><span class="p">):</span>
+            <span class="k">def</span> <span class="nf">_get_all_nodes</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">accum</span><span class="p">,</span> <span class="n">accum_names</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">accum_names</span><span class="p">:</span>
+                    <span class="n">accum</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                    <span class="n">accum_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">outgoing_nodes</span><span class="p">:</span>
+                    <span class="n">_get_all_nodes</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">accum</span><span class="p">,</span> <span class="n">accum_names</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">accum</span><span class="p">,</span> <span class="n">accum_names</span>
+
+            <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">node_names</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">origin_node</span> <span class="ow">in</span> <span class="n">request_graph</span><span class="o">.</span><span class="n">origin_nodes</span><span class="p">:</span>
+                <span class="n">subtree_nodes</span><span class="p">,</span> <span class="n">subtree_node_names</span> <span class="o">=</span> <span class="n">_get_all_nodes</span><span class="p">(</span><span class="n">origin_node</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[])</span>
+                <span class="k">for</span> <span class="n">st_node</span><span class="p">,</span> <span class="n">st_node_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">subtree_nodes</span><span class="p">,</span> <span class="n">subtree_node_names</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">st_node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_names</span><span class="p">:</span>
+                        <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">st_node</span><span class="p">)</span>
+                        <span class="n">node_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">st_node_name</span><span class="p">)</span>
+
+            <span class="n">tasks_to_get_endpoints</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">get_endpoints</span><span class="p">(</span><span class="n">connection_pool</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span>
+            <span class="p">]</span>
+            <span class="n">endpoints</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks_to_get_endpoints</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_executor_endpoint_mapping</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="p">(</span><span class="n">endp</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">endpoints</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_executor_endpoint_mapping</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">endp</span><span class="o">.</span><span class="n">endpoints</span>
+
         <span class="k">def</span> <span class="nf">_handle_request</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s1">'Request'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'asyncio.Future'</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">request_init_time</span><span class="p">[</span><span class="n">request</span><span class="o">.</span><span class="n">request_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-            <span class="n">request_graph</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
             <span class="c1"># important that the gateway needs to have an instance of the graph per request</span>
+            <span class="n">request_graph</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">has_filter_conditions</span><span class="p">:</span>
                 <span class="n">request_doc_ids</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span><span class="p">[</span>
                     <span class="p">:,</span> <span class="s1">'id'</span>
@@ -621,28 +659,22 @@
             <span class="n">r</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
             <span class="n">r</span><span class="o">.</span><span class="n">executor</span> <span class="o">=</span> <span class="s1">'gateway'</span>
             <span class="n">r</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">GetCurrentTime</span><span class="p">()</span>
-            <span class="c1"># If the request is targeting a specific deployment, we can send directly to the deployment instead of querying the graph</span>
-            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_executor</span><span class="p">:</span>
-                <span class="n">tasks_to_respond</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                    <span class="n">connection_pool</span><span class="o">.</span><span class="n">send_request</span><span class="p">(</span>
-                        <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span>
-                        <span class="n">deployment</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_executor</span><span class="p">,</span>
-                        <span class="n">head</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                        <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
-                    <span class="p">)</span>
+            <span class="c1"># If the request is targeting a specific deployment, we can send directly to the deployment instead of</span>
+            <span class="c1"># querying the graph</span>
+            <span class="k">for</span> <span class="n">origin_node</span> <span class="ow">in</span> <span class="n">request_graph</span><span class="o">.</span><span class="n">origin_nodes</span><span class="p">:</span>
+                <span class="n">leaf_tasks</span> <span class="o">=</span> <span class="n">origin_node</span><span class="o">.</span><span class="n">get_leaf_tasks</span><span class="p">(</span>
+                    <span class="n">connection_pool</span><span class="p">,</span>
+                    <span class="n">request</span><span class="p">,</span>
+                    <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
+                    <span class="n">executor_endpoint_mapping</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_executor_endpoint_mapping</span><span class="p">,</span>
+                    <span class="n">target_executor_pattern</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_executor</span><span class="p">,</span>
                 <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">origin_node</span> <span class="ow">in</span> <span class="n">request_graph</span><span class="o">.</span><span class="n">origin_nodes</span><span class="p">:</span>
-                    <span class="n">leaf_tasks</span> <span class="o">=</span> <span class="n">origin_node</span><span class="o">.</span><span class="n">get_leaf_tasks</span><span class="p">(</span>
-                        <span class="n">connection_pool</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span>
-                    <span class="p">)</span>
-                    <span class="c1"># Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their</span>
-                    <span class="c1"># subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous</span>
-                    <span class="c1"># nodes</span>
-                    <span class="n">tasks_to_respond</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">task</span> <span class="k">for</span> <span class="n">ret</span><span class="p">,</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">leaf_tasks</span> <span class="k">if</span> <span class="n">ret</span><span class="p">])</span>
-                    <span class="n">tasks_to_ignore</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                        <span class="p">[</span><span class="n">task</span> <span class="k">for</span> <span class="n">ret</span><span class="p">,</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">leaf_tasks</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">ret</span><span class="p">]</span>
-                    <span class="p">)</span>
+                <span class="c1"># Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their</span>
+                <span class="c1"># subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous</span>
+                <span class="c1"># nodes</span>
+                <span class="n">tasks_to_respond</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">task</span> <span class="k">for</span> <span class="n">ret</span><span class="p">,</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">leaf_tasks</span> <span class="k">if</span> <span class="n">ret</span><span class="p">])</span>
+                <span class="n">tasks_to_ignore</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">task</span> <span class="k">for</span> <span class="n">ret</span><span class="p">,</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">leaf_tasks</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">ret</span><span class="p">])</span>
 
             <span class="k">def</span> <span class="nf">_sort_response_docs</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
                 <span class="c1"># sort response docs according to their order in the initial request</span>
@@ -658,6 +690,8 @@
             <span class="k">async</span> <span class="k">def</span> <span class="nf">_process_results_at_end_gateway</span><span class="p">(</span>
                 <span class="n">tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">],</span> <span class="n">request_graph</span><span class="p">:</span> <span class="n">TopologyGraph</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor_endpoint_mapping</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">gather_endpoints</span><span class="p">(</span><span class="n">request_graph</span><span class="p">))</span>
 
                 <span class="n">partial_responses</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
                 <span class="n">partial_responses</span><span class="p">,</span> <span class="n">metadatas</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">partial_responses</span><span class="p">)</span>
@@ -723,7 +757,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 05, 2022.
+                    Last updated on May 10, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
