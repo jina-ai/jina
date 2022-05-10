@@ -37,7 +37,7 @@ This example shows how to start a Flow with monitoring enabled via yaml:
 
 In a `flow.yaml` file
 ```yaml
-!Flow
+jtype: Flow
 with:
   monitoring: true
   port_monitoring: 9090
