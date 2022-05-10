@@ -4,6 +4,11 @@
 Jina allows you to monitor every part of a Flow, including Executor, with the Grafana/Prometheus.
 This section documents the ability to add custom monitoring to the Executor.
 
+Custom metrics are useful when you want to monitor each subpart of your Executors. Jina allows you to leverage
+the full power of the [prometheus-client](https://github.com/prometheus/client_python) to define useful metrics 
+for each of your Executor. We provide a convenient wrapper as well, i.e `@monitor()`, which let you easily monitor
+sub-method of your Executor. 
+
 
 ```{admonition} Full detail on monitoring
 :class: seealso
