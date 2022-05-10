@@ -35,6 +35,21 @@ def clear_function_caches():
     _get_hub_config.cache_clear()
 
 
+@pytest.fixture(scope='function')
+def auth_token(tmpdir):
+    clear_function_caches()
+    os.environ['JINA_HUB_ROOT'] = str(tmpdir)
+
+    token = 'test-auth-token'
+    with open(tmpdir / 'config.json', 'w') as f:
+        json.dump({'auth_token': token}, f)
+
+    yield token
+
+    clear_function_caches()
+    del os.environ['JINA_HUB_ROOT']
+
+
 class PostMockResponse:
     def __init__(self, response_code: int = 201):
         self.response_code = response_code
@@ -223,14 +238,7 @@ def test_push_wrong_dockerfile(
     )
 
 
-def test_push_with_authorization(mocker, monkeypatch, tmpdir):
-    clear_function_caches()
-    os.environ['JINA_HUB_ROOT'] = str(tmpdir)
-
-    token = 'test-auth-token'
-    with open(tmpdir / 'config.json', 'w') as f:
-        json.dump({'auth_token': token}, f)
-
+def test_push_with_authorization(mocker, monkeypatch, auth_token):
     mock = mocker.Mock()
 
     def _mock_post(url, data, headers, stream):
@@ -248,14 +256,11 @@ def test_push_with_authorization(mocker, monkeypatch, tmpdir):
     exec_config_path = os.path.join(exec_path, '.jina')
     shutil.rmtree(exec_config_path)
 
-    del os.environ['JINA_HUB_ROOT']
-    clear_function_caches()
-
     assert mock.call_count == 1
 
     _, kwargs = mock.call_args_list[0]
 
-    assert kwargs['headers'].get('Authorization') == f'token {token}'
+    assert kwargs['headers'].get('Authorization') == f'token {auth_token}'
 
 
 @pytest.mark.parametrize('rebuild_image', [True, False])
@@ -339,14 +344,7 @@ def test_fetch_with_retry(mocker, monkeypatch):
     assert mock.call_count == 6  # mock must be called 3+3
 
 
-def test_fetch_with_authorization(mocker, monkeypatch, tmpdir):
-    clear_function_caches()
-    os.environ['JINA_HUB_ROOT'] = str(tmpdir)
-
-    token = 'test-auth-token'
-    with open(tmpdir / 'config.json', 'w') as f:
-        json.dump({'auth_token': token}, f)
-
+def test_fetch_with_authorization(mocker, monkeypatch, auth_token):
     mock = mocker.Mock()
 
     def _mock_post(url, json, headers):
@@ -357,14 +355,11 @@ def test_fetch_with_authorization(mocker, monkeypatch, tmpdir):
 
     HubIO.fetch_meta('dummy_mwu_encoder', tag=None, force=True)
 
-    del os.environ['JINA_HUB_ROOT']
-    clear_function_caches()
-
     assert mock.call_count == 1
 
     _, kwargs = mock.call_args_list[0]
 
-    assert kwargs['headers'].get('Authorization') == f'token {token}'
+    assert kwargs['headers'].get('Authorization') == f'token {auth_token}'
 
 
 class DownloadMockResponse:
