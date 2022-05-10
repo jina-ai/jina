@@ -4,7 +4,7 @@
 ```{caution} 
 The monitoring feature is still in Beta and the API is not stable yet.
 ```
-
+ 
 A Jina {ref}`Flow <flow-cookbook>` exposes several core metrics that allow you to have a deeper look
 at what is happening inside it. Metrics allow you to, for example, monitor the overall performance 
 of your Flow, detect bottlenecks, or alert your team when some component of your Flow is down.
@@ -101,12 +101,17 @@ Flows support different metrics out of the box, in addition to allowing the user
 Because not all Pods have the same role, they expose different kind of metrics:
 
 
+
 ### Gateway Pods
 
 | Metrics name                       | Metrics type                                                         | Description                                                                                                                                                                                                                                                                |
 |------------------------------------|----------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `jina_receiving_request_seconds`   | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measures the time elapsed between receiving a request from the client and the sending back the response.                                                                                                                                                                    |
 | `jina_sending_request_seconds`     | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measures the time elapsed between sending a downstream request to an Executor/Head and receiving the response back.                                                                                                                                                         |
+
+```{seealso} 
+You can find more information on the different type of metrics in Prometheus [here](https://prometheus.io/docs/concepts/metric_types/#metric-types)
+```
 
 ### Head Pods
 
@@ -123,15 +128,21 @@ Because not all Pods have the same role, they expose different kind of metrics:
 | `jina_process_request_seconds`   | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measure the time spend calling the requested method                                                                   |
 | `jina_document_processed_total`  | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter) | Count the number of Document processed by an Executor                                                                 |
 
+```{seealso} 
+Beyond monitoring every endpoint of an Executor you can define {ref}`custom metrics <monitoring-executor>`for you 
+Executor. 
+```
+
 ```{hint} 
  `jina_receiving_request_seconds` is different from `jina_process_request_seconds` because it includes the gRPC communication overhead whereas `jina_process_request_seconds` is only about the time spend calling the function 
 ```
 
-```{seealso} 
-You can find more information on the different type of metrics in Prometheus [here](https://prometheus.io/docs/concepts/metric_types/#metric-types)
-```
+
+
+
 
 ## See further
 
+- {ref}`Defining custom metrics in an Executor <monitoring-executor>`
 - {ref}`How to deploy and use the monitoring with Jina <monitoring>`
 - [Using Grafana to visualize prometheus metrics](https://grafana.com/docs/grafana/latest/getting-started/getting-started-prometheus/)

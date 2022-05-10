@@ -24,8 +24,8 @@ But what if you want to go bigger? Organize your code into modules, serve and sc
 ```python
 from jina import Executor, requests
 
-class MyExecutor(Executor):
 
+class MyExecutor(Executor):
     @requests
     def foo(self, docs, **kwargs):
         print(docs)  # process docs here
@@ -49,4 +49,5 @@ executor-in-flow
 repository-structure
 hub/index
 containerize-executor
+monitoring-executor
 ```

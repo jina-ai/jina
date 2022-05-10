@@ -170,3 +170,4 @@ port by modifying this [file](https://github.com/jina-ai/example-grafana-prometh
 
 - {ref}`List of available metrics <monitoring-flow>`
 - [Using Grafana to visualize prometheus metrics](https://grafana.com/docs/grafana/latest/getting-started/getting-started-prometheus/)
+- {ref}`Defining custom metrics in an Executor <monitoring-executor>`
