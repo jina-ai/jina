@@ -10,7 +10,7 @@ More details on the monitoring {ref}`here <monitoring-flow>`
 ```
 
 When the monitoring is enabled each Executor will expose its 
-own metrics. It means that in practice each of the Executor will expose a prometheus endpoint using the [prometheus-client](https://github.com/prometheus/client_python).
+own metrics. It means that in practice each of the Executor will expose a Prometheus endpoint using the [prometheus-client](https://github.com/prometheus/client_python).
 
 By default, every method which is decorated by the `@request` decorator will be monitored
 
@@ -86,7 +86,7 @@ class MyExecutor(Executor):
         docs.embedding = self.model_inference(docs.tensors)
 ```
 
-This will create two [prometheus summaries](https://prometheus.io/docs/concepts/metric_types/#summary)
+This will create two [Prometheus summaries](https://prometheus.io/docs/concepts/metric_types/#summary)
 `jina_model_inference_seconds`and `jina_preprocessing_seconds` which will keep track of the time of execution of these
 methods.
 
@@ -100,19 +100,19 @@ def method(self):
     ...
 ``` 
 
-````{admonition} respect the prometheus naming
+````{admonition} respect Prometheus naming
 :class: caution
-You should respect the prometheus naming [conventions](https://prometheus.io/docs/practices/naming/#metric-names). 
+You should respect Prometheus naming [conventions](https://prometheus.io/docs/practices/naming/#metric-names). 
 therefore because `@monitor` create a [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) under the hood
 your metrics name should finish with `seconds`
 ````
 
-### Defining custom metrics directly with the prometheus client
+### Defining custom metrics directly with the Prometheus client
 
 Under the hood the monitoring feature of the Executor is handled by the 
-python [prometheus-client](https://github.com/prometheus/client_python). The `@monitor` decorator is a convenient tool
-to monitor sub method of an Executor, but you might need more flexibility and that is why you can access the prometheus
-client directly from the executor to define every kind of metrics supported by prometheus.
+python [Prometheus-client](https://github.com/prometheus/client_python). The `@monitor` decorator is a convenient tool
+to monitor sub method of an Executor, but you might need more flexibility and that is why you can access the Prometheus
+client directly from the executor to define every kind of metrics supported by Prometheus.
 
 let's see it in an example
 
@@ -137,11 +137,11 @@ class MyExecutor(Executor):
         self.counter.inc(len(docs))
 ```
 
-This will create a prometheus [Counter](https://prometheus.io/docs/concepts/metric_types/#counter). 
+This will create a Prometheus [Counter](https://prometheus.io/docs/concepts/metric_types/#counter). 
 
-````{admonition} Directly using the prometheus client
+````{admonition} Directly using the Prometheus client
 :class: caution
-You need to pass the metrics registry from the Executor when creating custom metrics directly with the prometheus client.
+You need to pass the metrics registry from the Executor when creating custom metrics directly with the Prometheus client.
 ````
 
 

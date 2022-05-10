@@ -141,4 +141,4 @@ Executor.
 
 - {ref}`Defining custom metrics in an Executor <monitoring-executor>`
 - {ref}`How to deploy and use the monitoring with Jina <monitoring>`
-- [Using Grafana to visualize prometheus metrics](https://grafana.com/docs/grafana/latest/getting-started/getting-started-prometheus/)
+- [Using Grafana to visualize Prometheus metrics](https://grafana.com/docs/grafana/latest/getting-started/getting-started-prometheus/)

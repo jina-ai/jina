@@ -136,7 +136,7 @@ docker-compose -f config.yaml up
 ```
 ````
 
-To monitor a flow locally you will need to install prometheus and grafana locally. The easiest way to do it is by using
+To monitor a flow locally you will need to install Prometheus and grafana locally. The easiest way to do it is by using
 docker-compose.
 
 First clone the repo which contain the config file:
@@ -157,13 +157,13 @@ You can access the grafana dashboard at `http://localhost:3000`. the username is
 You should then set up the dashboard by following the end of the how-to on kubernetes and the monitoring.
 
 ```{caution}
-This example is working locally because the prometheus is configure so taht it listen to port 8000 and 9000. However
-in contrast with deploying on kubernetes, you need to tell prometheus which port to look at. You can change these
-port by modifying this [file](https://github.com/jina-ai/example-grafana-prometheus/blob/8baf519f7258da68cfe224775fc90537a749c305/prometheus-grafana-local/prometheus/prometheus.yml#L64)
+This example is working locally because Prometheus is configure so that it listen to port 8000 and 9000. However
+in contrast with deploying on kubernetes, you need to tell Prometheus which port to look at. You can change these
+ports by modifying this [file](https://github.com/jina-ai/example-grafana-prometheus/blob/8baf519f7258da68cfe224775fc90537a749c305/prometheus-grafana-local/prometheus/prometheus.yml#L64)
 ```
 
 ## See further
 
 - {ref}`List of available metrics <monitoring-flow>`
-- [Using Grafana to visualize prometheus metrics](https://grafana.com/docs/grafana/latest/getting-started/getting-started-prometheus/)
+- [Using Grafana to visualize Prometheus metrics](https://grafana.com/docs/grafana/latest/getting-started/getting-started-prometheus/)
 - {ref}`Defining custom metrics in an Executor <monitoring-executor>`
