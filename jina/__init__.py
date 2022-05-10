@@ -139,7 +139,6 @@ _names_with_underscore = [
     '__root_dir__',
     '__default_endpoint__',
     '__default_executor__',
-    '__num_args_executor_func__',
     '__unset_msg__',
     '__windows__',
 ]
