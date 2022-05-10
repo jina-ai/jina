@@ -161,7 +161,8 @@ ports by modifying this [file](https://github.com/jina-ai/example-grafana-promet
 
 ## 2- Using Grafana to visualize metrics
 
-Once you can access the Grafana nomepage then go to `Browse` then `import` and copy and paste the [JSON file](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json) 
+Once you can access the Grafana homepage then go to `Browse` then `import` and copy and paste the [JSON file](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json) 
+
 
 You should see the following dashboard:
 
@@ -173,7 +174,7 @@ You should see the following dashboard:
 ````{admonition} Hint
 :class: hint
 
-You should query your Flow to fed the monitoring. Othewise the dashboard will look empty.
+You should query your Flow generate the first metrics. Othewise the dashboard will look empty.
 ````
 
 You can query the flow by doing :
