@@ -44,8 +44,9 @@ helm install prometheus prometheus-community/kube-prometheus-stack --set prometh
 ```{hint} 
 setting the `serviceMonitorSelectorNilUsesHelmValues` to false allows the Prometheus Operator to discover metrics endpoint outside of the helm scope which will be needed to discover the Flow metrics endpoints.
 ```
+## 1 - Deploying the Flow and the monitoring stack
 
-### 2 - Deploying the Flow
+### Deploying on Kubernetes
 
 Let's now deploy the Flow that we want to monitor:
 
@@ -79,6 +80,7 @@ kubectl get pods
 ```
 
 Then you can see that the new metrics endpoints are automatically discovered:
+
 ```bash
 kubectl port-forward svc/prometheus-operated 9090:9090
 ```
@@ -86,6 +88,12 @@ kubectl port-forward svc/prometheus-operated 9090:9090
 ```{figure} ../../.github/2.0/prometheus_target.png
 :align: center
 ```
+Before querying the gateway you need to port-forward
+```bash
+kubectl port-forward svc/gateway 8080:8080
+```
+
+
 
 Now to access Grafana just do
 
@@ -99,15 +107,8 @@ User is `admin`, password is `prom-operator`
 
 You should see the Grafana home page.
 
-Then go to `Browse` then `import` and copy and paste the [JSON file](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json) 
 
-You should see the following dashboard :
-
-```{figure} ../../.github/2.0/grafana.png
-:align: center
-```
-
-## Use Prometheus and Grafana to monitor a Flow locally 
+### Deploying locally
 
 Let's first deploy the Flow that we want to monitor:
 
@@ -116,7 +117,7 @@ Let's first deploy the Flow that we want to monitor:
 ```python
 from jina import Flow
 
-with Flow(monitoring=True, port_monitoring=8000).add(
+with Flow(monitoring=True, port_monitoring=8000, port=8080).add(
     uses='jinahub://SimpleIndexer', port_monitoring=9000
 ) as f:
     f.block()
@@ -127,7 +128,7 @@ with Flow(monitoring=True, port_monitoring=8000).add(
 ```python
 from jina import Flow
 
-Flow(monitoring=True, port_monitoring=8000).add(
+Flow(monitoring=True, port_monitoring=8000, port=8080).add(
     uses='jinahub+docker://SimpleIndexer', port_monitoring=9000
 ).to_docker_compose_yaml('config.yaml')
 ```
@@ -154,12 +155,38 @@ docker-compose up
 
 You can access the Grafana dashboard at `http://localhost:3000`. the username is `admin` and the password `foobar`.
 
-You should then set up the dashboard by following the end of the how-to on Kubernetes and the monitoring.
-
 ```{caution}
 This example is working locally because Prometheus is configured so that it listens to ports 8000 and 9000. However,
 in contrast with deploying on Kubernetes, you need to tell Prometheus which port to look at. You can change these
 ports by modifying this [file](https://github.com/jina-ai/example-grafana-prometheus/blob/8baf519f7258da68cfe224775fc90537a749c305/prometheus-grafana-local/prometheus/prometheus.yml#L64)
+```
+
+## 2- Using Grafana to visualize metrics
+
+Once you can access the grafana nomepage then go to `Browse` then `import` and copy and paste the [JSON file](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json) 
+
+You should see the following dashboard :
+
+```{figure} ../../.github/2.0/grafana.png
+:align: center
+```
+
+
+````{admonition} Hint
+:class: hint
+
+You should query your Flow to fed the monitoring. Othewise the dashboard will look empty.
+````
+
+You can query the flow by doing :
+
+```python
+from jina import Client
+from docarray import DocumentArray
+
+client = Client(port=51000)
+client.index(inputs=DocumentArray.empty(size=4))
+client.search(inputs=DocumentArray.empty(size=4))
 ```
 
 ## See further
