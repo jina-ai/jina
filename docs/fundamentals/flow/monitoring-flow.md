@@ -5,7 +5,7 @@ A Jina {ref}`Flow <flow-cookbook>` exposes several core metrics that allow you t
 at what is happening inside it. Metrics allow you to, for example, monitor the overall performance 
 of your Flow, detect bottlenecks, or alert your team when some component of your Flow is down.
 
-Jina Flows exposes metrics in the [Prometheus format](https://prometheus.io/docs/instrumenting/exposition_formats/). This is a plain text format that is understandable by both humans and machines. These metrics are intended to be scraped by
+Jina Flows expose metrics in the [Prometheus format](https://prometheus.io/docs/instrumenting/exposition_formats/). This is a plain text format that is understandable by both humans and machines. These metrics are intended to be scraped by
 [Prometheus](https://prometheus.io/), an industry-standard tool for collecting and monitoring metrics.
 
 To visualize your metrics through a dashboard, we recommend [Grafana](https://grafana.com/)
