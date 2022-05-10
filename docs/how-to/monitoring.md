@@ -99,7 +99,7 @@ User is `admin`, password is `prom-operator`
 
 You should see the Grafana home page.
 
-Then go to `Browse` then `import` and copy and paste the JSON file from https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json 
+Then go to `Browse` then `import` and copy and paste the [JSON file](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json) 
 
 You should see the following dashboard :
 
