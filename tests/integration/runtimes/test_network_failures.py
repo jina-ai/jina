@@ -124,7 +124,7 @@ async def test_runtimes_headless_topology(port_generator, protocol):
         worker_process.join()
 
 
-@pytest.mark.parametrize('protocol', ['grpc'])  # , 'http', 'websocket'])
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 @pytest.mark.asyncio
 async def test_runtimes_replicas(port_generator, protocol):
     # create gateway and workers manually, then terminate worker process to provoke an error
