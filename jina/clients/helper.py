@@ -29,8 +29,6 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
         status_icon = '🟢'
         if route.status.code == jina_pb2.StatusProto.ERROR:
             status_icon = '🔴'
-        elif route.status.code == jina_pb2.StatusProto.ERROR_CHAINED:
-            status_icon = '⚪'
 
         table.add_row(
             f'{status_icon} {route.executor}',
