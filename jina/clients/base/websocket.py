@@ -92,15 +92,10 @@ class WebSocketBaseClient(BaseClient):
                     try:
                         async for response in iolet.recv_message():
                             _response_handler(response)
-                    except ConnectionResetError:
-                        print('thrown here')
                     finally:
-                        error_task = request_buffer.pop(
+                        request_buffer.pop(
                             '', None
                         )  # remove error task if it still there
-                        if error_task:
-                            e = error_task.exception()
-                            print('hey')
                         if request_buffer:
                             self.logger.warning(
                                 f'{self.__class__.__name__} closed, cancelling all outstanding requests'
