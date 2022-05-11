@@ -87,7 +87,6 @@ class GRPCBaseClient(BaseClient):
         except asyncio.CancelledError as ex:
             self.logger.warning(f'process error: {ex!r}')
         except (grpc.aio._call.AioRpcError, InternalNetworkError) as err:
-            # Since this object is guaranteed to be a grpc.Call, might as well include that in its name.
             my_code = err.code()
             my_details = err.details()
             msg = f'gRPC error: {my_code} {my_details}'

@@ -143,7 +143,9 @@ def get_fastapi_app(
             tags=['Debug']
             # do not add response_model here, this debug endpoint should not restricts the response model
         )
-        async def post(body: JinaEndpointRequestModel, response: Response):
+        async def post(
+            body: JinaEndpointRequestModel, response: Response
+        ):  # 'response' is a FastAPI response, not a Jina response
             """
             Post a data request to some endpoint.
 

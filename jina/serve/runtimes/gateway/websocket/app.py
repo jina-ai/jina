@@ -127,7 +127,9 @@ def get_fastapi_app(
         await connection_pool.close()
 
     @app.websocket('/')
-    async def websocket_endpoint(websocket: WebSocket, response: Response):
+    async def websocket_endpoint(
+        websocket: WebSocket, response: Response
+    ):  # 'response' is a FastAPI response, not a Jina response
         await manager.connect(websocket)
 
         async def req_iter():
