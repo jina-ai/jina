@@ -3,20 +3,32 @@ import time
 
 import pytest
 
-from jina import Client, Document, helper
-from jina.parsers import set_gateway_parser
+from jina import Client, Document, Executor, requests
+from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
+from jina.serve.runtimes.worker import WorkerRuntime
 from jina.types.request.control import ControlRequest
 
-from .test_runtimes import (
-    _activate_runtimes,
-    _create_gateway_runtime,
-    _create_head_runtime,
-    _create_worker_runtime,
-    async_inputs,
-)
+from .test_runtimes import _create_gateway_runtime, _create_head_runtime
+
+
+class DummyExec(Executor):
+    @requests(on='/foo')
+    def foo(self, *args, **kwargs):
+        pass
+
+
+def _create_worker_runtime(port, name='', executor=None):
+    args = set_pod_parser().parse_args([])
+    args.port = port
+    args.uses = 'DummyExec'
+    args.name = name
+    if executor:
+        args.uses = executor
+    with WorkerRuntime(args) as runtime:
+        runtime.run_forever()
 
 
 def _create_worker(port):
@@ -52,7 +64,7 @@ def _send_request(gateway_port, protocol):
     """send request to gateway and see what happens"""
     c = Client(host='localhost', port=gateway_port, protocol=protocol)
     return c.post(
-        '/', inputs=[Document(text='hi')], request_size=1, return_responses=True
+        '/foo', inputs=[Document(text='hi')], request_size=1, return_responses=True
     )
 
 
@@ -63,9 +75,14 @@ def _test_error(gateway_port, error_port, protocol):
     assert str(error_port) in err_info.value.args[0]
 
 
+@pytest.mark.parametrize(
+    'fail_before_endpoint_discovery', [True, False]
+)  # if not before, then after
 @pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
 @pytest.mark.asyncio
-async def test_runtimes_headless_topology(port_generator, protocol):
+async def test_runtimes_headless_topology(
+    port_generator, protocol, fail_before_endpoint_discovery
+):
     # create gateway and workers manually, then terminate worker process to provoke an error
     worker_port = port_generator()
     gateway_port = port_generator()
@@ -91,22 +108,40 @@ async def test_runtimes_headless_topology(port_generator, protocol):
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    worker_process.terminate()  # kill worker
-    worker_process.join()
+    if (
+        fail_before_endpoint_discovery
+    ):  # kill worker before having sent the first request, so before endpoint discov.
+        worker_process.terminate()
+        worker_process.join()
 
     try:
-        # ----------- 1. test that useful errors are given -----------
-        # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
-        p = multiprocessing.Process(
-            target=_test_error, args=(gateway_port, worker_port, protocol)
-        )
-        p.start()
-        p.join()
-        assert (
-            p.exitcode == 0
-        )  # if exitcode != 0 then test in other process did not pass and this should fail
+        if fail_before_endpoint_discovery:
+            # here worker is already dead before the first request, so endpoint discovery will fail
+            # ----------- 1. test that useful errors are given when endpoint discovery fails -----------
+            # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+            p = multiprocessing.Process(
+                target=_test_error, args=(gateway_port, worker_port, protocol)
+            )
+            p.start()
+            p.join()
+            assert (
+                p.exitcode == 0
+            )  # if exitcode != 0 then test in other process did not pass and this should fail
+        else:
+            # just ping the Flow without having killed a worker before. This (also) performs endpoint discovery
+            p = multiprocessing.Process(
+                target=_send_request, args=(gateway_port, protocol)
+            )
+            p.start()
+            p.join()
+            # only now do we kill the worker, after having performed successful endpoint discovery
+            # so in this case, the actual request will fail, not the discovery, which is handled differently by Gateway
+            worker_process.terminate()  # kill worker
+            worker_process.join()
+            print(f'worker is alive: {worker_process.is_alive()}')
+            assert not worker_process.is_alive()
         # ----------- 2. test that gateways remain alive -----------
-        # just do the same again, expecting the same outcome
+        # just do the same again, expecting the same failure
         p = multiprocessing.Process(
             target=_test_error, args=(gateway_port, worker_port, protocol)
         )
