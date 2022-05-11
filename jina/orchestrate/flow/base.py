@@ -1900,7 +1900,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                         if i < len(k8s_objects) - 1:
                             fp.write('---\n')
 
-        print(
+        self.logger.info(
             f'K8s yaml files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'
         )
 
@@ -1958,7 +1958,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             else f'docker-compose -f {output_path} up'
         )
 
-        print(
+        self.logger.info(
             f'Docker compose file has been created under [b]{output_path}[/b]. You can use it by running [b]{command}[/b]'
         )
 
