@@ -95,7 +95,7 @@ class WebSocketBaseClient(BaseClient):
                     finally:
                         request_buffer.pop(
                             '', None
-                        )  # remove error task if it still there
+                        )  # remove error task if it is still there
                         if request_buffer:
                             self.logger.warning(
                                 f'{self.__class__.__name__} closed, cancelling all outstanding requests'
