@@ -281,7 +281,6 @@ def _test_gql_error(gateway_port, error_port):
     with pytest.raises(ConnectionError) as err_info:  # assert correct error is thrown
         _send_gql_request(gateway_port)
     # assert error message contains useful info
-    assert 'pod0' in err_info.value.args[0]
     assert str(error_port) in err_info.value.args[0]
 
 
