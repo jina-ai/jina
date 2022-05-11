@@ -2455,7 +2455,7 @@
                         <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">k8s_objects</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
                             <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'---</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">'K8s yaml files have been created under [b]</span><span class="si">{</span><span class="n">output_base_path</span><span class="si">}</span><span class="s1">[/]. You can use it by running [b]kubectl apply -R -f </span><span class="si">{</span><span class="n">output_base_path</span><span class="si">}</span><span class="s1">[/]'</span>
         <span class="p">)</span></div>
 
@@ -2513,7 +2513,7 @@
             <span class="k">else</span> <span class="sa">f</span><span class="s1">'docker-compose -f </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s1"> up'</span>
         <span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">'Docker compose file has been created under [b]</span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s1">[/b]. You can use it by running [b]</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1">[/b]'</span>
         <span class="p">)</span></div>
 
