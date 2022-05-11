@@ -77,13 +77,17 @@ class HTTPBaseClient(BaseClient):
                     r_str = await response.json()
                     if r_status == 404:
                         raise BadClient(f'no such endpoint {url}')
-                    elif (
-                        r_status == 503
-                        and 'header' in r_str
-                        and 'status' in r_str['header']
-                        and 'description' in r_str['header']['status']
-                    ):
-                        raise ConnectionError(r_str['header']['status']['description'])
+                    elif r_status == 503:
+                        if (
+                            'header' in r_str
+                            and 'status' in r_str['header']
+                            and 'description' in r_str['header']['status']
+                        ):
+                            raise ConnectionError(
+                                r_str['header']['status']['description']
+                            )
+                        else:
+                            raise ValueError(r_str)
                     elif r_status < 200 or r_status > 300:
                         raise ValueError(r_str)
 
