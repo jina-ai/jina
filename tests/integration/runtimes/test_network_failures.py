@@ -59,8 +59,7 @@ def _send_request(gateway_port, protocol):
 def _test_error(gateway_port, error_port, protocol):
     with pytest.raises(ConnectionError) as err_info:  # assert correct error is thrown
         _send_request(gateway_port, protocol)
-    # assert error message contains useful info
-    assert 'pod0' in err_info.value.args[0]
+    # assert error message contains the port of the broken executor
     assert str(error_port) in err_info.value.args[0]
 
 

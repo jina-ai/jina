@@ -3,7 +3,10 @@ import copy
 import time
 from typing import TYPE_CHECKING, Callable, List, Optional
 
+import grpc.aio
 from docarray import DocumentArray
+
+from jina.excepts import InternalNetworkError
 from jina.importer import ImportExtensions
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
@@ -76,11 +79,21 @@ class RequestHandler:
                     if st_node_name not in node_names:
                         nodes.append(st_node)
                         node_names.append(st_node_name)
-
-            tasks_to_get_endpoints = [
-                node.get_endpoints(connection_pool) for node in nodes
-            ]
-            endpoints = await asyncio.gather(*tasks_to_get_endpoints)
+            try:
+                tasks_to_get_endpoints = [
+                    node.get_endpoints(connection_pool) for node in nodes
+                ]
+                endpoints = await asyncio.gather(*tasks_to_get_endpoints)
+            except InternalNetworkError as err:
+                err_code = err.code()
+                if err_code == grpc.StatusCode.UNAVAILABLE:
+                    err._details = (
+                        err.details()
+                        + f' |Gateway: Communication error with deployment at address {err.dest_addr}. Head or worker may be down.'
+                    )
+                    raise err
+                else:
+                    raise
 
             self._executor_endpoint_mapping = {}
             for node, (endp, _) in zip(nodes, endpoints):

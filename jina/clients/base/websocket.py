@@ -54,7 +54,12 @@ class WebSocketBaseClient(BaseClient):
                     WebsocketClientlet(url=url, logger=self.logger)
                 )
 
-                request_buffer: Dict[str, asyncio.Future] = dict()
+                request_buffer: Dict[
+                    str, asyncio.Future
+                ] = dict()  # maps request_ids to futures (tasks)
+                request_buffer[
+                    ''
+                ] = get_or_reuse_loop().create_future()  # task for error response
 
                 def _result_handler(result):
                     return result
@@ -62,7 +67,12 @@ class WebSocketBaseClient(BaseClient):
                 async def _receive():
                     def _response_handler(response):
                         if response.header.request_id in request_buffer:
-                            future = request_buffer.pop(response.header.request_id)
+                            request_id = response.header.request_id
+                            future = (
+                                request_buffer.pop(request_id)
+                                if request_id
+                                else request_buffer.get(request_id)
+                            )
                             future.set_result(response)
                             if (
                                 response.header.status.exception.name
@@ -82,7 +92,15 @@ class WebSocketBaseClient(BaseClient):
                     try:
                         async for response in iolet.recv_message():
                             _response_handler(response)
+                    except ConnectionResetError:
+                        print('thrown here')
                     finally:
+                        error_task = request_buffer.pop(
+                            '', None
+                        )  # remove error task if it still there
+                        if error_task:
+                            e = error_task.exception()
+                            print('hey')
                         if request_buffer:
                             self.logger.warning(
                                 f'{self.__class__.__name__} closed, cancelling all outstanding requests'
@@ -123,20 +141,21 @@ class WebSocketBaseClient(BaseClient):
                     raise RuntimeError(
                         'receive task not running, can not send messages'
                     )
-                async for response in streamer.stream(request_iterator):
-                    callback_exec(
-                        response=response,
-                        on_error=on_error,
-                        on_done=on_done,
-                        on_always=on_always,
-                        continue_on_error=self.continue_on_error,
-                        logger=self.logger,
-                    )
-                    if self.show_progress:
-                        p_bar.update()
-                    yield response
-
-                await receive_task
+                try:
+                    async for response in streamer.stream(request_iterator):
+                        callback_exec(
+                            response=response,
+                            on_error=on_error,
+                            on_done=on_done,
+                            on_always=on_always,
+                            continue_on_error=self.continue_on_error,
+                            logger=self.logger,
+                        )
+                        if self.show_progress:
+                            p_bar.update()
+                        yield response
+                finally:
+                    await receive_task
 
             except (aiohttp.ClientError, ConnectionError) as e:
                 self.logger.error(

@@ -194,6 +194,16 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         """
         return await self.process_data([request], context)
 
+    def _handle_internalnetworkerror(self, err, context, response):
+        context.set_details(
+            f'|Head: Failed to connect to worker (Executor) pod at address {err.dest_addr}. It may be down.'
+        )
+        context.set_code(err.code())
+        self.logger.error(f'Error while getting responses from Pods: {err.details()}')
+        if err.request_id:
+            response.header.request_id = err.request_id
+        return response
+
     async def process_data(self, requests: List[DataRequest], context) -> DataRequest:
         """
         Process the received data request and return the result as a new request
@@ -209,17 +219,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 context.set_trailing_metadata(metadata.items())
                 return response
         except InternalNetworkError as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
-            context.set_details(
-                f'|Head: Failed to connect to worker (Executor) pod at address {err.dest_addr}. It may be down.'
+            return self._handle_internalnetworkerror(
+                err=err, context=context, response=Response()
             )
-            context.set_code(err.code())
-            self.logger.error(
-                f'Error while getting responses from Pods: {err.details()}'
-            )
-            r = Response()
-            if err.request_id:
-                r.header.request_id = err.request_id
-            return r
         except (
             RuntimeError,
             Exception,
@@ -278,28 +280,39 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
     async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
         """
-        USes the connection pool to send a discover endpoint call to the workers
+        Uses the connection pool to send a discover endpoint call to the workers
 
         :param empty: The service expects an empty protobuf message
         :param context: grpc context
         :returns: the response request
         """
         response = jina_pb2.EndpointsProto()
-        if self.uses_before_address:
-            uses_before_response, _ = await self.connection_pool.send_discover_endpoint(
-                deployment='uses_before', head=False
-            )
-            response.endpoints.extend(uses_before_response.endpoints)
-        if self.uses_after_address:
-            uses_after_response, _ = await self.connection_pool.send_discover_endpoint(
-                deployment='uses_after', head=False
-            )
-            response.endpoints.extend(uses_after_response.endpoints)
+        try:
+            if self.uses_before_address:
+                (
+                    uses_before_response,
+                    _,
+                ) = await self.connection_pool.send_discover_endpoint(
+                    deployment='uses_before', head=False
+                )
+                response.endpoints.extend(uses_before_response.endpoints)
+            if self.uses_after_address:
+                (
+                    uses_after_response,
+                    _,
+                ) = await self.connection_pool.send_discover_endpoint(
+                    deployment='uses_after', head=False
+                )
+                response.endpoints.extend(uses_after_response.endpoints)
 
-        worker_response, _ = await self.connection_pool.send_discover_endpoint(
-            deployment=self._deployment_name, head=False
-        )
-        response.endpoints.extend(worker_response.endpoints)
+            worker_response, _ = await self.connection_pool.send_discover_endpoint(
+                deployment=self._deployment_name, head=False
+            )
+            response.endpoints.extend(worker_response.endpoints)
+        except InternalNetworkError as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
+            return self._handle_internalnetworkerror(
+                err=err, context=context, response=response
+            )
 
         return response
 

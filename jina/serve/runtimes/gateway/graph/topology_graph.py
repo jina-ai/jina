@@ -60,6 +60,17 @@ class TopologyGraph:
                 copy_req.data.docs = filtered_docs
                 self.parts_to_send[i] = copy_req
 
+        def _handle_internalnetworkerror(self, err):  # TODO(johannes) make this work
+            err_code = err.code()
+            if err_code == grpc.StatusCode.UNAVAILABLE:
+                err._details = (
+                    err.details()
+                    + f' |Gateway: Communication error with deployment {self.name} at address {err.dest_addr}. Head or worker may be down.'
+                )
+                raise err
+            else:
+                raise
+
         def get_endpoints(self, connection_pool: GrpcConnectionPool):
             return connection_pool.send_discover_endpoint(self.name)
 
@@ -114,15 +125,7 @@ class TopologyGraph:
                             timeout=self._timeout_send,
                         )
                     except InternalNetworkError as err:
-                        err_code = err.code()
-                        if err_code == grpc.StatusCode.UNAVAILABLE:
-                            err._details = (
-                                err.details()
-                                + f' |Gateway: Communication error with deployment {self.name} at address {err.dest_addr}. Head or worker may be down.'
-                            )
-                            raise err
-                        else:
-                            raise
+                        self._handle_internalnetworkerror(err)
 
                     self.end_time = datetime.utcnow()
                     if metadata and 'is-error' in metadata:
