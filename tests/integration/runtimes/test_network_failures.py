@@ -64,7 +64,10 @@ def _send_request(gateway_port, protocol):
     """send request to gateway and see what happens"""
     c = Client(host='localhost', port=gateway_port, protocol=protocol)
     return c.post(
-        '/foo', inputs=[Document(text='hi')], request_size=1, return_responses=True
+        '/foo',
+        inputs=[Document(text='hi') for _ in range(2)],
+        request_size=1,
+        return_responses=True,
     )
 
 
