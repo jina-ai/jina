@@ -1958,7 +1958,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             else f'docker-compose -f {output_path} up'
         )
 
-        print(
+        self.logger.info(
             f'Docker compose file has been created under [b]{output_path}[/b]. You can use it by running [b]{command}[/b]'
         )
 
