@@ -503,13 +503,6 @@ class GrpcConnectionPool:
             timeout=timeout,
         )
 
-    def get_deployment_address(self, deployment: str):
-        """Return the address of a given deployment
-        :param deployment: name of the deployment
-        :return: address of the deployment if the deployment is known, else None
-        """
-        return self._deployment_address_map.get(deployment, None)
-
     def send_requests(
         self,
         requests: List[Request],
