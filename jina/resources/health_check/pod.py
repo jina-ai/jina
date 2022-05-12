@@ -3,22 +3,14 @@ def check_health_pod(addr: str):
 
     :param addr: the address on which the pod is serving ex : localhost:1234
     """
-    import grpc
+    from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 
-    from jina.serve.networking import GrpcConnectionPool
-    from jina.types.request.control import ControlRequest
+    is_ready = AsyncNewLoopRuntime.is_ready(addr)
 
-    try:
-        GrpcConnectionPool.send_request_sync(
-            request=ControlRequest('STATUS'),
-            target=addr,
-        )
-    except grpc.RpcError as e:
-        print('The pod is unhealthy')
-        print(e)
-        raise e
+    if not is_ready:
+        raise Exception('Pod is unhealthy')
 
-    print('The pod is healthy')
+    print('The Pod is healthy')
 
 
 if __name__ == '__main__':

@@ -2,37 +2,7 @@ import os
 from typing import Iterable, List, Union
 
 from jina.proto import jina_pb2
-from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
-
-
-class ControlRequestProto:
-    """This class is a drop-in replacement for gRPC default serializer.
-
-    It replace default serializer to make sure we always work with `Request`
-
-    """
-
-    @staticmethod
-    def SerializeToString(x: 'ControlRequest'):
-        """
-        # noqa: DAR101
-        # noqa: DAR102
-        # noqa: DAR201
-        """
-        return x.proto.SerializePartialToString()
-
-    @staticmethod
-    def FromString(x: bytes):
-        """
-        # noqa: DAR101
-        # noqa: DAR102
-        # noqa: DAR201
-        """
-        proto = jina_pb2.ControlRequestProto()
-        proto.ParseFromString(x)
-
-        return ControlRequest(request=proto)
 
 
 class DataRequestProto:

@@ -3,13 +3,9 @@ from copy import deepcopy
 from functools import partial
 from typing import TYPE_CHECKING
 
-from grpc import RpcError
-
 from jina.enums import GatewayProtocolType, PodRoleType
 from jina.hubble.helper import is_valid_huburi
 from jina.hubble.hubio import HubIO
-from jina.serve.networking import GrpcConnectionPool
-from jina.types.request.control import ControlRequest
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -94,18 +90,3 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
         _args.runtime_cls = 'HeadRuntime'
 
     return _args
-
-
-def is_ready(address: str) -> bool:
-    """
-    TODO: make this async
-    Check if status is ready.
-    :param address: the address where the control message needs to be sent
-    :return: True if status is ready else False.
-    """
-
-    try:
-        GrpcConnectionPool.send_request_sync(ControlRequest('STATUS'), address)
-    except RpcError:
-        return False
-    return True
