@@ -654,6 +654,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
             'tag': tag if tag else 'latest',
             'jina': __version__,
             'args': args_copy,
+            'secret': secret,
         }
 
         import requests

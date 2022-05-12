@@ -712,7 +712,7 @@ def test_deploy_public_sandbox_existing(mocker, monkeypatch):
     monkeypatch.setattr(requests, "post", _mock_post)
 
     args = Namespace(
-        uses='jinahub+sandbox://dummy_mwu_encoder',
+        uses='jinahub+sandbox://dummy_mwu_encoder:dummy_secret',
         uses_with={'foo': 'bar'},
         test_string='text',
         test_number=1,
@@ -726,6 +726,7 @@ def test_deploy_public_sandbox_existing(mocker, monkeypatch):
         'uses_with': {'foo': 'bar'},
         'test_number': 1,
         'test_string': 'text',
+        'secret': 'dummy_secret',
     }
 
 
