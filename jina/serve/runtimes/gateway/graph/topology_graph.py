@@ -60,7 +60,7 @@ class TopologyGraph:
                 copy_req.data.docs = filtered_docs
                 self.parts_to_send[i] = copy_req
 
-        def _handle_internalnetworkerror(self, err):  # TODO(johannes) make this work
+        def _handle_internalnetworkerror(self, err):
             err_code = err.code()
             if err_code == grpc.StatusCode.UNAVAILABLE:
                 err._details = (
