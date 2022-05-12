@@ -3,6 +3,8 @@ import asyncio
 from contextlib import AsyncExitStack
 from typing import TYPE_CHECKING, Dict, Optional
 
+from starlette import status
+
 from jina.clients.base import BaseClient
 from jina.clients.base.helper import WebsocketClientlet
 from jina.clients.helper import callback_exec, callback_exec_on_error
@@ -130,7 +132,7 @@ class WebSocketBaseClient(BaseClient):
                             p_bar.update()
                         yield response
                 finally:
-                    if iolet.close_code == 1011:
+                    if iolet.close_code == status.WS_1011_INTERNAL_ERROR:
                         raise ConnectionError(iolet.close_message)
                     await receive_task
 

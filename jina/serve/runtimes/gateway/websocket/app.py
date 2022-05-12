@@ -16,6 +16,11 @@ if TYPE_CHECKING:
     from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 
 
+WS_CLOSING_MSG_MAX_LEN = (
+    123  # https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/close
+)
+
+
 def get_fastapi_app(
     args: 'argparse.Namespace',
     topology_graph: 'TopologyGraph',
@@ -164,7 +169,7 @@ def get_fastapi_app(
             # ws closing messages can't be longer than 123 chars
             msg = (
                 err.details()
-                if len(err.details()) <= 123
+                if len(err.details()) <= WS_CLOSING_MSG_MAX_LEN
                 else f'Network error while connecting to deployment at {err.dest_addr}. It may be down.'
             )
             await websocket.close(code=status.WS_1011_INTERNAL_ERROR, reason=msg)
