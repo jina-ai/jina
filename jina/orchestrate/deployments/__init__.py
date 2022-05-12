@@ -452,23 +452,6 @@ class Deployment(BaseDeployment):
     def __eq__(self, other: 'BaseDeployment'):
         return self.num_pods == other.num_pods and self.name == other.name
 
-    def activate(self):
-        """
-        Activate all worker pods in this deployment by registering them with the head
-        """
-        if self.head_pod is not None:
-            for shard_id in self.pod_args['pods']:
-                for pod_idx, pod_args in enumerate(self.pod_args['pods'][shard_id]):
-                    worker_host = self.get_worker_host(
-                        pod_args, self.shards[shard_id]._pods[pod_idx], self.head_pod
-                    )
-                    GrpcConnectionPool.activate_worker_sync(
-                        worker_host,
-                        int(pod_args.port),
-                        self.head_pod.runtime_ctrl_address,
-                        shard_id,
-                    )
-
     @staticmethod
     def get_worker_host(pod_args, pod, head_pod):
         """
@@ -478,7 +461,7 @@ class Deployment(BaseDeployment):
         :param pod_args: arguments of the worker pod
         :param pod: the worker pod
         :param head_pod: head pod communicating with the worker pod
-        :return: host to use in activate messages
+        :return: host to pass in connection list of the head
         """
         # Check if the current pod and head are both containerized on the same host
         # If so __docker_host__ needs to be advertised as the worker's address to the head
@@ -534,8 +517,6 @@ class Deployment(BaseDeployment):
             )
             self.enter_context(self.shards[shard_id])
 
-        if not getattr(self.args, 'noblock_on_start', False):
-            self.activate()
         return self
 
     def wait_start_success(self) -> None:
@@ -556,7 +537,6 @@ class Deployment(BaseDeployment):
                 self.head_pod.wait_start_success()
             for shard_id in self.shards:
                 self.shards[shard_id].wait_start_success()
-            self.activate()
         except:
             self.close()
             raise
@@ -706,7 +686,16 @@ class Deployment(BaseDeployment):
                 )
 
             parsed_args['head'] = BaseDeployment._copy_to_head_args(args)
+
         parsed_args['pods'] = self._set_pod_args(args)
+
+        if parsed_args['head'] is not None:
+            for shard_id in parsed_args['pods']:
+                for pod_idx, pod_args in enumerate(parsed_args['pods'][shard_id]):
+                    worker_host = self.get_worker_host(
+                        pod_args, self.shards[shard_id]._pods[pod_idx], self.head_pod
+                    )
+                    parsed_args['head'].connection_list[shard_id].append(worker_host)
 
         return parsed_args
 
