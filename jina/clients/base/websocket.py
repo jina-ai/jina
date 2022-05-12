@@ -57,9 +57,6 @@ class WebSocketBaseClient(BaseClient):
                 request_buffer: Dict[
                     str, asyncio.Future
                 ] = dict()  # maps request_ids to futures (tasks)
-                request_buffer[
-                    ''
-                ] = get_or_reuse_loop().create_future()  # task for error response
 
                 def _result_handler(result):
                     return result
@@ -67,22 +64,8 @@ class WebSocketBaseClient(BaseClient):
                 async def _receive():
                     def _response_handler(response):
                         if response.header.request_id in request_buffer:
-                            request_id = response.header.request_id
-                            future = (
-                                request_buffer.pop(request_id)
-                                if request_id
-                                else request_buffer.get(request_id)
-                            )
+                            future = request_buffer.pop(response.header.request_id)
                             future.set_result(response)
-                            if (
-                                response.header.status.exception.name
-                                == "<class 'jina.excepts.InternalNetworkError'>"
-                            ):  # This is a bit hacky.
-                                # If you use a different ws client, you should instead check if it closes with code 1011
-                                # (INTERNAL_ERROR), which is equivalent but doesn't work in this client implementation
-                                raise ConnectionError(
-                                    response.header.status.description
-                                )
                         else:
                             self.logger.warning(
                                 f'discarding unexpected response with request id {response.header.request_id}'
@@ -93,9 +76,6 @@ class WebSocketBaseClient(BaseClient):
                         async for response in iolet.recv_message():
                             _response_handler(response)
                     finally:
-                        request_buffer.pop(
-                            '', None
-                        )  # remove error task if it is still there
                         if request_buffer:
                             self.logger.warning(
                                 f'{self.__class__.__name__} closed, cancelling all outstanding requests'
@@ -150,6 +130,8 @@ class WebSocketBaseClient(BaseClient):
                             p_bar.update()
                         yield response
                 finally:
+                    if iolet.close_code == 1011:
+                        raise ConnectionError(iolet.close_message)
                     await receive_task
 
             except (aiohttp.ClientError, ConnectionError) as e:

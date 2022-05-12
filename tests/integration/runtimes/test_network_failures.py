@@ -268,6 +268,9 @@ async def test_runtimes_headful_topology(port_generator, protocol, terminate_hea
         worker_process.terminate()  # kill worker
         worker_process.join()
         error_port = worker_port
+    error_port = (
+        head_port if protocol == 'websocket' else error_port
+    )  # due to error msg length constraints ws will always report the head address
 
     try:
         # ----------- 1. test that useful errors are given -----------

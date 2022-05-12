@@ -1,4 +1,5 @@
 import argparse
+import json
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional
 
 from jina.clients.request import request_generator
@@ -159,37 +160,16 @@ def get_fastapi_app(
             async for msg in streamer.stream(request_iterator=req_iter()):
                 await manager.send(websocket, msg)
         except InternalNetworkError as err:
-            response.status_code = status.WS_1011_INTERNAL_ERROR
-            result = DataRequest().to_dict()
-            result['header'] = _generate_exception_header(
-                err
-            )  # attach exception details to response header
-            logger.error(
-                f'Error while getting responses from deployments: {err.details()}'
-            )
-            await manager.send(websocket, DataRequest(result))
             manager.disconnect(websocket)
-            await websocket.close(code=status.WS_1011_INTERNAL_ERROR)
+            # ws closing messages can't be longer than 123 chars
+            msg = (
+                err.details()
+                if len(err.details()) <= 123
+                else f'Network error while connecting to deployment at {err.dest_addr}. It may be down.'
+            )
+            await websocket.close(code=status.WS_1011_INTERNAL_ERROR, reason=msg)
         except WebSocketDisconnect:
             logger.info('Client successfully disconnected from server')
             manager.disconnect(websocket)
-
-    def _generate_exception_header(error: InternalNetworkError):
-        import traceback
-
-        exception_dict = {
-            'name': str(error.__class__),
-            'stacks': [
-                str(x) for x in traceback.extract_tb(error.og_exception.__traceback__)
-            ],
-            'executor': '',
-        }
-        status_dict = {
-            'code': 3,  # status error
-            'description': error.details() if error.details() else '',
-            'exception': exception_dict,
-        }
-        header_dict = {'request_id': error.request_id, 'status': status_dict}
-        return header_dict
 
     return app
