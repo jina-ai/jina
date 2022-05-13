@@ -64,7 +64,7 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '3.3.26'
+__version__ = '3.4.1'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -83,6 +83,7 @@ __uptime__ = _datetime.datetime.now().isoformat()
 # 2. grep -rohEI --exclude-dir=jina/hub --exclude-dir=tests --include \*.py "\'JINA_.*?\'" jina  | sort -u | sed "s/$/,/g"
 # 3. copy all lines EXCEPT the first (which is the grep command in the last line)
 __jina_env__ = (
+    'JINA_AUTH_TOKEN',
     'JINA_DEFAULT_HOST',
     'JINA_DEFAULT_TIMEOUT_CTRL',
     'JINA_DEFAULT_WORKSPACE_BASE',
@@ -139,7 +140,6 @@ _names_with_underscore = [
     '__root_dir__',
     '__default_endpoint__',
     '__default_executor__',
-    '__num_args_executor_func__',
     '__unset_msg__',
     '__windows__',
 ]

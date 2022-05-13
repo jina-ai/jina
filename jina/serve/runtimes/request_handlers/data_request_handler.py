@@ -55,7 +55,7 @@ class DataRequestHandler:
                     'document_processed',
                     'Number of Documents that have been processed by the executor',
                     namespace='jina',
-                    labelnames=('endpoint', 'executor', 'runtime_name'),
+                    labelnames=('executor_endpoint', 'executor', 'runtime_name'),
                     registry=metrics_registry,
                 )
         else:

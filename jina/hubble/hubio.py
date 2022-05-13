@@ -10,13 +10,7 @@ from pathlib import Path
 from typing import Dict, Optional, Union
 
 from jina import __resources_path__, __version__
-from jina.helper import (
-    ArgNamespace,
-    colored,
-    get_request_header,
-    get_rich_console,
-    retry,
-)
+from jina.helper import ArgNamespace, get_rich_console, retry
 from jina.hubble import HubExecutor
 from jina.hubble.helper import (
     archive_package,
@@ -26,6 +20,7 @@ from jina.hubble.helper import (
     get_download_cache_dir,
     get_hubble_error_message,
     get_hubble_url_v2,
+    get_request_header,
     parse_hub_uri,
     upload_file,
 )
@@ -393,7 +388,7 @@ metas:
                     form_data['secret'] = self.args.secret or secret
 
                 st.update(f'Connecting to Jina Hub ...')
-                if form_data.get('id') and form_data.get('secret'):
+                if form_data.get('id'):
                     hubble_url = get_hubble_url_v2() + '/rpc/executor.update'
                 else:
                     hubble_url = get_hubble_url_v2() + '/rpc/executor.create'
@@ -461,7 +456,7 @@ metas:
                 if image:
                     new_uuid8, new_secret = self._prettyprint_result(console, image)
                     if new_uuid8 != uuid8 or new_secret != secret:
-                        dump_secret(work_path, new_uuid8, new_secret)
+                        dump_secret(work_path, new_uuid8, new_secret or '')
                 else:
                     raise Exception(f'Unknown Error, session_id: {session_id}')
 
@@ -481,7 +476,7 @@ metas:
         from rich.table import Table
 
         uuid8 = image['id']
-        secret = image['secret']
+        secret = image.get('secret')
         visibility = image['visibility']
         tag = self.args.tag[0] if self.args.tag else None
 
@@ -494,11 +489,14 @@ metas:
         )
         if 'name' in image:
             table.add_row(':name_badge: Name', image['name'])
-        table.add_row(':lock: Secret', secret)
-        table.add_row(
-            '',
-            ':point_up:️ [bold red]Please keep this token in a safe place!',
-        )
+
+        if secret:
+            table.add_row(':lock: Secret', secret)
+            table.add_row(
+                '',
+                ':point_up:️ [bold red]Please keep this token in a safe place!',
+            )
+
         table.add_row(':eyes: Visibility', visibility)
 
         p1 = Panel(
@@ -511,7 +509,9 @@ metas:
 
         presented_id = image.get('name', uuid8)
         usage = (
-            f'{presented_id}' if visibility == 'public' else f'{presented_id}:{secret}'
+            f'{presented_id}'
+            if visibility == 'public' or not secret
+            else f'{presented_id}:{secret}'
         ) + (f'/{tag}' if tag else '')
 
         if not self.args.no_usage:
@@ -654,6 +654,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
             'tag': tag if tag else 'latest',
             'jina': __version__,
             'args': args_copy,
+            'secret': secret,
         }
 
         import requests
@@ -789,7 +790,7 @@ f = Flow().add(uses='jinahub+sandbox://{executor_name}')
                 presented_id = getattr(executor, 'name', executor.uuid)
                 executor_name = (
                     f'{presented_id}'
-                    if executor.visibility == 'public'
+                    if executor.visibility == 'public' or not secret
                     else f'{presented_id}:{secret}'
                 ) + (f'/{tag}' if tag else '')
 

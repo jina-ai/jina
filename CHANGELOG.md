@@ -180,6 +180,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -488,6 +489,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.3.23`)](#release-note-3323)
 - [Release Note (`3.3.24`)](#release-note-3324)
 - [Release Note (`3.3.25`)](#release-note-3325)
+- [Release Note (`3.4.0`)](#release-note-340)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -13533,4 +13535,45 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```913d1f31```](https://github.com/jina-ai/jina/commit/913d1f319afcc279fdd80ed18fba5a67768dcc59)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```d5c9967c```](https://github.com/jina-ai/jina/commit/d5c9967c0e0cd96f067afeee8aa0adae9cd3f4ef)] __-__ __version__: the next version will be 3.3.25 (*Jina Dev Bot*)
+
+<a name=release-note-3-4-0></a>
+## Release Note (`3.4.0`)
+
+> Release time: 2022-05-10 14:33:13
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  samsja,  Deepankar Mahapatro,  Roshan Jossy,  Tobias Jacobowitz,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```913312c0```](https://github.com/jina-ai/jina/commit/913312c0b4827de7f81a69ead87fb0e921facd8c)] __-__ rename the endpoint label in monitroing to jina endpoint (#4768) (*samsja*)
+ - [[```db638330```](https://github.com/jina-ai/jina/commit/db63833046c2f0c8a5ab562b8becdf0221c37f2f)] __-__ add runtime name as label for monitoring (#4752) (*samsja*)
+ - [[```65d6d6da```](https://github.com/jina-ai/jina/commit/65d6d6da50cb795499ea5e361bf14908f62a3168)] __-__ gateway endpoint discovery (#4756) (*Joan Fontanals*)
+ - [[```a2cbd8ec```](https://github.com/jina-ai/jina/commit/a2cbd8ecdb320cddb689df46e1585f50c234bb51)] __-__ now display all of the monitoring adress (#4758) (*samsja*)
+ - [[```c1e03950```](https://github.com/jina-ai/jina/commit/c1e03950670e338c40754b80ce2b6f2128858867)] __-__ add a decoratator for monitoring method (#4737) (*samsja*)
+ - [[```01dc9da6```](https://github.com/jina-ai/jina/commit/01dc9da6bc7c11bbfa996ffd941d96e4ec8c97df)] __-__ k8s failure testing (#4743) (*Tobias Jacobowitz*)
+
+### 🐞 Bug fixes
+
+ - [[```2fe34c7f```](https://github.com/jina-ai/jina/commit/2fe34c7fc0f65eb66f5fb2bbc5f924ec2447bff8)] __-__ import all from jina (#4772) (*Deepankar Mahapatro*)
+ - [[```92b0229c```](https://github.com/jina-ai/jina/commit/92b0229c268afe71115eba45e57c80b105e32665)] __-__ fix cd (#4762) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```32e2cd33```](https://github.com/jina-ai/jina/commit/32e2cd332b0305d0126cdfdb22d0329c08f2de75)] __-__ document the monitoring feature (#4710) (*samsja*)
+ - [[```6975ccb2```](https://github.com/jina-ai/jina/commit/6975ccb25856381360209d8f11ece1a396ad0fec)] __-__ change target executor to be a regex pattern (#4769) (*Joan Fontanals*)
+ - [[```5c8f8099```](https://github.com/jina-ai/jina/commit/5c8f8099b024208e5c30c3e2158fc2616ffa20b6)] __-__ __tracking__: update refer links to other docs with utm_source (#4750) (*Roshan Jossy*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```b2bc5493```](https://github.com/jina-ai/jina/commit/b2bc5493b08071efcff842c95de5b2b92c10404c)] __-__ fix k8s test in cd (#4765) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```d1ce7e95```](https://github.com/jina-ai/jina/commit/d1ce7e95f76a365ee2f7c667f6b0332eb575375a)] __-__ bump version (#4774) (*Joan Fontanals*)
+ - [[```dc18154a```](https://github.com/jina-ai/jina/commit/dc18154ae9cae32fc649b796830864763bae39cb)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```2292e935```](https://github.com/jina-ai/jina/commit/2292e935811c24af8f51017f309486f45b361942)] __-__ __version__: the next version will be 3.3.26 (*Jina Dev Bot*)
 
