@@ -638,7 +638,7 @@ class Deployment(BaseDeployment):
         :param replicas: the number of replicas
         :return: a map from replica id to device id
         """
-        if device_str and device_str.startswith('RR') and replicas > 1:
+        if device_str and device_str.startswith('RR') and replicas >= 1:
             try:
                 num_devices = str(subprocess.check_output(['nvidia-smi', '-L'])).count(
                     'UUID'
@@ -648,12 +648,9 @@ class Deployment(BaseDeployment):
                 if num_devices == 0:
                     return
 
-            if not device_str[2:]:
-                all_devices = list(range(num_devices))
-            else:
-                all_devices = list(range(num_devices))[
-                    Deployment._parse_slice(device_str[2:])
-                ]
+            all_devices = list(range(num_devices))
+            if device_str[2:]:
+                all_devices = all_devices[Deployment._parse_slice(device_str[2:])]
 
             _c = cycle(all_devices)
             return {j: next(_c) for j in range(replicas)}

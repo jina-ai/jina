@@ -15,6 +15,8 @@ from jina.orchestrate.deployments import Deployment
         ['RR', 5, {0: 0, 1: 1, 2: 2, 3: 0, 4: 1}],
         ['RR1:', 5, {0: 1, 1: 2, 2: 1, 3: 2, 4: 1}],
         ['RR0:2', 5, {0: 0, 1: 1, 2: 0, 3: 1, 4: 0}],
+        ['RR1:2', 2, {0: 1, 1: 1}],
+        ['RR1:2', 1, {0: 1}],
     ],
 )
 def test_cuda_assignment(device_str, replicas, expected):
