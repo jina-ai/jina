@@ -52,7 +52,6 @@ from jina.excepts import (
 from jina.helper import (
     ArgNamespace,
     CatchAllCleanupContextManager,
-    colored_rich,
     download_mermaid_url,
     get_internal_ip,
     get_public_ip,
@@ -1594,51 +1593,101 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return table
 
     def _get_address_table(self, address_table):
-        address_table.add_row(':link:', 'Protocol', f'{self.protocol}')
+        _protocol = str(self.protocol)
+        if self.gateway_args.ssl_certfile and self.gateway_args.ssl_keyfile:
+            _protocol = f'{self.protocol}S'
+            address_table.add_row(
+                ':link:', 'Protocol', f':closed_lock_with_key: {_protocol}'
+            )
+
+        else:
+            address_table.add_row(':link:', 'Protocol', _protocol)
+
+        _protocol = _protocol.lower()
         address_table.add_row(
             ':house:',
-            'Local access',
-            f'[link={self.protocol}://{self.host}:{self.port}]{self.host}:{self.port}[/]',
+            'Local',
+            f'[link={_protocol}://{self.host}:{self.port}]{self.host}:{self.port}[/]',
         )
         address_table.add_row(
             ':lock:',
-            'Private network',
-            f'[link={self.protocol}://{self.address_private}:{self.port}]{self.address_private}:{self.port}[/]',
+            'Private',
+            f'[link={_protocol}://{self.address_private}:{self.port}]{self.address_private}:{self.port}[/]',
         )
 
         if self.address_public:
             address_table.add_row(
                 ':earth_africa:',
-                'Public address',
-                f'[link={self.protocol}://{self.address_public}:{self.port}]{self.address_public}:{self.port}[/]',
+                'Public',
+                f'[link={_protocol}://{self.address_public}:{self.port}]{self.address_public}:{self.port}[/]',
             )
 
         if self.protocol == GatewayProtocolType.HTTP:
+
+            _address = [
+                f'[link={_protocol}://localhost:{self.port}/docs]Local[/]',
+                f'[link={_protocol}://{self.address_private}:{self.port}/docs]Private[/]',
+            ]
+            if self.address_public:
+                _address.append(
+                    f'[link={_protocol}://{self.address_public}:{self.port}/docs]Public[/]'
+                )
             address_table.add_row(
                 ':speech_balloon:',
                 'Swagger UI',
-                f'[link=http://localhost:{self.port}/docs]http://localhost:{self.port}/docs[/]',
+                '·'.join(_address),
             )
+
+            _address = [
+                f'[link={_protocol}://localhost:{self.port}/redoc]Local[/]',
+                f'[link={_protocol}://{self.address_private}:{self.port}/redoc]Private[/]',
+            ]
+
+            if self.address_public:
+                _address.append(
+                    f'[link={_protocol}://{self.address_public}:{self.port}/redoc]Public[/]'
+                )
 
             address_table.add_row(
                 ':books:',
                 'Redoc',
-                f'[link=http://localhost:{self.port}/redoc]http://localhost:{self.port}/redoc[/]',
+                '·'.join(_address),
             )
+
             if self.gateway_args.expose_graphql_endpoint:
+                _address = [
+                    f'[link={_protocol}://localhost:{self.port}/graphql]Local[/]',
+                    f'[link={_protocol}://{self.address_private}:{self.port}/graphql]Private[/]',
+                ]
+
+                if self.address_public:
+                    _address.append(
+                        f'[link={_protocol}://{self.address_public}:{self.port}/graphql]Public[/]'
+                    )
+
                 address_table.add_row(
                     ':strawberry:',
                     'GraphQL UI',
-                    f'[link=http://localhost:{self.port}/graphql]http://localhost:{self.port}/graphql[/]',
+                    '·'.join(_address),
                 )
-        if self.monitoring:
 
+        if self.monitoring:
             for name, deployment in self:
+                _address = [
+                    f'[link=http://localhost:{deployment.args.port_monitoring}]Local[/]',
+                    f'[link=http://{self.address_private}:{deployment.args.port_monitoring}]Private[/]',
+                ]
+
+                if self.address_public:
+                    _address.append(
+                        f'[link=http://{self.address_public}:{deployment.args.port_monitoring}]Public[/]'
+                    )
+
                 if deployment.args.monitoring:
                     address_table.add_row(
                         ':bar_chart:',
-                        f'Monitor {name}',
-                        f'[link=http://localhost:{deployment.args.port_monitoring}]http://localhost:{deployment.args.port_monitoring}[/]',
+                        f'Monitor [b]{name}[/]',
+                        '·'.join(_address),
                     )
 
             return self[GATEWAY_NAME].args.port_monitoring
