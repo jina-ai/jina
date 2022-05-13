@@ -153,7 +153,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
                 ctrl_address, timeout=1.0
             )
             # TODO: Get the proper value of the ServingStatus SERVING KEY
-            return response.status == 'SERVING'
+            return response.status == 1
         except RpcError:
             return False
 
