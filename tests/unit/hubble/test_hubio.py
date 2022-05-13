@@ -726,8 +726,8 @@ def test_deploy_public_sandbox_existing(mocker, monkeypatch):
         'uses_with': {'foo': 'bar'},
         'test_number': 1,
         'test_string': 'text',
-        'secret': 'dummy_secret',
     }
+    assert kwargs['json']['secret'] == 'dummy_secret'
 
 
 def test_deploy_public_sandbox_create_new(mocker, monkeypatch):
