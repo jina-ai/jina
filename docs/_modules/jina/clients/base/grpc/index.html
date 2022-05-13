@@ -560,7 +560,12 @@
 
 <span class="kn">from</span> <span class="nn">jina.clients.base</span> <span class="kn">import</span> <span class="n">BaseClient</span>
 <span class="kn">from</span> <span class="nn">jina.clients.helper</span> <span class="kn">import</span> <span class="n">callback_exec</span><span class="p">,</span> <span class="n">callback_exec_on_error</span>
-<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadClient</span><span class="p">,</span> <span class="n">BadClientInput</span><span class="p">,</span> <span class="n">BaseJinaException</span>
+<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BadClient</span><span class="p">,</span>
+    <span class="n">BadClientInput</span><span class="p">,</span>
+    <span class="n">BaseJinaException</span><span class="p">,</span>
+    <span class="n">InternalNetworkError</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="kn">import</span> <span class="n">ProgressBar</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2_grpc</span>
 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
@@ -636,21 +641,20 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'user cancel the process'</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'process error: </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">_call</span><span class="o">.</span><span class="n">AioRpcError</span> <span class="k">as</span> <span class="n">rpc_ex</span><span class="p">:</span>
-            <span class="c1"># Since this object is guaranteed to be a grpc.Call, might as well include that in its name.</span>
-            <span class="n">my_code</span> <span class="o">=</span> <span class="n">rpc_ex</span><span class="o">.</span><span class="n">code</span><span class="p">()</span>
-            <span class="n">my_details</span> <span class="o">=</span> <span class="n">rpc_ex</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">_call</span><span class="o">.</span><span class="n">AioRpcError</span><span class="p">,</span> <span class="n">InternalNetworkError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">my_code</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">()</span>
+            <span class="n">my_details</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'gRPC error: </span><span class="si">{</span><span class="n">my_code</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">my_details</span><span class="si">}</span><span class="s1">'</span>
 
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">the ongoing request is terminated as the server is not available or closed already'</span>
+                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">The ongoing request is terminated as the server is not available or closed already.'</span>
                     <span class="p">)</span>
-                    <span class="k">raise</span> <span class="n">rpc_ex</span>
+                    <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">my_details</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
                 <span class="k">elif</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">INTERNAL</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">internal error on the server side'</span><span class="p">)</span>
-                    <span class="k">raise</span> <span class="n">rpc_ex</span>
+                    <span class="k">raise</span> <span class="n">err</span>
                 <span class="k">elif</span> <span class="p">(</span>
                     <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNKNOWN</span>
                     <span class="ow">and</span> <span class="s1">'asyncio.exceptions.TimeoutError'</span> <span class="ow">in</span> <span class="n">my_details</span>
@@ -659,13 +663,14 @@
                         <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span>
                         <span class="s1">'often the case is that you define/send a bad input iterator to jina, '</span>
                         <span class="s1">'please double check your input iterator'</span>
-                    <span class="p">)</span> <span class="kn">from</span> <span class="nn">rpc_ex</span>
+                    <span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">BadClient</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">rpc_ex</span>
+                    <span class="k">raise</span> <span class="n">BadClient</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
 
             <span class="k">except</span> <span class="p">(</span>
                 <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">_call</span><span class="o">.</span><span class="n">AioRpcError</span><span class="p">,</span>
                 <span class="n">BaseJinaException</span><span class="p">,</span>
+                <span class="ne">ConnectionError</span><span class="p">,</span>
             <span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># depending on if there are callbacks we catch or not the exception</span>
                 <span class="k">if</span> <span class="n">on_error</span> <span class="ow">or</span> <span class="n">on_always</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">on_error</span><span class="p">:</span>
@@ -692,7 +697,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 11, 2022.
+                    Last updated on May 13, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

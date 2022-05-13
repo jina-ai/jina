@@ -566,10 +566,13 @@
     <span class="n">Union</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">InternalNetworkError</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.serve.stream.helper</span> <span class="kn">import</span> <span class="n">AsyncRequestsIterator</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'RequestStreamer'</span><span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">Response</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
@@ -609,22 +612,41 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_result_handler</span> <span class="o">=</span> <span class="n">result_handler</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_end_of_iter_handler</span> <span class="o">=</span> <span class="n">end_of_iter_handler</span>
 
-<div class="viewcode-block" id="RequestStreamer.stream"><a class="viewcode-back" href="../../../../api/jina.serve.stream/#jina.serve.stream.RequestStreamer.stream">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_iterator</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="s1">'Request'</span><span class="p">]:</span>
+<div class="viewcode-block" id="RequestStreamer.stream"><a class="viewcode-back" href="../../../../api/jina.serve.stream/#jina.serve.stream.RequestStreamer.stream">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">request_iterator</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="s1">'Request'</span><span class="p">]:</span>
         <span class="sd">"""</span>
 <span class="sd">        stream requests from client iterator and stream responses back.</span>
 
 <span class="sd">        :param request_iterator: iterator of requests</span>
+<span class="sd">        :param context: context of the grpc call</span>
 <span class="sd">        :param args: positional arguments</span>
 <span class="sd">        :yield: responses from Executors</span>
 <span class="sd">        """</span>
+
         <span class="n">async_iter</span><span class="p">:</span> <span class="n">AsyncIterator</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_stream_requests_with_prefetch</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefetch</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefetch</span> <span class="o">&gt;</span> <span class="mi">0</span>
             <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream_requests</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">)</span>
         <span class="p">)</span>
-
-        <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">async_iter</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">response</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">async_iter</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">response</span>
+        <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">):</span>  <span class="c1"># inside GrpcGateway we can handle the error directly here through the grpc context</span>
+                <span class="n">context</span><span class="o">.</span><span class="n">set_details</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">())</span>
+                <span class="n">context</span><span class="o">.</span><span class="n">set_code</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">())</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'Error while getting responses from deployments: </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">Response</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">request_id</span><span class="p">:</span>
+                    <span class="n">r</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">request_id</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">request_id</span>
+                <span class="k">yield</span> <span class="n">r</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># HTTP and WS need different treatment further up the stack</span>
+                <span class="k">raise</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_stream_requests</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -770,7 +792,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 11, 2022.
+                    Last updated on May 13, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

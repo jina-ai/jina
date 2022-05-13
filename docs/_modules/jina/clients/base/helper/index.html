@@ -557,6 +557,8 @@
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
+<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="kn">import</span> <span class="n">WSMsgType</span>
+
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">WebsocketSubProtocols</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
@@ -644,12 +646,34 @@
         <span class="k">return</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1e10</span><span class="p">)</span></div></div>
 
 
+<div class="viewcode-block" id="WsResponseIter"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.WsResponseIter">[docs]</a><span class="k">class</span> <span class="nc">WsResponseIter</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Iterates over all the responses that come in over the websocket connection.</span>
+<span class="sd">    In contrast to the iterator built into AioHTTP, this also records the message that was sent at closing-time.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span> <span class="o">=</span> <span class="n">websocket</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close_message</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__aiter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__anext__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="o">.</span><span class="n">receive</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">(</span><span class="n">WSMsgType</span><span class="o">.</span><span class="n">CLOSE</span><span class="p">,</span> <span class="n">WSMsgType</span><span class="o">.</span><span class="n">CLOSING</span><span class="p">,</span> <span class="n">WSMsgType</span><span class="o">.</span><span class="n">CLOSED</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">close_message</span> <span class="o">=</span> <span class="n">msg</span>
+            <span class="k">raise</span> <span class="ne">StopAsyncIteration</span>
+        <span class="k">return</span> <span class="n">msg</span></div>
+
+
 <div class="viewcode-block" id="WebsocketClientlet"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet">[docs]</a><span class="k">class</span> <span class="nc">WebsocketClientlet</span><span class="p">(</span><span class="n">AioHttpClientlet</span><span class="p">):</span>
     <span class="sd">"""Websocket Client to be used with the streamer"""</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response_iter</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="WebsocketClientlet.send_message"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.send_message">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">'Request'</span><span class="p">):</span>
         <span class="sd">"""Send request in bytes to the server.</span>
@@ -683,7 +707,7 @@
 
 <span class="sd">        :yield: response objects received from server</span>
 <span class="sd">        """</span>
-        <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_iter</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">DataRequest</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -692,7 +716,18 @@
             <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
             <span class="n">protocols</span><span class="o">=</span><span class="p">(</span><span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">BYTES</span><span class="o">.</span><span class="n">value</span><span class="p">,),</span>
         <span class="p">)</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response_iter</span> <span class="o">=</span> <span class="n">WsResponseIter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">close_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">""":return: the close message (reason) of the ws closing response"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_iter</span><span class="o">.</span><span class="n">close_message</span><span class="o">.</span><span class="n">extra</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_iter</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">close_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">""":return: the close code of the ws closing response"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="o">.</span><span class="n">close_code</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span> <span class="k">else</span> <span class="kc">None</span></div>
 </pre></div>
             </article>
             <footer>
@@ -704,7 +739,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 11, 2022.
+                    Last updated on May 13, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

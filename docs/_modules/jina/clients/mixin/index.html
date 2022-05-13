@@ -612,6 +612,11 @@
             <span class="n">res</span> <span class="o">=</span> <span class="n">endpoint</span><span class="p">(</span>
                 <span class="n">mutation</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">extra_headers</span><span class="o">=</span><span class="n">headers</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="s1">'errors'</span> <span class="ow">in</span> <span class="n">res</span> <span class="ow">and</span> <span class="n">res</span><span class="p">[</span><span class="s1">'errors'</span><span class="p">]:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">'GraphQL mutation returned the following errors: '</span>
+                <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">res</span><span class="p">[</span><span class="s1">'errors'</span><span class="p">]:</span>
+                    <span class="n">msg</span> <span class="o">+=</span> <span class="n">err</span><span class="p">[</span><span class="s1">'message'</span><span class="p">]</span> <span class="o">+</span> <span class="s1">'. '</span>
+                <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">res</span></div></div>
 
 
@@ -832,7 +837,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 11, 2022.
+                    Last updated on May 13, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

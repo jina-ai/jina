@@ -566,13 +566,14 @@
 <span class="kn">from</span> <span class="nn">grpc_reflection.v1alpha</span> <span class="kn">import</span> <span class="n">reflection</span>
 
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PollingType</span>
+<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">InternalNetworkError</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span><span class="p">,</span> <span class="n">jina_pb2_grpc</span>
 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.asyncio</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.request_handlers.data_request_handler</span> <span class="kn">import</span> <span class="n">DataRequestHandler</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.control</span> <span class="kn">import</span> <span class="n">ControlRequest</span>
-<span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
+<span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">Response</span>
 
 
 <div class="viewcode-block" id="HeadRuntime"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime">[docs]</a><span class="k">class</span> <span class="nc">HeadRuntime</span><span class="p">(</span><span class="n">AsyncNewLoopRuntime</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
@@ -748,6 +749,16 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_data</span><span class="p">([</span><span class="n">request</span><span class="p">],</span> <span class="n">context</span><span class="p">)</span></div>
 
+    <span class="k">def</span> <span class="nf">_handle_internalnetworkerror</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">set_details</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'|Head: Failed to connect to worker (Executor) pod at address </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1">. It may be down.'</span>
+        <span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">set_code</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Error while getting responses from Pods: </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">request_id</span><span class="p">:</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">request_id</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">request_id</span>
+        <span class="k">return</span> <span class="n">response</span>
+
 <div class="viewcode-block" id="HeadRuntime.process_data"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.process_data">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataRequest</span><span class="p">],</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
         <span class="sd">"""</span>
 <span class="sd">        Process the received data request and return the result as a new request</span>
@@ -762,7 +773,14 @@
                 <span class="n">response</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_data_request</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">)</span>
                 <span class="n">context</span><span class="o">.</span><span class="n">set_trailing_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
                 <span class="k">return</span> <span class="n">response</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>  <span class="c1"># can't connect, Flow broken, interrupt the streaming through gRPC error mechanism</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_internalnetworkerror</span><span class="p">(</span>
+                <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">Response</span><span class="p">()</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span>
+            <span class="ne">RuntimeError</span><span class="p">,</span>
+            <span class="ne">Exception</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>  <span class="c1"># some other error, keep streaming going just add error info</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1"> add "--quiet-error" to suppress the exception details'</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
@@ -817,28 +835,39 @@
 
 <div class="viewcode-block" id="HeadRuntime.endpoint_discovery"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.endpoint_discovery">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">endpoint_discovery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EndpointsProto</span><span class="p">:</span>
         <span class="sd">"""</span>
-<span class="sd">        USes the connection pool to send a discover endpoint call to the workers</span>
+<span class="sd">        Uses the connection pool to send a discover endpoint call to the workers</span>
 
 <span class="sd">        :param empty: The service expects an empty protobuf message</span>
 <span class="sd">        :param context: grpc context</span>
 <span class="sd">        :returns: the response request</span>
 <span class="sd">        """</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EndpointsProto</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_address</span><span class="p">:</span>
-            <span class="n">uses_before_response</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">send_discover_endpoint</span><span class="p">(</span>
-                <span class="n">deployment</span><span class="o">=</span><span class="s1">'uses_before'</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span>
-            <span class="n">response</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">uses_before_response</span><span class="o">.</span><span class="n">endpoints</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_address</span><span class="p">:</span>
-            <span class="n">uses_after_response</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">send_discover_endpoint</span><span class="p">(</span>
-                <span class="n">deployment</span><span class="o">=</span><span class="s1">'uses_after'</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span>
-            <span class="n">response</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">uses_after_response</span><span class="o">.</span><span class="n">endpoints</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_address</span><span class="p">:</span>
+                <span class="p">(</span>
+                    <span class="n">uses_before_response</span><span class="p">,</span>
+                    <span class="n">_</span><span class="p">,</span>
+                <span class="p">)</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">send_discover_endpoint</span><span class="p">(</span>
+                    <span class="n">deployment</span><span class="o">=</span><span class="s1">'uses_before'</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">)</span>
+                <span class="n">response</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">uses_before_response</span><span class="o">.</span><span class="n">endpoints</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_address</span><span class="p">:</span>
+                <span class="p">(</span>
+                    <span class="n">uses_after_response</span><span class="p">,</span>
+                    <span class="n">_</span><span class="p">,</span>
+                <span class="p">)</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">send_discover_endpoint</span><span class="p">(</span>
+                    <span class="n">deployment</span><span class="o">=</span><span class="s1">'uses_after'</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">)</span>
+                <span class="n">response</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">uses_after_response</span><span class="o">.</span><span class="n">endpoints</span><span class="p">)</span>
 
-        <span class="n">worker_response</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">send_discover_endpoint</span><span class="p">(</span>
-            <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_name</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
-        <span class="n">response</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">worker_response</span><span class="o">.</span><span class="n">endpoints</span><span class="p">)</span>
+            <span class="n">worker_response</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">send_discover_endpoint</span><span class="p">(</span>
+                <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_name</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">worker_response</span><span class="o">.</span><span class="n">endpoints</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>  <span class="c1"># can't connect, Flow broken, interrupt the streaming through gRPC error mechanism</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_internalnetworkerror</span><span class="p">(</span>
+                <span class="n">err</span><span class="o">=</span><span class="n">err</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">response</span></div>
 
@@ -922,7 +951,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 11, 2022.
+                    Last updated on May 13, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

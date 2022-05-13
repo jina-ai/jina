@@ -557,9 +557,12 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
+
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span> <span class="nn">jina.clients.request</span> <span class="kn">import</span> <span class="n">request_generator</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DataInputType</span>
+<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">InternalNetworkError</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_full_version</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
@@ -590,7 +593,7 @@
 <span class="sd">    :return: fastapi app</span>
 <span class="sd">    """</span>
     <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+        <span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">status</span>
         <span class="kn">from</span> <span class="nn">fastapi.middleware.cors</span> <span class="kn">import</span> <span class="n">CORSMiddleware</span>
         <span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">HTMLResponse</span>
         <span class="kn">from</span> <span class="nn">starlette.requests</span> <span class="kn">import</span> <span class="n">Request</span>
@@ -695,7 +698,9 @@
             <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">'Debug'</span><span class="p">]</span>
             <span class="c1"># do not add response_model here, this debug endpoint should not restricts the response model</span>
         <span class="p">)</span>
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="n">body</span><span class="p">:</span> <span class="n">JinaEndpointRequestModel</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">post</span><span class="p">(</span>
+            <span class="n">body</span><span class="p">:</span> <span class="n">JinaEndpointRequestModel</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span>
+        <span class="p">):</span>  <span class="c1"># 'response' is a FastAPI response, not a Jina response</span>
             <span class="sd">"""</span>
 <span class="sd">            Post a data request to some endpoint.</span>
 
@@ -720,10 +725,38 @@
             <span class="k">if</span> <span class="n">bd</span><span class="p">[</span><span class="s1">'data'</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">'docs'</span> <span class="ow">in</span> <span class="n">bd</span><span class="p">[</span><span class="s1">'data'</span><span class="p">]:</span>
                 <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">'data'</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">'data'</span><span class="p">][</span><span class="s1">'docs'</span><span class="p">]</span>
 
-            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_get_singleton_result</span><span class="p">(</span>
-                <span class="n">request_generator</span><span class="p">(</span><span class="o">**</span><span class="n">req_generator_input</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_get_singleton_result</span><span class="p">(</span>
+                    <span class="n">request_generator</span><span class="p">(</span><span class="o">**</span><span class="n">req_generator_input</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_503_SERVICE_UNAVAILABLE</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">bd</span>  <span class="c1"># send back the request</span>
+                <span class="n">result</span><span class="p">[</span><span class="s1">'header'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_generate_exception_header</span><span class="p">(</span>
+                    <span class="n">err</span>
+                <span class="p">)</span>  <span class="c1"># attach exception details to response header</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'Error while getting responses from deployments: </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
             <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">_generate_exception_header</span><span class="p">(</span><span class="n">error</span><span class="p">:</span> <span class="n">InternalNetworkError</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">traceback</span>
+
+        <span class="n">exception_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">'name'</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="vm">__class__</span><span class="p">),</span>
+            <span class="s1">'stacks'</span><span class="p">:</span> <span class="p">[</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">traceback</span><span class="o">.</span><span class="n">extract_tb</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">og_exception</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span>
+            <span class="p">],</span>
+            <span class="s1">'executor'</span><span class="p">:</span> <span class="s1">''</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">status_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">'code'</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>  <span class="c1"># status error</span>
+            <span class="s1">'description'</span><span class="p">:</span> <span class="n">error</span><span class="o">.</span><span class="n">details</span><span class="p">()</span> <span class="k">if</span> <span class="n">error</span><span class="o">.</span><span class="n">details</span><span class="p">()</span> <span class="k">else</span> <span class="s1">''</span><span class="p">,</span>
+            <span class="s1">'exception'</span><span class="p">:</span> <span class="n">exception_dict</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">header_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'request_id'</span><span class="p">:</span> <span class="n">error</span><span class="o">.</span><span class="n">request_id</span><span class="p">,</span> <span class="s1">'status'</span><span class="p">:</span> <span class="n">status_dict</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">header_dict</span>
 
     <span class="k">def</span> <span class="nf">expose_executor_endpoint</span><span class="p">(</span><span class="n">exec_endpoint</span><span class="p">,</span> <span class="n">http_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">"""Exposing an executor endpoint to http endpoint</span>
@@ -831,10 +864,15 @@
                     <span class="ow">and</span> <span class="s1">'docs'</span> <span class="ow">in</span> <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">'data'</span><span class="p">]</span>
                 <span class="p">):</span>
                     <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">'data'</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">'data'</span><span class="p">][</span><span class="s1">'docs'</span><span class="p">]</span>
-
-                <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_get_singleton_result</span><span class="p">(</span>
-                    <span class="n">request_generator</span><span class="p">(</span><span class="o">**</span><span class="n">req_generator_input</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_get_singleton_result</span><span class="p">(</span>
+                        <span class="n">request_generator</span><span class="p">(</span><span class="o">**</span><span class="n">req_generator_input</span><span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'Error while getting responses from deployments: </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">err</span>  <span class="c1"># will be handled by Strawberry</span>
                 <span class="k">return</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s1">'data'</span><span class="p">])</span><span class="o">.</span><span class="n">to_strawberry_type</span><span class="p">()</span>
 
             <span class="nd">@strawberry</span><span class="o">.</span><span class="n">type</span>
@@ -891,7 +929,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 11, 2022.
+                    Last updated on May 13, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

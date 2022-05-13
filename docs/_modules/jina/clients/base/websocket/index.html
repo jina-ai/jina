@@ -558,6 +558,8 @@
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">AsyncExitStack</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 
+<span class="kn">from</span> <span class="nn">starlette</span> <span class="kn">import</span> <span class="n">status</span>
+
 <span class="kn">from</span> <span class="nn">jina.clients.base</span> <span class="kn">import</span> <span class="n">BaseClient</span>
 <span class="kn">from</span> <span class="nn">jina.clients.base.helper</span> <span class="kn">import</span> <span class="n">WebsocketClientlet</span>
 <span class="kn">from</span> <span class="nn">jina.clients.helper</span> <span class="kn">import</span> <span class="n">callback_exec</span><span class="p">,</span> <span class="n">callback_exec_on_error</span>
@@ -609,7 +611,9 @@
                     <span class="n">WebsocketClientlet</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
                 <span class="p">)</span>
 
-                <span class="n">request_buffer</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                <span class="n">request_buffer</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
+                    <span class="nb">str</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span>
+                <span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>  <span class="c1"># maps request_ids to futures (tasks)</span>
 
                 <span class="k">def</span> <span class="nf">_result_handler</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
                     <span class="k">return</span> <span class="n">result</span>
@@ -669,20 +673,25 @@
                     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                         <span class="s1">'receive task not running, can not send messages'</span>
                     <span class="p">)</span>
-                <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">):</span>
-                    <span class="n">callback_exec</span><span class="p">(</span>
-                        <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
-                        <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
-                        <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
-                        <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
-                        <span class="n">continue_on_error</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">continue_on_error</span><span class="p">,</span>
-                        <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
-                        <span class="n">p_bar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-                    <span class="k">yield</span> <span class="n">response</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">):</span>
+                        <span class="n">callback_exec</span><span class="p">(</span>
+                            <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+                            <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
+                            <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
+                            <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
+                            <span class="n">continue_on_error</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">continue_on_error</span><span class="p">,</span>
+                            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
+                            <span class="n">p_bar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+                        <span class="k">yield</span> <span class="n">response</span>
+                <span class="k">finally</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">iolet</span><span class="o">.</span><span class="n">close_code</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">WS_1011_INTERNAL_ERROR</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">iolet</span><span class="o">.</span><span class="n">close_message</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="n">receive_task</span>
 
-            <span class="k">except</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientError</span><span class="p">,</span> <span class="ne">ConnectionError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'Error while streaming response from websocket server </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">'</span>
                 <span class="p">)</span>
@@ -712,7 +721,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 11, 2022.
+                    Last updated on May 13, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

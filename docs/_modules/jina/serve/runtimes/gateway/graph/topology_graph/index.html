@@ -560,7 +560,10 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
+<span class="kn">import</span> <span class="nn">grpc.aio</span>
+
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_endpoint__</span>
+<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">InternalNetworkError</span>
 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.request_handlers.data_request_handler</span> <span class="kn">import</span> <span class="n">DataRequestHandler</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
@@ -612,6 +615,17 @@
                 <span class="n">copy_req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">filtered_docs</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy_req</span>
 
+        <span class="k">def</span> <span class="nf">_handle_internalnetworkerror</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">):</span>
+            <span class="n">err_code</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">err_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
+                <span class="n">err</span><span class="o">.</span><span class="n">_details</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
+                    <span class="o">+</span> <span class="sa">f</span><span class="s1">' |Gateway: Communication error with deployment </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> at address </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1">. Head or worker may be down.'</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">err</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span>
+
         <span class="k">def</span> <span class="nf">get_endpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_pool</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">send_discover_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
@@ -656,14 +670,18 @@
                         <span class="n">target_executor_pattern</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
                     <span class="p">):</span>
                         <span class="k">return</span> <span class="n">request</span><span class="p">,</span> <span class="n">metadata</span>
+                    <span class="c1"># otherwise, send to executor and get response</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">resp</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">send_requests_once</span><span class="p">(</span>
+                            <span class="n">requests</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">,</span>
+                            <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">head</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
+                            <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_send</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_handle_internalnetworkerror</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
 
-                    <span class="n">resp</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="k">await</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">send_requests_once</span><span class="p">(</span>
-                        <span class="n">requests</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">,</span>
-                        <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="n">head</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                        <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
-                        <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_send</span><span class="p">,</span>
-                    <span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
                     <span class="k">if</span> <span class="n">metadata</span> <span class="ow">and</span> <span class="s1">'is-error'</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">status</span>
@@ -775,7 +793,7 @@
         <span class="n">deployments_disable_reduce</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="n">num_parts_per_node</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">'start-gateway'</span> <span class="ow">in</span> <span class="n">graph_representation</span><span class="p">:</span>
@@ -848,7 +866,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 11, 2022.
+                    Last updated on May 13, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

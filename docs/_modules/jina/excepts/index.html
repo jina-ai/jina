@@ -554,6 +554,7 @@
                 </div>
                 <h1>Source code for jina.excepts</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""This modules defines all kinds of exceptions raised in Jina."""</span>
+<span class="kn">import</span> <span class="nn">grpc.aio</span>
 
 
 <div class="viewcode-block" id="BaseJinaException"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.BaseJinaException">[docs]</a><span class="k">class</span> <span class="nc">BaseJinaException</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
@@ -626,6 +627,56 @@
 
 <div class="viewcode-block" id="PortAlreadyUsed"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.PortAlreadyUsed">[docs]</a><span class="k">class</span> <span class="nc">PortAlreadyUsed</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">BaseJinaException</span><span class="p">):</span>
     <span class="sd">"""Raised when to use a port which is already used"""</span></div>
+
+
+<div class="viewcode-block" id="InternalNetworkError"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.InternalNetworkError">[docs]</a><span class="k">class</span> <span class="nc">InternalNetworkError</span><span class="p">(</span><span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">AioRpcError</span><span class="p">,</span> <span class="n">BaseJinaException</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Raised when communication between microservices fails.</span>
+<span class="sd">    Needed to propagate information about the root cause event, such as request_id and dest_addr.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">og_exception</span><span class="p">:</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">AioRpcError</span><span class="p">,</span>
+        <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span>
+        <span class="n">dest_addr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span>
+        <span class="n">details</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        :param og_exception: the original exception that caused the network error</span>
+<span class="sd">        :param request_id: id of the request that caused the error</span>
+<span class="sd">        :param dest_addr: destination (microservice) address of the problematic network call</span>
+<span class="sd">        :param details: details of the error</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">og_exception</span> <span class="o">=</span> <span class="n">og_exception</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request_id</span> <span class="o">=</span> <span class="n">request_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dest_addr</span> <span class="o">=</span> <span class="n">dest_addr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_details</span> <span class="o">=</span> <span class="n">details</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">og_exception</span><span class="o">.</span><span class="n">code</span><span class="p">(),</span>
+            <span class="n">og_exception</span><span class="o">.</span><span class="n">initial_metadata</span><span class="p">(),</span>
+            <span class="n">og_exception</span><span class="o">.</span><span class="n">trailing_metadata</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">details</span><span class="p">(),</span>
+            <span class="n">og_exception</span><span class="o">.</span><span class="n">debug_error_string</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="InternalNetworkError.code"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.InternalNetworkError.code">[docs]</a>    <span class="k">def</span> <span class="nf">code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        :return: error code of this exception</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">og_exception</span><span class="o">.</span><span class="n">code</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="InternalNetworkError.details"><a class="viewcode-back" href="../../../api/jina.excepts/#jina.excepts.InternalNetworkError.details">[docs]</a>    <span class="k">def</span> <span class="nf">details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""</span>
+<span class="sd">        :return: details of this exception</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">og_exception</span><span class="o">.</span><span class="n">details</span><span class="p">()</span></div></div>
 </pre></div>
             </article>
             <footer>
@@ -637,7 +688,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 11, 2022.
+                    Last updated on May 13, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

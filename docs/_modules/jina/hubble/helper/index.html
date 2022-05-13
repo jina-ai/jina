@@ -575,6 +575,7 @@
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">BetterEnum</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_request_header</span> <span class="k">as</span> <span class="n">_get_request_header_main</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
@@ -587,6 +588,16 @@
         <span class="n">hub_root</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">hub_root</span>
+
+
+<span class="nd">@lru_cache</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">_get_hub_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+    <span class="n">hub_root</span> <span class="o">=</span> <span class="n">_get_hub_root</span><span class="p">()</span>
+
+    <span class="n">config_file</span> <span class="o">=</span> <span class="n">hub_root</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">'config.json'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">config_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_hub_packages_dir"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.get_hub_packages_dir">[docs]</a><span class="nd">@lru_cache</span><span class="p">()</span>
@@ -659,6 +670,37 @@
             <span class="k">raise</span>
 
     <span class="k">return</span> <span class="n">u</span>
+
+
+<span class="nd">@lru_cache</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">_get_auth_token</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">"""Get user auth token.</span>
+<span class="sd">    .. note:: We first check `JINA_AUTH_TOKEN` environment variable.</span>
+<span class="sd">        if token is not None, use env token. Otherwise, we get token from config.</span>
+
+<span class="sd">    :return: user auth token</span>
+<span class="sd">    """</span>
+    <span class="n">token_from_env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'JINA_AUTH_TOKEN'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">token_from_env</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">token_from_env</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">_get_hub_config</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">config</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'auth_token'</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_request_header"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.get_request_header">[docs]</a><span class="k">def</span> <span class="nf">get_request_header</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="sd">"""Return the header of request with an authorization token.</span>
+
+<span class="sd">    :return: request header</span>
+<span class="sd">    """</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="n">_get_request_header_main</span><span class="p">()</span>
+
+    <span class="n">auth_token</span> <span class="o">=</span> <span class="n">_get_auth_token</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">auth_token</span><span class="p">:</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s1">'Authorization'</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'token </span><span class="si">{</span><span class="n">auth_token</span><span class="si">}</span><span class="s1">'</span>
+
+    <span class="k">return</span> <span class="n">headers</span></div>
 
 
 <div class="viewcode-block" id="get_hubble_url_v1"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.get_hubble_url_v1">[docs]</a><span class="k">def</span> <span class="nf">get_hubble_url_v1</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -1153,7 +1195,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 11, 2022.
+                    Last updated on May 13, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

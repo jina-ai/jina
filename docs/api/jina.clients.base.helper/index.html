@@ -672,6 +672,13 @@
 </dd></dl>
 </dd></dl>
 <dl class="py class">
+<dt class="sig sig-object py" id="jina.clients.base.helper.WsResponseIter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">WsResponseIter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">websocket</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#WsResponseIter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.WsResponseIter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Iterates over all the responses that come in over the websocket connection.
+In contrast to the iterator built into AioHTTP, this also records the message that was sent at closing-time.</p>
+</dd></dl>
+<dl class="py class">
 <dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">WebsocketClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#WebsocketClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.clients.base.helper.AioHttpClientlet" title="jina.clients.base.helper.AioHttpClientlet"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.base.helper.AioHttpClientlet</span></code></a></p>
@@ -726,6 +733,24 @@ we need to make sure we don’t create multiple tasks with <cite>recv_message</c
 </dd>
 </dl>
 </dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet.close_message">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close_message</span></span><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet.close_message" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the close message (reason) of the ws closing response</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="jina.clients.base.helper.WebsocketClientlet.close_code">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close_code</span></span><a class="headerlink" href="#jina.clients.base.helper.WebsocketClientlet.close_code" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the close code of the ws closing response</p>
+</dd>
+</dl>
+</dd></dl>
 </dd></dl>
 </section>
 
@@ -761,7 +786,7 @@ we need to make sure we don’t create multiple tasks with <cite>recv_message</c
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 11, 2022.
+                    Last updated on May 13, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

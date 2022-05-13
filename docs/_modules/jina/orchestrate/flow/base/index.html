@@ -607,7 +607,6 @@
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ArgNamespace</span><span class="p">,</span>
     <span class="n">CatchAllCleanupContextManager</span><span class="p">,</span>
-    <span class="n">colored_rich</span><span class="p">,</span>
     <span class="n">download_mermaid_url</span><span class="p">,</span>
     <span class="n">get_internal_ip</span><span class="p">,</span>
     <span class="n">get_public_ip</span><span class="p">,</span>
@@ -2149,51 +2148,101 @@
         <span class="k">return</span> <span class="n">table</span>
 
     <span class="k">def</span> <span class="nf">_get_address_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address_table</span><span class="p">):</span>
-        <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':link:'</span><span class="p">,</span> <span class="s1">'Protocol'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">_protocol</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_args</span><span class="o">.</span><span class="n">ssl_certfile</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_args</span><span class="o">.</span><span class="n">ssl_keyfile</span><span class="p">:</span>
+            <span class="n">_protocol</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">S'</span>
+            <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                <span class="s1">':link:'</span><span class="p">,</span> <span class="s1">'Protocol'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">':closed_lock_with_key: </span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">':link:'</span><span class="p">,</span> <span class="s1">'Protocol'</span><span class="p">,</span> <span class="n">_protocol</span><span class="p">)</span>
+
+        <span class="n">_protocol</span> <span class="o">=</span> <span class="n">_protocol</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
             <span class="s1">':house:'</span><span class="p">,</span>
-            <span class="s1">'Local access'</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/]'</span><span class="p">,</span>
+            <span class="s1">'Local'</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/]'</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
             <span class="s1">':lock:'</span><span class="p">,</span>
-            <span class="s1">'Private network'</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/]'</span><span class="p">,</span>
+            <span class="s1">'Private'</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/]'</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="p">:</span>
             <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                 <span class="s1">':earth_africa:'</span><span class="p">,</span>
-                <span class="s1">'Public address'</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/]'</span><span class="p">,</span>
+                <span class="s1">'Public'</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/]'</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">==</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">:</span>
+
+            <span class="n">_address</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/docs]Local[/]'</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/docs]Private[/]'</span><span class="p">,</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="p">:</span>
+                <span class="n">_address</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/docs]Public[/]'</span>
+                <span class="p">)</span>
             <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                 <span class="s1">':speech_balloon:'</span><span class="p">,</span>
                 <span class="s1">'Swagger UI'</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s1">'[link=http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/docs]http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/docs[/]'</span><span class="p">,</span>
+                <span class="s1">'·'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_address</span><span class="p">),</span>
             <span class="p">)</span>
+
+            <span class="n">_address</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/redoc]Local[/]'</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/redoc]Private[/]'</span><span class="p">,</span>
+            <span class="p">]</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="p">:</span>
+                <span class="n">_address</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/redoc]Public[/]'</span>
+                <span class="p">)</span>
 
             <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                 <span class="s1">':books:'</span><span class="p">,</span>
                 <span class="s1">'Redoc'</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s1">'[link=http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/redoc]http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/redoc[/]'</span><span class="p">,</span>
+                <span class="s1">'·'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_address</span><span class="p">),</span>
             <span class="p">)</span>
+
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_args</span><span class="o">.</span><span class="n">expose_graphql_endpoint</span><span class="p">:</span>
+                <span class="n">_address</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/graphql]Local[/]'</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/graphql]Private[/]'</span><span class="p">,</span>
+                <span class="p">]</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="p">:</span>
+                    <span class="n">_address</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/graphql]Public[/]'</span>
+                    <span class="p">)</span>
+
                 <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                     <span class="s1">':strawberry:'</span><span class="p">,</span>
                     <span class="s1">'GraphQL UI'</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s1">'[link=http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/graphql]http://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/graphql[/]'</span><span class="p">,</span>
+                    <span class="s1">'·'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_address</span><span class="p">),</span>
                 <span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitoring</span><span class="p">:</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitoring</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="n">_address</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="sa">f</span><span class="s1">'[link=http://localhost:</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">]Local[/]'</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">'[link=http://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">]Private[/]'</span><span class="p">,</span>
+                <span class="p">]</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="p">:</span>
+                    <span class="n">_address</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'[link=http://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">]Public[/]'</span>
+                    <span class="p">)</span>
+
                 <span class="k">if</span> <span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">monitoring</span><span class="p">:</span>
                     <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                         <span class="s1">':bar_chart:'</span><span class="p">,</span>
-                        <span class="sa">f</span><span class="s1">'Monitor </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
-                        <span class="sa">f</span><span class="s1">'[link=http://localhost:</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">]http://localhost:</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">[/]'</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s1">'Monitor [b]</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">[/]'</span><span class="p">,</span>
+                        <span class="s1">'·'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_address</span><span class="p">),</span>
                     <span class="p">)</span>
 
             <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span>
@@ -2554,7 +2603,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 11, 2022.
+                    Last updated on May 13, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
