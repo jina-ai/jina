@@ -2,9 +2,12 @@ import argparse
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional
 
+from docarray import Document
+
 from jina import __version__
 from jina.clients.request import request_generator
 from jina.enums import DataInputType
+from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
@@ -35,7 +38,7 @@ def get_fastapi_app(
     :return: fastapi app
     """
     with ImportExtensions(required=True):
-        from fastapi import FastAPI
+        from fastapi import FastAPI, Response, status
         from fastapi.middleware.cors import CORSMiddleware
         from fastapi.responses import HTMLResponse
         from starlette.requests import Request
@@ -140,7 +143,9 @@ def get_fastapi_app(
             tags=['Debug']
             # do not add response_model here, this debug endpoint should not restricts the response model
         )
-        async def post(body: JinaEndpointRequestModel):
+        async def post(
+            body: JinaEndpointRequestModel, response: Response
+        ):  # 'response' is a FastAPI response, not a Jina response
             """
             Post a data request to some endpoint.
 
@@ -165,10 +170,38 @@ def get_fastapi_app(
             if bd['data'] is not None and 'docs' in bd['data']:
                 req_generator_input['data'] = req_generator_input['data']['docs']
 
-            result = await _get_singleton_result(
-                request_generator(**req_generator_input)
-            )
+            try:
+                result = await _get_singleton_result(
+                    request_generator(**req_generator_input)
+                )
+            except InternalNetworkError as err:
+                response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+                result = bd  # send back the request
+                result['header'] = _generate_exception_header(
+                    err
+                )  # attach exception details to response header
+                logger.error(
+                    f'Error while getting responses from deployments: {err.details()}'
+                )
             return result
+
+    def _generate_exception_header(error: InternalNetworkError):
+        import traceback
+
+        exception_dict = {
+            'name': str(error.__class__),
+            'stacks': [
+                str(x) for x in traceback.extract_tb(error.og_exception.__traceback__)
+            ],
+            'executor': '',
+        }
+        status_dict = {
+            'code': 3,  # status error
+            'description': error.details() if error.details() else '',
+            'exception': exception_dict,
+        }
+        header_dict = {'request_id': error.request_id, 'status': status_dict}
+        return header_dict
 
     def expose_executor_endpoint(exec_endpoint, http_path=None, **kwargs):
         """Exposing an executor endpoint to http endpoint
@@ -276,10 +309,15 @@ def get_fastapi_app(
                     and 'docs' in req_generator_input['data']
                 ):
                     req_generator_input['data'] = req_generator_input['data']['docs']
-
-                response = await _get_singleton_result(
-                    request_generator(**req_generator_input)
-                )
+                try:
+                    response = await _get_singleton_result(
+                        request_generator(**req_generator_input)
+                    )
+                except InternalNetworkError as err:
+                    logger.error(
+                        f'Error while getting responses from deployments: {err.details()}'
+                    )
+                    raise err  # will be handled by Strawberry
                 return DocumentArray.from_dict(response['data']).to_strawberry_type()
 
             @strawberry.type

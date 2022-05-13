@@ -57,6 +57,11 @@ class MutateMixin:
             res = endpoint(
                 mutation, variables=variables, timeout=timeout, extra_headers=headers
             )
+            if 'errors' in res and res['errors']:
+                msg = 'GraphQL mutation returned the following errors: '
+                for err in res['errors']:
+                    msg += err['message'] + '. '
+                raise ConnectionError(msg)
             return res
 
 

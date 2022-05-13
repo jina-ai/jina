@@ -1,8 +1,10 @@
 import argparse
+import json
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional
 
 from jina.clients.request import request_generator
 from jina.enums import DataInputType, WebsocketSubProtocols
+from jina.excepts import InternalNetworkError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.types.request.data import DataRequest
@@ -12,6 +14,13 @@ if TYPE_CHECKING:
 
     from jina.serve.networking import GrpcConnectionPool
     from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
+
+
+def _fits_ws_close_msg(msg: str):
+    # Websocket close messages ('reasons') can't exceed 123 bytes:
+    # https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/close
+    ws_closing_msg_max_len = 123
+    return len(msg.encode('utf-8')) <= ws_closing_msg_max_len
 
 
 def get_fastapi_app(
@@ -35,7 +44,7 @@ def get_fastapi_app(
     from jina.serve.runtimes.gateway.http.models import JinaEndpointRequestModel
 
     with ImportExtensions(required=True):
-        from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+        from fastapi import FastAPI, Response, WebSocket, WebSocketDisconnect, status
 
     class ConnectionManager:
         def __init__(self):
@@ -126,7 +135,9 @@ def get_fastapi_app(
         await connection_pool.close()
 
     @app.websocket('/')
-    async def websocket_endpoint(websocket: WebSocket):
+    async def websocket_endpoint(
+        websocket: WebSocket, response: Response
+    ):  # 'response' is a FastAPI response, not a Jina response
         await manager.connect(websocket)
 
         async def req_iter():
@@ -155,6 +166,14 @@ def get_fastapi_app(
         try:
             async for msg in streamer.stream(request_iterator=req_iter()):
                 await manager.send(websocket, msg)
+        except InternalNetworkError as err:
+            manager.disconnect(websocket)
+            msg = (
+                err.details()
+                if _fits_ws_close_msg(err.details())  # some messages are too long
+                else f'Network error while connecting to deployment at {err.dest_addr}. It may be down.'
+            )
+            await websocket.close(code=status.WS_1011_INTERNAL_ERROR, reason=msg)
         except WebSocketDisconnect:
             logger.info('Client successfully disconnected from server')
             manager.disconnect(websocket)

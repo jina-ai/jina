@@ -2,6 +2,8 @@ import asyncio
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
+from aiohttp import WSMsgType
+
 from jina.enums import WebsocketSubProtocols
 from jina.importer import ImportExtensions
 from jina.types.request import Request
@@ -89,12 +91,34 @@ class HTTPClientlet(AioHttpClientlet):
         return await asyncio.sleep(1e10)
 
 
+class WsResponseIter:
+    """
+    Iterates over all the responses that come in over the websocket connection.
+    In contrast to the iterator built into AioHTTP, this also records the message that was sent at closing-time.
+    """
+
+    def __init__(self, websocket):
+        self.websocket = websocket
+        self.close_message = None
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        msg = await self.websocket.receive()
+        if msg.type in (WSMsgType.CLOSE, WSMsgType.CLOSING, WSMsgType.CLOSED):
+            self.close_message = msg
+            raise StopAsyncIteration
+        return msg
+
+
 class WebsocketClientlet(AioHttpClientlet):
     """Websocket Client to be used with the streamer"""
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.websocket = None
+        self.response_iter = None
 
     async def send_message(self, request: 'Request'):
         """Send request in bytes to the server.
@@ -128,7 +152,7 @@ class WebsocketClientlet(AioHttpClientlet):
 
         :yield: response objects received from server
         """
-        async for response in self.websocket:
+        async for response in self.response_iter:
             yield DataRequest(response.data)
 
     async def __aenter__(self):
@@ -137,4 +161,15 @@ class WebsocketClientlet(AioHttpClientlet):
             url=self.url,
             protocols=(WebsocketSubProtocols.BYTES.value,),
         ).__aenter__()
+        self.response_iter = WsResponseIter(self.websocket)
         return self
+
+    @property
+    def close_message(self):
+        """:return: the close message (reason) of the ws closing response"""
+        return self.response_iter.close_message.extra if self.response_iter else None
+
+    @property
+    def close_code(self):
+        """:return: the close code of the ws closing response"""
+        return self.websocket.close_code if self.websocket else None

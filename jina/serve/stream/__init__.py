@@ -11,10 +11,13 @@ from typing import (
     Union,
 )
 
+from jina.excepts import InternalNetworkError
 from jina.logging.logger import JinaLogger
 from jina.serve.stream.helper import AsyncRequestsIterator
 
 __all__ = ['RequestStreamer']
+
+from jina.types.request.data import Response
 
 if TYPE_CHECKING:
     from jina.types.request import Request
@@ -54,22 +57,41 @@ class RequestStreamer:
         self._result_handler = result_handler
         self._end_of_iter_handler = end_of_iter_handler
 
-    async def stream(self, request_iterator, *args) -> AsyncIterator['Request']:
+    async def stream(
+        self, request_iterator, context=None, *args
+    ) -> AsyncIterator['Request']:
         """
         stream requests from client iterator and stream responses back.
 
         :param request_iterator: iterator of requests
+        :param context: context of the grpc call
         :param args: positional arguments
         :yield: responses from Executors
         """
+
         async_iter: AsyncIterator = (
             self._stream_requests_with_prefetch(request_iterator, self._prefetch)
             if self._prefetch > 0
             else self._stream_requests(request_iterator)
         )
-
-        async for response in async_iter:
-            yield response
+        try:
+            async for response in async_iter:
+                yield response
+        except InternalNetworkError as err:
+            if (
+                context is not None
+            ):  # inside GrpcGateway we can handle the error directly here through the grpc context
+                context.set_details(err.details())
+                context.set_code(err.code())
+                self.logger.error(
+                    f'Error while getting responses from deployments: {err.details()}'
+                )
+                r = Response()
+                if err.request_id:
+                    r.header.request_id = err.request_id
+                yield r
+            else:  # HTTP and WS need different treatment further up the stack
+                raise
 
     async def _stream_requests(
         self,

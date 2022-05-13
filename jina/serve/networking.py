@@ -36,7 +36,7 @@ class ReplicaList:
         self._connections = []
         self._address_to_connection_idx = {}
         self._address_to_channel = {}
-        self._rr_counter = 0
+        self._rr_counter = 0  # round robin counter
         self.summary = summary
 
     def add_connection(self, address: str):
@@ -471,6 +471,7 @@ class GrpcConnectionPool:
         else:
             self._summary_time = contextlib.nullcontext()
         self._connections = self._ConnectionPoolMap(self._logger, self._summary_time)
+        self._deployment_address_map = {}
 
     def send_request(
         self,
@@ -639,6 +640,7 @@ class GrpcConnectionPool:
             if shard_id is None:
                 shard_id = 0
             self._connections.add_replica(deployment, shard_id, address)
+        self._deployment_address_map[deployment] = address
 
     async def remove_connection(
         self,
@@ -675,6 +677,39 @@ class GrpcConnectionPool:
         """
         await self._connections.close()
 
+    def _handle_aiorpcerror(
+        self,
+        e: AioRpcError,
+        retry_i: int = 0,
+        request_id: str = '',
+        dest_addr: str = '',
+    ):
+        # connection failures and cancelled requests should be retried
+        # all other cases should not be retried and will be raised immediately
+        # connection failures have the code grpc.StatusCode.UNAVAILABLE
+        # cancelled requests have the code grpc.StatusCode.CANCELLED
+        # requests usually gets cancelled when the server shuts down
+        # retries for cancelled requests will hit another replica in K8s
+        if (
+            e.code() != grpc.StatusCode.UNAVAILABLE
+            and e.code() != grpc.StatusCode.CANCELLED
+        ):
+            raise
+        elif e.code() == grpc.StatusCode.UNAVAILABLE and retry_i >= 2:
+            self._logger.debug(f'GRPC call failed, retries exhausted')
+            from jina.excepts import InternalNetworkError
+
+            raise InternalNetworkError(
+                og_exception=e,
+                request_id=request_id,
+                dest_addr=dest_addr,
+                details=e.details(),
+            )
+        else:
+            self._logger.debug(
+                f'GRPC call failed with code {e.code()}, retry attempt {retry_i + 1}/3'
+            )
+
     def _send_requests(
         self,
         requests: List[Request],
@@ -695,13 +730,12 @@ class GrpcConnectionPool:
                         timeout=timeout,
                     )
                 except AioRpcError as e:
-                    if i == 2:
-                        self._logger.debug(f'GRPC call failed, retries exhausted')
-                        raise
-                    else:
-                        self._logger.debug(
-                            f'GRPC call failed with code {e.code()}, retry attempt {i + 1}/3'
-                        )
+                    self._handle_aiorpcerror(
+                        e=e,
+                        retry_i=i,
+                        request_id=requests[0].request_id,
+                        dest_addr=connection.address,
+                    )
 
         return asyncio.create_task(task_wrapper())
 
@@ -719,24 +753,9 @@ class GrpcConnectionPool:
                         timeout=timeout,
                     )
                 except AioRpcError as e:
-                    # connection failures and cancelled requests should be retried
-                    # all other cases should not be retried and will be raised immediately
-                    # connection failures have the code grpc.StatusCode.UNAVAILABLE
-                    # cancelled requests have the code grpc.StatusCode.CANCELLED
-                    # requests usually gets cancelled when the server shuts down
-                    # retries for cancelled requests will hit another replica in K8s
-                    if (
-                        e.code() != grpc.StatusCode.UNAVAILABLE
-                        and e.code() != grpc.StatusCode.CANCELLED
-                    ):
-                        raise
-                    elif e.code() == grpc.StatusCode.UNAVAILABLE and i == 2:
-                        self._logger.debug(f'GRPC call failed, retries exhausted')
-                        raise
-                    else:
-                        self._logger.debug(
-                            f'GRPC call failed with code {e.code()}, retry attempt {i + 1}/3'
-                        )
+                    self._handle_aiorpcerror(
+                        e=e, retry_i=i, dest_addr=connection.address
+                    )
                 except AttributeError:
                     # in gateway2gateway communication, gateway does not expose this endpoint. So just send empty list which corresponds to all endpoints valid
                     from jina import __default_endpoint__
