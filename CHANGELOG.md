@@ -182,6 +182,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -13618,4 +13619,24 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```ec136dd8```](https://github.com/jina-ai/jina/commit/ec136dd82c218bc3676cacb3ed8276c46b5d823f)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
  - [[```13a954be```](https://github.com/jina-ai/jina/commit/13a954bec4b42ce6c6b3540270eae34497c17b71)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```36ca89d3```](https://github.com/jina-ai/jina/commit/36ca89d31876b5eae38d83c28bfb8168e35fe690)] __-__ __version__: the next version will be 3.4.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-4-2></a>
+## Release Note (`3.4.2`)
+
+> Release time: 2022-05-13 20:09:02
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```1dd09184```](https://github.com/jina-ai/jina/commit/1dd09184b8a0e1d0ce11a57214eb14cb400d86d7)] __-__ __deployment__: add roundrobin cuda device assignment (#4786) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```8c4d1761```](https://github.com/jina-ai/jina/commit/8c4d17614de841ff1f0e8d7cf24d139225a8504a)] __-__ remove unnecessary steps on chore commit (*Han Xiao*)
+ - [[```01503bcd```](https://github.com/jina-ai/jina/commit/01503bcd66e27021bd41fd1a02888637394ffcf4)] __-__ __version__: the next version will be 3.4.2 (*Jina Dev Bot*)
 
