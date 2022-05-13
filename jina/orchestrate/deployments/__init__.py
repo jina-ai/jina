@@ -1,7 +1,11 @@
 import copy
+import os
+import re
+import subprocess
 from abc import abstractmethod
 from argparse import Namespace
 from contextlib import ExitStack
+from itertools import cycle
 from typing import Dict, List, Optional, Set, Union
 
 from jina import __default_executor__, __default_host__, __docker_host__, helper
@@ -12,6 +16,8 @@ from jina.jaml.helper import complete_path
 from jina.orchestrate.pods.container import ContainerPod
 from jina.orchestrate.pods.factory import PodFactory
 from jina.serve.networking import GrpcConnectionPool, host_is_local, in_docker
+
+WRAPPED_SLICE_BASE = r'\[[-\d:]+\]'
 
 
 class BaseDeployment(ExitStack):
@@ -604,15 +610,71 @@ class Deployment(BaseDeployment):
         return is_ready
 
     @staticmethod
+    def _parse_slice(value: str):
+        """Parses a `slice()` from string, like `start:stop:step`.
+
+        :param value: a string like
+        :return: slice
+        """
+        if re.match(WRAPPED_SLICE_BASE, value):
+            value = value[1:-1]
+
+        if value:
+            parts = value.split(':')
+            if len(parts) == 1:
+                # slice(stop)
+                parts = [parts[0], str(int(parts[0]) + 1)]
+            # else: slice(start, stop[, step])
+        else:
+            # slice()
+            parts = []
+        return slice(*[int(p) if p else None for p in parts])
+
+    @staticmethod
+    def _roundrobin_cuda_device(device_str: str, replicas: int):
+        """Parse cuda device string with RR prefix
+
+        :param device_str: `RRm:n`, where `RR` is the prefix, m:n is python slice format
+        :param replicas: the number of replicas
+        :return: a map from replica id to device id
+        """
+        if device_str and device_str.startswith('RR') and replicas >= 1:
+            try:
+                num_devices = str(subprocess.check_output(['nvidia-smi', '-L'])).count(
+                    'UUID'
+                )
+            except:
+                num_devices = int(os.environ.get('CUDA_TOTAL_DEVICES', 0))
+                if num_devices == 0:
+                    return
+
+            all_devices = list(range(num_devices))
+            if device_str[2:]:
+                all_devices = all_devices[Deployment._parse_slice(device_str[2:])]
+
+            _c = cycle(all_devices)
+            return {j: next(_c) for j in range(replicas)}
+
+    @staticmethod
     def _set_pod_args(args: Namespace) -> Dict[int, List[Namespace]]:
         result = {}
         sharding_enabled = args.shards and args.shards > 1
+
+        cuda_device_map = None
+        if args.env:
+            cuda_device_map = Deployment._roundrobin_cuda_device(
+                args.env.get('CUDA_VISIBLE_DEVICES'), args.replicas
+            )
+
         for shard_id in range(args.shards):
             replica_args = []
             for replica_id in range(args.replicas):
                 _args = copy.deepcopy(args)
                 _args.shard_id = shard_id
                 _args.pod_role = PodRoleType.WORKER
+
+                if cuda_device_map:
+                    _args.env['CUDA_VISIBLE_DEVICES'] = str(cuda_device_map[replica_id])
 
                 _args.host = args.host
                 if _args.name:
