@@ -13,7 +13,12 @@ import pytest
 import requests
 import yaml
 
-from jina.hubble.helper import disk_cache_offline
+from jina.hubble.helper import (
+    _get_auth_token,
+    _get_hub_config,
+    _get_hub_root,
+    disk_cache_offline,
+)
 from jina.hubble.hubio import HubExecutor, HubIO
 from jina.parsers.hubble import (
     set_hub_new_parser,
@@ -22,6 +27,27 @@ from jina.parsers.hubble import (
 )
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+def clear_function_caches():
+    _get_auth_token.cache_clear()
+    _get_hub_root.cache_clear()
+    _get_hub_config.cache_clear()
+
+
+@pytest.fixture(scope='function')
+def auth_token(tmpdir):
+    clear_function_caches()
+    os.environ['JINA_HUB_ROOT'] = str(tmpdir)
+
+    token = 'test-auth-token'
+    with open(tmpdir / 'config.json', 'w') as f:
+        json.dump({'auth_token': token}, f)
+
+    yield token
+
+    clear_function_caches()
+    del os.environ['JINA_HUB_ROOT']
 
 
 class PostMockResponse:
@@ -212,6 +238,31 @@ def test_push_wrong_dockerfile(
     )
 
 
+def test_push_with_authorization(mocker, monkeypatch, auth_token):
+    mock = mocker.Mock()
+
+    def _mock_post(url, data, headers, stream):
+        mock(url=url, headers=headers)
+        return PostMockResponse(response_code=200)
+
+    monkeypatch.setattr(requests, 'post', _mock_post)
+
+    exec_path = os.path.join(cur_dir, 'dummy_executor')
+    args = set_hub_push_parser().parse_args([exec_path])
+
+    HubIO(args).push()
+
+    # remove .jina
+    exec_config_path = os.path.join(exec_path, '.jina')
+    shutil.rmtree(exec_config_path)
+
+    assert mock.call_count == 1
+
+    _, kwargs = mock.call_args_list[0]
+
+    assert kwargs['headers'].get('Authorization') == f'token {auth_token}'
+
+
 @pytest.mark.parametrize('rebuild_image', [True, False])
 def test_fetch(mocker, monkeypatch, rebuild_image):
     mock = mocker.Mock()
@@ -291,6 +342,24 @@ def test_fetch_with_retry(mocker, monkeypatch):
     assert executor.uuid == 'dummy_mwu_encoder'
 
     assert mock.call_count == 6  # mock must be called 3+3
+
+
+def test_fetch_with_authorization(mocker, monkeypatch, auth_token):
+    mock = mocker.Mock()
+
+    def _mock_post(url, json, headers):
+        mock(url=url, json=json, headers=headers)
+        return FetchMetaMockResponse(response_code=200)
+
+    monkeypatch.setattr(requests, 'post', _mock_post)
+
+    HubIO.fetch_meta('dummy_mwu_encoder', tag=None, force=True)
+
+    assert mock.call_count == 1
+
+    _, kwargs = mock.call_args_list[0]
+
+    assert kwargs['headers'].get('Authorization') == f'token {auth_token}'
 
 
 class DownloadMockResponse:
@@ -643,7 +712,7 @@ def test_deploy_public_sandbox_existing(mocker, monkeypatch):
     monkeypatch.setattr(requests, "post", _mock_post)
 
     args = Namespace(
-        uses='jinahub+sandbox://dummy_mwu_encoder',
+        uses='jinahub+sandbox://dummy_mwu_encoder:dummy_secret',
         uses_with={'foo': 'bar'},
         test_string='text',
         test_number=1,
@@ -658,6 +727,7 @@ def test_deploy_public_sandbox_existing(mocker, monkeypatch):
         'test_number': 1,
         'test_string': 'text',
     }
+    assert kwargs['json']['secret'] == 'dummy_secret'
 
 
 def test_deploy_public_sandbox_create_new(mocker, monkeypatch):

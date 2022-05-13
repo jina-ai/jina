@@ -3,6 +3,8 @@ import asyncio
 from contextlib import AsyncExitStack
 from typing import TYPE_CHECKING, Dict, Optional
 
+from starlette import status
+
 from jina.clients.base import BaseClient
 from jina.clients.base.helper import WebsocketClientlet
 from jina.clients.helper import callback_exec, callback_exec_on_error
@@ -54,7 +56,9 @@ class WebSocketBaseClient(BaseClient):
                     WebsocketClientlet(url=url, logger=self.logger)
                 )
 
-                request_buffer: Dict[str, asyncio.Future] = dict()
+                request_buffer: Dict[
+                    str, asyncio.Future
+                ] = dict()  # maps request_ids to futures (tasks)
 
                 def _result_handler(result):
                     return result
@@ -114,20 +118,25 @@ class WebSocketBaseClient(BaseClient):
                     raise RuntimeError(
                         'receive task not running, can not send messages'
                     )
-                async for response in streamer.stream(request_iterator):
-                    callback_exec(
-                        response=response,
-                        on_error=on_error,
-                        on_done=on_done,
-                        on_always=on_always,
-                        continue_on_error=self.continue_on_error,
-                        logger=self.logger,
-                    )
-                    if self.show_progress:
-                        p_bar.update()
-                    yield response
+                try:
+                    async for response in streamer.stream(request_iterator):
+                        callback_exec(
+                            response=response,
+                            on_error=on_error,
+                            on_done=on_done,
+                            on_always=on_always,
+                            continue_on_error=self.continue_on_error,
+                            logger=self.logger,
+                        )
+                        if self.show_progress:
+                            p_bar.update()
+                        yield response
+                finally:
+                    if iolet.close_code == status.WS_1011_INTERNAL_ERROR:
+                        raise ConnectionError(iolet.close_message)
+                    await receive_task
 
-            except aiohttp.ClientError as e:
+            except (aiohttp.ClientError, ConnectionError) as e:
                 self.logger.error(
                     f'Error while streaming response from websocket server {e!r}'
                 )

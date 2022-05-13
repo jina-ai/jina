@@ -12,6 +12,8 @@ from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
+from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
+from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
 from jina.serve.runtimes.head import HeadRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 from jina.types.request.control import ControlRequest
@@ -715,8 +717,14 @@ def _create_head_runtime(
         runtime.run_forever()
 
 
-def _create_gateway_runtime(graph_description, pod_addresses, port):
-    with GRPCGatewayRuntime(
+def _create_gateway_runtime(graph_description, pod_addresses, port, protocol='grpc'):
+    if protocol == 'http':
+        gateway_runtime = HTTPGatewayRuntime
+    elif protocol == 'websocket':
+        gateway_runtime = WebSocketGatewayRuntime
+    else:
+        gateway_runtime = GRPCGatewayRuntime
+    with gateway_runtime(
         set_gateway_parser().parse_args(
             [
                 '--graph-description',

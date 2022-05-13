@@ -2,6 +2,8 @@ import asyncio
 from contextlib import AsyncExitStack
 from typing import TYPE_CHECKING, Optional
 
+from starlette import status
+
 from jina.clients.base import BaseClient
 from jina.clients.base.helper import HTTPClientlet
 from jina.clients.helper import callback_exec, callback_exec_on_error
@@ -75,9 +77,23 @@ class HTTPBaseClient(BaseClient):
                     r_status = response.status
 
                     r_str = await response.json()
-                    if r_status == 404:
+                    if r_status == status.HTTP_404_NOT_FOUND:
                         raise BadClient(f'no such endpoint {url}')
-                    elif r_status < 200 or r_status > 300:
+                    elif r_status == status.HTTP_503_SERVICE_UNAVAILABLE:
+                        if (
+                            'header' in r_str
+                            and 'status' in r_str['header']
+                            and 'description' in r_str['header']['status']
+                        ):
+                            raise ConnectionError(
+                                r_str['header']['status']['description']
+                            )
+                        else:
+                            raise ValueError(r_str)
+                    elif (
+                        r_status < status.HTTP_200_OK
+                        or r_status > status.HTTP_300_MULTIPLE_CHOICES
+                    ):  # failure codes
                         raise ValueError(r_str)
 
                     da = None
@@ -103,7 +119,7 @@ class HTTPBaseClient(BaseClient):
                         p_bar.update()
                     yield resp
 
-            except aiohttp.ClientError as e:
+            except (aiohttp.ClientError, ValueError, ConnectionError) as e:
                 self.logger.error(
                     f'Error while fetching response from HTTP server {e!r}'
                 )

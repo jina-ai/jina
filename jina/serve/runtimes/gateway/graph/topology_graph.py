@@ -5,7 +5,10 @@ from collections import defaultdict
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
+import grpc.aio
+
 from jina import __default_endpoint__
+from jina.excepts import InternalNetworkError
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest
@@ -57,6 +60,17 @@ class TopologyGraph:
                 copy_req.data.docs = filtered_docs
                 self.parts_to_send[i] = copy_req
 
+        def _handle_internalnetworkerror(self, err):
+            err_code = err.code()
+            if err_code == grpc.StatusCode.UNAVAILABLE:
+                err._details = (
+                    err.details()
+                    + f' |Gateway: Communication error with deployment {self.name} at address {err.dest_addr}. Head or worker may be down.'
+                )
+                raise err
+            else:
+                raise
+
         def get_endpoints(self, connection_pool: GrpcConnectionPool):
             return connection_pool.send_discover_endpoint(self.name)
 
@@ -101,14 +115,18 @@ class TopologyGraph:
                         target_executor_pattern, self.name
                     ):
                         return request, metadata
+                    # otherwise, send to executor and get response
+                    try:
+                        resp, metadata = await connection_pool.send_requests_once(
+                            requests=self.parts_to_send,
+                            deployment=self.name,
+                            head=True,
+                            endpoint=endpoint,
+                            timeout=self._timeout_send,
+                        )
+                    except InternalNetworkError as err:
+                        self._handle_internalnetworkerror(err)
 
-                    resp, metadata = await connection_pool.send_requests_once(
-                        requests=self.parts_to_send,
-                        deployment=self.name,
-                        head=True,
-                        endpoint=endpoint,
-                        timeout=self._timeout_send,
-                    )
                     self.end_time = datetime.utcnow()
                     if metadata and 'is-error' in metadata:
                         self.status = resp.header.status
@@ -220,7 +238,7 @@ class TopologyGraph:
         deployments_disable_reduce: List[str] = [],
         timeout_send: Optional[float] = 1.0,
         *args,
-        **kwargs
+        **kwargs,
     ):
         num_parts_per_node = defaultdict(int)
         if 'start-gateway' in graph_representation:

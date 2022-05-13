@@ -26,7 +26,7 @@
 # demo: required for the hello world demos
 
 scipy>=1.6.1:               devel
-fastapi:                    standard,devel, demo
+fastapi>=0.76.0:            standard,devel, demo
 uvicorn[standard]:          standard,devel, demo
 strawberry-graphql>=0.96.0: cicd, graphql
 docker:                     standard,devel

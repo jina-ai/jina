@@ -1,4 +1,5 @@
 """This modules defines all kinds of exceptions raised in Jina."""
+import grpc.aio
 
 
 class BaseJinaException(BaseException):
@@ -71,3 +72,53 @@ class NoContainerizedError(Exception, BaseJinaException):
 
 class PortAlreadyUsed(RuntimeError, BaseJinaException):
     """Raised when to use a port which is already used"""
+
+
+class InternalNetworkError(grpc.aio.AioRpcError, BaseJinaException):
+    """
+    Raised when communication between microservices fails.
+    Needed to propagate information about the root cause event, such as request_id and dest_addr.
+    """
+
+    def __init__(
+        self,
+        og_exception: grpc.aio.AioRpcError,
+        request_id: str = '',
+        dest_addr: str = '',
+        details: str = '',
+    ):
+        """
+        :param og_exception: the original exception that caused the network error
+        :param request_id: id of the request that caused the error
+        :param dest_addr: destination (microservice) address of the problematic network call
+        :param details: details of the error
+        """
+        self.og_exception = og_exception
+        self.request_id = request_id
+        self.dest_addr = dest_addr
+        self._details = details
+        super().__init__(
+            og_exception.code(),
+            og_exception.initial_metadata(),
+            og_exception.trailing_metadata(),
+            self.details(),
+            og_exception.debug_error_string(),
+        )
+
+    def __str__(self):
+        return self.details()
+
+    def __repr__(self):
+        return self.__str__()
+
+    def code(self):
+        """
+        :return: error code of this exception
+        """
+        return self.og_exception.code()
+
+    def details(self):
+        """
+        :return: details of this exception
+        """
+        return self._details if self._details else self.og_exception.details()
