@@ -8,7 +8,6 @@ from jina.excepts import BadRequestType
 from jina.helper import random_identity
 from jina.proto import jina_pb2
 from jina.proto.serializer import DataRequestProto
-from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest, Response
 
 
@@ -17,13 +16,6 @@ def req():
     r = jina_pb2.DataRequestProto()
     r.header.request_id = random_identity()
     r.data.docs.docs.add()
-    return r
-
-
-@pytest.fixture(scope='function')
-def control_req():
-    r = jina_pb2.ControlRequestProto()
-    r.header.request_id = random_identity()
     return r
 
 
@@ -58,13 +50,6 @@ def test_data_backwards_compatibility(req):
     req = DataRequest(request=req)
     assert len(req.data.docs) == 1
     assert len(req.data.docs) == len(req.docs)
-
-
-def test_command(control_req):
-    request = ControlRequest(request=control_req)
-    cmd = request.command
-    assert cmd
-    assert isinstance(cmd, str)
 
 
 def test_as_pb_object(req):

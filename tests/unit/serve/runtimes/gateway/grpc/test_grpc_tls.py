@@ -3,11 +3,11 @@ import time
 
 import grpc
 import pytest
-from docarray import Document
 
+from docarray import Document
 from jina import Client, Flow
 from jina.serve.networking import GrpcConnectionPool
-from jina.types.request.control import ControlRequest
+from jina.types.request.data import DataRequest
 
 
 @pytest.fixture
@@ -55,7 +55,7 @@ def test_grpc_ssl_with_flow_and_client(cert_pem, key_pem, error_log_level):
             creds = f.read()
 
         GrpcConnectionPool.send_request_sync(
-            request=ControlRequest('STATUS'),
+            request=DataRequest(),
             target=f'localhost:{flow.port}',
             root_certificates=creds,
             tls=True,

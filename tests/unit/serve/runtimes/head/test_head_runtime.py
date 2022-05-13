@@ -7,7 +7,6 @@ from typing import List
 
 import grpc
 import pytest
-from grpc import RpcError
 
 from jina import Document, DocumentArray
 from jina.clients.request import request_generator
@@ -18,7 +17,6 @@ from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.head import HeadRuntime
 from jina.types.request import Request
-from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
 
 
@@ -40,33 +38,6 @@ def test_regular_data_case():
     assert 'is-error' in dict(call.trailing_metadata())
     assert len(response.docs) == 1
     assert not handle_queue.empty()
-
-    _destroy_runtime(args, cancel_event, runtime_thread)
-
-
-def test_control_message_processing():
-    args = set_pod_parser().parse_args([])
-    cancel_event, handle_queue, runtime_thread = _create_runtime(args)
-
-    # no connection registered yet
-    resp = GrpcConnectionPool.send_request_sync(
-        _create_test_data_message(), f'{args.host}:{args.port}'
-    )
-    assert resp.status.code == resp.status.ERROR
-
-    _add_worker(args, 'ip1')
-    # after adding a connection, sending should work
-    result = GrpcConnectionPool.send_request_sync(
-        _create_test_data_message(), f'{args.host}:{args.port}'
-    )
-    assert result
-
-    _remove_worker(args, 'ip1')
-    # after removing the connection again, sending does not work anymore
-    resp = GrpcConnectionPool.send_request_sync(
-        _create_test_data_message(), f'{args.host}:{args.port}'
-    )
-    assert resp.status.code == resp.status.ERROR
 
     _destroy_runtime(args, cancel_event, runtime_thread)
 
@@ -263,7 +234,6 @@ async def test_head_runtime_reflection():
     assert all(
         service_name in service_names
         for service_name in [
-            'jina.JinaControlRequestRPC',
             'jina.JinaDataRequestRPC',
             'jina.JinaSingleDataRequestRPC',
         ]
@@ -342,14 +312,6 @@ def _create_runtime(args):
 
 def _add_worker(args, ip='fake_ip', shard_id=None):
     activate_msg = ControlRequest(command='ACTIVATE')
-    activate_msg.add_related_entity('worker', ip, 8080, shard_id)
-    assert GrpcConnectionPool.send_request_sync(
-        activate_msg, f'{args.host}:{args.port}'
-    )
-
-
-def _remove_worker(args, ip='fake_ip', shard_id=None):
-    activate_msg = ControlRequest(command='DEACTIVATE')
     activate_msg.add_related_entity('worker', ip, 8080, shard_id)
     assert GrpcConnectionPool.send_request_sync(
         activate_msg, f'{args.host}:{args.port}'
