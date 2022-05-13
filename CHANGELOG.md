@@ -181,6 +181,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -13576,4 +13577,45 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```d1ce7e95```](https://github.com/jina-ai/jina/commit/d1ce7e95f76a365ee2f7c667f6b0332eb575375a)] __-__ bump version (#4774) (*Joan Fontanals*)
  - [[```dc18154a```](https://github.com/jina-ai/jina/commit/dc18154ae9cae32fc649b796830864763bae39cb)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```2292e935```](https://github.com/jina-ai/jina/commit/2292e935811c24af8f51017f309486f45b361942)] __-__ __version__: the next version will be 3.3.26 (*Jina Dev Bot*)
+
+<a name=release-note-3-4-1></a>
+## Release Note (`3.4.1`)
+
+> Release time: 2022-05-13 11:55:54
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Johannes Messner,  Delgermurun,  Han Xiao,  Roshan Jossy,  Florian Hönicke,  Jina Dev Bot,  samsja,  🙇
+
+
+### 🆕 New Features
+
+ - [[```072a47a4```](https://github.com/jina-ai/jina/commit/072a47a4fa97aca68203882e1ef809681a523097)] __-__ better error messages when gateway can&#39;t connect to other deployment (#4677) (*Johannes Messner*)
+ - [[```6514ca95```](https://github.com/jina-ai/jina/commit/6514ca95318b6d6262b4e7ec54bcf77a0d2098ac)] __-__ __hubble__: executor push/pull user integration (#4770) (*Delgermurun*)
+
+### 🐞 Bug fixes
+
+ - [[```fb529399```](https://github.com/jina-ai/jina/commit/fb5293993c3468a21f7611e0e833f3a28356da77)] __-__ __sandbox__: send secret in the request (#4781) (*Delgermurun*)
+ - [[```2e9484ef```](https://github.com/jina-ai/jina/commit/2e9484efa14743a438ea30983a5ef64b6700ce33)] __-__ yaml jtype flow (#4776) (*samsja*)
+
+### 🧼 Code Refactoring
+
+ - [[```934ecd8f```](https://github.com/jina-ai/jina/commit/934ecd8fa5c98a8f54a6aeed753698a691bb77d7)] __-__ __flow__: improve success box (#4782) (*Han Xiao*)
+ - [[```b0df40ae```](https://github.com/jina-ai/jina/commit/b0df40aefc5327fa97becbc14e9b8e16c125a30a)] __-__ logging no print (#4777) (*Florian Hönicke*)
+
+### 📗 Documentation
+
+ - [[```ad5ed0dc```](https://github.com/jina-ai/jina/commit/ad5ed0dc81b7d853a9c67d6329edc944e87d64bf)] __-__ __tracking__: fix utm source (#4780) (*Roshan Jossy*)
+ - [[```7de44506```](https://github.com/jina-ai/jina/commit/7de4450658293b9e7c0ca1248c778d9aeb79ae5a)] __-__ add jina now logo (#4775) (*Florian Hönicke*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```d7c48d5f```](https://github.com/jina-ai/jina/commit/d7c48d5f4e07240811421336a022810209463afe)] __-__ __hubble__: fix failing test (#4783) (*Delgermurun*)
+
+### 🍹 Other Improvements
+
+ - [[```ec136dd8```](https://github.com/jina-ai/jina/commit/ec136dd82c218bc3676cacb3ed8276c46b5d823f)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```13a954be```](https://github.com/jina-ai/jina/commit/13a954bec4b42ce6c6b3540270eae34497c17b71)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```36ca89d3```](https://github.com/jina-ai/jina/commit/36ca89d31876b5eae38d83c28bfb8168e35fe690)] __-__ __version__: the next version will be 3.4.1 (*Jina Dev Bot*)
 
