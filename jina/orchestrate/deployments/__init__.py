@@ -1,6 +1,8 @@
 import copy
+import json
 from abc import abstractmethod
 from argparse import Namespace
+from collections import defaultdict
 from contextlib import ExitStack
 from typing import Dict, List, Optional, Set, Union
 
@@ -9,9 +11,8 @@ from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.helper import CatchAllCleanupContextManager
 from jina.hubble.hubio import HubIO
 from jina.jaml.helper import complete_path
-from jina.orchestrate.pods.container import ContainerPod
 from jina.orchestrate.pods.factory import PodFactory
-from jina.serve.networking import GrpcConnectionPool, host_is_local, in_docker
+from jina.serve.networking import host_is_local, in_docker
 
 
 class BaseDeployment(ExitStack):
@@ -278,6 +279,17 @@ class Deployment(BaseDeployment):
         return is_sandbox
 
     @property
+    def _is_docker(self) -> bool:
+        """
+        Check if this deployment is a sandbox.
+
+        :return: True if this deployment is to be run in docker
+        """
+        uses = getattr(self.args, 'uses', '')
+        is_docker = uses.startswith('jinahub+docker://') or uses.startswith('docker://')
+        return is_docker
+
+    @property
     def tls_enabled(self):
         """
         Checks whether secure connection via tls is enabled for this Deployment.
@@ -453,33 +465,25 @@ class Deployment(BaseDeployment):
         return self.num_pods == other.num_pods and self.name == other.name
 
     @staticmethod
-    def get_worker_host(pod_args, pod, head_pod):
+    def get_worker_host(pod_args, pod_is_container, head_is_container):
         """
         Check if the current pod and head are both containerized on the same host
         If so __docker_host__ needs to be advertised as the worker's address to the head
 
         :param pod_args: arguments of the worker pod
-        :param pod: the worker pod
-        :param head_pod: head pod communicating with the worker pod
+        :param pod_is_container: boolean specifying if pod is to be run in container
+        :param head_is_container: boolean specifying if head pod is to be run in container
         :return: host to pass in connection list of the head
         """
         # Check if the current pod and head are both containerized on the same host
         # If so __docker_host__ needs to be advertised as the worker's address to the head
         worker_host = (
             __docker_host__
-            if Deployment._is_container_to_container(pod, head_pod)
+            if (pod_is_container and (head_is_container or in_docker()))
             and host_is_local(pod_args.host)
             else pod_args.host
         )
         return worker_host
-
-    @staticmethod
-    def _is_container_to_container(pod, head_pod):
-        # Check if both shard_id/pod_idx and the head are containerized
-        # if the head is not containerized, it still could mean that the deployment itself is containerized
-        return type(pod) == ContainerPod and (
-            type(head_pod) == ContainerPod or in_docker()
-        )
 
     def start(self) -> 'Deployment':
         """
@@ -690,12 +694,13 @@ class Deployment(BaseDeployment):
         parsed_args['pods'] = self._set_pod_args(args)
 
         if parsed_args['head'] is not None:
+            connection_list = defaultdict(list)
+
             for shard_id in parsed_args['pods']:
                 for pod_idx, pod_args in enumerate(parsed_args['pods'][shard_id]):
-                    worker_host = self.get_worker_host(
-                        pod_args, self.shards[shard_id]._pods[pod_idx], self.head_pod
-                    )
-                    parsed_args['head'].connection_list[shard_id].append(worker_host)
+                    worker_host = self.get_worker_host(pod_args, self._is_docker, False)
+                    connection_list[shard_id].append(worker_host)
+            parsed_args['head'].connection_list = json.dumps(connection_list)
 
         return parsed_args
 
