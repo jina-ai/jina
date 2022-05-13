@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.orchestrate.deployments - Jina 3.4.1 documentation</title>
+        <title>jina.orchestrate.deployments - Jina 3.4.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.4.1 documentation</div>
+                <div class="brand">Jina 3.4.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -554,9 +554,13 @@
                 </div>
                 <h1>Source code for jina.orchestrate.deployments</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">ExitStack</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">cycle</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_executor__</span><span class="p">,</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span><span class="p">,</span> <span class="n">helper</span>
@@ -567,6 +571,8 @@
 <span class="kn">from</span> <span class="nn">jina.orchestrate.pods.container</span> <span class="kn">import</span> <span class="n">ContainerPod</span>
 <span class="kn">from</span> <span class="nn">jina.orchestrate.pods.factory</span> <span class="kn">import</span> <span class="n">PodFactory</span>
 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span><span class="p">,</span> <span class="n">host_is_local</span><span class="p">,</span> <span class="n">in_docker</span>
+
+<span class="n">WRAPPED_SLICE_BASE</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">'\[[-\d:]+\]'</span>
 
 
 <div class="viewcode-block" id="BaseDeployment"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment">[docs]</a><span class="k">class</span> <span class="nc">BaseDeployment</span><span class="p">(</span><span class="n">ExitStack</span><span class="p">):</span>
@@ -1159,15 +1165,71 @@
         <span class="k">return</span> <span class="n">is_ready</span>
 
     <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_slice</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">"""Parses a `slice()` from string, like `start:stop:step`.</span>
+
+<span class="sd">        :param value: a string like</span>
+<span class="sd">        :return: slice</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">WRAPPED_SLICE_BASE</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># slice(stop)</span>
+                <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+            <span class="c1"># else: slice(start, stop[, step])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># slice()</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="nb">slice</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">])</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_roundrobin_cuda_device</span><span class="p">(</span><span class="n">device_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">"""Parse cuda device string with RR prefix</span>
+
+<span class="sd">        :param device_str: `RRm:n`, where `RR` is the prefix, m:n is python slice format</span>
+<span class="sd">        :param replicas: the number of replicas</span>
+<span class="sd">        :return: a map from replica id to device id</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">device_str</span> <span class="ow">and</span> <span class="n">device_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'RR'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">replicas</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">num_devices</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">'nvidia-smi'</span><span class="p">,</span> <span class="s1">'-L'</span><span class="p">]))</span><span class="o">.</span><span class="n">count</span><span class="p">(</span>
+                    <span class="s1">'UUID'</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">num_devices</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'CUDA_TOTAL_DEVICES'</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">num_devices</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">return</span>
+
+            <span class="n">all_devices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_devices</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">device_str</span><span class="p">[</span><span class="mi">2</span><span class="p">:]:</span>
+                <span class="n">all_devices</span> <span class="o">=</span> <span class="n">all_devices</span><span class="p">[</span><span class="n">Deployment</span><span class="o">.</span><span class="n">_parse_slice</span><span class="p">(</span><span class="n">device_str</span><span class="p">[</span><span class="mi">2</span><span class="p">:])]</span>
+
+            <span class="n">_c</span> <span class="o">=</span> <span class="n">cycle</span><span class="p">(</span><span class="n">all_devices</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">j</span><span class="p">:</span> <span class="nb">next</span><span class="p">(</span><span class="n">_c</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">replicas</span><span class="p">)}</span>
+
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_set_pod_args</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Namespace</span><span class="p">]]:</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">sharding_enabled</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">shards</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">shards</span> <span class="o">&gt;</span> <span class="mi">1</span>
+
+        <span class="n">cuda_device_map</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="p">:</span>
+            <span class="n">cuda_device_map</span> <span class="o">=</span> <span class="n">Deployment</span><span class="o">.</span><span class="n">_roundrobin_cuda_device</span><span class="p">(</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'CUDA_VISIBLE_DEVICES'</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">replicas</span>
+            <span class="p">)</span>
+
         <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">shards</span><span class="p">):</span>
             <span class="n">replica_args</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">replica_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">replicas</span><span class="p">):</span>
                 <span class="n">_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
                 <span class="n">_args</span><span class="o">.</span><span class="n">shard_id</span> <span class="o">=</span> <span class="n">shard_id</span>
                 <span class="n">_args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">WORKER</span>
+
+                <span class="k">if</span> <span class="n">cuda_device_map</span><span class="p">:</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">env</span><span class="p">[</span><span class="s1">'CUDA_VISIBLE_DEVICES'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cuda_device_map</span><span class="p">[</span><span class="n">replica_id</span><span class="p">])</span>
 
                 <span class="n">_args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">host</span>
                 <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
