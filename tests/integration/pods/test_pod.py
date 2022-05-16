@@ -542,9 +542,7 @@ def _create_head_pod(
         args.uses_before_address = uses_before
     if uses_after:
         args.uses_after_address = uses_after
-    args.connection_list = json.dumps(
-        connection_list_dict
-    )  # {'0': [f'127.0.0.1:{worker_port}' for worker_port in worker_ports]})
+    args.connection_list = json.dumps(connection_list_dict)
 
     return Pod(args)
 

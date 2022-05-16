@@ -112,17 +112,12 @@ def test_pprint_routes(capfd):
     r.status.exception.stacks.extend(['r1\nline1', 'r2\nline2'])
     result.append(r)
     r = jina_pb2.RouteProto()
-    r.status.code = jina_pb2.StatusProto.ERROR_CHAINED
-    r.status.exception.stacks.extend(['line1', 'line2'])
-    result.append(r)
-    r = jina_pb2.RouteProto()
     r.status.code = jina_pb2.StatusProto.SUCCESS
     result.append(r)
     rr = DataRequest()
     rr.routes.extend(result)
     pprint_routes(rr)
     out, err = capfd.readouterr()
-    assert '⚪' in out
     assert '🟢' in out
     assert 'Executor' in out
     assert 'Time' in out
@@ -130,7 +125,6 @@ def test_pprint_routes(capfd):
     assert 'r1' in out
     assert 'line1r2' in out
     assert 'line2' in out
-    assert 'line1line2' in out
 
 
 def test_convert_tuple_to_list():
