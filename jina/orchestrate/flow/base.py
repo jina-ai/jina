@@ -98,11 +98,7 @@ FALLBACK_PARSERS = [
 ]
 
 
-class _BaseClassFlow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
-    ...
-
-
-class Flow(_BaseClassFlow):
+class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     """Flow is how Jina streamlines and distributes Executors."""
 
     # overload_inject_start_client_flow
@@ -2045,7 +2041,7 @@ class Flow(_BaseClassFlow):
         self._common_kwargs.update(kwargs)
 
     def __getattribute__(self, item):
-        obj = super(_BaseClassFlow, self).__getattribute__(item)
+        obj = super().__getattribute__(item)
 
         if (
             item == 'load_config' and inspect.ismethod(obj) and obj.__self__ is Flow
