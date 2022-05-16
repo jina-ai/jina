@@ -2051,7 +2051,7 @@ class Flow(_BaseClassFlow):
             item == 'load_config' and inspect.ismethod(obj) and obj.__self__ is Flow
         ):  # check if obj load config call from an instance and not the Class
             warnings.warn(
-                'Calling load_config from a Flow instance will overidde all of its initial parameters. You should probably use `Flow.load_config(...)` instead'
+                'Calling load_config from a Flow instance will override all of its initial parameters. You should probably use `Flow.load_config(...)` instead'
             )
 
         return obj
