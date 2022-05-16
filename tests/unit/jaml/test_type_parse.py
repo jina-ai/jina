@@ -183,8 +183,10 @@ def test_parsing_brackets_in_envvar():
 
 
 def test_exception_invalid_yaml():
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+    yaml = os.path.join(cur_dir, 'invalid.yml')
     with pytest.raises(BadConfigSource):
-        BaseExecutor.load_config('./invalid.yml')
+        BaseExecutor.load_config(yaml)
 
     with pytest.raises(BadConfigSource):
-        Flow.load_config('./invalid.yml')
+        Flow.load_config(yaml)
