@@ -749,7 +749,12 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
                 # revert yaml's tag and load again, this time with substitution
                 tag_yml = JAML.unescape(JAML.dump(no_tag_yml))
             # load into object, no more substitute
-            return JAML.load(tag_yml, substitute=False, runtime_args=runtime_args)
+            obj = JAML.load(tag_yml, substitute=False, runtime_args=runtime_args)
+            if not isinstance(obj, cls):
+                raise BadConfigSource(
+                    f'Can not construct {cls} object from {source}. Source might be an invalid configuration.'
+                )
+            return obj
 
     @classmethod
     def _override_yml_params(cls, raw_yaml, field_name, override_field):
