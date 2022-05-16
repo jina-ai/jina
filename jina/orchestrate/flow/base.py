@@ -1,6 +1,7 @@
 import argparse
 import base64
 import copy
+import inspect
 import json
 import multiprocessing
 import os
@@ -8,6 +9,7 @@ import sys
 import threading
 import time
 import uuid
+import warnings
 from collections import OrderedDict
 from contextlib import ExitStack
 from typing import (
@@ -96,7 +98,11 @@ FALLBACK_PARSERS = [
 ]
 
 
-class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
+class _BaseClassFlow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
+    ...
+
+
+class Flow(_BaseClassFlow):
     """Flow is how Jina streamlines and distributes Executors."""
 
     # overload_inject_start_client_flow
@@ -2037,3 +2043,15 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param kwargs: new network settings
         """
         self._common_kwargs.update(kwargs)
+
+    def __getattribute__(self, item):
+        obj = super(_BaseClassFlow, self).__getattribute__(item)
+
+        if (
+            item == 'load_config' and inspect.ismethod(obj) and obj.__self__ is Flow
+        ):  # check if obj load config call from an instance and not the Class
+            warnings.warn(
+                'Calling load_config from a Flow instance will overidde all of its initial parameters. You should probably use `Flow.load_config(...)` instead'
+            )
+
+        return obj
