@@ -792,35 +792,6 @@ class GrpcConnectionPool:
         return insecure_channel(address, options)
 
     @staticmethod
-    def activate_worker_sync(
-        worker_host: str,
-        worker_port: int,
-        target_head: str,
-        shard_id: Optional[int] = None,
-    ):
-        """
-        Register a given worker to a head by sending an activate request
-
-        :param worker_host: the host address of the worker
-        :param worker_port: the port of the worker
-        :param target_head: address of the head to send the activate request to
-        :param shard_id: id of the shard the worker belongs to
-        :returns: the response request
-        """
-        from jina.types.request.control import ControlRequest
-
-        activate_request = ControlRequest(command='ACTIVATE')
-        activate_request.add_related_entity(
-            'worker', worker_host, worker_port, shard_id
-        )
-
-        if os.name != 'nt':
-            os.unsetenv('http_proxy')
-            os.unsetenv('https_proxy')
-
-        return GrpcConnectionPool.send_request_sync(activate_request, target_head)
-
-    @staticmethod
     def send_request_sync(
         request: Request,
         target: str,

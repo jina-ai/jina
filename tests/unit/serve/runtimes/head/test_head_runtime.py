@@ -23,9 +23,9 @@ from jina.types.request.data import DataRequest
 def test_regular_data_case():
     args = set_pod_parser().parse_args([])
     args.polling = PollingType.ANY
+    connection_list_dict = {0: [f'fake_ip:8080']}
+    args.connection_list = json.dumps(connection_list_dict)
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
-
-    _add_worker(args)
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port}',
@@ -49,12 +49,10 @@ def test_message_merging(disable_reduce):
     else:
         args = set_pod_parser().parse_args(['--disable-reduce'])
     args.polling = PollingType.ALL
+    connection_list_dict = {0: [f'ip1:8080'], 1: [f'ip2:8080'], 2: [f'ip3:8080']}
+    args.connection_list = json.dumps(connection_list_dict)
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
-    assert handle_queue.empty()
-    _add_worker(args, 'ip1', shard_id=0)
-    _add_worker(args, 'ip2', shard_id=1)
-    _add_worker(args, 'ip3', shard_id=2)
     assert handle_queue.empty()
 
     data_request = _create_test_data_message()
@@ -73,12 +71,10 @@ def test_uses_before_uses_after():
     args.polling = PollingType.ALL
     args.uses_before_address = 'fake_address'
     args.uses_after_address = 'fake_address'
+    connection_list_dict = {0: [f'ip1:8080'], 1: [f'ip2:8080'], 2: [f'ip3:8080']}
+    args.connection_list = json.dumps(connection_list_dict)
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
-    assert handle_queue.empty()
-    _add_worker(args, 'ip1', shard_id=0)
-    _add_worker(args, 'ip2', shard_id=1)
-    _add_worker(args, 'ip3', shard_id=2)
     assert handle_queue.empty()
 
     result = GrpcConnectionPool.send_request_sync(
@@ -110,9 +106,9 @@ def test_decompress(monkeypatch):
 
     args = set_pod_parser().parse_args([])
     args.polling = PollingType.ANY
+    connection_list_dict = {0: [f'fake_ip:8080']}
+    args.connection_list = json.dumps(connection_list_dict)
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
-
-    _add_worker(args)
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port}',
@@ -143,10 +139,11 @@ def test_dynamic_polling(polling):
             str(2),
         ]
     )
-    cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
-    _add_worker(args, shard_id=0)
-    _add_worker(args, shard_id=1)
+    connection_list_dict = {0: [f'fake_ip:8080'], 1: [f'fake_ip:8080']}
+    args.connection_list = json.dumps(connection_list_dict)
+
+    cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port}',
@@ -185,10 +182,9 @@ def test_base_polling(polling):
             str(2),
         ]
     )
+    connection_list_dict = {0: [f'fake_ip:8080'], 1: [f'fake_ip:8080']}
+    args.connection_list = json.dumps(connection_list_dict)
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
-
-    _add_worker(args, shard_id=0)
-    _add_worker(args, shard_id=1)
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port}',
@@ -245,9 +241,9 @@ async def test_head_runtime_reflection():
 def test_timeout_behaviour():
     args = set_pod_parser().parse_args(['--timeout-send', '100'])
     args.polling = PollingType.ANY
+    connection_list_dict = {0: [f'fake_ip:8080']}
+    args.connection_list = json.dumps(connection_list_dict)
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
-
-    _add_worker(args)
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port}',
@@ -308,14 +304,6 @@ def _create_runtime(args):
         ready_or_shutdown_event=multiprocessing.Event(),
     )
     return cancel_event, handle_queue, runtime_thread
-
-
-def _add_worker(args, ip='fake_ip', shard_id=None):
-    activate_msg = ControlRequest(command='ACTIVATE')
-    activate_msg.add_related_entity('worker', ip, 8080, shard_id)
-    assert GrpcConnectionPool.send_request_sync(
-        activate_msg, f'{args.host}:{args.port}'
-    )
 
 
 def _destroy_runtime(args, cancel_event, runtime_thread):
