@@ -2,8 +2,6 @@ import argparse
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional
 
-from docarray import Document
-
 from jina import __version__
 from jina.clients.request import request_generator
 from jina.enums import DataInputType
@@ -188,6 +186,8 @@ def get_fastapi_app(
     def _generate_exception_header(error: InternalNetworkError):
         import traceback
 
+        from jina.proto.serializer import DataRequest
+
         exception_dict = {
             'name': str(error.__class__),
             'stacks': [
@@ -196,7 +196,7 @@ def get_fastapi_app(
             'executor': '',
         }
         status_dict = {
-            'code': 3,  # status error
+            'code': DataRequest().status.ERROR,
             'description': error.details() if error.details() else '',
             'exception': exception_dict,
         }
