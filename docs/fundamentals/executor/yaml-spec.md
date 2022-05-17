@@ -30,6 +30,8 @@ String specifying the Python type of the Executor
 - `with` TODO is `uses_with` a synonym?
 Collection containing keyword arguments passed to the Executor's `__init__()` method
 
+TODO `py_modules` and `workspace` should be moved out of `metas`
+
 - `metas`
 Collection containing special internal attributes of the Executor
   - `py_modules` List of strings defining the Python dependencies of the Executor. Most notably this has to contain the
