@@ -195,9 +195,10 @@ class RequestHandler:
                     route.end_time.GetCurrentTime()
 
             if self._summary:
-                self._summary.observe(
-                    time.time() - self.request_init_time[result.request_id]
-                )
+                init_time = self.request_init_time.pop(
+                    result.request_id
+                )  # need to pop otherwise it stay in memory for ever
+                self._summary.observe(time.time() - init_time)
 
             return result
 
