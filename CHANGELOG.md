@@ -184,6 +184,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -13665,4 +13666,30 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```ec923d02```](https://github.com/jina-ai/jina/commit/ec923d028282d7994069447fe509fafc235c3268)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```95c1519d```](https://github.com/jina-ai/jina/commit/95c1519d60a9c53274b3d4daad0181c6353cd337)] __-__ fix readme (*Han Xiao*)
  - [[```6194244f```](https://github.com/jina-ai/jina/commit/6194244fd2886ff2e05e7df27d0d9fdc5dfe75a2)] __-__ __version__: the next version will be 3.4.3 (*Jina Dev Bot*)
+
+<a name=release-note-3-4-4></a>
+## Release Note (`3.4.4`)
+
+> Release time: 2022-05-18 12:54:06
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Delgermurun,  Sha Zhou,  Jina Dev Bot,  Roshan Jossy,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```0372f10f```](https://github.com/jina-ai/jina/commit/0372f10f381af1b5be1efdcec3ee062f98d5fe30)] __-__ unsetenv not existing on Windows (#4800) (*Joan Fontanals*)
+ - [[```99ccff1f```](https://github.com/jina-ai/jina/commit/99ccff1fefbf8a6064b685598abe48ad45044234)] __-__ remove executor secret from flow mermaid chart (#4801) (*Delgermurun*)
+ - [[```d66e98c1```](https://github.com/jina-ai/jina/commit/d66e98c145785e7cb11f496bb061c5da6f537be4)] __-__ __qabot__: hide the slot elements on the docs page (#4799) (*Sha Zhou*)
+
+### 📗 Documentation
+
+ - [[```f0f5948e```](https://github.com/jina-ai/jina/commit/f0f5948ea6a50074b1b74fe9698a83b1413bba30)] __-__ __tracking__: remove adding utm_source to links (#4798) (*Roshan Jossy*)
+
+### 🍹 Other Improvements
+
+ - [[```32d85a50```](https://github.com/jina-ai/jina/commit/32d85a502438a6a99c886e2d4e974db213a025ef)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```2b5efac1```](https://github.com/jina-ai/jina/commit/2b5efac1478f33134d481e8cf9fcc7b405c58515)] __-__ __version__: the next version will be 3.4.4 (*Jina Dev Bot*)
 
