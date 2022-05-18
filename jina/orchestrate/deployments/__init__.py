@@ -11,6 +11,7 @@ from typing import Dict, List, Optional, Set, Union
 from jina import __default_executor__, __default_host__, __docker_host__, helper
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.helper import CatchAllCleanupContextManager
+from jina.hubble.helper import replace_secret_of_hub_uri
 from jina.hubble.hubio import HubIO
 from jina.jaml.helper import complete_path
 from jina.orchestrate.pods.container import ContainerPod
@@ -781,6 +782,7 @@ class Deployment(BaseDeployment):
         .. # noqa: DAR201
         """
         mermaid_graph = []
+        secret = '&ltsecret&gt'
         if self.role != DeploymentRoleType.GATEWAY and not self.external:
             mermaid_graph = [f'subgraph {self.name};', f'\ndirection LR;\n']
 
@@ -790,7 +792,7 @@ class Deployment(BaseDeployment):
                 else None
             )
             uses_before_uses = (
-                self.uses_before_args.uses
+                replace_secret_of_hub_uri(self.uses_before_args.uses, secret)
                 if self.uses_before_args is not None
                 else None
             )
@@ -798,7 +800,9 @@ class Deployment(BaseDeployment):
                 self.uses_after_args.name if self.uses_after_args is not None else None
             )
             uses_after_uses = (
-                self.uses_after_args.uses if self.uses_after_args is not None else None
+                replace_secret_of_hub_uri(self.uses_after_args.uses, secret)
+                if self.uses_after_args is not None
+                else None
             )
             shard_names = []
             if len(self.pod_args['pods']) > 1:
@@ -818,7 +822,7 @@ class Deployment(BaseDeployment):
                     ]  # all the uses should be the same but let's keep it this
                     # way
                     for rep_i, (name, use) in enumerate(zip(names, uses)):
-                        escaped_uses = f'"{use}"'
+                        escaped_uses = f'"{replace_secret_of_hub_uri(use, secret)}"'
                         shard_mermaid_graph.append(f'{name}[{escaped_uses}]:::pod;')
                     shard_mermaid_graph.append('end;')
                     shard_mermaid_graph = [
@@ -828,7 +832,9 @@ class Deployment(BaseDeployment):
                     mermaid_graph.append('\n')
                 if uses_before_name is not None:
                     for shard_name in shard_names:
-                        escaped_uses_before_uses = f'"{uses_before_uses}"'
+                        escaped_uses_before_uses = (
+                            f'"{replace_secret_of_hub_uri(uses_before_uses, secret)}"'
+                        )
                         mermaid_graph.append(
                             f'{self.args.name}-head[{escaped_uses_before_uses}]:::HEADTAIL --> {shard_name};'
                         )
@@ -840,16 +846,17 @@ class Deployment(BaseDeployment):
                         )
             else:
                 # single shard case, no uses_before or uses_after_considered
-                name = list(self.pod_args['pods'].values())[0][0].name
-                uses = f'"{list(self.pod_args["pods"].values())[0][0].uses}"'
-                num_replicas = list(self.pod_args['pods'].values())[0][0].replicas
+                pod_args = list(self.pod_args['pods'].values())[0][0]
+                uses = f'"{replace_secret_of_hub_uri(pod_args.uses, secret)}"'
 
                 # just put the replicas in parallel
-                if num_replicas > 1:
-                    for rep_i in range(num_replicas):
-                        mermaid_graph.append(f'{name}/rep-{rep_i}[{uses}]:::pod;')
+                if pod_args.replicas > 1:
+                    for rep_i in range(pod_args.replicas):
+                        mermaid_graph.append(
+                            f'{pod_args.name}/rep-{rep_i}["{uses}"]:::pod;'
+                        )
                 else:
-                    mermaid_graph.append(f'{name}[{uses}]:::pod;')
+                    mermaid_graph.append(f'{pod_args.name}["{uses}"]:::pod;')
 
             mermaid_graph.append('end;')
         return mermaid_graph

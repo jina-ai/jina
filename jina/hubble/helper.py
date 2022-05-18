@@ -189,6 +189,23 @@ def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
     return scheme, name, tag, secret
 
 
+def replace_secret_of_hub_uri(uri_path: str, txt: str = '<secret>') -> str:
+    """Replace the secret of the Jina Hub URI.
+
+    :param uri_path: the uri of Jina Hub URI
+    :param txt: text to replace
+    :return: the new URI
+    """
+
+    try:
+        secret = parse_hub_uri(uri_path)[-1]
+        if secret:
+            return uri_path.replace(secret, txt)
+    except ValueError:
+        pass  # ignore if the URI is not a valid Jina Hub URI
+    return uri_path
+
+
 def is_valid_huburi(uri: str) -> bool:
     """Return True if it is a valid Hubble URI
 
