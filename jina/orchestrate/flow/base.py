@@ -2047,7 +2047,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             item == 'load_config' and inspect.ismethod(obj) and obj.__self__ is Flow
         ):  # check if obj load config call from an instance and not the Class
             warnings.warn(
-                'Calling load_config from a Flow instance will override all of the instance's initial parameters. We recommend to use `Flow.load_config(...)` instead'
+                "Calling load_config from a Flow instance will override all of the instance's initial parameters. We recommend to use `Flow.load_config(...)` instead"
             )
 
         return obj
