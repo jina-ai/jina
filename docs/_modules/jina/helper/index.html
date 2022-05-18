@@ -1569,7 +1569,8 @@
 <span class="c1"># workaround for asyncio loop and fork issue: https://github.com/python/cpython/issues/66197</span>
 <span class="c1"># we close the loop after forking to avoid reusing the parents process loop</span>
 <span class="c1"># a new loop should be created in the child process</span>
-<span class="n">os</span><span class="o">.</span><span class="n">register_at_fork</span><span class="p">(</span><span class="n">after_in_child</span><span class="o">=</span><span class="n">_close_loop</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">__windows__</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">register_at_fork</span><span class="p">(</span><span class="n">after_in_child</span><span class="o">=</span><span class="n">_close_loop</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_or_reuse_loop"><a class="viewcode-back" href="../../../api/jina.helper/#jina.helper.get_or_reuse_loop">[docs]</a><span class="k">def</span> <span class="nf">get_or_reuse_loop</span><span class="p">():</span>

@@ -744,6 +744,23 @@
     <span class="k">return</span> <span class="n">scheme</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">secret</span></div>
 
 
+<div class="viewcode-block" id="replace_secret_of_hub_uri"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.replace_secret_of_hub_uri">[docs]</a><span class="k">def</span> <span class="nf">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">uri_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">txt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'&lt;secret&gt;'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">"""Replace the secret of the Jina Hub URI.</span>
+
+<span class="sd">    :param uri_path: the uri of Jina Hub URI</span>
+<span class="sd">    :param txt: text to replace</span>
+<span class="sd">    :return: the new URI</span>
+<span class="sd">    """</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">secret</span> <span class="o">=</span> <span class="n">parse_hub_uri</span><span class="p">(</span><span class="n">uri_path</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">secret</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">uri_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">txt</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">pass</span>  <span class="c1"># ignore if the URI is not a valid Jina Hub URI</span>
+    <span class="k">return</span> <span class="n">uri_path</span></div>
+
+
 <div class="viewcode-block" id="is_valid_huburi"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.is_valid_huburi">[docs]</a><span class="k">def</span> <span class="nf">is_valid_huburi</span><span class="p">(</span><span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="sd">"""Return True if it is a valid Hubble URI</span>
 
