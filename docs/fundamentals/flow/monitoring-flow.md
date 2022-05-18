@@ -104,6 +104,7 @@ Because not all Pods have the same role, they expose different kinds of metrics:
 |-------------------------------------|----------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
 | `jina_receiving_request_seconds`    | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measures the time elapsed between receiving a request from the client and sending back the response.                |
 | `jina_sending_request_seconds`      | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measures the time elapsed between sending a downstream request to an Executor/Head and receiving the response back. |
+| `jina_number_of_pending_requests`       | [Gauge](https://prometheus.io/docs/concepts/metric_types/#gauge)     | Count the number of pending requests                                                                                |
 
 
 ```{seealso} 

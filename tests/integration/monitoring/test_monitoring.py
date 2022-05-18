@@ -190,3 +190,63 @@ def test_requests_size(port_generator, executor):
         measured_request_bytes_sum = _get_request_bytes_size()
 
         assert measured_request_bytes_sum > measured_request_bytes_sum_init
+
+
+def test_pending_request(port_generator):
+    port0 = port_generator()
+    port1 = port_generator()
+
+    class SlowExecutor(Executor):
+        @requests
+        def foo(self, docs, **kwargs):
+            time.sleep(5)
+
+    with Flow(monitoring=True, port_monitoring=port0).add(
+        uses=SlowExecutor, port_monitoring=port1
+    ) as f:
+
+        def _send_request():
+            f.search(inputs=DocumentArray.empty(size=1))
+
+        def _assert_pending_value(val: str):
+            resp = req.get(f'http://localhost:{port0}/')
+            assert resp.status_code == 200
+            assert (
+                f'jina_number_of_pending_requests{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} {val}'
+                in str(resp.content)
+            )
+
+        _assert_while = lambda: _assert_pending_value(
+            '1.0'
+        )  # while the request is being processed the counter is at one
+        _assert_after = lambda: _assert_pending_value(
+            '0.0'
+        )  # but before and after it is at 0
+        _assert_before = lambda: _assert_pending_value(
+            '0.0'
+        )  # but before and after it is at 0
+
+        p_send = multiprocessing.Process(target=_send_request)
+        p_before = multiprocessing.Process(target=_assert_before)
+        p_while = multiprocessing.Process(target=_assert_while)
+
+        p_before.start()
+        time.sleep(1)
+        p_send.start()
+        time.sleep(1)
+        p_while.start()
+
+        for p in [p_before, p_send, p_while]:
+            p.join()
+
+        exitcodes = []
+        for p in [p_before, p_send, p_while]:
+            p.terminate()
+            exitcodes.append(
+                p.exitcode
+            )  # collect the exit codes and assert after all of them have been terminated, to avoid timeouts
+
+        for code in exitcodes:
+            assert not code
+
+        _assert_after()

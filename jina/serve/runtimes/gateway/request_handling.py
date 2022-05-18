@@ -30,7 +30,7 @@ class RequestHandler:
         metrics_registry: Optional['CollectorRegistry'] = None,
         runtime_name: Optional[str] = None,
     ):
-        self.request_init_time = {} if metrics_registry else None
+        self._request_init_time = {} if metrics_registry else None
         self._executor_endpoint_mapping = None
 
         if metrics_registry:
@@ -38,9 +38,9 @@ class RequestHandler:
                 required=True,
                 help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
-                from prometheus_client import Summary
+                from prometheus_client import Gauge, Summary
 
-            self._summary = Summary(
+            self._receiving_request_metrics = Summary(
                 'receiving_request_seconds',
                 'Time spent processing request',
                 registry=metrics_registry,
@@ -48,8 +48,17 @@ class RequestHandler:
                 labelnames=('runtime_name',),
             ).labels(runtime_name)
 
+            self._pending_requests_metrics = Gauge(
+                'number_of_pending_requests',
+                'Number of pending requests',
+                registry=metrics_registry,
+                namespace='jina',
+                labelnames=('runtime_name',),
+            ).labels(runtime_name)
+
         else:
-            self._summary = None
+            self._receiving_request_metrics = None
+            self._pending_requests_metrics = None
 
     def handle_request(
         self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
@@ -100,8 +109,10 @@ class RequestHandler:
                 self._executor_endpoint_mapping[node.name] = endp.endpoints
 
         def _handle_request(request: 'Request') -> 'asyncio.Future':
-            if self._summary:
-                self.request_init_time[request.request_id] = time.time()
+            if self._receiving_request_metrics:
+                self._request_init_time[request.request_id] = time.time()
+            if self._pending_requests_metrics:
+                self._pending_requests_metrics.inc()
             # important that the gateway needs to have an instance of the graph per request
             request_graph = copy.deepcopy(graph)
 
@@ -194,11 +205,14 @@ class RequestHandler:
                 if route.executor == 'gateway':
                     route.end_time.GetCurrentTime()
 
-            if self._summary:
-                init_time = self.request_init_time.pop(
+            if self._receiving_request_metrics:
+                init_time = self._request_init_time.pop(
                     result.request_id
-                )  # need to pop otherwise it stay in memory for ever
-                self._summary.observe(time.time() - init_time)
+                )  # need to pop otherwise it stays in memory forever
+                self._receiving_request_metrics.observe(time.time() - init_time)
+
+            if self._pending_requests_metrics:
+                self._pending_requests_metrics.dec()
 
             return result
 
