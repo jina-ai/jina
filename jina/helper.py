@@ -1004,7 +1004,7 @@ def _update_policy():
 def _close_loop():
     try:
         loop = asyncio.get_event_loop()
-        if not loop.is_closed():
+        if not loop.is_closed() and loop.is_running():
             loop.close()
     except RuntimeError:
         # there is no loop, so nothing to do here
