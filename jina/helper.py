@@ -1014,7 +1014,8 @@ def _close_loop():
 # workaround for asyncio loop and fork issue: https://github.com/python/cpython/issues/66197
 # we close the loop after forking to avoid reusing the parents process loop
 # a new loop should be created in the child process
-os.register_at_fork(after_in_child=_close_loop)
+if not __windows__:
+    os.register_at_fork(after_in_child=_close_loop)
 
 
 def get_or_reuse_loop():

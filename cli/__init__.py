@@ -131,6 +131,8 @@ def _try_plugin_command():
 def main():
     """The main entrypoint of the CLI"""
 
+    from jina import __windows__
+
     class EnvVariableSet:
         def __init__(self, key, value):
             self.key = key
@@ -143,8 +145,10 @@ def main():
                 os.environ[self.key] = self.value
 
         def __exit__(self, exc_type, exc_val, exc_tb):
-            if self.unset:
+            if self.unset and not __windows__:
                 os.unsetenv(self.key)
+            elif self.unset and __windows__:
+                del os.environ[self.key]
 
     with EnvVariableSet('JINA_CHECK_VERSION', 'True'):
         found_plugin = _try_plugin_command()
