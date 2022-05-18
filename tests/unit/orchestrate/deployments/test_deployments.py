@@ -1,6 +1,5 @@
 import json
 import os
-from multiprocessing import Process
 
 import pytest
 
@@ -116,13 +115,14 @@ def test_uses_before_after(pod_args, shards):
         assert pod.num_pods == 5 if shards == 2 else 1
 
 
-def test_mermaid_str_no_error(pod_args):
+def test_mermaid_str_no_secret(pod_args):
     pod_args.replicas = 3
-    pod_args.uses_before = 'MyDummyExecutor'
+    pod_args.shards = 3
+    pod_args.uses_before = 'jinahub+docker://MyDummyExecutor:Dummy@Secret'
     pod_args.uses_after = 'ChildDummyExecutor2'
-    pod_args.uses = 'ChildDummyExecutor'
+    pod_args.uses = 'jinahub://ChildDummyExecutor:Dummy@Secret'
     pod = Deployment(pod_args)
-    print(pod._mermaid_str)
+    assert 'Dummy@Secret' not in ''.join(pod._mermaid_str)
 
 
 @pytest.mark.slow

@@ -5,7 +5,6 @@ import pytest
 
 from jina.hubble import helper
 from jina.hubble.helper import disk_cache_offline
-from jina.parsers.hubble import set_hub_pull_parser
 
 
 @pytest.fixture
@@ -42,6 +41,19 @@ def test_parse_wrong_hub_uri(uri_path):
         helper.parse_hub_uri(uri_path)
 
     assert f'{uri_path} is not a valid Hub URI.' == str(info.value)
+
+
+def test_replace_secret_of_hub_uri():
+    result = helper.replace_secret_of_hub_uri('jinahub://hello', '_secret_')
+    assert result == 'jinahub://hello'
+
+    result = helper.replace_secret_of_hub_uri(
+        'jinahub://hello:dummy@secret/path', '*secret*'
+    )
+    assert result == 'jinahub://hello:*secret*/path'
+
+    result = helper.replace_secret_of_hub_uri('hello:magic/world')
+    assert result == 'hello:magic/world'
 
 
 def test_md5file(dummy_zip_file):
