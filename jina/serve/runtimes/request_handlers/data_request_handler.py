@@ -49,7 +49,7 @@ class DataRequestHandler:
                 required=True,
                 help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
-                from prometheus_client import Counter
+                from prometheus_client import Counter, Summary
 
                 self._counter = Counter(
                     'document_processed',
@@ -58,8 +58,17 @@ class DataRequestHandler:
                     labelnames=('executor_endpoint', 'executor', 'runtime_name'),
                     registry=metrics_registry,
                 )
+
+                self._request_size_metrics = Summary(
+                    'request_size_bytes',
+                    'The request size in Bytes',
+                    namespace='jina',
+                    labelnames=('executor_endpoint', 'executor', 'runtime_name'),
+                    registry=metrics_registry,
+                )
         else:
             self._counter = None
+            self._request_size_metrics = None
 
     def _load_executor(self, metrics_registry: Optional['CollectorRegistry'] = None):
         """
@@ -120,6 +129,15 @@ class DataRequestHandler:
                 f'skip executor: mismatch request, exec_endpoint: {requests[0].header.exec_endpoint}, requests: {self._executor.requests}'
             )
             return requests[0]
+
+        if self._request_size_metrics:
+
+            for req in requests:
+                self._request_size_metrics.labels(
+                    requests[0].header.exec_endpoint,
+                    self._executor.__class__.__name__,
+                    self.args.name,
+                ).observe(req.nbytes)
 
         params = self._parse_params(requests[0].parameters, self._executor.metas.name)
         docs = DataRequestHandler.get_docs_from_request(
