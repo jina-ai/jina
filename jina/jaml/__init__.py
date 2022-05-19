@@ -554,7 +554,8 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         """
         from jina.jaml.parsers import get_parser
 
-        tmp = get_parser(cls, version=data._version).dump(data)
+        tmp = {'jtype': cls.__name__}
+        tmp.update(get_parser(cls, version=data._version).dump(data))
         return representer.represent_mapping('!' + cls.__name__, tmp)
 
     @classmethod
