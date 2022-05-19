@@ -214,41 +214,6 @@ def test_multiple_clients(prefetch, protocol, info_log_level):
     GOOD_CLIENT_NUM_DOCS = 20
     MALICIOUS_CLIENT_NUM_DOCS = 50
 
-    def check_order_of_ids(port):
-        order_of_ids = list(
-            Client(protocol=protocol, port=port)
-            .post(on='/status', inputs=[Document()], return_responses=True)[0]
-            .docs[0]
-            .tags['ids']
-        )
-        # There must be total 150 docs indexed.
-        assert (
-            len(order_of_ids)
-            == GOOD_CLIENTS * GOOD_CLIENT_NUM_DOCS + MALICIOUS_CLIENT_NUM_DOCS
-        )
-
-        """
-        If prefetch is set, each Client is allowed (max) 5 requests at a time.
-        Since requests are controlled, `badguy` has to do the last 20 requests.
-        
-        If prefetch is disabled, clients can freeflow requests. No client is blocked. 
-        Hence last 20 requests go from `goodguy`.
-        (Ideally last 30 requests should be validated, to avoid flaky CI, we test last 20)
-
-        When there are no rules, badguy wins! With rule, you find balance in the world.        
-        """
-        if protocol == 'http':
-            # There's no prefetch for http.
-            assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {
-                'goodguy'
-            }
-        elif prefetch == 5:
-            assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'badguy'}
-        elif prefetch == 0:
-            assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {
-                'goodguy'
-            }
-
     def get_document(i):
         return Document(
             id=f'{current_process().name}_{i}',
@@ -293,10 +258,32 @@ def test_multiple_clients(prefetch, protocol, info_log_level):
         for p in pool:
             p.join()
 
-        check = Process(
-            target=partial(check_order_of_ids, f.port),
-            name='badguy',
+        order_of_ids = list(
+            Client(protocol=protocol, port=f.port)
+            .post(on='/status', inputs=[Document()], return_responses=True)[0]
+            .docs[0]
+            .tags['ids']
         )
-        check.start()
-        check.join()
-        assert check.exitcode == 0
+    # There must be total 150 docs indexed.
+    assert (
+        len(order_of_ids)
+        == GOOD_CLIENTS * GOOD_CLIENT_NUM_DOCS + MALICIOUS_CLIENT_NUM_DOCS
+    )
+
+    """
+    If prefetch is set, each Client is allowed (max) 5 requests at a time.
+    Since requests are controlled, `badguy` has to do the last 20 requests.
+    
+    If prefetch is disabled, clients can freeflow requests. No client is blocked. 
+    Hence last 20 requests go from `goodguy`.
+    (Ideally last 30 requests should be validated, to avoid flaky CI, we test last 20)
+
+    When there are no rules, badguy wins! With rule, you find balance in the world.        
+    """
+    if protocol == 'http':
+        # There's no prefetch for http.
+        assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'goodguy'}
+    elif prefetch == 5:
+        assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'badguy'}
+    elif prefetch == 0:
+        assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'goodguy'}
