@@ -712,7 +712,7 @@ CUDA_VISIBLE_DEVICES=RR jina flow --uses flow.yaml
 ```
 ````
 
-Will assign GPU devices to the following round-robin fashion:
+Will assign GPU devices in the following round-robin fashion:
 
 | GPU device | Replica ID |
 |------------|------------|
