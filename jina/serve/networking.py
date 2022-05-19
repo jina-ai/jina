@@ -3,7 +3,7 @@ import contextlib
 import ipaddress
 import os
 from collections import defaultdict
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 from urllib.parse import urlparse
 
 import grpc
@@ -686,7 +686,8 @@ class GrpcConnectionPool:
         e: AioRpcError,
         retry_i: int = 0,
         request_id: str = '',
-        dest_addr: str = '',
+        dest_addr: Set[str] = {''},
+        num_retries: int = 3,
     ):
         # connection failures and cancelled requests should be retried
         # all other cases should not be retried and will be raised immediately
@@ -711,7 +712,8 @@ class GrpcConnectionPool:
             )
         else:
             self._logger.debug(
-                f'GRPC call failed with code {e.code()}, retry attempt {retry_i + 1}/3'
+                f'GRPC call failed with code {e.code()}, retry attempt {retry_i + 1}/{num_retries}.'
+                f' Trying next replica, if available.'
             )
 
     def _send_requests(
@@ -725,8 +727,11 @@ class GrpcConnectionPool:
         # the grpc call function is not a coroutine but some _AioCall
         async def task_wrapper():
             metadata = (('endpoint', endpoint),) if endpoint else None
-            for i in range(min(3, len(connections.get_all_connections()))):
+            tried_addresses = set()
+            num_retries = max(3, len(connections.get_all_connections()))
+            for i in range(num_retries):
                 connection = connections.get_next_connection()
+                tried_addresses.add(connection.address)
                 try:
                     return await connection.send_requests(
                         requests=requests,
@@ -739,7 +744,8 @@ class GrpcConnectionPool:
                         e=e,
                         retry_i=i,
                         request_id=requests[0].request_id,
-                        dest_addr=connection.address,
+                        dest_addr=tried_addresses,
+                        num_retries=num_retries,
                     )
 
         return asyncio.create_task(task_wrapper())

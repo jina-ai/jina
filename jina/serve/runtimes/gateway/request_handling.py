@@ -89,7 +89,7 @@ class RequestHandler:
                 if err_code == grpc.StatusCode.UNAVAILABLE:
                     err._details = (
                         err.details()
-                        + f' |Gateway: Communication error with deployment at address {err.dest_addr}. Head or worker may be down.'
+                        + f' |Gateway: Communication error with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
                     )
                     raise err
                 else:
