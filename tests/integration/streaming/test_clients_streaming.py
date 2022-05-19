@@ -214,52 +214,9 @@ def test_multiple_clients(prefetch, protocol, info_log_level):
     GOOD_CLIENT_NUM_DOCS = 20
     MALICIOUS_CLIENT_NUM_DOCS = 50
 
-    def get_document(i):
-        return Document(
-            id=f'{current_process().name}_{i}',
-            text=str(bytes(bytearray(os.urandom(512 * 4)))),
-        )
-
-    async def good_client_gen():
-        for i in range(GOOD_CLIENT_NUM_DOCS):
-            yield get_document(i)
-            await asyncio.sleep(0.1)
-
-    async def malicious_client_gen():
-        for i in range(1000, 1000 + MALICIOUS_CLIENT_NUM_DOCS):
-            yield get_document(i)
-
-    def client(gen, port, protocol):
-        Client(protocol=protocol, port=port).post(
-            on='/index', inputs=gen, request_size=1, return_responses=True
-        )
-
-    pool: List[Process] = []
-    f = Flow(protocol=protocol, prefetch=prefetch).add(uses=Indexer)
-    with f:
-        # We have 5 good clients connecting to the same gateway. They have controlled requests.
-        # Each client sends `GOOD_CLIENT_NUM_DOCS` (20) requests and sleeps after each request.
-        for i in range(GOOD_CLIENTS):
-            p = Process(
-                target=partial(client, good_client_gen, f.port, protocol),
-                name=f'goodguy_{i}',
-            )
-            p.start()
-            pool.append(p)
-
-        # and 1 malicious client, sending lot of requests (trying to block others)
-        p = Process(
-            target=partial(client, malicious_client_gen, f.port, protocol),
-            name='badguy',
-        )
-        p.start()
-        pool.append(p)
-
-        for p in pool:
-            p.join()
-
+    def check_order_of_ids(port):
         order_of_ids = list(
-            Client(protocol=protocol, port=f.port)
+            Client(protocol=protocol, port=port)
             .post(on='/status', inputs=[Document()], return_responses=True)[0]
             .docs[0]
             .tags['ids']
@@ -291,3 +248,55 @@ def test_multiple_clients(prefetch, protocol, info_log_level):
             assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {
                 'goodguy'
             }
+
+    def get_document(i):
+        return Document(
+            id=f'{current_process().name}_{i}',
+            text=str(bytes(bytearray(os.urandom(512 * 4)))),
+        )
+
+    async def good_client_gen():
+        for i in range(GOOD_CLIENT_NUM_DOCS):
+            yield get_document(i)
+            await asyncio.sleep(0.1)
+
+    async def malicious_client_gen():
+        for i in range(1000, 1000 + MALICIOUS_CLIENT_NUM_DOCS):
+            yield get_document(i)
+
+    def client(gen, port):
+        Client(protocol=protocol, port=port).post(
+            on='/index', inputs=gen, request_size=1, return_responses=True
+        )
+
+    pool: List[Process] = []
+    f = Flow(protocol=protocol, prefetch=prefetch).add(uses=Indexer)
+    with f:
+        # We have 5 good clients connecting to the same gateway. They have controlled requests.
+        # Each client sends `GOOD_CLIENT_NUM_DOCS` (20) requests and sleeps after each request.
+        for i in range(GOOD_CLIENTS):
+            p = Process(
+                target=partial(client, good_client_gen, f.port),
+                name=f'goodguy_{i}',
+            )
+            p.start()
+            pool.append(p)
+
+        # and 1 malicious client, sending lot of requests (trying to block others)
+        p = Process(
+            target=partial(client, malicious_client_gen, f.port),
+            name='badguy',
+        )
+        p.start()
+        pool.append(p)
+
+        for p in pool:
+            p.join()
+
+        check = Process(
+            target=partial(check_order_of_ids, f.port),
+            name='badguy',
+        )
+        check.start()
+        check.join()
+        assert check.exitcode == 0
