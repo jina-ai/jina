@@ -94,27 +94,11 @@ def get_download_cache_dir() -> Path:
 
 @lru_cache()
 def _get_hubble_base_url() -> str:
-    """Get base Hubble Url from api.jina.ai or os.environ
+    """Get base Hubble Url from os.environ or constants
 
     :return: base Hubble Url
     """
-    if 'JINA_HUBBLE_REGISTRY' in os.environ:
-        u = os.environ['JINA_HUBBLE_REGISTRY']
-    else:
-        try:
-            req = Request(
-                'https://api.jina.ai/hub/hubble.json',
-                headers={'User-Agent': 'Mozilla/5.0'},
-            )
-            with urlopen(req) as resp:
-                u = json.load(resp)['url']
-        except:
-            default_logger.critical(
-                'Can not fetch the Url of Hubble from `api.jina.ai`'
-            )
-            raise
-
-    return u
+    return os.environ.get('JINA_HUBBLE_REGISTRY', 'https://api.hubble.jina.ai')
 
 
 @lru_cache()
