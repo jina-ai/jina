@@ -98,10 +98,7 @@ def _get_hubble_base_url() -> str:
 
     :return: base Hubble Url
     """
-    if 'JINA_HUBBLE_REGISTRY' in os.environ:
-        return os.environ['JINA_HUBBLE_REGISTRY']
-
-    return 'https://api.hubble.jina.ai'
+    return os.environ.get('JINA_HUBBLE_REGISTRY', 'https://api.hubble.jina.ai')
 
 
 @lru_cache()
