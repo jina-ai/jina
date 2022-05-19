@@ -1,6 +1,6 @@
 import pytest
 
-from jina import Flow, Executor
+from jina import Executor, Flow
 
 
 class MyExecutor(Executor):
@@ -16,7 +16,7 @@ with:
     foo: bar
     '''
     with pytest.warns(UserWarning, match='ignored unknown') as record:
-        Flow().load_config(yaml)
+        Flow.load_config(yaml)
     assert len(record) == 1
     assert record[0].message.args[0].startswith('ignored unknown')
 
@@ -28,7 +28,7 @@ executors:
     - foo: bar
     '''
     with pytest.warns(UserWarning, match='ignored unknown') as record:
-        Flow().load_config(yaml)
+        Flow.load_config(yaml)
     assert len(record) == 1
     assert record[0].message.args[0].startswith('ignored unknown')
 
@@ -41,7 +41,7 @@ executors:
         foo: bar
     '''
     with pytest.warns(UserWarning, match='ignored unknown') as record:
-        Flow().load_config(yaml)
+        Flow.load_config(yaml)
     assert len(record) == 1
     assert record[0].message.args[0].startswith('ignored unknown')
 
@@ -54,7 +54,7 @@ executors:
         foo: bar
     '''
     with pytest.warns(None, match='ignored unknown') as record:
-        Flow().load_config(yaml)
+        Flow.load_config(yaml)
     assert len(record) == 0
 
 
@@ -65,7 +65,7 @@ executors:
     - override_with: 1
     '''
     with pytest.warns(None, match='ignored unknown') as record:
-        Flow().load_config(yaml)
+        Flow.load_config(yaml)
     assert len(record) == 1
 
 
@@ -79,7 +79,7 @@ executors:
             name: MyExecutor
     '''
     with pytest.warns(None, match='ignored unknown') as record:
-        with Flow().load_config(yaml):
+        with Flow.load_config(yaml):
             pass
     assert len(record) == 0
 
