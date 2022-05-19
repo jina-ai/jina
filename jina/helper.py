@@ -1002,9 +1002,11 @@ def _update_policy():
 
 
 def _close_loop():
+    import platform
+
     try:
         loop = asyncio.get_event_loop()
-        if not loop.is_closed() and loop.is_running():
+        if not loop.is_closed() and platform.system() != 'Darwin':
             loop.close()
     except RuntimeError:
         # there is no loop, so nothing to do here

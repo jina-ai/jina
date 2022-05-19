@@ -2,8 +2,6 @@ import argparse
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional
 
-from docarray import Document
-
 from jina import __version__
 from jina.clients.request import request_generator
 from jina.enums import DataInputType
@@ -285,13 +283,14 @@ def get_fastapi_app(
             from dataclasses import asdict
 
             import strawberry
-            from docarray import DocumentArray
             from docarray.document.strawberry_type import (
                 JSONScalar,
                 StrawberryDocument,
                 StrawberryDocumentInput,
             )
             from strawberry.fastapi import GraphQLRouter
+
+            from docarray import DocumentArray
 
             async def get_docs_from_endpoint(
                 data, target_executor, parameters, exec_endpoint

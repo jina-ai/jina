@@ -1,12 +1,14 @@
+import asyncio
 import os
-import time, asyncio
-from typing import List
+import time
 from datetime import datetime
 from functools import partial
 from multiprocessing import Process, current_process
+from typing import List
 
 import pytest
-from jina import Flow, Document, DocumentArray, Executor, requests, Client
+
+from jina import Client, Document, DocumentArray, Executor, Flow, requests
 
 INPUT_LEN = 4
 INPUT_GEN_SLEEP_TIME = 1
@@ -197,10 +199,17 @@ class Indexer(Executor):
         return DocumentArray(Document(tags={'ids': self.docs[:, 'id']}))
 
 
+@pytest.fixture()
+def info_log_level():
+    log_level = os.environ['JINA_LOG_LEVEL']
+    os.environ['JINA_LOG_LEVEL'] = 'INFO'
+    yield
+    os.environ['JINA_LOG_LEVEL'] = log_level
+
+
 @pytest.mark.parametrize('prefetch', [0, 5])
 @pytest.mark.parametrize('protocol', ['websocket', 'http', 'grpc'])
-def test_multiple_clients(prefetch, protocol):
-    os.environ['JINA_LOG_LEVEL'] = 'INFO'
+def test_multiple_clients(prefetch, protocol, info_log_level):
     GOOD_CLIENTS = 5
     GOOD_CLIENT_NUM_DOCS = 20
     MALICIOUS_CLIENT_NUM_DOCS = 50
@@ -221,8 +230,8 @@ def test_multiple_clients(prefetch, protocol):
             yield get_document(i)
 
     def client(gen, port, protocol):
-        Client(protocol=protocol, port=port, return_responses=True).post(
-            on='/index', inputs=gen, request_size=1
+        Client(protocol=protocol, port=port).post(
+            on='/index', inputs=gen, request_size=1, return_responses=True
         )
 
     pool: List[Process] = []
@@ -250,8 +259,8 @@ def test_multiple_clients(prefetch, protocol):
             p.join()
 
         order_of_ids = list(
-            Client(protocol=protocol, port=f.port, return_responses=True)
-            .post(on='/status', inputs=[Document()])[0]
+            Client(protocol=protocol, port=f.port)
+            .post(on='/status', inputs=[Document()], return_responses=True)[0]
             .docs[0]
             .tags['ids']
         )
