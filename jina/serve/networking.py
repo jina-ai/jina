@@ -310,7 +310,7 @@ class GrpcConnectionPool:
             entity_id: Optional[int] = None,
             increase_access_count: bool = True,
         ) -> ReplicaList:
-            # returns all replicas of a given deployment, using a "random" shard
+            # returns all replicas of a given deployment, using a given shard
             if deployment in self._deployments:
                 type_ = 'heads' if head else 'shards'
                 if entity_id is None and head:
@@ -730,10 +730,10 @@ class GrpcConnectionPool:
             tried_addresses = set()
             num_retries = max(3, len(connections.get_all_connections()))
             for i in range(num_retries):
-                connection = connections.get_next_connection()
-                tried_addresses.add(connection.address)
+                current_connection = connections.get_next_connection()
+                tried_addresses.add(current_connection.address)
                 try:
-                    return await connection.send_requests(
+                    return await current_connection.send_requests(
                         requests=requests,
                         metadata=metadata,
                         compression=self.compression,
