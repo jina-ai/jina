@@ -725,7 +725,7 @@ class GrpcConnectionPool:
         # the grpc call function is not a coroutine but some _AioCall
         async def task_wrapper():
             metadata = (('endpoint', endpoint),) if endpoint else None
-            for i in range(3):
+            for i in range(min(3, len(connections.get_all_connections()))):
                 connection = connections.get_next_connection()
                 try:
                     return await connection.send_requests(
