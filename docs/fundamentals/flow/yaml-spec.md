@@ -30,7 +30,7 @@ executors:
 # reference to Executor YAML
 - name: secondexec
   uses: indexer.yml
-  workspace: /home/johannes/.config/JetBrains/PyCharmCE2022.1/scratches/indexed
+  workspace: /home/my/workspace
 # reference to Executor Python class
 - name: thirdexec
   uses: CustomExec  # located in executor.py
@@ -64,3 +64,24 @@ Alternatively, an Executor YAML configuration can be proved directly inline in t
 ### `metas`
 Collection that overrides the `metas` attribute for all Executors in a Flow.
 This can be useful when loading multiple Executors from the same Python file.
+
+
+## Variables
+
+Jina Flow YAMLs support variables and variable substitution according to the [Github Actions syntax](https://docs.github.com/en/actions/learn-github-actions/environment-variables).
+
+This means that the following variable substitutions are supported:
+
+### Environment variables
+
+Use `${{ ENV.VAR }}` to refer to the environment variable `VAR`.
+
+## Context variables
+
+Use `${{ CONTEXT.VAR }}` to refer to the context variable `VAR`.
+Context variables can be passed to `f.load_config(..., context=...)` in the form of a Python dictionary.
+
+## Relative paths
+
+Use `${{root.path.to.var}}` to refer to the variable `var` within the same YAML file, found at the provided path in the file's structure.
+Note that the only difference between environment variable syntax and relative path syntax is the omission of spaces in the latter.
