@@ -144,7 +144,6 @@ async def test_runtimes_headless_topology(
             # so in this case, the actual request will fail, not the discovery, which is handled differently by Gateway
             worker_process.terminate()  # kill worker
             worker_process.join()
-            print(f'worker is alive: {worker_process.is_alive()}')
             assert not worker_process.is_alive()
         # ----------- 2. test that gateways remain alive -----------
         # just do the same again, expecting the same failure
