@@ -676,10 +676,21 @@ The above Flow will create a topology with three Replicas of Executor `slow_enco
 request to exactly one of the three instances. Then the replica will send its result to `fast_indexer`.
 
 
-### Replicate on Multiple GPUs
+### Replicate on multiple GPUs
 
-If you have multiple GPU devices, you can leverage them via `CUDA_VISIBLE_DEVICES=RR`. For example, if you have 3 GPUs 
-and one of your Executor has 5 replicas then 
+You can be in a setup when you want to replicate your Executor so that each replicas can use a different GPU on your machine.
+To do so you need to tell the Flow to leverage multiple GPUs, by passing `CUDA_VISIBLE_DEVICES=RR` as an environment variable,
+the Flow will then assign each available GPU to each replicas in a round-robin fashion.
+
+```{caution} 
+Replicate on multiple GPUs by using `CUDA_VISIBLE_DEVICES=RR` should only be used locally.  
+```
+
+```{tip}
+When working in Kubernetes or with Docker Compose you shoud allocate GPU ressources to each replica directly in the configuration files.
+```
+
+For example, if you have 3 GPUs and one of your Executor has 5 replicas then 
 
 ````{tab} Python
  In a `flow.py` file 
@@ -712,7 +723,7 @@ CUDA_VISIBLE_DEVICES=RR jina flow --uses flow.yaml
 ```
 ````
 
-Will assign GPU devices in the following round-robin fashion:
+The Flow will assign GPU devices in the following round-robin fashion:
 
 | GPU device | Replica ID |
 |------------|------------|
@@ -723,7 +734,7 @@ Will assign GPU devices in the following round-robin fashion:
 | 1          | 4          |
 
  
-You can also restrict the visible devices in round-robin assigment by `CUDA_VISIBLE_DEVICES=RR0:2`, where `0:2` has the same meaning as Python slice. This will create the following assigment:
+You can also restrict the visible devices in round-robin assignment by `CUDA_VISIBLE_DEVICES=RR0:2`, where `0:2` has the same meaning as Python slice. This will create the following assignment:
 
 | GPU device | Replica ID |
 |------------|------------|
