@@ -632,17 +632,17 @@ class Deployment(BaseDeployment):
         return slice(*[int(p) if p else None for p in parts])
 
     @staticmethod
-    def _roundrobin_cuda_device(device_str: str, replicas: int):
+    def _roundrobin_cuda_device(device: Union[str, int], replicas: int):
         """Parse cuda device string with RR prefix
 
-        :param device_str: `RRm:n`, where `RR` is the prefix, m:n is python slice format
+        :param device: `RRm:n`, where `RR` is the prefix, m:n is python slice format or device number
         :param replicas: the number of replicas
         :return: a map from replica id to device id
         """
-        if isinstance(device_str, int):
-            return {j: device_str for j in range(replicas)}
+        if isinstance(device, int):
+            return {j: device for j in range(replicas)}
 
-        if device_str and device_str.startswith('RR') and replicas >= 1:
+        if device and device.startswith('RR') and replicas >= 1:
             try:
                 num_devices = str(subprocess.check_output(['nvidia-smi', '-L'])).count(
                     'UUID'
@@ -653,8 +653,8 @@ class Deployment(BaseDeployment):
                     return
 
             all_devices = list(range(num_devices))
-            if device_str[2:]:
-                all_devices = all_devices[Deployment._parse_slice(device_str[2:])]
+            if device[2:]:
+                all_devices = all_devices[Deployment._parse_slice(device[2:])]
 
             _c = cycle(all_devices)
             return {j: next(_c) for j in range(replicas)}
