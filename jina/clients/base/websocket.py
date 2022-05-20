@@ -112,7 +112,7 @@ class WebSocketBaseClient(BaseClient):
                     end_of_iter_handler=_handle_end_of_iter,
                 )
 
-                receive_task = get_or_reuse_loop().create_task(_receive())
+                receive_task = asyncio.create_task(_receive())
 
                 if receive_task.done():
                     raise RuntimeError(
