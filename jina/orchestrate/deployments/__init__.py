@@ -639,7 +639,7 @@ class Deployment(BaseDeployment):
         :param replicas: the number of replicas
         :return: a map from replica id to device id
         """
-        if isinstance(device, int):
+        if isinstance(device, (str, int)) and not device.startswith('RR'):
             return {j: device for j in range(replicas)}
 
         if device and device.startswith('RR') and replicas >= 1:
