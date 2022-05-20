@@ -17,9 +17,6 @@ jtype: Flow
 version: '1'
 with:
   protocol: http
-metas:
-  - py_modules:
-      - executor.py
 executors:
 # inline Executor YAML
 - name: firstexec
@@ -60,10 +57,6 @@ A complete list of these arguments can be found [here](https://docs.jina.ai/api/
 `uses` can take a direct reference to a Python class, or a path to an Executor YAML specification, equivalently the `f.add(uses=...)` pattern.
 
 Alternatively, an Executor YAML configuration can be proved directly inline in the Flow YAML configuration, like shown in the example above.
-
-### `metas`
-Collection that overrides the `metas` attribute for all Executors in a Flow.
-This can be useful when loading multiple Executors from the same Python file.
 
 
 ## Variables
