@@ -345,6 +345,7 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
     runtime_process = multiprocessing.Process(
         target=create_runtime,
         kwargs={
+            'protocol': protocol,
             'port': port,
             'graph_dict': simple_graph_dict_indexer,
             'prefetch': prefetch,
