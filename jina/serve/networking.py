@@ -3,7 +3,7 @@ import contextlib
 import ipaddress
 import os
 from collections import defaultdict
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 from urllib.parse import urlparse
 
 import grpc
@@ -310,6 +310,7 @@ class GrpcConnectionPool:
             entity_id: Optional[int] = None,
             increase_access_count: bool = True,
         ) -> ReplicaList:
+            # returns all replicas of a given deployment, using a given shard
             if deployment in self._deployments:
                 type_ = 'heads' if head else 'shards'
                 if entity_id is None and head:
@@ -324,6 +325,8 @@ class GrpcConnectionPool:
                 return None
 
         def get_replicas_all_shards(self, deployment: str) -> List[ReplicaList]:
+            # returns all replicas of a given deployment, for all available shards
+            # result is a list of 'shape' (num_shards, num_replicas), containing all replicas for all shards
             replicas = []
             if deployment in self._deployments:
                 for shard_id in self._deployments[deployment]['shards']:
@@ -527,18 +530,20 @@ class GrpcConnectionPool:
         results = []
         connections = []
         if polling_type == PollingType.ANY:
-            connection_list = self._connections.get_replicas(deployment, head, shard_id)
-            if connection_list:
-                connections.append(connection_list.get_next_connection())
+            replica_list = self._connections.get_replicas(deployment, head, shard_id)
+            if replica_list:
+                connections.append(replica_list)
         elif polling_type == PollingType.ALL:
-            connection_lists = self._connections.get_replicas_all_shards(deployment)
-            for connection_list in connection_lists:
-                connections.append(connection_list.get_next_connection())
+            shard_replica_lists = self._connections.get_replicas_all_shards(deployment)
+            for replica_list in shard_replica_lists:
+                connections.append(replica_list)
         else:
             raise ValueError(f'Unsupported polling type {polling_type}')
 
-        for connection in connections:
-            task = self._send_requests(requests, connection, endpoint, timeout=timeout)
+        for replica_list in connections:
+            task = self._send_requests(
+                requests, replica_list, endpoint, timeout=timeout
+            )
             results.append(task)
 
         return results
@@ -611,8 +616,7 @@ class GrpcConnectionPool:
         """
         replicas = self._connections.get_replicas(deployment, head, shard_id)
         if replicas:
-            connection = replicas.get_next_connection()
-            return self._send_requests(requests, connection, endpoint, timeout=timeout)
+            return self._send_requests(requests, replicas, endpoint, timeout=timeout)
         else:
             self._logger.debug(
                 f'no available connections for deployment {deployment} and shard {shard_id}'
@@ -682,7 +686,8 @@ class GrpcConnectionPool:
         e: AioRpcError,
         retry_i: int = 0,
         request_id: str = '',
-        dest_addr: str = '',
+        dest_addr: Set[str] = {''},
+        num_retries: int = 3,
     ):
         # connection failures and cancelled requests should be retried
         # all other cases should not be retried and will be raised immediately
@@ -707,13 +712,14 @@ class GrpcConnectionPool:
             )
         else:
             self._logger.debug(
-                f'GRPC call failed with code {e.code()}, retry attempt {retry_i + 1}/3'
+                f'GRPC call failed with code {e.code()}, retry attempt {retry_i + 1}/{num_retries}.'
+                f' Trying next replica, if available.'
             )
 
     def _send_requests(
         self,
         requests: List[Request],
-        connection: ConnectionStubs,
+        connections: ReplicaList,
         endpoint: Optional[str] = None,
         timeout: Optional[float] = None,
     ) -> asyncio.Task:
@@ -721,9 +727,13 @@ class GrpcConnectionPool:
         # the grpc call function is not a coroutine but some _AioCall
         async def task_wrapper():
             metadata = (('endpoint', endpoint),) if endpoint else None
-            for i in range(3):
+            tried_addresses = set()
+            num_retries = max(3, len(connections.get_all_connections()))
+            for i in range(num_retries):
+                current_connection = connections.get_next_connection()
+                tried_addresses.add(current_connection.address)
                 try:
-                    return await connection.send_requests(
+                    return await current_connection.send_requests(
                         requests=requests,
                         metadata=metadata,
                         compression=self.compression,
@@ -734,7 +744,8 @@ class GrpcConnectionPool:
                         e=e,
                         retry_i=i,
                         request_id=requests[0].request_id,
-                        dest_addr=connection.address,
+                        dest_addr=tried_addresses,
+                        num_retries=num_retries,
                     )
 
         return asyncio.create_task(task_wrapper())
