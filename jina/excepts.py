@@ -1,4 +1,6 @@
 """This modules defines all kinds of exceptions raised in Jina."""
+from typing import Set, Union
+
 import grpc.aio
 
 
@@ -84,13 +86,13 @@ class InternalNetworkError(grpc.aio.AioRpcError, BaseJinaException):
         self,
         og_exception: grpc.aio.AioRpcError,
         request_id: str = '',
-        dest_addr: str = '',
+        dest_addr: Union[str, Set[str]] = {''},
         details: str = '',
     ):
         """
         :param og_exception: the original exception that caused the network error
         :param request_id: id of the request that caused the error
-        :param dest_addr: destination (microservice) address of the problematic network call
+        :param dest_addr: destination (microservice) address(es) of the problematic network call(s)
         :param details: details of the error
         """
         self.og_exception = og_exception

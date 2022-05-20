@@ -71,11 +71,14 @@ def _send_request(gateway_port, protocol):
     )
 
 
-def _test_error(gateway_port, error_port, protocol):
+def _test_error(gateway_port, error_ports, protocol):
+    if not isinstance(error_ports, list):
+        error_ports = [error_ports]
     with pytest.raises(ConnectionError) as err_info:  # assert correct error is thrown
         _send_request(gateway_port, protocol)
-    # assert error message contains the port of the broken executor
-    assert str(error_port) in err_info.value.args[0]
+    # assert error message contains the port(s) of the broken executor(s)
+    for port in error_ports:
+        assert str(port) in err_info.value.args[0]
 
 
 @pytest.mark.parametrize(
@@ -141,7 +144,6 @@ async def test_runtimes_headless_topology(
             # so in this case, the actual request will fail, not the discovery, which is handled differently by Gateway
             worker_process.terminate()  # kill worker
             worker_process.join()
-            print(f'worker is alive: {worker_process.is_alive()}')
             assert not worker_process.is_alive()
         # ----------- 2. test that gateways remain alive -----------
         # just do the same again, expecting the same failure
@@ -411,3 +413,116 @@ async def test_runtimes_graphql(port_generator):
         worker_process.terminate()
         gateway_process.join()
         worker_process.join()
+
+
+@pytest.mark.asyncio
+async def test_replica_retry(port_generator):
+    # test that if one replica is down, the other replica(s) will be used
+    # create gateway and workers manually, then terminate worker process to provoke an error
+    worker_ports = [port_generator() for _ in range(3)]
+    worker0_port, worker1_port, worker2_port = worker_ports
+    gateway_port = port_generator()
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["0.0.0.0:{worker0_port}", "0.0.0.0:{worker1_port}", "0.0.0.0:{worker2_port}"]}}'
+
+    worker_processes = []
+    for p in worker_ports:
+        worker_processes.append(_create_worker(p))
+        time.sleep(0.1)
+        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ctrl_address=f'0.0.0.0:{p}',
+            ready_or_shutdown_event=multiprocessing.Event(),
+        )
+
+    gateway_process = _create_gateway(
+        gateway_port, graph_description, pod_addresses, 'grpc'
+    )
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{gateway_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    try:
+        # ----------- 1. ping Flow once to trigger endpoint discovery -----------
+        # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+        p = multiprocessing.Process(target=_send_request, args=(gateway_port, 'grpc'))
+        p.start()
+        p.join()
+        assert p.exitcode == 0
+        # kill second worker, which would be responsible for the second call (round robin)
+        worker_processes[1].terminate()
+        worker_processes[1].join()
+        # ----------- 2. test that redundant replicas take over -----------
+        # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+        p = multiprocessing.Process(target=_send_request, args=(gateway_port, 'grpc'))
+        p.start()
+        p.join()
+        assert p.exitcode == 0
+    except Exception:
+        assert False
+    finally:  # clean up runtimes
+        gateway_process.terminate()
+        gateway_process.join()
+        for p in worker_processes:
+            p.terminate()
+            p.join()
+
+
+@pytest.mark.asyncio
+async def test_replica_retry_all_fail(port_generator):
+    # test that if one replica is down, the other replica(s) will be used
+    # create gateway and workers manually, then terminate worker process to provoke an error
+    worker_ports = [port_generator() for _ in range(3)]
+    worker0_port, worker1_port, worker2_port = worker_ports
+    gateway_port = port_generator()
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["0.0.0.0:{worker0_port}", "0.0.0.0:{worker1_port}", "0.0.0.0:{worker2_port}"]}}'
+
+    worker_processes = []
+    for p in worker_ports:
+        worker_processes.append(_create_worker(p))
+        time.sleep(0.1)
+        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ctrl_address=f'0.0.0.0:{p}',
+            ready_or_shutdown_event=multiprocessing.Event(),
+        )
+
+    gateway_process = _create_gateway(
+        gateway_port, graph_description, pod_addresses, 'grpc'
+    )
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{gateway_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    try:
+        # ----------- 1. ping Flow once to trigger endpoint discovery -----------
+        # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+        p = multiprocessing.Process(target=_send_request, args=(gateway_port, 'grpc'))
+        p.start()
+        p.join()
+        assert p.exitcode == 0
+        # kill all workers
+        for p in worker_processes:
+            p.terminate()
+            p.join()
+        # ----------- 2. test that call fails with informative error message -----------
+        # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+        p = multiprocessing.Process(
+            target=_test_error, args=(gateway_port, worker_ports, 'grpc')
+        )
+        p.start()
+        p.join()
+        assert p.exitcode == 0
+    except Exception:
+        assert False
+    finally:  # clean up runtimes
+        gateway_process.terminate()
+        gateway_process.join()
+        for p in worker_processes:
+            p.terminate()
+            p.join()
