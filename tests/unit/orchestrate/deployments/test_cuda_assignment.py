@@ -8,9 +8,9 @@ from jina.orchestrate.deployments import Deployment
 @pytest.mark.parametrize(
     'device_str, replicas, expected',
     [
-        ['1', 1, None],  # wont trigger device RB
-        ['1', 2, None],  # wont trigger device RB
-        ['1,2', 2, None],  # wont trigger device RB
+        ['1', 1, {1: '1'}],
+        ['1', 2, {1: '1', 2: '1'}],
+        ['1,2', 2, {1: '1,2', 2: '1,2'}],
         ['RR', 2, {0: 0, 1: 1}],
         ['RR', 5, {0: 0, 1: 1, 2: 2, 3: 0, 4: 1}],
         ['RR1:', 5, {0: 1, 1: 2, 2: 1, 3: 2, 4: 1}],
