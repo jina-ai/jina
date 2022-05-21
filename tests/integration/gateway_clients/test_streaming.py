@@ -329,9 +329,9 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
         for i in range(1000, 1000 + MALICIOUS_CLIENT_NUM_DOCS):
             yield get_document(i)
 
-    def client(gen, port, protocol):
-        Client(protocol=protocol, port=port, return_responses=True).post(
-            on='/index', inputs=gen, request_size=1
+    def client(gen, port):
+        Client(protocol=protocol, port=port).post(
+            on='/index', inputs=gen, request_size=1, return_responses=True
         )
 
     monkeypatch.setattr(
@@ -357,7 +357,7 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
     # Each client sends `GOOD_CLIENT_NUM_DOCS` (20) requests and sleeps after each request.
     for i in range(GOOD_CLIENTS):
         cp = multiprocessing.Process(
-            target=partial(client, good_client_gen, port, protocol),
+            target=partial(client, good_client_gen, port),
             name=f'goodguy_{i}',
         )
         cp.start()
@@ -365,7 +365,7 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
 
     # and 1 malicious client, sending lot of requests (trying to block others)
     cp = multiprocessing.Process(
-        target=partial(client, malicious_client_gen, port, protocol),
+        target=partial(client, malicious_client_gen, port),
         name='badguy',
     )
     cp.start()
