@@ -89,8 +89,7 @@ class DataRequestListProto:
         if not isinstance(x, Iterable):
             protos.append(x.proto)
         else:
-            for r in x:
-                protos.append(r.proto)
+            protos = [r.proto for r in x]
 
         return jina_pb2.DataRequestListProto(requests=protos).SerializeToString()
 
@@ -103,11 +102,7 @@ class DataRequestListProto:
         """
         rlp = jina_pb2.DataRequestListProto()
         rlp.ParseFromString(x)
-        requests = []
-        for request in rlp.requests:
-            requests.append(DataRequest.from_proto(request))
-
-        return requests
+        return [DataRequest.from_proto(request) for request in rlp.requests]
 
 
 class EndpointsProto:

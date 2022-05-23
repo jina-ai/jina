@@ -192,7 +192,7 @@ def test_flow_with_external_deployment_shards(
                 external=True,
                 needs=['executor1'],
             )
-            .join(needs=['external_fake_1', 'external_fake_2'], port=random_port())
+            .needs(needs=['external_fake_1', 'external_fake_2'], port=random_port())
         )
 
         with flow:
@@ -251,7 +251,7 @@ def test_flow_with_external_deployment_pre_shards(
                 name='executor2',
                 needs=['external_fake'],
             )
-            .join(needs=['executor1', 'executor2'])
+            .needs(['executor1', 'executor2'])
         )
         with flow:
             resp = flow.index(inputs=input_docs)
@@ -310,7 +310,7 @@ def test_flow_with_external_deployment_join(
                 name='executor2',
                 needs=['executor0'],
             )
-            .join(
+            .needs(
                 **external_args,
                 external=True,
                 needs=['executor1', 'executor2'],

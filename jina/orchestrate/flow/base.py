@@ -70,10 +70,9 @@ from jina.parsers import (
     set_gateway_parser,
 )
 from jina.parsers.flow import set_flow_parser
+from jina.serve.networking import host_is_local, in_docker
 
 __all__ = ['Flow']
-
-from jina.serve.networking import host_is_local, in_docker
 
 
 class FlowType(type(ExitStack), type(JAMLCompatible)):
@@ -376,7 +375,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             endpoint = [endpoint]
         elif not endpoint:
             if op_flow._last_changed_deployment and connect_to_last_deployment:
-                endpoint = [op_flow.last_deployment]
+                endpoint = [op_flow._last_deployment]
             else:
                 endpoint = []
 
@@ -394,7 +393,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         return endpoint
 
     @property
-    def last_deployment(self):
+    def _last_deployment(self):
         """Last deployment
 
 
@@ -405,8 +404,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """
         return self._last_changed_deployment[-1]
 
-    @last_deployment.setter
-    def last_deployment(self, name: str):
+    @_last_deployment.setter
+    def _last_deployment(self, name: str):
         """
         Set a Deployment as the last Deployment in the Flow, useful when modifying the Flow.
 
@@ -417,7 +416,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if name not in self._deployment_nodes:
             raise FlowMissingDeploymentError(f'{name} can not be found in this Flow')
 
-        if self._last_changed_deployment and name == self.last_deployment:
+        if self._last_changed_deployment and name == self._last_deployment:
             pass
         else:
             self._last_changed_deployment.append(name)
@@ -577,7 +576,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 graph_dict[need].append(node)
 
         # find all non hanging leafs
-        last_deployment = self.last_deployment
+        last_deployment = self._last_deployment
         if last_deployment != 'gateway':
             graph_dict[last_deployment].append('end-gateway')
 
@@ -877,7 +876,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         op_flow._deployment_nodes[deployment_name] = Deployment(args, needs)
 
-        op_flow.last_deployment = deployment_name
+        op_flow._last_deployment = deployment_name
 
         return op_flow
 
@@ -910,7 +909,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         :param kwargs: kwargs for .add()
         :return: the new instance of the Flow
         """
-        _last_deployment = self.last_deployment
+        _last_deployment = self._last_deployment
         op_flow = self.add(
             name=name,
             needs=_last_deployment,
@@ -931,7 +930,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         )
 
         # register any future connection to _last_deployment by the auxiliary Deployment
-        op_flow._inspect_deployments[_last_deployment] = op_flow.last_deployment
+        op_flow._inspect_deployments[_last_deployment] = op_flow._last_deployment
 
         return op_flow
 
@@ -970,7 +969,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         ]
         if needs:
             if include_last_deployment:
-                needs.append(self.last_deployment)
+                needs.append(self._last_deployment)
             return self.add(
                 name=name,
                 needs=needs,
@@ -1030,7 +1029,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         if GATEWAY_NAME not in op_flow._deployment_nodes:
             op_flow._add_gateway(
-                needs={op_flow.last_deployment},
+                needs={op_flow._last_deployment},
                 graph_description=op_flow._get_graph_representation(),
                 deployments_addresses=op_flow._get_deployments_addresses(),
                 graph_conditions=op_flow._get_graph_conditions(),
@@ -1055,7 +1054,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             while (
                 len(op_flow._last_changed_deployment) > 0
                 and len(removed_deployments) > 0
-                and op_flow.last_deployment in removed_deployments
+                and op_flow._last_deployment in removed_deployments
             ):
                 op_flow._last_changed_deployment.pop()
 
@@ -1893,10 +1892,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """
         self._endpoints_mapping[exec_endpoint] = kwargs
 
-    # for backward support
-    join = needs
-
-    def to_k8s_yaml(
+    def to_kubernetes_yaml(
         self,
         output_base_path: str,
         k8s_namespace: Optional[str] = None,
@@ -1954,6 +1950,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         self.logger.info(
             f'K8s yaml files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'
         )
+
+    to_k8s_yaml = to_kubernetes_yaml
 
     def to_docker_compose_yaml(
         self,
@@ -2033,7 +2031,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         """
         return ArgNamespace.kwargs2namespace(self._common_kwargs, set_gateway_parser())
 
-    def update_network_interface(self, **kwargs):
+    def _update_network_interface(self, **kwargs):
         """Update the network interface of this Flow (affects Gateway & Client)
 
         :param kwargs: new network settings
