@@ -192,7 +192,7 @@ def test_flow_with_external_deployment_shards(
                 external=True,
                 needs=['executor1'],
             )
-            .join(needs=['external_fake_1', 'external_fake_2'], port=random_port())
+            .needs(needs=['external_fake_1', 'external_fake_2'], port=random_port())
         )
 
         with flow:
