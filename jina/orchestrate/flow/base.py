@@ -1951,7 +1951,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
             f'K8s yaml files have been created under [b]{output_base_path}[/]. You can use it by running [b]kubectl apply -R -f {output_base_path}[/]'
         )
 
-    to_k8s = to_kubernetes_yaml
+    to_k8s_yaml = to_kubernetes_yaml
 
     def to_docker_compose_yaml(
         self,
