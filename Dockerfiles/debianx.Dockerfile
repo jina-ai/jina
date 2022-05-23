@@ -3,6 +3,9 @@ ARG PY_VERSION=3.7
 
 FROM python:${PY_VERSION}-slim AS jina_dep
 
+# install security updates from debian
+RUN apt-get update && apt-get upgrade -y
+
 # a "cache miss" occurs upon its first usage, not its definition.
 
 # given by builder
