@@ -25,6 +25,6 @@ def test_get_set_client_gateway_in_flow(protocol):
     assert f.gateway_args.protocol == GatewayProtocolType.from_string(protocol)
     assert f.client_args.port == 12345
     assert f.gateway_args.port == 12345
-    f.update_network_interface(port=54321)
+    f._update_network_interface(port=54321)
     assert f.client_args.port == 54321
     assert f.gateway_args.port == 54321

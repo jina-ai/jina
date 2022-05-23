@@ -72,7 +72,7 @@ __proto_version__ = '0.1.10'
 try:
     __docarray_version__ = _docarray.__version__
 except AttributeError as e:
-    raise OSError(
+    raise RuntimeError(
         '`docarray` dependency is not installed correctly, please reinstall with `pip install -U --force-reinstall docarray`'
     )
 
