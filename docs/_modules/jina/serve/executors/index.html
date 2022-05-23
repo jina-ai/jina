@@ -569,11 +569,13 @@
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">iscoroutinefunction</span><span class="p">,</span> <span class="n">typename</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.jaml</span> <span class="kn">import</span> <span class="n">JAML</span><span class="p">,</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">env_var_regex</span><span class="p">,</span> <span class="n">internal_var_regex</span>
+<span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.serve.executors.decorators</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">store_init_kwargs</span><span class="p">,</span> <span class="n">wrap_func</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
     <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">Summary</span>
+
+    <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'BaseExecutor'</span><span class="p">,</span> <span class="s1">'ReducerExecutor'</span><span class="p">]</span>
 
@@ -664,6 +666,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_runtime_args</span><span class="p">(</span><span class="n">runtime_args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_monitoring</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_add_runtime_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_runtime_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]):</span>
         <span class="k">if</span> <span class="n">_runtime_args</span><span class="p">:</span>
