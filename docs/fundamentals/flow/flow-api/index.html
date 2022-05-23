@@ -257,6 +257,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/containerize-executor/">Dockerize your Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/monitoring-executor/">Monitor Executor with Custom Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/yaml-spec/">YAML specification</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Flow</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -265,6 +266,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../access-flow-api/">Access Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../client/">Python Client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../monitoring-flow/">Monitor Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../yaml-spec/">YAML specification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../remarks/">Remarks</a></li>
 </ul>
 </li>
@@ -592,7 +594,7 @@ Every <code class="docutils literal notranslate"><span class="pre">Flow</span></
 <p>There are two ways of defining a Flow, either directly from the Python API or using yaml files. For each section we will show you both possibles way of configuring your flow.</p>
 <div class="caution admonition">
 <p class="admonition-title">Jina Client</p>
-<p>To showcase the workings of Flow, the examples below use a Client connecting to it, all from withing the same Pyhon script.</p>
+<p>To showcase the workings of Flow, the examples below use a Client connecting to it, all from withing the same Python script.</p>
 <p>In most cases, this is not how a real user would access a Flow. Rather, they would use one of <a class="reference internal" href="../access-flow-api/#access-flow-api"><span class="std std-ref">several ways of connecting over a network</span></a>.
 This does not affect how you have to configure your Flow API, so the examples here should translate seamlessly.</p>
 <p>For more proper use of the Client, and more information about the Client itself, see the <a class="reference internal" href="../client/#client"><span class="std std-ref">Client documentation</span></a>.</p>
