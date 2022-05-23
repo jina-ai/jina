@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/api/jina.excepts/" />
   
-<meta property="og:site_name" content="Jina 3.4.4 Documentation" />
+<meta property="og:site_name" content="Jina 3.4.5 Documentation" />
   
 <meta property="og:description" content="This modules defines all kinds of exceptions raised in Jina." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.4.4 Documentation" />
+<meta property="og:image:alt" content="Jina 3.4.5 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.helper module" href="../jina.helper/" /><link rel="prev" title="jina.enums module" href="../jina.enums/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.excepts module - Jina 3.4.4 documentation</title>
+        <title>jina.excepts module - Jina 3.4.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -172,7 +172,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.4.4 documentation</div>
+                <div class="brand">Jina 3.4.5 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -698,7 +698,7 @@
 </dd></dl>
 <dl class="py exception">
 <dt class="sig sig-object py" id="jina.excepts.InternalNetworkError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">InternalNetworkError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">og_exception</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_addr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">details</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/excepts/#InternalNetworkError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.InternalNetworkError" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.excepts.</span></span><span class="sig-name descname"><span class="pre">InternalNetworkError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">og_exception</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_addr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{''}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">details</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/excepts/#InternalNetworkError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.excepts.InternalNetworkError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">grpc.aio._call.AioRpcError</span></code>, <a class="reference internal" href="#jina.excepts.BaseJinaException" title="jina.excepts.BaseJinaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.excepts.BaseJinaException</span></code></a></p>
 <p>Raised when communication between microservices fails.
 Needed to propagate information about the root cause event, such as request_id and dest_addr.</p>
@@ -707,7 +707,7 @@ Needed to propagate information about the root cause event, such as request_id a
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>og_exception</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AioRpcError</span></code>) – the original exception that caused the network error</p></li>
 <li><p><strong>request_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – id of the request that caused the error</p></li>
-<li><p><strong>dest_addr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – destination (microservice) address of the problematic network call</p></li>
+<li><p><strong>dest_addr</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Set</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – destination (microservice) address(es) of the problematic network call(s)</p></li>
 <li><p><strong>details</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – details of the error</p></li>
 </ul>
 </dd>
@@ -765,7 +765,7 @@ Needed to propagate information about the root cause event, such as request_id a
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 18, 2022.
+                    Last updated on May 23, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>

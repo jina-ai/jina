@@ -675,6 +675,76 @@ Flow with 3 replicas of slow_encoder and 1 replica of fast_indexer
 The above Flow will create a topology with three Replicas of Executor `slow_encoder`. The `Flow` will send every 
 request to exactly one of the three instances. Then the replica will send its result to `fast_indexer`.
 
+
+### Replicate on multiple GPUs
+
+In certain situations, you may want to replicate your Executor so that each replica uses a different GPU on your machine.
+To achieve this, you need to tell the Flow to leverage multiple GPUs, by passing `CUDA_VISIBLE_DEVICES=RR` as an environment variable.
+The Flow will then assign each available GPU to replicas in a round-robin fashion.
+
+```{caution} 
+Replicate on multiple GPUs by using `CUDA_VISIBLE_DEVICES=RR` should only be used locally.  
+```
+
+```{tip}
+When working in Kubernetes or with Docker Compose you shoud allocate GPU ressources to each replica directly in the configuration files.
+```
+
+For example, if you have 3 GPUs and one of your Executor has 5 replicas then 
+
+````{tab} Python
+ In a `flow.py` file 
+```python
+from jina import Flow
+
+with Flow().add(
+    uses='jinahub://CLIPEncoder', replicas=5, install_requirements=True
+) as f:
+    f.block()
+```
+
+```shell
+CUDA_VISIBLE_DEVICES=RR python flow.py
+```
+````
+
+````{tab} YAML
+In a `flow.yaml` file
+```yaml
+jtype: Flow
+executors:
+- uses: jinahub://CLIPEncoder
+  install_requirements: True
+  replicas: 5  
+```
+
+```shell
+CUDA_VISIBLE_DEVICES=RR jina flow --uses flow.yaml
+```
+````
+
+The Flow will assign GPU devices in the following round-robin fashion:
+
+| GPU device | Replica ID |
+|------------|------------|
+| 0          | 0          |
+| 1          | 1          |
+| 2          | 2          |
+| 0          | 3          |
+| 1          | 4          |
+
+ 
+You can also restrict the visible devices in round-robin assignment by `CUDA_VISIBLE_DEVICES=RR0:2`, where `0:2` has the same meaning as Python slice. This will create the following assignment:
+
+| GPU device | Replica ID |
+|------------|------------|
+| 0          | 0          |
+| 1          | 1          |
+| 0          | 2          |
+| 1          | 3          |
+| 0          | 4          |
+
+
 (partition-data-by-using-shards)=
 ### Partition data by using Shards
 

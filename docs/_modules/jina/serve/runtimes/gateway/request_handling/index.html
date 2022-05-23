@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.serve.runtimes.gateway.request_handling - Jina 3.4.4 documentation</title>
+        <title>jina.serve.runtimes.gateway.request_handling - Jina 3.4.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -139,7 +139,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.4.4 documentation</div>
+                <div class="brand">Jina 3.4.5 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -585,7 +585,7 @@
         <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'CollectorRegistry'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">runtime_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">request_init_time</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">metrics_registry</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request_init_time</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">metrics_registry</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_executor_endpoint_mapping</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">metrics_registry</span><span class="p">:</span>
@@ -593,9 +593,9 @@
                 <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">help_text</span><span class="o">=</span><span class="s1">'You need to install the `prometheus_client` to use the montitoring functionality of jina'</span><span class="p">,</span>
             <span class="p">):</span>
-                <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">Summary</span>
+                <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">Gauge</span><span class="p">,</span> <span class="n">Summary</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">_summary</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
                 <span class="s1">'receiving_request_seconds'</span><span class="p">,</span>
                 <span class="s1">'Time spent processing request'</span><span class="p">,</span>
                 <span class="n">registry</span><span class="o">=</span><span class="n">metrics_registry</span><span class="p">,</span>
@@ -603,8 +603,17 @@
                 <span class="n">labelnames</span><span class="o">=</span><span class="p">(</span><span class="s1">'runtime_name'</span><span class="p">,),</span>
             <span class="p">)</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">runtime_name</span><span class="p">)</span>
 
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span> <span class="o">=</span> <span class="n">Gauge</span><span class="p">(</span>
+                <span class="s1">'number_of_pending_requests'</span><span class="p">,</span>
+                <span class="s1">'Number of pending requests'</span><span class="p">,</span>
+                <span class="n">registry</span><span class="o">=</span><span class="n">metrics_registry</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="s1">'jina'</span><span class="p">,</span>
+                <span class="n">labelnames</span><span class="o">=</span><span class="p">(</span><span class="s1">'runtime_name'</span><span class="p">,),</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">runtime_name</span><span class="p">)</span>
+
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_summary</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="RequestHandler.handle_request"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_request">[docs]</a>    <span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span> <span class="s1">'TopologyGraph'</span><span class="p">,</span> <span class="n">connection_pool</span><span class="p">:</span> <span class="s1">'GrpcConnectionPool'</span>
@@ -644,7 +653,7 @@
                 <span class="k">if</span> <span class="n">err_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
                     <span class="n">err</span><span class="o">.</span><span class="n">_details</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
-                        <span class="o">+</span> <span class="sa">f</span><span class="s1">' |Gateway: Communication error with deployment at address </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1">. Head or worker may be down.'</span>
+                        <span class="o">+</span> <span class="sa">f</span><span class="s1">' |Gateway: Communication error with deployment at address(es) </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1">. Head or worker(s) may be down.'</span>
                     <span class="p">)</span>
                     <span class="k">raise</span> <span class="n">err</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -655,8 +664,10 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_executor_endpoint_mapping</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">endp</span><span class="o">.</span><span class="n">endpoints</span>
 
         <span class="k">def</span> <span class="nf">_handle_request</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s1">'Request'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'asyncio.Future'</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">request_init_time</span><span class="p">[</span><span class="n">request</span><span class="o">.</span><span class="n">request_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_request_init_time</span><span class="p">[</span><span class="n">request</span><span class="o">.</span><span class="n">request_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
             <span class="c1"># important that the gateway needs to have an instance of the graph per request</span>
             <span class="n">request_graph</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
 
@@ -749,11 +760,14 @@
                 <span class="k">if</span> <span class="n">route</span><span class="o">.</span><span class="n">executor</span> <span class="o">==</span> <span class="s1">'gateway'</span><span class="p">:</span>
                     <span class="n">route</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">GetCurrentTime</span><span class="p">()</span>
 
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary</span><span class="p">:</span>
-                <span class="n">init_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_init_time</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span><span class="p">:</span>
+                <span class="n">init_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_init_time</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
                     <span class="n">result</span><span class="o">.</span><span class="n">request_id</span>
-                <span class="p">)</span>  <span class="c1"># need to pop otherwise it stay in memory for ever</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_summary</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">init_time</span><span class="p">)</span>
+                <span class="p">)</span>  <span class="c1"># need to pop otherwise it stays in memory forever</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">init_time</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="o">.</span><span class="n">dec</span><span class="p">()</span>
 
             <span class="k">return</span> <span class="n">result</span>
 
@@ -769,7 +783,7 @@
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 18, 2022.
+                    Last updated on May 23, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
