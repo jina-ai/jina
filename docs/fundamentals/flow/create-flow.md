@@ -678,9 +678,9 @@ request to exactly one of the three instances. Then the replica will send its re
 
 ### Replicate on multiple GPUs
 
-You can be in a setup when you want to replicate your Executor so that each replicas can use a different GPU on your machine.
-To do so you need to tell the Flow to leverage multiple GPUs, by passing `CUDA_VISIBLE_DEVICES=RR` as an environment variable,
-the Flow will then assign each available GPU to each replicas in a round-robin fashion.
+In certain situations, you may want to replicate your Executor so that each replica uses a different GPU on your machine.
+To achieve this, you need to tell the Flow to leverage multiple GPUs, by passing `CUDA_VISIBLE_DEVICES=RR` as an environment variable.
+The Flow will then assign each available GPU to replicas in a round-robin fashion.
 
 ```{caution} 
 Replicate on multiple GPUs by using `CUDA_VISIBLE_DEVICES=RR` should only be used locally.  
