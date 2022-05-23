@@ -40,7 +40,8 @@ COPY extra-requirements.txt setup.py /tmp/
 
 RUN cd /tmp/ && \
     # apt package should be install before pypi package
-    if [ -n "${APT_PACKAGES}" ]; then apt-get update && apt-get install --no-install-recommends -y ${APT_PACKAGES}; fi && \
+    if [ -n "${APT_PACKAGES}" ]; then apt-get update && apt list --upgradable | grep security |cut -d\/ -f1|xargs sudo apt-get install -y && \
+    apt-get install --no-install-recommends -y ${APT_PACKAGES}; fi && \
     if [ -n "${PIP_TAG}" ]; then pip install --default-timeout=1000 --compile --extra-index-url $PIP_EXTRA_INDEX_URL ".[${PIP_TAG}]" ; fi && \
     pip install --default-timeout=1000 --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} . && \
     # now remove apt packages
