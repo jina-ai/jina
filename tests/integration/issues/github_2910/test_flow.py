@@ -16,7 +16,7 @@ def test_target_executor(mocker):
         Flow()
         .add(uses=UpExecutor, shards=3, name='up')
         .add(uses=DownExecutor, needs='gateway', name='down')
-        .join(needs=['up', 'down'])
+        .needs(needs=['up', 'down'])
     )
 
     with f:
