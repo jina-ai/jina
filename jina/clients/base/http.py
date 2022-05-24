@@ -21,6 +21,55 @@ if TYPE_CHECKING:
 class HTTPBaseClient(BaseClient):
     """A MixIn for HTTP Client."""
 
+    def _handle_response_status(self, r_status, r_str, url):
+        if r_status == status.HTTP_404_NOT_FOUND:
+            raise BadClient(f'no such endpoint {url}')
+        elif r_status == status.HTTP_503_SERVICE_UNAVAILABLE:
+            if (
+                'header' in r_str
+                and 'status' in r_str['header']
+                and 'description' in r_str['header']['status']
+            ):
+                raise ConnectionError(r_str['header']['status']['description'])
+            else:
+                raise ValueError(r_str)
+        elif (
+            r_status < status.HTTP_200_OK or r_status > status.HTTP_300_MULTIPLE_CHOICES
+        ):  # failure codes
+            raise ValueError(r_str)
+
+    async def _health_check(self, **kwargs) -> bool:
+        """Sends a health check to the Flow to validate if the Flow is ready to receive requests
+
+        :return: boolean indicating the health/readiness of the Flow
+        """
+        with ImportExtensions(required=True):
+            import aiohttp
+
+        async with AsyncExitStack() as stack:
+            try:
+                proto = 'https' if self.args.tls else 'http'
+                url = f'{proto}://{self.args.host}:{self.args.port}/health'
+                print(f' url {url}')
+                iolet = await stack.enter_async_context(
+                    HTTPClientlet(url=url, logger=self.logger)
+                )
+
+                print(f' A url {url}')
+                response = await iolet.send_health_check()
+                print(f' B response {response}')
+                r_status = response.status
+
+                print(f' C r_status {r_status}')
+                r_str = await response.json()
+                print(f' D r_str {r_str}')
+                self._handle_response_status(r_status, r_str, url)
+
+                print(f' r_str {r_str}')
+                return True
+            except:
+                return False
+
     async def _get_results(
         self,
         inputs: 'InputType',
@@ -77,24 +126,7 @@ class HTTPBaseClient(BaseClient):
                     r_status = response.status
 
                     r_str = await response.json()
-                    if r_status == status.HTTP_404_NOT_FOUND:
-                        raise BadClient(f'no such endpoint {url}')
-                    elif r_status == status.HTTP_503_SERVICE_UNAVAILABLE:
-                        if (
-                            'header' in r_str
-                            and 'status' in r_str['header']
-                            and 'description' in r_str['header']['status']
-                        ):
-                            raise ConnectionError(
-                                r_str['header']['status']['description']
-                            )
-                        else:
-                            raise ValueError(r_str)
-                    elif (
-                        r_status < status.HTTP_200_OK
-                        or r_status > status.HTTP_300_MULTIPLE_CHOICES
-                    ):  # failure codes
-                        raise ValueError(r_str)
+                    self._handle_response_status(r_status, r_str, url)
 
                     da = None
                     if 'data' in r_str and r_str['data'] is not None:

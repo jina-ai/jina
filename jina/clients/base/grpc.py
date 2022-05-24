@@ -31,6 +31,13 @@ class GRPCBaseClient(BaseClient):
     It manages the asyncio event loop internally, so all interfaces are synchronous from the outside.
     """
 
+    def _health_check(self, **kwargs) -> bool:
+        """Sends a health check to the Flow to validate if the Flow is ready to receive requests
+
+        :return: boolean indicating the health/readiness of the Flow
+        """
+        return True
+
     async def _get_results(
         self,
         inputs: 'InputType',

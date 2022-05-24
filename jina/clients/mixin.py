@@ -88,6 +88,15 @@ class AsyncMutateMixin(MutateMixin):
         )
 
 
+class HealthCheckMixin:
+    def health_check(self, **kwargs) -> bool:
+        """Sends a health check to the Flow to validate if the Flow is ready to receive requests
+
+        :return: boolean indicating the health/readiness of the Flow
+        """
+        return run_async(self.client._health_check, **kwargs)
+
+
 class PostMixin:
     """The Post Mixin class for Client and Flow"""
 

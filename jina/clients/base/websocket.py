@@ -21,6 +21,13 @@ if TYPE_CHECKING:
 class WebSocketBaseClient(BaseClient):
     """A Websocket Client."""
 
+    def _health_check(self, **kwargs) -> bool:
+        """Sends a health check to the Flow to validate if the Flow is ready to receive requests
+
+        :return: boolean indicating the health/readiness of the Flow
+        """
+        return True
+
     async def _get_results(
         self,
         inputs: 'InputType',

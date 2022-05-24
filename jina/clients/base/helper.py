@@ -34,6 +34,11 @@ class AioHttpClientlet(ABC):
         ...
 
     @abstractmethod
+    async def send_health_check(self):
+        """Query the health_check endpoint from Gateway"""
+        ...
+
+    @abstractmethod
     async def recv_message(self):
         """Receive message from Gateway"""
         ...
@@ -82,6 +87,10 @@ class HTTPClientlet(AioHttpClientlet):
         if 'target_executor' in req_dict['header']:
             req_dict['target_executor'] = req_dict['header']['target_executor']
         return await self.session.post(url=self.url, json=req_dict).__aenter__()
+
+    async def send_health_check(self):
+        """Query the health_check endpoint from Gateway"""
+        return await self.session.get(url=self.url).__aenter__()
 
     async def recv_message(self):
         """Receive message for HTTP (sleep)

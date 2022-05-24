@@ -1,14 +1,22 @@
 from jina.clients.base.http import HTTPBaseClient
-from jina.clients.mixin import AsyncPostMixin, PostMixin, MutateMixin, AsyncMutateMixin
+from jina.clients.mixin import (
+    AsyncMutateMixin,
+    AsyncPostMixin,
+    HealthCheckMixin,
+    MutateMixin,
+    PostMixin,
+)
 
 
-class HTTPClient(HTTPBaseClient, PostMixin, MutateMixin):
+class HTTPClient(HTTPBaseClient, PostMixin, MutateMixin, HealthCheckMixin):
     """
     A client communicates the server with HTTP protocol.
     """
 
 
-class AsyncHTTPClient(HTTPBaseClient, AsyncPostMixin, AsyncMutateMixin):
+class AsyncHTTPClient(
+    HTTPBaseClient, AsyncPostMixin, AsyncMutateMixin, HealthCheckMixin
+):
     """
     A client communicates the server with HTTP protocol.
 
