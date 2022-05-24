@@ -71,8 +71,11 @@ class TopologyGraph:
             else:
                 raise
 
-        def get_endpoints(self, connection_pool: GrpcConnectionPool):
+        def get_endpoints(self, connection_pool: GrpcConnectionPool) -> asyncio.Task:
             return connection_pool.send_discover_endpoint(self.name)
+
+        def health_check(self, connection_pool: GrpcConnectionPool) -> asyncio.Task:
+            return connection_pool.send_health_check_async_task(self.name)
 
         async def _wait_previous_and_send(
             self,
@@ -300,3 +303,55 @@ class TopologyGraph:
         :return: A list of nodes
         """
         return self._origin_nodes
+
+    @property
+    def all_nodes(self):
+        """
+        The set of all the nodes inside this Graph
+
+        :return: A list of nodes
+        """
+
+        def _get_all_nodes(node, accum, accum_names):
+            if node.name not in accum_names:
+                accum.append(node)
+                accum_names.append(node.name)
+            for n in node.outgoing_nodes:
+                _get_all_nodes(n, accum, accum_names)
+            return accum, accum_names
+
+        nodes = []
+        node_names = []
+        for origin_node in self.origin_nodes:
+            subtree_nodes, subtree_node_names = _get_all_nodes(origin_node, [], [])
+            for st_node, st_node_name in zip(subtree_nodes, subtree_node_names):
+                if st_node_name not in node_names:
+                    nodes.append(st_node)
+                    node_names.append(st_node_name)
+        return nodes
+
+    async def health_check_all_nodes(
+        self, connection_pool: 'GrpcConnectionPool'
+    ) -> None:
+        """
+        Asynchronously send health checks to every node in the graph. Raise Exception if health check cannot be completed
+
+        :param connection_pool: The connection_pool need to actually send the requests
+        """
+        try:
+            tasks_to_health_check = [
+                node.health_check(connection_pool) for node in self.all_nodes
+            ]
+            _ = await asyncio.gather(*tasks_to_health_check)
+        except InternalNetworkError as err:
+            err_code = err.code()
+            if err_code == grpc.StatusCode.UNAVAILABLE:
+                err._details = (
+                    err.details()
+                    + f' |Gateway: Communication error with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
+                )
+                raise err
+            else:
+                raise
+        except Exception:
+            raise

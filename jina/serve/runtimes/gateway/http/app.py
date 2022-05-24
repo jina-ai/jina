@@ -102,16 +102,39 @@ def get_fastapi_app(
 
         @app.get(
             path='/',
-            summary='Get the health of Jina service',
+            summary='Get the health of Jina gateway service',
             response_model=JinaHealthModel,
         )
-        async def _health():
+        async def _gateway_health():
             """
-            Get the health of this Jina service.
+            Get the health of this gateway service.
             .. # noqa: DAR201
 
             """
             return {}
+
+        from jina.serve.runtimes.gateway.http.models import JinaFlowHealthModel
+
+        @app.get(
+            path='/health',
+            summary='Get the health of Jina Flow service, send an empty DocumentArray to the complete Flow to '
+            'validate connectivity',
+            response_model=JinaFlowHealthModel,
+        )
+        async def _flow_health():
+            """
+            Get the health of the complete Flow service.
+            .. # noqa: DAR201
+
+            """
+
+            try:
+                _ = await topology_graph.health_check_all_nodes(connection_pool)
+            except Exception as exc:
+                logger.error(f'Error while getting health check from the Flow: {exc}')
+                return {'health': False}
+
+            return {'health': True}
 
         @app.get(
             path='/status',
