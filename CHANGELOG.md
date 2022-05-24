@@ -187,6 +187,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -13758,4 +13759,29 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```174dbde1```](https://github.com/jina-ai/jina/commit/174dbde1922b422b934e0ed0d7ea910657ecb510)] __-__ add security analysis (*Han Xiao*)
  - [[```93db296a```](https://github.com/jina-ai/jina/commit/93db296a365a6805f0c55d8ae5078734d6cd00d0)] __-__ __version__: the next version will be 3.4.6 (*Jina Dev Bot*)
+
+<a name=release-note-3-4-7></a>
+## Release Note (`3.4.7`)
+
+> Release time: 2022-05-24 07:44:20
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Ahmet Türkmen,  Mohammad Kalim Akram,  Jina Dev Bot,  🙇
+
+
+### 📗 Documentation
+
+ - [[```b70da3b4```](https://github.com/jina-ai/jina/commit/b70da3b4ab84e12fe4b7e0f1ffc3a2e3c2828ed3)] __-__ add missing logo file (#4822) (*Mohammad Kalim Akram*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```1ec26558```](https://github.com/jina-ai/jina/commit/1ec26558a446a89917f0cb80f9aec7b73b9c20ba)] __-__ add create-release.yml (#4759) (*Ahmet Türkmen*)
+
+### 🍹 Other Improvements
+
+ - [[```75c6413f```](https://github.com/jina-ai/jina/commit/75c6413fdbb7bf2daf68a06c28fd348c21dde0cb)] __-__ fix docarray dependency (*Han Xiao*)
+ - [[```2950d640```](https://github.com/jina-ai/jina/commit/2950d64073783bc1885ea39727661bc0a14fc668)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```5c72155f```](https://github.com/jina-ai/jina/commit/5c72155faee74423638ca7a72a5086cc4bf14106)] __-__ __version__: the next version will be 3.4.7 (*Jina Dev Bot*)
 

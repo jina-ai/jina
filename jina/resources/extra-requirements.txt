@@ -31,13 +31,13 @@ grpcio>=1.46.0:             core
 grpcio-reflection>=1.46.0:  core
 pyyaml>=5.3.1:              core
 packaging>=20.0:            core
-docarray:                   core
+docarray>=0.13.14:          core
 lz4<3.1.2:                  perf, standard,devel
 uvloop:                     perf, standard,devel
 prometheus_client:          perf, standard,devel
 fastapi>=0.76.0:            standard,devel, demo
 uvicorn[standard]:          standard,devel, demo
-docarray[common]:           standard,devel
+docarray[common]>=0.13.14:  standard,devel
 docker:                     standard,devel
 pathspec:                   standard,devel
 cryptography:               standard,devel
