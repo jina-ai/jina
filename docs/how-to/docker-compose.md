@@ -103,8 +103,10 @@ services:
                   #     Encoder       #
   encoder-rep-1:  # # # # # # # # # # #
 
-  indexer-0:      # # # # # # # # # # #          
-                  #     Indexer       #
+  indexer-head:   # # # # # # # # # # #          
+                  #                   #
+  indexer-0:      #     Indexer       #
+                  #                   #
   indexer-1:      # # # # # # # # # # #
 
   gateway: 
@@ -123,7 +125,7 @@ Here you can see that 5 services will be created:
 
 - 1 for the `gateway` which is the entrypoint of the `Flow`.
 - 2 associated with the encoder for the two Replicas.
-- 2 associated with the indexer for the two Shards.
+- 3 associated with the indexer, one for the Head and two for the Shards.
 
 Now, you can deploy this Flow :
 
