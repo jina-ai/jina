@@ -877,43 +877,6 @@ class GrpcConnectionPool:
                     raise
 
     @staticmethod
-    def send_health_check_async_task(
-        target: str,
-        timeout=100.0,
-        tls=False,
-        root_certificates: Optional[str] = None,
-    ) -> asyncio.Task:
-        """
-        Sends a request synchronously to the target via grpc
-
-        :param target: where to send the request to, like 127.0.0.1:8080
-        :param timeout: timeout for the send
-        :param tls: if True, use tls encryption for the grpc channel
-        :param root_certificates: the path to the root certificates for tls, only used if tls is True
-
-        :returns: the response health check
-        """
-
-        async def task_wrapper():
-
-            for i in range(3):
-                try:
-                    async with GrpcConnectionPool.get_grpc_channel(
-                        target,
-                        tls=tls,
-                        root_certificates=root_certificates,
-                    ) as channel:
-                        health_check_req = health_pb2.HealthCheckRequest()
-                        health_check_req.service = ''
-                        stub = health_pb2_grpc.HealthStub(channel)
-                        return await stub.Check(health_check_req, timeout=timeout)
-                except grpc.RpcError:
-                    if i == 2:
-                        raise
-
-        return asyncio.create_task(task_wrapper())
-
-    @staticmethod
     def send_requests_sync(
         requests: List[Request],
         target: str,

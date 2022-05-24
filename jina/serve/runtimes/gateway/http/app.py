@@ -113,6 +113,7 @@ def get_fastapi_app(
             """
             return {}
 
+        from docarray import DocumentArray
         from jina.serve.runtimes.gateway.http.models import JinaFlowHealthModel
 
         @app.get(
@@ -128,13 +129,19 @@ def get_fastapi_app(
 
             """
 
-            try:
-                _ = await topology_graph.health_check_all_nodes(connection_pool)
-            except Exception as exc:
-                logger.error(f'Error while getting health check from the Flow: {exc}')
-                return {'health': False}
+            da = DocumentArray()
 
-            return {'health': True}
+            try:
+                _ = await _get_singleton_result(
+                    request_generator(
+                        exec_endpoint='_jina_dry_run_endpoint',
+                        data=da,
+                        data_type=DataInputType.DOCUMENT,
+                    )
+                )
+                return {'health': True}
+            except Exception:
+                return {'health': False}
 
         @app.get(
             path='/status',
