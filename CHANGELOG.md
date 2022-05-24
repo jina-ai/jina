@@ -185,6 +185,8 @@
 
 
 
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -498,6 +500,8 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.4.2`)](#release-note-342)
 - [Release Note (`3.4.3`)](#release-note-343)
 - [Release Note (`3.4.4`)](#release-note-344)
+- [Release Note (`3.4.5`)](#release-note-345)
+- [Release Note (`3.4.6`)](#release-note-346)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -13693,4 +13697,65 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```32d85a50```](https://github.com/jina-ai/jina/commit/32d85a502438a6a99c886e2d4e974db213a025ef)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```2b5efac1```](https://github.com/jina-ai/jina/commit/2b5efac1478f33134d481e8cf9fcc7b405c58515)] __-__ __version__: the next version will be 3.4.4 (*Jina Dev Bot*)
+
+<a name=release-note-3-4-5></a>
+## Release Note (`3.4.5`)
+
+> Release time: 2022-05-23 12:00:14
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  samsja,  Johannes Messner,  ZiniuYu,  Joan Fontanals,  Zhaofeng Miao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```9c1fda96```](https://github.com/jina-ai/jina/commit/9c1fda96718b2e775fdcd06dc9b8bbfc673c1248)] __-__ __executor__: add self logger to executor (#4818) (*Han Xiao*)
+ - [[```e553d913```](https://github.com/jina-ai/jina/commit/e553d913eb2526c1dc8f32c56c0faa53531c505b)] __-__ smart replica retry (#4794) (*Johannes Messner*)
+ - [[```a9ed27ed```](https://github.com/jina-ai/jina/commit/a9ed27ed72d35af9b7c0757b87ce13dbc2f8d12e)] __-__ add additional metrics (#4789) (*samsja*)
+ - [[```c88d2cf5```](https://github.com/jina-ai/jina/commit/c88d2cf571f9756f4526eba156008c2e2b88fcbb)] __-__ __hubble__: use fixed domain for hubble api (#4804) (*Zhaofeng Miao*)
+
+### 🐞 Bug fixes
+
+ - [[```aa2d7c8d```](https://github.com/jina-ai/jina/commit/aa2d7c8d4cf2d3e9b9f5d4315ce24f2f6a3276a3)] __-__ __dockerfile__: install security updates in docker image (*Han Xiao*)
+ - [[```87de3c09```](https://github.com/jina-ai/jina/commit/87de3c09766335624f97bc9254d51cbb9bd8fff0)] __-__ define metrics in worker before grpc server (#4816) (*samsja*)
+ - [[```a2bc2302```](https://github.com/jina-ai/jina/commit/a2bc2302112074fe447fbd1f810da65fb23c2bc2)] __-__ avoid closing loop at fork time (#4803) (*Joan Fontanals*)
+ - [[```3fb3b419```](https://github.com/jina-ai/jina/commit/3fb3b419c48b016c55bcc63b1d75097d0ff397df)] __-__ warn user when calling load config from flow instance (#4787) (*samsja*)
+
+### 🧼 Code Refactoring
+
+ - [[```93f06fc5```](https://github.com/jina-ai/jina/commit/93f06fc533730b6bfa3836c3873524089ad72004)] __-__ simplify event loop usage (#4811) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```3a7d95b6```](https://github.com/jina-ai/jina/commit/3a7d95b6cdedb525b1ddb4dc58faf0d7ef55afa7)] __-__ add specification of executor and flow yaml (#4795) (*Johannes Messner*)
+ - [[```10ab59f1```](https://github.com/jina-ai/jina/commit/10ab59f143a244a72db891d486ac92a0ea5e6de5)] __-__ fix Flow docs typo (#4815) (*ZiniuYu*)
+ - [[```15d83ba8```](https://github.com/jina-ai/jina/commit/15d83ba87dfef748b732dcc1fd41ad5f719ac467)] __-__ round robin gpu scheduling  (#4805) (*samsja*)
+
+### 🍹 Other Improvements
+
+ - [[```94153117```](https://github.com/jina-ai/jina/commit/9415311721dce65b512243216fe6790574745456)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```3c7d0b3e```](https://github.com/jina-ai/jina/commit/3c7d0b3ed0b39edffcddcc645d5d1acf5a00ea34)] __-__ __version__: the next version will be 3.4.5 (*Jina Dev Bot*)
+
+<a name=release-note-3-4-6></a>
+## Release Note (`3.4.6`)
+
+> Release time: 2022-05-23 19:21:36
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```049666d9```](https://github.com/jina-ai/jina/commit/049666d92f4c467d6430aa14d858156c0b0cab56)] __-__ code review (#4821) (*Han Xiao*)
+ - [[```688370db```](https://github.com/jina-ai/jina/commit/688370dbc43536f8bcd8d1b16572530bb750fb0f)] __-__ __dockerfile__: install security updates in docker image (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```174dbde1```](https://github.com/jina-ai/jina/commit/174dbde1922b422b934e0ed0d7ea910657ecb510)] __-__ add security analysis (*Han Xiao*)
+ - [[```93db296a```](https://github.com/jina-ai/jina/commit/93db296a365a6805f0c55d8ae5078734d6cd00d0)] __-__ __version__: the next version will be 3.4.6 (*Jina Dev Bot*)
 

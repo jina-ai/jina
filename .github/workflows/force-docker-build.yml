@@ -149,3 +149,15 @@ jobs:
             PY_VERSION=${{matrix.py_version}}
             PIP_TAG=${{matrix.pip_tag}}
           target: ${{env.BUILD_TARGET}}
+
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: benc-uk/workflow-dispatch@v1
+        if: ${{ inputs.triggered_by == 'TAG' }}
+        with:
+          workflow: Create Release
+          token: ${{ secrets.JINA_DEV_BOT }}
+          inputs: '{ "release_token": "${{ env.release_token }}", "triggered_by": "TAG"}'
+        env:
+          release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}

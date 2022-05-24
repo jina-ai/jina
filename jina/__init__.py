@@ -64,7 +64,7 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '3.4.5'
+__version__ = '3.4.7'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -72,7 +72,7 @@ __proto_version__ = '0.1.10'
 try:
     __docarray_version__ = _docarray.__version__
 except AttributeError as e:
-    raise OSError(
+    raise RuntimeError(
         '`docarray` dependency is not installed correctly, please reinstall with `pip install -U --force-reinstall docarray`'
     )
 
@@ -89,6 +89,7 @@ __jina_env__ = (
     'JINA_DEFAULT_WORKSPACE_BASE',
     'JINA_DEPLOYMENT_NAME',
     'JINA_DISABLE_UVLOOP',
+    'JINA_EARLY_STOP',
     'JINA_FULL_CLI',
     'JINA_GATEWAY_IMAGE',
     'JINA_GRPC_RECV_BYTES',
@@ -104,7 +105,6 @@ __jina_env__ = (
     'JINA_RANDOM_PORT_MAX',
     'JINA_RANDOM_PORT_MIN',
     'JINA_VCS_VERSION',
-    'JINA_CHECK_VERSION',
 )
 
 __default_host__ = _os.environ.get(
@@ -113,7 +113,6 @@ __default_host__ = _os.environ.get(
 __default_port_monitoring__ = 9090
 __docker_host__ = 'host.docker.internal'
 __default_executor__ = 'BaseExecutor'
-__default_reducer_executor__ = 'ReducerExecutor'
 __default_endpoint__ = '/default'
 __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
@@ -124,7 +123,6 @@ __args_executor_func__ = {
     'docs_matrix',
 }
 __args_executor_init__ = {'metas', 'requests', 'runtime_args'}
-__root_dir__ = _os.path.dirname(_os.path.abspath(__file__))
 __resources_path__ = _os.path.join(
     _os.path.dirname(_sys.modules['jina'].__file__), 'resources'
 )
@@ -137,7 +135,6 @@ _names_with_underscore = [
     '__stop_msg__',
     '__jina_env__',
     '__uptime__',
-    '__root_dir__',
     '__default_endpoint__',
     '__default_executor__',
     '__unset_msg__',

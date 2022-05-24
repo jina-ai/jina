@@ -39,8 +39,10 @@ ENV PIP_NO_CACHE_DIR=1 \
 COPY extra-requirements.txt setup.py /tmp/
 
 RUN cd /tmp/ && \
-    # apt package should be install before pypi package
-    if [ -n "${APT_PACKAGES}" ]; then apt-get update && apt-get install --no-install-recommends -y ${APT_PACKAGES}; fi && \
+    # apt latest security packages should be install before pypi package
+    if [ -n "${APT_PACKAGES}" ]; then apt-get update && apt-get upgrade -y && \
+    apt-get --only-upgrade install openssl libssl1.1 -y && \
+    apt-get install --no-install-recommends -y ${APT_PACKAGES}; fi && \
     if [ -n "${PIP_TAG}" ]; then pip install --default-timeout=1000 --compile --extra-index-url $PIP_EXTRA_INDEX_URL ".[${PIP_TAG}]" ; fi && \
     pip install --default-timeout=1000 --compile --extra-index-url ${PIP_EXTRA_INDEX_URL} . && \
     # now remove apt packages
