@@ -1,7 +1,7 @@
-jina.orchestrate.helper module
+jina.logging.predefined module
 ==============================
 
-.. automodule:: jina.orchestrate.helper
+.. automodule:: jina.logging.predefined
    :members:
    :undoc-members:
    :show-inheritance:
