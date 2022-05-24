@@ -2,8 +2,7 @@ import os
 
 import pytest
 
-from jina import Executor, Client, requests
-from jina import Flow, Document
+from jina import Client, Document, Executor, Flow, requests
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 exposed_port = 12345
@@ -13,7 +12,7 @@ exposed_port = 12345
 def flow(request):
     flow_src = request.param
     if flow_src == 'flow-yml':
-        return Flow().load_config(os.path.join(cur_dir, 'flow.yml'))
+        return Flow.load_config(os.path.join(cur_dir, 'flow.yml'))
     elif flow_src == 'uses-yml':
         return Flow(port=exposed_port).add(
             uses=os.path.join(cur_dir, 'default_config.yml'),

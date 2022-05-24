@@ -94,27 +94,11 @@ def get_download_cache_dir() -> Path:
 
 @lru_cache()
 def _get_hubble_base_url() -> str:
-    """Get base Hubble Url from api.jina.ai or os.environ
+    """Get base Hubble Url from os.environ or constants
 
     :return: base Hubble Url
     """
-    if 'JINA_HUBBLE_REGISTRY' in os.environ:
-        u = os.environ['JINA_HUBBLE_REGISTRY']
-    else:
-        try:
-            req = Request(
-                'https://api.jina.ai/hub/hubble.json',
-                headers={'User-Agent': 'Mozilla/5.0'},
-            )
-            with urlopen(req) as resp:
-                u = json.load(resp)['url']
-        except:
-            default_logger.critical(
-                'Can not fetch the Url of Hubble from `api.jina.ai`'
-            )
-            raise
-
-    return u
+    return os.environ.get('JINA_HUBBLE_REGISTRY', 'https://api.hubble.jina.ai')
 
 
 @lru_cache()
@@ -187,6 +171,23 @@ def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
     tag = parser.path.strip('/') if parser.path else None
 
     return scheme, name, tag, secret
+
+
+def replace_secret_of_hub_uri(uri_path: str, txt: str = '<secret>') -> str:
+    """Replace the secret of the Jina Hub URI.
+
+    :param uri_path: the uri of Jina Hub URI
+    :param txt: text to replace
+    :return: the new URI
+    """
+
+    try:
+        secret = parse_hub_uri(uri_path)[-1]
+        if secret:
+            return uri_path.replace(secret, txt)
+    except ValueError:
+        pass  # ignore if the URI is not a valid Jina Hub URI
+    return uri_path
 
 
 def is_valid_huburi(uri: str) -> bool:

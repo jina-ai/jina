@@ -2,9 +2,10 @@ import os
 
 import pytest
 
-from jina.serve.executors import BaseExecutor
+from jina import Flow, __default_executor__, requests
+from jina.excepts import BadConfigSource
 from jina.jaml import JAML, JAMLCompatible
-from jina import __default_executor__, requests, Flow
+from jina.serve.executors import BaseExecutor
 
 
 class MyExecutor(BaseExecutor):
@@ -179,3 +180,13 @@ def test_parsing_brackets_in_envvar():
         assert b['executors'][0]['env']['var2'] == 'a'
         assert b['executors'][0]['env']['var3'] == '{"1": "2"}-a'
         assert b['executors'][0]['env']['var4'] == '-{"1": "2"}'
+
+
+def test_exception_invalid_yaml():
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+    yaml = os.path.join(cur_dir, 'invalid.yml')
+    with pytest.raises(BadConfigSource):
+        BaseExecutor.load_config(yaml)
+
+    with pytest.raises(BadConfigSource):
+        Flow.load_config(yaml)

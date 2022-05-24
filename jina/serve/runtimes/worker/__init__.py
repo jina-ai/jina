@@ -33,8 +33,6 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         Start the DataRequestHandler and wait for the GRPC and Monitoring servers to start
         """
-        await self._async_setup_grpc_server()
-
         if self.metrics_registry:
             with ImportExtensions(
                 required=True,
@@ -55,6 +53,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             )
         else:
             self._summary_time = contextlib.nullcontext()
+
+        await self._async_setup_grpc_server()
 
     async def _async_setup_grpc_server(self):
         """

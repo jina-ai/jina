@@ -1,12 +1,14 @@
+import asyncio
 import os
-import time, asyncio
-from typing import List
+import time
 from datetime import datetime
 from functools import partial
 from multiprocessing import Process, current_process
+from typing import List
 
 import pytest
-from jina import Flow, Document, DocumentArray, Executor, requests, Client
+
+from jina import Client, Document, DocumentArray, Executor, Flow, requests
 
 INPUT_LEN = 4
 INPUT_GEN_SLEEP_TIME = 1
@@ -197,10 +199,17 @@ class Indexer(Executor):
         return DocumentArray(Document(tags={'ids': self.docs[:, 'id']}))
 
 
+@pytest.fixture()
+def info_log_level():
+    log_level = os.environ['JINA_LOG_LEVEL']
+    os.environ['JINA_LOG_LEVEL'] = 'INFO'
+    yield
+    os.environ['JINA_LOG_LEVEL'] = log_level
+
+
 @pytest.mark.parametrize('prefetch', [0, 5])
 @pytest.mark.parametrize('protocol', ['websocket', 'http', 'grpc'])
-def test_multiple_clients(prefetch, protocol):
-    os.environ['JINA_LOG_LEVEL'] = 'INFO'
+def test_multiple_clients(prefetch, protocol, info_log_level):
     GOOD_CLIENTS = 5
     GOOD_CLIENT_NUM_DOCS = 20
     MALICIOUS_CLIENT_NUM_DOCS = 50
@@ -220,9 +229,9 @@ def test_multiple_clients(prefetch, protocol):
         for i in range(1000, 1000 + MALICIOUS_CLIENT_NUM_DOCS):
             yield get_document(i)
 
-    def client(gen, port, protocol):
-        Client(protocol=protocol, port=port, return_responses=True).post(
-            on='/index', inputs=gen, request_size=1
+    def client(gen, port):
+        Client(protocol=protocol, port=port).post(
+            on='/index', inputs=gen, request_size=1, return_responses=True
         )
 
     pool: List[Process] = []
@@ -232,7 +241,7 @@ def test_multiple_clients(prefetch, protocol):
         # Each client sends `GOOD_CLIENT_NUM_DOCS` (20) requests and sleeps after each request.
         for i in range(GOOD_CLIENTS):
             p = Process(
-                target=partial(client, good_client_gen, f.port, protocol),
+                target=partial(client, good_client_gen, f.port),
                 name=f'goodguy_{i}',
             )
             p.start()
@@ -240,7 +249,7 @@ def test_multiple_clients(prefetch, protocol):
 
         # and 1 malicious client, sending lot of requests (trying to block others)
         p = Process(
-            target=partial(client, malicious_client_gen, f.port, protocol),
+            target=partial(client, malicious_client_gen, f.port),
             name='badguy',
         )
         p.start()
@@ -250,35 +259,31 @@ def test_multiple_clients(prefetch, protocol):
             p.join()
 
         order_of_ids = list(
-            Client(protocol=protocol, port=f.port, return_responses=True)
-            .post(on='/status', inputs=[Document()])[0]
+            Client(protocol=protocol, port=f.port)
+            .post(on='/status', inputs=[Document()], return_responses=True)[0]
             .docs[0]
             .tags['ids']
         )
-        # There must be total 150 docs indexed.
-        assert (
-            len(order_of_ids)
-            == GOOD_CLIENTS * GOOD_CLIENT_NUM_DOCS + MALICIOUS_CLIENT_NUM_DOCS
-        )
+    # There must be total 150 docs indexed.
+    assert (
+        len(order_of_ids)
+        == GOOD_CLIENTS * GOOD_CLIENT_NUM_DOCS + MALICIOUS_CLIENT_NUM_DOCS
+    )
 
-        """
-        If prefetch is set, each Client is allowed (max) 5 requests at a time.
-        Since requests are controlled, `badguy` has to do the last 20 requests.
-        
-        If prefetch is disabled, clients can freeflow requests. No client is blocked. 
-        Hence last 20 requests go from `goodguy`.
-        (Ideally last 30 requests should be validated, to avoid flaky CI, we test last 20)
+    """
+    If prefetch is set, each Client is allowed (max) 5 requests at a time.
+    Since requests are controlled, `badguy` has to do the last 20 requests.
+    
+    If prefetch is disabled, clients can freeflow requests. No client is blocked. 
+    Hence last 20 requests go from `goodguy`.
+    (Ideally last 30 requests should be validated, to avoid flaky CI, we test last 20)
 
-        When there are no rules, badguy wins! With rule, you find balance in the world.        
-        """
-        if protocol == 'http':
-            # There's no prefetch for http.
-            assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {
-                'goodguy'
-            }
-        elif prefetch == 5:
-            assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'badguy'}
-        elif prefetch == 0:
-            assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {
-                'goodguy'
-            }
+    When there are no rules, badguy wins! With rule, you find balance in the world.        
+    """
+    if protocol == 'http':
+        # There's no prefetch for http.
+        assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'goodguy'}
+    elif prefetch == 5:
+        assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'badguy'}
+    elif prefetch == 0:
+        assert set(map(lambda x: x.split('_')[0], order_of_ids[-20:])) == {'goodguy'}

@@ -1001,22 +1001,6 @@ def _update_policy():
             )
 
 
-def _close_loop():
-    try:
-        loop = asyncio.get_event_loop()
-        if not loop.is_closed():
-            loop.close()
-    except RuntimeError:
-        # there is no loop, so nothing to do here
-        pass
-
-
-# workaround for asyncio loop and fork issue: https://github.com/python/cpython/issues/66197
-# we close the loop after forking to avoid reusing the parents process loop
-# a new loop should be created in the child process
-os.register_at_fork(after_in_child=_close_loop)
-
-
 def get_or_reuse_loop():
     """
     Get a new eventloop or reuse the current opened eventloop.
@@ -1286,22 +1270,18 @@ def iscoroutinefunction(func: Callable):
 def run_async(func, *args, **kwargs):
     """Generalized asyncio.run for jupyter notebook.
 
-    When running inside jupyter, an eventloop is already exist, can't be stopped, can't be killed.
+    When running inside jupyter, an eventloop already exists, can't be stopped, can't be killed.
     Directly calling asyncio.run will fail, as This function cannot be called when another asyncio event loop
     is running in the same thread.
 
     .. see_also:
         https://stackoverflow.com/questions/55409641/asyncio-run-cannot-be-called-from-a-running-event-loop
 
-    call `run_async(my_function, any_event_loop=True, *args, **kwargs)` to enable run with any eventloop
-
     :param func: function to run
     :param args: parameters
     :param kwargs: key-value parameters
     :return: asyncio.run(func)
     """
-
-    any_event_loop = kwargs.pop('any_event_loop', False)
 
     class _RunThread(threading.Thread):
         """Create a running thread when in Jupyter notebook."""
@@ -1318,7 +1298,7 @@ def run_async(func, *args, **kwargs):
     if loop and loop.is_running():
         # eventloop already exist
         # running inside Jupyter
-        if any_event_loop or is_jupyter():
+        if is_jupyter():
             thread = _RunThread()
             thread.start()
             thread.join()
@@ -1339,7 +1319,7 @@ def run_async(func, *args, **kwargs):
                 'please report this issue here: https://github.com/jina-ai/jina'
             )
     else:
-        return get_or_reuse_loop().run_until_complete(func(*args, **kwargs))
+        return asyncio.run(func(*args, **kwargs))
 
 
 def slugify(value):

@@ -12,11 +12,13 @@ from jina.enums import BetterEnum
 from jina.helper import ArgNamespace, T, iscoroutinefunction, typename
 from jina.importer import ImportExtensions
 from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
+from jina.logging.logger import JinaLogger
 from jina.serve.executors.decorators import requests, store_init_kwargs, wrap_func
 
 if TYPE_CHECKING:
-    from docarray import DocumentArray
     from prometheus_client import Summary
+
+    from docarray import DocumentArray
 
 __all__ = ['BaseExecutor', 'ReducerExecutor']
 
@@ -107,6 +109,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._add_requests(requests)
         self._add_runtime_args(runtime_args)
         self._init_monitoring()
+        self.logger = JinaLogger(self.__class__.__name__)
 
     def _add_runtime_args(self, _runtime_args: Optional[Dict]):
         if _runtime_args:
