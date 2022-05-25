@@ -41,33 +41,29 @@ class HTTPBaseClient(BaseClient):
     async def _health_check(self, **kwargs) -> bool:
         """Sends a health check to the Flow to validate if the Flow is ready to receive requests
 
+        :param kwargs: potential kwargs received passed from the public interface
         :return: boolean indicating the health/readiness of the Flow
         """
-        with ImportExtensions(required=True):
-            import aiohttp
 
         async with AsyncExitStack() as stack:
             try:
                 proto = 'https' if self.args.tls else 'http'
                 url = f'{proto}://{self.args.host}:{self.args.port}/health'
-                print(f' url {url}')
                 iolet = await stack.enter_async_context(
                     HTTPClientlet(url=url, logger=self.logger)
                 )
 
-                print(f' A url {url}')
                 response = await iolet.send_health_check()
-                print(f' B response {response}')
                 r_status = response.status
 
-                print(f' C r_status {r_status}')
                 r_str = await response.json()
-                print(f' D r_str {r_str}')
                 self._handle_response_status(r_status, r_str, url)
 
-                print(f' r_str {r_str}')
                 return True
-            except:
+            except Exception as e:
+                self.logger.error(
+                    f'Error while fetching response from HTTP server {e!r}'
+                )
                 return False
 
     async def _get_results(
