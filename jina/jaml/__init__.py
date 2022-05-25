@@ -562,7 +562,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         # To maintain compatibility with off-the-shelf parsers we don't want any tags ('!...') to show up in the output
         # Since pyyaml insists on receiving a tag, we need to pass the default map tag. This won't show up in the output
         return representer.represent_mapping(
-            'tag:yaml.org,2002:map', config_dict_with_jtype
+            representer.DEFAULT_MAPPING_TAG, config_dict_with_jtype
         )
 
     @classmethod
