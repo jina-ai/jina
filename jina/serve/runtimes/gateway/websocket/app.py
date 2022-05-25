@@ -189,14 +189,15 @@ def get_fastapi_app(
     async def websocket_endpoint(
         websocket: WebSocket, response: Response
     ):  # 'response' is a FastAPI response, not a Jina response
+        from jina.serve.executors import __dry_run_endpoint__
+
         await manager.connect(websocket)
-        print(f' WEBSOCKET HEALTH ENDPOINT')
 
         da = DocumentArray()
         try:
             async for _ in streamer.stream(
                 request_iterator=request_generator(
-                    exec_endpoint='_jina_dry_run_endpoint_',
+                    exec_endpoint=__dry_run_endpoint__,
                     data=da,
                     data_type=DataInputType.DOCUMENT,
                 )

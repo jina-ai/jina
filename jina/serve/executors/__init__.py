@@ -20,7 +20,10 @@ if TYPE_CHECKING:
 
     from docarray import DocumentArray
 
-__all__ = ['BaseExecutor', 'ReducerExecutor']
+
+__dry_run_endpoint__ = '_jina_dry_run_'
+
+__all__ = ['BaseExecutor', 'ReducerExecutor', __dry_run_endpoint__]
 
 
 class ExecutorType(type(JAMLCompatible), type):
@@ -510,6 +513,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             return self._metrics_buffer[name]
         else:
             return None
+
+    @requests(on=__dry_run_endpoint__)
+    def _dry_run_endpoint_(self, **kwargs):
+        pass
 
 
 class ReducerExecutor(BaseExecutor):

@@ -114,6 +114,7 @@ def get_fastapi_app(
             return {}
 
         from docarray import DocumentArray
+        from jina.serve.executors import __dry_run_endpoint__
         from jina.serve.runtimes.gateway.http.models import JinaFlowHealthModel
 
         @app.get(
@@ -134,7 +135,7 @@ def get_fastapi_app(
             try:
                 _ = await _get_singleton_result(
                     request_generator(
-                        exec_endpoint='_jina_dry_run_endpoint_',
+                        exec_endpoint=__dry_run_endpoint__,
                         data=da,
                         data_type=DataInputType.DOCUMENT,
                     )
