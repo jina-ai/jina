@@ -1,7 +1,7 @@
 import argparse
-import json
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional
 
+from docarray import DocumentArray
 from jina.clients.request import request_generator
 from jina.enums import DataInputType, WebsocketSubProtocols
 from jina.excepts import InternalNetworkError
@@ -111,6 +111,13 @@ def get_fastapi_app(
             elif subprotocol == WebsocketSubProtocols.BYTES:
                 return await websocket.send_bytes(data.to_bytes())
 
+        async def send_healthy(self, websocket: WebSocket) -> None:
+            subprotocol = self.protocol_dict[self.get_client(websocket)]
+            if subprotocol == WebsocketSubProtocols.JSON:
+                return await websocket.send_json({'health': True}, mode='text')
+            elif subprotocol == WebsocketSubProtocols.BYTES:
+                return await websocket.send_bytes(bytes({'health': True}))
+
     manager = ConnectionManager()
 
     app = FastAPI()
@@ -166,6 +173,35 @@ def get_fastapi_app(
         try:
             async for msg in streamer.stream(request_iterator=req_iter()):
                 await manager.send(websocket, msg)
+        except InternalNetworkError as err:
+            manager.disconnect(websocket)
+            msg = (
+                err.details()
+                if _fits_ws_close_msg(err.details())  # some messages are too long
+                else f'Network error while connecting to deployment at {err.dest_addr}. It may be down.'
+            )
+            await websocket.close(code=status.WS_1011_INTERNAL_ERROR, reason=msg)
+        except WebSocketDisconnect:
+            logger.info('Client successfully disconnected from server')
+            manager.disconnect(websocket)
+
+    @app.websocket('/health')
+    async def websocket_endpoint(
+        websocket: WebSocket, response: Response
+    ):  # 'response' is a FastAPI response, not a Jina response
+        await manager.connect(websocket)
+        print(f' WEBSOCKET HEALTH ENDPOINT')
+
+        da = DocumentArray()
+        try:
+            async for _ in streamer.stream(
+                request_iterator=request_generator(
+                    exec_endpoint='_jina_dry_run_endpoint_',
+                    data=da,
+                    data_type=DataInputType.DOCUMENT,
+                )
+            ):
+                await manager.send_healthy(websocket)
         except InternalNetworkError as err:
             manager.disconnect(websocket)
             msg = (

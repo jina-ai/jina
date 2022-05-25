@@ -134,7 +134,7 @@ def get_fastapi_app(
             try:
                 _ = await _get_singleton_result(
                     request_generator(
-                        exec_endpoint='_jina_dry_run_endpoint',
+                        exec_endpoint='_jina_dry_run_endpoint_',
                         data=da,
                         data_type=DataInputType.DOCUMENT,
                     )

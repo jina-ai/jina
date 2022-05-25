@@ -21,12 +21,54 @@ if TYPE_CHECKING:
 class WebSocketBaseClient(BaseClient):
     """A Websocket Client."""
 
-    def _health_check(self, **kwargs) -> bool:
+    async def _health_check(self, **kwargs) -> bool:
         """Sends a health check to the Flow to validate if the Flow is ready to receive requests
 
+        :param kwargs: potential kwargs received passed from the public interface
         :return: boolean indicating the health/readiness of the Flow
         """
-        return True
+        async with AsyncExitStack() as stack:
+            try:
+                proto = 'wss' if self.args.tls else 'ws'
+                url = f'{proto}://{self.args.host}:{self.args.port}/health'
+                iolet = await stack.enter_async_context(
+                    WebsocketClientlet(url=url, logger=self.logger)
+                )
+
+                async def _receive():
+                    try:
+                        async for response in iolet.recv_message():
+                            print(f' received response from server {response}')
+                        return True
+                    except Exception as exc:
+                        self.logger.error(
+                            f'Error while fetching response from Websocket server {exc!r}'
+                        )
+                        raise
+
+                async def _send():
+                    return await iolet.send_health_check()
+
+                receive_task = asyncio.create_task(_receive())
+
+                if receive_task.done():
+                    raise RuntimeError(
+                        'receive task not running, can not send messages'
+                    )
+                try:
+                    send_task = asyncio.create_task(_send())
+                    _, response_result = asyncio.gather([send_task, receive_task])
+                    return response_result
+                finally:
+                    if iolet.close_code == status.WS_1011_INTERNAL_ERROR:
+                        raise ConnectionError(iolet.close_message)
+                    await receive_task
+
+            except Exception as e:
+                self.logger.error(
+                    f'Error while getting response from websocket server {e!r}'
+                )
+                return False
 
     async def _get_results(
         self,

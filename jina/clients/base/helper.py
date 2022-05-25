@@ -89,7 +89,9 @@ class HTTPClientlet(AioHttpClientlet):
         return await self.session.post(url=self.url, json=req_dict).__aenter__()
 
     async def send_health_check(self):
-        """Query the health_check endpoint from Gateway"""
+        """Query the health_check endpoint from Gateway
+        :return: send get message
+        """
         return await self.session.get(url=self.url).__aenter__()
 
     async def recv_message(self):
@@ -137,6 +139,17 @@ class WebsocketClientlet(AioHttpClientlet):
         """
         try:
             return await self.websocket.send_bytes(request.SerializeToString())
+        except ConnectionResetError:
+            self.logger.critical(f'server connection closed already!')
+
+    async def send_health_check(self):
+        """Query the health_check endpoint from Gateway
+
+        :return: send health_check as bytes awaitable
+        """
+
+        try:
+            return await self.websocket.send_bytes(b'')
         except ConnectionResetError:
             self.logger.critical(f'server connection closed already!')
 
