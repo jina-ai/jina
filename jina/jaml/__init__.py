@@ -554,9 +554,16 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         """
         from jina.jaml.parsers import get_parser
 
-        tmp = {'jtype': cls.__name__}
-        tmp.update(get_parser(cls, version=data._version).dump(data))
-        return representer.represent_mapping('!' + cls.__name__, tmp)
+        config_dict = get_parser(cls, version=data._version).dump(data)
+        config_dict_with_jtype = {
+            'jtype': cls.__name__
+        }  # specifies the type of Jina object that is represented
+        config_dict_with_jtype.update(config_dict)
+        # To maintain compatibility with off-the-shelf parsers we don't want any tags ('!...') to show up in the output
+        # Since pyyaml insists on receiving a tag, we need to pass the default map tag. This won't show up in the output
+        return representer.represent_mapping(
+            'tag:yaml.org,2002:map', config_dict_with_jtype
+        )
 
     @classmethod
     def _from_yaml(cls, constructor: FullConstructor, node):
