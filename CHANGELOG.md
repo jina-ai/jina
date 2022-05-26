@@ -188,6 +188,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -13785,4 +13786,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```75c6413f```](https://github.com/jina-ai/jina/commit/75c6413fdbb7bf2daf68a06c28fd348c21dde0cb)] __-__ fix docarray dependency (*Han Xiao*)
  - [[```2950d640```](https://github.com/jina-ai/jina/commit/2950d64073783bc1885ea39727661bc0a14fc668)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```5c72155f```](https://github.com/jina-ai/jina/commit/5c72155faee74423638ca7a72a5086cc4bf14106)] __-__ __version__: the next version will be 3.4.7 (*Jina Dev Bot*)
+
+<a name=release-note-3-4-8></a>
+## Release Note (`3.4.8`)
+
+> Release time: 2022-05-26 11:15:35
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Joan Fontanals,  AlaeddineAbdessalem,  Jina Dev Bot,  samsja,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```d7998903```](https://github.com/jina-ai/jina/commit/d7998903a24c8c223a92be802896288fdf97b7b4)] __-__ cuda visible device (#4834) (*Han Xiao*)
+ - [[```65daf752```](https://github.com/jina-ai/jina/commit/65daf752e330842ddeab847beb47caff78500992)] __-__ fix protobuf dependency (#4830) (*AlaeddineAbdessalem*)
+
+### 🧼 Code Refactoring
+
+ - [[```7ad728d0```](https://github.com/jina-ai/jina/commit/7ad728d0e00c085dd19d0b9f2511264857cb65bb)] __-__ __docs__: update docker compose docs (#4820) (*samsja*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```0a8a4fa6```](https://github.com/jina-ai/jina/commit/0a8a4fa6d9aeddc2a1271b7db16c8cac8b66b2b5)] __-__ fix tests because join disappeared (#4832) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```eae5d07f```](https://github.com/jina-ai/jina/commit/eae5d07f352ceb26502373c11259c2d751c71eeb)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```0b2bd2a4```](https://github.com/jina-ai/jina/commit/0b2bd2a405f6c0fc57d2bf7cb42b29af280bc0b9)] __-__ __version__: the next version will be 3.4.8 (*Jina Dev Bot*)
 
