@@ -132,10 +132,41 @@ class GRPCGatewayRuntime(GatewayRuntime):
 
     async def dry_run(self, empty, context) -> jina_pb2.StatusProto:
         """
-        Process the the call requested and return the list of Endpoints exposed by the Executor wrapped inside this Runtime
+        Process the the call requested by having a dry run call to every Executor in the graph
 
         :param empty: The service expects an empty protobuf message
         :param context: grpc context
         :returns: the response request
         """
-        pass
+        from docarray import DocumentArray
+        from jina.clients.request import request_generator
+        from jina.enums import DataInputType
+        from jina.serve.executors import __dry_run_endpoint__
+
+        da = DocumentArray()
+
+        try:
+            req_iterator = request_generator(
+                exec_endpoint=__dry_run_endpoint__,
+                data=da,
+                data_type=DataInputType.DOCUMENT,
+            )
+            async for _ in self.streamer.stream(request_iterator=req_iterator):
+                pass
+            status_pb = jina_pb2.StatusProto()
+            status_pb.code = jina_pb2.StatusProto.SUCCESS
+            return status_pb
+        except Exception as ex:
+            import traceback
+
+            status_pb = jina_pb2.StatusProto()
+            status_pb.code = jina_pb2.StatusProto.ERROR
+            status_pb.description = repr(ex)
+            status_pb.exception.name = ex.__class__.__name__
+            status_pb.exception.args.extend([str(v) for v in ex.args])
+            status_pb.exception.stacks.extend(
+                traceback.format_exception(
+                    etype=type(ex), value=ex, tb=ex.__traceback__
+                )
+            )
+            return status_pb
