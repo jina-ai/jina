@@ -80,7 +80,7 @@ def test_flow_identical(tmpdir):
         .add(name='chunk_seg', shards=3)
         .add(name='wqncode1', shards=2)
         .add(name='encode2', shards=2, needs='chunk_seg')
-        .join(['wqncode1', 'encode2'])
+        .needs(['wqncode1', 'encode2'])
     )
 
     a.save_config(os.path.join(str(tmpdir), 'test2.yml'))
@@ -132,7 +132,7 @@ def test_py_client():
 
 
 def test_dry_run_with_two_pathways_diverging_at_gateway():
-    f = Flow().add(name='r2').add(name='r3', needs='gateway').join(['r2', 'r3'])
+    f = Flow().add(name='r2').add(name='r3', needs='gateway').needs(['r2', 'r3'])
 
     with f:
         _validate_flow(f)
@@ -144,7 +144,7 @@ def test_dry_run_with_two_pathways_diverging_at_non_gateway():
         .add(name='r1')
         .add(name='r2')
         .add(name='r3', needs='r1')
-        .join(['r2', 'r3'])
+        .needs(['r2', 'r3'])
     )
 
     with f:
@@ -156,7 +156,7 @@ def test_refactor_num_part():
         Flow()
         .add(name='r1', needs='gateway')
         .add(name='r2', needs='gateway')
-        .join(['r1', 'r2'])
+        .needs(['r1', 'r2'])
     )
 
     with f:
@@ -169,7 +169,7 @@ def test_refactor_num_part_proxy():
         .add(name='r1')
         .add(name='r2', needs='r1')
         .add(name='r3', needs='r1')
-        .join(['r2', 'r3'])
+        .needs(['r2', 'r3'])
     )
 
     with f:
@@ -231,7 +231,7 @@ def test_flow_with_publish_driver(protocol):
         Flow(protocol=protocol)
         .add(name='r2', uses=DummyOneHotTextEncoder)
         .add(name='r3', uses=DummyOneHotTextEncoder, needs='gateway')
-        .join(needs=['r2', 'r3'])
+        .needs(needs=['r2', 'r3'])
     )
 
     with f:
@@ -399,7 +399,7 @@ def test_socket_types_2_remote_one_local():
         .add(name='executor1', host='0.0.0.1')
         .add(name='executor2', shards=2, host='0.0.0.2')
         .add(name='executor3', shards=2, host='1.2.3.4', needs=['gateway'])
-        .join(name='join', needs=['executor2', 'executor3'])
+        .needs(name='join', needs=['executor2', 'executor3'])
     )
 
     f.build()
@@ -413,7 +413,7 @@ def test_socket_types_2_remote_one_local_input_socket_pull_connect_from_remote()
         .add(name='executor1', host='0.0.0.1')
         .add(name='executor2', shards=2, host='0.0.0.2')
         .add(name='executor3', shards=2, host='1.2.3.4', needs=['gateway'])
-        .join(name='join', needs=['executor2', 'executor3'])
+        .needs(name='join', needs=['executor2', 'executor3'])
     )
 
     f.build()

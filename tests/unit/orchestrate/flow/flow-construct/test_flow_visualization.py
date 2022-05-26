@@ -36,7 +36,7 @@ def test_visualization_plot_twice(tmpdir):
         .add(name='pod_a')
         .plot(output=os.path.join(tmpdir, 'flow1.svg'))
         .add(name='pod_b', needs='gateway')
-        .join(needs=['pod_a', 'pod_b'])
+        .needs(['pod_a', 'pod_b'])
         .plot(output=os.path.join(tmpdir, 'flow2.svg'))
     )
 
@@ -50,7 +50,7 @@ def test_visualization_plot_in_middle(tmpdir):
         .add(name='pod_a')
         .plot(output=os.path.join(tmpdir, 'flow3.svg'))
         .add(name='pod_b', needs='gateway')
-        .join(needs=['pod_a', 'pod_b'])
+        .needs(['pod_a', 'pod_b'])
     )
 
     assert os.path.exists(os.path.join(tmpdir, 'flow3.svg'))
