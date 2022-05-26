@@ -1,7 +1,7 @@
-jina.hubble.hubapi module
+cli.known\_plugins module
 =========================
 
-.. automodule:: jina.hubble.hubapi
+.. automodule:: cli.known_plugins
    :members:
    :undoc-members:
    :show-inheritance:

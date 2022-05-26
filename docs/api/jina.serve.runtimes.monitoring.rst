@@ -1,7 +1,7 @@
-jina.helloworld.fashion.helper module
+jina.serve.runtimes.monitoring module
 =====================================
 
-.. automodule:: jina.helloworld.fashion.helper
+.. automodule:: jina.serve.runtimes.monitoring
    :members:
    :undoc-members:
    :show-inheritance:
