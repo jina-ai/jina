@@ -105,6 +105,7 @@ __jina_env__ = (
     'JINA_RANDOM_PORT_MAX',
     'JINA_RANDOM_PORT_MIN',
     'JINA_VCS_VERSION',
+    'JINA_DISABLE_HEALTHCHECK_LOGS',
 )
 
 __default_host__ = _os.environ.get(
