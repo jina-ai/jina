@@ -4,11 +4,11 @@ metas:
   prefetch: 10
 executors:
   - name: crafter
-    parallel: 4
+    shards: 4
   - name: encoder
-    parallel: 4
+    shards: 4
   - name: faiss_indexer
-    parallel: 1
+    shards: 1
   - name: doc_indexer
     needs: crafter
   - name: join_all

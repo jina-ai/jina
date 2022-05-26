@@ -7,7 +7,7 @@ executors:
     read_only: true
   - name: image_encoder
     read_only: true
-    parallel: 4
+    shards: 4
   - name: image_vector_indexer
     read_only: true
   - name: image_kv_indexer
@@ -15,7 +15,7 @@ executors:
   - name: text_encoder
     timeout_ready: 600000
     read_only: true
-    parallel: 4
+    shards: 4
     needs: [gateway]
   - name: text_indexer
     read_only: true
