@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y
 WORKDIR /builder/
 
 RUN apt-get install --no-install-recommends -y build-essential git autoconf libtool wget unzip zlib1g-dev pkg-config cmake
-RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v3.19.1/protoc-3.19.1-linux-x86_64.zip  -O protobuf.zip \
+RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v3.20.1/protoc-3.20.1-linux-x86_64.zip  -O protobuf.zip \
     && unzip protobuf.zip && rm protobuf.zip && \
     cp bin/protoc /usr/local/bin/ && \
     cp -r include/* /usr/local/include/ && \

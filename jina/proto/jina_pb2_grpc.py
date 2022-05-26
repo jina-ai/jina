@@ -331,7 +331,7 @@ class JinaRPC(object):
 
 class JinaDiscoverEndpointsRPCStub(object):
     """*
-    jina gRPC service for DataRequests.
+    jina gRPC service to expose Endpoints from Executors.
     """
 
     def __init__(self, channel):
@@ -349,7 +349,7 @@ class JinaDiscoverEndpointsRPCStub(object):
 
 class JinaDiscoverEndpointsRPCServicer(object):
     """*
-    jina gRPC service for DataRequests.
+    jina gRPC service to expose Endpoints from Executors.
     """
 
     def endpoint_discovery(self, request, context):
@@ -376,7 +376,7 @@ def add_JinaDiscoverEndpointsRPCServicer_to_server(servicer, server):
 # This class is part of an EXPERIMENTAL API.
 class JinaDiscoverEndpointsRPC(object):
     """*
-    jina gRPC service for DataRequests.
+    jina gRPC service to expose Endpoints from Executors.
     """
 
     @staticmethod
