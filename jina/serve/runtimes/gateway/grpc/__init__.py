@@ -71,9 +71,11 @@ class GRPCGatewayRuntime(GatewayRuntime):
         self.streamer.Call = self.streamer.stream
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self.streamer, self.server)
+        jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self, self.server)
 
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaGatewayDryRunRPC'].full_name,
             reflection.SERVICE_NAME,
         )
         # Mark all services as healthy.
@@ -127,3 +129,13 @@ class GRPCGatewayRuntime(GatewayRuntime):
         """The async running of server."""
         self._connection_pool.start()
         await self.server.wait_for_termination()
+
+    async def dry_run(self, empty, context) -> jina_pb2.StatusProto:
+        """
+        Process the the call requested and return the list of Endpoints exposed by the Executor wrapped inside this Runtime
+
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
+        """
+        pass

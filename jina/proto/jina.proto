@@ -160,3 +160,12 @@ service JinaDiscoverEndpointsRPC {
     }
 }
 
+
+/**
+ * jina gRPC service to expose Endpoints from Executors.
+ */
+service JinaGatewayDryRunRPC {
+    rpc dry_run (google.protobuf.Empty) returns (StatusProto) {
+    }
+}
+
