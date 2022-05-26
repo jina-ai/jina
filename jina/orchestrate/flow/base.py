@@ -1635,7 +1635,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 )
             address_table.add_row(
                 ':speech_balloon:',
-                'Swagger UI',
+                'Swagger UI [dim](/docs)[/]',
                 '·'.join(_address),
             )
 
@@ -1651,7 +1651,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
             address_table.add_row(
                 ':books:',
-                'Redoc',
+                'Redoc [dim](/redoc)[/]',
                 '·'.join(_address),
             )
 
@@ -1668,7 +1668,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
                 address_table.add_row(
                     ':strawberry:',
-                    'GraphQL UI',
+                    'GraphQL UI [dim](/graphql)[/]',
                     '·'.join(_address),
                 )
 
@@ -1687,7 +1687,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 if deployment.args.monitoring:
                     address_table.add_row(
                         ':bar_chart:',
-                        f'Monitor [b]{name}[/]',
+                        f'Monitor [b]{name}:{deployment.args.port_monitoring}[/]',
                         '·'.join(_address),
                     )
 

@@ -273,3 +273,30 @@ def test_app_models_acceptance(docs_input):
         r = req.post(f'http://localhost:{f.port}/index', json=docs_input)
 
     assert DocumentArray.from_dict(r.json()['data'])[0].text == 'text_input'
+
+
+def test_healthcheck_logs(capfd):
+    os.environ['JINA_LOG_LEVEL'] = 'INFO'
+
+    f = Flow(protocol='http', port=12345).add()
+    with f:
+        req.get('http://localhost:12345/')
+        req.get('http://localhost:12345/docs')
+
+    out, _ = capfd.readouterr()
+    assert '"GET / HTTP/1.1" 200 OK' in out
+    assert '"GET /docs HTTP/1.1" 200 OK' in out
+
+
+def test_no_healthcheck_logs_with_env(capfd):
+    os.environ['JINA_LOG_LEVEL'] = 'INFO'
+    os.environ['JINA_DISABLE_HEALTHCHECK_LOGS'] = '1'
+
+    f = Flow(protocol='http', port=12345).add()
+    with f:
+        req.get('http://localhost:12345/')
+        req.get('http://localhost:12345/docs')
+
+    out, _ = capfd.readouterr()
+    assert '"GET / HTTP/1.1" 200 OK' not in out
+    assert '"GET /docs HTTP/1.1" 200 OK' in out
