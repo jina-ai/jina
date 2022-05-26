@@ -946,7 +946,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'jina-proto': __proto_version__,
             'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', __unset_msg__),
             'protobuf': google.protobuf.__version__,
-            'proto-backend': api_implementation._default_implementation_type,
+            'proto-backend': api_implementation.Type(),
             'grpcio': getattr(grpc, '__version__', _grpcio_metadata.__version__),
             'pyyaml': yaml.__version__,
             'python': platform.python_version(),
