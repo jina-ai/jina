@@ -639,7 +639,12 @@ class Deployment(BaseDeployment):
         :param replicas: the number of replicas
         :return: a map from replica id to device id
         """
-        if device_str and device_str.startswith('RR') and replicas >= 1:
+        if (
+            device_str
+            and isinstance(device_str, str)
+            and device_str.startswith('RR')
+            and replicas >= 1
+        ):
             try:
                 num_devices = str(subprocess.check_output(['nvidia-smi', '-L'])).count(
                     'UUID'
