@@ -113,15 +113,18 @@ def get_fastapi_app(
             """
             return {}
 
+        from google.protobuf.json_format import MessageToDict
+
         from docarray import DocumentArray
+        from jina.proto import jina_pb2
         from jina.serve.executors import __dry_run_endpoint__
-        from jina.serve.runtimes.gateway.http.models import JinaFlowHealthModel
+        from jina.serve.runtimes.gateway.http.models import PROTO_TO_PYDANTIC_MODELS
 
         @app.get(
             path='/health',
             summary='Get the health of Jina Flow service, send an empty DocumentArray to the complete Flow to '
             'validate connectivity',
-            response_model=JinaFlowHealthModel,
+            response_model=PROTO_TO_PYDANTIC_MODELS.StatusProto,
         )
         async def _flow_health():
             """
@@ -140,9 +143,31 @@ def get_fastapi_app(
                         data_type=DataInputType.DOCUMENT,
                     )
                 )
-                return {'health': True}
-            except Exception:
-                return {'health': False}
+                status_pb = jina_pb2.StatusProto()
+                status_pb.code = jina_pb2.StatusProto.SUCCESS
+                return MessageToDict(
+                    status_pb,
+                    preserving_proto_field_name=True,
+                    use_integers_for_enums=True,
+                )
+            except Exception as ex:
+                import traceback
+
+                status_pb = jina_pb2.StatusProto()
+                status_pb.code = jina_pb2.StatusProto.ERROR
+                status_pb.description = repr(ex)
+                status_pb.exception.name = ex.__class__.__name__
+                status_pb.exception.args.extend([str(v) for v in ex.args])
+                status_pb.exception.stacks.extend(
+                    traceback.format_exception(
+                        etype=type(ex), value=ex, tb=ex.__traceback__
+                    )
+                )
+                return MessageToDict(
+                    status_pb,
+                    preserving_proto_field_name=True,
+                    use_integers_for_enums=True,
+                )
 
         @app.get(
             path='/status',

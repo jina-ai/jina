@@ -44,6 +44,7 @@ class HTTPBaseClient(BaseClient):
         :param kwargs: potential kwargs received passed from the public interface
         :return: boolean indicating the health/readiness of the Flow
         """
+        from jina.proto import jina_pb2
 
         async with AsyncExitStack() as stack:
             try:
@@ -59,12 +60,13 @@ class HTTPBaseClient(BaseClient):
                 r_str = await response.json()
                 self._handle_response_status(r_status, r_str, url)
 
-                return True
+                if r_str['code'] == jina_pb2.StatusProto.SUCCESS:
+                    return True
             except Exception as e:
                 self.logger.error(
                     f'Error while fetching response from HTTP server {e!r}'
                 )
-                return False
+        return False
 
     async def _get_results(
         self,

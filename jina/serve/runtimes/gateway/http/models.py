@@ -218,12 +218,6 @@ class JinaHealthModel(BaseModel):
     ...
 
 
-class JinaFlowHealthModel(BaseModel):
-    """Pydantic BaseModel for Jina health check, used as the response model in REST app."""
-
-    health: bool
-
-
 class JinaStatusModel(BaseModel):
     """Pydantic BaseModel for Jina status, used as the response model in REST app."""
 
