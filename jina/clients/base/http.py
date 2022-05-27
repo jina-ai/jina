@@ -59,7 +59,6 @@ class HTTPBaseClient(BaseClient):
 
                 r_str = await response.json()
                 self._handle_response_status(r_status, r_str, url)
-
                 if r_str['code'] == jina_pb2.StatusProto.SUCCESS:
                     return True
             except Exception as e:

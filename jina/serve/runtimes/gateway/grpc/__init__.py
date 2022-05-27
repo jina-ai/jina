@@ -12,6 +12,7 @@ from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.gateway.request_handling import RequestHandler
 from jina.serve.stream import RequestStreamer
+from jina.types.request.status import StatusMessage
 
 __all__ = ['GRPCGatewayRuntime']
 
@@ -153,20 +154,10 @@ class GRPCGatewayRuntime(GatewayRuntime):
             )
             async for _ in self.streamer.stream(request_iterator=req_iterator):
                 pass
-            status_pb = jina_pb2.StatusProto()
-            status_pb.code = jina_pb2.StatusProto.SUCCESS
-            return status_pb
+            status_message = StatusMessage()
+            status_message.set_code(jina_pb2.StatusProto.SUCCESS)
+            return status_message.proto
         except Exception as ex:
-            import traceback
-
-            status_pb = jina_pb2.StatusProto()
-            status_pb.code = jina_pb2.StatusProto.ERROR
-            status_pb.description = repr(ex)
-            status_pb.exception.name = ex.__class__.__name__
-            status_pb.exception.args.extend([str(v) for v in ex.args])
-            status_pb.exception.stacks.extend(
-                traceback.format_exception(
-                    etype=type(ex), value=ex, tb=ex.__traceback__
-                )
-            )
-            return status_pb
+            status_message = StatusMessage()
+            status_message.set_exception(ex)
+            return status_message.proto

@@ -1,5 +1,5 @@
 import argparse
-from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional, Union
 
 from docarray import DocumentArray
 from jina.clients.request import request_generator
@@ -8,6 +8,7 @@ from jina.excepts import InternalNetworkError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.types.request.data import DataRequest
+from jina.types.request.status import StatusMessage
 
 if TYPE_CHECKING:
     from prometheus_client import CollectorRegistry
@@ -104,19 +105,14 @@ def get_fastapi_app(
             except WebSocketDisconnect:
                 pass
 
-        async def send(self, websocket: WebSocket, data: DataRequest) -> None:
+        async def send(
+            self, websocket: WebSocket, data: Union[DataRequest, StatusMessage]
+        ) -> None:
             subprotocol = self.protocol_dict[self.get_client(websocket)]
             if subprotocol == WebsocketSubProtocols.JSON:
                 return await websocket.send_json(data.to_dict(), mode='text')
             elif subprotocol == WebsocketSubProtocols.BYTES:
                 return await websocket.send_bytes(data.to_bytes())
-
-        async def send_healthy(self, websocket: WebSocket) -> None:
-            subprotocol = self.protocol_dict[self.get_client(websocket)]
-            if subprotocol == WebsocketSubProtocols.JSON:
-                return await websocket.send_json({'health': True}, mode='text')
-            elif subprotocol == WebsocketSubProtocols.BYTES:
-                return await websocket.send_bytes(bytes({'health': True}))
 
     manager = ConnectionManager()
 
@@ -189,6 +185,7 @@ def get_fastapi_app(
     async def websocket_endpoint(
         websocket: WebSocket, response: Response
     ):  # 'response' is a FastAPI response, not a Jina response
+        from jina.proto import jina_pb2
         from jina.serve.executors import __dry_run_endpoint__
 
         await manager.connect(websocket)
@@ -202,7 +199,10 @@ def get_fastapi_app(
                     data_type=DataInputType.DOCUMENT,
                 )
             ):
-                await manager.send_healthy(websocket)
+                pass
+            status_message = StatusMessage()
+            status_message.set_code(jina_pb2.StatusProto.SUCCESS)
+            await manager.send(websocket, status_message)
         except InternalNetworkError as err:
             manager.disconnect(websocket)
             msg = (
@@ -210,9 +210,16 @@ def get_fastapi_app(
                 if _fits_ws_close_msg(err.details())  # some messages are too long
                 else f'Network error while connecting to deployment at {err.dest_addr}. It may be down.'
             )
-            await websocket.close(code=status.WS_1011_INTERNAL_ERROR, reason=msg)
+            await websocket.close(
+                code=status_message.WS_1011_INTERNAL_ERROR, reason=msg
+            )
         except WebSocketDisconnect:
             logger.info('Client successfully disconnected from server')
             manager.disconnect(websocket)
+        except Exception as ex:
+            manager.disconnect(websocket)
+            status_message = StatusMessage()
+            status_message.set_exception(ex)
+            await manager.send(websocket, status_message)
 
     return app

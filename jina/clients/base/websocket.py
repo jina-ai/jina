@@ -11,7 +11,9 @@ from jina.clients.helper import callback_exec, callback_exec_on_error
 from jina.helper import get_or_reuse_loop
 from jina.importer import ImportExtensions
 from jina.logging.profile import ProgressBar
+from jina.proto import jina_pb2
 from jina.serve.stream import RequestStreamer
+from jina.types.request.status import StatusMessage
 
 if TYPE_CHECKING:
     from jina.clients.base import CallbackFnType, InputType
@@ -37,9 +39,8 @@ class WebSocketBaseClient(BaseClient):
 
                 async def _receive():
                     try:
-                        async for response in iolet.recv_message():
-                            print(f' received response from server {response}')
-                        return True
+                        async for response in iolet.recv_health_check():
+                            return response
                     except Exception as exc:
                         self.logger.error(
                             f'Error while fetching response from Websocket server {exc!r}'
@@ -58,7 +59,8 @@ class WebSocketBaseClient(BaseClient):
                 try:
                     send_task = asyncio.create_task(_send())
                     _, response_result = asyncio.gather([send_task, receive_task])
-                    return response_result
+                    if response_result.proto.code == jina_pb2.StatusProto.SUCCESS:
+                        return True
                 finally:
                     if iolet.close_code == status.WS_1011_INTERNAL_ERROR:
                         raise ConnectionError(iolet.close_message)
@@ -68,7 +70,7 @@ class WebSocketBaseClient(BaseClient):
                 self.logger.error(
                     f'Error while getting response from websocket server {e!r}'
                 )
-                return False
+            return False
 
     async def _get_results(
         self,

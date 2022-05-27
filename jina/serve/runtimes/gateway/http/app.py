@@ -113,12 +113,11 @@ def get_fastapi_app(
             """
             return {}
 
-        from google.protobuf.json_format import MessageToDict
-
         from docarray import DocumentArray
         from jina.proto import jina_pb2
         from jina.serve.executors import __dry_run_endpoint__
         from jina.serve.runtimes.gateway.http.models import PROTO_TO_PYDANTIC_MODELS
+        from jina.types.request.status import StatusMessage
 
         @app.get(
             path='/health',
@@ -143,31 +142,13 @@ def get_fastapi_app(
                         data_type=DataInputType.DOCUMENT,
                     )
                 )
-                status_pb = jina_pb2.StatusProto()
-                status_pb.code = jina_pb2.StatusProto.SUCCESS
-                return MessageToDict(
-                    status_pb,
-                    preserving_proto_field_name=True,
-                    use_integers_for_enums=True,
-                )
+                status_message = StatusMessage()
+                status_message.set_code(jina_pb2.StatusProto.SUCCESS)
+                return status_message.to_dict()
             except Exception as ex:
-                import traceback
-
-                status_pb = jina_pb2.StatusProto()
-                status_pb.code = jina_pb2.StatusProto.ERROR
-                status_pb.description = repr(ex)
-                status_pb.exception.name = ex.__class__.__name__
-                status_pb.exception.args.extend([str(v) for v in ex.args])
-                status_pb.exception.stacks.extend(
-                    traceback.format_exception(
-                        etype=type(ex), value=ex, tb=ex.__traceback__
-                    )
-                )
-                return MessageToDict(
-                    status_pb,
-                    preserving_proto_field_name=True,
-                    use_integers_for_enums=True,
-                )
+                status_message = StatusMessage()
+                status_message.set_exception(ex)
+                return status_message.to_dict()
 
         @app.get(
             path='/status',

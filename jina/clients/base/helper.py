@@ -8,6 +8,7 @@ from jina.enums import WebsocketSubProtocols
 from jina.importer import ImportExtensions
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
+from jina.types.request.status import StatusMessage
 
 if TYPE_CHECKING:
     from jina.logging.logger import JinaLogger
@@ -42,6 +43,10 @@ class AioHttpClientlet(ABC):
     async def recv_message(self):
         """Receive message from Gateway"""
         ...
+
+    async def recv_health_check(self):
+        """Receive health check response from Gateway"""
+        pass
 
     async def __aenter__(self):
         """enter async context
@@ -96,6 +101,13 @@ class HTTPClientlet(AioHttpClientlet):
 
     async def recv_message(self):
         """Receive message for HTTP (sleep)
+
+        :return: await sleep
+        """
+        return await asyncio.sleep(1e10)
+
+    async def recv_health_check(self):
+        """Receive health check response for HTTP (sleep)
 
         :return: await sleep
         """
@@ -176,6 +188,18 @@ class WebsocketClientlet(AioHttpClientlet):
         """
         async for response in self.response_iter:
             yield DataRequest(response.data)
+
+    async def recv_health_check(self):
+        """Receive health check response in bytes from server
+
+        ..note::
+            aiohttp allows only one task which can `receive` concurrently.
+            we need to make sure we don't create multiple tasks with `recv_message`
+
+        :yield: response objects received from server
+        """
+        async for response in self.response_iter:
+            yield StatusMessage(response.data)
 
     async def __aenter__(self):
         await super().__aenter__()
