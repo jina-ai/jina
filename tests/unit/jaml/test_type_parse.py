@@ -1,6 +1,7 @@
 import os
 
 import pytest
+import yaml
 
 from jina import Flow, __default_executor__, requests
 from jina.excepts import BadConfigSource
@@ -190,3 +191,25 @@ def test_exception_invalid_yaml():
 
     with pytest.raises(BadConfigSource):
         Flow.load_config(yaml)
+
+
+def test_jtype(tmpdir):
+    flow_path = os.path.join(tmpdir, 'flow.yml')
+    exec_path = os.path.join(tmpdir, 'exec.yml')
+
+    f = Flow()
+    f.save_config(flow_path)
+    with open(flow_path, 'r') as file:
+        conf = yaml.safe_load(file)
+        assert 'jtype' in conf
+        assert conf['jtype'] == 'Flow'
+
+    e = BaseExecutor()
+    e.save_config(exec_path)
+    with open(exec_path, 'r') as file:
+        conf = yaml.safe_load(file)
+        assert 'jtype' in conf
+        assert conf['jtype'] == 'BaseExecutor'
+
+    assert type(BaseExecutor.load_config(exec_path)) == BaseExecutor
+    assert type(Flow.load_config(flow_path)) == Flow
