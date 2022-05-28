@@ -58,7 +58,7 @@ class WebSocketBaseClient(BaseClient):
                     )
                 try:
                     send_task = asyncio.create_task(_send())
-                    _, response_result = asyncio.gather([send_task, receive_task])
+                    _, response_result = await asyncio.gather(send_task, receive_task)
                     if response_result.proto.code == jina_pb2.StatusProto.SUCCESS:
                         return True
                 finally:
