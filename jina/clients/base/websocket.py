@@ -13,7 +13,6 @@ from jina.importer import ImportExtensions
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2
 from jina.serve.stream import RequestStreamer
-from jina.types.request.status import StatusMessage
 
 if TYPE_CHECKING:
     from jina.clients.base import CallbackFnType, InputType
