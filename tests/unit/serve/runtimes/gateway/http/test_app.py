@@ -275,9 +275,25 @@ def test_app_models_acceptance(docs_input):
     assert DocumentArray.from_dict(r.json()['data'])[0].text == 'text_input'
 
 
-def test_healthcheck_logs(capfd):
+@pytest.fixture
+def health_check_env():
+    _prev_loglevel = os.environ.get('JINA_LOG_LEVEL', None)
     os.environ['JINA_LOG_LEVEL'] = 'INFO'
+    os.environ['JINA_DISABLE_HEALTHCHECK_LOGS'] = '1'
+    yield
+    os.environ['JINA_LOG_LEVEL'] = _prev_loglevel
+    os.environ.pop('JINA_DISABLE_HEALTHCHECK_LOGS')
 
+
+@pytest.fixture
+def no_health_check_env():
+    _prev_loglevel = os.environ.get('JINA_LOG_LEVEL', None)
+    os.environ['JINA_LOG_LEVEL'] = 'INFO'
+    yield
+    os.environ['JINA_LOG_LEVEL'] = _prev_loglevel
+
+
+def test_healthcheck_logs_http(capfd, no_health_check_env):
     f = Flow(protocol='http', port=12345).add()
     with f:
         req.get('http://localhost:12345/')
@@ -288,10 +304,7 @@ def test_healthcheck_logs(capfd):
     assert '"GET /docs HTTP/1.1" 200 OK' in out
 
 
-def test_no_healthcheck_logs_with_env(capfd):
-    os.environ['JINA_LOG_LEVEL'] = 'INFO'
-    os.environ['JINA_DISABLE_HEALTHCHECK_LOGS'] = '1'
-
+def test_no_healthcheck_logs_http_with_env(capfd, health_check_env):
     f = Flow(protocol='http', port=12345).add()
     with f:
         req.get('http://localhost:12345/')
@@ -300,3 +313,23 @@ def test_no_healthcheck_logs_with_env(capfd):
     out, _ = capfd.readouterr()
     assert '"GET / HTTP/1.1" 200 OK' not in out
     assert '"GET /docs HTTP/1.1" 200 OK' in out
+
+
+def test_healthcheck_logs_websocket(capfd, no_health_check_env):
+    f = Flow(protocol='websocket', port=12345).add()
+    with f:
+        req.get('http://localhost:12345/')
+        f.post('/', inputs=DocumentArray.empty())
+
+    out, _ = capfd.readouterr()
+    assert '"GET / HTTP/1.1" 200 OK' in out
+
+
+def test_healthcheck_logs_websocket_with_env(capfd, health_check_env):
+    f = Flow(protocol='websocket', port=12345).add()
+    with f:
+        f.post('/', inputs=DocumentArray.empty())
+        req.get('http://localhost:12345/')
+
+    out, _ = capfd.readouterr()
+    assert '"GET / HTTP/1.1" 200 OK' not in out

@@ -130,6 +130,18 @@ def get_fastapi_app(
 
     streamer.Call = streamer.stream
 
+    @app.get(
+        path='/',
+        summary='Get the health of Jina service',
+    )
+    async def _health():
+        """
+        Get the health of this Jina service.
+        .. # noqa: DAR201
+
+        """
+        return {}
+
     @app.on_event('shutdown')
     async def _shutdown():
         await connection_pool.close()
