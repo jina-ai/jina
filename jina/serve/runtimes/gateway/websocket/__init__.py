@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 
 from jina import __default_host__
@@ -46,6 +47,16 @@ class WebSocketGatewayRuntime(GatewayRuntime):
                 :param kwargs: keyword arguments
                 """
                 await self.main_loop()
+
+        if 'JINA_DISABLE_HEALTHCHECK_LOGS' in os.environ:
+
+            class _EndpointFilter(logging.Filter):
+                def filter(self, record: logging.LogRecord) -> bool:
+                    # NOTE: space is important after `GET /`, else all logs will be disabled.
+                    return record.getMessage().find("GET / ") == -1
+
+            # Filter out healthcheck endpoint `GET /`
+            logging.getLogger("uvicorn.access").addFilter(_EndpointFilter())
 
         from jina.helper import extend_rest_interface
 
