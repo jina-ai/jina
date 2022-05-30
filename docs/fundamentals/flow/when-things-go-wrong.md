@@ -1,8 +1,22 @@
 # When things go wrong
 
+When building a complex solution, unfortunately things will go wrong sometimes.
+Jina does its best to recover from failures, handle them gracefully, and report useful failure information to the user.
+
+The following outlines a number of (more or less) common failure cases, and outlines how Jina responds to each one of them.
+
 ## Exceptions in Executor code
 
-## Exception in Executor or Head runtime
+In general there are two places where an Executor level error can be introduced.
+
+If an Executor's `__init__` method raises and Exception, the Flow cannot start.
+In this case this Exception is gets raised by the Executor runtime, and the Flow throws a `RuntimeFailToStart` Exception.
+
+If one of the Executor's `@requests` methods raises and Exception, the offending error message gets added to the response
+and is being sent back to the client.
+If the gRPC or WebSocket protocols are used, the networking stream is not interrupted and can accept further requests.
+
+In all cases, the {ref}`Jina Client <client>` will raise an Exception.
 
 ## Executor or Head cannot be reached
 
