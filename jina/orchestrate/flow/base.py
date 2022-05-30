@@ -1027,6 +1027,9 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
         if op_flow.args.inspect == FlowInspectType.COLLECT:
             op_flow.gather_inspect(copy_flow=False)
 
+        for deployment in self._deployment_nodes.values():
+            deployment.update_sandbox_args()
+
         if GATEWAY_NAME not in op_flow._deployment_nodes:
             op_flow._add_gateway(
                 needs={op_flow._last_deployment},
