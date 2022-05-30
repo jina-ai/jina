@@ -156,7 +156,7 @@ class BaseClient(ABC):
     def _health_check(self, **kwargs) -> bool:
         """Sends a health check to the Flow to validate if the Flow is ready to receive requests
 
-        :return: boolean indicating the health/readiness of the Flow
+        :param kwargs: potential kwargs received passed from the public interface
         """
         ...
 
