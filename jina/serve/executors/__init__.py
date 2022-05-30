@@ -120,7 +120,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 f' So it is recommended not to expose this endpoint. '
             )
 
-    def _dry_run_func(self, **kwargs):
+    def _dry_run_func(self, *args, **kwargs):
         pass
 
     def _add_runtime_args(self, _runtime_args: Optional[Dict]):

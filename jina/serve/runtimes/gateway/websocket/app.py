@@ -222,9 +222,7 @@ def get_fastapi_app(
                 if _fits_ws_close_msg(err.details())  # some messages are too long
                 else f'Network error while connecting to deployment at {err.dest_addr}. It may be down.'
             )
-            await websocket.close(
-                code=status_message.WS_1011_INTERNAL_ERROR, reason=msg
-            )
+            await websocket.close(code=status.WS_1011_INTERNAL_ERROR, reason=msg)
         except WebSocketDisconnect:
             logger.info('Client successfully disconnected from server')
             manager.disconnect(websocket)
