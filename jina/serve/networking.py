@@ -1003,7 +1003,11 @@ class GrpcConnectionPool:
                 [
                     service.name
                     for service in res.list_services_response.service
-                    if service.name != 'grpc.reflection.v1alpha.ServerReflection'
+                    if service.name
+                    not in {
+                        'grpc.reflection.v1alpha.ServerReflection',
+                        'jina.JinaGatewayDryRunRPC',
+                    }
                 ]
             )
         return service_names[0]
