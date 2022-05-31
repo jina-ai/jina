@@ -102,12 +102,12 @@ def get_fastapi_app(
 
         @app.get(
             path='/',
-            summary='Get the health of Jina gateway service',
+            summary='Get the health of Jina Gateway service',
             response_model=JinaHealthModel,
         )
         async def _gateway_health():
             """
-            Get the health of this gateway service.
+            Get the health of this Gateway service.
             .. # noqa: DAR201
 
             """
