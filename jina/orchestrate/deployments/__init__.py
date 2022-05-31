@@ -248,6 +248,7 @@ class Deployment(BaseDeployment):
         self.head_pod = None
         self.shards = {}
         self.update_pod_args()
+        self._sandbox_deployed = False
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
@@ -261,8 +262,11 @@ class Deployment(BaseDeployment):
         else:
             self.pod_args = self._parse_args(self.args)
 
+    def update_sandbox_args(self):
+        """Update args of all its pods based on the host and port returned by Hubble"""
         if self.is_sandbox:
             host, port = HubIO.deploy_public_sandbox(self.args)
+            self._sandbox_deployed = True
             self.first_pod_args.host = host
             self.first_pod_args.port = port
             if self.head_args:
@@ -515,6 +519,9 @@ class Deployment(BaseDeployment):
             If one of the :class:`Pod` fails to start, make sure that all of them
             are properly closed.
         """
+        if self.is_sandbox and not self._sandbox_deployed:
+            self.update_sandbox_args()
+
         if self.pod_args['uses_before'] is not None:
             _args = self.pod_args['uses_before']
             if getattr(self.args, 'noblock_on_start', False):
