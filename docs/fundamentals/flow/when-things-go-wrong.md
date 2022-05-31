@@ -1,3 +1,4 @@
+(flow-error-handling)=
 # Error handling
 
 When building a complex solution, unfortunately things go wrong sometimes.
