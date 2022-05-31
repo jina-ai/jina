@@ -304,6 +304,7 @@ ac_table = {
             '--when',
             '--external',
             '--deployment-role',
+            '--tls',
         ],
         'client': [
             '--help',
