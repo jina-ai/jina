@@ -293,7 +293,7 @@ class Deployment(BaseDeployment):
         """
         has_cert = getattr(self.args, 'ssl_certfile', None) is not None
         has_key = getattr(self.args, 'ssl_keyfile', None) is not None
-        return self.is_sandbox or (has_cert and has_key)
+        return self.args.tls or self.is_sandbox or (has_cert and has_key)
 
     @property
     def external(self) -> bool:
