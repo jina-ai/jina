@@ -1021,7 +1021,6 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
         .. # noqa: DAR401
         """
-
         op_flow = copy.deepcopy(self) if copy_flow else self
 
         if op_flow.args.inspect == FlowInspectType.COLLECT:
@@ -1285,6 +1284,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
 
         .. # noqa: DAR201"""
+        print(f' num pods')
         return sum(v.num_pods for v in self._deployment_nodes.values())
 
     def __eq__(self, other: 'Flow') -> bool:
