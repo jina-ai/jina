@@ -27,7 +27,7 @@ The specifics of this policy depend on the environment the Flow find itself in, 
 If, during the complete execution of this policy, no successful call to any Executor replica could be made, the request is aborted
 and the failure is {ref}`reported to the client <failure-reporting>`.
 
-### Request retry policy: Local deployment
+### Request retries: Local deployment
 
 If a Flow is deployed locally (with or without {ref}`containerized Executors <dockerize-exec>`), the following policy
 for failed requests applies on a per-Executor basis:
@@ -35,7 +35,7 @@ for failed requests applies on a per-Executor basis:
 - If there are multiple replicas of the target Executor, try each replica at least once, or until the request succeeds
 - Irrespective of the number of replicas, try the request at least 3 times, or until it succeeds. If there are fewer than 3 replicas, try them in a round-robin fashion
 
-### Request retry policy: Deployment with Kubernetes
+### Request retries: Deployment with Kubernetes
 
 If a Flow is {ref}`deployed in Kubernetes <kubernetes>` without a service mesh, retries cannot be distributed to different replicas of the same Executor.
 
@@ -52,7 +52,7 @@ Concretely, this results in the following per-Executor retry policy:
 
 - Try the request 3 times, or until it succeeds, always on the same replica of the Executor
 
-### Request retry policy: Deployment with Kubernetes and service mesh
+### Request retries: Deployment with Kubernetes and service mesh
 
 A Kubernetes service mesh can enable load balancing, and thus retries, between replicas of an Executor.
 
