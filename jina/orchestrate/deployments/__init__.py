@@ -288,7 +288,7 @@ class Deployment(BaseDeployment):
     @property
     def _is_docker(self) -> bool:
         """
-        Check if this deployment is a sandbox.
+        Check if this deployment is to be run in docker.
 
         :return: True if this deployment is to be run in docker
         """
