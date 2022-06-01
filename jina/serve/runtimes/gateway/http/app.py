@@ -120,8 +120,8 @@ def get_fastapi_app(
         from jina.types.request.status import StatusMessage
 
         @app.get(
-            path='/health',
-            summary='Get the health of Jina Flow service, send an empty DocumentArray to the complete Flow to '
+            path='/dry_run',
+            summary='Get the readiness of Jina Flow service, sends an empty DocumentArray to the complete Flow to '
             'validate connectivity',
             response_model=PROTO_TO_PYDANTIC_MODELS.StatusProto,
         )

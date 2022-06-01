@@ -38,8 +38,8 @@ class HTTPBaseClient(BaseClient):
         ):  # failure codes
             raise ValueError(r_str)
 
-    async def _health_check(self, **kwargs) -> bool:
-        """Sends a health check to the Flow to validate if the Flow is ready to receive requests
+    async def _dry_run(self, **kwargs) -> bool:
+        """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
 
         :param kwargs: potential kwargs received passed from the public interface
         :return: boolean indicating the health/readiness of the Flow
@@ -54,7 +54,7 @@ class HTTPBaseClient(BaseClient):
                     HTTPClientlet(url=url, logger=self.logger)
                 )
 
-                response = await iolet.send_health_check()
+                response = await iolet.send_dry_run()
                 r_status = response.status
 
                 r_str = await response.json()

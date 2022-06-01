@@ -22,23 +22,23 @@ if TYPE_CHECKING:
 class WebSocketBaseClient(BaseClient):
     """A Websocket Client."""
 
-    async def _health_check(self, **kwargs) -> bool:
-        """Sends a health check to the Flow to validate if the Flow is ready to receive requests
+    async def _dry_run(self, **kwargs) -> bool:
+        """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
 
         :param kwargs: potential kwargs received passed from the public interface
-        :return: boolean indicating the health/readiness of the Flow
+        :return: boolean indicating the readiness of the Flow
         """
         async with AsyncExitStack() as stack:
             try:
                 proto = 'wss' if self.args.tls else 'ws'
-                url = f'{proto}://{self.args.host}:{self.args.port}/health'
+                url = f'{proto}://{self.args.host}:{self.args.port}/dry_run'
                 iolet = await stack.enter_async_context(
                     WebsocketClientlet(url=url, logger=self.logger)
                 )
 
                 async def _receive():
                     try:
-                        async for response in iolet.recv_health_check():
+                        async for response in iolet.recv_dry_run():
                             return response
                     except Exception as exc:
                         self.logger.error(
@@ -47,7 +47,7 @@ class WebSocketBaseClient(BaseClient):
                         raise
 
                 async def _send():
-                    return await iolet.send_health_check()
+                    return await iolet.send_dry_run()
 
                 receive_task = asyncio.create_task(_receive())
 
