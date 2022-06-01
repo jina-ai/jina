@@ -11,6 +11,9 @@ from jina.parsers import set_client_cli_parser
 from jina.proto import jina_pb2
 from jina.types.request.data import Response
 
+__default_port_client__ = 80
+__default_port_tls_client__ = 443
+
 
 def pprint_routes(resp: 'Response', stack_limit: int = 3):
     """Pretty print routes with :mod:`prettytable`, fallback to :func:`print`.
@@ -123,7 +126,9 @@ def parse_client(kwargs) -> Namespace:
     )
 
     if not args.port:
-        args.port = 80 if not args.tls else 443
+        args.port = (
+            __default_port_client__ if not args.tls else __default_port_tls_client__
+        )
 
     return args
 
