@@ -193,6 +193,53 @@ def get_fastapi_app(
             logger.info('Client successfully disconnected from server')
             manager.disconnect(websocket)
 
+    async def _get_singleton_result(request_iterator) -> Dict:
+        """
+        Streams results from AsyncPrefetchCall as a dict
+
+        :param request_iterator: request iterator, with length of 1
+        :return: the first result from the request iterator
+        """
+        async for k in streamer.stream(request_iterator=request_iterator):
+            request_dict = k.to_dict()
+            return request_dict
+
+    from docarray import DocumentArray
+    from jina.proto import jina_pb2
+    from jina.serve.executors import __dry_run_endpoint__
+    from jina.serve.runtimes.gateway.http.models import PROTO_TO_PYDANTIC_MODELS
+
+    @app.get(
+        path='/dry_run',
+        summary='Get the readiness of Jina Flow service, sends an empty DocumentArray to the complete Flow to '
+        'validate connectivity',
+        response_model=PROTO_TO_PYDANTIC_MODELS.StatusProto,
+    )
+    async def _dry_run_http():
+        """
+        Get the health of the complete Flow service.
+        .. # noqa: DAR201
+
+        """
+
+        da = DocumentArray()
+
+        try:
+            _ = await _get_singleton_result(
+                request_generator(
+                    exec_endpoint=__dry_run_endpoint__,
+                    data=da,
+                    data_type=DataInputType.DOCUMENT,
+                )
+            )
+            status_message = StatusMessage()
+            status_message.set_code(jina_pb2.StatusProto.SUCCESS)
+            return status_message.to_dict()
+        except Exception as ex:
+            status_message = StatusMessage()
+            status_message.set_exception(ex)
+            return status_message.to_dict(use_integers_for_enums=True)
+
     @app.websocket('/dry_run')
     async def websocket_endpoint(
         websocket: WebSocket, response: Response
