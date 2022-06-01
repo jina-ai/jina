@@ -114,9 +114,9 @@ Here are some managed `Kubernetes` cluster solutions you could use:
 - [Digital Ocean](https://www.digitalocean.com/products/kubernetes/)
 ```
 
-### Indexing and searching images using CLIP image encoder and PQLiteIndexer
+### Indexing and searching images using CLIP image encoder and ANNLite
 
-This example shows how to build and deploy a Flow in Kubernetes with [`CLIPImageEncoder`](https://hub.jina.ai/executor/0hnlmu3q) as encoder and [`PQLiteIndexer`](https://hub.jina.ai/executor/pn1qofsj) as indexer.
+This example shows how to build and deploy a Flow in Kubernetes with [`CLIPImageEncoder`](https://hub.jina.ai/executor/0hnlmu3q) as encoder and [`ANNLiteIndexer`](https://hub.jina.ai/executor/pn1qofsj) as indexer.
 
 ```python
 from jina import Flow
@@ -126,7 +126,7 @@ f = (
     .add(name='encoder', uses='jinahub+docker://CLIPEncoder', replicas=2)
     .add(
         name='indexer',
-        uses='jinahub+docker://PQLiteIndexer',
+        uses='jinahub+docker://ANNLiteIndexer',
         uses_with={'dim': 512},
         shards=2,
     )
@@ -147,8 +147,7 @@ You should expect the following file structure generated:
     ├── gateway
     │   └── gateway.yml
     └── encoder
-    │   ├── encoder.yml
-    │   └── encoder-head.yml
+    │   └── encoder.yml
     └── indexer
         ├── indexer-0.yml
         ├── indexer-1.yml
