@@ -2,7 +2,7 @@
 import argparse
 from typing import TYPE_CHECKING, Optional, Union, overload
 
-from jina.helper import parse_client
+from jina.clients.helper import parse_client
 
 __all__ = ['Client']
 

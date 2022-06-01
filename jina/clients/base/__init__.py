@@ -6,8 +6,9 @@ import os
 from abc import ABC
 from typing import TYPE_CHECKING, AsyncIterator, Callable, Iterator, Optional, Union
 
+from jina.clients.helper import parse_client
 from jina.excepts import BadClientInput
-from jina.helper import T, parse_client, typename
+from jina.helper import T, typename
 from jina.logging.logger import JinaLogger
 from jina.logging.predefined import default_logger
 
