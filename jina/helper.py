@@ -1525,6 +1525,92 @@ def get_rich_console():
     )
 
 
+from jina.parsers import set_client_cli_parser
+
+__default_port_client__ = 80
+__default_port_tls_client__ = 443
+
+
+def parse_client(kwargs) -> Namespace:
+    """
+    Parse the kwargs for the Client
+
+    :param kwargs: kwargs to be parsed
+
+    :return: parsed argument.
+    """
+    kwargs = _parse_kwargs(kwargs)
+    args = ArgNamespace.kwargs2namespace(
+        kwargs, set_client_cli_parser(), warn_unknown=True
+    )
+
+    if not args.port:
+        args.port = (
+            __default_port_client__ if not args.tls else __default_port_tls_client__
+        )
+
+    return args
+
+
+def _parse_kwargs(kwargs: Dict[str, Any]) -> Dict[str, Any]:
+    if 'host' in kwargs.keys():
+        return_scheme = dict()
+        (
+            kwargs['host'],
+            return_scheme['port'],
+            return_scheme['protocol'],
+            return_scheme['tls'],
+        ) = _parse_host_scheme(kwargs['host'])
+
+        for key, value in return_scheme.items():
+            if value:
+                if key in kwargs:
+                    raise ValueError(
+                        f"You can't have two definitions of {key}: you have one in the host scheme and one in the keyword argument"
+                    )
+                elif value:
+                    kwargs[key] = value
+
+    kwargs = _delete_host_slash(kwargs)
+
+    return kwargs
+
+
+def _delete_host_slash(kwargs: Dict[str, Any]) -> Dict[str, Any]:
+    if 'host' in kwargs:
+        if kwargs['host'][-1] == '/':
+            kwargs['host'] = kwargs['host'][:-1]
+    return kwargs
+
+
+def _parse_host_scheme(host: str) -> Tuple[str, str, str, bool]:
+    scheme, _hostname, port = _parse_url(host)
+
+    tls = None
+    if scheme in ('grpcs', 'https', 'wss'):
+        scheme = scheme[:-1]
+        tls = True
+
+    if scheme == 'ws':
+        scheme = 'websocket'
+
+    return _hostname, port, scheme, tls
+
+
+def _parse_url(host):
+    if '://' in host:
+        scheme, host = host.split('://')
+    else:
+        scheme = None
+
+    if ':' in host:
+        host, port = host.split(':')
+    else:
+        port = None
+
+    return scheme, host, port
+
+
 def is_port_free(host, port):
     with socket(AF_INET, SOCK_STREAM) as session:
         if session.connect_ex((host, port)) == 0:
