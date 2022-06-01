@@ -31,13 +31,12 @@ docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12346 grpc
 (health-check-gateway)=
 # Health check of the Gateway
 
-The same way individual Executors expose endpoints for orchestrators, clients or other services to check their availability, Gateway as a microservice also exposes this in different ways and depending
-on the protocol used.
+The same way individual Executors expose endpoints for orchestrators, clients or other services to check their availability, Gateway, as a microservice, also exposes this in different ways depending on the protocol used.
 
 
 ## Gateway health check with grpc
 
-When using grpc as the protocol used to communicate with the Gateway, then Gateway uses the exact same mechanism as Executors to expose their individual health status. It exposes [grpc health check](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) to the outside world.
+When using grpc as the protocol to communicate with the Gateway, then Gateway uses the exact same mechanism as Executors to expose their individual health status. It exposes [grpc health check](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) to the outside world.
 
 With the same Flow described before we can use the same way to check the gateway status:
 
@@ -77,7 +76,7 @@ Then you will get a valid empty response indicating its ability to serve.
 
 # Readiness of a Flow exposed to the client
 
-A lot of times, from the client perspective, it is useful to know if a Flow as a complete set of microservices is ready to receive requests. This is why the gateway 
+A lot of times, from the client perspective, it is useful to know if a Flow, as a complete set of microservices, is ready to receive requests. This is why the gateway 
 exposes an endpoint for each of the supported protocols to know the health and readiness of a Flow. 
 
 Also Jina Flow and Client contains a convenient API to query these endpoints. You can call `flow.dry_run()` and `client.dry_run()`
