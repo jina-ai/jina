@@ -118,9 +118,14 @@ def parse_client(kwargs) -> Namespace:
     :return: parsed argument.
     """
     kwargs = _parse_kwargs(kwargs)
-    return ArgNamespace.kwargs2namespace(
+    args = ArgNamespace.kwargs2namespace(
         kwargs, set_client_cli_parser(), warn_unknown=True
     )
+
+    if not args.port:
+        args.port = 80 if not args.tls else 443
+
+    return args
 
 
 def _parse_kwargs(kwargs: Dict[str, Any]) -> Dict[str, Any]:
@@ -142,15 +147,8 @@ def _parse_kwargs(kwargs: Dict[str, Any]) -> Dict[str, Any]:
                 elif value:
                     kwargs[key] = value
 
-    kwargs = _add_default_port_tls(kwargs)
     kwargs = _delete_host_slash(kwargs)
 
-    return kwargs
-
-
-def _add_default_port_tls(kwargs: Dict[str, Any]) -> Dict[str, Any]:
-    if ('tls' in kwargs) and ('port' not in kwargs):
-        kwargs['port'] = 443
     return kwargs
 
 
