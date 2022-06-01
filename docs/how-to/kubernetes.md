@@ -7,7 +7,7 @@ A `Flow` is composed of `Executors` which run Python code
 defined to operate on a `DocumentArray`. These Executors live in different runtimes depending on how you want to deploy
 your Flow. 
 
-When deployed in Kubernetes, these Executors will run inside Kubernetes Pods as containers and their lifetime will be handled
+When deployed in Kubernetes, these Executors will run inside Kubernetes Pods as containers and their lifetime will be orchestrated
 by Kubernetes.
 
 Deploying a Flow in Kubernetes is the recommended way of using Jina in production.
