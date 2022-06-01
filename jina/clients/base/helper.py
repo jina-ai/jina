@@ -35,8 +35,8 @@ class AioHttpClientlet(ABC):
         ...
 
     @abstractmethod
-    async def send_health_check(self):
-        """Query the health_check endpoint from Gateway"""
+    async def send_dry_run(self):
+        """Query the dry_run endpoint from Gateway"""
         ...
 
     @abstractmethod
@@ -44,8 +44,8 @@ class AioHttpClientlet(ABC):
         """Receive message from Gateway"""
         ...
 
-    async def recv_health_check(self):
-        """Receive health check response from Gateway"""
+    async def recv_dry_run(self):
+        """Receive dry run response from Gateway"""
         pass
 
     async def __aenter__(self):
@@ -93,8 +93,8 @@ class HTTPClientlet(AioHttpClientlet):
             req_dict['target_executor'] = req_dict['header']['target_executor']
         return await self.session.post(url=self.url, json=req_dict).__aenter__()
 
-    async def send_health_check(self):
-        """Query the health_check endpoint from Gateway
+    async def send_dry_run(self):
+        """Query the dry_run endpoint from Gateway
         :return: send get message
         """
         return await self.session.get(url=self.url).__aenter__()
@@ -106,8 +106,8 @@ class HTTPClientlet(AioHttpClientlet):
         """
         return await asyncio.sleep(1e10)
 
-    async def recv_health_check(self):
-        """Receive health check response for HTTP (sleep)
+    async def recv_dry_run(self):
+        """Receive dry run response for HTTP (sleep)
 
         :return: await sleep
         """
@@ -154,10 +154,10 @@ class WebsocketClientlet(AioHttpClientlet):
         except ConnectionResetError:
             self.logger.critical(f'server connection closed already!')
 
-    async def send_health_check(self):
-        """Query the health_check endpoint from Gateway
+    async def send_dry_run(self):
+        """Query the dry_run endpoint from Gateway
 
-        :return: send health_check as bytes awaitable
+        :return: send dry_run as bytes awaitable
         """
 
         try:
@@ -189,8 +189,8 @@ class WebsocketClientlet(AioHttpClientlet):
         async for response in self.response_iter:
             yield DataRequest(response.data)
 
-    async def recv_health_check(self):
-        """Receive health check response in bytes from server
+    async def recv_dry_run(self):
+        """Receive dry run response in bytes from server
 
         ..note::
             aiohttp allows only one task which can `receive` concurrently.

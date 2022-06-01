@@ -193,7 +193,7 @@ def get_fastapi_app(
             logger.info('Client successfully disconnected from server')
             manager.disconnect(websocket)
 
-    @app.websocket('/health')
+    @app.websocket('/dry_run')
     async def websocket_endpoint(
         websocket: WebSocket, response: Response
     ):  # 'response' is a FastAPI response, not a Jina response

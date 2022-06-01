@@ -153,8 +153,8 @@ class BaseClient(ABC):
         ...
 
     @abc.abstractmethod
-    def _health_check(self, **kwargs) -> bool:
-        """Sends a health check to the Flow to validate if the Flow is ready to receive requests
+    def _dry_run(self, **kwargs) -> bool:
+        """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
 
         :param kwargs: potential kwargs received passed from the public interface
         """
