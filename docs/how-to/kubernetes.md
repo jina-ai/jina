@@ -114,9 +114,9 @@ Here are some managed `Kubernetes` cluster solutions you could use:
 - [Digital Ocean](https://www.digitalocean.com/products/kubernetes/)
 ```
 
-### Indexing and searching images using CLIP image encoder and PQLiteIndexer
+### Indexing and searching images using CLIP image encoder and ANNLite
 
-This example shows how to build and deploy a Flow in Kubernetes with [`CLIPImageEncoder`](https://hub.jina.ai/executor/0hnlmu3q) as encoder and [`PQLiteIndexer`](https://hub.jina.ai/executor/pn1qofsj) as indexer.
+This example shows how to build and deploy a Flow in Kubernetes with [`CLIPImageEncoder`](https://hub.jina.ai/executor/0hnlmu3q) as encoder and [`ANNLiteIndexer`](https://hub.jina.ai/executor/pn1qofsj) as indexer.
 
 ```python
 from jina import Flow
@@ -126,7 +126,7 @@ f = (
     .add(name='encoder', uses='jinahub+docker://CLIPEncoder', replicas=2)
     .add(
         name='indexer',
-        uses='jinahub+docker://PQLiteIndexer',
+        uses='jinahub+docker://ANNLiteIndexer',
         uses_with={'dim': 512},
         shards=2,
     )
@@ -147,8 +147,7 @@ You should expect the following file structure generated:
     ├── gateway
     │   └── gateway.yml
     └── encoder
-    │   ├── encoder.yml
-    │   └── encoder-head.yml
+    │   └── encoder.yml
     └── indexer
         ├── indexer-0.yml
         ├── indexer-1.yml
@@ -178,11 +177,11 @@ kubectl get pods -n custom-namespace
 NAME                              READY   STATUS    RESTARTS   AGE
 encoder-8b5575cb9-bh2x8           1/1     Running   0          60m
 encoder-8b5575cb9-gx78g           1/1     Running   0          60m
-encoder-head-55bbb477ff-p2bmk   1/1     Running   0          60m
+encoder-head-55bbb477ff-p2bmk     1/1     Running   0          60m
 gateway-7df8765bd9-xf5tf          1/1     Running   0          60m
 indexer-0-8f676fc9d-4fh52         1/1     Running   0          60m
 indexer-1-55b6cc9dd8-gtpf6        1/1     Running   0          60m
-indexer-head-6fcc679d95-8mrm6   1/1     Running   0          60m
+indexer-head-6fcc679d95-8mrm6     1/1     Running   0          60m
 ```
 
 Note that the Jina gateway was deployed with name `gateway-7df8765bd9-xf5tf`.
