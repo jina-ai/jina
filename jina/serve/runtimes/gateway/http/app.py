@@ -148,7 +148,7 @@ def get_fastapi_app(
             except Exception as ex:
                 status_message = StatusMessage()
                 status_message.set_exception(ex)
-                return status_message.to_dict()
+                return status_message.to_dict(use_integers_for_enums=True)
 
         @app.get(
             path='/status',
