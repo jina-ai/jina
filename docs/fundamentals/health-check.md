@@ -75,21 +75,21 @@ Then you will get a valid empty response indicating its ability to serve.
 {}%
 ```
 
-# Health check of a Flow exposed to the client
+# Readiness of a Flow exposed to the client
 
 A lot of times, from the client perspective, it is useful to know if a Flow as a complete set of microservices is ready to receive requests. This is why the gateway 
 exposes an endpoint for each of the supported protocols to know the health and readiness of a Flow. 
 
-Also Jina Flow and Client contains a convenient API to query these endpoints. You can call `flow.health_check()` and `client.health_check()`
+Also Jina Flow and Client contains a convenient API to query these endpoints. You can call `flow.dry_run()` and `client.dry_run()`
 
 ````{tab} via Flow
 ```python
 from jina import Flow
 
 with Flow().add() as f:
-    print(f.health_check())
+    print(f.dry_run())
 
-print(f.health_check())
+print(f.dry_run())
 ```
 ```text
 True
@@ -107,7 +107,7 @@ with Flow(port=12345).add() as f:
 from jina import Client
 
 client = Client(port=12345)
-print(client.health_check())
+print(client.dry_run())
 ```
 ```text
 True
@@ -215,11 +215,11 @@ To understand better what is going on under the hood, we can check how to target
 
 Let's first instantiate the Flow and block it for serving.
 
-Then we can use curl to target the `/health` endpoint.
+Then we can use curl to target the `/dry_run` endpoint.
 
 
 ```shell
-curl http://localhost:12345/health
+curl http://localhost:12345/dry_run
 ```
 ```text
 {"code":0,"description":"","exception":null}%
@@ -232,3 +232,7 @@ kill -9 $EXECUTOR_PID # in this case we can see in the logs that it is 19059
 ```
 
 Then by doing the same check, we will see that it returns an error.
+
+```text
+{"code":1,"description":"failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {'0.0.0.0:12346'}. Head or worker(s) may be down.","exception":{"name":"InternalNetworkError","args":["failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {'0.0.0.0:12346'}. Head or worker(s) may be down."],"stacks":["Traceback (most recent call last):\n","  File \"/home/joan/jina/jina/jina/serve/networking.py\", line 726, in task_wrapper\n    timeout=timeout,\n","  File \"/home/joan/jina/jina/jina/serve/networking.py\", line 241, in send_requests\n    await call_result,\n","  File \"/home/joan/.local/lib/python3.7/site-packages/grpc/aio/_call.py\", line 291, in __await__\n    self._cython_call._status)\n","grpc.aio._call.AioRpcError: <AioRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses\"\n\tdebug_error_string = \"{\"created\":\"@1654074272.702044542\",\"description\":\"Failed to pick subchannel\",\"file\":\"src/core/ext/filters/client_channel/client_channel.cc\",\"file_line\":3134,\"referenced_errors\":[{\"created\":\"@1654074272.702043378\",\"description\":\"failed to connect to all addresses\",\"file\":\"src/core/lib/transport/error_utils.cc\",\"file_line\":163,\"grpc_status\":14}]}\"\n>\n","\nDuring handling of the above exception, another exception occurred:\n\n","Traceback (most recent call last):\n","  File \"/home/joan/jina/jina/jina/serve/runtimes/gateway/http/app.py\", line 142, in _flow_health\n    data_type=DataInputType.DOCUMENT,\n","  File \"/home/joan/jina/jina/jina/serve/runtimes/gateway/http/app.py\", line 399, in _get_singleton_result\n    async for k in streamer.stream(request_iterator=request_iterator):\n","  File \"/home/joan/jina/jina/jina/serve/stream/__init__.py\", line 78, in stream\n    async for response in async_iter:\n","  File \"/home/joan/jina/jina/jina/serve/stream/__init__.py\", line 154, in _stream_requests\n    response = self._result_handler(future.result())\n","  File \"/home/joan/jina/jina/jina/serve/runtimes/gateway/request_handling.py\", line 148, in _process_results_at_end_gateway\n    partial_responses = await asyncio.gather(*tasks)\n","  File \"/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\", line 128, in _wait_previous_and_send\n    self._handle_internalnetworkerror(err)\n","  File \"/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\", line 70, in _handle_internalnetworkerror\n    raise err\n","  File \"/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\", line 125, in _wait_previous_and_send\n    timeout=self._timeout_send,\n","  File \"/home/joan/jina/jina/jina/serve/networking.py\", line 734, in task_wrapper\n    num_retries=num_retries,\n","  File \"/home/joan/jina/jina/jina/serve/networking.py\", line 697, in _handle_aiorpcerror\n    details=e.details(),\n","jina.excepts.InternalNetworkError: failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {'0.0.0.0:12346'}. Head or worker(s) may be down.\n"],"executor":""}}%
+```

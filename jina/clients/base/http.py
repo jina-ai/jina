@@ -49,7 +49,7 @@ class HTTPBaseClient(BaseClient):
         async with AsyncExitStack() as stack:
             try:
                 proto = 'https' if self.args.tls else 'http'
-                url = f'{proto}://{self.args.host}:{self.args.port}/health'
+                url = f'{proto}://{self.args.host}:{self.args.port}/dry_run'
                 iolet = await stack.enter_async_context(
                     HTTPClientlet(url=url, logger=self.logger)
                 )
