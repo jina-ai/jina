@@ -1,6 +1,6 @@
 from typing import Dict
 
-from jina.helper import typename, T, TYPE_CHECKING, deprecate_by
+from jina.helper import TYPE_CHECKING, T, deprecate_by, typename
 
 if TYPE_CHECKING:
     from jina.proto import jina_pb2
@@ -18,7 +18,6 @@ class ProtoTypeMixin:
             .. code-block:: python
 
                 class MyJinaType(ProtoTypeMixin):
-
                     def __init__(self, proto: Optional[jina_pb2.SomePbMsg] = None):
                         self._pb_body = proto or jina_pb2.SomePbMsg()
 
@@ -35,21 +34,20 @@ class ProtoTypeMixin:
             self.proto, preserving_proto_field_name=True, sort_keys=True
         )
 
-    def to_dict(self) -> Dict:
+    def to_dict(self, **kwargs) -> Dict:
         """Return the object in Python dictionary.
 
         .. note::
             Array like object such as :class:`numpy.ndarray` (i.e. anything described as :class:`jina_pb2.NdArrayProto`)
             will be converted to Python list.
 
+        :param kwargs: Extra kwargs to be passed to MessageToDict, like use_integers_for_enums
+
         :return: dict representation of the object
         """
         from google.protobuf.json_format import MessageToDict
 
-        return MessageToDict(
-            self.proto,
-            preserving_proto_field_name=True,
-        )
+        return MessageToDict(self.proto, preserving_proto_field_name=True, **kwargs)
 
     @property
     def proto(self) -> 'jina_pb2._reflection.GeneratedProtocolMessageType':
