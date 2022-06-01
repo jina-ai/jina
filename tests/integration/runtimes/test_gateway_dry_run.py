@@ -50,7 +50,7 @@ def _create_gateway_runtime(graph_description, pod_addresses, port, protocol='gr
 
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
-def test_health_check_of_flow(port_generator, protocol):
+def test_dry_run_of_flow(port_generator, protocol):
     worker_port = port_generator()
     port = port_generator()
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
@@ -82,18 +82,18 @@ def test_health_check_of_flow(port_generator, protocol):
 
     # send requests to the gateway
     c = Client(host='localhost', port=port, asyncio=True, protocol=protocol)
-    health_check_alive = c.health_check()
+    dry_run_alive = c.dry_run()
 
     worker_process.terminate()
     worker_process.join()
 
-    health_check_worker_removed = c.health_check()
+    dry_run_worker_removed = c.dry_run()
 
     gateway_process.terminate()
     gateway_process.join()
 
-    assert health_check_alive
-    assert not health_check_worker_removed
+    assert dry_run_alive
+    assert not dry_run_worker_removed
 
     assert gateway_process.exitcode == 0
     assert worker_process.exitcode == 0
