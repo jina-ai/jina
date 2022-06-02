@@ -29,6 +29,12 @@ All af these have to match the Flow and how it was set up:
 * the `host` and the `port` as exposed by the Flow
 * if it needs to use `TLS` encryption
 
+    
+````{Hint} Default port
+The default port for the Client is `80` unless you are using `TLS` encryption it will be `443`
+````
+
+
 You can define these parameters by passing a valid URI scheme as part of the `host` argument:
 
 ````{tab} TLS disabled
