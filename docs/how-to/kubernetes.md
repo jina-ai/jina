@@ -42,7 +42,7 @@ To generate YAML configurations for Kubernetes from a Jina Flow, one just needs 
 flow.to_k8s_yaml('flow_k8s_configuration')
 ```
 
-This will create a folder 'flow_k8s_configuration' with a set of Kubernetes YAML configurations for all the deployments composing the Flow
+This will create a folder `flow_k8s_configuration` with a set of Kubernetes YAML configurations for all the deployments composing the Flow
 
 ````{admonition} Hint
 :class: hint
