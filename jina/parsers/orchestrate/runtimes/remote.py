@@ -23,7 +23,7 @@ def mixin_client_gateway_parser(parser):
     gp.add_argument(
         '--port',
         type=int,
-        default=helper.random_port(),
+        default=None,
         help='The port of the Gateway, which the client should connect to.',
     )
 
