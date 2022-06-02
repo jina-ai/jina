@@ -31,7 +31,7 @@ All af these have to match the Flow and how it was set up:
 
     
 ````{Hint} Default port
-The default port for the Client is 80 unless you are using `TLS` encryption it will be 443
+The default port for the Client is `80` unless you are using `TLS` encryption it will be `443`
 ````
 
 
