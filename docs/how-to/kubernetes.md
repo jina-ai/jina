@@ -7,7 +7,7 @@ A `Flow` is composed of `Executors` which run Python code
 defined to operate on a `DocumentArray`. These Executors live in different runtimes depending on how you want to deploy
 your Flow. 
 
-When deployed in Kubernetes, these Executors will run inside Kubernetes Pods as containers and their lifetime will be handled
+When deployed in Kubernetes, these Executors will run inside Kubernetes Pods as containers and their lifetime will be orchestrated
 by Kubernetes.
 
 Deploying a Flow in Kubernetes is the recommended way of using Jina in production.
@@ -42,7 +42,7 @@ To generate YAML configurations for Kubernetes from a Jina Flow, one just needs 
 flow.to_k8s_yaml('flow_k8s_configuration')
 ```
 
-This will create a folder 'flow_k8s_configuration' with a set of Kubernetes YAML configurations for all the deployments composing the Flow
+This will create a folder `flow_k8s_configuration` with a set of Kubernetes YAML configurations for all the deployments composing the Flow
 
 ````{admonition} Hint
 :class: hint
@@ -114,9 +114,9 @@ Here are some managed `Kubernetes` cluster solutions you could use:
 - [Digital Ocean](https://www.digitalocean.com/products/kubernetes/)
 ```
 
-### Indexing and searching images using CLIP image encoder and PQLiteIndexer
+### Indexing and searching images using CLIP image encoder and ANNLite
 
-This example shows how to build and deploy a Flow in Kubernetes with [`CLIPImageEncoder`](https://hub.jina.ai/executor/0hnlmu3q) as encoder and [`PQLiteIndexer`](https://hub.jina.ai/executor/pn1qofsj) as indexer.
+This example shows how to build and deploy a Flow in Kubernetes with [`CLIPImageEncoder`](https://hub.jina.ai/executor/0hnlmu3q) as encoder and [`ANNLiteIndexer`](https://hub.jina.ai/executor/pn1qofsj) as indexer.
 
 ```python
 from jina import Flow
@@ -126,7 +126,7 @@ f = (
     .add(name='encoder', uses='jinahub+docker://CLIPEncoder', replicas=2)
     .add(
         name='indexer',
-        uses='jinahub+docker://PQLiteIndexer',
+        uses='jinahub+docker://ANNLiteIndexer',
         uses_with={'dim': 512},
         shards=2,
     )
@@ -147,8 +147,7 @@ You should expect the following file structure generated:
     ├── gateway
     │   └── gateway.yml
     └── encoder
-    │   ├── encoder.yml
-    │   └── encoder-head.yml
+    │   └── encoder.yml
     └── indexer
         ├── indexer-0.yml
         ├── indexer-1.yml
@@ -178,35 +177,63 @@ kubectl get pods -n custom-namespace
 NAME                              READY   STATUS    RESTARTS   AGE
 encoder-8b5575cb9-bh2x8           1/1     Running   0          60m
 encoder-8b5575cb9-gx78g           1/1     Running   0          60m
-encoder-head-55bbb477ff-p2bmk   1/1     Running   0          60m
 gateway-7df8765bd9-xf5tf          1/1     Running   0          60m
 indexer-0-8f676fc9d-4fh52         1/1     Running   0          60m
 indexer-1-55b6cc9dd8-gtpf6        1/1     Running   0          60m
-indexer-head-6fcc679d95-8mrm6   1/1     Running   0          60m
+indexer-head-6fcc679d95-8mrm6     1/1     Running   0          60m
 ```
 
 Note that the Jina gateway was deployed with name `gateway-7df8765bd9-xf5tf`.
 
 Once we see that all the Deployments in the Flow are ready, we can start indexing documents.
 
-```python
-import portforward
+First, you need to forward the Kubernetes services to your local machine by doing
 
+```bash 
+kubectl port-forward svc/gateway 8080:8080
+```
+
+Now you can define a Client to connect to your Flow running in Kubernetes:
+
+```python
 from jina.clients import Client
+
+client = Client(host='http://localhost:8080')
+```
+
+Then you can index the set of images that you want to search:
+
+```python
 from docarray import DocumentArray
 
-with portforward.forward('custom-namespace', 'gateway-7df8765bd9-xf5tf', 8080, 8080):
-    client = Client(host='localhost', port=8080)
-    client.show_progress = True
-    docs = client.post(
-        '/index',
-        inputs=DocumentArray.from_files('./imgs/*.png').apply(
-            lambda d: d.convert_uri_to_datauri()
-        ),
-    )
+da = DocumentArray.pull('demo-da-images-jina', show_progress=True)
 
-    print(f' Indexed documents: {len(docs)}')
+da_query = da[0:1]  # one document for query
+da_index = da[1:]  # the rest is for indexing
+
+indexed_docs = client.index(inputs=da_index)
+print(f'Indexed Documents: {len(indexed_docs)}')
 ```
+
+```shell
+Indexed Documents: 99
+```
+
+We indexer 99 Documents !
+
+Then, search for the closest image to our query image:
+
+```python
+queried_docs = client.search(inputs=da_query)
+
+matches = queried_docs[0].matches
+print(f'Matched Documents: {len(matches)}')
+```
+
+```shell
+Matched Documents: 10
+```
+Now have the list of the 10 closest image to the query !
 
 (kubernetes-expose)=
 ## Exposing your Flow
@@ -233,22 +260,14 @@ export EXTERNAL_IP=`kubectl get service gateway-exposed -n custom-namespace -o=j
 The client sends an image to the exposed `Flow` on `$EXTERNAL_IP` and retrieves the matches retrieved from the Flow.
 Finally, it prints the uri of the closest matches.
 
+You will need to configure your Client to connect to the Flow via the external IP by doing:
+
 ```python
 import os
-
 from jina.clients import Client
-from docarray import DocumentArray
 
 host = os.environ['EXTERNAL_IP']
 port = 80
 
 client = Client(host=host, port=port)
-client.show_progress = True
-docs = DocumentArray.from_files("./imgs/*.png").apply(
-    lambda d: d.convert_uri_to_datauri()
-)
-queried_docs = client.post("/search", inputs=docs)
-
-matches = queried_docs[0].matches
-print(f"Matched documents: {len(matches)}")
 ```
