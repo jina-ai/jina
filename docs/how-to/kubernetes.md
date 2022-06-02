@@ -177,7 +177,6 @@ kubectl get pods -n custom-namespace
 NAME                              READY   STATUS    RESTARTS   AGE
 encoder-8b5575cb9-bh2x8           1/1     Running   0          60m
 encoder-8b5575cb9-gx78g           1/1     Running   0          60m
-encoder-head-55bbb477ff-p2bmk     1/1     Running   0          60m
 gateway-7df8765bd9-xf5tf          1/1     Running   0          60m
 indexer-0-8f676fc9d-4fh52         1/1     Running   0          60m
 indexer-1-55b6cc9dd8-gtpf6        1/1     Running   0          60m
