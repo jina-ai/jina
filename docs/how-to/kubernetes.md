@@ -187,7 +187,7 @@ Note that the Jina gateway was deployed with name `gateway-7df8765bd9-xf5tf`.
 
 Once we see that all the Deployments in the Flow are ready, we can start indexing documents.
 
-We need first to forward the Kubernetes services to your local machine by doing
+First, you need to forward the Kubernetes services to your local machine by doing
 
 ```bash 
 kubectl port-forward svc/gateway 8080:8080
