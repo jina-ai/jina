@@ -193,7 +193,7 @@ We need first to forward the Kubernetes services to your local machine by doing
 kubectl port-forward svc/gateway 8080:8080
 ```
 
-Now we can define a client to connect to our Flow running in Kubernetes:
+Now you can define a Client to connect to your Flow running in Kubernetes:
 
 ```python
 from jina.clients import Client
@@ -201,7 +201,7 @@ from jina.clients import Client
 client = Client(host='http://localhost:8080')
 ```
 
-Then let's index the set of images we want to search:
+Then you can index the set of images that you want to search:
 
 ```python
 from docarray import DocumentArray
@@ -221,7 +221,7 @@ Indexed Documents: 99
 
 We indexer 99 Documents !
 
-Then let's search for the closest image to our query image:
+Then, search for the closest image to our query image:
 
 ```python
 queried_docs = client.search(inputs=da_query)
