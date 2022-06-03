@@ -13,7 +13,12 @@ from jina.helper import ArgNamespace, T, iscoroutinefunction, typename
 from jina.importer import ImportExtensions
 from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
-from jina.serve.executors.decorators import requests, store_init_kwargs, wrap_func
+from jina.serve.executors.decorators import (
+    avoid_concurrent_lock_wrapper,
+    requests,
+    store_init_kwargs,
+    wrap_func,
+)
 
 if TYPE_CHECKING:
     from prometheus_client import Summary
@@ -58,6 +63,7 @@ class ExecutorType(type(JAMLCompatible), type):
                     f'{cls.__init__} does not follow the full signature of `Executor.__init__`, '
                     f'please add `**kwargs` to your __init__ function'
                 )
+            wrap_func(cls, ['__init__'], avoid_concurrent_lock_wrapper)
             wrap_func(cls, ['__init__'], store_init_kwargs)
 
             reg_cls_set.add(cls_id)

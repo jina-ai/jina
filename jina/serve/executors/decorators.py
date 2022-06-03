@@ -4,6 +4,8 @@ import inspect
 from functools import wraps
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Sequence, Union
 
+import filelock
+
 from jina.helper import convert_tuple_to_list, iscoroutinefunction
 from jina.serve.executors.metas import get_default_metas
 
@@ -57,6 +59,26 @@ def store_init_kwargs(func: Callable) -> Callable:
             self._init_kwargs_dict = tmp
         convert_tuple_to_list(self._init_kwargs_dict)
         f = func(self, *args, **kwargs)
+        return f
+
+    return arg_wrapper
+
+
+def avoid_concurrent_lock_wrapper(func: Callable) -> Callable:
+    """Wrap the function around a File Lock to make sure that the function is run by a single replica in the same machine
+    :param func: the function to decorate
+    :return: the wrapped function
+    """
+
+    @wraps(func)
+    def arg_wrapper(self, *args, **kwargs):
+        if func.__name__ != '__init__':
+            raise TypeError(
+                'this decorator should only be used on __init__ method of an executor'
+            )
+
+        with filelock.FileLock(f'~/.jina/locks/{self.__class__.__name__}.lock') as lock:
+            f = func(self, *args, **kwargs)
         return f
 
     return arg_wrapper
