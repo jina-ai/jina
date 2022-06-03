@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/how-to/kubernetes/" />
   
-<meta property="og:site_name" content="Jina 3.4.10 Documentation" />
+<meta property="og:site_name" content="Jina 3.4.11 Documentation" />
   
 <meta property="og:description" content="Jina natively supports deploying your Flow and Executors on Kubernetes. A Flow is composed of Executors which run Python code defined to operate on a DocumentArray. These Executors live in different runtimes depending on how you want to deploy your Flow. When deployed in Kubernetes, these Executo..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.4.10 Documentation" />
+<meta property="og:image:alt" content="Jina 3.4.11 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="How to deploy and use the monitoring with Jina" href="../monitoring/" /><link rel="prev" title="How to run Jina with Docker Compose" href="../docker-compose/" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>How to deploy Jina on Kubernetes - Jina 3.4.10 documentation</title>
+        <title>How to deploy Jina on Kubernetes - Jina 3.4.11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -172,7 +172,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.4.10 documentation</div>
+                <div class="brand">Jina 3.4.11 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -266,6 +266,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/access-flow-api/">Access Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/client/">Python Client</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Error handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
@@ -593,7 +594,7 @@
 <p>A <code class="docutils literal notranslate"><span class="pre">Flow</span></code> is composed of <code class="docutils literal notranslate"><span class="pre">Executors</span></code> which run Python code
 defined to operate on a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. These Executors live in different runtimes depending on how you want to deploy
 your Flow.</p>
-<p>When deployed in Kubernetes, these Executors will run inside Kubernetes Pods as containers and their lifetime will be handled
+<p>When deployed in Kubernetes, these Executors will run inside Kubernetes Pods as containers and their lifetime will be orchestrated
 by Kubernetes.</p>
 <p>Deploying a Flow in Kubernetes is the recommended way of using Jina in production.</p>
 <section id="jina-relies-on-service-mesh">
@@ -618,7 +619,7 @@ Then, you can use the <code class="docutils literal notranslate"><span class="pr
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">flow</span><span class="o">.</span><span class="n">to_k8s_yaml</span><span class="p">(</span><span class="s1">'flow_k8s_configuration'</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This will create a folder ‘flow_k8s_configuration’ with a set of Kubernetes YAML configurations for all the deployments composing the Flow</p>
+<p>This will create a folder <code class="docutils literal notranslate"><span class="pre">flow_k8s_configuration</span></code> with a set of Kubernetes YAML configurations for all the deployments composing the Flow</p>
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
 <p>You can use a custom Docker image for the Gateway deployment. Just set the envrironment variable <code class="docutils literal notranslate"><span class="pre">JINA_GATEWAY_IMAGE</span></code> to the desired image before generating the configuration.</p>
@@ -685,9 +686,9 @@ and it does not mean that we don’t support these features. On the contrary we 
 </ul>
 </div>
 </section>
-<section id="indexing-and-searching-images-using-clip-image-encoder-and-pqliteindexer">
-<h3>Indexing and searching images using CLIP image encoder and PQLiteIndexer<a class="headerlink" href="#indexing-and-searching-images-using-clip-image-encoder-and-pqliteindexer" title="Permalink to this headline">¶</a></h3>
-<p>This example shows how to build and deploy a Flow in Kubernetes with <a class="reference external" href="https://hub.jina.ai/executor/0hnlmu3q"><code class="docutils literal notranslate"><span class="pre">CLIPImageEncoder</span></code></a> as encoder and <a class="reference external" href="https://hub.jina.ai/executor/pn1qofsj"><code class="docutils literal notranslate"><span class="pre">PQLiteIndexer</span></code></a> as indexer.</p>
+<section id="indexing-and-searching-images-using-clip-image-encoder-and-annlite">
+<h3>Indexing and searching images using CLIP image encoder and ANNLite<a class="headerlink" href="#indexing-and-searching-images-using-clip-image-encoder-and-annlite" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to build and deploy a Flow in Kubernetes with <a class="reference external" href="https://hub.jina.ai/executor/0hnlmu3q"><code class="docutils literal notranslate"><span class="pre">CLIPImageEncoder</span></code></a> as encoder and <a class="reference external" href="https://hub.jina.ai/executor/pn1qofsj"><code class="docutils literal notranslate"><span class="pre">ANNLiteIndexer</span></code></a> as indexer.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
@@ -695,7 +696,7 @@ and it does not mean that we don’t support these features. On the contrary we 
     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'encoder'</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://CLIPEncoder'</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="o">.</span><span class="n">add</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">'indexer'</span><span class="p">,</span>
-        <span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://PQLiteIndexer'</span><span class="p">,</span>
+        <span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://ANNLiteIndexer'</span><span class="p">,</span>
         <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">'dim'</span><span class="p">:</span> <span class="mi">512</span><span class="p">},</span>
         <span class="n">shards</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
     <span class="p">)</span>
@@ -712,8 +713,7 @@ and it does not mean that we don’t support these features. On the contrary we 
     ├── gateway
     │   └── gateway.yml
     └── encoder
-    │   ├── encoder.yml
-    │   └── encoder-head.yml
+    │   └── encoder.yml
     └── indexer
         ├── indexer-0.yml
         ├── indexer-1.yml
@@ -737,33 +737,51 @@ and it does not mean that we don’t support these features. On the contrary we 
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>NAME                              READY   STATUS    RESTARTS   AGE
 encoder-8b5575cb9-bh2x8           1/1     Running   0          60m
 encoder-8b5575cb9-gx78g           1/1     Running   0          60m
-encoder-head-55bbb477ff-p2bmk   1/1     Running   0          60m
 gateway-7df8765bd9-xf5tf          1/1     Running   0          60m
 indexer-0-8f676fc9d-4fh52         1/1     Running   0          60m
 indexer-1-55b6cc9dd8-gtpf6        1/1     Running   0          60m
-indexer-head-6fcc679d95-8mrm6   1/1     Running   0          60m
+indexer-head-6fcc679d95-8mrm6     1/1     Running   0          60m
 </pre></div>
 </div>
 <p>Note that the Jina gateway was deployed with name <code class="docutils literal notranslate"><span class="pre">gateway-7df8765bd9-xf5tf</span></code>.</p>
 <p>Once we see that all the Deployments in the Flow are ready, we can start indexing documents.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">portforward</span>
-
-<span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
-
-<span class="k">with</span> <span class="n">portforward</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="s1">'custom-namespace'</span><span class="p">,</span> <span class="s1">'gateway-7df8765bd9-xf5tf'</span><span class="p">,</span> <span class="mi">8080</span><span class="p">,</span> <span class="mi">8080</span><span class="p">):</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'localhost'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">)</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">show_progress</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-        <span class="s1">'/index'</span><span class="p">,</span>
-        <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="s1">'./imgs/*.png'</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">convert_uri_to_datauri</span><span class="p">()</span>
-        <span class="p">),</span>
-    <span class="p">)</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">' Indexed documents: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+<p>First, you need to forward the Kubernetes services to your local machine by doing</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl port-forward svc/gateway <span class="m">8080</span>:8080
 </pre></div>
 </div>
+<p>Now you can define a Client to connect to your Flow running in Kubernetes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'http://localhost:8080'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then you can index the set of images that you want to search:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+<span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">pull</span><span class="p">(</span><span class="s1">'demo-da-images-jina'</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">da_query</span> <span class="o">=</span> <span class="n">da</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># one document for query</span>
+<span class="n">da_index</span> <span class="o">=</span> <span class="n">da</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>  <span class="c1"># the rest is for indexing</span>
+
+<span class="n">indexed_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">da_index</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Indexed Documents: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">indexed_docs</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Indexed Documents: <span class="m">99</span>
+</pre></div>
+</div>
+<p>We indexer 99 Documents !</p>
+<p>Then, search for the closest image to our query image:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">queried_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">da_query</span><span class="p">)</span>
+
+<span class="n">matches</span> <span class="o">=</span> <span class="n">queried_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Matched Documents: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Matched Documents: <span class="m">10</span>
+</pre></div>
+</div>
+<p>Now have the list of the 10 closest image to the query !</p>
 </section>
 </section>
 <section id="exposing-your-flow">
@@ -788,23 +806,14 @@ sleep <span class="m">60</span> <span class="c1"># wait until the external ip is
 <h3>Client<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h3>
 <p>The client sends an image to the exposed <code class="docutils literal notranslate"><span class="pre">Flow</span></code> on <code class="docutils literal notranslate"><span class="pre">$EXTERNAL_IP</span></code> and retrieves the matches retrieved from the Flow.
 Finally, it prints the uri of the closest matches.</p>
+<p>You will need to configure your Client to connect to the Flow via the external IP by doing:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-
 <span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
 <span class="n">host</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'EXTERNAL_IP'</span><span class="p">]</span>
 <span class="n">port</span> <span class="o">=</span> <span class="mi">80</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
-<span class="n">client</span><span class="o">.</span><span class="n">show_progress</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="s2">"./imgs/*.png"</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">convert_uri_to_datauri</span><span class="p">()</span>
-<span class="p">)</span>
-<span class="n">queried_docs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"/search"</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">docs</span><span class="p">)</span>
-
-<span class="n">matches</span> <span class="o">=</span> <span class="n">queried_docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">matches</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Matched documents: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -843,7 +852,7 @@ Finally, it prints the uri of the closest matches.</p>
 
                 <div class="related-information sd-d-inline-flex">
                     <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on May 30, 2022.
+                    Last updated on Jun 03, 2022.
                     <div class="social-btns">
                     <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
                     <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
@@ -878,7 +887,7 @@ Finally, it prints the uri of the closest matches.</p>
 <li><a class="reference internal" href="#extra-kubernetes-options">Extra Kubernetes options</a></li>
 <li><a class="reference internal" href="#example-deploying-a-flow-with-kubernetes">Example : Deploying a Flow with Kubernetes</a><ul>
 <li><a class="reference internal" href="#preliminaries">Preliminaries</a></li>
-<li><a class="reference internal" href="#indexing-and-searching-images-using-clip-image-encoder-and-pqliteindexer">Indexing and searching images using CLIP image encoder and PQLiteIndexer</a></li>
+<li><a class="reference internal" href="#indexing-and-searching-images-using-clip-image-encoder-and-annlite">Indexing and searching images using CLIP image encoder and ANNLite</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#exposing-your-flow">Exposing your Flow</a><ul>
