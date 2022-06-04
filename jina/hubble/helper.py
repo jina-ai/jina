@@ -16,7 +16,6 @@ from functools import lru_cache, wraps
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 from urllib.parse import urljoin, urlparse
-from urllib.request import Request, urlopen
 
 from jina import __resources_path__
 from jina.enums import BetterEnum
