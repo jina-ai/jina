@@ -27,7 +27,7 @@ Jina is a framework that empowers anyone to build cross-modal and multi-modal<su
 
 ⚡ **Performance**
   - Intuitive design pattern for building high-performance microservices.
-  - Scaling at ease: set replicas, sharding via one parameter. 
+  - Scaling at ease: set replicas, sharding in one line. 
   - Duplex streaming between client and server.
   - Async and non-blocking data processing over dynamic flows.
 
@@ -54,15 +54,13 @@ pip install jina
 ## Get Started
 
 
-
-
 ### Basic Concepts
 
 Document, Executor and Flow are three fundamental concepts in Jina.
 
-- [**Document**](https://docarray.jina.ai/) is a data structure contains multi-modal data.
-- [**Executor**](https://docs.jina.ai/fundamentals/executor/) is a self-contained component and performs a group of tasks on Documents.
-- [**Flow**](https://docs.jina.ai/fundamentals/flow/) ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
+- [**Document**](https://docarray.jina.ai/) is the fundamental data structure.
+- [**Executor**](https://docs.jina.ai/fundamentals/executor/) is a group of functions with Documents as IO.
+- [**Flow**](https://docs.jina.ai/fundamentals/flow/) ties Executors together into a pipeline and exposes it with an API gateway.
 
 Leveraging these three concepts, let's build a simple image search service, as a "productization" of [DocArray README](https://github.com/jina-ai/docarray#a-complete-workflow-of-visual-search). 
 
