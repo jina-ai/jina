@@ -23,7 +23,7 @@ Jina is a framework that empowers anyone to build cross-modal and multi-modal<su
 Applications built with Jina enjoy the following features out-of-the-box:
 
 🌌 **Universal**
-  - Build applications that deliver fresh insights from multiple data types such as text, image, audio, video, 3D mesh, PDF.
+  - Build applications that deliver fresh insights from multiple data types such as text, image, audio, video, 3D mesh, PDF with [Jina AI's DocArray](https://docarray.jina.ai).
   - Support all mainstream deep learning frameworks.
   - Polyglot gateway that supports gRPC, Websockets, HTTP, GraphQL protocols with TLS.
 
@@ -92,7 +92,7 @@ with f:
 
 - The first line imports three concepts we just introduced;
 - `MyExec` defines an async function `foo` that receives `DocumentArray` from network requests and appends `"hello, world"` to `.text`;
-- `f` defines a Flow streamlined two Executors;
+- `f` defines a Flow streamlined two Executors in a chain;
 - The `with` block opens the Flow, sends an empty DocumentArray to the Flow, and prints the result.
 
 Running it gives you:
@@ -103,6 +103,12 @@ Running it gives you:
 
 At the last line we see its output `['hello, world!hello, world!', 'hello, world!hello, world!']`.
 
+
+While one could use standard Python with the same number of lines and get the same output, Jina accelerate time to market of your application by making it more scalable and cloud-native. Jina handles the infrastructure complexity in production and other Day-2 operations so that you can focus on the data application itself.  
+
+<p align="center">
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/no-complexity-banner.png?raw=true" alt="Jina: No Infrastructure Complexity, High Engineering Efficiency" width="100%"></a>
+</p>
 
 Leveraging these three concepts, let's build a simple image search service, as a "productization" of [DocArray README](https://github.com/jina-ai/docarray#a-complete-workflow-of-visual-search). 
 
