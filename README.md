@@ -118,7 +118,7 @@ tba
 
 tba
 
-### Easy deployment to the cloud
+### Fast-lane to cloud-native
 
 tba
 
