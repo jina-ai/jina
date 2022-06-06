@@ -4,7 +4,7 @@ from enum import Enum
 from types import SimpleNamespace
 from typing import Callable, Dict, List, Optional, Union
 
-from docarray.document.pydantic_model import PydanticDocumentArray
+from docarray.document.pydantic_model import PydanticDocument, PydanticDocumentArray
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 from pydantic import BaseConfig, BaseModel, Field, create_model, root_validator
@@ -185,13 +185,18 @@ def protobuf_to_pydantic_model(
         )
 
     CustomConfig.fields = camel_case_fields
-    model = create_model(
-        model_name,
-        **all_fields,
-        __config__=CustomConfig,
-        __validators__=oneof_field_validators,
-    )
-    model.update_forward_refs()
+    if model_name == 'DocumentProto':
+        model = PydanticDocument
+    elif model_name == 'DocumentArrayProto':
+        model = PydanticDocumentArray
+    else:
+        model = create_model(
+            model_name,
+            **all_fields,
+            __config__=CustomConfig,
+            __validators__=oneof_field_validators,
+        )
+        model.update_forward_refs()
     PROTO_TO_PYDANTIC_MODELS.__setattr__(model_name, model)
 
     return model
@@ -230,14 +235,6 @@ class JinaStatusModel(BaseModel):
         allow_population_by_field_name = True
 
 
-def _get_example_data():
-    from docarray import Document, DocumentArray
-
-    docs = DocumentArray()
-    docs.append(Document(text='hello, world!'))
-    return docs.to_list()
-
-
 class JinaRequestModel(BaseModel):
     """
     Jina HTTP request model.
@@ -252,7 +249,10 @@ class JinaRequestModel(BaseModel):
         ]
     ] = Field(
         None,
-        example=_get_example_data(),
+        example=[
+            {'text': 'hello, world!'},
+            {'uri': 'https://docs.jina.ai/_static/logo-light.svg'},
+        ],
         description=DESCRIPTION_DATA,
     )
     target_executor: Optional[str] = Field(
@@ -292,8 +292,8 @@ class JinaEndpointRequestModel(JinaRequestModel):
     """
 
     exec_endpoint: str = Field(
-        ...,
-        example='/foo',
+        default='/',
+        example='/',
         description='The endpoint string, by convention starts with `/`. '
-        'All executors bind with `@requests(on="/foo")` will receive this request.',
+        'If you specify it as `/foo`, then all executors bind with `@requests(on="/foo")` will receive the request.',
     )
