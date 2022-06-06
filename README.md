@@ -112,160 +112,7 @@ While one could use standard Python with the same number of lines and get the sa
 
 
 
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-banner1.svg?raw=true" alt="Get started with Jina to build production-ready neural search solution via ResNet in less than 20 minutes" width="100%"></a>
-</p>
-
-### Build a service from scratch
-
-<sup>
-Preliminaries: <a href="https://pytorch.org/get-started/locally/">install PyTorch & Torchvision</a>
-</sup>
-
-1. Import what we need.
-    ```python
-    from docarray import Document, DocumentArray
-    from jina import Executor, Flow, requests
-    ```
-2. Copy-paste the preprocessing step and wrap it via `Executor`:
-    ```python
-    class PreprocImg(Executor):
-        @requests
-        async def foo(self, docs: DocumentArray, **kwargs):
-            for d in docs:
-                (
-                    d.load_uri_to_image_tensor(200, 200)  # load
-                    .set_image_tensor_normalization()  # normalize color
-                    .set_image_tensor_channel_axis(
-                        -1, 0
-                    )  # switch color axis for the PyTorch model later
-                )
-    ```
-3. Copy-paste the embedding step and wrap it via `Executor`:
-    
-    ```python   
-    class EmbedImg(Executor):
-        def __init__(self, **kwargs):
-            super().__init__(**kwargs)
-            import torchvision
-            self.model = torchvision.models.resnet50(pretrained=True)        
-   
-        @requests
-        async def foo(self, docs: DocumentArray, **kwargs):
-            docs.embed(self.model)
-    ```
-4. Wrap the matching step into an `Executor`:
-    ```python
-    class MatchImg(Executor):
-        _da = DocumentArray()
-
-        @requests(on='/index')
-        async def index(self, docs: DocumentArray, **kwargs):
-            self._da.extend(docs)
-            docs.clear()  # clear content to save bandwidth
-
-        @requests(on='/search')
-        async def foo(self, docs: DocumentArray, **kwargs):
-            docs.match(self._da, limit=9)
-            del docs[...][:, ('embedding', 'tensor')]  # save bandwidth as it is not needed
-    ```
-5. Connect all `Executor`s in a `Flow`, scale embedding to 3:
-    ```python
-    f = (
-        Flow(port=12345)
-        .add(uses=PreprocImg)
-        .add(uses=EmbedImg, replicas=3)
-        .add(uses=MatchImg)
-    )
-    ```
-    Plot it via `f.plot('flow.svg')` and you get:
-    
-    <p align="center">
-    <img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-flow-plot.svg?raw=true" title="Jina Flow.plot visualization" width="65%">
-    </p>
-    
-6. Download the image dataset.
-
-
-<table>
-<tr>
-<th> Pull from Cloud </th> 
-<th> Manually download, unzip and load </th>
-</tr>
-<tr>
-<td> 
-
-```python
-index_data = DocumentArray.pull('demo-leftda', show_progress=True)
-```
-     
-</td>
-<td>
-
-1. Download `left.zip` from [Google Drive](https://sites.google.com/view/totally-looks-like-dataset)
-2. Unzip all images to `./left/`
-3. Load into DocumentArray
-    ```python
-    index_data = DocumentArray.from_files('left/*.jpg')
-    ```
-
-</td>
-</tr>
-</table>
-
-    
-7. Index image data:
-    ```python
-    with f:
-        f.post(
-            '/index',
-            index_data,
-            show_progress=True,
-            request_size=8,
-        )
-        f.block()
-    ```
-
-The full indexing on 6,000 images should take ~8 minutes on a MacBook Air 2020.
-
-Now you can use a Python client to access the service:
-
-```python
-from jina import Client
-
-c = Client(port=12345)  # connect to localhost:12345
-print(c.post('/search', index_data[0])['@m'])  # '@m' is the matches-selector
-```
-
-To switch from gRPC interface to REST API, you can simply set `protocol = 'http'`:
-
-```python
-with f:
-    ...
-    f.protocol = 'http'
-    f.block()
-```
-
-Now you can query it via `curl`:
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-curl.png?raw=true" alt="Use curl to query image search service built by Jina & ResNet50" width="80%"></a>
-</p>
-
-Or go to `http://0.0.0.0:12345/docs` and test requests via a Swagger UI:
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-swagger-ui.gif?raw=true" alt="Visualize visual similar images in Jina using ResNet50" width="60%"></a>
-</p>
-
-
-
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-banner2.svg?raw=true" alt="Get started with Jina to build production-ready neural search solution via ResNet in less than 20 minutes" width="100%"></a>
-</p>
-
-### Play with Containerized Executors
+### Seamless Docker integration
 
 You can containerize the Executors and use them in a sandbox thanks to [Hub](https://hub.jina.ai).
 
@@ -401,8 +248,7 @@ Now we have the service up running in Kubernetes!
 ## Support
 
 - Check out the [Learning Bootcamp](https://learn.jina.ai) to get started with Jina.
-- Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and
-  support queries.
+- Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and support queries.
 - Join our [Engineering All Hands](https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne) meet-up to
   discuss your use case and learn Jina's new features.
     - **When?** The second Tuesday of every month
@@ -415,16 +261,14 @@ Now we have the service up running in Kubernetes!
 ## Join Us
 
 Jina is backed by [Jina AI](https://jina.ai) and licensed under [Apache-2.0](./LICENSE).
-[We are actively hiring](https://jobs.jina.ai) AI engineers, solution engineers to build the next neural search
-ecosystem in open source.
+[We are actively hiring](https://jobs.jina.ai) AI engineers, solution engineers to build the next neural search ecosystem in open source.
 
 <!-- end support-pitch -->
 
 ## Contribute
 
-We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to
-your active involvement.
+We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to your active involvement.
 
 - [Release cycles and development stages](RELEASE.md)
 - [Contributing guidelines](CONTRIBUTING.md)
-- [Code of conduct](https://github.com/jina-ai/jina/blob/master/.github/CODE_OF_CONDUCT.md)
+- [Code of conduct](.github/CODE_OF_CONDUCT.md)
