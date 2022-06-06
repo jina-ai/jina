@@ -36,7 +36,7 @@ Jina is a framework that empowers anyone to build cross-modal and multi-modal<su
   - Fast deployment to Kubernetes, Docker Compose and Jina Cloud.
   - Full observability via Prometheus and Grafana.
 
-<sup><a id="example-application">[*]</a> Example cross-modal application: <a href="https://github.com/jina-ai/dalle-flow/">DALL·E Flow</a>; example multi-modal services: <a href="https://github.com/jina-ai/clip-as-service/">CLIP-as-service</a>, <a href="https://github.com/jina-ai/now/">Jina Now</a></sup>
+<sup><a id="example-application">[*]</a> Example cross-modal application: <a href="https://github.com/jina-ai/dalle-flow/">DALL·E Flow</a>; example multi-modal services: <a href="https://github.com/jina-ai/clip-as-service/">CLIP-as-service</a>, <a href="https://github.com/jina-ai/now/">Jina Now</a>.</sup>
 
 <!-- end jina-description -->
 
@@ -46,10 +46,9 @@ Jina is a framework that empowers anyone to build cross-modal and multi-modal<su
 
 ```bash
 pip install jina
-jina -v
 ```
 
-More install [can be found in the docs](https://docs.jina.ai/get-started/install/).
+[More install options can be found in the docs](https://docs.jina.ai/get-started/install/).
 
 
 ## Get Started
