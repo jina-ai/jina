@@ -152,7 +152,6 @@ def get_main_parser():
     from jina.parsers.create import set_new_project_parser
     from jina.parsers.export_api import set_export_api_parser
     from jina.parsers.flow import set_flow_parser
-    from jina.parsers.helloworld import set_hello_parser
     from jina.parsers.helper import _SHOW_ALL_ARGS, _chf
     from jina.parsers.hubble import set_hub_parser
     from jina.parsers.ping import set_ping_parser
@@ -163,15 +162,6 @@ def get_main_parser():
     sp = parser.add_subparsers(
         dest='cli',
         required=True,
-    )
-
-    set_hello_parser(
-        sp.add_parser(
-            'hello',
-            help='Hello Jina!',
-            description='Start hello world demos.',
-            formatter_class=_chf,
-        )
     )
 
     set_pod_parser(
