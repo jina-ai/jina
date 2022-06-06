@@ -177,32 +177,6 @@ def export_api(args: 'Namespace'):
             default_logger.info(f'API is exported to {f_name}')
 
 
-def hello(args: 'Namespace'):
-    """
-    Run any of the hello world examples
-
-    :param args: arguments coming from the CLI.
-    """
-    if args.hello == 'fashion':
-        from jina.helloworld.fashion.app import hello_world
-
-        hello_world(args)
-    elif args.hello == 'chatbot':
-        from jina.helloworld.chatbot.app import hello_world
-
-        hello_world(args)
-    elif args.hello == 'multimodal':
-        from jina.helloworld.multimodal.app import hello_world
-
-        hello_world(args)
-    elif args.hello == 'fork':
-        from jina.helloworld.fork import fork_hello
-
-        fork_hello(args)
-    else:
-        raise ValueError(f'must be one of [`fashion`, `chatbot`, `multimodal`, `fork`]')
-
-
 def flow(args: 'Namespace'):
     """
     Start a Flow from a YAML file or a docker image

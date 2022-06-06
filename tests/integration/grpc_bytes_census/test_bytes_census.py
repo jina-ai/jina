@@ -2,8 +2,10 @@ import os
 
 import pytest
 
-from docarray import DocumentArray
-from jina import Flow
+from jina import DocumentArray, Flow
+
+os.environ['JINA_GRPC_SEND_BYTES'] = '0'
+os.environ['JINA_GRPC_RECV_BYTES'] = '0'
 
 
 @pytest.mark.parametrize('inputs', [None, DocumentArray.empty(10)])

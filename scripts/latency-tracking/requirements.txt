@@ -1,4 +1,0 @@
-packaging==21.0
-Pillow==9.0.1
-scipy==1.7.0
-uvloop==0.15.2

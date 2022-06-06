@@ -342,13 +342,6 @@ You can containerize the Executors and use them in a sandbox thanks to [Hub](htt
 Now we have the service up running in Kubernetes!
 
 
-## Run Quick Demo
-
-- [👗 Fashion image search](https://docs.jina.ai/get-started/hello-world/fashion/): `jina hello fashion`
-- [🤖 QA chatbot](https://docs.jina.ai/get-started/hello-world/covid-19-chatbot/): `pip install "jina[demo]" && jina hello chatbot`
-- [📰 Multimodal search](https://docs.jina.ai/get-started/hello-world/multimodal/): `pip install "jina[demo]" && jina hello multimodal`
-- 🍴 Fork the source of a demo to your folder: `jina hello fork fashion ../my-proj/`
-- Create a new Jina project: `jina new hello-jina`
 
 <!-- start support-pitch -->
 

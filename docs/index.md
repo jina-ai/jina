@@ -25,59 +25,20 @@
     ```
     ````
 
-2. That’s it! Try a hello-world demo
+2. That’s it!
    ````{tab} Run natively
    ```shell
-   jina hello fashion
+   jina -v
    ```
    ````
    ````{tab} Run in Docker
    ```shell
-   docker run -v "$(pwd)/j:/j" jinaai/jina:latest hello fashion --workdir /j && open j/demo.html
+   docker run jinaai/jina:latest -v
    ```
    ````
 
 Now that you’re set up, let’s dive into more of how Jina works and how to build great apps.
 
-## Next steps
-
-:::::{grid} 2
-:gutter: 3
-
-
-::::{grid-item-card} {octicon}`smiley;1.5em` Play 3 Hello World
-:link: get-started/hello-world/index
-:link-type: doc
-
-Try Jina on fashion image search, QA chatbot and multimodal search.
-
-::::
-
-::::{grid-item-card} {octicon}`workflow;1.5em` Understand the Architecture 
-:link: fundamentals/architecture-overview
-:link-type: doc
-
-Executor and Flow are the fundamental concepts in Jina.
-
-::::
-
-::::{grid-item-card} {octicon}`light-bulb;1.5em` Create a Jina Project
-:link: get-started/create-app
-:link-type: doc
-
-Create a new Jina project with one line in the terminal
-::::
-
-::::{grid-item-card} {octicon}`package-dependents;1.5em` Share Executors
-:link: fundamentals/executor/hub/index
-:link-type: doc
-:class-card: color-gradient-card
-
-Learn to share and reuse Executors from the Jina community.
-::::
-
-
-:::::
 
 ```{include} ../README.md
 :start-after: <!-- start support-pitch -->
@@ -92,7 +53,6 @@ get-started/neural-search
 get-started/what-is-jina
 get-started/install/index
 get-started/create-app
-get-started/hello-world/index
 ```
 
 ```{toctree}
