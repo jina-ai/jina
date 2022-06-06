@@ -18,12 +18,6 @@ from jina.serve.networking import GrpcConnectionPool
 if TYPE_CHECKING:
     from jina.clients.base import CallbackFnType, InputType
 
-GRPC_COMPRESSION_MAP = {
-    'NoCompression'.lower(): grpc.Compression.NoCompression,
-    'Gzip'.lower(): grpc.Compression.Gzip,
-    'Deflate'.lower(): grpc.Compression.Deflate,
-}
-
 
 class GRPCBaseClient(BaseClient):
     """A simple Python client for connecting to the gRPC gateway.
@@ -37,19 +31,16 @@ class GRPCBaseClient(BaseClient):
         on_done: 'CallbackFnType',
         on_error: Optional['CallbackFnType'] = None,
         on_always: Optional['CallbackFnType'] = None,
-        compression: str = 'NoCompression',
+        compression: Optional[str] = None,
         **kwargs,
     ):
         try:
-            if compression.lower() not in GRPC_COMPRESSION_MAP:
-                import warnings
+            self.compression = (
+                getattr(grpc.Compression, compression)
+                if compression
+                else grpc.Compression.NoCompression
+            )
 
-                warnings.warn(
-                    message=f'Your compression "{compression}" is not supported. Supported '
-                    f'algorithms are `Gzip`, `Deflate` and `NoCompression`. NoCompression will be used as '
-                    f'default'
-                )
-                compression = 'NoCompression'
             self.inputs = inputs
             req_iter = self._get_requests(**kwargs)
             async with GrpcConnectionPool.get_grpc_channel(
@@ -66,9 +57,7 @@ class GRPCBaseClient(BaseClient):
 
                     async for resp in stub.Call(
                         req_iter,
-                        compression=GRPC_COMPRESSION_MAP.get(
-                            compression.lower(), grpc.Compression.NoCompression
-                        ),
+                        compression=self.compression,
                     ):
                         callback_exec(
                             response=resp,

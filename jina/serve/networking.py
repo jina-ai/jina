@@ -437,25 +437,15 @@ class GrpcConnectionPool:
     def __init__(
         self,
         logger: Optional[JinaLogger] = None,
-        compression: str = 'NoCompression',
+        compression: Optional[str] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
     ):
         self._logger = logger or JinaLogger(self.__class__.__name__)
-        GRPC_COMPRESSION_MAP = {
-            'NoCompression'.lower(): grpc.Compression.NoCompression,
-            'Gzip'.lower(): grpc.Compression.Gzip,
-            'Deflate'.lower(): grpc.Compression.Deflate,
-        }
-        if compression.lower() not in GRPC_COMPRESSION_MAP:
-            import warnings
 
-            warnings.warn(
-                message=f'Your compression "{compression}" is not supported. Supported '
-                f'algorithms are `Gzip`, `Deflate` and `NoCompression`. NoCompression will be used as '
-                f'default'
-            )
-        self.compression = GRPC_COMPRESSION_MAP.get(
-            compression.lower(), grpc.Compression.NoCompression
+        self.compression = (
+            getattr(grpc.Compression, compression)
+            if compression
+            else grpc.Compression.NoCompression
         )
 
         if metrics_registry:

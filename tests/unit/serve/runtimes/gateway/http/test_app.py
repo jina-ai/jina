@@ -18,21 +18,6 @@ from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime, get_fastapi_app
 from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
 
 
-@pytest.mark.parametrize('p', [['--default-swagger-ui'], []])
-def test_custom_swagger(p):
-    args = set_gateway_parser().parse_args(p)
-    logger = JinaLogger('')
-    app = get_fastapi_app(
-        args, TopologyGraph({}), GrpcConnectionPool(logger=logger), logger
-    )
-    # The TestClient is needed here as a context manager to generate the shutdown event correctly
-    # otherwise the app can hang as it is not cleaned up correctly
-    # see https://fastapi.tiangolo.com/advanced/testing-events/
-    with TestClient(app) as client:
-        assert any('/docs' in r.path for r in app.routes)
-        assert any('/openapi.json' in r.path for r in app.routes)
-
-
 class TestExecutor(Executor):
     @requests
     def empty(self, docs: 'DocumentArray', **kwargs):
