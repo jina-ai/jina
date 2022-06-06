@@ -171,8 +171,8 @@ ogp_custom_meta_tags = [
     '<meta name="twitter:card" content="summary_large_image">',
     '<meta name="twitter:site" content="@JinaAI_">',
     '<meta name="twitter:creator" content="@JinaAI_">',
-    '<meta name="description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">',
-    '<meta property="og:description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">',
+    '<meta name="description" content="The Framework for Building Cross-Modal and Multi-Modal Applications on the Cloud">',
+    '<meta property="og:description" content="The Framework for Building Cross-Modal and Multi-Modal Applications on the Cloud">',
     '''
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -203,8 +203,8 @@ def configure_qa_bot_ui(app):
 
 def setup(app):
     from sphinx.domains.python import PyField
-    from sphinx.util.docfields import Field
     from sphinx.locale import _
+    from sphinx.util.docfields import Field
 
     app.add_object_type(
         'confval',

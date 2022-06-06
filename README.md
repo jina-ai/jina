@@ -1,11 +1,11 @@
 <p align="center">
 <br><br><br>
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Jina is a cloud-native neural search framework" width="150px"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: The Framework for Building Cross-Modal and Multi-Modal Applications on the Cloud" width="150px"></a>
 <br><br><br>
 </p>
 
 <p align="center">
-<b>Cloud-Native Neural Search<sup><a href="https://docs.jina.ai/get-started/neural-search/">?</a></sup> Framework for <i>Any</i> Kind of Data</b>
+<b>The Framework for Building Cross-Modal and Multi-Modal Applications on the Cloud</b>
 </p>
 
 
@@ -13,40 +13,42 @@
 <a href="https://github.com/jina-ai/jina/actions/workflows/cd.yml"><img alt="Github CD status" src="https://github.com/jina-ai/jina/actions/workflows/cd.yml/badge.svg"></a>
 <a href="https://pypi.org/project/jina/"><img alt="PyPI" src="https://img.shields.io/pypi/v/jina?label=PyPI&logo=pypi&logoColor=white&style=flat-square"></a>
 <a href="https://codecov.io/gh/jina-ai/jina"><img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/jina-ai/jina/master?logo=Codecov&logoColor=white&style=flat-square"></a>
-<a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-2.8k-blueviolet?logo=slack&amp;logoColor=white&style=flat-square"></a>
+<a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-3.0k-blueviolet?logo=slack&amp;logoColor=white&style=flat-square"></a>
 </p>
 
 <!-- start jina-description -->
 
-Jina is a neural search framework that empowers anyone to build SOTA and scalable neural search applications in minutes.
+Jina is a framework that empowers anyone to build cross-modal and multi-modal applications on the cloud. It uplifts a local PoC into a production-ready service in just minutes. Jina simplifies the advanced solution engineering and cloud-native technologies, making them accessible to every developer. Specially, applications built with Jina enjoy the following features out-of-the-box:
 
-⏱️ **Save time** - *The* design pattern of neural search systems. Quickly build solutions for indexing, querying, understanding multi-/cross-modal data such as video, image, text, audio, source code, PDF. Get it up and running right now using [Jina NOW](https://github.com/jina-ai/now)
-
-🌩️ **Local & cloud friendly** - Distributed architecture, scalable & cloud-native from day one. Same developer experience on local, [Docker Compose](https://docs.jina.ai/how-to/docker-compose/), [Kubernetes](https://docs.jina.ai/how-to/kubernetes/).
-
-🚀 **Serve, scale & share** - Serve a local project with HTTP, WebSockets or gRPC endpoints in just minutes. Scale your neural search applications to meet your availability and throughput requirements. Share and reuse building blocks from [Hub](https://hub.jina.ai).
-
-🍱 **Own your stack** - Keep end-to-end stack ownership of your solution. Avoid integration pitfalls you get with fragmented, multi-vendor, generic legacy tools. Enjoy the integration with the neural search ecosystem including [DocArray](https://docarray.jina.ai), [Hub](https://hub.jina.ai) and [Finetuner](https://finetuner.jina.ai).
+- 🌌 Versatile on all modalities and data types, such as text, image, audio, video, 3D mesh, PDF.
+- 🧠 Support all mainstream deep learning frameworks. 
+- 🛣️ Intuitive design pattern for building high-performant microservices.
+- 🆙 Scaling at ease: set replicas, sharding via one parameter. 
+- 📡 Universal gateway that supports gRPC, Websockets, HTTP, GraphQL protocols with TLS.
+- 🔁 Duplex streaming between client and server.
+- ⚡ Async and non-blocking data processing over dynamic flows.
+- 🐳 Seamless Docker integration: sharing, exploring, sandboxing, versioning and dependency control via [Jina Hub](https://hub.jina.ai).
+- ⎈ Fast deployment to Kubernetes, Docker Compose and Jina Cloud.
+- 👁️ Full observability via Prometheus and Grafana.
 
 <!-- end jina-description -->
+
+## [Documentation](https://docs.jina.ai)
 
 ## Install 
 
 ```bash
 pip install jina
+jina -v
 ```
 
-For Jina 2.x users, please uninstall it via `pip uninstall jina` before installing Jina 3. Please also read [the 2 to 3 migration guide](https://docs.jina.ai/get-started/migrate/).
+More install [can be found in the docs](https://docs.jina.ai/get-started/install/).
 
-More install options including Conda, Docker, and Windows [can be found here](https://docs.jina.ai/get-started/install/).
-
-## [Documentation](https://docs.jina.ai)
 
 ## Get Started
 
 
 
-We promise you can build a **scalable** ResNet-powered image search **service** in 20 minutes or less, **from scratch to Kubernetes**. If not, you can forget about Jina.
 
 ### Basic Concepts
 
