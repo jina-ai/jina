@@ -18,15 +18,15 @@
 
 <!-- start jina-description -->
 
-Jina is a framework that empowers anyone to build cross-modal and multi-modal<sup><a href="#example-application">[*]</a></sup> applications on the cloud. It uplifts a local PoC into a production-ready service in just minutes. It simplifies the advanced solution engineering and cloud-native technologies, making them accessible to every developer. Applications built with Jina enjoy the following features out-of-the-box:
+Jina is a framework that empowers anyone to build cross-modal and multi-modal<sup><a href="#example-application">[*]</a></sup> applications on the cloud. It uplifts a local PoC into a production-ready service in just minutes. Jina handles the infrastructure complexity, and makes the advanced solution engineering and cloud-native technologies accessible to every developer. Applications built with Jina enjoy the following features out-of-the-box:
 
 🌌 **Universal**
-  - Versatile on all modalities and data types, such as text, image, audio, video, 3D mesh, PDF.
+  - Build applications that deliver fresh insights from multiple data types such as text, image, audio, video, 3D mesh, PDF.
   - Support all mainstream deep learning frameworks.
   - Polyglot gateway that supports gRPC, Websockets, HTTP, GraphQL protocols with TLS.
 
 ⚡ **Performance**
-  - Intuitive design pattern for building high-performance microservices.
+  - Intuitive design pattern for high-performance microservices.
   - Scaling at ease: set replicas, sharding in one line. 
   - Duplex streaming between client and server.
   - Async and non-blocking data processing over dynamic flows.
@@ -35,6 +35,9 @@ Jina is a framework that empowers anyone to build cross-modal and multi-modal<su
   - Seamless Docker integration: sharing, exploring, sandboxing, versioning and dependency control via [Jina Hub](https://hub.jina.ai).
   - Fast deployment to Kubernetes, Docker Compose and Jina Cloud.
   - Full observability via Prometheus and Grafana.
+
+🍱 **Ecosystem**
+  - Improved engineering efficiency thanks to the Jina AI ecosystem, so you can focus on innovating with the data applications you build.
 
 <sup><a id="example-application">[*]</a> Example cross-modal application: <a href="https://github.com/jina-ai/dalle-flow/">DALL·E Flow</a>; example multi-modal services: <a href="https://github.com/jina-ai/clip-as-service/">CLIP-as-service</a>, <a href="https://github.com/jina-ai/now/">Jina Now</a>.</sup>
 
