@@ -22,6 +22,10 @@ on:
 
 jobs:
   analyze:
+    if: |
+      !startsWith(github.event.head_commit.message, 'chore') &&
+      !startsWith(github.event.head_commit.message, 'build: hotfix') &&
+      !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
     name: Analyze
     runs-on: ubuntu-latest
     permissions:
