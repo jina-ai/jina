@@ -20,16 +20,21 @@
 
 Jina is a framework that empowers anyone to build cross-modal and multi-modal applications on the cloud. It uplifts a local PoC into a production-ready service in just minutes. Jina simplifies the advanced solution engineering and cloud-native technologies, making them accessible to every developer. Specially, applications built with Jina enjoy the following features out-of-the-box:
 
-- 🌌 Versatile on all modalities and data types, such as text, image, audio, video, 3D mesh, PDF.
-- 🧠 Support all mainstream deep learning frameworks. 
-- 🛣️ Intuitive design pattern for building high-performant microservices.
-- 🆙 Scaling at ease: set replicas, sharding via one parameter. 
-- 📡 Universal gateway that supports gRPC, Websockets, HTTP, GraphQL protocols with TLS.
-- 🔁 Duplex streaming between client and server.
-- ⚡ Async and non-blocking data processing over dynamic flows.
-- 🐳 Seamless Docker integration: sharing, exploring, sandboxing, versioning and dependency control via [Jina Hub](https://hub.jina.ai).
-- ⎈ Fast deployment to Kubernetes, Docker Compose and Jina Cloud.
-- 👁️ Full observability via Prometheus and Grafana.
+🌌 **Universal**:
+  - Versatile on all modalities and data types, such as text, image, audio, video, 3D mesh, PDF.
+  - Support all mainstream deep learning frameworks.
+  - Polyglot gateway that supports gRPC, Websockets, HTTP, GraphQL protocols with TLS.
+
+⚡ **Performance**:
+  - Intuitive design pattern for building high-performant microservices.
+  - Scaling at ease: set replicas, sharding via one parameter. 
+  - Duplex streaming between client and server.
+  - Async and non-blocking data processing over dynamic flows.
+
+☁️ **Cloud-native**:
+  - Seamless Docker integration: sharing, exploring, sandboxing, versioning and dependency control via [Jina Hub](https://hub.jina.ai).
+  - Fast deployment to Kubernetes, Docker Compose and Jina Cloud.
+  - Full observability via Prometheus and Grafana.
 
 <!-- end jina-description -->
 
