@@ -171,7 +171,7 @@ jina flow --uses toy.yml
 <a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/flow-block.png?raw=true" alt="Running a simple hello-world program" width="50%"></a>
 </p>
 
-The service is successfully started, and you can now use a client to query it.
+The server is successfully started, and you can now use a client to query it.
 
 ### Seamless Docker integration
 
