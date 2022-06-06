@@ -136,9 +136,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def __init__(
         self,
         *,
-        compression: Optional[str] = 'NoCompression',
+        compression: Optional[str] = None,
         cors: Optional[bool] = False,
-        default_swagger_ui: Optional[bool] = False,
         deployments_addresses: Optional[str] = '{}',
         deployments_disable_reduce: Optional[str] = '[]',
         description: Optional[str] = None,
@@ -185,9 +184,8 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.
 
-        :param compression: The compression mechanism used when sending requests to Executors. Possibilites are: `NoCompression, Gzip, Deflate`. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
+        :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
-        :param default_swagger_ui: If set, the default swagger ui is used for `/docs` endpoint.
         :param deployments_addresses: dictionary JSON with the input addresses of each Deployment
         :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
@@ -211,10 +209,10 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
 
               When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
-        :param no_crud_endpoints: If set, /index, /search, /update, /delete endpoints are removed from HTTP interface.
+        :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
-        :param no_debug_endpoints: If set, /status /post endpoints are removed from HTTP interface.
+        :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
@@ -629,7 +627,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     def add(
         self,
         *,
-        compression: Optional[str] = 'NoCompression',
+        compression: Optional[str] = None,
         connection_list: Optional[str] = None,
         disable_auto_volume: Optional[bool] = False,
         disable_reduce: Optional[bool] = False,
@@ -677,7 +675,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
     ) -> Union['Flow', 'AsyncFlow']:
         """Add an Executor to the current Flow object.
 
-        :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. Possibilities are `NoCompression, Gzip, Deflate`. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
+        :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param connection_list: dictionary JSON with a list of connections to configure
         :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
         :param disable_reduce: Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head
