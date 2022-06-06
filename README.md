@@ -18,7 +18,9 @@
 
 <!-- start jina-description -->
 
-Jina is a framework that empowers anyone to build cross-modal and multi-modal<sup><a href="#example-application">[*]</a></sup> applications on the cloud. It uplifts a local PoC into a production-ready service in just minutes. Jina handles the infrastructure complexity, and makes the advanced solution engineering and cloud-native technologies accessible to every developer. Applications built with Jina enjoy the following features out-of-the-box:
+Jina is a framework that empowers anyone to build cross-modal and multi-modal<sup><a href="#example-application">[*]</a></sup> applications on the cloud. It uplifts a local PoC into a production-ready service in just minutes. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer. 
+
+Applications built with Jina enjoy the following features out-of-the-box:
 
 🌌 **Universal**
   - Build applications that deliver fresh insights from multiple data types such as text, image, audio, video, 3D mesh, PDF.
