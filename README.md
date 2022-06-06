@@ -18,7 +18,7 @@
 
 <!-- start jina-description -->
 
-Jina is a framework that empowers anyone to build cross-modal and multi-modal<sup><a href="#example-application">[*]</a></sup> applications on the cloud. It uplifts a local PoC into a production-ready service in just minutes. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer. 
+Jina is a framework that empowers anyone to build cross-modal and multi-modal<sup><a href="#example-application">[*]</a></sup> applications on the cloud. It uplifts a PoC into a production-ready service in just minutes. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer. 
 
 Applications built with Jina enjoy the following features out-of-the-box:
 
@@ -66,6 +66,43 @@ Document, Executor and Flow are three fundamental concepts in Jina.
 - [**Document**](https://docarray.jina.ai/) is the fundamental data structure.
 - [**Executor**](https://docs.jina.ai/fundamentals/executor/) is a group of functions with Documents as IO.
 - [**Flow**](https://docs.jina.ai/fundamentals/flow/) ties Executors together into a pipeline and exposes it with an API gateway.
+
+
+### Hello world example
+
+Leveraging these three concepts, let's look at a simple example below:
+
+```python
+from jina import DocumentArray, Executor, Flow, requests
+
+
+class MyExec(Executor):
+    @requests
+    async def foo(self, docs: DocumentArray, **kwargs):
+        for d in docs:
+            d.text += 'hello, world!'
+
+
+f = Flow().add(uses=MyExec).add(uses=MyExec)
+
+with f:
+    r = f.post('/', DocumentArray.empty(2))
+    print(r.texts)
+```
+
+- The first line imports three concepts we just introduced;
+- `MyExec` defines an async function `foo` that receives `DocumentArray` from network requests and appends `"hello, world"` to `.text`;
+- `f` defines a Flow streamlined two Executors;
+- The `with` block opens the Flow, sends an empty DocumentArray to the Flow, and prints the result.
+
+Running it gives you:
+
+<p align="center">
+<a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/run-hello-world.gif?raw=true" alt="Running a simple hello-world program" width="70%"></a>
+</p>
+
+At the last line we see its output `['hello, world!hello, world!', 'hello, world!hello, world!']`.
+
 
 Leveraging these three concepts, let's build a simple image search service, as a "productization" of [DocArray README](https://github.com/jina-ai/docarray#a-complete-workflow-of-visual-search). 
 
