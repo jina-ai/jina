@@ -116,6 +116,62 @@ While one could use standard Python with the same number of lines and get the sa
 
 ### Scalability and concurrency at ease
 
+The example above can be refactored into a Python Executor file and a Flow YAML file:
+
+<table>
+<tr>
+<th> toy.yml </th> 
+<th> executor.py </th>
+</tr>
+<tr>
+<td> 
+
+```yaml
+jtype: Flow
+with:
+  port: 51000
+  protocol: grpc
+executors:
+- uses: MyExec
+  name: e1
+  py_modules:
+    - executor.py
+- uses: MyExec
+  name: e2
+  py_modules:
+    - executor.py
+```
+     
+</td>
+<td>
+
+```python
+from jina import DocumentArray, Executor, requests
+
+
+class MyExec(Executor):
+    @requests
+    async def foo(self, docs: DocumentArray, **kwargs):
+        for d in docs:
+            d.text += 'hello, world!'
+```
+
+</td>
+</tr>
+</table>
+
+
+Run the following command in the terminal:
+
+```bash
+jina flow --uses toy.yml
+```
+
+<p align="center">
+<a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/flow-block.png?raw=true" alt="Running a simple hello-world program" width="60%"></a>
+</p>
+
+
 tba
 
 ### Seamless Docker integration
