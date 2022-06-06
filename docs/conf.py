@@ -171,8 +171,8 @@ ogp_custom_meta_tags = [
     '<meta name="twitter:card" content="summary_large_image">',
     '<meta name="twitter:site" content="@JinaAI_">',
     '<meta name="twitter:creator" content="@JinaAI_">',
-    '<meta name="description" content="The Framework for Building Cross-Modal and Multi-Modal Applications on the Cloud">',
-    '<meta property="og:description" content="The Framework for Building Cross-Modal and Multi-Modal Applications on the Cloud">',
+    '<meta name="description" content="Building cross-modal and multi-modal applications on the cloud">',
+    '<meta property="og:description" content="Building cross-modal and multi-modal applications on the cloud">',
     '''
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>

@@ -1,11 +1,11 @@
 <p align="center">
 <br><br><br>
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: The Framework for Building Cross-Modal and Multi-Modal Applications on the Cloud" width="150px"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Building cross-modal and multi-modal applications on the cloud" width="150px"></a>
 <br><br><br>
 </p>
 
 <p align="center">
-<b>The Framework for Building Cross-Modal and Multi-Modal Applications on the Cloud</b>
+<b>Building cross-modal and multi-modal applications on the cloud</b>
 </p>
 
 
