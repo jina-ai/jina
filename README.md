@@ -110,136 +110,12 @@ At the last line we see its output `['hello, world!hello, world!', 'hello, world
 
 While one could use standard Python with the same number of lines and get the same output, Jina accelerates time to market of your application by making it more scalable and cloud-native. Jina also handles the infrastructure complexity in production and other Day-2 operations so that you can focus on the data application itself.  
 
-
+### Scalability and concurrency at ease
 
 ### Seamless Docker integration
 
-You can containerize the Executors and use them in a sandbox thanks to [Hub](https://hub.jina.ai).
+### Easy deployment to the cloud
 
-1. Move each `Executor` class to a separate folder with one Python file in each:
-   - `PreprocImg` -> 📁 `preproc_img/exec.py`
-   - `EmbedImg` -> 📁 `embed_img/exec.py`
-   - `MatchImg` -> 📁 `match_img/exec.py`
-2. Create a `requirements.txt` in `embed_img` as it requires `torchvision`.
-
-    ```text
-    .
-    ├── embed_img
-    │     ├── exec.py  # copy-paste codes of ImageEmbeddingExecutor
-    │     └── requirements.txt  # add the requirement `torchvision`
-    └── match_img
-          └── exec.py  # copy-paste codes of IndexExecutor
-    └── preproc_img
-          └── exec.py  # copy-paste codes of IndexExecutor
-    ```
-3. Push all Executors to the [Hub](https://hub.jina.ai):
-    ```bash
-    jina hub push preproc_img
-    jina hub push embed_img
-    jina hub push match_img
-    ```
-   You will get three Hub Executors that can be used via Sandbox, Docker container or source code. 
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-hub-push.png?raw=true" alt="Jina hub push gives you the sandbox" width="70%"></a>
-</p>
-
-4. In particular, Sandbox hosts your Executor on Jina Cloud and allows you to use it from your local machine:
-    ```python
-    from docarray import DocumentArray
-    from jina import Flow
-
-    index_data = DocumentArray.pull(
-        'demo-leftda', show_progress=True
-    )  # Download the dataset as shown in the tutorial above
-
-    f = Flow().add(uses='jinahub+sandbox://2k7gsejl')
-
-    with f:
-        print(f.post('/', index_data[:10]))
-    ```
-
-<p align="center">
-<a href="https://docs.jina.ai"><img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-sandbox-play.png?raw=ture" title="outputs of docker-compose" width="90%"></a>
-</p>
-
-
-<p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-banner3.svg?raw=true" alt="Containerize, share and play in one-place like a pro" width="100%"></a>
-</p>
-
-
-### Deploy the service via Docker Compose
-
-1. Now that all Executors are in containers, we can easily use Docker Compose to orchestrate the Flow:
-
-    ```python
-    f = (
-        Flow(port=12345)
-        .add(uses='jinahub+docker://1ylut0gf')
-        .add(uses='jinahub+docker://258lzh3c')
-    )
-    f.to_docker_compose_yaml()  # By default, stored at `docker-compose.yml`
-    ```
-
-2. Now in the console run:
-
-    ```shell
-    docker-compose up
-    ```
-
-<p align="center">
-<a href="https://docs.jina.ai"><img alt="Shell outputs running docker-compose" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-docker-compose.png?raw=ture" title="She;; outputs of docker-compose"  width="85%"></a>
-</p>
-
-### Deploy the service via Kubernetes
-
-1. Create a Kubernetes cluster and get credentials (example in GCP, [more K8s providers here](https://docs.jina.ai/advanced/experimental/kubernetes/#preliminaries)):
-    ```bash
-    gcloud container clusters create test --machine-type e2-highmem-2  --num-nodes 1 --zone europe-west3-a
-    gcloud container clusters get-credentials test --zone europe-west3-a --project jina-showcase
-    ```
-
-2. Create a namespace `flow-k8s-namespace` for demonstration purpose:
-    ```bash
-    kubectl create namespace flow-k8s-namespace
-    ```
-
-3. Generate the kubernetes configuration files using one line of code:
-    ```python
-    f.to_kubernetes_yaml('./k8s_config', k8s_namespace='flow-k8s-namespace')
-    ```
-    
-4. Your `k8s_config` folder will look like the following:
-    ```shell
-    k8s_config
-    ├── executor0
-    │     ├── executor0-head.yml
-    │     └── executor0.yml
-    ├── executor1
-    │     ├── executor1-head.yml
-    │     └── executor1.yml
-    └── gateway
-          └── gateway.yml
-    ```
-
-5. Use `kubectl` to deploy your neural search application: 
-
-    ```shell
-    kubectl apply -R -f ./k8s_config
-    ```
-
-<p align="center">
-<a href="https://docs.jina.ai"><img alt="Shell outputs running k8s" src="https://github.com/jina-ai/jina/blob/master/.github/images/readme-k8s.png?raw=ture" title="kubernetes outputs" width="70%"></a>
-</p>
-
-6. Run port forwarding so that you can send requests to your Kubernetes application from local CLI : 
-
-    ```shell
-    kubectl port-forward svc/gateway -n flow-k8s-namespace 12345:12345
-    ```
-
-Now we have the service up running in Kubernetes!
 
 
 
@@ -264,11 +140,3 @@ Jina is backed by [Jina AI](https://jina.ai) and licensed under [Apache-2.0](./L
 [We are actively hiring](https://jobs.jina.ai) AI engineers, solution engineers to build the next neural search ecosystem in open source.
 
 <!-- end support-pitch -->
-
-## Contribute
-
-We welcome all kinds of contributions from the open-source community, individuals and partners. We owe our success to your active involvement.
-
-- [Release cycles and development stages](RELEASE.md)
-- [Contributing guidelines](CONTRIBUTING.md)
-- [Code of conduct](.github/CODE_OF_CONDUCT.md)
