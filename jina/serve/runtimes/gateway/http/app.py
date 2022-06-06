@@ -38,8 +38,6 @@ def get_fastapi_app(
     with ImportExtensions(required=True):
         from fastapi import FastAPI, Response, status
         from fastapi.middleware.cors import CORSMiddleware
-        from fastapi.responses import HTMLResponse
-        from starlette.requests import Request
 
         from jina.serve.runtimes.gateway.http.models import (
             JinaEndpointRequestModel,
@@ -48,14 +46,12 @@ def get_fastapi_app(
             JinaStatusModel,
         )
 
-    docs_url = '/docs'
     app = FastAPI(
         title=args.title or 'My Jina Service',
         description=args.description
         or 'This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` '
-        'to customize this text.',
+        'to customize the title and description.',
         version=__version__,
-        docs_url=docs_url if args.default_swagger_ui else None,
     )
 
     if args.cors:
@@ -66,9 +62,7 @@ def get_fastapi_app(
             allow_methods=['*'],
             allow_headers=['*'],
         )
-        logger.warning(
-            'CORS is enabled. This service is now accessible from any website!'
-        )
+        logger.warning('CORS is enabled. This service is accessible from any website!')
 
     from jina.serve.runtimes.gateway.request_handling import RequestHandler
     from jina.serve.stream import RequestStreamer
@@ -264,33 +258,18 @@ def get_fastapi_app(
         for k, v in endpoints.items():
             expose_executor_endpoint(exec_endpoint=k, **v)
 
-    if not args.default_swagger_ui:
-
-        async def _render_custom_swagger_html(req: Request) -> HTMLResponse:
-            import urllib.request
-
-            swagger_url = 'https://api.jina.ai/swagger'
-            req = urllib.request.Request(
-                swagger_url, headers={'User-Agent': 'Mozilla/5.0'}
-            )
-            with urllib.request.urlopen(req) as f:
-                return HTMLResponse(f.read().decode())
-
-        app.add_route(docs_url, _render_custom_swagger_html, include_in_schema=False)
-
     if args.expose_graphql_endpoint:
         with ImportExtensions(required=True):
             from dataclasses import asdict
 
             import strawberry
+            from docarray import DocumentArray
             from docarray.document.strawberry_type import (
                 JSONScalar,
                 StrawberryDocument,
                 StrawberryDocumentInput,
             )
             from strawberry.fastapi import GraphQLRouter
-
-            from docarray import DocumentArray
 
             async def get_docs_from_endpoint(
                 data, target_executor, parameters, exec_endpoint

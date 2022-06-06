@@ -136,7 +136,6 @@ ac_table = {
             '--title',
             '--description',
             '--cors',
-            '--default-swagger-ui',
             '--no-debug-endpoints',
             '--no-crud-endpoints',
             '--expose-endpoints',

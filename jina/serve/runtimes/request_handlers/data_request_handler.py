@@ -92,11 +92,12 @@ class DataRequestHandler:
                 py_modules=self.args.py_modules,
                 extra_search_paths=self.args.extra_search_paths,
             )
+            self.logger.debug(f'{self._executor} is successfully loaded!')
 
         except BadConfigSource:
             self.logger.error(
                 f'fail to load config from {self.args.uses}, if you are using docker image for --uses, '
-                f'please use "docker://YOUR_IMAGE_NAME"'
+                f'please use `docker://YOUR_IMAGE_NAME`'
             )
             raise
         except FileNotFoundError:

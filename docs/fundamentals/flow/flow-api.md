@@ -428,7 +428,7 @@ This will generate a single `docker-compose.yml` file containing all the `Execut
 from jina import Flow
 
 f = Flow().add()
-f.to_k8s_yaml('flow_k8s_configuration')
+f.to_kubernetes_yaml('flow_k8s_configuration')
 ```
 This will generate the necessary Kubernetes configuration files for all the `Executors` of the `Flow`.
 The generated folder can be used directly with `kubectl` to deploy the `Flow` to an existing Kubernetes cluster.

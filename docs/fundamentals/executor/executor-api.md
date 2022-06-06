@@ -324,7 +324,7 @@ Executors can be served - and remotely accessed - directly, without the need to 
 This is especially useful when debugging an Executor in a remote setting. It can also be used to run external/shared Executors to be used in multiple Flows.
 There are different options how you can deploy and run a stand-alone Executor:
 * Run the Executor directly from Python with the `.serve()` class method
-* Run the static `Executor.to_k8s_yaml()` method to generate K8s deployment configuration files
+* Run the static `Executor.to_kubernetes_yaml()` method to generate K8s deployment configuration files
 * Run the static `Executor.to_docker_compose_yaml()` method to generate a docker-compose service file
 
 ### Serving Executors
@@ -373,12 +373,12 @@ For more details on these arguments and the workings of `Flow`, see the {ref}`Fl
 ````
 
 ### Run Executors in Kubernetes
-You can generate Kubernetes configuration files for your containerized Executor by using the static `Executor.to_k8s_yaml()` method. This works very similar to {ref}`deploying a Flow in Kubernetes <kubernetes>`, because your Executor is wrapped automatically in a Flow and using the very same deployment techniques.
+You can generate Kubernetes configuration files for your containerized Executor by using the static `Executor.to_kubernetes_yaml()` method. This works very similar to {ref}`deploying a Flow in Kubernetes <kubernetes>`, because your Executor is wrapped automatically in a Flow and using the very same deployment techniques.
 
 ```python
 from jina import Executor
 
-Executor.to_k8s_yaml(
+Executor.to_kubernetes_yaml(
     output_base_path='/tmp/config_out_folder',
     port_expose=8080,
     uses='jinahub+docker://DummyHubExecutor',

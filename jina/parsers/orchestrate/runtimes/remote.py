@@ -81,10 +81,9 @@ def mixin_gateway_parser(parser):
 
     gp.add_argument(
         '--compression',
-        type=str,
-        default='NoCompression',
-        help='The compression mechanism used when sending requests to Executors. Possibilites are: `NoCompression, '
-        'Gzip, Deflate`. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.',
+        choices=['NoCompression', 'Deflate', 'Gzip'],
+        help='The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, '
+        'check https://grpc.github.io/grpc/python/grpc.html#compression.',
     )
 
     gp.add_argument(
@@ -160,17 +159,10 @@ def mixin_http_gateway_parser(parser=None):
     )
 
     gp.add_argument(
-        '--default-swagger-ui',
-        action='store_true',
-        default=False,
-        help='If set, the default swagger ui is used for `/docs` endpoint. ',
-    )
-
-    gp.add_argument(
         '--no-debug-endpoints',
         action='store_true',
         default=False,
-        help='If set, /status /post endpoints are removed from HTTP interface. ',
+        help='If set, `/status` `/post` endpoints are removed from HTTP interface. ',
     )
 
     gp.add_argument(
@@ -178,7 +170,7 @@ def mixin_http_gateway_parser(parser=None):
         action='store_true',
         default=False,
         help='''
-        If set, /index, /search, /update, /delete endpoints are removed from HTTP interface.
+        If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
 
         Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         ''',

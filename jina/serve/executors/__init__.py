@@ -5,7 +5,7 @@ import os
 import threading
 import warnings
 from types import SimpleNamespace
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union
 
 from jina import __args_executor_init__, __default_endpoint__
 from jina.enums import BetterEnum
@@ -23,9 +23,7 @@ from jina.serve.executors.decorators import (
 if TYPE_CHECKING:
     from prometheus_client import Summary
 
-    from docarray import DocumentArray
-
-__all__ = ['BaseExecutor', 'ReducerExecutor']
+__all__ = ['BaseExecutor']
 
 
 class ExecutorType(type(JAMLCompatible), type):
@@ -410,7 +408,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         SHARED = 1  # not served by a gateway, served by head/worker
 
     @staticmethod
-    def to_k8s_yaml(
+    def to_kubernetes_yaml(
         uses: str,
         output_base_path: str,
         k8s_namespace: Optional[str] = None,
@@ -439,18 +437,19 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         """
         from jina import Flow
 
-        f = Flow(**kwargs).add(
+        Flow(**kwargs).add(
             uses=uses,
             uses_with=uses_with,
             uses_metas=uses_metas,
             uses_requests=uses_requests,
-        )
-        f.to_k8s_yaml(
+        ).to_kubernetes_yaml(
             output_base_path=output_base_path,
             k8s_namespace=k8s_namespace,
             include_gateway=executor_type
             == BaseExecutor.StandaloneExecutorType.EXTERNAL,
         )
+
+    to_k8s_yaml = to_kubernetes_yaml
 
     @staticmethod
     def to_docker_compose_yaml(
@@ -516,25 +515,3 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             return self._metrics_buffer[name]
         else:
             return None
-
-
-class ReducerExecutor(BaseExecutor):
-    """
-    ReducerExecutor is an Executor that performs a reduce operation on a matrix of DocumentArrays coming from shards.
-    ReducerExecutor relies on DocumentArray.reduce_all to merge all DocumentArray into one DocumentArray which will be
-    sent to the next deployment.
-
-    This Executor only adds a reduce endpoint to the BaseExecutor.
-    """
-
-    @requests
-    def reduce(self, docs_matrix: List['DocumentArray'] = [], **kwargs):
-        """Reduce docs_matrix into one `DocumentArray` using `DocumentArray.reduce_all`
-        :param docs_matrix: a List of DocumentArrays to be reduced
-        :param kwargs: extra keyword arguments
-        :return: the reduced DocumentArray
-        """
-        if docs_matrix:
-            da = docs_matrix[0]
-            da.reduce_all(docs_matrix[1:])
-            return da
