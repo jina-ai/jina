@@ -112,10 +112,15 @@ While one could use standard Python with the same number of lines and get the sa
 
 ### Scalability and concurrency at ease
 
+tba
+
 ### Seamless Docker integration
+
+tba
 
 ### Easy deployment to the cloud
 
+tba
 
 
 
@@ -123,14 +128,11 @@ While one could use standard Python with the same number of lines and get the sa
 
 ## Support
 
-- Check out the [Learning Bootcamp](https://learn.jina.ai) to get started with Jina.
-- Join our [Slack community](https://slack.jina.ai) to chat to our engineers about your use cases, questions, and support queries.
-- Join our [Engineering All Hands](https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne) meet-up to
-  discuss your use case and learn Jina's new features.
+- Join our [Slack community](https://slack.jina.ai) and chat with other community members about ideas.
+- Join our [Engineering All Hands](https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne) meet-up to discuss your use case and learn Jina's new features.
     - **When?** The second Tuesday of every month
     - **Where?**
-      Zoom ([see our public calendar](https://calendar.google.com/calendar/embed?src=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&ctz=Europe%2FBerlin)/[.ical](https://calendar.google.com/calendar/ical/c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com/public/basic.ics)/[Meetup
-      group](https://www.meetup.com/jina-community-meetup/))
+      Zoom ([see our public events calendar](https://calendar.google.com/calendar/embed?src=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&ctz=Europe%2FBerlin)/[.ical](https://calendar.google.com/calendar/ical/c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com/public/basic.ics))
       and [live stream on YouTube](https://youtube.com/c/jina-ai)
 - Subscribe to the latest video tutorials on our [YouTube channel](https://youtube.com/c/jina-ai)
 
