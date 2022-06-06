@@ -5,16 +5,17 @@ from jina.logging.logger import JinaLogger
 
 
 class BaseRuntime:
-    """A Jina Runtime is a procedure that blocks the main process once running (i.e. :meth:`run_forever`),
+    """
+    A Jina Runtime is a procedure that blocks the main process once running (i.e. :meth:`run_forever`),
     therefore should be put into a separated thread/process, or inside the main process of a docker container.
-     Any program/library/package/module that blocks the main process, can be formulated into a :class:`BaseRuntime` class
-     and then be started from a :class:`Pod`.
+    Any program/library/package/module that blocks the main process, can be formulated into a :class:`BaseRuntime` class
+    and then be started from a :class:`Pod`.
 
-     In the sequel, we call the main process/thread as ``M``, the process/thread blocked :class:`Runtime` as ``S``.
+    In the sequel, we call the main process/thread as ``M``, the process/thread blocked :class:`Runtime` as ``S``.
 
-     In Jina, a :class:`Pod` object is used to manage a :class:`Runtime` object's lifecycle. A :class:`Pod`
-     acts as a :class:`multiprocessing.Process` or :class:`threading.Thread`, it starts from ``M`` and once the
-     ``S`` is spawned, it uses :class:`Runtime` as a context manager:
+    In Jina, a :class:`Pod` object is used to manage a :class:`Runtime` object's lifecycle. A :class:`Pod`
+    acts as a :class:`multiprocessing.Process` or :class:`threading.Thread`, it starts from ``M`` and once the
+    ``S`` is spawned, it uses :class:`Runtime` as a context manager:
 
         0. :meth:`__init__`
 
@@ -26,16 +27,16 @@ class BaseRuntime:
         3. When an error occurs during `run_forever` or `cancel` signal is reached by the `runtime`. The `run_forever` method is cancelled and
         the managed context is closed. The `__exit__` of `Runtime` guarantees that the `Runtime` is properly shut by calling `teardown`.
 
-     The :meth:`__init__` and :meth:`teardown` pair together, which defines instructions that will be executed before
-     and after. In subclasses, `teardown` is optional.
+    The :meth:`__init__` and :meth:`teardown` pair together, which defines instructions that will be executed before
+    and after. In subclasses, `teardown` is optional.
 
-     In order to cancel the `run_forever` method of a `Runtime`, you can use their `static` `cancel` method that will make sure that the runtime is properly cancelled.
+    In order to cancel the `run_forever` method of a `Runtime`, you can use their `static` `cancel` method that will make sure that the runtime is properly cancelled.
 
-        - Use :class:`threading.Event` or `multiprocessing.Event`, while :meth:`run_forever` polls for this event
-        - Use :class:`GrpcConnectionPool` to send a TERMINATE message, while :meth:`run_forever` polls for this message
+    - Use :class:`threading.Event` or `multiprocessing.Event`, while :meth:`run_forever` polls for this event
+    - Use :class:`GrpcConnectionPool` to send a TERMINATE message, while :meth:`run_forever` polls for this message
 
-     Note, another way to jump out from :meth:`run_forever` is raise exceptions from it. This will immediately move to
-     :meth:`teardown`.
+    Note, another way to jump out from :meth:`run_forever` is raise exceptions from it. This will immediately move to
+    :meth:`teardown`.
 
      .. note::
         Rule of thumb on exception handling: if you are not sure if you should handle exception inside
