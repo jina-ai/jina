@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
-
 set -ex
+if [[ $1 == "windows" ]]; then
+    declare -a array2=( $(ls -d tests/{unit}/*/ | grep -v '__pycache__'| grep -v 'unit/serve' | grep -v 'unit/orchestrate'))
+    declare -a array3=( $(ls -d tests/{unit}/orchestrate/*/ | grep -v '__pycache__'))
+    declare -a array4=( $(ls -d tests/{unit}/serve/*/ | grep -v '__pycache__'))
+    dest1=( "${array2[@]}" "${array3[@]}" "${array4[@]}" )
+    printf '%s\n' "${dest1[@]}" | jq -R . | jq -cs .
+else
+    declare -a array1=( "tests/unit/*.py" "tests/integration/*.py")
+    declare -a array2=( $(ls -d tests/{unit,integration}/*/ | grep -v '__pycache__' | grep -v 'unit/serve' | grep -v 'unit/orchestrate'))
+    declare -a array3=( $(ls -d tests/unit/orchestrate/*/ | grep -v '__pycache__'))
+    declare -a array4=( $(ls -d tests/unit/serve/*/ | grep -v '__pycache__'))
+    dest=( "${array1[@]}" "${array2[@]}" "${array3[@]}" "${array4[@]}" )
 
-BATCH_SIZE=5
-#declare -a array1=( "tests/unit/test_*.py" )
-#declare -a array2=( $(ls -d tests/unit/*/ | grep -v '__pycache__' | grep -v 'array') )
-#declare -a array3=( "tests/unit/array/*.py" )
-declare -a mixins=( $(find tests -name "test_*.py") )
-declare -a array4=( "$(echo "${mixins[@]}" | xargs -n$BATCH_SIZE)" )
-# array5 is currently empty because in the array/ directory, mixins is the only directory
-# but add the following in case new directories are created in array/
-dest=( "${array1[@]}" "${array2[@]}" "${array3[@]}" "${array4[@]}" "${array5[@]}" )
-
-printf '%s\n' "${dest[@]}" | jq -R . | jq -cs .
+    printf '%s\n' "${dest[@]}" | jq -R . | jq -cs .
+fi

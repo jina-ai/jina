@@ -145,7 +145,7 @@ setup(
     packages=find_packages(),
     version=__version__,
     include_package_data=True,
-    description='Jina is the cloud-native neural search framework for any kind of data',
+    description='The Framework for Building Cross-Modal and Multi-Modal Applications on the Cloud',
     author='Jina AI',
     author_email='hello@jina.ai',
     license='Apache 2.0',
@@ -195,6 +195,6 @@ setup(
         'Source': 'https://github.com/jina-ai/jina/',
         'Tracker': 'https://github.com/jina-ai/jina/issues',
     },
-    keywords='jina cloud-native neural-search query search index elastic neural-network encoding '
-    'embedding serving docker container image video audio deep-learning',
+    keywords='jina cloud-native cross-modal multi-modal neural-search query search index elastic neural-network encoding '
+    'embedding serving docker container image video audio deep-learning ',
 )
