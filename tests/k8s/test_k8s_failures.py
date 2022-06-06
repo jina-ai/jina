@@ -213,7 +213,7 @@ async def test_failure_scenarios(logger, docker_images, tmpdir, k8s_cluster):
     flow = Flow(prefetch=100).add(replicas=3, uses=f'docker://{docker_images[0]}')
 
     dump_path = os.path.join(str(tmpdir), namespace)
-    flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
     await create_all_flow_deployments_and_wait_ready(
         dump_path,

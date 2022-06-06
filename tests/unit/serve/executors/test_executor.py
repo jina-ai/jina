@@ -14,7 +14,6 @@ from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_pod_parser
-from jina.serve.executors import ReducerExecutor
 from jina.serve.executors.metas import get_default_metas
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
@@ -292,24 +291,6 @@ def test_map_nested():
     assert da1.texts == ['hello'] * N
 
 
-@pytest.mark.parametrize('n_shards', [3, 5])
-@pytest.mark.parametrize('n_matches', [10, 11])
-@pytest.mark.parametrize('n_chunks', [10, 11])
-def test_reducer_executor(n_shards, n_matches, n_chunks):
-    reducer_executor = ReducerExecutor()
-    query = DocumentArray([Document() for _ in range(5)])
-    docs_matrix = [deepcopy(query) for _ in range(n_shards)]
-    for da in docs_matrix:
-        for doc in da:
-            doc.matches.extend([Document() for _ in range(n_matches)])
-            doc.chunks.extend([Document() for _ in range(n_chunks)])
-
-    reduced_da = reducer_executor.reduce(docs_matrix=docs_matrix)
-    for doc in reduced_da:
-        assert len(doc.matches) == n_shards * n_matches
-        assert len(doc.chunks) == n_shards * n_chunks
-
-
 @pytest.mark.asyncio
 async def test_async():
     class AsyncExecutor(Executor):
@@ -383,7 +364,7 @@ def test_default_workspace(tmpdir):
     [Executor.StandaloneExecutorType.EXTERNAL, Executor.StandaloneExecutorType.SHARED],
 )
 def test_to_k8s_yaml(tmpdir, exec_type):
-    Executor.to_k8s_yaml(
+    Executor.to_kubernetes_yaml(
         output_base_path=tmpdir,
         port_expose=2020,
         uses='jinahub+docker://DummyHubExecutor',

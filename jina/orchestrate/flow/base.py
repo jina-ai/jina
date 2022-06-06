@@ -1942,7 +1942,7 @@ class Flow(PostMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
                 if node == 'gateway'
                 else None,
             )
-            configs = k8s_deployment.to_k8s_yaml()
+            configs = k8s_deployment.to_kubernetes_yaml()
             for name, k8s_objects in configs:
                 filename = os.path.join(deployment_base, f'{name}.yml')
                 os.makedirs(deployment_base, exist_ok=True)

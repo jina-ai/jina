@@ -30,7 +30,7 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
     dump_path = os.path.join(str(tmpdir), 'test_flow_k8s')
 
     namespace = 'test-flow-ns'
-    flow.to_k8s_yaml(
+    flow.to_kubernetes_yaml(
         output_base_path=dump_path,
         k8s_namespace=namespace,
     )
@@ -420,7 +420,7 @@ def test_flow_to_k8s_yaml_external_pod(tmpdir, has_external):
     dump_path = os.path.join(str(tmpdir), 'test_flow_k8s')
 
     namespace = 'test-flow-ns'
-    flow.to_k8s_yaml(
+    flow.to_kubernetes_yaml(
         output_base_path=dump_path,
         k8s_namespace=namespace,
     )
@@ -465,7 +465,7 @@ def test_raise_exception_invalid_executor(tmpdir):
 
     with pytest.raises(NoContainerizedError):
         f = Flow().add(uses='A')
-        f.to_k8s_yaml(str(tmpdir))
+        f.to_kubernetes_yaml(str(tmpdir))
 
 
 def test_flow_to_k8s_yaml_sandbox(tmpdir):
@@ -477,7 +477,7 @@ def test_flow_to_k8s_yaml_sandbox(tmpdir):
     dump_path = os.path.join(str(tmpdir), 'test_flow_k8s')
 
     namespace = 'test-flow-ns'
-    flow.to_k8s_yaml(
+    flow.to_kubernetes_yaml(
         output_base_path=dump_path,
         k8s_namespace=namespace,
     )

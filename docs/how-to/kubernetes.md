@@ -39,7 +39,7 @@ All Executors in the Flow should be used with `jinahub+docker://...` or `docker:
 To generate YAML configurations for Kubernetes from a Jina Flow, one just needs to call:
 
 ```python
-flow.to_k8s_yaml('flow_k8s_configuration')
+flow.to_kubernetes_yaml('flow_k8s_configuration')
 ```
 
 This will create a folder `flow_k8s_configuration` with a set of Kubernetes YAML configurations for all the deployments composing the Flow
@@ -136,7 +136,7 @@ f = (
 Now, we can generate Kubernetes YAML configs from the Flow:
 
 ```python
-f.to_k8s_yaml('./k8s_flow', k8s_namespace='custom-namespace')
+f.to_kubernetes_yaml('./k8s_flow', k8s_namespace='custom-namespace')
 ```
 
 You should expect the following file structure generated:

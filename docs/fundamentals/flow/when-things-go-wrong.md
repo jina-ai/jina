@@ -59,7 +59,7 @@ A Kubernetes service mesh can enable load balancing, and thus retries, between r
 
 ````{admonition} Hint
 :class: hint
-While Jina supports any service mesh, the output of `f.to_k8s_yaml()` already includes the necessary annotations for [Linkerd](https://linkerd.io/).
+While Jina supports any service mesh, the output of `f.to_kubernetes_yaml()` already includes the necessary annotations for [Linkerd](https://linkerd.io/).
 ````
 
 If a service mesh is installed alongside Jina in the Kubernetes cluster, the following retry policy applies for each Executor:

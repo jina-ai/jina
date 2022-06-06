@@ -307,7 +307,7 @@ You can containerize the Executors and use them in a sandbox thanks to [Hub](htt
 
 3. Generate the kubernetes configuration files using one line of code:
     ```python
-    f.to_k8s_yaml('./k8s_config', k8s_namespace='flow-k8s-namespace')
+    f.to_kubernetes_yaml('./k8s_config', k8s_namespace='flow-k8s-namespace')
     ```
     
 4. Your `k8s_config` folder will look like the following:
