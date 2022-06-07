@@ -1,4 +1,4 @@
-# Health and readiness check of Jina Services
+# Health and readiness check of Jina services
 Every Jina Flow is comprised of a {ref}`number of microservices <architecture-overview>`, each of which have to be ready and healthy before the Flow is ready to receive requests.
 
 Each Flow microservice provides health and readiness checks in the form of a  [standardized gRPC endpoint](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) that exposes this information to the outside world. This means that they can automatically be used by Jina itself as well as external tools like Docker Compose, Kubernetes service meshes, or load balancers.
