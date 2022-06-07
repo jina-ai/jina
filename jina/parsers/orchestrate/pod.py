@@ -107,7 +107,7 @@ def mixin_pod_parser(parser):
     gp.add_argument(
         '--retries',
         type=int,
-        default=None,  # default prometheus server port
+        default=-1,
         dest='retries',
-        help=f'Number of retries per gRPC call. If None or <0, it defaults to max(3, num_replicas)',
+        help=f'Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)',
     )

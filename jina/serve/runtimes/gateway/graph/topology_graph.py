@@ -36,7 +36,7 @@ class TopologyGraph:
             filter_condition: dict = None,
             reduce: bool = True,
             timeout_send: Optional[float] = None,
-            retries: Optional[int] = None,
+            retries: Optional[int] = -1,
         ):
             self.name = name
             self.outgoing_nodes = []
@@ -240,7 +240,7 @@ class TopologyGraph:
         graph_conditions: Dict = {},
         deployments_disable_reduce: List[str] = [],
         timeout_send: Optional[float] = 1.0,
-        retries: Optional[int] = None,
+        retries: Optional[int] = -1,
         *args,
         **kwargs,
     ):

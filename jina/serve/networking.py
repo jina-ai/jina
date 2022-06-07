@@ -475,7 +475,7 @@ class GrpcConnectionPool:
         polling_type: PollingType = PollingType.ANY,
         endpoint: Optional[str] = None,
         timeout: Optional[float] = None,
-        retries: Optional[int] = None,
+        retries: Optional[int] = -1,
     ) -> List[asyncio.Task]:
         """Send a single message to target via one or all of the pooled connections, depending on polling_type. Convenience function wrapper around send_request.
         :param request: a single request to send
@@ -485,7 +485,7 @@ class GrpcConnectionPool:
         :param polling_type: defines if the message should be send to any or all pooled connections for the target
         :param endpoint: endpoint to target with the request
         :param timeout: timeout for sending the requests
-        :param retries: number of retries per gRPC call. If None or <0, it defaults to max(3, num_replicas)
+        :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :return: list of asyncio.Task items for each send call
         """
         return self.send_requests(
@@ -508,7 +508,7 @@ class GrpcConnectionPool:
         polling_type: PollingType = PollingType.ANY,
         endpoint: Optional[str] = None,
         timeout: Optional[float] = None,
-        retries: Optional[int] = None,
+        retries: Optional[int] = -1,
     ) -> List[asyncio.Task]:
         """Send a request to target via one or all of the pooled connections, depending on polling_type
 
@@ -519,7 +519,7 @@ class GrpcConnectionPool:
         :param polling_type: defines if the request should be send to any or all pooled connections for the target
         :param endpoint: endpoint to target with the requests
         :param timeout: timeout for sending the requests
-        :param retries: number of retries per gRPC call. If None or <0, it defaults to max(3, num_replicas)
+        :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :return: list of asyncio.Task items for each send call
         """
         results = []
@@ -573,7 +573,7 @@ class GrpcConnectionPool:
         head: bool = False,
         shard_id: Optional[int] = None,
         timeout: Optional[float] = None,
-        retries: Optional[int] = None,
+        retries: Optional[int] = -1,
     ) -> asyncio.Task:
         """Send msg to target via only one of the pooled connections
         :param request: request to send
@@ -581,7 +581,7 @@ class GrpcConnectionPool:
         :param head: If True it is send to the head, otherwise to the worker pods
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param timeout: timeout for sending the requests
-        :param retries: number of retries per gRPC call. If None or <0, it defaults to max(3, num_replicas)
+        :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :return: asyncio.Task representing the send call
         """
         return self.send_requests_once(
@@ -601,7 +601,7 @@ class GrpcConnectionPool:
         shard_id: Optional[int] = None,
         endpoint: Optional[str] = None,
         timeout: Optional[float] = None,
-        retries: Optional[int] = None,
+        retries: Optional[int] = -1,
     ) -> asyncio.Task:
         """Send a request to target via only one of the pooled connections
 
@@ -611,7 +611,7 @@ class GrpcConnectionPool:
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param endpoint: endpoint to target with the requests
         :param timeout: timeout for sending the requests
-        :param retries: number of retries per gRPC call. If None or <0, it defaults to max(3, num_replicas)
+        :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :return: asyncio.Task representing the send call
         """
         replicas = self._connections.get_replicas(deployment, head, shard_id)
@@ -724,7 +724,7 @@ class GrpcConnectionPool:
         connections: ReplicaList,
         endpoint: Optional[str] = None,
         timeout: Optional[float] = None,
-        retries: Optional[int] = None,
+        retries: Optional[int] = -1,
     ) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
