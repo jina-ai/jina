@@ -264,6 +264,10 @@ Behind this smooth experience is advanced management of Executors:
 - Instant delivery of any Executor via Sandbox without pulling anything to local.
 
 
+<p align="center">
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/cloud-native-banner.png?raw=true" alt="Jina: Seamless Container Integration" width="100%"></a>
+</p>
+
 ### Fast-lane to cloud-native
 
 tba
