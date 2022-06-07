@@ -4,8 +4,8 @@ import time
 from typing import TYPE_CHECKING, Callable, List, Optional
 
 import grpc.aio
-from docarray import DocumentArray
 
+from docarray import DocumentArray
 from jina.excepts import InternalNetworkError
 from jina.importer import ImportExtensions
 from jina.serve.networking import GrpcConnectionPool
@@ -72,22 +72,7 @@ class RequestHandler:
         """
 
         async def gather_endpoints(request_graph):
-            def _get_all_nodes(node, accum, accum_names):
-                if node.name not in accum_names:
-                    accum.append(node)
-                    accum_names.append(node.name)
-                for n in node.outgoing_nodes:
-                    _get_all_nodes(n, accum, accum_names)
-                return accum, accum_names
-
-            nodes = []
-            node_names = []
-            for origin_node in request_graph.origin_nodes:
-                subtree_nodes, subtree_node_names = _get_all_nodes(origin_node, [], [])
-                for st_node, st_node_name in zip(subtree_nodes, subtree_node_names):
-                    if st_node_name not in node_names:
-                        nodes.append(st_node)
-                        node_names.append(st_node_name)
+            nodes = request_graph.all_nodes
             try:
                 tasks_to_get_endpoints = [
                     node.get_endpoints(connection_pool) for node in nodes

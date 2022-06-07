@@ -327,3 +327,83 @@ class JinaDiscoverEndpointsRPC(object):
             timeout,
             metadata,
         )
+
+
+class JinaGatewayDryRunRPCStub(object):
+    """*
+    jina gRPC service to expose Endpoints from Executors.
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.dry_run = channel.unary_unary(
+            '/jina.JinaGatewayDryRunRPC/dry_run',
+            request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            response_deserializer=jina__pb2.StatusProto.FromString,
+        )
+
+
+class JinaGatewayDryRunRPCServicer(object):
+    """*
+    jina gRPC service to expose Endpoints from Executors.
+    """
+
+    def dry_run(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_JinaGatewayDryRunRPCServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+        'dry_run': grpc.unary_unary_rpc_method_handler(
+            servicer.dry_run,
+            request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            response_serializer=jina__pb2.StatusProto.SerializeToString,
+        ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+        'jina.JinaGatewayDryRunRPC', rpc_method_handlers
+    )
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+# This class is part of an EXPERIMENTAL API.
+class JinaGatewayDryRunRPC(object):
+    """*
+    jina gRPC service to expose Endpoints from Executors.
+    """
+
+    @staticmethod
+    def dry_run(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/jina.JinaGatewayDryRunRPC/dry_run',
+            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            jina__pb2.StatusProto.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+        )

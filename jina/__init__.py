@@ -69,6 +69,7 @@ __version__ = '3.4.11'
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
 __proto_version__ = '0.1.11'
+
 try:
     __docarray_version__ = _docarray.__version__
 except AttributeError as e:

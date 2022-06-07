@@ -1,12 +1,12 @@
 from jina.clients.base.grpc import GRPCBaseClient
-from jina.clients.mixin import AsyncPostMixin, PostMixin
+from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin
 
 
-class GRPCClient(GRPCBaseClient, PostMixin):
+class GRPCClient(GRPCBaseClient, PostMixin, HealthCheckMixin):
     """A client communicates the server with GRPC protocol."""
 
 
-class AsyncGRPCClient(GRPCBaseClient, AsyncPostMixin):
+class AsyncGRPCClient(GRPCBaseClient, AsyncPostMixin, HealthCheckMixin):
     """
     A client communicates the server with GRPC protocol.
 

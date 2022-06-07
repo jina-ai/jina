@@ -152,6 +152,14 @@ class BaseClient(ABC):
     ):
         ...
 
+    @abc.abstractmethod
+    def _dry_run(self, **kwargs) -> bool:
+        """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
+
+        :param kwargs: potential kwargs received passed from the public interface
+        """
+        ...
+
     @property
     def client(self: T) -> T:
         """Return the client object itself

@@ -8,6 +8,7 @@ from jina.enums import WebsocketSubProtocols
 from jina.importer import ImportExtensions
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
+from jina.types.request.status import StatusMessage
 
 if TYPE_CHECKING:
     from jina.logging.logger import JinaLogger
@@ -34,9 +35,18 @@ class AioHttpClientlet(ABC):
         ...
 
     @abstractmethod
+    async def send_dry_run(self):
+        """Query the dry_run endpoint from Gateway"""
+        ...
+
+    @abstractmethod
     async def recv_message(self):
         """Receive message from Gateway"""
         ...
+
+    async def recv_dry_run(self):
+        """Receive dry run response from Gateway"""
+        pass
 
     async def __aenter__(self):
         """enter async context
@@ -83,8 +93,21 @@ class HTTPClientlet(AioHttpClientlet):
             req_dict['target_executor'] = req_dict['header']['target_executor']
         return await self.session.post(url=self.url, json=req_dict).__aenter__()
 
+    async def send_dry_run(self):
+        """Query the dry_run endpoint from Gateway
+        :return: send get message
+        """
+        return await self.session.get(url=self.url).__aenter__()
+
     async def recv_message(self):
         """Receive message for HTTP (sleep)
+
+        :return: await sleep
+        """
+        return await asyncio.sleep(1e10)
+
+    async def recv_dry_run(self):
+        """Receive dry run response for HTTP (sleep)
 
         :return: await sleep
         """
@@ -131,6 +154,17 @@ class WebsocketClientlet(AioHttpClientlet):
         except ConnectionResetError:
             self.logger.critical(f'server connection closed already!')
 
+    async def send_dry_run(self):
+        """Query the dry_run endpoint from Gateway
+
+        :return: send dry_run as bytes awaitable
+        """
+
+        try:
+            return await self.websocket.send_bytes(b'')
+        except ConnectionResetError:
+            self.logger.critical(f'server connection closed already!')
+
     async def send_eoi(self):
         """To confirm end of iteration, we send `bytes(True)` to the server.
 
@@ -154,6 +188,18 @@ class WebsocketClientlet(AioHttpClientlet):
         """
         async for response in self.response_iter:
             yield DataRequest(response.data)
+
+    async def recv_dry_run(self):
+        """Receive dry run response in bytes from server
+
+        ..note::
+            aiohttp allows only one task which can `receive` concurrently.
+            we need to make sure we don't create multiple tasks with `recv_message`
+
+        :yield: response objects received from server
+        """
+        async for response in self.response_iter:
+            yield StatusMessage(response.data)
 
     async def __aenter__(self):
         await super().__aenter__()
