@@ -228,9 +228,15 @@ executors:
 - The communication between clients and the API gateway is duplex.
 - The API gateway allows you to route request to a specific Executor while other parts of the Flow are still busy, via `.post(..., target_executor=...)`
 
-### Seamless Docker integration
 
-Without having to worry about dependencies, you can easily share your Executors with others and use public/private Executors in your project thanks to [Jina Hub](https://hub.jina.ai).
+
+<p align="center">
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/container-banner.png?raw=true" alt="Jina: Seamless Container Integration" width="100%"></a>
+</p>
+
+### Seamless Container integration
+
+Without having to worry about dependencies, you can easily share your Executors with others; or use public/private Executors in your project thanks to [Jina Hub](https://hub.jina.ai).
 
 To create an Executor:
 
@@ -252,9 +258,10 @@ To use a Hub Executor in your Flow:
 | Python | `.add(uses='jinahub+docker://MyExecutor')` | `.add(uses='jinahub+sandbox://MyExecutor')` | `.add(uses='jinahub://MyExecutor')` |
 
 Behind this smooth experience is advanced management of Executors:
-- Store, build and deploy Executors cost-efficiently;
+- Automated builds on the cloud
+- Store, deploy, and deliver Executors cost-efficiently;
 - Automatically resolve version conflicts and dependencies;
-- Serverless sandbox allows one to immediately use an Executor on the cloud without pulling anything to local.
+- Instant delivery of any Executor via Sandbox without pulling anything to local.
 
 
 ### Fast-lane to cloud-native
