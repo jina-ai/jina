@@ -472,6 +472,7 @@ metas:
     def _prettyprint_result(self, console, image):
         # TODO: only support single executor now
 
+        from rich import box
         from rich.panel import Panel
         from rich.table import Table
 
@@ -480,15 +481,16 @@ metas:
         visibility = image['visibility']
         tag = self.args.tag[0] if self.args.tag else None
 
-        table = Table.grid()
-        table.add_column(width=20, no_wrap=True)
-        table.add_column(style='cyan', no_wrap=True)
+        table = Table(box=box.SIMPLE, show_header=False)
+        table.add_column(no_wrap=True)
+        table.add_column(no_wrap=True)
+        if 'name' in image:
+            table.add_row(':name_badge: Name', image['name'])
+
         table.add_row(
             ':link: Hub URL',
             f'[link=https://hub.jina.ai/executor/{uuid8}/]https://hub.jina.ai/executor/{uuid8}/[/link]',
         )
-        if 'name' in image:
-            table.add_row(':name_badge: Name', image['name'])
 
         if secret:
             table.add_row(':lock: Secret', secret)
@@ -520,48 +522,36 @@ metas:
         return uuid8, secret
 
     def _get_prettyprint_usage(self, console, executor_name, usage_kind=None):
+        from rich import box
         from rich.panel import Panel
         from rich.syntax import Syntax
+        from rich.table import Table
 
-        flow_plain = f'''from jina import Flow
+        param_str = Table(
+            box=box.SIMPLE,
+        )
+        param_str.add_column('')
+        param_str.add_column('YAML')
+        param_str.add_column('Python')
+        param_str.add_row(
+            'Container',
+            Syntax(f"uses: jinahub+docker://{executor_name}", 'yaml'),
+            Syntax(f".add(uses='jinahub+docker://{executor_name}')", 'python'),
+        )
 
-f = Flow().add(uses='jinahub://{executor_name}')
-'''
+        param_str.add_row(
+            'Sandbox',
+            Syntax(f"uses: jinahub+sandbox://{executor_name}", 'yaml'),
+            Syntax(f".add(uses='jinahub+sandbox://{executor_name}')", 'python'),
+        )
 
-        flow_docker = f'''from jina import Flow
+        param_str.add_row(
+            'Source',
+            Syntax(f"uses: jinahub://{executor_name}", 'yaml'),
+            Syntax(f".add(uses='jinahub://{executor_name}')", 'python'),
+        )
 
-f = Flow().add(uses='jinahub+docker://{executor_name}')
-'''
-
-        flow_sandbox = f'''from jina import Flow
-
-f = Flow().add(uses='jinahub+sandbox://{executor_name}')
-'''
-        panels = [
-            Panel(
-                Syntax(
-                    p[0],
-                    'python',
-                    theme='monokai',
-                    word_wrap=True,
-                ),
-                title=p[1],
-                width=80,
-                expand=False,
-            )
-            for p in [
-                (flow_plain, 'Use via source'),
-                (flow_docker, 'Use in Docker'),
-                (flow_sandbox, 'Use in Sandbox'),
-            ]
-        ]
-
-        if usage_kind == 'docker':
-            console.print(panels[1])
-        elif usage_kind == 'source':
-            console.print(panels[0])
-        else:
-            console.print(*reversed(panels))
+        console.print(Panel(param_str, title='Usage', expand=False, width=100))
 
     @staticmethod
     @disk_cache_offline(cache_file=str(get_cache_db()))

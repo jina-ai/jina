@@ -230,7 +230,32 @@ executors:
 
 ### Seamless Docker integration
 
-tba
+Without having to worry about dependencies, you can easily share your Executors with others and use public/private Executors in your project thanks to [Jina Hub](https://hub.jina.ai).
+
+To create an Executor:
+
+```bash
+jina hub new 
+```
+
+To push it to Jina Hub:
+
+```bash
+jina hub push .
+```
+
+To use a Hub Executor in your Flow:
+
+|        | Docker container                           | Sandbox                                     | Source                              |
+|--------|--------------------------------------------|---------------------------------------------|-------------------------------------|
+| YAML   | `uses: jinahub+docker://MyExecutor`        | `uses: jinahub+sandbox://MyExecutor`        | `uses: jinahub://MyExecutor`        |
+| Python | `.add(uses='jinahub+docker://MyExecutor')` | `.add(uses='jinahub+sandbox://MyExecutor')` | `.add(uses='jinahub://MyExecutor')` |
+
+Behind this smooth experience is advanced management of Executors:
+- Store, build and deploy Executors cost-efficiently;
+- Automatically resolve version conflicts and dependencies;
+- Serverless sandbox allows one to immediately use an Executor on the cloud without pulling anything to local.
+
 
 ### Fast-lane to cloud-native
 
