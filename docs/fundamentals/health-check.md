@@ -1,5 +1,7 @@
+# Health and readiness check of Jina Services
+
 (health-check-executor)=
-# Health check of an Executor
+## Health check of an Executor
 
 Executors run as microservices exposing `grpc` endpoints. To give information to the outside world about their health and their readiness to receive requests,
 Executors expose a [grpc health check](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) service which can be used by different orchestrators like docker-compose, 
@@ -29,12 +31,12 @@ docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12346 grpc
 ```
 
 (health-check-gateway)=
-# Health check of the Gateway
+## Health check of the Gateway
 
 The same way individual Executors expose endpoints for orchestrators, clients or other services to check their availability, Gateway, as a microservice, also exposes this in different ways depending on the protocol used.
 
 
-## Gateway health check with grpc
+### Gateway health check with grpc
 
 When using grpc as the protocol to communicate with the Gateway, then Gateway uses the exact same mechanism as Executors to expose their individual health status. It exposes [grpc health check](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) to the outside world.
 
@@ -51,7 +53,7 @@ docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12345 grpc
 ```
 
 
-## Gateway health check with http or websocket
+### Gateway health check with http or websocket
 
 When using grpc or http as a procotol for the Gateway, then it exposes and endpoint '/' that one can query to check the status.
 
@@ -74,7 +76,7 @@ Then you will get a valid empty response indicating its ability to serve.
 {}%
 ```
 
-# Readiness of a Flow exposed to the client
+## Readiness of a Flow exposed to the client
 
 A lot of times, from the client perspective, it is useful to know if a Flow, as a complete set of microservices, is ready to receive requests. This is why the gateway 
 exposes an endpoint for each of the supported protocols to know the health and readiness of a Flow. 
@@ -113,7 +115,7 @@ True
 ```
 ````
 
-## Check status from outside
+### Check status from outside
 
 To understand better what is going on under the hood, we can check how to target the endpoint from outside Jina or the client.
 
@@ -147,7 +149,7 @@ DEBUG  gateway/rep-0@19059 ready and listening                                  
 DEBUG  Flow@19059 2 Deployments (i.e. 2 Pods) are running in this Flow 
 ```
 
-### with grpc
+#### with grpc
 
 When using grpc, we can again use grpcurl to hit the proper grpc service, we will see that the Status is positive.
 
@@ -207,7 +209,7 @@ docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12345 jina
 ```
 
 
-## With http or websocket
+#### With http or websocket
 
 To understand better what is going on under the hood, we can check how to target the endpoint from outside Jina or the client.
 
