@@ -41,13 +41,17 @@ Adding the custom monitoring on a method is as straightforward as decorating the
 ````
 
 ```python
-from jina import Executor, monitor
+from jina import Executor, monitor, requests
 
 
 class MyExecutor(Executor):
     @monitor()
     def my_method(self):
         ...
+
+    @requests
+    def foo(self, **kwargs):
+        self.my_method()
 ```
 
 This will create a [Prometheus summary](https://prometheus.io/docs/concepts/metric_types/#summary)
@@ -63,6 +67,25 @@ of the function. However, you can name it by yourself by doing :
 def method(self):
     ...
 ```
+
+You can as well monitor internal part of your executor with a Context Manager:
+
+```python
+from jina import Executor, requests
+from docarray import DocumentArray
+
+
+def process():
+    ...
+
+
+class MyExecutor(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        with self.monitor('processing_seconds', 'Time processing my document'):
+            docs = process(docs)
+```
+
 
 ````{admonition} respect Prometheus naming
 :class: caution
@@ -99,11 +122,13 @@ The encode function is composed of two sub-functions.
 
 By default, only the `encode` function will be monitored. 
 
+````{tab} Decorator
+
 ```{code-block} python
 ---
 emphasize-lines: 6, 10
 ---
-from jina import requests,monitor,Executor
+from jina import requests,monitor, Executor
 from docarray import DocumentArray
 
 class MyExecutor(Executor):
@@ -121,6 +146,33 @@ class MyExecutor(Executor):
         docs.tensors = self.preprocessing(docs)
         docs.embedding = self.model_inference(docs.tensors)
 ```
+````
+
+````{tab} Context Manager
+```{code-block} python
+---
+emphasize-lines: 14, 16
+---
+from jina import requests, Executor
+from docarray import DocumentArray
+
+class MyExecutor(Executor):
+
+    def preprocessing(self, docs: DocumentArray):
+        ...
+
+    @monitor()
+    def model_inference(self, tensor):
+        ...
+
+    @requests
+    def encode(self, docs: DocumentArray, **kwargs):
+        with self.monitor('preprocessing_seconds', 'Time preprocessing the requests'):
+            docs.tensors = self.preprocessing(docs)
+        with self.monitor('model_inference_seconds', 'Time doing inference the requests'):
+            docs.embedding = self.model_inference(docs.tensors)
+```
+````
 
 
 ### Defining custom metrics directly with the Prometheus client
