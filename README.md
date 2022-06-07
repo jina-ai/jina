@@ -67,6 +67,7 @@ Document, Executor and Flow are three fundamental concepts in Jina.
 - [**Executor**](https://docs.jina.ai/fundamentals/executor/) is a group of functions with Documents as IO.
 - [**Flow**](https://docs.jina.ai/fundamentals/flow/) ties Executors together into a pipeline and exposes it with an API gateway.
 
+---
 
 <p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/no-complexity-banner.png?raw=true" alt="Jina: No Infrastructure Complexity, High Engineering Efficiency" width="100%"></a>
@@ -109,6 +110,8 @@ At the last line we see its output `['hello, world!hello, world!', 'hello, world
 
 
 While one could use standard Python with the same number of lines and get the same output, Jina accelerates time to market of your application by making it more scalable and cloud-native. Jina also handles the infrastructure complexity in production and other Day-2 operations so that you can focus on the data application itself.  
+
+---
 
 <p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/scalability-banner.png?raw=true" alt="Jina: Scalability and concurrency at ease" width="100%"></a>
@@ -228,7 +231,7 @@ executors:
 - The communication between clients and the API gateway is duplex.
 - The API gateway allows you to route request to a specific Executor while other parts of the Flow are still busy, via `.post(..., target_executor=...)`
 
-
+---
 
 <p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/container-banner.png?raw=true" alt="Jina: Seamless Container Integration" width="100%"></a>
@@ -263,6 +266,7 @@ Behind this smooth experience is advanced management of Executors:
 - Automatically resolve version conflicts and dependencies;
 - Instant delivery of any Executor via Sandbox without pulling anything to local.
 
+---
 
 <p align="center">
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/cloud-native-banner.png?raw=true" alt="Jina: Seamless Container Integration" width="100%"></a>
