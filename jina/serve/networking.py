@@ -714,7 +714,7 @@ class GrpcConnectionPool:
             )
         else:
             self._logger.debug(
-                f'GRPC call failed with code {e.code()}, retry attempt {retry_i + 1}/{num_retries}.'
+                f'GRPC call failed with code {e.code()}, retry attempt {retry_i + 1}/{num_retries - 1}.'
                 f' Trying next replica, if available.'
             )
 
@@ -732,10 +732,10 @@ class GrpcConnectionPool:
             metadata = (('endpoint', endpoint),) if endpoint else None
             tried_addresses = set()
             if retries is None or retries < 0:
-                num_retries = max(3, len(connections.get_all_connections()))
+                total_num_tries = max(3, len(connections.get_all_connections())) + 1
             else:
-                num_retries = retries
-            for i in range(num_retries):
+                total_num_tries = 1 + retries  # try once, then do all the retries
+            for i in range(total_num_tries):
                 current_connection = connections.get_next_connection()
                 tried_addresses.add(current_connection.address)
                 try:
@@ -751,7 +751,7 @@ class GrpcConnectionPool:
                         retry_i=i,
                         request_id=requests[0].request_id,
                         dest_addr=tried_addresses,
-                        num_retries=num_retries,
+                        num_retries=total_num_tries,
                     )
 
         return asyncio.create_task(task_wrapper())
