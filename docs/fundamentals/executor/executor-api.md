@@ -1,5 +1,9 @@
 (executor)=
 
+```{tip}
+Executor uses `docarray.DocumentArray` as input and output data structure. Please first [read DocArray's docs](https://docarray.jina.ai) to get an impression how does it work.   
+```
+
 # Basic
 
 {class}`~jina.Executor` is a self-contained component and performs a group of tasks on a `DocumentArray`. 
