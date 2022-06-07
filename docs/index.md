@@ -50,7 +50,6 @@ fundamentals/architecture-overview
 fundamentals/executor/index
 fundamentals/flow/index
 fundamentals/clean-code
-fundamentals/health-check
 ```
 
 ```{toctree}
