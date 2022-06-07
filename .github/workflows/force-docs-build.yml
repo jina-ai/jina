@@ -38,7 +38,7 @@ jobs:
           mkdir gen-html
           cd docs
           pip install -r requirements.txt
-          pip install furo==2021.10.9
+          pip install --pre -U furo
           export NUM_RELEASES=2
           bash makedoc.sh local-only
           cd ./_build/dirhtml/
