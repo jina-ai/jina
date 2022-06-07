@@ -34,15 +34,15 @@ def test_decorator_interface(port_generator):
     class DummyExecutor(Executor):
         @requests(on='/foo')
         def foo(self, docs, **kwargs):
-            self._proces(docs)
-            self.proces_2(docs)
+            self._process(docs)
+            self.process_2(docs)
 
         @monitor(name='metrics_name', documentation='metrics description')
-        def _proces(self, docs):
+        def _process(self, docs):
             ...
 
         @monitor()
-        def proces_2(self, docs):
+        def process_2(self, docs):
             ...
 
     port = port_generator()
@@ -56,7 +56,7 @@ def test_decorator_interface(port_generator):
             resp.content
         )
         assert (
-            f'jina_proces_2_seconds_count{{runtime_name="executor0/rep-0"}} 1.0'
+            f'jina_process_2_seconds_count{{runtime_name="executor0/rep-0"}} 1.0'
             in str(resp.content)
         )
 
@@ -67,19 +67,19 @@ def test_context_manager_interface(port_generator):
         def foo(self, docs, **kwargs):
 
             with self.monitor(
-                name='proces_seconds', documentation='process time in seconds '
+                name='process_seconds', documentation='process time in seconds '
             ):
-                self._proces(docs)
+                self._process(docs)
 
             with self.monitor(
-                name='proces_2_seconds', documentation='process 2 time in seconds '
+                name='process_2_seconds', documentation='process 2 time in seconds '
             ):
-                self.proces_2(docs)
+                self.process_2(docs)
 
-        def _proces(self, docs):
+        def _process(self, docs):
             ...
 
-        def proces_2(self, docs):
+        def process_2(self, docs):
             ...
 
     port = port_generator()
@@ -90,10 +90,10 @@ def test_context_manager_interface(port_generator):
 
         resp = req.get(f'http://localhost:{port}/')
         assert (
-            f'jina_proces_seconds_count{{runtime_name="executor0/rep-0"}} 1.0'
+            f'jina_process_seconds_count{{runtime_name="executor0/rep-0"}} 1.0'
             in str(resp.content)
         )
         assert (
-            f'jina_proces_2_seconds_count{{runtime_name="executor0/rep-0"}} 1.0'
+            f'jina_process_2_seconds_count{{runtime_name="executor0/rep-0"}} 1.0'
             in str(resp.content)
         )
