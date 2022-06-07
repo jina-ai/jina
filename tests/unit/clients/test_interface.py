@@ -37,7 +37,7 @@ def test_host_unpacking(protocol, gateway_type, tls, hostname):
 
 @pytest.mark.parametrize('protocol', ['https', 'grpcs', 'wss'])
 @pytest.mark.parametrize('port', [1234, None])
-def test_host_unpacking(protocol, port):
+def test_host_unpacking_port_tls(protocol, port):
 
     port_scheme = f':{port}' if port else ''
 
@@ -48,9 +48,9 @@ def test_host_unpacking(protocol, port):
     assert c.args.port == port if port else 443
 
 
-@pytest.mark.parametrize('protocol', ['https', 'grpcs', 'wss'])
+@pytest.mark.parametrize('protocol', ['http', 'grpc', 'ws'])
 @pytest.mark.parametrize('port', [1234, None])
-def test_host_unpacking(protocol, port):
+def test_host_unpacking_port(protocol, port):
 
     port_scheme = f':{port}' if port else ''
 
@@ -58,7 +58,7 @@ def test_host_unpacking(protocol, port):
 
     c = Client(host=host)
 
-    assert c.args.port == port if port else 443
+    assert c.args.port == port if port else 80
 
 
 def test_delete_slash_host():
@@ -70,7 +70,7 @@ def test_delete_slash_host():
     assert c.args.host == 'localhost'
 
 
-def test_host_unpacking_port():
+def test_host_unpacking_basic():
 
     protocol = 'http'
     hostname = 'localhost'

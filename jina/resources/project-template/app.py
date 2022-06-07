@@ -1,5 +1,4 @@
-from docarray import Document
-from jina import Flow
+from jina import DocumentArray, Flow
 
 
 def run():
@@ -7,7 +6,7 @@ def run():
     # or load from Flow YAML
     # f = Flow.load_config('flow.yml')
     with f:
-        da = f.post('/', [Document(), Document()])
+        da = f.post('/', DocumentArray.empty(2))
         print(da.texts)
 
 

@@ -1,8 +1,6 @@
 (architecture-overview)=
 # Architecture Overview
 
-{ref}`Executor <executor>` and {ref}`Flow <flow>` are the two fundamental concepts in Jina. 
-
 The figure below shows details on how the Flow and Executor abstractions translate into concrete microservices, providing all the 
 serving and scaling features of Jina.
 
@@ -18,7 +16,7 @@ In fact, you might notice how some naming and concepts are inspired by the Kuber
 
 The following concepts may appear in the docs, but you don't need to master them as they are mainly designed for advanced or internal use:
 
-  - **Gateway**: The Gateway is a service started by the Flow which is responsible for exposing the `HTTP`, `WebSocker` or `gRPC` endpoints to the client. It is the service that the clients of your app will actually talk to. Additionally, it keeps knowledge of the topology of the Flow to guarantee that the `Documents` are processed by the Executors in the proper order. It communicates with the Deployments via `gRPC`
+  - **Gateway**: The Gateway is a service started by the Flow which is responsible for exposing the `HTTP`, `Websocket` or `gRPC` endpoints to the client. It is the service that the clients of your app will actually talk to. Additionally, it keeps knowledge of the topology of the Flow to guarantee that the `Documents` are processed by the Executors in the proper order. It communicates with the Deployments via `gRPC`.
 
   - **Deployment**: Deployment is an abstraction around Executor that lets the `Gateway` communicate with an Executor. It encapsulates and abstracts internal replication details.
 

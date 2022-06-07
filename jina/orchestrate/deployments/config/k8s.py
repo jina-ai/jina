@@ -325,7 +325,7 @@ class K8sDeploymentConfig:
 
         return parsed_args
 
-    def to_k8s_yaml(
+    def to_kubernetes_yaml(
         self,
     ) -> List[Tuple[str, List[Dict]]]:
         """
@@ -352,3 +352,5 @@ class K8sDeploymentConfig:
                 )
                 for deployment in deployments
             ]
+
+    to_k8s_yaml = to_kubernetes_yaml

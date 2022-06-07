@@ -10,17 +10,12 @@ def mixin_head_parser(parser):
 
     gp = add_arg_group(parser, title='Head')
 
-    try:
-        gp.add_argument(
-            '--compression',
-            type=str,
-            default='NoCompression',
-            help='The compression mechanism used when sending requests from the Head to the WorkerRuntimes. Possibilities '
-            'are `NoCompression, Gzip, Deflate`. For more details, '
-            'check https://grpc.github.io/grpc/python/grpc.html#compression.',
-        )
-    except argparse.ArgumentError:
-        pass
+    gp.add_argument(
+        '--compression',
+        choices=['NoCompression', 'Deflate', 'Gzip'],
+        help='The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, '
+        'check https://grpc.github.io/grpc/python/grpc.html#compression.',
+    )
 
     gp.add_argument(
         '--uses-before-address',

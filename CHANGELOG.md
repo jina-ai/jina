@@ -191,6 +191,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -510,6 +511,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.4.8`)](#release-note-348)
 - [Release Note (`3.4.9`)](#release-note-349)
 - [Release Note (`3.4.10`)](#release-note-3410)
+- [Release Note (`3.4.11`)](#release-note-3411)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -13865,4 +13867,32 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```a6e64553```](https://github.com/jina-ai/jina/commit/a6e645539fa30cea496cbee5d687d9d02a39949b)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```b3b3a44f```](https://github.com/jina-ai/jina/commit/b3b3a44f64b80d4f7bd0b4be39f63e7df7b6cbe1)] __-__ __version__: the next version will be 3.4.10 (*Jina Dev Bot*)
+
+<a name=release-note-3-4-11></a>
+## Release Note (`3.4.11`)
+
+> Release time: 2022-06-03 05:59:18
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Johannes Messner,  samsja,  Florian Hönicke,  Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```2eee78d5```](https://github.com/jina-ai/jina/commit/2eee78d51752e2fae8f89b0b72ad2736941347a2)] __-__ client default port  (#4855) (*samsja*)
+ - [[```99c8b0cc```](https://github.com/jina-ai/jina/commit/99c8b0cc0784b62deb57c5a0a29ce7c1473fa58b)] __-__ pass tls to the deployment (#4849) (*samsja*)
+ - [[```7c4c39a9```](https://github.com/jina-ai/jina/commit/7c4c39a9d82c58ef2493c21a288c755901a9594e)] __-__ do not deploy sandbox on init (#4844) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```d435f858```](https://github.com/jina-ai/jina/commit/d435f8586dc55c2f940d4a895faed739cfdbf0cb)] __-__ document behaviour when things go wrong and redo k8s howto (#4842) (*Johannes Messner*)
+ - [[```528a0b6c```](https://github.com/jina-ai/jina/commit/528a0b6c39f8700b7b2799bd9ea146f73cc20557)] __-__ add default port client (#4858) (*samsja*)
+ - [[```3bf1c866```](https://github.com/jina-ai/jina/commit/3bf1c8663a56df1b47b97ba8dc94448d1b42bb6d)] __-__ add jina now (#4847) (*Florian Hönicke*)
+
+### 🍹 Other Improvements
+
+ - [[```cfb97363```](https://github.com/jina-ai/jina/commit/cfb973631fbee824873276792c19bc1fd0ab5ed3)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```dc8b2cfb```](https://github.com/jina-ai/jina/commit/dc8b2cfb6ea83510b15af14969b9e1b49181ee21)] __-__ __version__: the next version will be 3.4.11 (*Jina Dev Bot*)
 

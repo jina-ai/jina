@@ -1,4 +1,4 @@
-# Migration to Jina 3
+# Migrate Jina 2 to Jina 3
 
 Jina 3 comes with many improvements but to be able to enjoy them, you will also have to make some
 tweaks to your existing Jina 2 code.

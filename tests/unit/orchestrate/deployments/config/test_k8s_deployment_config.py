@@ -276,7 +276,7 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway):
     deployment_config = K8sDeploymentConfig(
         args, 'default-namespace', deployments_addresses
     )
-    yaml_configs = deployment_config.to_k8s_yaml()
+    yaml_configs = deployment_config.to_kubernetes_yaml()
     assert len(yaml_configs) == 1
     name, configs = yaml_configs[0]
     assert name == 'gateway'
@@ -439,7 +439,7 @@ def test_k8s_yaml_regular_deployment(
     args = set_deployment_parser().parse_args(args_list)
     # ignored for gateway
     deployment_config = K8sDeploymentConfig(args, 'default-namespace')
-    yaml_configs = deployment_config.to_k8s_yaml()
+    yaml_configs = deployment_config.to_kubernetes_yaml()
     assert len(yaml_configs) == shards + (1 if shards > 1 else 0)
 
     if shards > 1:

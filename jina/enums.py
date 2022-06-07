@@ -205,51 +205,6 @@ class DeploymentRoleType(BetterEnum):
         return self.value in {2, 4}
 
 
-class RequestType(BetterEnum):
-    """The enum of Client mode."""
-
-    DATA = 0
-    CONTROL = 1
-
-
-class CompressAlgo(BetterEnum):
-    """
-    The enum of Compress algorithms.
-
-    .. note::
-        LZ4 requires additional package, to install it use pip install "jina[lz4]"
-
-    .. seealso::
-
-        https://docs.python.org/3/library/archiving.html
-    """
-
-    NONE = 0
-    LZ4 = 1
-    ZLIB = 2
-    GZIP = 3
-    BZ2 = 4
-    LZMA = 5
-
-
-class OnErrorStrategy(BetterEnum):
-    """
-    The level of error handling.
-
-    .. warning::
-        In theory, all methods below do not 100% guarantee the success
-        execution on the sequel flow. If something is wrong in the upstream,
-        it is hard to CARRY this exception and moving forward without ANY
-        side-effect.
-    """
-
-    IGNORE = (
-        0  #: Ignore it, keep running all Drivers & Executors logics in the sequel flow
-    )
-    SKIP_HANDLE = 1  #: Skip all Executors in the sequel, only `pre_hook` and `post_hook` are called
-    THROW_EARLY = 2  #: Immediately throw the exception, the sequel flow will not be running at all
-
-
 class FlowInspectType(BetterEnum):
     """Inspect strategy in the flow."""
 

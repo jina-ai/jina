@@ -142,7 +142,7 @@ async def test_no_message_lost_during_scaling(logger, docker_images, tmpdir):
 
     dump_path = os.path.join(str(tmpdir), 'test_flow_k8s')
     namespace = 'test-flow-slow-process-executor-ns'
-    flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
     from kubernetes import client
 
     api_client = client.ApiClient()
@@ -245,7 +245,7 @@ async def test_no_message_lost_during_kill(logger, docker_images, tmpdir):
     )
     dump_path = os.path.join(str(tmpdir), 'test_flow_k8s')
     namespace = 'test-flow-slow-process-executor-ns-2'
-    flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
     from kubernetes import client
 
     api_client = client.ApiClient()
@@ -354,7 +354,7 @@ async def test_linear_processing_time_scaling(docker_images, logger, tmpdir):
     )
     dump_path = os.path.join(str(tmpdir), 'test_flow_k8s')
     namespace = 'test-flow-slow-process-executor-ns-3'
-    flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
     from kubernetes import client
 
     api_client = client.ApiClient()

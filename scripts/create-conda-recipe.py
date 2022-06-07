@@ -166,7 +166,7 @@ recipe_object = {
         'license': 'Apache-2.0',
         'license_family': 'Apache',
         'license_file': 'LICENSE',
-        'summary': 'Jina is the cloud-native neural search framework for any kind of data',
+        'summary': 'Build cross-modal and multi-modal applications on the cloud',
         'doc_url': 'https://docs.jina.ai',
     },
     'extra': {

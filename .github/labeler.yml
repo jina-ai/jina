@@ -22,8 +22,6 @@ area/helper:
 area/entrypoint:
   - jina/__init__.py
 
-area/helloworld:
-  - jina/helloworld/*
 
 area/network:
   - jina/peapods/**/*

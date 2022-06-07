@@ -52,7 +52,7 @@ Let's now deploy the Flow that we want to monitor:
 from jina import Flow
 
 f = Flow(monitoring=True).add(uses='jinahub+docker://SimpleIndexer')
-f.to_k8s_yaml('config')
+f.to_kubernetes_yaml('config')
 ```
 
 This will create a `config` folder containing the Kubernetes YAML definition of the Flow.

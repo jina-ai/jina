@@ -1,14 +1,31 @@
 """Decorators and wrappers designed for wrapping :class:`BaseExecutor` functions. """
 import functools
 import inspect
-from functools import wraps
+import os
+from contextlib import nullcontext
+from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Sequence, Union
 
 from jina.helper import convert_tuple_to_list, iscoroutinefunction
+from jina.importer import ImportExtensions
 from jina.serve.executors.metas import get_default_metas
 
 if TYPE_CHECKING:
     from jina import DocumentArray
+
+
+@functools.lru_cache()
+def _get_locks_root() -> Path:
+    locks_root = Path(
+        os.environ.get(
+            'JINA_LOCKS_ROOT', Path.home().joinpath('.jina').joinpath('locks')
+        )
+    )
+
+    if not locks_root.exists():
+        locks_root.mkdir(parents=True, exist_ok=True)
+
+    return locks_root
 
 
 def wrap_func(cls, func_lst, wrapper):
@@ -31,7 +48,7 @@ def store_init_kwargs(func: Callable) -> Callable:
     :return: the wrapped function
     """
 
-    @wraps(func)
+    @functools.wraps(func)
     def arg_wrapper(self, *args, **kwargs):
         if func.__name__ != '__init__':
             raise TypeError(
@@ -60,6 +77,51 @@ def store_init_kwargs(func: Callable) -> Callable:
         return f
 
     return arg_wrapper
+
+
+def avoid_concurrent_lock_cls(cls):
+    """Wraps a function to lock a filelock for concurrent access with the name of the class to which it applies, to avoid deadlocks
+    :param cls: the class to which is applied, only when the class corresponds to the instance type, this filelock will apply
+    :return: the wrapped function
+    """
+
+    def avoid_concurrent_lock_wrapper(func: Callable) -> Callable:
+        """Wrap the function around a File Lock to make sure that the function is run by a single replica in the same machine
+        :param func: the function to decorate
+        :return: the wrapped function
+        """
+
+        @functools.wraps(func)
+        def arg_wrapper(self, *args, **kwargs):
+            if func.__name__ != '__init__':
+                raise TypeError(
+                    'this decorator should only be used on __init__ method of an executor'
+                )
+
+            if self.__class__ == cls:
+                file_lock = nullcontext()
+                with ImportExtensions(
+                    required=False,
+                    help_text=f'FileLock is needed to guarantee non-concurrent initialization of replicas in the same '
+                    f'machine.',
+                ):
+                    import filelock
+
+                    locks_root = _get_locks_root()
+
+                    lock_file = locks_root.joinpath(f'{self.__class__.__name__}.lock')
+
+                    file_lock = filelock.FileLock(lock_file, timeout=-1)
+
+                with file_lock:
+                    f = func(self, *args, **kwargs)
+                return f
+            else:
+                return func(self, *args, **kwargs)
+
+        return arg_wrapper
+
+    return avoid_concurrent_lock_wrapper
 
 
 def requests(
