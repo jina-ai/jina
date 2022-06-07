@@ -6,6 +6,7 @@ ac_table = {
         'executor',
         'flow',
         'ping',
+        'export',
         'new',
         'gateway',
         'hub',
@@ -13,7 +14,6 @@ ac_table = {
         'pod',
         'deployment',
         'client',
-        'export-api',
     ],
     'completions': {
         'executor': [
@@ -79,6 +79,11 @@ ac_table = {
             '--inspect',
         ],
         'ping': ['--help', '--timeout', '--retries'],
+        'export flowchart': ['--help', '--vertical-layout'],
+        'export kubernetes': ['--help', '--k8s-namespace'],
+        'export docker-compose': ['--help', '--network_name'],
+        'export schema': ['--help', '--yaml-path', '--json-path', '--schema-path'],
+        'export': ['--help', 'flowchart', 'kubernetes', 'docker-compose', 'schema'],
         'new': ['--help'],
         'gateway': [
             '--help',
@@ -284,6 +289,5 @@ ac_table = {
             '--return-responses',
             '--protocol',
         ],
-        'export-api': ['--help', '--yaml-path', '--json-path', '--schema-path'],
     },
 }
