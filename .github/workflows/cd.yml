@@ -48,7 +48,7 @@ jobs:
           echo "JINA_VERSION=${JINA_VERSION}" >> $GITHUB_ENV
           cd schema
           mkdir -p schemas
-          jina export-api --schema-path schemas/"$JINA_VERSION.json" schemas/master.json schemas/master --yaml-path "$JINA_VERSION.yml" master.yml --json-path "$JINA_VERSION.json" master.json master
+          jina export schema --schema-path schemas/"$JINA_VERSION.json" schemas/master.json schemas/master --yaml-path "$JINA_VERSION.yml" master.yml --json-path "$JINA_VERSION.json" master.json master
           python ../scripts/get-openapi-schemas.py
           npm install --prefix ~ snippet-enricher-cli
           ~/node_modules/.bin/snippet-enricher-cli --input=gateway.json --targets=shell_curl > gateway-with-code.json
