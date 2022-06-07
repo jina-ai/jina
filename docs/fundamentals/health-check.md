@@ -153,7 +153,7 @@ DEBUG  gateway/rep-0@19059 ready and listening                                  
 DEBUG  Flow@19059 2 Deployments (i.e. 2 Pods) are running in this Flow 
 ```
 
-#### with grpc
+#### With gRPC
 
 When using grpc, we can again use grpcurl to hit the proper grpc service, we will see that the Status is positive.
 
