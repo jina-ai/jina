@@ -120,7 +120,7 @@ The example above can be refactored into a Python Executor file and a Flow YAML 
 
 <table>
 <tr>
-<th> toy.yml </th> 
+<th> <code>toy.yml</code> </th> 
 <th> executor.py </th>
 </tr>
 <tr>
@@ -186,7 +186,7 @@ This simple refactoring allows developers to write an application in the client-
 
 <table>
 <tr>
-<th> toy.yml </th> 
+<th> <code>toy.yml</code> </th> 
 <th> Flowchart </th>
 </tr>
 <tr>
