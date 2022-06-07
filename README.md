@@ -173,6 +173,20 @@ jina flow --uses toy.yml
 
 The server is successfully started, and you can now use a client to query it.
 
+```python
+from jina import Client, Document
+
+c = Client(host='grpc://0.0.0.0:51000')
+c.post('/', Document())
+```
+
+This simple refactoring allows developers to write an application in the client-server style. The separation of Flow YAML and Executor Python file does not only make the project more maintainable but also brings scalability and concurrency to the next level:
+- The data flow on the server is non-blocking and async. New request is handled immediately when an Executor is free, regardless if previous request is still being processed.
+- Scalability can be easily achieved by setting `replicas: ` in YAML/Python. Load-balancing is automatically added to ensure the maximum throughput.
+- You now have an API gateway that supports gRPC (default), Websockets, and HTTP protocols with TLS.
+- The communication between clients and the API gateway is duplex.
+- The API gateway allows you to route request to a specific Executor while other parts of the Flow are still busy, via `.post(..., target_executor=...)`
+
 ### Seamless Docker integration
 
 tba
