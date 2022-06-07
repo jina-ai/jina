@@ -109,6 +109,7 @@ Then by doing the same check, you will see that it returns an error:
 docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12345 jina.JinaGatewayDryRunRPC/dry_run
 ```
 
+````{dropdown} Error output
 ```text
 {
   "code": "ERROR",
@@ -142,6 +143,7 @@ docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12345 jina
   }
 }
 ```
+````
 
 
 #### Using HTTP or Websocket
