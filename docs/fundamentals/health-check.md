@@ -1,13 +1,15 @@
 # Health and readiness check of Jina Services
+Every Jina Flow is comprised of a {ref}`number of microservices <architecture-overview>`, each of which have to be ready and healthy before the Flow is ready to receive requests.
 
+Each Flow microservice provides health and readiness checks in the form of a  [standardized gRPC endpoint](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) that exposes this information to the outside world. This means that they can automatically be used by Jina itself as well as external tools like Docker Compose, Kubernetes service meshes, or load balancers.
+
+The following page describes how to perform a manual health check of each component in a Jina Flow.
 (health-check-executor)=
 ## Health check of an Executor
 
-Executors run as microservices exposing `grpc` endpoints. To give information to the outside world about their health and their readiness to receive requests,
-Executors expose a [grpc health check](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) service which can be used by different orchestrators like docker-compose, 
-or by other services like load-balancers. Jina itself when run locally uses this service to make sure that each Executor is ready to receive traffic.
+Executors run as microservices exposing gRPC endpoints, and they expose one endpoint for a health and readiness check.
 
-To see how to use it, let's start a Flow inside a Terminal and let it blocked to serve requests:
+To see how to use it, you can start a Flow inside a terminal and block it to accept requests:
 
 ```python
 from jina import Flow
@@ -17,7 +19,7 @@ with f:
     f.block()
 ```
 
-On another terminal, we can install or download [grpcurl](https://github.com/fullstorydev/grpcurl) image to be able to send `rpc` requests to our services.
+On another terminal, you can use [grpcurl](https://github.com/fullstorydev/grpcurl) to send RPC requests to your services.
 
 ```bash
 docker pull fullstorydev/grpcurl:latest
@@ -33,14 +35,16 @@ docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12346 grpc
 (health-check-gateway)=
 ## Health check of the Gateway
 
-The same way individual Executors expose endpoints for orchestrators, clients or other services to check their availability, Gateway, as a microservice, also exposes this in different ways depending on the protocol used.
+Just like each individual Executor, the Gateway also acts as a microservice, and as such it exposes a health check endpoint.
+
+In contrast to Executors however, a Gateway can use gRPC, HTTP, or Websocket, and the health check endpoint changes accordingly.
 
 
-### Gateway health check with grpc
+### Gateway health check with gRPC
 
-When using grpc as the protocol to communicate with the Gateway, then Gateway uses the exact same mechanism as Executors to expose their individual health status. It exposes [grpc health check](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) to the outside world.
+When using gRPC as the protocol to communicate with the Gateway, the Gateway uses the exact same mechanism as Executors to expose its health status: It exposes the [ standard gRPC health check](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) to the outside world.
 
-With the same Flow described before we can use the same way to check the gateway status:
+With the same Flow as described before, you can use the same way to check the Gateway status:
 
 ```bash
 docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12345 grpc.health.v1.Health/Check
@@ -53,11 +57,11 @@ docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12345 grpc
 ```
 
 
-### Gateway health check with http or websocket
+### Gateway health check with HTTP or Websocket
 
-When using grpc or http as a procotol for the Gateway, then it exposes and endpoint '/' that one can query to check the status.
+When using HTTP or Websocket as the protocol for the Gateway, it exposes the endpoint `'/'` that one can query to check the status.
 
-By having a Flow with http or websocket as protocol:
+First, crate a Flow with HTTP or Websocket protocol:
 
 ```python
 from jina import Flow
@@ -66,22 +70,22 @@ f = Flow(protocol='http', port=12345).add()
 with f:
     f.block()
 ```
-
+Then, you can query the "empty" endpoint:
 ```bash
 curl http://localhost:12345
 ```
 
-Then you will get a valid empty response indicating its ability to serve.
+And you will get a valid empty response indicating the Gateway's ability to serve.
 ```text
 {}%
 ```
 
-## Readiness of a Flow exposed to the client
+## Readiness of complete Flow
 
-A lot of times, from the client perspective, it is useful to know if a Flow, as a complete set of microservices, is ready to receive requests. This is why the gateway 
-exposes an endpoint for each of the supported protocols to know the health and readiness of a Flow. 
+A lot of times, from the client perspective, it is useful to know if a Flow, as a complete set of microservices, is ready to receive requests. This is why the Gateway 
+exposes an endpoint for each of the supported protocols to know the health and readiness of an entire Flow. 
 
-Also Jina Flow and Client contains a convenient API to query these endpoints. You can call `flow.dry_run()` and `client.dry_run()`
+Jina `Flow` and `Client` offer a convenient API to query these readiness endpoints. You can call `flow.dry_run()` and `client.dry_run()`, which will return `True` if the Flow is healthy and ready, and `False` otherwise.
 
 ````{tab} via Flow
 ```python
