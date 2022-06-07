@@ -82,7 +82,7 @@ from jina import DocumentArray, Executor, Flow, requests
 
 class MyExec(Executor):
     @requests
-    async def foo(self, docs: DocumentArray, **kwargs):
+    async def add_text(self, docs: DocumentArray, **kwargs):
         for d in docs:
             d.text += 'hello, world!'
 
@@ -95,7 +95,7 @@ with f:
 ```
 
 - The first line imports three concepts we just introduced;
-- `MyExec` defines an async function `foo` that receives `DocumentArray` from network requests and appends `"hello, world"` to `.text`;
+- `MyExec` defines an async function `add_text` that receives `DocumentArray` from network requests and appends `"hello, world"` to `.text`;
 - `f` defines a Flow streamlined two Executors in a chain;
 - The `with` block opens the Flow, sends an empty DocumentArray to the Flow, and prints the result.
 
@@ -133,11 +133,11 @@ with:
   protocol: grpc
 executors:
 - uses: MyExec
-  name: e1
+  name: foo
   py_modules:
     - executor.py
 - uses: MyExec
-  name: e2
+  name: bar
   py_modules:
     - executor.py
 ```
@@ -151,7 +151,7 @@ from jina import DocumentArray, Executor, requests
 
 class MyExec(Executor):
     @requests
-    async def foo(self, docs: DocumentArray, **kwargs):
+    async def add_text(self, docs: DocumentArray, **kwargs):
         for d in docs:
             d.text += 'hello, world!'
 ```
@@ -182,7 +182,48 @@ c.post('/', Document())
 
 This simple refactoring allows developers to write an application in the client-server style. The separation of Flow YAML and Executor Python file does not only make the project more maintainable but also brings scalability and concurrency to the next level:
 - The data flow on the server is non-blocking and async. New request is handled immediately when an Executor is free, regardless if previous request is still being processed.
-- Scalability can be easily achieved by setting `replicas: ` in YAML/Python. Load-balancing is automatically added to ensure the maximum throughput.
+- Scalability can be easily achieved by the keywords `replicas` and `needs` in YAML/Python. Load-balancing is automatically added when necessary to ensure the maximum throughput.
+
+<table>
+<tr>
+<th> toy.yml </th> 
+<th> Flowchart </th>
+</tr>
+<tr>
+<td> 
+
+```yaml
+jtype: Flow
+with:
+  port: 51000
+  protocol: grpc
+executors:
+- uses: MyExec
+  name: foo
+  py_modules:
+    - executor.py
+  replicas: 2
+- uses: MyExec
+  name: bar
+  py_modules:
+    - executor.py
+  replicas: 3
+  needs: gateway
+- needs: [foo, bar]
+  name: baz
+```
+     
+</td>
+<td>
+
+<p align="center">
+<a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/scale-flow.svg?raw=true" alt="Running a simple hello-world program" width="70%"></a>
+</p>
+
+</td>
+</tr>
+</table>
+
 - You now have an API gateway that supports gRPC (default), Websockets, and HTTP protocols with TLS.
 - The communication between clients and the API gateway is duplex.
 - The API gateway allows you to route request to a specific Executor while other parts of the Flow are still busy, via `.post(..., target_executor=...)`
