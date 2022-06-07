@@ -38,8 +38,7 @@ This could become a performance bottleneck to your search system.
 The Executor looks like this:
 
 ```python
-from jina import Executor, requests
-from docarray import Document
+from jina import Executor, requests, Document
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.datasets import fetch_20newsgroups

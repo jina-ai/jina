@@ -166,8 +166,7 @@ jina executor --uses my-exec.yml --port 12345
 Now that your Executor is up and running, we can tap into it just like before, and even use it from two different Flows.
 
 ```python
-from jina import Flow
-from docarray import Document, DocumentArray
+from jina import Flow, Document, DocumentArray
 
 f1 = Flow().add(host='localhost', port=12345, external=True)
 f2 = Flow().add(host='localhost', port=12345, external=True)

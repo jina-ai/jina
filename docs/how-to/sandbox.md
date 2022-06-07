@@ -14,8 +14,7 @@ Here is a graph to show the difference between using and not using Sandbox.
 ## Use
 
 ```python
-from docarray import Document
-from jina import Flow
+from jina import Flow, Document
 
 f = Flow().add(uses='jinahub+sandbox://Hello')
 

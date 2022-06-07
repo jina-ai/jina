@@ -167,8 +167,7 @@ You should query your Flow generate the first metrics. Othewise the dashboard wi
 You can query the flow by doing :
 
 ```python
-from jina import Client
-from docarray import DocumentArray
+from jina import Client, DocumentArray
 
 client = Client(port=51000)
 client.index(inputs=DocumentArray.empty(size=4))
