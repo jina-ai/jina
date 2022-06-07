@@ -1,11 +1,13 @@
 # Health and readiness check of Jina Flow
 Every Jina Flow consists of a {ref}`number of microservices <architecture-overview>`,
-each of which have to be ready and healthy before the Flow is ready to receive requests.
+each of which have to be healthy before the Flow is ready to receive requests.
 
-Each Flow microservice provides health and readiness checks in the form of a  [standardized gRPC endpoint](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) that exposes this information to the outside world.
+Each Flow microservice provides a health check in the form of a [standardized gRPC endpoint](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) that exposes this information to the outside world.
 This means that health checks can automatically be performed by Jina itself as well as external tools like Docker Compose, Kubernetes service meshes, or load balancers.
 
-In most cases, it is most useful to check if an entire Flow is ready to accept requests, and the Jina Gateway provides and endpoint for this.
+In most cases, it is most useful to check if an entire Flow is ready to accept requests.
+To enable this readiness check, the Jina Gateway can aggregate health check information from all services and provides
+a readiness check endpoint for the complete Flow.
 
 ## Readiness of complete Flow
 
@@ -167,14 +169,25 @@ Then by doing the same check, you will see that the call returns an error:
 {"code":1,"description":"failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {'0.0.0.0:12346'}. Head or worker(s) may be down.","exception":{"name":"InternalNetworkError","args":["failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {'0.0.0.0:12346'}. Head or worker(s) may be down."],"stacks":["Traceback (most recent call last):\n","  File \"/home/joan/jina/jina/jina/serve/networking.py\", line 726, in task_wrapper\n    timeout=timeout,\n","  File \"/home/joan/jina/jina/jina/serve/networking.py\", line 241, in send_requests\n    await call_result,\n","  File \"/home/joan/.local/lib/python3.7/site-packages/grpc/aio/_call.py\", line 291, in __await__\n    self._cython_call._status)\n","grpc.aio._call.AioRpcError: <AioRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses\"\n\tdebug_error_string = \"{\"created\":\"@1654074272.702044542\",\"description\":\"Failed to pick subchannel\",\"file\":\"src/core/ext/filters/client_channel/client_channel.cc\",\"file_line\":3134,\"referenced_errors\":[{\"created\":\"@1654074272.702043378\",\"description\":\"failed to connect to all addresses\",\"file\":\"src/core/lib/transport/error_utils.cc\",\"file_line\":163,\"grpc_status\":14}]}\"\n>\n","\nDuring handling of the above exception, another exception occurred:\n\n","Traceback (most recent call last):\n","  File \"/home/joan/jina/jina/jina/serve/runtimes/gateway/http/app.py\", line 142, in _flow_health\n    data_type=DataInputType.DOCUMENT,\n","  File \"/home/joan/jina/jina/jina/serve/runtimes/gateway/http/app.py\", line 399, in _get_singleton_result\n    async for k in streamer.stream(request_iterator=request_iterator):\n","  File \"/home/joan/jina/jina/jina/serve/stream/__init__.py\", line 78, in stream\n    async for response in async_iter:\n","  File \"/home/joan/jina/jina/jina/serve/stream/__init__.py\", line 154, in _stream_requests\n    response = self._result_handler(future.result())\n","  File \"/home/joan/jina/jina/jina/serve/runtimes/gateway/request_handling.py\", line 148, in _process_results_at_end_gateway\n    partial_responses = await asyncio.gather(*tasks)\n","  File \"/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\", line 128, in _wait_previous_and_send\n    self._handle_internalnetworkerror(err)\n","  File \"/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\", line 70, in _handle_internalnetworkerror\n    raise err\n","  File \"/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\", line 125, in _wait_previous_and_send\n    timeout=self._timeout_send,\n","  File \"/home/joan/jina/jina/jina/serve/networking.py\", line 734, in task_wrapper\n    num_retries=num_retries,\n","  File \"/home/joan/jina/jina/jina/serve/networking.py\", line 697, in _handle_aiorpcerror\n    details=e.details(),\n","jina.excepts.InternalNetworkError: failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {'0.0.0.0:12346'}. Head or worker(s) may be down.\n"],"executor":""}}%
 ```
 
-
+=(health-check-microservices)
 ## Health check of individual microservices
 
-In addition to a performing a health check for the entire Flow, it is also possible to check every individual microservice in said Flow.
+In addition to a performing a readiness check for the entire Flow, it is also possible to check every individual microservice in said Flow,
+by utilizing a [standardized gRPC health check endpoint](https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
 In most cases this is not necessary, since such checks are performed by Jina, a Kubernetes service mesh or a load balancer under the hood.
-Nevertheless, it is possible to performs these checks as a user.
+Nevertheless, it is possible to perform these checks as a user.
 
-The following page describes how to perform a manual health check of each component in a Jina Flow.
+When performing these checks, you can expect on of the following `ServingStatus` responses:
+- **`UNKNOWN` (0)**: The health of the microservice could not be determined
+- **`SERVING` (1)**: The microservice is healthy and ready to receive requests
+- **`NOT_SERVING` (2)**: The microservice is *not* healthy and *not* ready to receive requests
+- **`SERVICE_UNKNOWN` (3)**: The health of the microservice could not be determined while performing streaming
+
+````{admonition} See Also
+:class: seealso
+
+To learn more about these status codes, and how health checks are performed with gRPC, see [here](https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
+````
 
 (health-check-executor)=
 ### Health check of an Executor
@@ -230,6 +243,13 @@ docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12345 grpc
 
 
 #### Gateway health check with HTTP or Websocket
+
+````{admonition} Caution
+:class: caution
+For Gateways running with HTTP or Websocket, the gRPC health check response codes outlined {ref}`above <health-check-microservices>` do not apply.
+
+Instead, an error free response signifies healthiness.
+````
 
 When using HTTP or Websocket as the protocol for the Gateway, it exposes the endpoint `'/'` that one can query to check the status.
 
