@@ -213,7 +213,7 @@ docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12345 jina
 ```
 
 
-#### With http or websocket
+#### With HTTP or Websocket
 
 To understand better what is going on under the hood, we can check how to target the endpoint from outside Jina or the client.
 
