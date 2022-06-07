@@ -3,15 +3,16 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/grpc.html" />
 
-    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.serve.runtimes.gateway.grpc - Jina 3.5.0 documentation</title>
+    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+        <title>jina.serve.runtimes.gateway.grpc - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -27,24 +28,27 @@
   --color-brand-content: #009191;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FBCB67;
-  --color-brand-content: #FBCB67;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   --color-brand-primary: #FBCB67;
   --color-brand-content: #FBCB67;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
@@ -53,17 +57,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -72,14 +72,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -94,7 +94,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -102,7 +102,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.5.0 documentation</div>
+                <div class="brand">Jina 3.5.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -488,6 +488,7 @@
 </div>
 
 </div>
+
             </div>
             
         </div>
@@ -540,31 +541,31 @@
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.request_handling</span> <span class="kn">import</span> <span class="n">RequestHandler</span>
 <span class="kn">from</span> <span class="nn">jina.serve.stream</span> <span class="kn">import</span> <span class="n">RequestStreamer</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'GRPCGatewayRuntime'</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GRPCGatewayRuntime&#39;</span><span class="p">]</span>
 
 <span class="kn">from</span> <span class="nn">jina.types.request.control</span> <span class="kn">import</span> <span class="n">ControlRequest</span>
 
 
 <div class="viewcode-block" id="GRPCGatewayRuntime"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime">[docs]</a><span class="k">class</span> <span class="nc">GRPCGatewayRuntime</span><span class="p">(</span><span class="n">GatewayRuntime</span><span class="p">):</span>
-    <span class="sd">"""Gateway Runtime for gRPC."""</span>
+    <span class="sd">&quot;&quot;&quot;Gateway Runtime for gRPC.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="GRPCGatewayRuntime.async_setup"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The async method to setup.</span>
 
 <span class="sd">        Create the gRPC server and expose the port for communication.</span>
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">proxy</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">'nt'</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">'http_proxy'</span><span class="p">)</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">'https_proxy'</span><span class="p">)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">proxy</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;nt&#39;</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">&#39;http_proxy&#39;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">&#39;https_proxy&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">is_port_free</span><span class="p">(</span><span class="n">__default_host__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="n">PortAlreadyUsed</span><span class="p">(</span><span class="sa">f</span><span class="s1">'port:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">PortAlreadyUsed</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;port:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">server</span><span class="p">(</span>
             <span class="n">options</span><span class="o">=</span><span class="p">[</span>
-                <span class="p">(</span><span class="s1">'grpc.max_send_message_length'</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">'grpc.max_receive_message_length'</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;grpc.max_send_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+                <span class="p">(</span><span class="s1">&#39;grpc.max_receive_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
             <span class="p">]</span>
         <span class="p">)</span>
 
@@ -591,18 +592,18 @@
         <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaControlRequestRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
 
         <span class="n">service_names</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">'JinaRPC'</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
-            <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">'JinaControlRequestRPC'</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
+            <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
+            <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaControlRequestRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
             <span class="n">reflection</span><span class="o">.</span><span class="n">SERVICE_NAME</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">reflection</span><span class="o">.</span><span class="n">enable_server_reflection</span><span class="p">(</span><span class="n">service_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
 
-        <span class="n">bind_addr</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">__default_host__</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
+        <span class="n">bind_addr</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">__default_host__</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssl_keyfile</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssl_certfile</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssl_keyfile</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssl_keyfile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">private_key</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssl_certfile</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssl_certfile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">certificate_chain</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
             <span class="n">server_credentials</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">ssl_server_credentials</span><span class="p">(</span>
@@ -618,43 +619,43 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssl_keyfile</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssl_certfile</span>
         <span class="p">):</span>  <span class="c1"># if we have only ssl_keyfile and not ssl_certfile or vice versa</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">"you can't pass a ssl_keyfile without a ssl_certfile and vice versa"</span>
+                <span class="sa">f</span><span class="s2">&quot;you can&#39;t pass a ssl_keyfile without a ssl_certfile and vice versa&quot;</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">add_insecure_port</span><span class="p">(</span><span class="n">bind_addr</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'start server bound to </span><span class="si">{</span><span class="n">bind_addr</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;start server bound to </span><span class="si">{</span><span class="n">bind_addr</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 <div class="viewcode-block" id="GRPCGatewayRuntime.async_teardown"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Close the connection pool"""</span>
+        <span class="sd">&quot;&quot;&quot;Close the connection pool&quot;&quot;&quot;</span>
         <span class="c1"># usually async_cancel should already have been called, but then its a noop</span>
         <span class="c1"># if the runtime is stopped without a sigterm (e.g. as a context manager, this can happen)</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GRPCGatewayRuntime.async_cancel"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_cancel">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""The async method to stop server."""</span>
+        <span class="sd">&quot;&quot;&quot;The async method to stop server.&quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">stop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GRPCGatewayRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""The async running of server."""</span>
+        <span class="sd">&quot;&quot;&quot;The async running of server.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">wait_for_termination</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GRPCGatewayRuntime.process_control"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.process_control">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">ControlRequest</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlRequest</span><span class="p">:</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Should be used to check readiness by sending STATUS ControlRequests.</span>
 <span class="sd">        Throws for any other command than STATUS.</span>
 
-<span class="sd">        :param request: the ControlRequest, should have command 'STATUS'</span>
+<span class="sd">        :param request: the ControlRequest, should have command &#39;STATUS&#39;</span>
 <span class="sd">        :param args: additional arguments in the grpc call, ignored</span>
 <span class="sd">        :returns: will be the original request</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug_enabled</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_log_control_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">command</span> <span class="o">!=</span> <span class="s1">'STATUS'</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'gateway only support STATUS ControlRequests'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">command</span> <span class="o">!=</span> <span class="s1">&#39;STATUS&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;gateway only support STATUS ControlRequests&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">request</span></div></div>
 </pre></div>
                 </article>
@@ -715,7 +716,7 @@
     <script src="../../../../../../_static/jquery.js"></script>
     <script src="../../../../../../_static/underscore.js"></script>
     <script src="../../../../../../_static/doctools.js"></script>
-    <script src="../../../../../../_static/scripts/main.js"></script>
+    <script src="../../../../../../_static/scripts/furo.js"></script>
     <script src="../../../../../../_static/clipboard.min.js"></script>
     <script src="../../../../../../_static/copybutton.js"></script>
     <script src="../../../../../../_static/tabs.js"></script>

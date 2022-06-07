@@ -3,15 +3,16 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/_modules/jina/parsers/orchestrate/runtimes/remote.html" />
 
-    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.parsers.orchestrate.runtimes.remote - Jina 3.5.0 documentation</title>
+    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+        <title>jina.parsers.orchestrate.runtimes.remote - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -27,24 +28,27 @@
   --color-brand-content: #009191;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FBCB67;
-  --color-brand-content: #FBCB67;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   --color-brand-primary: #FBCB67;
   --color-brand-content: #FBCB67;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
@@ -53,17 +57,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -72,14 +72,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -94,7 +94,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -102,7 +102,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.5.0 documentation</div>
+                <div class="brand">Jina 3.5.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -488,6 +488,7 @@
 </div>
 
 </div>
+
             </div>
             
         </div>
@@ -527,248 +528,248 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.parsers.orchestrate.runtimes.remote</h1><div class="highlight"><pre>
-<span></span><span class="sd">"""Argparser module for remote runtime"""</span>
+<span></span><span class="sd">&quot;&quot;&quot;Argparser module for remote runtime&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">helper</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">KVAppendAction</span><span class="p">,</span> <span class="n">add_arg_group</span>
 
 
 <div class="viewcode-block" id="mixin_remote_runtime_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_remote_runtime_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_remote_runtime_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
-    <span class="sd">"""Add the options for a remote Executor</span>
+    <span class="sd">&quot;&quot;&quot;Add the options for a remote Executor</span>
 <span class="sd">    :param parser: the parser</span>
-<span class="sd">    """</span>
-    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'RemoteRuntime'</span><span class="p">)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;RemoteRuntime&#39;</span><span class="p">)</span>
     <span class="n">_add_host</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="mixin_client_gateway_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_client_gateway_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_client_gateway_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
-    <span class="sd">"""Add the options for the client connecting to the Gateway</span>
+    <span class="sd">&quot;&quot;&quot;Add the options for the client connecting to the Gateway</span>
 <span class="sd">    :param parser: the parser</span>
-<span class="sd">    """</span>
-    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'ClientGateway'</span><span class="p">)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;ClientGateway&#39;</span><span class="p">)</span>
     <span class="n">_add_host</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
     <span class="n">_add_proxy</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--port'</span><span class="p">,</span>
+        <span class="s1">&#39;--port&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'The port of the Gateway, which the client should connect to.'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The port of the Gateway, which the client should connect to.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--tls'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="s1">&#39;--tls&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, connect to gateway using tls encryption'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, connect to gateway using tls encryption&#39;</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="mixin_gateway_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_gateway_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_gateway_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
-    <span class="sd">"""Add the options for remote expose at the Gateway</span>
+    <span class="sd">&quot;&quot;&quot;Add the options for remote expose at the Gateway</span>
 <span class="sd">    :param parser: the parser</span>
-<span class="sd">    """</span>
-    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Gateway'</span><span class="p">)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Gateway&#39;</span><span class="p">)</span>
     <span class="n">_add_host</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
     <span class="n">_add_proxy</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--port-expose'</span><span class="p">,</span>
+        <span class="s1">&#39;--port-expose&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s1">'port'</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;port&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">(),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'The port that the gateway exposes for clients for GRPC connections.'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The port that the gateway exposes for clients for GRPC connections.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--graph-description'</span><span class="p">,</span>
+        <span class="s1">&#39;--graph-description&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'Routing graph for the gateway'</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s1">'</span><span class="si">{}</span><span class="s1">'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Routing graph for the gateway&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--graph-conditions'</span><span class="p">,</span>
+        <span class="s1">&#39;--graph-conditions&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.'</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s1">'</span><span class="si">{}</span><span class="s1">'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--deployments-addresses'</span><span class="p">,</span>
+        <span class="s1">&#39;--deployments-addresses&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'dictionary JSON with the input addresses of each Deployment'</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s1">'</span><span class="si">{}</span><span class="s1">'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;dictionary JSON with the input addresses of each Deployment&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--deployments-disable-reduce'</span><span class="p">,</span>
+        <span class="s1">&#39;--deployments-disable-reduce&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'list JSON disabling the built-in merging mechanism for each Deployment listed'</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s1">'[]'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;list JSON disabling the built-in merging mechanism for each Deployment listed&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;[]&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--compression'</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">'NoCompression'</span><span class="p">,</span> <span class="s1">'Deflate'</span><span class="p">,</span> <span class="s1">'Gzip'</span><span class="p">],</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, '</span>
-        <span class="s1">'check https://grpc.github.io/grpc/python/grpc.html#compression.'</span><span class="p">,</span>
+        <span class="s1">&#39;--compression&#39;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;NoCompression&#39;</span><span class="p">,</span> <span class="s1">&#39;Deflate&#39;</span><span class="p">,</span> <span class="s1">&#39;Gzip&#39;</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, &#39;</span>
+        <span class="s1">&#39;check https://grpc.github.io/grpc/python/grpc.html#compression.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--timeout-send'</span><span class="p">,</span>
+        <span class="s1">&#39;--timeout-send&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default&#39;</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_add_host</span><span class="p">(</span><span class="n">arg_group</span><span class="p">):</span>
     <span class="n">arg_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--host'</span><span class="p">,</span>
+        <span class="s1">&#39;--host&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">__default_host__</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s1">'The host address of the runtime, by default it is </span><span class="si">{</span><span class="n">__default_host__</span><span class="si">}</span><span class="s1">.'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;The host address of the runtime, by default it is </span><span class="si">{</span><span class="n">__default_host__</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_add_proxy</span><span class="p">(</span><span class="n">arg_group</span><span class="p">):</span>
 
     <span class="n">arg_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--proxy'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="s1">&#39;--proxy&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, respect the http_proxy and https_proxy environment variables. '</span>
-        <span class="s1">'otherwise, it will unset these proxy variables before start. '</span>
-        <span class="s1">'gRPC seems to prefer no proxy'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, respect the http_proxy and https_proxy environment variables. &#39;</span>
+        <span class="s1">&#39;otherwise, it will unset these proxy variables before start. &#39;</span>
+        <span class="s1">&#39;gRPC seems to prefer no proxy&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
 
 <div class="viewcode-block" id="mixin_graphql_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_graphql_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_graphql_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">"""Add the options to rest server</span>
+    <span class="sd">&quot;&quot;&quot;Add the options to rest server</span>
 
 <span class="sd">    :param parser: the parser</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'GraphQL'</span><span class="p">)</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;GraphQL&#39;</span><span class="p">)</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--expose-graphql-endpoint'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="s1">&#39;--expose-graphql-endpoint&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, /graphql endpoint is added to HTTP interface. '</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, /graphql endpoint is added to HTTP interface. &#39;</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="mixin_http_gateway_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_http_gateway_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_http_gateway_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">"""Add the options to rest server</span>
+    <span class="sd">&quot;&quot;&quot;Add the options to rest server</span>
 
 <span class="sd">    :param parser: the parser</span>
-<span class="sd">    """</span>
-    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'HTTP Gateway'</span><span class="p">)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;HTTP Gateway&#39;</span><span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--title'</span><span class="p">,</span>
+        <span class="s1">&#39;--title&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'The title of this HTTP server. It will be used in automatics docs such as Swagger UI.'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The title of this HTTP server. It will be used in automatics docs such as Swagger UI.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--description'</span><span class="p">,</span>
+        <span class="s1">&#39;--description&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'The description of this HTTP server. It will be used in automatics docs such as Swagger UI.'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The description of this HTTP server. It will be used in automatics docs such as Swagger UI.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--cors'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="s1">&#39;--cors&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">        If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.</span>
-<span class="s1">        '''</span><span class="p">,</span>
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--no-debug-endpoints'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="s1">&#39;--no-debug-endpoints&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'If set, `/status` `/post` endpoints are removed from HTTP interface. '</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, `/status` `/post` endpoints are removed from HTTP interface. &#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--no-crud-endpoints'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
+        <span class="s1">&#39;--no-crud-endpoints&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">        If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.</span>
 
 <span class="s1">        Any executor that has `@requests(on=...)` bind with those values will receive data requests.</span>
-<span class="s1">        '''</span><span class="p">,</span>
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--expose-endpoints'</span><span class="p">,</span>
+        <span class="s1">&#39;--expose-endpoints&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">        A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.</span>
-<span class="s1">        '''</span><span class="p">,</span>
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--uvicorn-kwargs'</span><span class="p">,</span>
+        <span class="s1">&#39;--uvicorn-kwargs&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">KVAppendAction</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">'KEY: VALUE'</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s1">'*'</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;KEY: VALUE&#39;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server</span>
 
 <span class="s1">More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/</span>
 
-<span class="s1">'''</span><span class="p">,</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--grpc-server-kwargs'</span><span class="p">,</span>
+        <span class="s1">&#39;--grpc-server-kwargs&#39;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="n">KVAppendAction</span><span class="p">,</span>
-        <span class="n">metavar</span><span class="o">=</span><span class="s1">'KEY: VALUE'</span><span class="p">,</span>
-        <span class="n">nargs</span><span class="o">=</span><span class="s1">'*'</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;KEY: VALUE&#39;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">    Dictionary of kwargs arguments that will be passed to the grpc server when starting the server # todo update</span>
-<span class="s1">    '''</span><span class="p">,</span>
+<span class="s1">    &#39;&#39;&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--ssl-certfile'</span><span class="p">,</span>
+        <span class="s1">&#39;--ssl-certfile&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">        the path to the certificate file</span>
-<span class="s1">        '''</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s1">'ssl_certfile'</span><span class="p">,</span>
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;ssl_certfile&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--ssl-keyfile'</span><span class="p">,</span>
+        <span class="s1">&#39;--ssl-keyfile&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">        the path to the key file</span>
-<span class="s1">        '''</span><span class="p">,</span>
-        <span class="n">dest</span><span class="o">=</span><span class="s1">'ssl_keyfile'</span><span class="p">,</span>
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">,</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;ssl_keyfile&#39;</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="mixin_prefetch_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_prefetch_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_prefetch_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">"""Add the options for prefetching</span>
+    <span class="sd">&quot;&quot;&quot;Add the options for prefetching</span>
 <span class="sd">    :param parser: the parser</span>
-<span class="sd">    """</span>
-    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">'Prefetch'</span><span class="p">)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Prefetch&#39;</span><span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">'--prefetch'</span><span class="p">,</span>
+        <span class="s1">&#39;--prefetch&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">'''</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">    Number of requests fetched from the client before feeding into the first Executor. </span>
 <span class="s1">    </span>
-<span class="s1">    Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)'''</span><span class="p">,</span>
+<span class="s1">    Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)&#39;&#39;&#39;</span><span class="p">,</span>
     <span class="p">)</span></div>
 </pre></div>
                 </article>
@@ -829,7 +830,7 @@
     <script src="../../../../../../_static/jquery.js"></script>
     <script src="../../../../../../_static/underscore.js"></script>
     <script src="../../../../../../_static/doctools.js"></script>
-    <script src="../../../../../../_static/scripts/main.js"></script>
+    <script src="../../../../../../_static/scripts/furo.js"></script>
     <script src="../../../../../../_static/clipboard.min.js"></script>
     <script src="../../../../../../_static/copybutton.js"></script>
     <script src="../../../../../../_static/tabs.js"></script>

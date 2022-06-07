@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/api/jina.enums/" />
   
-<meta property="og:site_name" content="Jina 3.5.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.5.1 Documentation" />
   
 <meta property="og:description" content="Miscellaneous enums used in Jina. To use these enums in YAML config, following the example below:" />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.5.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.5.1 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -36,15 +36,16 @@
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.excepts module" href="../jina.excepts/" /><link rel="prev" title="jina.checker module" href="../jina.checker/" />
+        <link rel="canonical" href="https://docs.jina.ai/api/jina.enums.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.enums module - Jina 3.5.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+        <title>jina.enums module - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -60,24 +61,27 @@
   --color-brand-content: #009191;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FBCB67;
-  --color-brand-content: #FBCB67;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   --color-brand-primary: #FBCB67;
   --color-brand-content: #FBCB67;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
@@ -86,17 +90,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -105,14 +105,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -127,7 +127,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -135,7 +135,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.5.0 documentation</div>
+                <div class="brand">Jina 3.5.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -521,6 +521,7 @@
 </div>
 
 </div>
+
             </div>
             
         </div>
@@ -560,7 +561,7 @@
                 </div>
                 <article role="main">
                     <section id="module-jina.enums">
-<span id="jina-enums-module"></span><h1>jina.enums module<a class="headerlink" href="#module-jina.enums" title="Permalink to this headline">¶</a></h1>
+<span id="jina-enums-module"></span><h1>jina.enums module<a class="headerlink" href="#module-jina.enums" title="Permalink to this headline">#</a></h1>
 <p>Miscellaneous enums used in Jina.</p>
 <p>To use these enums in YAML config, following the example below:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">chunk_idx</span><span class="p">:</span><span class="w"></span>
@@ -575,7 +576,7 @@
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.EnumType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">EnumType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#EnumType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.EnumType" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">EnumType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#EnumType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.EnumType" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.EnumMeta</span></code></p>
 <p>The metaclass for BetterEnum.</p>
 <p>Register a new EnumType</p>
@@ -592,7 +593,7 @@
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.enums.EnumType.register_class">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">register_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#EnumType.register_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.EnumType.register_class" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">register_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#EnumType.register_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.EnumType.register_class" title="Permalink to this definition">#</a></dt>
 <dd><p>Register the class for dumping loading.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -603,15 +604,17 @@
 </dd>
 </dl>
 </dd></dl>
+
 </dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.BetterEnum">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">BetterEnum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#BetterEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.BetterEnum" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">BetterEnum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#BetterEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.BetterEnum" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
 <p>The base class of Enum used in Jina.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.enums.BetterEnum.from_string">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#BetterEnum.from_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.BetterEnum.from_string" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#BetterEnum.from_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.BetterEnum.from_string" title="Permalink to this definition">#</a></dt>
 <dd><p>Parse the enum from a string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -622,30 +625,35 @@
 </dd>
 </dl>
 </dd></dl>
+
 </dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.PollingType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">PollingType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#PollingType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.PollingType" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">PollingType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#PollingType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.PollingType" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
 <p>The enum for representing the parallel type of pods in a deployment.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.PollingType.ANY">
-<span class="sig-name descname"><span class="pre">ANY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.PollingType.ANY" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ANY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.PollingType.ANY" title="Permalink to this definition">#</a></dt>
 <dd><p>one of the shards will receive the message</p>
 </dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.PollingType.ALL">
-<span class="sig-name descname"><span class="pre">ALL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.PollingType.ALL" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ALL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.PollingType.ALL" title="Permalink to this definition">#</a></dt>
 <dd><p>all shards will receive the message, blocked until all done with the message</p>
 </dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.PollingType.ALL_ASYNC">
-<span class="sig-name descname"><span class="pre">ALL_ASYNC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#jina.enums.PollingType.ALL_ASYNC" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ALL_ASYNC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#jina.enums.PollingType.ALL_ASYNC" title="Permalink to this definition">#</a></dt>
 <dd><p>(reserved) all replica will receive the message, but any one of them can return, useful in backup</p>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.enums.PollingType.is_push">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_push</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.PollingType.is_push" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_push</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.PollingType.is_push" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if <a class="reference internal" href="#jina.enums.PollingType" title="jina.enums.PollingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollingType</span></code></a> is using <cite>push</cite> protocol.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -656,9 +664,10 @@
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.enums.PollingType.is_block">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_block</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.PollingType.is_block" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_block</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.PollingType.is_block" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if <a class="reference internal" href="#jina.enums.PollingType" title="jina.enums.PollingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollingType</span></code></a> is using <cite>block</cite> protocol.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -669,127 +678,154 @@
 </dd>
 </dl>
 </dd></dl>
+
 </dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.LogVerbosity">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">LogVerbosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#LogVerbosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.LogVerbosity" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">LogVerbosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#LogVerbosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.LogVerbosity" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
 <p>Verbosity level of the logger.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.LogVerbosity.DEBUG">
-<span class="sig-name descname"><span class="pre">DEBUG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.DEBUG" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">DEBUG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.DEBUG" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.LogVerbosity.INFO">
-<span class="sig-name descname"><span class="pre">INFO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.INFO" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">INFO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.INFO" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.LogVerbosity.SUCCESS">
-<span class="sig-name descname"><span class="pre">SUCCESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.SUCCESS" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">SUCCESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">25</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.SUCCESS" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.LogVerbosity.WARNING">
-<span class="sig-name descname"><span class="pre">WARNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.WARNING" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">WARNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.WARNING" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.LogVerbosity.ERROR">
-<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.ERROR" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.ERROR" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.LogVerbosity.CRITICAL">
-<span class="sig-name descname"><span class="pre">CRITICAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.CRITICAL" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">CRITICAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50</span></em><a class="headerlink" href="#jina.enums.LogVerbosity.CRITICAL" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 </dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.FlowBuildLevel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">FlowBuildLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#FlowBuildLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.FlowBuildLevel" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">FlowBuildLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#FlowBuildLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.FlowBuildLevel" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
 <p>The enum for representing a flow’s build level.</p>
 <p>Some <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.orchestrate.flow.Flow</span></code> class functions require certain build level to run.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.FlowBuildLevel.EMPTY">
-<span class="sig-name descname"><span class="pre">EMPTY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.FlowBuildLevel.EMPTY" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">EMPTY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.FlowBuildLevel.EMPTY" title="Permalink to this definition">#</a></dt>
 <dd><p>Nothing is built</p>
 </dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.FlowBuildLevel.GRAPH">
-<span class="sig-name descname"><span class="pre">GRAPH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.FlowBuildLevel.GRAPH" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">GRAPH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.FlowBuildLevel.GRAPH" title="Permalink to this definition">#</a></dt>
 <dd><p>The underlying graph is built, you may visualize the flow</p>
 </dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.FlowBuildLevel.RUNNING">
-<span class="sig-name descname"><span class="pre">RUNNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.FlowBuildLevel.RUNNING" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">RUNNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.FlowBuildLevel.RUNNING" title="Permalink to this definition">#</a></dt>
 <dd><p>the graph is started and all deployment are running</p>
 </dd></dl>
+
 </dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.GatewayProtocolType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">GatewayProtocolType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#GatewayProtocolType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.GatewayProtocolType" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">GatewayProtocolType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#GatewayProtocolType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.GatewayProtocolType" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
 <p>Gateway communication protocol</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.GatewayProtocolType.GRPC">
-<span class="sig-name descname"><span class="pre">GRPC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.GatewayProtocolType.GRPC" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">GRPC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.GatewayProtocolType.GRPC" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.GatewayProtocolType.HTTP">
-<span class="sig-name descname"><span class="pre">HTTP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.GatewayProtocolType.HTTP" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">HTTP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.GatewayProtocolType.HTTP" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.GatewayProtocolType.WEBSOCKET">
-<span class="sig-name descname"><span class="pre">WEBSOCKET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.GatewayProtocolType.WEBSOCKET" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">WEBSOCKET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.GatewayProtocolType.WEBSOCKET" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 </dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.PodRoleType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">PodRoleType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#PodRoleType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.PodRoleType" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">PodRoleType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#PodRoleType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.PodRoleType" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
 <p>The enum of a Pod role.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.PodRoleType.HEAD">
-<span class="sig-name descname"><span class="pre">HEAD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.PodRoleType.HEAD" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">HEAD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.PodRoleType.HEAD" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.PodRoleType.WORKER">
-<span class="sig-name descname"><span class="pre">WORKER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.PodRoleType.WORKER" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">WORKER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.PodRoleType.WORKER" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.PodRoleType.GATEWAY">
-<span class="sig-name descname"><span class="pre">GATEWAY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.PodRoleType.GATEWAY" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">GATEWAY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.PodRoleType.GATEWAY" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 </dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.DeploymentRoleType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">DeploymentRoleType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#DeploymentRoleType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.DeploymentRoleType" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">DeploymentRoleType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#DeploymentRoleType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.DeploymentRoleType" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
 <p>The enum of a Deploymen role for visualization.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.DeploymentRoleType.DEPLOYMENT">
-<span class="sig-name descname"><span class="pre">DEPLOYMENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.DEPLOYMENT" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">DEPLOYMENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.DEPLOYMENT" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.DeploymentRoleType.JOIN">
-<span class="sig-name descname"><span class="pre">JOIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.JOIN" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">JOIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.JOIN" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.DeploymentRoleType.INSPECT">
-<span class="sig-name descname"><span class="pre">INSPECT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.INSPECT" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">INSPECT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.INSPECT" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.DeploymentRoleType.GATEWAY">
-<span class="sig-name descname"><span class="pre">GATEWAY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.GATEWAY" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">GATEWAY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.GATEWAY" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.DeploymentRoleType.INSPECT_AUX_PASS">
-<span class="sig-name descname"><span class="pre">INSPECT_AUX_PASS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.INSPECT_AUX_PASS" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">INSPECT_AUX_PASS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.INSPECT_AUX_PASS" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.DeploymentRoleType.JOIN_INSPECT">
-<span class="sig-name descname"><span class="pre">JOIN_INSPECT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.JOIN_INSPECT" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">JOIN_INSPECT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.JOIN_INSPECT" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.enums.DeploymentRoleType.is_inspect">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_inspect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.is_inspect" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_inspect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.is_inspect" title="Permalink to this definition">#</a></dt>
 <dd><p>If the role is inspect deployment related.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -800,27 +836,32 @@
 </dd>
 </dl>
 </dd></dl>
+
 </dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.FlowInspectType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">FlowInspectType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#FlowInspectType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.FlowInspectType" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">FlowInspectType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#FlowInspectType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.FlowInspectType" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
 <p>Inspect strategy in the flow.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.FlowInspectType.HANG">
-<span class="sig-name descname"><span class="pre">HANG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.FlowInspectType.HANG" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">HANG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.FlowInspectType.HANG" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.FlowInspectType.REMOVE">
-<span class="sig-name descname"><span class="pre">REMOVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.FlowInspectType.REMOVE" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">REMOVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.FlowInspectType.REMOVE" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.FlowInspectType.COLLECT">
-<span class="sig-name descname"><span class="pre">COLLECT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.FlowInspectType.COLLECT" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">COLLECT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.FlowInspectType.COLLECT" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.enums.FlowInspectType.is_keep">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_keep</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.FlowInspectType.is_keep" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_keep</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.FlowInspectType.is_keep" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if the target is inspected.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -831,46 +872,56 @@
 </dd>
 </dl>
 </dd></dl>
+
 </dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.DataInputType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">DataInputType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#DataInputType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.DataInputType" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">DataInputType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#DataInputType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.DataInputType" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
 <p>Data input type in the request generator.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.DataInputType.AUTO">
-<span class="sig-name descname"><span class="pre">AUTO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.DataInputType.AUTO" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">AUTO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.enums.DataInputType.AUTO" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.DataInputType.DOCUMENT">
-<span class="sig-name descname"><span class="pre">DOCUMENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.DataInputType.DOCUMENT" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">DOCUMENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#jina.enums.DataInputType.DOCUMENT" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.DataInputType.CONTENT">
-<span class="sig-name descname"><span class="pre">CONTENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.DataInputType.CONTENT" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">CONTENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#jina.enums.DataInputType.CONTENT" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.DataInputType.DICT">
-<span class="sig-name descname"><span class="pre">DICT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#jina.enums.DataInputType.DICT" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">DICT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#jina.enums.DataInputType.DICT" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 </dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.WebsocketSubProtocols">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">WebsocketSubProtocols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#WebsocketSubProtocols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.WebsocketSubProtocols" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">WebsocketSubProtocols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#WebsocketSubProtocols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.WebsocketSubProtocols" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>Subprotocol supported with Websocket Gateway</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.WebsocketSubProtocols.JSON">
-<span class="sig-name descname"><span class="pre">JSON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'json'</span></em><a class="headerlink" href="#jina.enums.WebsocketSubProtocols.JSON" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">JSON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'json'</span></em><a class="headerlink" href="#jina.enums.WebsocketSubProtocols.JSON" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.WebsocketSubProtocols.BYTES">
-<span class="sig-name descname"><span class="pre">BYTES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bytes'</span></em><a class="headerlink" href="#jina.enums.WebsocketSubProtocols.BYTES" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">BYTES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bytes'</span></em><a class="headerlink" href="#jina.enums.WebsocketSubProtocols.BYTES" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.enums.replace_enum_to_str">
-<span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">replace_enum_to_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#replace_enum_to_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.replace_enum_to_str" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">replace_enum_to_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#replace_enum_to_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.replace_enum_to_str" title="Permalink to this definition">#</a></dt>
 <dd><p>Transform BetterEnum type into string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -881,6 +932,7 @@
 </dd>
 </dl>
 </dd></dl>
+
 </section>
 
                 </article>
@@ -963,7 +1015,7 @@
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/scripts/main.js"></script>
+    <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script src="../../_static/tabs.js"></script>

@@ -3,15 +3,16 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/asyncio.html" />
 
-    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.serve.runtimes.asyncio - Jina 3.5.0 documentation</title>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+        <title>jina.serve.runtimes.asyncio - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -27,24 +28,27 @@
   --color-brand-content: #009191;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FBCB67;
-  --color-brand-content: #FBCB67;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   --color-brand-primary: #FBCB67;
   --color-brand-content: #FBCB67;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
@@ -53,17 +57,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -72,14 +72,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -94,7 +94,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -102,7 +102,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.5.0 documentation</div>
+                <div class="brand">Jina 3.5.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -488,6 +488,7 @@
 </div>
 
 </div>
+
             </div>
             
         </div>
@@ -550,15 +551,15 @@
 
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime">[docs]</a><span class="k">class</span> <span class="nc">AsyncNewLoopRuntime</span><span class="p">(</span><span class="n">BaseRuntime</span><span class="p">,</span> <span class="n">MonitoringMixin</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">"""</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The async runtime to start a new event loop.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">,</span>
         <span class="n">cancel_event</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span>
-            <span class="n">Union</span><span class="p">[</span><span class="s1">'asyncio.Event'</span><span class="p">,</span> <span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">]</span>
+            <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;asyncio.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">]</span>
         <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
@@ -567,24 +568,24 @@
         <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span> <span class="o">=</span> <span class="n">cancel_event</span> <span class="ow">or</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">__windows__</span><span class="p">:</span>
-            <span class="c1"># TODO: windows event loops don't support signal handlers</span>
+            <span class="c1"># TODO: windows event loops don&#39;t support signal handlers</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">signame</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'SIGINT'</span><span class="p">,</span> <span class="s1">'SIGTERM'</span><span class="p">}:</span>
+                <span class="k">for</span> <span class="n">signame</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;SIGINT&#39;</span><span class="p">,</span> <span class="s1">&#39;SIGTERM&#39;</span><span class="p">}:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">add_signal_handler</span><span class="p">(</span>
                         <span class="nb">getattr</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">signame</span><span class="p">),</span>
                         <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">set</span><span class="p">(),</span>
                     <span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">' The runtime </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> will not be able to handle termination signals. '</span>
-                    <span class="sa">f</span><span class="s1">' </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">&#39; The runtime </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> will not be able to handle termination signals. &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
                 <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-                <span class="n">help_text</span><span class="o">=</span><span class="s1">'''If you see a 'DLL load failed' error, please reinstall `pywin32`.</span>
-<span class="s1">                If you're using conda, please use the command `conda install -c anaconda pywin32`'''</span><span class="p">,</span>
+                <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;If you see a &#39;DLL load failed&#39; error, please reinstall `pywin32`.</span>
+<span class="s1">                If you&#39;re using conda, please use the command `conda install -c anaconda pywin32`&#39;&#39;&#39;</span><span class="p">,</span>
             <span class="p">):</span>
                 <span class="kn">import</span> <span class="nn">win32api</span>
 
@@ -596,22 +597,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_setup</span><span class="p">())</span>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.run_forever"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.run_forever">[docs]</a>    <span class="k">def</span> <span class="nf">run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Running method to block the main thread.</span>
 
 <span class="sd">        Run the event loop until a Future is done.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loop_body</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.teardown"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.teardown">[docs]</a>    <span class="k">def</span> <span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Call async_teardown() and stop and close the event loop."""</span>
+        <span class="sd">&quot;&quot;&quot;Call async_teardown() and stop and close the event loop.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_teardown</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_for_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Do NOT override this method when inheriting from :class:`GatewayPod`"""</span>
+        <span class="sd">&quot;&quot;&quot;Do NOT override this method when inheriting from :class:`GatewayPod`&quot;&quot;&quot;</span>
         <span class="c1"># threads are not using asyncio.Event, but threading.Event</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">):</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
@@ -622,63 +623,63 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_loop_body</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Do NOT override this method when inheriting from :class:`GatewayPod`"""</span>
+        <span class="sd">&quot;&quot;&quot;Do NOT override this method when inheriting from :class:`GatewayPod`&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">async_run_forever</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_cancel</span><span class="p">())</span>
         <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'received terminate ctrl message from main process'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;received terminate ctrl message from main process&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Signal the runtime to terminate</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.async_setup"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""The async method to setup."""</span>
+        <span class="sd">&quot;&quot;&quot;The async method to setup.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.async_teardown"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""The async method to clean up resources during teardown. This method should free all resources allocated</span>
-<span class="sd">        during async_setup"""</span>
+        <span class="sd">&quot;&quot;&quot;The async method to clean up resources during teardown. This method should free all resources allocated</span>
+<span class="sd">        during async_setup&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.async_cancel"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_cancel">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""An async method to cancel async_run_forever."""</span>
+        <span class="sd">&quot;&quot;&quot;An async method to cancel async_run_forever.&quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.async_run_forever">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""The async method to run until it is stopped."""</span>
+        <span class="sd">&quot;&quot;&quot;The async method to run until it is stopped.&quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
     <span class="c1"># Static methods used by the Pod to communicate with the `Runtime` in the separate process</span>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.activate"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.activate">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Activate the runtime, does not apply to these runtimes</span>
 
 <span class="sd">        :param kwargs: extra keyword arguments</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># does not apply to this types of runtimes</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="AsyncNewLoopRuntime.is_ready"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.is_ready">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if status is ready.</span>
 
 <span class="sd">        :param ctrl_address: the address where the control request needs to be sent</span>
 <span class="sd">        :param kwargs: extra keyword arguments</span>
 
 <span class="sd">        :return: True if status is ready else False.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">send_request_sync</span><span class="p">(</span>
-                <span class="n">ControlRequest</span><span class="p">(</span><span class="s1">'STATUS'</span><span class="p">),</span> <span class="n">ctrl_address</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">1.0</span>
+                <span class="n">ControlRequest</span><span class="p">(</span><span class="s1">&#39;STATUS&#39;</span><span class="p">),</span> <span class="n">ctrl_address</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">1.0</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="n">RpcError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -687,11 +688,11 @@
 <div class="viewcode-block" id="AsyncNewLoopRuntime.wait_for_ready_or_shutdown"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime.wait_for_ready_or_shutdown">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">wait_for_ready_or_shutdown</span><span class="p">(</span>
         <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
-        <span class="n">ready_or_shutdown_event</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">],</span>
+        <span class="n">ready_or_shutdown_event</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">],</span>
         <span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the runtime has successfully started</span>
 
 <span class="sd">        :param timeout: The time to wait before readiness or failure is determined</span>
@@ -699,7 +700,7 @@
 <span class="sd">        :param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or is ready</span>
 <span class="sd">        :param kwargs: extra keyword arguments</span>
 <span class="sd">        :return: True if is ready or it needs to be shutdown</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">timeout_ns</span> <span class="o">=</span> <span class="mi">1000000000</span> <span class="o">*</span> <span class="n">timeout</span> <span class="k">if</span> <span class="n">timeout</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span>
         <span class="k">while</span> <span class="n">timeout_ns</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">-</span> <span class="n">now</span> <span class="o">&lt;</span> <span class="n">timeout_ns</span><span class="p">:</span>
@@ -718,12 +719,12 @@
 
     <span class="k">def</span> <span class="nf">_log_control_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">ControlRequest</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'recv ControlRequest </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">command</span><span class="si">}</span><span class="s1"> with id: </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">request_id</span><span class="si">}</span><span class="s1">'</span>
+            <span class="sa">f</span><span class="s1">&#39;recv ControlRequest </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">command</span><span class="si">}</span><span class="s1"> with id: </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">request_id</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_log_data_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'recv DataRequest at </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span><span class="si">}</span><span class="s1"> with id: </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">request_id</span><span class="si">}</span><span class="s1">'</span>
+            <span class="sa">f</span><span class="s1">&#39;recv DataRequest at </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">exec_endpoint</span><span class="si">}</span><span class="s1"> with id: </span><span class="si">{</span><span class="n">request</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">request_id</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="p">)</span></div>
 </pre></div>
                 </article>
@@ -784,7 +785,7 @@
     <script src="../../../../../_static/jquery.js"></script>
     <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
-    <script src="../../../../../_static/scripts/main.js"></script>
+    <script src="../../../../../_static/scripts/furo.js"></script>
     <script src="../../../../../_static/clipboard.min.js"></script>
     <script src="../../../../../_static/copybutton.js"></script>
     <script src="../../../../../_static/tabs.js"></script>

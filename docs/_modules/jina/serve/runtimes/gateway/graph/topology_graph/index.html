@@ -3,15 +3,16 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/graph/topology_graph.html" />
 
-    <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.serve.runtimes.gateway.graph.topology_graph - Jina 3.5.0 documentation</title>
+    <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+        <title>jina.serve.runtimes.gateway.graph.topology_graph - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -27,24 +28,27 @@
   --color-brand-content: #009191;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FBCB67;
-  --color-brand-content: #FBCB67;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   --color-brand-primary: #FBCB67;
   --color-brand-content: #FBCB67;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
@@ -53,17 +57,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -72,14 +72,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -94,7 +94,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -102,7 +102,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../../">
-                <div class="brand">Jina 3.5.0 documentation</div>
+                <div class="brand">Jina 3.5.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -488,6 +488,7 @@
 </div>
 
 </div>
+
             </div>
             
         </div>
@@ -544,17 +545,17 @@
 
 
 <div class="viewcode-block" id="TopologyGraph"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.graph.topology_graph/#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph">[docs]</a><span class="k">class</span> <span class="nc">TopologyGraph</span><span class="p">:</span>
-    <span class="sd">"""</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :class TopologyGraph is a class that describes a computational graph of nodes, where each node represents</span>
 <span class="sd">        a Deployment that needs to be sent requests in the order respecting the path traversal.</span>
 
 <span class="sd">    :param graph_description: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to</span>
 <span class="sd">        determine the nodes that receive the very first request and the ones whose response needs to be sent back to the client. All the nodes with no outgoing nodes</span>
-<span class="sd">        will be considered to be hanging, and they will be "flagged" so that the user can ignore their tasks and not await them.</span>
+<span class="sd">        will be considered to be hanging, and they will be &quot;flagged&quot; so that the user can ignore their tasks and not await them.</span>
 
 <span class="sd">    :param conditions: A dictionary describing which Executors have special conditions to be fullfilled by the `Documents` to be sent to them.</span>
 <span class="sd">    :param reduce: Reduce requests arriving from multiple needed predecessors, True by default</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">class</span> <span class="nc">_ReqReplyNode</span><span class="p">:</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -594,7 +595,7 @@
             <span class="k">if</span> <span class="n">err_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
                 <span class="n">err</span><span class="o">.</span><span class="n">_details</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
-                    <span class="o">+</span> <span class="sa">f</span><span class="s1">' |Gateway: Communication error with deployment </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> at address(es) </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1">. Head or worker(s) may be down.'</span>
+                    <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; |Gateway: Communication error with deployment </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> at address(es) </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1">. Head or worker(s) may be down.&#39;</span>
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="n">err</span>
             <span class="k">else</span><span class="p">:</span>
@@ -617,7 +618,7 @@
             <span class="k">if</span> <span class="n">previous_task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">previous_task</span>
                 <span class="n">request</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">metadata</span> <span class="ow">and</span> <span class="s1">'is-error'</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">metadata</span> <span class="ow">and</span> <span class="s1">&#39;is-error&#39;</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">request</span><span class="p">,</span> <span class="n">metadata</span>
             <span class="k">elif</span> <span class="n">request</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
@@ -657,7 +658,7 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">_handle_internalnetworkerror</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
 
                     <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="n">metadata</span> <span class="ow">and</span> <span class="s1">'is-error'</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">metadata</span> <span class="ow">and</span> <span class="s1">&#39;is-error&#39;</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">status</span>
                     <span class="k">return</span> <span class="n">resp</span><span class="p">,</span> <span class="n">metadata</span>
 
@@ -672,7 +673,7 @@
             <span class="n">executor_endpoint_mapping</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">target_executor_pattern</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]]:</span>
-            <span class="sd">"""</span>
+            <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Gets all the tasks corresponding from all the subgraphs born from this node</span>
 
 <span class="sd">            :param connection_pool: The connection_pool need to actually send the requests</span>
@@ -695,7 +696,7 @@
 <span class="sd">                |-&gt; deployment3 ----------&gt;             | -&gt; deployment6</span>
 <span class="sd">                |-&gt; deployment5 ------------------------&gt;</span>
 
-<span class="sd">                Let's imagine a graph from this. Node corresponding to Deployment6 will receive 2 calls from deployment4 and deployment5.</span>
+<span class="sd">                Let&#39;s imagine a graph from this. Node corresponding to Deployment6 will receive 2 calls from deployment4 and deployment5.</span>
 <span class="sd">                The task returned by `deployment6` will backpropagated to the caller of deployment1.get_leaf_tasks, deployment3.get_leaf_tasks and deployment5.get_leaf_tasks.</span>
 
 <span class="sd">                When the caller of these methods await them, they will fire the logic of sending requests and responses from and to every deployment</span>
@@ -703,7 +704,7 @@
 <span class="sd">            :return: Return a list of tuples, where tasks corresponding to the leafs of all the subgraphs born from this node are in each tuple.</span>
 <span class="sd">                These tasks will be based on awaiting for the task from previous_node and sending a request to the corresponding node. The other member of the pair</span>
 <span class="sd">                is a flag indicating if the task is to be awaited by the gateway or not.</span>
-<span class="sd">            """</span>
+<span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">wait_previous_and_send_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_wait_previous_and_send</span><span class="p">(</span>
                     <span class="n">request_to_send</span><span class="p">,</span>
@@ -733,13 +734,13 @@
 
             <span class="k">return</span> <span class="n">hanging_tasks_tuples</span>
 
-        <span class="k">def</span> <span class="nf">add_route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">'DataRequest'</span><span class="p">):</span>
-            <span class="sd">"""</span>
+        <span class="k">def</span> <span class="nf">add_route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">&#39;DataRequest&#39;</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">             Add routes to the DataRequest based on the state of request processing</span>
 
 <span class="sd">             :param request: the request to add the routes to</span>
 <span class="sd">            :return: modified request with added routes</span>
-<span class="sd">            """</span>
+<span class="sd">            &quot;&quot;&quot;</span>
 
             <span class="k">def</span> <span class="nf">_find_route</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">routes</span><span class="p">:</span>
@@ -770,19 +771,19 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="n">num_parts_per_node</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s1">'start-gateway'</span> <span class="ow">in</span> <span class="n">graph_representation</span><span class="p">:</span>
-            <span class="n">origin_node_names</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">'start-gateway'</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;start-gateway&#39;</span> <span class="ow">in</span> <span class="n">graph_representation</span><span class="p">:</span>
+            <span class="n">origin_node_names</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;start-gateway&#39;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">origin_node_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">hanging_deployment_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">node_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">outgoing_node_names</span> <span class="ow">in</span> <span class="n">graph_representation</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'start-gateway'</span><span class="p">,</span> <span class="s1">'end-gateway'</span><span class="p">}:</span>
+            <span class="k">if</span> <span class="n">node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;start-gateway&#39;</span><span class="p">,</span> <span class="s1">&#39;end-gateway&#39;</span><span class="p">}:</span>
                 <span class="n">node_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_name</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">outgoing_node_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">hanging_deployment_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_name</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">out_node_name</span> <span class="ow">in</span> <span class="n">outgoing_node_names</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">out_node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">'start-gateway'</span><span class="p">,</span> <span class="s1">'end-gateway'</span><span class="p">}:</span>
+                <span class="k">if</span> <span class="n">out_node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;start-gateway&#39;</span><span class="p">,</span> <span class="s1">&#39;end-gateway&#39;</span><span class="p">}:</span>
                     <span class="n">node_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">out_node_name</span><span class="p">)</span>
                     <span class="n">num_parts_per_node</span><span class="p">[</span><span class="n">out_node_name</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
 
@@ -801,33 +802,33 @@
             <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">outgoing_node_names</span> <span class="ow">in</span> <span class="n">graph_representation</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'start-gateway'</span><span class="p">,</span> <span class="s1">'end-gateway'</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;start-gateway&#39;</span><span class="p">,</span> <span class="s1">&#39;end-gateway&#39;</span><span class="p">]:</span>
                 <span class="k">for</span> <span class="n">out_node_name</span> <span class="ow">in</span> <span class="n">outgoing_node_names</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">out_node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'start-gateway'</span><span class="p">,</span> <span class="s1">'end-gateway'</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">out_node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;start-gateway&#39;</span><span class="p">,</span> <span class="s1">&#39;end-gateway&#39;</span><span class="p">]:</span>
                         <span class="n">nodes</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span><span class="o">.</span><span class="n">outgoing_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">out_node_name</span><span class="p">])</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_origin_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span> <span class="k">for</span> <span class="n">node_name</span> <span class="ow">in</span> <span class="n">origin_node_names</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">has_filter_conditions</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">graph_conditions</span><span class="p">)</span>
 
-<div class="viewcode-block" id="TopologyGraph.add_routes"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.graph.topology_graph/#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph.add_routes">[docs]</a>    <span class="k">def</span> <span class="nf">add_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">'DataRequest'</span><span class="p">):</span>
-        <span class="sd">"""</span>
+<div class="viewcode-block" id="TopologyGraph.add_routes"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.graph.topology_graph/#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph.add_routes">[docs]</a>    <span class="k">def</span> <span class="nf">add_routes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">&#39;DataRequest&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add routes to the DataRequest based on the state of request processing</span>
 
 <span class="sd">        :param request: the request to add the routes to</span>
 <span class="sd">        :return: modified request with added routes</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_origin_nodes</span><span class="p">:</span>
             <span class="n">request</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">request</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">origin_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The list of origin nodes, the one that depend only on the gateway, so all the subgraphs will be born from them and they will</span>
 <span class="sd">        send to their deployments the request as received by the client.</span>
 
 <span class="sd">        :return: A list of nodes</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_origin_nodes</span></div>
 </pre></div>
                 </article>
@@ -888,7 +889,7 @@
     <script src="../../../../../../../_static/jquery.js"></script>
     <script src="../../../../../../../_static/underscore.js"></script>
     <script src="../../../../../../../_static/doctools.js"></script>
-    <script src="../../../../../../../_static/scripts/main.js"></script>
+    <script src="../../../../../../../_static/scripts/furo.js"></script>
     <script src="../../../../../../../_static/clipboard.min.js"></script>
     <script src="../../../../../../../_static/copybutton.js"></script>
     <script src="../../../../../../../_static/tabs.js"></script>

@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/executor/monitoring-executor/" />
   
-<meta property="og:site_name" content="Jina 3.5.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.5.1 Documentation" />
   
 <meta property="og:description" content="This section documents the ability to add custom monitoring to the Executor with the Grafana/Prometheus. Custom metrics are useful when you want to monitor each subpart of your Executors. Jina allows you to leverage the full power of the Prometheus Client to define useful metrics for each of your..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.5.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.5.1 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -36,15 +36,16 @@
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Run" href="../executor-run/" /><link rel="prev" title="@requests methods" href="../executor-methods/" />
+        <link rel="canonical" href="https://docs.jina.ai/fundamentals/executor/monitoring-executor.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>Monitor - Jina 3.5.0 documentation</title>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+        <title>Monitor - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -60,24 +61,27 @@
   --color-brand-content: #009191;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FBCB67;
-  --color-brand-content: #FBCB67;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   --color-brand-primary: #FBCB67;
   --color-brand-content: #FBCB67;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
@@ -86,17 +90,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -105,14 +105,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -127,7 +127,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -135,7 +135,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.5.0 documentation</div>
+                <div class="brand">Jina 3.5.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -521,6 +521,7 @@
 </div>
 
 </div>
+
             </div>
             
         </div>
@@ -560,11 +561,11 @@
                 </div>
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="monitor">
-<span id="monitoring-executor"></span><h1>Monitor<a class="headerlink" href="#monitor" title="Permalink to this headline">¶</a></h1>
+<span id="monitoring-executor"></span><h1>Monitor<a class="headerlink" href="#monitor" title="Permalink to this headline">#</a></h1>
 <p>This section documents the ability to add custom monitoring to the Executor with the Grafana/Prometheus.</p>
 <p>Custom metrics are useful when you want to monitor each subpart of your Executors. Jina allows you to leverage
 the full power of the <a class="reference external" href="https://github.com/prometheus/client_python">Prometheus Client</a> to define useful metrics
-for each of your Executors. We provide a convenient wrapper as well, i.e <code class="docutils literal notranslate"><span class="pre">@monitor()</span></code>, which let you easily monitor
+for each of your Executors. We provide a convenient wrapper as well, i.e <code class="docutils literal notranslate"><span class="pre">&#64;monitor()</span></code>, which let you easily monitor
 sub-method of your Executor.</p>
 <div class="seealso admonition">
 <p class="admonition-title">Full detail on monitoring</p>
@@ -573,21 +574,21 @@ please refer to <a class="reference internal" href="../../flow/monitoring-flow/#
 </div>
 <p>When the monitoring is enabled each Executor will expose its
 own metrics. This means that in practice each of the Executors will expose a Prometheus endpoint using the <a class="reference external" href="https://github.com/prometheus/client_python">Prometheus Client</a>.</p>
-<p>By default, every method which is decorated by the <code class="docutils literal notranslate"><span class="pre">@requests</span></code> decorator will be monitored, it will create a
+<p>By default, every method which is decorated by the <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> decorator will be monitored, it will create a
 <a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Prometheus Summary</a> which will keep track of the time of
 the execution of the method.</p>
 <section id="define-custom-metrics">
-<h2>Define custom metrics<a class="headerlink" href="#define-custom-metrics" title="Permalink to this headline">¶</a></h2>
+<h2>Define custom metrics<a class="headerlink" href="#define-custom-metrics" title="Permalink to this headline">#</a></h2>
 <p>Sometimes monitoring the <code class="docutils literal notranslate"><span class="pre">encoding</span></code> method is not enough, you need to break it up into multiple parts that you want to
 monitor one by one.</p>
 <p>It could be useful if your encoding phase is composed of two tasks: image processing and
 image embedding. By using custom metrics on these two tasks you can identify potential bottlenecks.</p>
 <p>Overall the ability to add custom metrics allows you to have the full flexibility on the monitoring of your Executor.</p>
 <section id="defining-custom-metrics-with-monitor">
-<h3>Defining custom metrics with <code class="docutils literal notranslate"><span class="pre">@monitor</span></code><a class="headerlink" href="#defining-custom-metrics-with-monitor" title="Permalink to this headline">¶</a></h3>
+<h3>Defining custom metrics with <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code><a class="headerlink" href="#defining-custom-metrics-with-monitor" title="Permalink to this headline">#</a></h3>
 <div class="hint admonition">
-<p class="admonition-title">Using @monitor</p>
-<p>Adding the custom monitoring on a method is as straightforward as decorating the method with <code class="docutils literal notranslate"><span class="pre">@monitor</span></code></p>
+<p class="admonition-title">Using &#64;monitor</p>
+<p>Adding the custom monitoring on a method is as straightforward as decorating the method with <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code></p>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">monitor</span>
 
@@ -600,10 +601,10 @@ image embedding. By using custom metrics on these two tasks you can identify pot
 </div>
 <p>This will create a <a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Prometheus summary</a>
 <code class="docutils literal notranslate"><span class="pre">jina_my_method_inference_seconds</span></code> which will keep track of the time of execution of `my_method</p>
-<p>By default, the name and the documentation of the metric created by <code class="docutils literal notranslate"><span class="pre">@monitor</span></code> are auto-generated based on the name
+<p>By default, the name and the documentation of the metric created by <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> are auto-generated based on the name
 of the function. However, you can name it by yourself by doing :</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@monitor</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">'my_custom_metrics_seconds'</span><span class="p">,</span> <span class="n">documentation</span><span class="o">=</span><span class="s1">'This is my custom documentation'</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_custom_metrics_seconds&#39;</span><span class="p">,</span> <span class="n">documentation</span><span class="o">=</span><span class="s1">&#39;This is my custom documentation&#39;</span>
 <span class="p">)</span>
 <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="o">...</span>
@@ -620,20 +621,20 @@ of the function. However, you can name it by yourself by doing :</p>
 <span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="s1">'processing_seconds'</span><span class="p">,</span> <span class="s1">'Time processing my document'</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="s1">&#39;processing_seconds&#39;</span><span class="p">,</span> <span class="s1">&#39;Time processing my document&#39;</span><span class="p">):</span>
             <span class="n">docs</span> <span class="o">=</span> <span class="n">process</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="caution admonition">
 <p class="admonition-title">respect Prometheus naming</p>
 <p>You should respect Prometheus naming <a class="reference external" href="https://prometheus.io/docs/practices/naming/#metric-names">conventions</a>.
-therefore because <code class="docutils literal notranslate"><span class="pre">@monitor</span></code> creates a <a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a> under the hood
+therefore because <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> creates a <a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a> under the hood
 your metrics name should finish with <code class="docutils literal notranslate"><span class="pre">seconds</span></code></p>
 </div>
 </section>
 </section>
 <section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">#</a></h2>
 <p>Let’s take an example to illustrate custom metrics:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
@@ -658,7 +659,7 @@ your metrics name should finish with <code class="docutils literal notranslate">
 </ul>
 <p>By default, only the <code class="docutils literal notranslate"><span class="pre">encode</span></code> function will be monitored.</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">Decorator</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Decorator</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">monitor</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
@@ -678,7 +679,7 @@ your metrics name should finish with <code class="docutils literal notranslate">
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">Context manager</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Context manager</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="k">def</span> <span class="nf">preprocessing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">):</span>
@@ -691,18 +692,18 @@ your metrics name should finish with <code class="docutils literal notranslate">
 
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="hll">        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="s1">'preprocessing_seconds'</span><span class="p">,</span> <span class="s1">'Time preprocessing the requests'</span><span class="p">):</span>
+<span class="hll">        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="s1">&#39;preprocessing_seconds&#39;</span><span class="p">,</span> <span class="s1">&#39;Time preprocessing the requests&#39;</span><span class="p">):</span>
 </span>            <span class="n">docs</span><span class="o">.</span><span class="n">tensors</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
-<span class="hll">        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="s1">'model_inference_seconds'</span><span class="p">,</span> <span class="s1">'Time doing inference the requests'</span><span class="p">):</span>
+<span class="hll">        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="s1">&#39;model_inference_seconds&#39;</span><span class="p">,</span> <span class="s1">&#39;Time doing inference the requests&#39;</span><span class="p">):</span>
 </span>            <span class="n">docs</span><span class="o">.</span><span class="n">embedding</span> <span class="o">=</span> <span class="n">model_inference</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">tensors</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <section id="defining-custom-metrics-directly-with-the-prometheus-client">
-<h3>Defining custom metrics directly with the Prometheus client<a class="headerlink" href="#defining-custom-metrics-directly-with-the-prometheus-client" title="Permalink to this headline">¶</a></h3>
+<h3>Defining custom metrics directly with the Prometheus client<a class="headerlink" href="#defining-custom-metrics-directly-with-the-prometheus-client" title="Permalink to this headline">#</a></h3>
 <p>Under the hood, the monitoring feature of the Executor is handled by the
-Python <a class="reference external" href="https://github.com/prometheus/client_python">Prometheus-client</a>. The <code class="docutils literal notranslate"><span class="pre">@monitor</span></code> decorator is a convenient tool
+Python <a class="reference external" href="https://github.com/prometheus/client_python">Prometheus-client</a>. The <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> decorator is a convenient tool
 to monitor sub-methods of an Executor, but you might need more flexibility and that is why you can access the Prometheus
 client directly from the Executor to define every kind of metric supported by Prometheus.</p>
 <p>Let’s see it in an example</p>
@@ -715,8 +716,8 @@ client directly from the Executor to define every kind of metric supported by Pr
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">'my_count_total'</span><span class="p">,</span>
-            <span class="n">documentation</span><span class="o">=</span><span class="s1">'my count'</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_count_total&#39;</span><span class="p">,</span>
+            <span class="n">documentation</span><span class="o">=</span><span class="s1">&#39;my count&#39;</span><span class="p">,</span>
             <span class="n">registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -733,7 +734,7 @@ client directly from the Executor to define every kind of metric supported by Pr
 </section>
 </section>
 <section id="see-further">
-<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this headline">¶</a></h2>
+<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../flow/monitoring-flow/#monitoring-flow"><span class="std std-ref">List of available metrics</span></a></p></li>
 <li><p><a class="reference internal" href="../../../how-to/monitoring/#monitoring"><span class="std std-ref">How to deploy and use the monitoring with Jina</span></a></p></li>
@@ -848,7 +849,7 @@ client directly from the Executor to define every kind of metric supported by Pr
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/scripts/main.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
     <script src="../../../_static/tabs.js"></script>

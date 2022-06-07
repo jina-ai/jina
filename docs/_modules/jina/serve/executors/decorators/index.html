@@ -3,15 +3,16 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/executors/decorators.html" />
 
-    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.serve.executors.decorators - Jina 3.5.0 documentation</title>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+        <title>jina.serve.executors.decorators - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -27,24 +28,27 @@
   --color-brand-content: #009191;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FBCB67;
-  --color-brand-content: #FBCB67;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   --color-brand-primary: #FBCB67;
   --color-brand-content: #FBCB67;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
@@ -53,17 +57,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -72,14 +72,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -94,7 +94,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -102,7 +102,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.5.0 documentation</div>
+                <div class="brand">Jina 3.5.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -488,6 +488,7 @@
 </div>
 
 </div>
+
             </div>
             
         </div>
@@ -527,7 +528,7 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.serve.executors.decorators</h1><div class="highlight"><pre>
-<span></span><span class="sd">"""Decorators and wrappers designed for wrapping :class:`BaseExecutor` functions. """</span>
+<span></span><span class="sd">&quot;&quot;&quot;Decorators and wrappers designed for wrapping :class:`BaseExecutor` functions. &quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -547,7 +548,7 @@
 <span class="k">def</span> <span class="nf">_get_locks_root</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
     <span class="n">locks_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
         <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="s1">'JINA_LOCKS_ROOT'</span><span class="p">,</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">'.jina'</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">'locks'</span><span class="p">)</span>
+            <span class="s1">&#39;JINA_LOCKS_ROOT&#39;</span><span class="p">,</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;.jina&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;locks&#39;</span><span class="p">)</span>
         <span class="p">)</span>
     <span class="p">)</span>
 
@@ -558,12 +559,12 @@
 
 
 <div class="viewcode-block" id="wrap_func"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.wrap_func">[docs]</a><span class="k">def</span> <span class="nf">wrap_func</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func_lst</span><span class="p">,</span> <span class="n">wrapper</span><span class="p">):</span>
-    <span class="sd">"""Wrapping a class method only once, inherited but not overridden method will not be wrapped again</span>
+    <span class="sd">&quot;&quot;&quot;Wrapping a class method only once, inherited but not overridden method will not be wrapped again</span>
 
 <span class="sd">    :param cls: class</span>
 <span class="sd">    :param func_lst: function list to wrap</span>
 <span class="sd">    :param wrapper: the wrapper</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">f_name</span> <span class="ow">in</span> <span class="n">func_lst</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">f_name</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span>
             <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">f_name</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">f_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mro</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span>
@@ -572,18 +573,18 @@
 
 
 <div class="viewcode-block" id="store_init_kwargs"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.store_init_kwargs">[docs]</a><span class="k">def</span> <span class="nf">store_init_kwargs</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-    <span class="sd">"""Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML</span>
+    <span class="sd">&quot;&quot;&quot;Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML</span>
 <span class="sd">    :param func: the function to decorate</span>
 <span class="sd">    :return: the wrapped function</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s1">'__init__'</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s1">'this decorator should only be used on __init__ method of an executor'</span>
+                <span class="s1">&#39;this decorator should only be used on __init__ method of an executor&#39;</span>
             <span class="p">)</span>
-        <span class="n">taboo</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'self'</span><span class="p">,</span> <span class="s1">'args'</span><span class="p">,</span> <span class="s1">'kwargs'</span><span class="p">,</span> <span class="s1">'metas'</span><span class="p">,</span> <span class="s1">'requests'</span><span class="p">,</span> <span class="s1">'runtime_args'</span><span class="p">}</span>
+        <span class="n">taboo</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;self&#39;</span><span class="p">,</span> <span class="s1">&#39;args&#39;</span><span class="p">,</span> <span class="s1">&#39;kwargs&#39;</span><span class="p">,</span> <span class="s1">&#39;metas&#39;</span><span class="p">,</span> <span class="s1">&#39;requests&#39;</span><span class="p">,</span> <span class="s1">&#39;runtime_args&#39;</span><span class="p">}</span>
         <span class="n">_defaults</span> <span class="o">=</span> <span class="n">get_default_metas</span><span class="p">()</span>
         <span class="n">taboo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_defaults</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">all_pars</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span>
@@ -597,7 +598,7 @@
             <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">tmp</span><span class="p">:</span>
                 <span class="n">tmp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'_init_kwargs_dict'</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_init_kwargs_dict&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_kwargs_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_kwargs_dict</span> <span class="o">=</span> <span class="n">tmp</span>
@@ -609,36 +610,36 @@
 
 
 <div class="viewcode-block" id="avoid_concurrent_lock_cls"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.avoid_concurrent_lock_cls">[docs]</a><span class="k">def</span> <span class="nf">avoid_concurrent_lock_cls</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-    <span class="sd">"""Wraps a function to lock a filelock for concurrent access with the name of the class to which it applies, to avoid deadlocks</span>
+    <span class="sd">&quot;&quot;&quot;Wraps a function to lock a filelock for concurrent access with the name of the class to which it applies, to avoid deadlocks</span>
 <span class="sd">    :param cls: the class to which is applied, only when the class corresponds to the instance type, this filelock will apply</span>
 <span class="sd">    :return: the wrapped function</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">avoid_concurrent_lock_wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-        <span class="sd">"""Wrap the function around a File Lock to make sure that the function is run by a single replica in the same machine</span>
+        <span class="sd">&quot;&quot;&quot;Wrap the function around a File Lock to make sure that the function is run by a single replica in the same machine</span>
 <span class="sd">        :param func: the function to decorate</span>
 <span class="sd">        :return: the wrapped function</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s1">'__init__'</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="s1">'this decorator should only be used on __init__ method of an executor'</span>
+                    <span class="s1">&#39;this decorator should only be used on __init__ method of an executor&#39;</span>
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">==</span> <span class="bp">cls</span><span class="p">:</span>
                 <span class="n">file_lock</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">()</span>
                 <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
                     <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="n">help_text</span><span class="o">=</span><span class="sa">f</span><span class="s1">'FileLock is needed to guarantee non-concurrent initialization of replicas in the same '</span>
-                    <span class="sa">f</span><span class="s1">'machine.'</span><span class="p">,</span>
+                    <span class="n">help_text</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;FileLock is needed to guarantee non-concurrent initialization of replicas in the same &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;machine.&#39;</span><span class="p">,</span>
                 <span class="p">):</span>
                     <span class="kn">import</span> <span class="nn">filelock</span>
 
                     <span class="n">locks_root</span> <span class="o">=</span> <span class="n">_get_locks_root</span><span class="p">()</span>
 
-                    <span class="n">lock_file</span> <span class="o">=</span> <span class="n">locks_root</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">.lock'</span><span class="p">)</span>
+                    <span class="n">lock_file</span> <span class="o">=</span> <span class="n">locks_root</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">.lock&#39;</span><span class="p">)</span>
 
                     <span class="n">file_lock</span> <span class="o">=</span> <span class="n">filelock</span><span class="o">.</span><span class="n">FileLock</span><span class="p">(</span><span class="n">lock_file</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 
@@ -656,18 +657,18 @@
 <div class="viewcode-block" id="requests"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.requests">[docs]</a><span class="k">def</span> <span class="nf">requests</span><span class="p">(</span>
     <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
         <span class="p">[</span>
-            <span class="s1">'DocumentArray'</span><span class="p">,</span>
+            <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
             <span class="n">Dict</span><span class="p">,</span>
-            <span class="s1">'DocumentArray'</span><span class="p">,</span>
-            <span class="n">List</span><span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">],</span>
-            <span class="n">List</span><span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">],</span>
+            <span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span>
+            <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">],</span>
+            <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">],</span>
         <span class="p">],</span>
-        <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">'DocumentArray'</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
+        <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]],</span>
     <span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">on</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">"""</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `@requests` defines when a function will be invoked. It has a keyword `on=` to define the endpoint.</span>
 
 <span class="sd">    A class method decorated with plan `@requests` (without `on=`) is the default handler for all endpoints.</span>
@@ -676,7 +677,7 @@
 <span class="sd">    :param func: the method to decorate</span>
 <span class="sd">    :param on: the endpoint string, by convention starts with `/`</span>
 <span class="sd">    :return: decorated function</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__args_executor_func__</span><span class="p">,</span> <span class="n">__default_endpoint__</span>
 
     <span class="k">class</span> <span class="nc">FunctionMapper</span><span class="p">:</span>
@@ -687,8 +688,8 @@
                 <span class="n">arg_spec</span><span class="o">.</span><span class="n">args</span>
             <span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s1"> accepts only </span><span class="si">{</span><span class="n">arg_spec</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s1"> which is fewer than expected, '</span>
-                    <span class="sa">f</span><span class="s1">'please add `**kwargs` to the function signature.'</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s1"> accepts only </span><span class="si">{</span><span class="n">arg_spec</span><span class="o">.</span><span class="n">args</span><span class="si">}</span><span class="s1"> which is fewer than expected, &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;please add `**kwargs` to the function signature.&#39;</span>
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
@@ -712,7 +713,7 @@
 
         <span class="k">def</span> <span class="nf">__set_name__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="o">.</span><span class="n">class_name</span> <span class="o">=</span> <span class="n">owner</span><span class="o">.</span><span class="vm">__name__</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="s1">'requests'</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">owner</span><span class="p">,</span> <span class="s1">&#39;requests&#39;</span><span class="p">):</span>
                 <span class="n">owner</span><span class="o">.</span><span class="n">requests</span> <span class="o">=</span> <span class="p">{}</span>
 
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">on</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
@@ -734,26 +735,26 @@
     <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">documentation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">"""</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `@monitor()` allow to monitor internal method of your executor. You can access these metrics by enabling the</span>
 <span class="sd">    monitoring on your Executor. It will track the time spend calling the function and the number of times it has been</span>
 <span class="sd">    called. Under the hood it will create a prometheus Summary : https://prometheus.io/docs/practices/histograms/.</span>
 
-<span class="sd">    :warning: Don't use this decorator with the @request decorator as it already handle monitoring under the hood</span>
+<span class="sd">    :warning: Don&#39;t use this decorator with the @request decorator as it already handle monitoring under the hood</span>
 
 <span class="sd">    :param name: the name of the metrics, by default it is based on the name of the method it decorates</span>
 <span class="sd">    :param documentation:  the description of the metrics, by default it is based on the name of the method it decorates</span>
 
 <span class="sd">    :return: decorator which takes as an input a single callable</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_decorator</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
 
-        <span class="n">name_</span> <span class="o">=</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">_seconds'</span>
+        <span class="n">name_</span> <span class="o">=</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">_seconds&#39;</span>
         <span class="n">documentation_</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">documentation</span>
             <span class="k">if</span> <span class="n">documentation</span>
-            <span class="k">else</span> <span class="sa">f</span><span class="s1">'Time spent calling method </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">'</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;Time spent calling method </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="p">)</span>
 
         <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
@@ -823,7 +824,7 @@
     <script src="../../../../../_static/jquery.js"></script>
     <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
-    <script src="../../../../../_static/scripts/main.js"></script>
+    <script src="../../../../../_static/scripts/furo.js"></script>
     <script src="../../../../../_static/clipboard.min.js"></script>
     <script src="../../../../../_static/copybutton.js"></script>
     <script src="../../../../../_static/tabs.js"></script>

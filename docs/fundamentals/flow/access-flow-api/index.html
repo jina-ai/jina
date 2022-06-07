@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/access-flow-api/" />
   
-<meta property="og:site_name" content="Jina 3.5.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.5.1 Documentation" />
   
 <meta property="og:description" content="This page is about accessing the Flow with other clients, e.g. curl. HTTP: Apart from using the Jina Client, the most common way of interacting with your deployed Flow is via HTTP. You can always use post to interact with a Flow, using the/post HTTP endpoint. With the help of OpenAPI schema, one ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_images/swagger-ui.png" />
   
-<meta property="og:image:alt" content="Jina 3.5.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.5.1 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -36,15 +36,16 @@
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Hub" href="../../executor/hub/" /><link rel="prev" title="Client" href="../client/" />
+        <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/access-flow-api.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>Third-party clients - Jina 3.5.0 documentation</title>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+        <title>Third-party clients - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -60,24 +61,27 @@
   --color-brand-content: #009191;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FBCB67;
-  --color-brand-content: #FBCB67;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   --color-brand-primary: #FBCB67;
   --color-brand-content: #FBCB67;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
@@ -86,17 +90,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -105,14 +105,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -127,7 +127,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -135,7 +135,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.5.0 documentation</div>
+                <div class="brand">Jina 3.5.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -521,6 +521,7 @@
 </div>
 
 </div>
+
             </div>
             
         </div>
@@ -560,10 +561,10 @@
                 </div>
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="third-party-clients">
-<span id="access-flow-api"></span><h1>Third-party clients<a class="headerlink" href="#third-party-clients" title="Permalink to this headline">¶</a></h1>
+<span id="access-flow-api"></span><h1>Third-party clients<a class="headerlink" href="#third-party-clients" title="Permalink to this headline">#</a></h1>
 <p>This page is about accessing the Flow with other clients, e.g. <code class="docutils literal notranslate"><span class="pre">curl</span></code>.</p>
 <section id="http">
-<h2>HTTP<a class="headerlink" href="#http" title="Permalink to this headline">¶</a></h2>
+<h2>HTTP<a class="headerlink" href="#http" title="Permalink to this headline">#</a></h2>
 <div class="caution admonition">
 <p class="admonition-title">Available Protocols</p>
 <p>Jina Flows can use one of <a class="reference internal" href="../../gateway/#flow-protocol"><span class="std std-ref">three protocols</span></a>: gRPC, HTTP, or Websocket.
@@ -573,9 +574,9 @@ Only Flows that use HTTP can be accessed via the methods described below.</p>
 <p>You can always use <code class="docutils literal notranslate"><span class="pre">post</span></code> to interact with a Flow, using the <code class="docutils literal notranslate"><span class="pre">/post</span></code> HTTP endpoint.</p>
 <p>With the help of <a class="reference external" href="https://swagger.io/specification/">OpenAPI schema</a>, one can send data requests to a Flow via <code class="docutils literal notranslate"><span class="pre">cURL</span></code>, JavaScript, <a class="reference external" href="https://www.postman.com/">Postman</a>, or any other HTTP client or programming library.</p>
 <section id="arguments">
-<h3>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">#</a></h3>
 <p>Your HTTP request can include the following parameters:</p>
-<div class="table-wrapper"><table border="1" class="docutils">
+<table border="1" class="docutils">
 <thead>
 <tr>
 <th>Name</th>
@@ -610,33 +611,33 @@ Only Flows that use HTTP can be accessed via the methods described below.</p>
 <td><code>"targetExecutor": "MyExec"</code></td>
 </tr>
 </tbody>
-</table></div>
+</table>
 <p>Instead of using the generic <code class="docutils literal notranslate"><span class="pre">/post</span></code> endpoint, you can directly use endpoints like <code class="docutils literal notranslate"><span class="pre">/index</span></code> or <code class="docutils literal notranslate"><span class="pre">/search</span></code> to perform a specific operation.
 In this case your data request will be sent to the corresponding Executor endpoint, so the parameter <code class="docutils literal notranslate"><span class="pre">execEndpoint</span></code> does not need to be specified.</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
 Example<div class="sd-summary-down docutils">
-<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
 <div class="sd-summary-up docutils">
-<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">cURL</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">cURL</label><div class="tab-content docutils">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl --request POST <span class="se">\</span>
-<span class="hll"><span class="s1">'http://localhost:12345/search'</span> <span class="se">\</span>
-</span>--header <span class="s1">'Content-Type: application/json'</span> -d <span class="s1">'{"data": [{"text": "hello world"}]}'</span>
+<span class="hll"><span class="s1">&#39;http://localhost:12345/search&#39;</span> <span class="se">\</span>
+</span>--header <span class="s1">&#39;Content-Type: application/json&#39;</span> -d <span class="s1">&#39;{&quot;data&quot;: [{&quot;text&quot;: &quot;hello world&quot;}]}&#39;</span>
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">javascript</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">javascript</label><div class="tab-content docutils">
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">fetch</span><span class="p">(</span><span class="w"></span>
-<span class="hll"><span class="w">    </span><span class="s1">'http://localhost:12345/search'</span><span class="p">,</span><span class="w"> </span>
+<span class="hll"><span class="w">    </span><span class="s1">&#39;http://localhost:12345/search&#39;</span><span class="p">,</span><span class="w"> </span>
 </span><span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">'POST'</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;POST&#39;</span><span class="p">,</span><span class="w"></span>
 <span class="w">        </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="s1">'Content-Type'</span><span class="o">:</span><span class="w"> </span><span class="s1">'application/json'</span><span class="w"></span>
+<span class="w">            </span><span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;application/json&#39;</span><span class="w"></span>
 <span class="w">    </span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="s2">"data"</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="s2">"text"</span><span class="o">:</span><span class="w"> </span><span class="s2">"hello world"</span><span class="p">}]})</span><span class="w"></span>
+<span class="w">    </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="s2">&quot;data&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="s2">&quot;text&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;hello world&quot;</span><span class="p">}]})</span><span class="w"></span>
 <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">()).</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">));</span><span class="w"></span>
 </pre></div>
 </div>
@@ -655,65 +656,65 @@ Example<div class="sd-summary-down docutils">
 </div>
 </section>
 <section id="use-curl">
-<span id="swagger-ui"></span><h3>Use curl<a class="headerlink" href="#use-curl" title="Permalink to this headline">¶</a></h3>
+<span id="swagger-ui"></span><h3>Use curl<a class="headerlink" href="#use-curl" title="Permalink to this headline">#</a></h3>
 <p>Here’s an example that uses <code class="docutils literal notranslate"><span class="pre">cURL</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl --request POST <span class="s1">'http://localhost:12345/post'</span> --header <span class="s1">'Content-Type: application/json'</span> -d <span class="s1">'{"data": [{"text": "hello world"}],"execEndpoint": "/search"}'</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl --request POST <span class="s1">&#39;http://localhost:12345/post&#39;</span> --header <span class="s1">&#39;Content-Type: application/json&#39;</span> -d <span class="s1">&#39;{&quot;data&quot;: [{&quot;text&quot;: &quot;hello world&quot;}],&quot;execEndpoint&quot;: &quot;/search&quot;}&#39;</span>
 </pre></div>
 </div>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
 Sample response<div class="sd-summary-down docutils">
-<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
 <div class="sd-summary-up docutils">
-<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="p">{</span>
-      <span class="s2">"requestId"</span><span class="p">:</span> <span class="s2">"e2978837-e5cb-45c6-a36d-588cf9b24309"</span><span class="p">,</span>
-      <span class="s2">"data"</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">"docs"</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">&quot;requestId&quot;</span><span class="p">:</span> <span class="s2">&quot;e2978837-e5cb-45c6-a36d-588cf9b24309&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;docs&quot;</span><span class="p">:</span> <span class="p">[</span>
           <span class="p">{</span>
-            <span class="s2">"id"</span><span class="p">:</span> <span class="s2">"84d9538e-f5be-11eb-8383-c7034ef3edd4"</span><span class="p">,</span>
-            <span class="s2">"granularity"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="s2">"adjacency"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="s2">"parentId"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-            <span class="s2">"text"</span><span class="p">:</span> <span class="s2">"hello world"</span><span class="p">,</span>
-            <span class="s2">"chunks"</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s2">"weight"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-            <span class="s2">"matches"</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s2">"mimeType"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-            <span class="s2">"tags"</span><span class="p">:</span> <span class="p">{</span>
-              <span class="s2">"mimeType"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-              <span class="s2">"parentId"</span><span class="p">:</span> <span class="s2">""</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;84d9538e-f5be-11eb-8383-c7034ef3edd4&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;granularity&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;adjacency&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;parentId&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;hello world&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;chunks&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">&quot;matches&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;mimeType&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">{</span>
+              <span class="s2">&quot;mimeType&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;parentId&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span>
             <span class="p">},</span>
-            <span class="s2">"location"</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="s2">"offset"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="s2">"embedding"</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
-            <span class="s2">"scores"</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s2">"modality"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-            <span class="s2">"evaluations"</span><span class="p">:</span> <span class="p">{}</span>
+            <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;embedding&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+            <span class="s2">&quot;scores&quot;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s2">&quot;modality&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;evaluations&quot;</span><span class="p">:</span> <span class="p">{}</span>
           <span class="p">}</span>
         <span class="p">],</span>
-        <span class="s2">"groundtruths"</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="s2">&quot;groundtruths&quot;</span><span class="p">:</span> <span class="p">[]</span>
       <span class="p">},</span>
-      <span class="s2">"header"</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">"execEndpoint"</span><span class="p">:</span> <span class="s2">"/index"</span><span class="p">,</span>
-        <span class="s2">"targetPeapod"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-        <span class="s2">"noPropagate"</span><span class="p">:</span> <span class="n">false</span>
+      <span class="s2">&quot;header&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;execEndpoint&quot;</span><span class="p">:</span> <span class="s2">&quot;/index&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;targetPeapod&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;noPropagate&quot;</span><span class="p">:</span> <span class="n">false</span>
       <span class="p">},</span>
-      <span class="s2">"parameters"</span><span class="p">:</span> <span class="p">{},</span>
-      <span class="s2">"routes"</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{},</span>
+      <span class="s2">&quot;routes&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="p">{</span>
-          <span class="s2">"pod"</span><span class="p">:</span> <span class="s2">"gateway"</span><span class="p">,</span>
-          <span class="s2">"podId"</span><span class="p">:</span> <span class="s2">"5742d5dd-43f1-451f-88e7-ece0588b7557"</span><span class="p">,</span>
-          <span class="s2">"startTime"</span><span class="p">:</span> <span class="s2">"2021-08-05T07:26:58.636258+00:00"</span><span class="p">,</span>
-          <span class="s2">"endTime"</span><span class="p">:</span> <span class="s2">"2021-08-05T07:26:58.636910+00:00"</span><span class="p">,</span>
-          <span class="s2">"status"</span><span class="p">:</span> <span class="n">null</span>
+          <span class="s2">&quot;pod&quot;</span><span class="p">:</span> <span class="s2">&quot;gateway&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;podId&quot;</span><span class="p">:</span> <span class="s2">&quot;5742d5dd-43f1-451f-88e7-ece0588b7557&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;startTime&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-08-05T07:26:58.636258+00:00&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;endTime&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-08-05T07:26:58.636910+00:00&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">null</span>
         <span class="p">}</span>
       <span class="p">],</span>
-      <span class="s2">"status"</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">"code"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">"description"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
-        <span class="s2">"exception"</span><span class="p">:</span> <span class="n">null</span>
+      <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;exception&quot;</span><span class="p">:</span> <span class="n">null</span>
       <span class="p">}</span>
     <span class="p">}</span>
 </pre></div>
@@ -721,46 +722,46 @@ Sample response<div class="sd-summary-down docutils">
 </div>
 </details></section>
 <section id="use-javascript">
-<h3>Use Javascript<a class="headerlink" href="#use-javascript" title="Permalink to this headline">¶</a></h3>
+<h3>Use Javascript<a class="headerlink" href="#use-javascript" title="Permalink to this headline">#</a></h3>
 <p>Sending a request from the front-end JavaScript code is a common use case too. Here’s how this would look like:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">fetch</span><span class="p">(</span><span class="s1">'http://localhost:12345/post'</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">'POST'</span><span class="p">,</span><span class="w"></span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;http://localhost:12345/post&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nx">method</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;POST&#39;</span><span class="p">,</span><span class="w"></span>
 <span class="w">    </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="s1">'Content-Type'</span><span class="o">:</span><span class="w"> </span><span class="s1">'application/json'</span><span class="w"></span>
+<span class="w">        </span><span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;application/json&#39;</span><span class="w"></span>
 <span class="w">    </span><span class="p">},</span><span class="w"></span>
-<span class="w">    </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="s2">"data"</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="s2">"text"</span><span class="o">:</span><span class="w"> </span><span class="s2">"hello world"</span><span class="p">}],</span><span class="s2">"execEndpoint"</span><span class="o">:</span><span class="w"> </span><span class="s2">"/search"</span><span class="p">})</span><span class="w"></span>
+<span class="w">    </span><span class="nx">body</span><span class="o">:</span><span class="w"> </span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="s2">&quot;data&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span><span class="s2">&quot;text&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;hello world&quot;</span><span class="p">}],</span><span class="s2">&quot;execEndpoint&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;/search&quot;</span><span class="p">})</span><span class="w"></span>
 <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">()).</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">));</span><span class="w"></span>
 </pre></div>
 </div>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
 Output<div class="sd-summary-down docutils">
-<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-down" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z" fill-rule="evenodd"></path></svg></div>
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
 <div class="sd-summary-up docutils">
-<svg aria-hidden="true" class="sd-octicon sd-octicon-chevron-up" height="1.5em" version="1.1" viewbox="0 0 24 24" width="1.5em"><path d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z" fill-rule="evenodd"></path></svg></div>
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="s2">"data"</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">  </span><span class="s2">&quot;data&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
 <span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="s2">"id"</span><span class="o">:</span><span class="w"> </span><span class="s2">"37e6f1bc7ec82fc4ba75691315ae54a6"</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">"text"</span><span class="o">:</span><span class="w"> </span><span class="s2">"hello world"</span><span class="w"></span>
-<span class="w">      </span><span class="s2">"matches"</span><span class="o">:</span><span class="w"> </span><span class="p">...</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;id&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;37e6f1bc7ec82fc4ba75691315ae54a6&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;text&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;hello world&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;matches&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">...</span><span class="w"></span>
 <span class="w">    </span><span class="p">},</span><span class="w"></span>
-<span class="w">  </span><span class="s2">"header"</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="s2">"requestId"</span><span class="o">:</span><span class="w"> </span><span class="s2">"c725217aa7714de88039866fb5aa93d2"</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="s2">"execEndpoint"</span><span class="o">:</span><span class="w"> </span><span class="s2">"/index"</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="s2">"targetExecutor"</span><span class="o">:</span><span class="w"> </span><span class="s2">""</span><span class="w"></span>
+<span class="w">  </span><span class="s2">&quot;header&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="s2">&quot;requestId&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;c725217aa7714de88039866fb5aa93d2&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s2">&quot;execEndpoint&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;/index&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="s2">&quot;targetExecutor&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"></span>
 <span class="w">  </span><span class="p">},</span><span class="w"></span>
-<span class="w">  </span><span class="s2">"routes"</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">  </span><span class="s2">&quot;routes&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
 <span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="s2">"executor"</span><span class="o">:</span><span class="w"> </span><span class="s2">"gateway"</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">"startTime"</span><span class="o">:</span><span class="w"> </span><span class="s2">"2022-04-01T13:11:57.992497+00:00"</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">"endTime"</span><span class="o">:</span><span class="w"> </span><span class="s2">"2022-04-01T13:11:57.997802+00:00"</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;executor&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;gateway&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;startTime&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;2022-04-01T13:11:57.992497+00:00&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;endTime&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;2022-04-01T13:11:57.997802+00:00&quot;</span><span class="w"></span>
 <span class="w">    </span><span class="p">},</span><span class="w"></span>
 <span class="w">    </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="s2">"executor"</span><span class="o">:</span><span class="w"> </span><span class="s2">"executor0"</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">"startTime"</span><span class="o">:</span><span class="w"> </span><span class="s2">"2022-04-01T13:11:57.993686+00:00"</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="s2">"endTime"</span><span class="o">:</span><span class="w"> </span><span class="s2">"2022-04-01T13:11:57.997274+00:00"</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;executor&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;executor0&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;startTime&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;2022-04-01T13:11:57.993686+00:00&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;endTime&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;2022-04-01T13:11:57.997274+00:00&quot;</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 <span class="w">  </span><span class="p">],</span><span class="w"></span>
 <span class="w">  </span><span class="p">]</span><span class="w"></span>
@@ -770,7 +771,7 @@ Output<div class="sd-summary-down docutils">
 </div>
 </details></section>
 <section id="use-swagger-ui">
-<h3>Use Swagger UI<a class="headerlink" href="#use-swagger-ui" title="Permalink to this headline">¶</a></h3>
+<h3>Use Swagger UI<a class="headerlink" href="#use-swagger-ui" title="Permalink to this headline">#</a></h3>
 <p>Flows provide a customized <a class="reference external" href="https://swagger.io/tools/swagger-ui/">Swagger UI</a> which can be used to interact with the Flow
 visually, through a web browser.</p>
 <div class="caution admonition">
@@ -779,7 +780,7 @@ visually, through a web browser.</p>
 </div>
 <p>For a Flow that is exposed on port <code class="docutils literal notranslate"><span class="pre">PORT</span></code>, you can navigate to the Swagger UI via <code class="docutils literal notranslate"><span class="pre">http://localhost:PORT/docs</span></code>:</p>
 <figure class="align-center">
-<img alt="../../../_images/swagger-ui.png" src="../../../_images/swagger-ui.png"/>
+<img alt="../../../_images/swagger-ui.png" src="../../../_images/swagger-ui.png" />
 </figure>
 <p>Here you can see all the endpoints that are exposed by the Flow, such as <code class="docutils literal notranslate"><span class="pre">/search</span></code> and <code class="docutils literal notranslate"><span class="pre">/index</span></code>.</p>
 <p>To send a request, click on the endpoint you want to target, then on <code class="docutils literal notranslate"><span class="pre">Try</span> <span class="pre">it</span> <span class="pre">out</span></code>.</p>
@@ -788,14 +789,14 @@ You can again use the <a class="reference external" href="https://api.jina.ai/re
 <p>Below, in <code class="docutils literal notranslate"><span class="pre">Responses</span></code>, you can see the reply, together with a visual representation of the returned Documents.</p>
 </section>
 <section id="use-postman">
-<h3>Use Postman<a class="headerlink" href="#use-postman" title="Permalink to this headline">¶</a></h3>
+<h3>Use Postman<a class="headerlink" href="#use-postman" title="Permalink to this headline">#</a></h3>
 <p><a class="reference external" href="https://www.postman.com/">Postman</a> is an application that allows the testing of web APIs from a graphical interface. You can store all the templates for your REST APIs in it, using Collections.</p>
 <p>We provide a suite of templates for the Jina Flow, in this <a class="reference external" href="https://github.com/jina-ai/jina/tree/master/.github/Jina.postman_collection.json">collection</a>. You can import it in Postman in <strong>Collections</strong>, with the <strong>Import</strong> button. It provides templates for the main operations. You need to create an Environment to define the <code class="docutils literal notranslate"><span class="pre">{{url}}</span></code> and <code class="docutils literal notranslate"><span class="pre">{{port}}</span></code> environment variables. These would be the hostname and the port where the Flow is listening.</p>
 <p>This contribution was made by <a class="reference external" href="https://jina-ai.slack.com/archives/C0169V26ATY/p1649689443888779?thread_ts=1649428823.420879&amp;cid=C0169V26ATY">Jonathan Rowley</a>, in our <span class="xref myst">community Slack</span>.</p>
 </section>
 </section>
 <section id="graphql">
-<span id="flow-graphql"></span><h2>GraphQL<a class="headerlink" href="#graphql" title="Permalink to this headline">¶</a></h2>
+<span id="flow-graphql"></span><h2>GraphQL<a class="headerlink" href="#graphql" title="Permalink to this headline">#</a></h2>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
 <p>This article does not serve as the introduction to GraphQL.
@@ -810,22 +811,22 @@ This is especially useful when the user does not need potentially large fields, 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sgqlc.endpoint.http</span> <span class="kn">import</span> <span class="n">HTTPEndpoint</span>
 
 <span class="n">HOSTNAME</span><span class="p">,</span> <span class="n">PORT</span> <span class="o">=</span> <span class="o">...</span>
-<span class="n">endpoint</span> <span class="o">=</span> <span class="n">HTTPEndpoint</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">HOSTNAME</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">PORT</span><span class="si">}</span><span class="s1">/graphql'</span><span class="p">)</span>
-<span class="n">mut</span> <span class="o">=</span> <span class="s1">'''</span>
+<span class="n">endpoint</span> <span class="o">=</span> <span class="n">HTTPEndpoint</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">HOSTNAME</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">PORT</span><span class="si">}</span><span class="s1">/graphql&#39;</span><span class="p">)</span>
+<span class="n">mut</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">    mutation {</span>
-<span class="s1">        docs(data: {text: "abcd"}) { </span>
+<span class="s1">        docs(data: {text: &quot;abcd&quot;}) { </span>
 <span class="s1">            id</span>
 <span class="s1">            matches {</span>
 <span class="s1">                embedding</span>
 <span class="s1">            }</span>
 <span class="s1">        } </span>
 <span class="s1">    }</span>
-<span class="s1">'''</span>
+<span class="s1">&#39;&#39;&#39;</span>
 <span class="n">response</span> <span class="o">=</span> <span class="n">endpoint</span><span class="p">(</span><span class="n">mut</span><span class="p">)</span>
 </pre></div>
 </div>
 <section id="mutations-and-arguments">
-<h3>Mutations and arguments<a class="headerlink" href="#mutations-and-arguments" title="Permalink to this headline">¶</a></h3>
+<h3>Mutations and arguments<a class="headerlink" href="#mutations-and-arguments" title="Permalink to this headline">#</a></h3>
 <p>The Flow GraphQL API exposes the mutation <code class="docutils literal notranslate"><span class="pre">docs</span></code>, which sends its inputs to the Flow’s Executors,
 just like HTTP <code class="docutils literal notranslate"><span class="pre">post</span></code> as described <span class="xref std std-ref">above</span>.</p>
 <p>A GraphQL mutation takes same set of arguments used in <a class="reference external" href="#arguments">HTTP</a>.</p>
@@ -837,18 +838,18 @@ or the <a class="reference external" href="https://docarray.jina.ai/api/docarray
 </div>
 </section>
 <section id="fields">
-<h3>Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h3>
+<h3>Fields<a class="headerlink" href="#fields" title="Permalink to this headline">#</a></h3>
 <p>The available fields in the GraphQL API are defined by the <a class="reference external" href="https://docarray.jina.ai/advanced/graphql-support/?highlight=graphql">Document Strawberry type</a>.</p>
 <p>Essentially, you can ask for any property of a Document, including <code class="docutils literal notranslate"><span class="pre">embedding</span></code>, <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">tensor</span></code>, <code class="docutils literal notranslate"><span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">matches</span></code>, <code class="docutils literal notranslate"><span class="pre">tags</span></code>,
 and more.</p>
 </section>
 </section>
 <section id="grpc">
-<h2>gRPC<a class="headerlink" href="#grpc" title="Permalink to this headline">¶</a></h2>
+<h2>gRPC<a class="headerlink" href="#grpc" title="Permalink to this headline">#</a></h2>
 <p>If you want to create a gRPC client in another language, you will need to compile the <a class="reference internal" href="../../../proto/docs/"><span class="doc std std-doc">Protobuf definition</span></a>. In Python, you can use our <a class="reference internal" href="../client/#client"><span class="std std-ref">own client</span></a>.</p>
 </section>
 <section id="websocket">
-<h2>Websocket<a class="headerlink" href="#websocket" title="Permalink to this headline">¶</a></h2>
+<h2>Websocket<a class="headerlink" href="#websocket" title="Permalink to this headline">#</a></h2>
 <p>Websocket uses persistent connections between the client &amp; Flow, hence allowing streaming use cases.
 While you can always use the Python client to stream requests like any other protocol, websocket allows streaming JSON from anywhere (CLI / Postman / any other programming language).
 The same set of arguments as <a class="reference external" href="#arguments">HTTP</a> can be used in the payload.</p>
@@ -869,7 +870,7 @@ The Flow defaults to <code class="docutils literal notranslate"><span class="pre
 </div>
 </section>
 <section id="see-further">
-<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this headline">¶</a></h2>
+<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../client/#client"><span class="std std-ref">Access a Flow with the Client</span></a></p></li>
 <li><p><a class="reference internal" href="../../gateway/#flow"><span class="std std-ref">Configure Flow</span></a></p></li>
@@ -992,7 +993,7 @@ The Flow defaults to <code class="docutils literal notranslate"><span class="pre
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/scripts/main.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
     <script src="../../../_static/tabs.js"></script>

@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/api/jina.orchestrate.deployments/" />
   
-<meta property="og:site_name" content="Jina 3.5.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.5.1 Documentation" />
   
 <meta property="og:description" content="Subpackages: jina.orchestrate.deployments.config package- Subpackages- jina.orchestrate.deployments.config.k8slib package- Submodules, Module contents.., Submodules- jina.orchestrate.deployments.config.docker_compose module, jina.orchestrate.deployments.config.helper module, jina.orchestrate.depl..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.5.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.5.1 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -36,15 +36,16 @@
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.orchestrate.deployments.config package" href="../jina.orchestrate.deployments.config/" /><link rel="prev" title="jina.orchestrate package" href="../jina.orchestrate/" />
+        <link rel="canonical" href="https://docs.jina.ai/api/jina.orchestrate.deployments.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.orchestrate.deployments package - Jina 3.5.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+        <title>jina.orchestrate.deployments package - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -60,24 +61,27 @@
   --color-brand-content: #009191;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FBCB67;
-  --color-brand-content: #FBCB67;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   --color-brand-primary: #FBCB67;
   --color-brand-content: #FBCB67;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
@@ -86,17 +90,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -105,14 +105,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -127,7 +127,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -135,7 +135,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.5.0 documentation</div>
+                <div class="brand">Jina 3.5.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -521,6 +521,7 @@
 </div>
 
 </div>
+
             </div>
             
         </div>
@@ -560,9 +561,9 @@
                 </div>
                 <article role="main">
                     <section id="jina-orchestrate-deployments-package">
-<h1>jina.orchestrate.deployments package<a class="headerlink" href="#jina-orchestrate-deployments-package" title="Permalink to this headline">¶</a></h1>
+<h1>jina.orchestrate.deployments package<a class="headerlink" href="#jina-orchestrate-deployments-package" title="Permalink to this headline">#</a></h1>
 <section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.deployments.config/">jina.orchestrate.deployments.config package</a><ul>
@@ -587,17 +588,17 @@
 </div>
 </section>
 <section id="module-jina.orchestrate.deployments">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.orchestrate.deployments" title="Permalink to this headline">¶</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.orchestrate.deployments" title="Permalink to this headline">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.BaseDeployment">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.orchestrate.deployments.</span></span><span class="sig-name descname"><span class="pre">BaseDeployment</span></span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#BaseDeployment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.orchestrate.deployments.</span></span><span class="sig-name descname"><span class="pre">BaseDeployment</span></span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#BaseDeployment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">contextlib.ExitStack</span></code></p>
 <p>A BaseDeployment is an immutable set of pods.
 Internally, the pods can run with the process/thread backend.
 They can be also run in their own containers on remote machines.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.BaseDeployment.start">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#BaseDeployment.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment.start" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#BaseDeployment.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment.start" title="Permalink to this definition">#</a></dt>
 <dd><p>Start to run all <code class="xref py py-class docutils literal notranslate"><span class="pre">Pod</span></code> in this BaseDeployment.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -610,9 +611,10 @@ are properly closed.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.BaseDeployment.role">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">role</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina.enums/#jina.enums.DeploymentRoleType" title="jina.enums.DeploymentRoleType"><span class="pre">jina.enums.DeploymentRoleType</span></a></em><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment.role" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">role</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina.enums/#jina.enums.DeploymentRoleType" title="jina.enums.DeploymentRoleType"><span class="pre">jina.enums.DeploymentRoleType</span></a></em><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment.role" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the role of this <a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment" title="jina.orchestrate.deployments.BaseDeployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDeployment</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -620,9 +622,10 @@ are properly closed.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.BaseDeployment.name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment.name" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment.name" title="Permalink to this definition">#</a></dt>
 <dd><p>The name of this <a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment" title="jina.orchestrate.deployments.BaseDeployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDeployment</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -630,9 +633,10 @@ are properly closed.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.BaseDeployment.head_host">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">head_host</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment.head_host" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">head_host</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment.head_host" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the host of the HeadPod of this deployment
 .. # noqa: DAR201</p>
 <dl class="field-list simple">
@@ -641,15 +645,17 @@ are properly closed.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.BaseDeployment.head_port">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">head_port</span></span><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment.head_port" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">head_port</span></span><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment.head_port" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the port of the HeadPod of this deployment
 .. # noqa: DAR201</p>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.BaseDeployment.head_args">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">head_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">argparse.Namespace</span></em><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment.head_args" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">head_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">argparse.Namespace</span></em><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment.head_args" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the arguments for the <cite>head</cite> of this BaseDeployment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -657,14 +663,16 @@ are properly closed.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.BaseDeployment.join">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">join</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#BaseDeployment.join"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment.join" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">join</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#BaseDeployment.join"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment.join" title="Permalink to this definition">#</a></dt>
 <dd><p>Wait until all deployment and pods exit.</p>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.BaseDeployment.deployments">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deployments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment.deployments" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deployments</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.orchestrate.deployments.BaseDeployment.deployments" title="Permalink to this definition">#</a></dt>
 <dd><p>Get deployments of the deployment. The BaseDeployment just gives one deployment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -675,10 +683,12 @@ are properly closed.</p>
 </dd>
 </dl>
 </dd></dl>
+
 </dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.orchestrate.deployments.</span></span><span class="sig-name descname"><span class="pre">Deployment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.orchestrate.deployments.</span></span><span class="sig-name descname"><span class="pre">Deployment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment" title="jina.orchestrate.deployments.BaseDeployment"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.orchestrate.deployments.BaseDeployment</span></code></a></p>
 <p>A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.
 Internally, the pods can run with the process/thread backend. They can be also run in their own containers
@@ -688,27 +698,31 @@ Internally, the pods can run with the process/thread backend. They can be also r
 :param needs: deployments names of preceding deployments, the output of these deployments are going into the input of this deployment</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.needs">
-<span class="sig-name descname"><span class="pre">needs</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.needs" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">needs</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.needs" title="Permalink to this definition">#</a></dt>
 <dd><p>used in the <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.flow.Flow</span></code> to build the graph</p>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.update_pod_args">
-<span class="sig-name descname"><span class="pre">update_pod_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.update_pod_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.update_pod_args" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_pod_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.update_pod_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.update_pod_args" title="Permalink to this definition">#</a></dt>
 <dd><p>Update args of all its pods based on Deployment args. Including head/tail</p>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.update_sandbox_args">
-<span class="sig-name descname"><span class="pre">update_sandbox_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.update_sandbox_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.update_sandbox_args" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_sandbox_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.update_sandbox_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.update_sandbox_args" title="Permalink to this definition">#</a></dt>
 <dd><p>Update args of all its pods based on the host and port returned by Hubble</p>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.update_worker_pod_args">
-<span class="sig-name descname"><span class="pre">update_worker_pod_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.update_worker_pod_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.update_worker_pod_args" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_worker_pod_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.update_worker_pod_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.update_worker_pod_args" title="Permalink to this definition">#</a></dt>
 <dd><p>Update args of all its worker pods based on Deployment args. Does not touch head and tail</p>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.is_sandbox">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_sandbox</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.is_sandbox" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_sandbox</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.is_sandbox" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if this deployment is a sandbox.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -719,9 +733,10 @@ Internally, the pods can run with the process/thread backend. They can be also r
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.tls_enabled">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tls_enabled</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.tls_enabled" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tls_enabled</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.tls_enabled" title="Permalink to this definition">#</a></dt>
 <dd><p>Checks whether secure connection via tls is enabled for this Deployment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -729,9 +744,10 @@ Internally, the pods can run with the process/thread backend. They can be also r
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.external">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">external</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.external" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">external</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.external" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if this deployment is external.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -742,18 +758,20 @@ Internally, the pods can run with the process/thread backend. They can be also r
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.protocol">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protocol</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.protocol" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">protocol</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.protocol" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>the protocol of this deployment</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.first_pod_args">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">first_pod_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">argparse.Namespace</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.first_pod_args" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">first_pod_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">argparse.Namespace</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.first_pod_args" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the first worker pod’s args</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -761,9 +779,10 @@ Internally, the pods can run with the process/thread backend. They can be also r
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.host">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">host</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.host" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">host</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.host" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the host name of this deployment</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -771,18 +790,20 @@ Internally, the pods can run with the process/thread backend. They can be also r
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.port">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">port</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.port" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">port</span></span><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.port" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>the port of this deployment</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.ports">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.ports" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ports</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.ports" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a list of ports exposed by this Deployment.
 Exposed means these are the ports a Client/Gateway is supposed to communicate with.
 For sharded deployments this will be the head_port.
@@ -794,9 +815,10 @@ For non sharded deployments it will be all replica ports
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.dockerized_uses">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dockerized_uses</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.dockerized_uses" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dockerized_uses</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.dockerized_uses" title="Permalink to this definition">#</a></dt>
 <dd><p>Checks if this Deployment uses a dockerized Executor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -804,9 +826,10 @@ For non sharded deployments it will be all replica ports
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.head_args">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">head_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">argparse.Namespace</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.head_args" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">head_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">argparse.Namespace</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.head_args" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the arguments for the <cite>head</cite> of this Deployment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -814,9 +837,10 @@ For non sharded deployments it will be all replica ports
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.uses_before_args">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">uses_before_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">argparse.Namespace</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.uses_before_args" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">uses_before_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">argparse.Namespace</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.uses_before_args" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the arguments for the <cite>uses_before</cite> of this Deployment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -824,9 +848,10 @@ For non sharded deployments it will be all replica ports
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.uses_after_args">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">uses_after_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">argparse.Namespace</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.uses_after_args" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">uses_after_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">argparse.Namespace</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.uses_after_args" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the arguments for the <cite>uses_after</cite> of this Deployment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -834,9 +859,10 @@ For non sharded deployments it will be all replica ports
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.all_args">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">argparse.Namespace</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.all_args" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">argparse.Namespace</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.all_args" title="Permalink to this definition">#</a></dt>
 <dd><p>Get all arguments of all Pods in this BaseDeployment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -844,9 +870,10 @@ For non sharded deployments it will be all replica ports
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.num_pods">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_pods</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.num_pods" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_pods</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.num_pods" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the number of running <code class="xref py py-class docutils literal notranslate"><span class="pre">Pod</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -854,14 +881,16 @@ For non sharded deployments it will be all replica ports
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.activate">
-<span class="sig-name descname"><span class="pre">activate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.activate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.activate" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">activate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.activate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.activate" title="Permalink to this definition">#</a></dt>
 <dd><p>Activate all worker pods in this deployment by registering them with the head</p>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.get_worker_host">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_worker_host</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pod_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head_pod</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.get_worker_host"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.get_worker_host" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_worker_host</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pod_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pod</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head_pod</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.get_worker_host"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.get_worker_host" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if the current pod and head are both containerized on the same host
 If so __docker_host__ needs to be advertised as the worker’s address to the head</p>
 <dl class="field-list simple">
@@ -877,9 +906,10 @@ If so __docker_host__ needs to be advertised as the worker’s address to the he
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.start">
-<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.start" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.start" title="Permalink to this definition">#</a></dt>
 <dd><p>Start to run all <code class="xref py py-class docutils literal notranslate"><span class="pre">Pod</span></code> in this BaseDeployment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -895,9 +925,10 @@ If so __docker_host__ needs to be advertised as the worker’s address to the he
 are properly closed.</p>
 </div>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.wait_start_success">
-<span class="sig-name descname"><span class="pre">wait_start_success</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.wait_start_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.wait_start_success" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">wait_start_success</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.wait_start_success"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.wait_start_success" title="Permalink to this definition">#</a></dt>
 <dd><p>Block until all pods starts successfully.</p>
 <p>If not successful, it will raise an error hoping the outer function to catch it</p>
 <dl class="field-list simple">
@@ -906,14 +937,16 @@ are properly closed.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.join">
-<span class="sig-name descname"><span class="pre">join</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.join"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.join" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">join</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/orchestrate/deployments/#Deployment.join"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.join" title="Permalink to this definition">#</a></dt>
 <dd><p>Wait until all pods exit</p>
 </dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.orchestrate.deployments.Deployment.is_ready">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.is_ready" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.orchestrate.deployments.Deployment.is_ready" title="Permalink to this definition">#</a></dt>
 <dd><p>Checks if Deployment is ready</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -925,7 +958,9 @@ are properly closed.</p>
 </dd>
 </dl>
 </dd></dl>
+
 </dd></dl>
+
 </section>
 </section>
 
@@ -1029,7 +1064,7 @@ are properly closed.</p>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/scripts/main.js"></script>
+    <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script src="../../_static/tabs.js"></script>

@@ -10,11 +10,11 @@
   
 <meta property="og:url" content="https://docs.jina.ai/api/jina.helper/" />
   
-<meta property="og:site_name" content="Jina 3.5.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.5.1 Documentation" />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.5.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.5.1 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -34,15 +34,16 @@
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="jina.importer module" href="../jina.importer/" /><link rel="prev" title="jina.exporter module" href="../jina.exporter/" />
+        <link rel="canonical" href="https://docs.jina.ai/api/jina.helper.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.helper module - Jina 3.5.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+        <title>jina.helper module - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -58,24 +59,27 @@
   --color-brand-content: #009191;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FBCB67;
-  --color-brand-content: #FBCB67;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   --color-brand-primary: #FBCB67;
   --color-brand-content: #FBCB67;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
@@ -84,17 +88,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -103,14 +103,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -125,7 +125,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -133,7 +133,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -171,7 +171,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.5.0 documentation</div>
+                <div class="brand">Jina 3.5.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -519,6 +519,7 @@
 </div>
 
 </div>
+
             </div>
             
         </div>
@@ -558,10 +559,10 @@
                 </div>
                 <article role="main">
                     <section id="module-jina.helper">
-<span id="jina-helper-module"></span><h1>jina.helper module<a class="headerlink" href="#module-jina.helper" title="Permalink to this headline">¶</a></h1>
+<span id="jina-helper-module"></span><h1>jina.helper module<a class="headerlink" href="#module-jina.helper" title="Permalink to this headline">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.batch_iterator">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">batch_iterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#batch_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.batch_iterator" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">batch_iterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#batch_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.batch_iterator" title="Permalink to this definition">#</a></dt>
 <dd><p>Get an iterator of batches of data.</p>
 <p>For example:
 .. highlight:: python
@@ -591,9 +592,10 @@
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.parse_arg">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">parse_arg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#parse_arg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.parse_arg" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">parse_arg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#parse_arg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.parse_arg" title="Permalink to this definition">#</a></dt>
 <dd><p>Parse the arguments from string to <cite>Union[bool, int, str, list, float]</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -607,9 +609,10 @@
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.random_port">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">random_port</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#random_port"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.random_port" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">random_port</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#random_port"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.random_port" title="Permalink to this definition">#</a></dt>
 <dd><p>Get a random available port number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -620,9 +623,10 @@
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.random_identity">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">random_identity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_uuid1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#random_identity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.random_identity" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">random_identity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_uuid1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#random_identity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.random_identity" title="Permalink to this definition">#</a></dt>
 <dd><p>Generate random UUID.</p>
 <dl>
 <dt>..note::</dt><dd><p>A MAC address or time-based ordering (UUID1) can afford increased database performance, since it’s less work
@@ -643,9 +647,10 @@ explicitly stored.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.random_uuid">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">random_uuid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_uuid1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#random_uuid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.random_uuid" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">random_uuid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_uuid1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#random_uuid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.random_uuid" title="Permalink to this definition">#</a></dt>
 <dd><p>Get a random UUID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -659,9 +664,10 @@ explicitly stored.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.expand_env_var">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">expand_env_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#expand_env_var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.expand_env_var" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">expand_env_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#expand_env_var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.expand_env_var" title="Permalink to this definition">#</a></dt>
 <dd><p>Expand the environment variables.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -675,9 +681,10 @@ explicitly stored.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.colored">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">colored</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attrs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#colored"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.colored" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">colored</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attrs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#colored"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.colored" title="Permalink to this definition">#</a></dt>
 <dd><p>Give the text with color.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -733,14 +740,15 @@ explicitly stored.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.helper.ArgNamespace">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">ArgNamespace</span></span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">ArgNamespace</span></span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Helper function for argparse.Namespace object.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.helper.ArgNamespace.kwargs2list">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kwargs2list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.kwargs2list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.kwargs2list" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kwargs2list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.kwargs2list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.kwargs2list" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert dict to an argparse-friendly list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -754,9 +762,10 @@ explicitly stored.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.helper.ArgNamespace.kwargs2namespace">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kwargs2namespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fallback_parsers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positional_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.kwargs2namespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.kwargs2namespace" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kwargs2namespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fallback_parsers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positional_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.kwargs2namespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.kwargs2namespace" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert dict to a namespace.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -776,9 +785,10 @@ explicitly stored.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.helper.ArgNamespace.get_non_defaults_args">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_non_defaults_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taboo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.get_non_defaults_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.get_non_defaults_args" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_non_defaults_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taboo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.get_non_defaults_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.get_non_defaults_args" title="Permalink to this definition">#</a></dt>
 <dd><p>Get non-default args in a dict.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -796,9 +806,10 @@ explicitly stored.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.helper.ArgNamespace.flatten_to_dict">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flatten_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.flatten_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.flatten_to_dict" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flatten_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#ArgNamespace.flatten_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.ArgNamespace.flatten_to_dict" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert argparse.Namespace to dict to be uploaded via REST.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -812,10 +823,12 @@ explicitly stored.</p>
 </dd>
 </dl>
 </dd></dl>
+
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.is_valid_local_config_source">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">is_valid_local_config_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#is_valid_local_config_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.is_valid_local_config_source" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">is_valid_local_config_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#is_valid_local_config_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.is_valid_local_config_source" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if the path is valid.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -829,9 +842,10 @@ explicitly stored.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.helper.cached_property">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">cached_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#cached_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.cached_property" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">cached_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#cached_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.cached_property" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The decorator to cache property of a class.</p>
 <p>Create the <a class="reference internal" href="#jina.helper.cached_property" title="jina.helper.cached_property"><code class="xref py py-class docutils literal notranslate"><span class="pre">cached_property</span></code></a>.</p>
@@ -841,9 +855,10 @@ explicitly stored.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.typename">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">typename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#typename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.typename" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">typename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#typename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.typename" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the typename of object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -854,9 +869,10 @@ explicitly stored.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.get_public_ip">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">get_public_ip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#get_public_ip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.get_public_ip" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">get_public_ip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#get_public_ip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.get_public_ip" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the public IP address of the gateway for connecting from other machine in the public network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -867,9 +883,10 @@ explicitly stored.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.get_internal_ip">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">get_internal_ip</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#get_internal_ip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.get_internal_ip" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">get_internal_ip</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#get_internal_ip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.get_internal_ip" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the private IP address of the gateway for connecting from other machine in the same network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -877,9 +894,10 @@ explicitly stored.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.convert_tuple_to_list">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">convert_tuple_to_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#convert_tuple_to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.convert_tuple_to_list" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">convert_tuple_to_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#convert_tuple_to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.convert_tuple_to_list" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert all the tuple type values from a dict to list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -887,9 +905,10 @@ explicitly stored.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.run_async">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">run_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#run_async"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.run_async" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">run_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#run_async"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.run_async" title="Permalink to this definition">#</a></dt>
 <dd><p>Generalized asyncio.run for jupyter notebook.</p>
 <p>When running inside jupyter, an eventloop already exists, can’t be stopped, can’t be killed.
 Directly calling asyncio.run will fail, as This function cannot be called when another asyncio event loop
@@ -907,17 +926,18 @@ is running in the same thread.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.deprecated_alias">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">deprecated_alias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">aliases</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#deprecated_alias"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.deprecated_alias" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">deprecated_alias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">aliases</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#deprecated_alias"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.deprecated_alias" title="Permalink to this definition">#</a></dt>
 <dd><p>Usage, kwargs with key as the deprecated arg name and value be a tuple, (new_name, deprecate_level).</p>
 <p>With level 0 means warning, level 1 means exception.</p>
 <dl>
 <dt>For example:</dt><dd><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@deprecated_alias</span><span class="p">(</span>
-    <span class="n">input_fn</span><span class="o">=</span><span class="p">(</span><span class="s1">'inputs'</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
-    <span class="n">buffer</span><span class="o">=</span><span class="p">(</span><span class="s1">'input_fn'</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
-    <span class="n">callback</span><span class="o">=</span><span class="p">(</span><span class="s1">'on_done'</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-    <span class="n">output_fn</span><span class="o">=</span><span class="p">(</span><span class="s1">'on_done'</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">input_fn</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;inputs&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="n">buffer</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;input_fn&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="n">callback</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;on_done&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">output_fn</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;on_done&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
 <span class="p">)</span>
 <span class="k">def</span> <span class="nf">some_function</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">input_fn</span><span class="p">,</span> <span class="n">on_done</span><span class="p">):</span>
     <span class="k">pass</span>
@@ -934,9 +954,10 @@ is running in the same thread.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.retry">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">retry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_retry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Calling</span> <span class="pre">{func_name}</span> <span class="pre">failed,</span> <span class="pre">retry</span> <span class="pre">attempt</span> <span class="pre">{attempt}/{num_retry}.</span> <span class="pre">Error:</span> <span class="pre">{error!r}'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#retry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.retry" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">retry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_retry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Calling</span> <span class="pre">{func_name}</span> <span class="pre">failed,</span> <span class="pre">retry</span> <span class="pre">attempt</span> <span class="pre">{attempt}/{num_retry}.</span> <span class="pre">Error:</span> <span class="pre">{error!r}'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#retry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.retry" title="Permalink to this definition">#</a></dt>
 <dd><p>Retry calling a function again in case of an error.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -950,9 +971,10 @@ is running in the same thread.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.countdown">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">countdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'I</span> <span class="pre">am</span> <span class="pre">blocking</span> <span class="pre">this</span> <span class="pre">thread'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#countdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.countdown" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">countdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'I</span> <span class="pre">am</span> <span class="pre">blocking</span> <span class="pre">this</span> <span class="pre">thread'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#countdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.countdown" title="Permalink to this definition">#</a></dt>
 <dd><p>Display the countdown in console.</p>
 <dl class="simple">
 <dt>For example:</dt><dd></dd>
@@ -969,9 +991,10 @@ is running in the same thread.</p>
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.helper.CatchAllCleanupContextManager">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">CatchAllCleanupContextManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#CatchAllCleanupContextManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.CatchAllCleanupContextManager" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">CatchAllCleanupContextManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#CatchAllCleanupContextManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.CatchAllCleanupContextManager" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This context manager guarantees, that the :method:<code class="docutils literal notranslate"><span class="pre">__exit__</span></code> of the
 sub context is called, even when there is an Exception in the
@@ -982,9 +1005,10 @@ sub context is called, even when there is an Exception in the
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.download_mermaid_url">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">download_mermaid_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mermaid_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#download_mermaid_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.download_mermaid_url" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">download_mermaid_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mermaid_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#download_mermaid_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.download_mermaid_url" title="Permalink to this definition">#</a></dt>
 <dd><p>Download the jpg image from mermaid_url.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -998,9 +1022,10 @@ sub context is called, even when there is an Exception in the
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.get_readable_size">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">get_readable_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_bytes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#get_readable_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.get_readable_size" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">get_readable_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_bytes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#get_readable_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.get_readable_size" title="Permalink to this definition">#</a></dt>
 <dd><p>Transform the bytes into readable value with different units (e.g. 1 KB, 20 MB, 30.1 GB).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1014,9 +1039,10 @@ sub context is called, even when there is an Exception in the
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.get_or_reuse_loop">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">get_or_reuse_loop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#get_or_reuse_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.get_or_reuse_loop" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">get_or_reuse_loop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#get_or_reuse_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.get_or_reuse_loop" title="Permalink to this definition">#</a></dt>
 <dd><p>Get a new eventloop or reuse the current opened eventloop.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1024,12 +1050,14 @@ sub context is called, even when there is an Exception in the
 </dd>
 </dl>
 </dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.helper.get_rich_console">
-<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">get_rich_console</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#get_rich_console"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.get_rich_console" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.helper.</span></span><span class="sig-name descname"><span class="pre">get_rich_console</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/helper/#get_rich_console"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.helper.get_rich_console" title="Permalink to this definition">#</a></dt>
 <dd><p>Function to get jina rich default console.
 :return: rich console</p>
 </dd></dl>
+
 </section>
 
                 </article>
@@ -1112,7 +1140,7 @@ sub context is called, even when there is an Exception in the
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/scripts/main.js"></script>
+    <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script src="../../_static/tabs.js"></script>

@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/executor/executor-serve/" />
   
-<meta property="og:site_name" content="Jina 3.5.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.5.1 Documentation" />
   
 <meta property="og:description" content="Executors can be served - and remotely accessed - directly, without the need to instantiate a Flow manually. This is especially useful when debugging an Executor in a remote setting. It can also be used to run external/shared Executors to be used in multiple Flows. There are different options how..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.5.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.5.1 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -36,15 +36,16 @@
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="YAML specification" href="../yaml-spec/" /><link rel="prev" title="Run" href="../executor-run/" />
+        <link rel="canonical" href="https://docs.jina.ai/fundamentals/executor/executor-serve.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>Serve - Jina 3.5.0 documentation</title>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+        <title>Serve - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -60,24 +61,27 @@
   --color-brand-content: #009191;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FBCB67;
-  --color-brand-content: #FBCB67;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   --color-brand-primary: #FBCB67;
   --color-brand-content: #FBCB67;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
@@ -86,17 +90,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -105,14 +105,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -127,7 +127,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -135,7 +135,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.5.0 documentation</div>
+                <div class="brand">Jina 3.5.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -521,6 +521,7 @@
 </div>
 
 </div>
+
             </div>
             
         </div>
@@ -560,7 +561,7 @@
                 </div>
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="serve">
-<span id="serve-executor-standalone"></span><h1>Serve<a class="headerlink" href="#serve" title="Permalink to this headline">¶</a></h1>
+<span id="serve-executor-standalone"></span><h1>Serve<a class="headerlink" href="#serve" title="Permalink to this headline">#</a></h1>
 <p>Executors can be served - and remotely accessed - directly, without the need to instantiate a Flow manually.
 This is especially useful when debugging an Executor in a remote setting. It can also be used to run external/shared Executors to be used in multiple Flows.
 There are different options how you can deploy and run a stand-alone Executor:</p>
@@ -570,10 +571,10 @@ There are different options how you can deploy and run a stand-alone Executor:</
 <li><p>Run the static <code class="docutils literal notranslate"><span class="pre">Executor.to_docker_compose_yaml()</span></code> method to generate a docker-compose service file</p></li>
 </ul>
 <section id="serve-directly">
-<h2>Serve directly<a class="headerlink" href="#serve-directly" title="Permalink to this headline">¶</a></h2>
+<h2>Serve directly<a class="headerlink" href="#serve-directly" title="Permalink to this headline">#</a></h2>
 <p>An Executor can be served using the <code class="docutils literal notranslate"><span class="pre">.serve()</span></code> class method:</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">Serve Executor</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Serve Executor</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 
@@ -581,20 +582,20 @@ There are different options how you can deploy and run a stand-alone Executor:</
 <span class="k">class</span> <span class="nc">MyExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
     <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'executed MyExec'</span>  <span class="c1"># custom logic goes here</span>
+        <span class="n">docs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;executed MyExec&#39;</span>  <span class="c1"># custom logic goes here</span>
 
 
 <span class="n">MyExec</span><span class="o">.</span><span class="n">serve</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">Access served Executor</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Access served Executor</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">on</span><span class="o">=</span><span class="s1">'/foo'</span><span class="p">)</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/foo&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">['executed MyExec']</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[&#39;executed MyExec&#39;]</span>
 </pre></div>
 </div>
 </div>
@@ -608,14 +609,14 @@ the Executor, and <code class="docutils literal notranslate"><span class="pre">*
 </div>
 </section>
 <section id="serve-via-kubernetes">
-<h2>Serve via Kubernetes<a class="headerlink" href="#serve-via-kubernetes" title="Permalink to this headline">¶</a></h2>
+<h2>Serve via Kubernetes<a class="headerlink" href="#serve-via-kubernetes" title="Permalink to this headline">#</a></h2>
 <p>You can generate Kubernetes configuration files for your containerized Executor by using the static <code class="docutils literal notranslate"><span class="pre">Executor.to_kubernetes_yaml()</span></code> method. This works very similar to <a class="reference internal" href="../../../how-to/kubernetes/#kubernetes"><span class="std std-ref">deploying a Flow in Kubernetes</span></a>, because your Executor is wrapped automatically in a Flow and using the very same deployment techniques.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
 
 <span class="n">Executor</span><span class="o">.</span><span class="n">to_kubernetes_yaml</span><span class="p">(</span>
-    <span class="n">output_base_path</span><span class="o">=</span><span class="s1">'/tmp/config_out_folder'</span><span class="p">,</span>
+    <span class="n">output_base_path</span><span class="o">=</span><span class="s1">&#39;/tmp/config_out_folder&#39;</span><span class="p">,</span>
     <span class="n">port_expose</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span>
-    <span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://DummyHubExecutor'</span><span class="p">,</span>
+    <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinahub+docker://DummyHubExecutor&#39;</span><span class="p">,</span>
     <span class="n">executor_type</span><span class="o">=</span><span class="n">Executor</span><span class="o">.</span><span class="n">StandaloneExecutorType</span><span class="o">.</span><span class="n">EXTERNAL</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
@@ -629,7 +630,7 @@ the Executor, and <code class="docutils literal notranslate"><span class="pre">*
 <p>The Executor you are using needs to be already containerized and stored in a registry accessible from your Kubernetes cluster. We recommend Jina Hub for this.</p>
 </div>
 <section id="external-and-shared-executors">
-<span id="external-shared-executor"></span><h3>External and shared Executors<a class="headerlink" href="#external-and-shared-executors" title="Permalink to this headline">¶</a></h3>
+<span id="external-shared-executor"></span><h3>External and shared Executors<a class="headerlink" href="#external-and-shared-executors" title="Permalink to this headline">#</a></h3>
 <p>The type of stand-alone Executors can be either <em>external</em> or <em>shared</em>. By default, it will be external.
 An external Executor is deployd alongside a <a class="reference internal" href="../../architecture-overview/#architecture-overview"><span class="std std-ref">Gateway</span></a>.
 A shared Executor has no Gateway. Both types of Executor <a class="reference internal" href="../../../how-to/external-executor/#external-executor"><span class="std std-ref">can be used directly in any Flow</span></a>.
@@ -637,14 +638,14 @@ Having a Gateway may be useful if you want to be able to access your Executor wi
 </section>
 </section>
 <section id="serve-via-docker-compose">
-<h2>Serve via Docker Compose<a class="headerlink" href="#serve-via-docker-compose" title="Permalink to this headline">¶</a></h2>
+<h2>Serve via Docker Compose<a class="headerlink" href="#serve-via-docker-compose" title="Permalink to this headline">#</a></h2>
 <p>You can generate a Docker Compose service file for your containerized Executor by using the static <code class="docutils literal notranslate"><span class="pre">Executor.to_docker_compose_yaml()</span></code> method. This works very similar to <a class="reference internal" href="../../../how-to/docker-compose/#docker-compose"><span class="std std-ref">running a Flow with Docker Compose</span></a>, because your Executor is wrapped automatically in a Flow and using the very same deployment techniques.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
 
 <span class="n">Executor</span><span class="o">.</span><span class="n">to_docker_compose_yaml</span><span class="p">(</span>
-    <span class="n">output_path</span><span class="o">=</span><span class="s1">'/tmp/docker-compose.yml'</span><span class="p">,</span>
+    <span class="n">output_path</span><span class="o">=</span><span class="s1">&#39;/tmp/docker-compose.yml&#39;</span><span class="p">,</span>
     <span class="n">port_expose</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span>
-    <span class="n">uses</span><span class="o">=</span><span class="s1">'jinahub+docker://DummyHubExecutor'</span><span class="p">,</span>
+    <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinahub+docker://DummyHubExecutor&#39;</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -763,7 +764,7 @@ Having a Gateway may be useful if you want to be able to access your Executor wi
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/scripts/main.js"></script>
+    <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
     <script src="../../../_static/tabs.js"></script>

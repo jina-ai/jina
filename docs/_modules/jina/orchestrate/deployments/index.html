@@ -3,15 +3,16 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/_modules/jina/orchestrate/deployments.html" />
 
-    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.orchestrate.deployments - Jina 3.5.0 documentation</title>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+        <title>jina.orchestrate.deployments - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -27,24 +28,27 @@
   --color-brand-content: #009191;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FBCB67;
-  --color-brand-content: #FBCB67;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   --color-brand-primary: #FBCB67;
   --color-brand-content: #FBCB67;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
@@ -53,17 +57,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -72,14 +72,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -94,7 +94,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -102,7 +102,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.5.0 documentation</div>
+                <div class="brand">Jina 3.5.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -488,6 +488,7 @@
 </div>
 
 </div>
+
             </div>
             
         </div>
@@ -547,23 +548,23 @@
 <span class="kn">from</span> <span class="nn">jina.orchestrate.pods.factory</span> <span class="kn">import</span> <span class="n">PodFactory</span>
 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span><span class="p">,</span> <span class="n">host_is_local</span><span class="p">,</span> <span class="n">in_docker</span>
 
-<span class="n">WRAPPED_SLICE_BASE</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">'\[[-\d:]+\]'</span>
+<span class="n">WRAPPED_SLICE_BASE</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;\[[-\d:]+\]&#39;</span>
 
 
 <div class="viewcode-block" id="BaseDeployment"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment">[docs]</a><span class="k">class</span> <span class="nc">BaseDeployment</span><span class="p">(</span><span class="n">ExitStack</span><span class="p">):</span>
-    <span class="sd">"""A BaseDeployment is an immutable set of pods.</span>
+    <span class="sd">&quot;&quot;&quot;A BaseDeployment is an immutable set of pods.</span>
 <span class="sd">    Internally, the pods can run with the process/thread backend.</span>
 <span class="sd">    They can be also run in their own containers on remote machines.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BaseDeployment.start"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment.start">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BaseDeployment'</span><span class="p">:</span>
-        <span class="sd">"""Start to run all :class:`Pod` in this BaseDeployment.</span>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;BaseDeployment&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Start to run all :class:`Pod` in this BaseDeployment.</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            If one of the :class:`Pod` fails to start, make sure that all of them</span>
 <span class="sd">            are properly closed.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
     <span class="nd">@staticmethod</span>
@@ -579,16 +580,16 @@
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="n">_upload_files</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'uses'</span><span class="p">,</span> <span class="s1">'uses_before'</span><span class="p">,</span> <span class="s1">'uses_after'</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;uses&#39;</span><span class="p">,</span> <span class="s1">&#39;uses_before&#39;</span><span class="p">,</span> <span class="s1">&#39;uses_after&#39;</span><span class="p">]:</span>
             <span class="n">param_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">param_value</span> <span class="ow">and</span> <span class="n">valid_path</span><span class="p">(</span><span class="n">param_value</span><span class="p">):</span>
                 <span class="n">_upload_files</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">param_value</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'py_modules'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;py_modules&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
             <span class="n">_upload_files</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span><span class="n">py_module</span> <span class="k">for</span> <span class="n">py_module</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">py_modules</span> <span class="k">if</span> <span class="n">valid_path</span><span class="p">(</span><span class="n">py_module</span><span class="p">)}</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'upload_files'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;upload_files&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
             <span class="n">_upload_files</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
                     <span class="n">upload_file</span>
@@ -599,112 +600,112 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">_upload_files</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">role</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'DeploymentRoleType'</span><span class="p">:</span>
-        <span class="sd">"""Return the role of this :class:`BaseDeployment`.</span>
+    <span class="k">def</span> <span class="nf">role</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DeploymentRoleType&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return the role of this :class:`BaseDeployment`.</span>
 
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">deployment_role</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">"""The name of this :class:`BaseDeployment`.</span>
+        <span class="sd">&quot;&quot;&quot;The name of this :class:`BaseDeployment`.</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">head_host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">"""Get the host of the HeadPod of this deployment</span>
+        <span class="sd">&quot;&quot;&quot;Get the host of the HeadPod of this deployment</span>
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">host</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">head_port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Get the port of the HeadPod of this deployment</span>
+        <span class="sd">&quot;&quot;&quot;Get the port of the HeadPod of this deployment</span>
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'BaseDeployment'</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;BaseDeployment&#39;</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">CatchAllCleanupContextManager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_copy_to_head_args</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the outgoing args of the head router</span>
 
 <span class="sd">        :param args: basic arguments</span>
 <span class="sd">        :return: enriched head arguments</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">_head_args</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="n">_head_args</span><span class="o">.</span><span class="n">polling</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">polling</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'port'</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;port&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">:</span>
             <span class="n">_head_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_head_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span>
         <span class="n">_head_args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">uses</span>
         <span class="n">_head_args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">HEAD</span>
-        <span class="n">_head_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">'HeadRuntime'</span>
+        <span class="n">_head_args</span><span class="o">.</span><span class="n">runtime_cls</span> <span class="o">=</span> <span class="s1">&#39;HeadRuntime&#39;</span>
         <span class="n">_head_args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">=</span> <span class="mi">1</span>
 
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-            <span class="n">_head_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/head'</span>
+            <span class="n">_head_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/head&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">_head_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'head'</span>
+            <span class="n">_head_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;head&#39;</span>
 
         <span class="k">return</span> <span class="n">_head_args</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">"""Get the arguments for the `head` of this BaseDeployment.</span>
+        <span class="sd">&quot;&quot;&quot;Get the arguments for the `head` of this BaseDeployment.</span>
 
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span>
 
 <div class="viewcode-block" id="BaseDeployment.join"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.BaseDeployment.join">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Wait until all deployment and pods exit."""</span>
+        <span class="sd">&quot;&quot;&quot;Wait until all deployment and pods exit.&quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">_mermaid_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">"""String that will be used to represent the Deployment graphically when `Flow.plot()` is invoked</span>
+        <span class="sd">&quot;&quot;&quot;String that will be used to represent the Deployment graphically when `Flow.plot()` is invoked</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">deployments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
-        <span class="sd">"""Get deployments of the deployment. The BaseDeployment just gives one deployment.</span>
+        <span class="sd">&quot;&quot;&quot;Get deployments of the deployment. The BaseDeployment just gives one deployment.</span>
 
 <span class="sd">        :return: list of deployments</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="p">{</span>
-                <span class="s1">'name'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="s1">'head_host'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_host</span><span class="p">,</span>
-                <span class="s1">'head_port'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_port</span><span class="p">,</span>
+                <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s1">&#39;head_host&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_host</span><span class="p">,</span>
+                <span class="s1">&#39;head_port&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_port</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="Deployment"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment">[docs]</a><span class="k">class</span> <span class="nc">Deployment</span><span class="p">(</span><span class="n">BaseDeployment</span><span class="p">):</span>
-    <span class="sd">"""A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.</span>
+    <span class="sd">&quot;&quot;&quot;A Deployment is an immutable set of pods, which run in replicas. They share the same input and output socket.</span>
 <span class="sd">    Internally, the pods can run with the process/thread backend. They can be also run in their own containers</span>
 <span class="sd">    :param args: arguments parsed from the CLI</span>
 <span class="sd">    :param needs: deployments names of preceding deployments, the output of these deployments are going into the input of this deployment</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">class</span> <span class="nc">_ReplicaSet</span><span class="p">:</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -740,7 +741,7 @@
 
         <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">,</span> <span class="s1">'noblock_on_start'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deployment_args</span><span class="p">,</span> <span class="s1">&#39;noblock_on_start&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_pods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">())</span>
             <span class="k">return</span> <span class="bp">self</span>
@@ -757,16 +758,16 @@
                 <span class="k">raise</span> <span class="n">closing_exception</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'Namespace'</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span> <span class="n">needs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Namespace&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span> <span class="n">needs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="n">args</span><span class="o">.</span><span class="n">upload_files</span> <span class="o">=</span> <span class="n">BaseDeployment</span><span class="o">.</span><span class="n">_set_upload_files</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">polling</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">args</span><span class="o">.</span><span class="n">polling</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'polling'</span><span class="p">)</span> <span class="k">else</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">polling</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;polling&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span>
         <span class="p">)</span>
         <span class="c1"># polling only works for shards, if there are none, polling will be ignored</span>
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'shards'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;shards&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">polling</span> <span class="o">=</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">needs</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">needs</span> <span class="ow">or</span> <span class="nb">set</span><span class="p">()</span>
@@ -784,7 +785,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Deployment.update_pod_args"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.update_pod_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Update args of all its pods based on Deployment args. Including head/tail"""</span>
+        <span class="sd">&quot;&quot;&quot;Update args of all its pods based on Deployment args. Including head/tail&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
             <span class="c1"># This is used when a Deployment is created in a remote context, where pods &amp; their connections are already given.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
@@ -792,110 +793,110 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Deployment.update_sandbox_args"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.update_sandbox_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_sandbox_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Update args of all its pods based on the host and port returned by Hubble"""</span>
+        <span class="sd">&quot;&quot;&quot;Update args of all its pods based on the host and port returned by Hubble&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sandbox</span><span class="p">:</span>
             <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">deploy_public_sandbox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sandbox_deployed</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span></div>
 
 <div class="viewcode-block" id="Deployment.update_worker_pod_args"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.update_worker_pod_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_worker_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Update args of all its worker pods based on Deployment args. Does not touch head and tail"""</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'pods'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
+        <span class="sd">&quot;&quot;&quot;Update args of all its worker pods based on Deployment args. Does not touch head and tail&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_sandbox</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if this deployment is a sandbox.</span>
 
 <span class="sd">        :return: True if this deployment is provided as a sandbox, False otherwise</span>
-<span class="sd">        """</span>
-        <span class="n">uses</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'uses'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
-        <span class="n">is_sandbox</span> <span class="o">=</span> <span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'jinahub+sandbox://'</span><span class="p">)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">uses</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;uses&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">is_sandbox</span> <span class="o">=</span> <span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;jinahub+sandbox://&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">is_sandbox</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tls_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks whether secure connection via tls is enabled for this Deployment.</span>
 
 <span class="sd">        :return: True if tls is enabled, False otherwise</span>
-<span class="sd">        """</span>
-        <span class="n">has_cert</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'ssl_certfile'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="n">has_key</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'ssl_keyfile'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="n">tls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'tls'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">has_cert</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;ssl_certfile&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">has_key</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;ssl_keyfile&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">tls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;tls&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">tls</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sandbox</span> <span class="ow">or</span> <span class="p">(</span><span class="n">has_cert</span> <span class="ow">and</span> <span class="n">has_key</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">external</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if this deployment is external.</span>
 
 <span class="sd">        :return: True if this deployment is provided as an external deployment, False otherwise</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'external'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sandbox</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;external&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sandbox</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: the protocol of this deployment</span>
-<span class="sd">        """</span>
-        <span class="n">protocol</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'protocol'</span><span class="p">,</span> <span class="s1">'grpc'</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s1">'s'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tls_enabled</span> <span class="k">else</span> <span class="s1">''</span><span class="p">)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">protocol</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;protocol&#39;</span><span class="p">,</span> <span class="s1">&#39;grpc&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;s&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tls_enabled</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">first_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">"""Return the first worker pod's args</span>
+        <span class="sd">&quot;&quot;&quot;Return the first worker pod&#39;s args</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># note this will be never out of boundary</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'pods'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">"""Get the host name of this deployment</span>
+        <span class="sd">&quot;&quot;&quot;Get the host name of this deployment</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">host</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :return: the port of this deployment</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ports</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">"""Returns a list of ports exposed by this Deployment.</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of ports exposed by this Deployment.</span>
 <span class="sd">        Exposed means these are the ports a Client/Gateway is supposed to communicate with.</span>
 <span class="sd">        For sharded deployments this will be the head_port.</span>
 <span class="sd">        For non sharded deployments it will be all replica ports</span>
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_port</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">head_port</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ports</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">replica</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'pods'</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">replica</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
                 <span class="n">ports</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">replica</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">ports</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dockerized_uses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""Checks if this Deployment uses a dockerized Executor</span>
+        <span class="sd">&quot;&quot;&quot;Checks if this Deployment uses a dockerized Executor</span>
 
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
-            <span class="s1">'jinahub+docker://'</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;docker://&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+            <span class="s1">&#39;jinahub+docker://&#39;</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_parse_args</span><span class="p">(</span>
@@ -905,79 +906,79 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">"""Get the arguments for the `head` of this Deployment.</span>
+        <span class="sd">&quot;&quot;&quot;Get the arguments for the `head` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span>
 
     <span class="nd">@head_args</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">head_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="sd">"""Set the arguments for the `head` of this Deployment.</span>
+        <span class="sd">&quot;&quot;&quot;Set the arguments for the `head` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR101</span>
-<span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">uses_before_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">"""Get the arguments for the `uses_before` of this Deployment.</span>
+        <span class="sd">&quot;&quot;&quot;Get the arguments for the `uses_before` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'uses_before'</span><span class="p">]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_before&#39;</span><span class="p">]</span>
 
     <span class="nd">@uses_before_args</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">uses_before_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="sd">"""Set the arguments for the `uses_before` of this Deployment.</span>
+        <span class="sd">&quot;&quot;&quot;Set the arguments for the `uses_before` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR101</span>
-<span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'uses_before'</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_before&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">uses_after_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Namespace</span><span class="p">:</span>
-        <span class="sd">"""Get the arguments for the `uses_after` of this Deployment.</span>
+        <span class="sd">&quot;&quot;&quot;Get the arguments for the `uses_after` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'uses_after'</span><span class="p">]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_after&#39;</span><span class="p">]</span>
 
     <span class="nd">@uses_after_args</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">uses_after_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="sd">"""Set the arguments for the `uses_after` of this Deployment.</span>
+        <span class="sd">&quot;&quot;&quot;Set the arguments for the `uses_after` of this Deployment.</span>
 
 
 <span class="sd">        .. # noqa: DAR101</span>
-<span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'uses_after'</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_after&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">all_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Namespace</span><span class="p">]:</span>
-        <span class="sd">"""Get all arguments of all Pods in this BaseDeployment.</span>
+        <span class="sd">&quot;&quot;&quot;Get all arguments of all Pods in this BaseDeployment.</span>
 
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">all_args</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'uses_before'</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'uses_before'</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
-            <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'uses_after'</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'uses_after'</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
-            <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
+            <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_before&#39;</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_before&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
+            <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_after&#39;</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_after&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
+            <span class="o">+</span> <span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="p">[])</span>
         <span class="p">)</span>
-        <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'pods'</span><span class="p">]:</span>
-            <span class="n">all_args</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'pods'</span><span class="p">][</span><span class="n">shard_id</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]:</span>
+            <span class="n">all_args</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">][</span><span class="n">shard_id</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">all_args</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">num_pods</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">"""Get the number of running :class:`Pod`</span>
+        <span class="sd">&quot;&quot;&quot;Get the number of running :class:`Pod`</span>
 
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">num_pods</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">num_pods</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -990,16 +991,16 @@
                 <span class="n">num_pods</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span><span class="o">.</span><span class="n">num_pods</span>
         <span class="k">return</span> <span class="n">num_pods</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">'BaseDeployment'</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s1">&#39;BaseDeployment&#39;</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_pods</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">num_pods</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span>
 
 <div class="viewcode-block" id="Deployment.activate"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.activate">[docs]</a>    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Activate all worker pods in this deployment by registering them with the head</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'pods'</span><span class="p">]:</span>
-                <span class="k">for</span> <span class="n">pod_idx</span><span class="p">,</span> <span class="n">pod_args</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'pods'</span><span class="p">][</span><span class="n">shard_id</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">pod_idx</span><span class="p">,</span> <span class="n">pod_args</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">][</span><span class="n">shard_id</span><span class="p">]):</span>
                     <span class="n">worker_host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_worker_host</span><span class="p">(</span>
                         <span class="n">pod_args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span><span class="o">.</span><span class="n">_pods</span><span class="p">[</span><span class="n">pod_idx</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span>
                     <span class="p">)</span>
@@ -1012,17 +1013,17 @@
 
 <div class="viewcode-block" id="Deployment.get_worker_host"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.get_worker_host">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_worker_host</span><span class="p">(</span><span class="n">pod_args</span><span class="p">,</span> <span class="n">pod</span><span class="p">,</span> <span class="n">head_pod</span><span class="p">):</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the current pod and head are both containerized on the same host</span>
-<span class="sd">        If so __docker_host__ needs to be advertised as the worker's address to the head</span>
+<span class="sd">        If so __docker_host__ needs to be advertised as the worker&#39;s address to the head</span>
 
 <span class="sd">        :param pod_args: arguments of the worker pod</span>
 <span class="sd">        :param pod: the worker pod</span>
 <span class="sd">        :param head_pod: head pod communicating with the worker pod</span>
 <span class="sd">        :return: host to use in activate messages</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Check if the current pod and head are both containerized on the same host</span>
-        <span class="c1"># If so __docker_host__ needs to be advertised as the worker's address to the head</span>
+        <span class="c1"># If so __docker_host__ needs to be advertised as the worker&#39;s address to the head</span>
         <span class="n">worker_host</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">__docker_host__</span>
             <span class="k">if</span> <span class="n">Deployment</span><span class="o">.</span><span class="n">_is_container_to_container</span><span class="p">(</span><span class="n">pod</span><span class="p">,</span> <span class="n">head_pod</span><span class="p">)</span>
@@ -1039,8 +1040,8 @@
             <span class="nb">type</span><span class="p">(</span><span class="n">head_pod</span><span class="p">)</span> <span class="o">==</span> <span class="n">ContainerPod</span> <span class="ow">or</span> <span class="n">in_docker</span><span class="p">()</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="Deployment.start"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'Deployment'</span><span class="p">:</span>
-        <span class="sd">"""</span>
+<div class="viewcode-block" id="Deployment.start"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Deployment&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start to run all :class:`Pod` in this BaseDeployment.</span>
 
 <span class="sd">        :return: started deployment</span>
@@ -1048,48 +1049,48 @@
 <span class="sd">        .. note::</span>
 <span class="sd">            If one of the :class:`Pod` fails to start, make sure that all of them</span>
 <span class="sd">            are properly closed.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sandbox</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sandbox_deployed</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_sandbox_args</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'uses_before'</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'uses_before'</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'noblock_on_start'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_before&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_before&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;noblock_on_start&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                 <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'uses_after'</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'uses_after'</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'noblock_on_start'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_after&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;uses_after&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;noblock_on_start&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                 <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'noblock_on_start'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;noblock_on_start&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                 <span class="n">_args</span><span class="o">.</span><span class="n">noblock_on_start</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="o">=</span> <span class="n">PodFactory</span><span class="o">.</span><span class="n">build_pod</span><span class="p">(</span><span class="n">_args</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'pods'</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ReplicaSet</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'pods'</span><span class="p">][</span><span class="n">shard_id</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">][</span><span class="n">shard_id</span><span class="p">],</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shards</span><span class="p">[</span><span class="n">shard_id</span><span class="p">])</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">'noblock_on_start'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;noblock_on_start&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">activate</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Deployment.wait_start_success"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.wait_start_success">[docs]</a>    <span class="k">def</span> <span class="nf">wait_start_success</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""Block until all pods starts successfully.</span>
+        <span class="sd">&quot;&quot;&quot;Block until all pods starts successfully.</span>
 
 <span class="sd">        If not successful, it will raise an error hoping the outer function to catch it</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">noblock_on_start</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">wait_start_success</span><span class="si">!r}</span><span class="s1"> should only be called when `noblock_on_start` is set to True'</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">wait_start_success</span><span class="si">!r}</span><span class="s1"> should only be called when `noblock_on_start` is set to True&#39;</span>
             <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1106,7 +1107,7 @@
             <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="Deployment.join"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Wait until all pods exit"""</span>
+        <span class="sd">&quot;&quot;&quot;Wait until all pods exit&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_pod</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
@@ -1127,14 +1128,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">"""Checks if Deployment is ready</span>
+        <span class="sd">&quot;&quot;&quot;Checks if Deployment is ready</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            A Deployment is ready when all the Pods it contains are ready</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">is_ready</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">is_ready</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span><span class="o">.</span><span class="n">is_ready</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
@@ -1149,16 +1150,16 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_parse_slice</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">"""Parses a `slice()` from string, like `start:stop:step`.</span>
+        <span class="sd">&quot;&quot;&quot;Parses a `slice()` from string, like `start:stop:step`.</span>
 
 <span class="sd">        :param value: a string like</span>
 <span class="sd">        :return: slice</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">WRAPPED_SLICE_BASE</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
-            <span class="n">parts</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">)</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="c1"># slice(stop)</span>
                 <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
@@ -1170,24 +1171,24 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_roundrobin_cuda_device</span><span class="p">(</span><span class="n">device_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="sd">"""Parse cuda device string with RR prefix</span>
+        <span class="sd">&quot;&quot;&quot;Parse cuda device string with RR prefix</span>
 
 <span class="sd">        :param device_str: `RRm:n`, where `RR` is the prefix, m:n is python slice format</span>
 <span class="sd">        :param replicas: the number of replicas</span>
 <span class="sd">        :return: a map from replica id to device id</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">device_str</span>
             <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">device_str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="n">device_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'RR'</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">device_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;RR&#39;</span><span class="p">)</span>
             <span class="ow">and</span> <span class="n">replicas</span> <span class="o">&gt;=</span> <span class="mi">1</span>
         <span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">num_devices</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">'nvidia-smi'</span><span class="p">,</span> <span class="s1">'-L'</span><span class="p">]))</span><span class="o">.</span><span class="n">count</span><span class="p">(</span>
-                    <span class="s1">'UUID'</span>
+                <span class="n">num_devices</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s1">&#39;nvidia-smi&#39;</span><span class="p">,</span> <span class="s1">&#39;-L&#39;</span><span class="p">]))</span><span class="o">.</span><span class="n">count</span><span class="p">(</span>
+                    <span class="s1">&#39;UUID&#39;</span>
                 <span class="p">)</span>
             <span class="k">except</span><span class="p">:</span>
-                <span class="n">num_devices</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'CUDA_TOTAL_DEVICES'</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+                <span class="n">num_devices</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CUDA_TOTAL_DEVICES&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">num_devices</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">return</span>
 
@@ -1206,7 +1207,7 @@
         <span class="n">cuda_device_map</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="p">:</span>
             <span class="n">cuda_device_map</span> <span class="o">=</span> <span class="n">Deployment</span><span class="o">.</span><span class="n">_roundrobin_cuda_device</span><span class="p">(</span>
-                <span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'CUDA_VISIBLE_DEVICES'</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">replicas</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CUDA_VISIBLE_DEVICES&#39;</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">replicas</span>
             <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">shard_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">shards</span><span class="p">):</span>
@@ -1217,17 +1218,17 @@
                 <span class="n">_args</span><span class="o">.</span><span class="n">pod_role</span> <span class="o">=</span> <span class="n">PodRoleType</span><span class="o">.</span><span class="n">WORKER</span>
 
                 <span class="k">if</span> <span class="n">cuda_device_map</span><span class="p">:</span>
-                    <span class="n">_args</span><span class="o">.</span><span class="n">env</span><span class="p">[</span><span class="s1">'CUDA_VISIBLE_DEVICES'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cuda_device_map</span><span class="p">[</span><span class="n">replica_id</span><span class="p">])</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">env</span><span class="p">[</span><span class="s1">&#39;CUDA_VISIBLE_DEVICES&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cuda_device_map</span><span class="p">[</span><span class="n">replica_id</span><span class="p">])</span>
 
                 <span class="n">_args</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">host</span>
                 <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">name</span> <span class="o">+=</span> <span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'/shard-</span><span class="si">{</span><span class="n">shard_id</span><span class="si">}</span><span class="s1">/rep-</span><span class="si">{</span><span class="n">replica_id</span><span class="si">}</span><span class="s1">'</span>
+                        <span class="sa">f</span><span class="s1">&#39;/shard-</span><span class="si">{</span><span class="n">shard_id</span><span class="si">}</span><span class="s1">/rep-</span><span class="si">{</span><span class="n">replica_id</span><span class="si">}</span><span class="s1">&#39;</span>
                         <span class="k">if</span> <span class="n">sharding_enabled</span>
-                        <span class="k">else</span> <span class="sa">f</span><span class="s1">'/rep-</span><span class="si">{</span><span class="n">replica_id</span><span class="si">}</span><span class="s1">'</span>
+                        <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;/rep-</span><span class="si">{</span><span class="n">replica_id</span><span class="si">}</span><span class="s1">&#39;</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">replica_id</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">replica_id</span><span class="si">}</span><span class="s1">&#39;</span>
 
                 <span class="c1"># the gateway needs to respect the assigned port</span>
                 <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">deployment_role</span> <span class="o">==</span> <span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">GATEWAY</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
@@ -1256,19 +1257,19 @@
         <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">_args</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-            <span class="n">_args</span><span class="o">.</span><span class="n">name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'/</span><span class="si">{</span><span class="n">entity_type</span><span class="si">}</span><span class="s1">-0'</span>
+            <span class="n">_args</span><span class="o">.</span><span class="n">name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;/</span><span class="si">{</span><span class="n">entity_type</span><span class="si">}</span><span class="s1">-0&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">entity_type</span><span class="si">}</span><span class="s1">-0'</span>
+            <span class="n">_args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">entity_type</span><span class="si">}</span><span class="s1">-0&#39;</span>
 
-        <span class="k">if</span> <span class="s1">'uses_before'</span> <span class="o">==</span> <span class="n">entity_type</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;uses_before&#39;</span> <span class="o">==</span> <span class="n">entity_type</span><span class="p">:</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">uses_requests</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">uses_before</span> <span class="ow">or</span> <span class="n">__default_executor__</span>
-        <span class="k">elif</span> <span class="s1">'uses_after'</span> <span class="o">==</span> <span class="n">entity_type</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="s1">&#39;uses_after&#39;</span> <span class="o">==</span> <span class="n">entity_type</span><span class="p">:</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">uses_requests</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">_args</span><span class="o">.</span><span class="n">uses</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">uses_after</span> <span class="ow">or</span> <span class="n">__default_executor__</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'uses_before/uses_after pod does not support type </span><span class="si">{</span><span class="n">entity_type</span><span class="si">}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">&#39;uses_before/uses_after pod does not support type </span><span class="si">{</span><span class="n">entity_type</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="p">)</span>
 
         <span class="c1"># pod workspace if not set then derive from workspace</span>
@@ -1278,55 +1279,55 @@
 
     <span class="k">def</span> <span class="nf">_parse_base_deployment_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
         <span class="n">parsed_args</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">'head'</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s1">'uses_before'</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s1">'uses_after'</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s1">'pods'</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">&#39;head&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;uses_before&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;uses_after&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;pods&#39;</span><span class="p">:</span> <span class="p">{},</span>
         <span class="p">}</span>
 
         <span class="c1"># a gateway has no heads and uses</span>
         <span class="c1"># also there a no heads created, if there are no shards</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="o">!=</span> <span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">GATEWAY</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'shards'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="o">!=</span> <span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">GATEWAY</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;shards&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'uses_before'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;uses_before&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                 <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">uses_before</span> <span class="o">!=</span> <span class="n">__default_executor__</span>
             <span class="p">):</span>
                 <span class="n">uses_before_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_uses_before_after_args</span><span class="p">(</span>
-                    <span class="n">args</span><span class="p">,</span> <span class="n">entity_type</span><span class="o">=</span><span class="s1">'uses_before'</span>
+                    <span class="n">args</span><span class="p">,</span> <span class="n">entity_type</span><span class="o">=</span><span class="s1">&#39;uses_before&#39;</span>
                 <span class="p">)</span>
-                <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'uses_before'</span><span class="p">]</span> <span class="o">=</span> <span class="n">uses_before_args</span>
+                <span class="n">parsed_args</span><span class="p">[</span><span class="s1">&#39;uses_before&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uses_before_args</span>
                 <span class="n">args</span><span class="o">.</span><span class="n">uses_before_address</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uses_before_args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_before_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">uses_before_args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_before_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">'uses_after'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s1">&#39;uses_after&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                 <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">uses_after</span> <span class="o">!=</span> <span class="n">__default_executor__</span>
             <span class="p">):</span>
                 <span class="n">uses_after_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_uses_before_after_args</span><span class="p">(</span>
-                    <span class="n">args</span><span class="p">,</span> <span class="n">entity_type</span><span class="o">=</span><span class="s1">'uses_after'</span>
+                    <span class="n">args</span><span class="p">,</span> <span class="n">entity_type</span><span class="o">=</span><span class="s1">&#39;uses_after&#39;</span>
                 <span class="p">)</span>
-                <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'uses_after'</span><span class="p">]</span> <span class="o">=</span> <span class="n">uses_after_args</span>
+                <span class="n">parsed_args</span><span class="p">[</span><span class="s1">&#39;uses_after&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uses_after_args</span>
                 <span class="n">args</span><span class="o">.</span><span class="n">uses_after_address</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">uses_after_args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_after_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">uses_after_args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">uses_after_args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="p">)</span>
 
-            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'head'</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseDeployment</span><span class="o">.</span><span class="n">_copy_to_head_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-        <span class="n">parsed_args</span><span class="p">[</span><span class="s1">'pods'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_pod_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">parsed_args</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseDeployment</span><span class="o">.</span><span class="n">_copy_to_head_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">parsed_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_pod_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">parsed_args</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_mermaid_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">"""String that will be used to represent the Deployment graphically when `Flow.plot()` is invoked.</span>
+        <span class="sd">&quot;&quot;&quot;String that will be used to represent the Deployment graphically when `Flow.plot()` is invoked.</span>
 <span class="sd">        It does not include used_before/uses_after</span>
 
 
 <span class="sd">        .. # noqa: DAR201</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mermaid_graph</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">secret</span> <span class="o">=</span> <span class="s1">'&amp;ltsecret&amp;gt'</span>
+        <span class="n">secret</span> <span class="o">=</span> <span class="s1">&#39;&amp;ltsecret&amp;gt&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="o">!=</span> <span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">GATEWAY</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
-            <span class="n">mermaid_graph</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'subgraph </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">;'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1">direction LR;</span><span class="se">\n</span><span class="s1">'</span><span class="p">]</span>
+            <span class="n">mermaid_graph</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;subgraph </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">;&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">direction LR;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">]</span>
 
             <span class="n">uses_before_name</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">uses_before_args</span><span class="o">.</span><span class="n">name</span>
@@ -1347,60 +1348,60 @@
                 <span class="k">else</span> <span class="kc">None</span>
             <span class="p">)</span>
             <span class="n">shard_names</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'pods'</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="c1"># multiple shards</span>
-                <span class="k">for</span> <span class="n">shard_id</span><span class="p">,</span> <span class="n">pod_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'pods'</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">shard_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/shard-</span><span class="si">{</span><span class="n">shard_id</span><span class="si">}</span><span class="s1">'</span>
+                <span class="k">for</span> <span class="n">shard_id</span><span class="p">,</span> <span class="n">pod_args</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">shard_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/shard-</span><span class="si">{</span><span class="n">shard_id</span><span class="si">}</span><span class="s1">&#39;</span>
                     <span class="n">shard_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shard_name</span><span class="p">)</span>
                     <span class="n">shard_mermaid_graph</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="sa">f</span><span class="s1">'subgraph </span><span class="si">{</span><span class="n">shard_name</span><span class="si">}</span><span class="s1">;'</span><span class="p">,</span>
-                        <span class="sa">f</span><span class="s1">'</span><span class="se">\n</span><span class="s1">direction TB;</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s1">&#39;subgraph </span><span class="si">{</span><span class="n">shard_name</span><span class="si">}</span><span class="s1">;&#39;</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">direction TB;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
                     <span class="p">]</span>
                     <span class="n">names</span> <span class="o">=</span> <span class="p">[</span>
                         <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">pod_args</span>
                     <span class="p">]</span>  <span class="c1"># all the names of each of the replicas</span>
                     <span class="n">uses</span> <span class="o">=</span> <span class="p">[</span>
                         <span class="n">args</span><span class="o">.</span><span class="n">uses</span> <span class="k">for</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">pod_args</span>
-                    <span class="p">]</span>  <span class="c1"># all the uses should be the same but let's keep it this</span>
+                    <span class="p">]</span>  <span class="c1"># all the uses should be the same but let&#39;s keep it this</span>
                     <span class="c1"># way</span>
                     <span class="k">for</span> <span class="n">rep_i</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">use</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">uses</span><span class="p">)):</span>
-                        <span class="n">escaped_uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">use</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">"'</span>
-                        <span class="n">shard_mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">[</span><span class="si">{</span><span class="n">escaped_uses</span><span class="si">}</span><span class="s1">]:::pod;'</span><span class="p">)</span>
-                    <span class="n">shard_mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'end;'</span><span class="p">)</span>
+                        <span class="n">escaped_uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">use</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+                        <span class="n">shard_mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">[</span><span class="si">{</span><span class="n">escaped_uses</span><span class="si">}</span><span class="s1">]:::pod;&#39;</span><span class="p">)</span>
+                    <span class="n">shard_mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;end;&#39;</span><span class="p">)</span>
                     <span class="n">shard_mermaid_graph</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="n">node</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">';'</span><span class="p">,</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">shard_mermaid_graph</span>
+                        <span class="n">node</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">shard_mermaid_graph</span>
                     <span class="p">]</span>
                     <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">shard_mermaid_graph</span><span class="p">)</span>
-                    <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+                    <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">uses_before_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">shard_name</span> <span class="ow">in</span> <span class="n">shard_names</span><span class="p">:</span>
                         <span class="n">escaped_uses_before_uses</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">uses_before_uses</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">"'</span>
+                            <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">uses_before_uses</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
                         <span class="p">)</span>
                         <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">-head[</span><span class="si">{</span><span class="n">escaped_uses_before_uses</span><span class="si">}</span><span class="s1">]:::HEADTAIL --&gt; </span><span class="si">{</span><span class="n">shard_name</span><span class="si">}</span><span class="s1">;'</span>
+                            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">-head[</span><span class="si">{</span><span class="n">escaped_uses_before_uses</span><span class="si">}</span><span class="s1">]:::HEADTAIL --&gt; </span><span class="si">{</span><span class="n">shard_name</span><span class="si">}</span><span class="s1">;&#39;</span>
                         <span class="p">)</span>
                 <span class="k">if</span> <span class="n">uses_after_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">shard_name</span> <span class="ow">in</span> <span class="n">shard_names</span><span class="p">:</span>
-                        <span class="n">escaped_uses_after_uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">uses_after_uses</span><span class="si">}</span><span class="s1">"'</span>
+                        <span class="n">escaped_uses_after_uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">uses_after_uses</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
                         <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">shard_name</span><span class="si">}</span><span class="s1"> --&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">-tail[</span><span class="si">{</span><span class="n">escaped_uses_after_uses</span><span class="si">}</span><span class="s1">]:::HEADTAIL;'</span>
+                            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">shard_name</span><span class="si">}</span><span class="s1"> --&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">-tail[</span><span class="si">{</span><span class="n">escaped_uses_after_uses</span><span class="si">}</span><span class="s1">]:::HEADTAIL;&#39;</span>
                         <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># single shard case, no uses_before or uses_after_considered</span>
-                <span class="n">pod_args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">'pods'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">pod_args</span><span class="o">.</span><span class="n">uses</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">"'</span>
+                <span class="n">pod_args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">uses</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">replace_secret_of_hub_uri</span><span class="p">(</span><span class="n">pod_args</span><span class="o">.</span><span class="n">uses</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
 
                 <span class="c1"># just put the replicas in parallel</span>
                 <span class="k">if</span> <span class="n">pod_args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">rep_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pod_args</span><span class="o">.</span><span class="n">replicas</span><span class="p">):</span>
                         <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">pod_args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/rep-</span><span class="si">{</span><span class="n">rep_i</span><span class="si">}</span><span class="s1">["</span><span class="si">{</span><span class="n">uses</span><span class="si">}</span><span class="s1">"]:::pod;'</span>
+                            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">pod_args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/rep-</span><span class="si">{</span><span class="n">rep_i</span><span class="si">}</span><span class="s1">[&quot;</span><span class="si">{</span><span class="n">uses</span><span class="si">}</span><span class="s1">&quot;]:::pod;&#39;</span>
                         <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">pod_args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">["</span><span class="si">{</span><span class="n">uses</span><span class="si">}</span><span class="s1">"]:::pod;'</span><span class="p">)</span>
+                    <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">pod_args</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">[&quot;</span><span class="si">{</span><span class="n">uses</span><span class="si">}</span><span class="s1">&quot;]:::pod;&#39;</span><span class="p">)</span>
 
-            <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'end;'</span><span class="p">)</span>
+            <span class="n">mermaid_graph</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;end;&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mermaid_graph</span></div>
 </pre></div>
                 </article>
@@ -1461,7 +1462,7 @@
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/scripts/main.js"></script>
+    <script src="../../../../_static/scripts/furo.js"></script>
     <script src="../../../../_static/clipboard.min.js"></script>
     <script src="../../../../_static/copybutton.js"></script>
     <script src="../../../../_static/tabs.js"></script>

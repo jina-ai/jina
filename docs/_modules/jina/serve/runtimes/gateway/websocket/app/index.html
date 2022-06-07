@@ -3,15 +3,16 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/websocket/app.html" />
 
-    <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.serve.runtimes.gateway.websocket.app - Jina 3.5.0 documentation</title>
+    <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+        <title>jina.serve.runtimes.gateway.websocket.app - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -27,24 +28,27 @@
   --color-brand-content: #009191;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FBCB67;
-  --color-brand-content: #FBCB67;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   --color-brand-primary: #FBCB67;
   --color-brand-content: #FBCB67;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
@@ -53,17 +57,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -72,14 +72,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -94,7 +94,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -102,7 +102,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../../">
-                <div class="brand">Jina 3.5.0 documentation</div>
+                <div class="brand">Jina 3.5.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -488,6 +488,7 @@
 </div>
 
 </div>
+
             </div>
             
         </div>
@@ -546,20 +547,20 @@
 
 
 <span class="k">def</span> <span class="nf">_fits_ws_close_msg</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="c1"># Websocket close messages ('reasons') can't exceed 123 bytes:</span>
+    <span class="c1"># Websocket close messages (&#39;reasons&#39;) can&#39;t exceed 123 bytes:</span>
     <span class="c1"># https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/close</span>
     <span class="n">ws_closing_msg_max_len</span> <span class="o">=</span> <span class="mi">123</span>
-    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="n">ws_closing_msg_max_len</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="n">ws_closing_msg_max_len</span>
 
 
 <div class="viewcode-block" id="get_fastapi_app"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.websocket.app/#jina.serve.runtimes.gateway.websocket.app.get_fastapi_app">[docs]</a><span class="k">def</span> <span class="nf">get_fastapi_app</span><span class="p">(</span>
-    <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span>
-    <span class="n">topology_graph</span><span class="p">:</span> <span class="s1">'TopologyGraph'</span><span class="p">,</span>
-    <span class="n">connection_pool</span><span class="p">:</span> <span class="s1">'GrpcConnectionPool'</span><span class="p">,</span>
-    <span class="n">logger</span><span class="p">:</span> <span class="s1">'JinaLogger'</span><span class="p">,</span>
-    <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">'CollectorRegistry'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">,</span>
+    <span class="n">topology_graph</span><span class="p">:</span> <span class="s1">&#39;TopologyGraph&#39;</span><span class="p">,</span>
+    <span class="n">connection_pool</span><span class="p">:</span> <span class="s1">&#39;GrpcConnectionPool&#39;</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
+    <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CollectorRegistry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">"""</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the app from FastAPI as the Websocket interface.</span>
 
 <span class="sd">    :param args: passed arguments.</span>
@@ -568,7 +569,7 @@
 <span class="sd">    :param logger: Jina logger.</span>
 <span class="sd">    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler</span>
 <span class="sd">    :return: fastapi app</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.models</span> <span class="kn">import</span> <span class="n">JinaEndpointRequestModel</span>
 
@@ -581,36 +582,36 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">protocol_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">WebsocketSubProtocols</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">def</span> <span class="nf">get_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
 
         <span class="k">def</span> <span class="nf">get_subprotocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s1">'sec-websocket-protocol'</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;sec-websocket-protocol&#39;</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
                     <span class="n">subprotocol</span> <span class="o">=</span> <span class="n">WebsocketSubProtocols</span><span class="p">(</span>
-                        <span class="n">headers</span><span class="p">[</span><span class="s1">'sec-websocket-protocol'</span><span class="p">]</span>
+                        <span class="n">headers</span><span class="p">[</span><span class="s1">&#39;sec-websocket-protocol&#39;</span><span class="p">]</span>
                     <span class="p">)</span>
-                <span class="k">elif</span> <span class="sa">b</span><span class="s1">'sec-websocket-protocol'</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="sa">b</span><span class="s1">&#39;sec-websocket-protocol&#39;</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">:</span>
                     <span class="n">subprotocol</span> <span class="o">=</span> <span class="n">WebsocketSubProtocols</span><span class="p">(</span>
-                        <span class="n">headers</span><span class="p">[</span><span class="sa">b</span><span class="s1">'sec-websocket-protocol'</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+                        <span class="n">headers</span><span class="p">[</span><span class="sa">b</span><span class="s1">&#39;sec-websocket-protocol&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">subprotocol</span> <span class="o">=</span> <span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">JSON</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">'no protocol headers passed. Choosing default subprotocol </span><span class="si">{</span><span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">JSON</span><span class="si">}</span><span class="s1">'</span>
+                        <span class="sa">f</span><span class="s1">&#39;no protocol headers passed. Choosing default subprotocol </span><span class="si">{</span><span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">JSON</span><span class="si">}</span><span class="s1">&#39;</span>
                     <span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'got an exception while setting user</span><span class="se">\'</span><span class="s1">s subprotocol, defaulting to JSON </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">&#39;got an exception while setting user</span><span class="se">\&#39;</span><span class="s1">s subprotocol, defaulting to JSON </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="p">)</span>
                 <span class="n">subprotocol</span> <span class="o">=</span> <span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">JSON</span>
             <span class="k">return</span> <span class="n">subprotocol</span>
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">):</span>
             <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-            <span class="n">subprotocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subprotocol</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">websocket</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s1">'headers'</span><span class="p">]))</span>
+            <span class="n">subprotocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subprotocol</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">websocket</span><span class="o">.</span><span class="n">scope</span><span class="p">[</span><span class="s1">&#39;headers&#39;</span><span class="p">]))</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'client </span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1"> connected '</span>
-                <span class="sa">f</span><span class="s1">'with subprotocol </span><span class="si">{</span><span class="n">subprotocol</span><span class="si">}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">&#39;client </span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1"> connected &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;with subprotocol </span><span class="si">{</span><span class="n">subprotocol</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">active_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">protocol_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">(</span><span class="n">websocket</span><span class="p">)]</span> <span class="o">=</span> <span class="n">subprotocol</span>
@@ -622,7 +623,7 @@
         <span class="k">async</span> <span class="k">def</span> <span class="nf">receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
             <span class="n">subprotocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">(</span><span class="n">websocket</span><span class="p">)]</span>
             <span class="k">if</span> <span class="n">subprotocol</span> <span class="o">==</span> <span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">JSON</span><span class="p">:</span>
-                <span class="k">return</span> <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">receive_json</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">'text'</span><span class="p">)</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">receive_json</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">subprotocol</span> <span class="o">==</span> <span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">BYTES</span><span class="p">:</span>
                 <span class="k">return</span> <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">receive_bytes</span><span class="p">()</span>
 
@@ -636,7 +637,7 @@
         <span class="k">async</span> <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">subprotocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">(</span><span class="n">websocket</span><span class="p">)]</span>
             <span class="k">if</span> <span class="n">subprotocol</span> <span class="o">==</span> <span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">JSON</span><span class="p">:</span>
-                <span class="k">return</span> <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send_json</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'text'</span><span class="p">)</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send_json</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">subprotocol</span> <span class="o">==</span> <span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">BYTES</span><span class="p">:</span>
                 <span class="k">return</span> <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send_bytes</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">())</span>
 
@@ -660,25 +661,25 @@
     <span class="n">streamer</span><span class="o">.</span><span class="n">Call</span> <span class="o">=</span> <span class="n">streamer</span><span class="o">.</span><span class="n">stream</span>
 
     <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">path</span><span class="o">=</span><span class="s1">'/'</span><span class="p">,</span>
-        <span class="n">summary</span><span class="o">=</span><span class="s1">'Get the health of Jina service'</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span>
+        <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Get the health of Jina service&#39;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_health</span><span class="p">():</span>
-        <span class="sd">"""</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the health of this Jina service.</span>
 <span class="sd">        .. # noqa: DAR201</span>
 
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{}</span>
 
-    <span class="nd">@app</span><span class="o">.</span><span class="n">on_event</span><span class="p">(</span><span class="s1">'shutdown'</span><span class="p">)</span>
+    <span class="nd">@app</span><span class="o">.</span><span class="n">on_event</span><span class="p">(</span><span class="s1">&#39;shutdown&#39;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_shutdown</span><span class="p">():</span>
         <span class="k">await</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    <span class="nd">@app</span><span class="o">.</span><span class="n">websocket</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)</span>
+    <span class="nd">@app</span><span class="o">.</span><span class="n">websocket</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">websocket_endpoint</span><span class="p">(</span>
         <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span>
-    <span class="p">):</span>  <span class="c1"># 'response' is a FastAPI response, not a Jina response</span>
+    <span class="p">):</span>  <span class="c1"># &#39;response&#39; is a FastAPI response, not a Jina response</span>
         <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">req_iter</span><span class="p">():</span>
@@ -689,13 +690,13 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># NOTE: Helps in converting camelCase to snake_case</span>
                         <span class="n">req_generator_input</span> <span class="o">=</span> <span class="n">JinaEndpointRequestModel</span><span class="p">(</span><span class="o">**</span><span class="n">request</span><span class="p">)</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
-                        <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">'data_type'</span><span class="p">]</span> <span class="o">=</span> <span class="n">DataInputType</span><span class="o">.</span><span class="n">DICT</span>
-                        <span class="k">if</span> <span class="n">request</span><span class="p">[</span><span class="s1">'data'</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">'docs'</span> <span class="ow">in</span> <span class="n">request</span><span class="p">[</span><span class="s1">'data'</span><span class="p">]:</span>
-                            <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">'data'</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">'data'</span><span class="p">][</span>
-                                <span class="s1">'docs'</span>
+                        <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">&#39;data_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DataInputType</span><span class="o">.</span><span class="n">DICT</span>
+                        <span class="k">if</span> <span class="n">request</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">&#39;docs&#39;</span> <span class="ow">in</span> <span class="n">request</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]:</span>
+                            <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_generator_input</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span>
+                                <span class="s1">&#39;docs&#39;</span>
                             <span class="p">]</span>
 
-                        <span class="c1"># you can't do `yield from` inside an async function</span>
+                        <span class="c1"># you can&#39;t do `yield from` inside an async function</span>
                         <span class="k">for</span> <span class="n">data_request</span> <span class="ow">in</span> <span class="n">request_generator</span><span class="p">(</span><span class="o">**</span><span class="n">req_generator_input</span><span class="p">):</span>
                             <span class="k">yield</span> <span class="n">data_request</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
@@ -712,11 +713,11 @@
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">_fits_ws_close_msg</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">())</span>  <span class="c1"># some messages are too long</span>
-                <span class="k">else</span> <span class="sa">f</span><span class="s1">'Network error while connecting to deployment at </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1">. It may be down.'</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;Network error while connecting to deployment at </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1">. It may be down.&#39;</span>
             <span class="p">)</span>
             <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">WS_1011_INTERNAL_ERROR</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">WebSocketDisconnect</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Client successfully disconnected from server'</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Client successfully disconnected from server&#39;</span><span class="p">)</span>
             <span class="n">manager</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">app</span></div>
@@ -779,7 +780,7 @@
     <script src="../../../../../../../_static/jquery.js"></script>
     <script src="../../../../../../../_static/underscore.js"></script>
     <script src="../../../../../../../_static/doctools.js"></script>
-    <script src="../../../../../../../_static/scripts/main.js"></script>
+    <script src="../../../../../../../_static/scripts/furo.js"></script>
     <script src="../../../../../../../_static/clipboard.min.js"></script>
     <script src="../../../../../../../_static/copybutton.js"></script>
     <script src="../../../../../../../_static/tabs.js"></script>

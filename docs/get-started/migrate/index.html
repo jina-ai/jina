@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/get-started/migrate/" />
   
-<meta property="og:site_name" content="Jina 3.5.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.5.1 Documentation" />
   
 <meta property="og:description" content="Jina 3 comes with many improvements but to be able to enjoy them, you will also have to make some tweaks to your existing Jina 2 code. One of the major changes in Jina 3 is DocArray being an external dependency: The previously included Document and DocumentArray data structures now form their own..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.5.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.5.1 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -36,15 +36,16 @@
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="prev" title="Protocol Documentation" href="../../proto/docs/" />
+        <link rel="canonical" href="https://docs.jina.ai/get-started/migrate.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>Migrate Jina 2 to Jina 3 - Jina 3.5.0 documentation</title>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+        <title>Migrate Jina 2 to Jina 3 - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -60,24 +61,27 @@
   --color-brand-content: #009191;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FBCB67;
-  --color-brand-content: #FBCB67;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   --color-brand-primary: #FBCB67;
   --color-brand-content: #FBCB67;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
@@ -86,17 +90,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -105,14 +105,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -127,7 +127,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -135,7 +135,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.5.0 documentation</div>
+                <div class="brand">Jina 3.5.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -521,6 +521,7 @@
 </div>
 
 </div>
+
             </div>
             
         </div>
@@ -560,7 +561,7 @@
                 </div>
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="migrate-jina-2-to-jina-3">
-<h1>Migrate Jina 2 to Jina 3<a class="headerlink" href="#migrate-jina-2-to-jina-3" title="Permalink to this headline">¶</a></h1>
+<h1>Migrate Jina 2 to Jina 3<a class="headerlink" href="#migrate-jina-2-to-jina-3" title="Permalink to this headline">#</a></h1>
 <p>Jina 3 comes with many improvements but to be able to enjoy them, you will also have to make some
 tweaks to your existing Jina 2 code.</p>
 <p>One of the major changes in Jina 3 is <a class="reference external" href="https://docarray.jina.ai/">DocArray</a> being an external dependency:
@@ -577,10 +578,10 @@ underpin neural search apps as well as the Jina ecosystem, including <a class="r
 <p>In general, the breaking changes are aiming for increased simplicity and consistency, making your life easier in the
 long run. Here you can find out what exactly you will have to adapt.</p>
 <section id="simple-changes-at-a-glance">
-<h2>Simple changes at a glance<a class="headerlink" href="#simple-changes-at-a-glance" title="Permalink to this headline">¶</a></h2>
+<h2>Simple changes at a glance<a class="headerlink" href="#simple-changes-at-a-glance" title="Permalink to this headline">#</a></h2>
 <p>Many of the changes introduced in Jina 3 are easily adapted to a Jina 2 codebase.
 The modifications in the following table should, in most cases, be safe to perform without further thought or effort.</p>
-<div class="table-wrapper"><table border="1" class="docutils">
+<table border="1" class="docutils">
 <thead>
 <tr>
 <th>Jina 2</th>
@@ -625,12 +626,12 @@ The modifications in the following table should, in most cases, be safe to perfo
 <td><code>from docarray import Document, DocumentArray</code></td>
 </tr>
 </tbody>
-</table></div>
+</table>
 <p>There are, however, some more nuanced changes in Jina 3 as well.
 These are outlined below.</p>
 </section>
 <section id="document-more-natural-attribute-names-and-pythonic-serialization">
-<h2>Document: More natural attribute names and Pythonic serialization<a class="headerlink" href="#document-more-natural-attribute-names-and-pythonic-serialization" title="Permalink to this headline">¶</a></h2>
+<h2>Document: More natural attribute names and Pythonic serialization<a class="headerlink" href="#document-more-natural-attribute-names-and-pythonic-serialization" title="Permalink to this headline">#</a></h2>
 <p>Docarray introduces more natural naming conventions for <code class="docutils literal notranslate"><span class="pre">Document</span></code> and <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> attributes.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">doc.blob</span></code> is renamed to <code class="docutils literal notranslate"><span class="pre">doc.tensor</span></code>, to align with external libraries like PyTorch and Tensorflow</p></li>
@@ -641,7 +642,7 @@ These are outlined below.</p>
 </ul>
 </section>
 <section id="documentarray-simplified-attribute-element-access-and-new-storage-options">
-<h2>DocumentArray: Simplified attribute, element access and new storage options<a class="headerlink" href="#documentarray-simplified-attribute-element-access-and-new-storage-options" title="Permalink to this headline">¶</a></h2>
+<h2>DocumentArray: Simplified attribute, element access and new storage options<a class="headerlink" href="#documentarray-simplified-attribute-element-access-and-new-storage-options" title="Permalink to this headline">#</a></h2>
 <div class="seealso admonition">
 <p class="admonition-title">DocArray library</p>
 <p>Take a look at the <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/access-attributes/">DocArray documentation</a>
@@ -666,44 +667,44 @@ Additionally, you can access a specific key in <code class="docutils literal not
 <ul class="simple">
 <li><p>Traversal paths of the form <code class="docutils literal notranslate"><span class="pre">[path1,</span> <span class="pre">path2]</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">['r',</span> <span class="pre">'cm']</span></code>) are replaced by a single string of the form
 <code class="docutils literal notranslate"><span class="pre">'path1,path2'</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">'r,cm'</span></code>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">docs.traverse_flat(path)</span></code> is replaced by <code class="docutils literal notranslate"><span class="pre">docs['@path']</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">docs['@r,cm']</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs.traverse_flat(path)</span></code> is replaced by <code class="docutils literal notranslate"><span class="pre">docs['&#64;path']</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">docs['&#64;r,cm']</span></code>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">docs.flatten()</span></code> is replaced by <code class="docutils literal notranslate"><span class="pre">docs[...]</span></code></p></li>
 </ul>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--1">Jina 2</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Jina 2</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="n">docs</span> <span class="o">=</span> <span class="n">nested_docs</span><span class="p">()</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">traverse_flat</span><span class="p">(</span><span class="s1">'r,c'</span><span class="p">)</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">traverse_flat</span><span class="p">(</span><span class="s1">&#39;r,c&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">'root1'</span><span class="p">,</span> <span class="s1">'rooot2'</span><span class="p">,</span> <span class="s1">'chunk11'</span><span class="p">,</span> <span class="s1">'chunk12'</span><span class="p">,</span> <span class="s1">'chunk21'</span><span class="p">,</span> <span class="s1">'chunk22'</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;root1&#39;</span><span class="p">,</span> <span class="s1">&#39;rooot2&#39;</span><span class="p">,</span> <span class="s1">&#39;chunk11&#39;</span><span class="p">,</span> <span class="s1">&#39;chunk12&#39;</span><span class="p">,</span> <span class="s1">&#39;chunk21&#39;</span><span class="p">,</span> <span class="s1">&#39;chunk22&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">'chunk11'</span><span class="p">,</span> <span class="s1">'chunk12'</span><span class="p">,</span> <span class="s1">'root1'</span><span class="p">,</span> <span class="s1">'chunk21'</span><span class="p">,</span> <span class="s1">'chunk22'</span><span class="p">,</span> <span class="s1">'root2'</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;chunk11&#39;</span><span class="p">,</span> <span class="s1">&#39;chunk12&#39;</span><span class="p">,</span> <span class="s1">&#39;root1&#39;</span><span class="p">,</span> <span class="s1">&#39;chunk21&#39;</span><span class="p">,</span> <span class="s1">&#39;chunk22&#39;</span><span class="p">,</span> <span class="s1">&#39;root2&#39;</span><span class="p">]</span>
 
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"/><label class="tab-label" for="tab-set--0-input--2">Jina 3 </label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Jina 3 </label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="n">docs</span> <span class="o">=</span> <span class="n">nested_docs</span><span class="p">()</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="s1">'@r,c'</span><span class="p">]</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="s1">&#39;@r,c&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">'root1'</span><span class="p">,</span> <span class="s1">'rooot2'</span><span class="p">,</span> <span class="s1">'chunk11'</span><span class="p">,</span> <span class="s1">'chunk12'</span><span class="p">,</span> <span class="s1">'chunk21'</span><span class="p">,</span> <span class="s1">'chunk22'</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;root1&#39;</span><span class="p">,</span> <span class="s1">&#39;rooot2&#39;</span><span class="p">,</span> <span class="s1">&#39;chunk11&#39;</span><span class="p">,</span> <span class="s1">&#39;chunk12&#39;</span><span class="p">,</span> <span class="s1">&#39;chunk21&#39;</span><span class="p">,</span> <span class="s1">&#39;chunk22&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">'chunk11'</span><span class="p">,</span> <span class="s1">'chunk12'</span><span class="p">,</span> <span class="s1">'root1'</span><span class="p">,</span> <span class="s1">'chunk21'</span><span class="p">,</span> <span class="s1">'chunk22'</span><span class="p">,</span> <span class="s1">'root2'</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;chunk11&#39;</span><span class="p">,</span> <span class="s1">&#39;chunk12&#39;</span><span class="p">,</span> <span class="s1">&#39;root1&#39;</span><span class="p">,</span> <span class="s1">&#39;chunk21&#39;</span><span class="p">,</span> <span class="s1">&#39;chunk22&#39;</span><span class="p">,</span> <span class="s1">&#39;root2&#39;</span><span class="p">]</span>
 
 </pre></div>
 </div>
@@ -712,23 +713,23 @@ Additionally, you can access a specific key in <code class="docutils literal not
 <p><strong>Loading data from files</strong>: DocumentArray introduces a <code class="docutils literal notranslate"><span class="pre">.from_files()</span></code> class method which can be used directly instead of
 importing a <code class="docutils literal notranslate"><span class="pre">from_files()</span></code> function.</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--1">Jina 2</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Jina 2</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">jina.types.document.generators</span> <span class="kn">import</span> <span class="n">from_files</span>
 
-<span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">from_files</span><span class="p">(</span><span class="s1">'path/to/files'</span><span class="p">))</span>
+<span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span><span class="n">from_files</span><span class="p">(</span><span class="s1">&#39;path/to/files&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"/><label class="tab-label" for="tab-set--1-input--2">Jina 3 </label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">Jina 3 </label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
-<span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="s1">'path/to/files'</span><span class="p">)</span>
+<span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_files</span><span class="p">(</span><span class="s1">&#39;path/to/files&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p><br/>
+<p><br />
 <strong>Batching</strong>: Batching operations are delegated to the docarray package and Python builtins:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">docs.batch()</span></code> does not accept the arguments <code class="docutils literal notranslate"><span class="pre">traversal_paths=</span></code> and <code class="docutils literal notranslate"><span class="pre">require_attr=</span></code> anymore.
@@ -736,48 +737,48 @@ The example below shows how to achieve complex behavior that previously relied o
 and Jina 3 compatible way:</p></li>
 </ul>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--1">Jina 2</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">docs</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">traversal_paths</span><span class="o">=</span><span class="n">paths</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">bs</span><span class="p">,</span> <span class="n">require_attr</span><span class="o">=</span><span class="s1">'attr'</span><span class="p">)</span>
+<input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">Jina 2</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">docs</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">traversal_paths</span><span class="o">=</span><span class="n">paths</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">bs</span><span class="p">,</span> <span class="n">require_attr</span><span class="o">=</span><span class="s1">&#39;attr&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"/><label class="tab-label" for="tab-set--2-input--2">Jina 3 </label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">DocumentArray</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">attr</span><span class="p">),</span> <span class="n">docs</span><span class="p">[</span><span class="s1">'@paths'</span><span class="p">]))</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">bs</span><span class="p">)</span>
+<input class="tab-input" id="tab-set--2-input--2" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--2">Jina 3 </label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">DocumentArray</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">attr</span><span class="p">),</span> <span class="n">docs</span><span class="p">[</span><span class="s1">&#39;@paths&#39;</span><span class="p">]))</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="n">bs</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-<p><br/>
+<p><br />
 <strong>Accessing non-existent values</strong>: In Jina 2, bulk-accessing attributes in a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> returns a list of empty values, when the <code class="docutils literal notranslate"><span class="pre">Document</span></code>s
 inside the <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> do not have a value for that attribute. In Jina 3, this returns <code class="docutils literal notranslate"><span class="pre">None</span></code>. This change becomes
 important when migrating code that checks for the presence of a certain attribute.</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--1">Jina 2</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--1">Jina 2</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="s1">''</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;&#39;</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">d</span><span class="p">,</span> <span class="n">d</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">''</span><span class="p">,</span> <span class="s1">''</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"/><label class="tab-label" for="tab-set--3-input--2">Jina 3 </label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--3-input--2" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--2">Jina 3 </label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="s1">''</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="s1">&#39;&#39;</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">docs</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">([</span><span class="n">d</span><span class="p">,</span> <span class="n">d</span><span class="p">])</span>
@@ -789,7 +790,7 @@ important when migrating code that checks for the presence of a certain attribut
 </div>
 </div>
 </div>
-<p><br/>
+<p><br />
 <strong>Serialization</strong>: <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> introduces the same Pythonic serialization syntax as <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">docs.SerializeToString()</span></code> is removed in favour of <code class="docutils literal notranslate"><span class="pre">docs.to_bytes()</span></code> and <code class="docutils literal notranslate"><span class="pre">docs.to_json()</span></code></p></li>
@@ -804,23 +805,23 @@ modern databases.</p>
 <p>For example, you can use <a class="reference external" href="https://docarray.jina.ai/advanced/document-store/sqlite/">SQLite backend</a> as a replacement
 for <code class="docutils literal notranslate"><span class="pre">DocumentArrayMemmap</span></code>, which lets you persist Documents to disk and load them in another session:</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--4-input--1" name="tab-set--4" type="radio"/><label class="tab-label" for="tab-set--4-input--1">Storing to disk</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--4-input--1" name="tab-set--4" type="radio"><label class="tab-label" for="tab-set--4-input--1">Storing to disk</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="n">das</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span>
-    <span class="n">storage</span><span class="o">=</span><span class="s1">'sqlite'</span><span class="p">,</span>
-    <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s1">'connection'</span><span class="p">:</span> <span class="s1">'my_connection'</span><span class="p">,</span> <span class="s1">'table_name'</span><span class="p">:</span> <span class="s1">'my_table_name'</span><span class="p">},</span>
+    <span class="n">storage</span><span class="o">=</span><span class="s1">&#39;sqlite&#39;</span><span class="p">,</span>
+    <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;connection&#39;</span><span class="p">:</span> <span class="s1">&#39;my_connection&#39;</span><span class="p">,</span> <span class="s1">&#39;table_name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_table_name&#39;</span><span class="p">},</span>
 <span class="p">)</span>
 <span class="n">das</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">Document</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)])</span>
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--4-input--2" name="tab-set--4" type="radio"/><label class="tab-label" for="tab-set--4-input--2">Loading from disk</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--4-input--2" name="tab-set--4" type="radio"><label class="tab-label" for="tab-set--4-input--2">Loading from disk</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
 <span class="n">das</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span>
-    <span class="n">storage</span><span class="o">=</span><span class="s1">'sqlite'</span><span class="p">,</span>
-    <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s1">'connection'</span><span class="p">:</span> <span class="s1">'my_connection'</span><span class="p">,</span> <span class="s1">'table_name'</span><span class="p">:</span> <span class="s1">'my_table_name'</span><span class="p">},</span>
+    <span class="n">storage</span><span class="o">=</span><span class="s1">&#39;sqlite&#39;</span><span class="p">,</span>
+    <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;connection&#39;</span><span class="p">:</span> <span class="s1">&#39;my_connection&#39;</span><span class="p">,</span> <span class="s1">&#39;table_name&#39;</span><span class="p">:</span> <span class="s1">&#39;my_table_name&#39;</span><span class="p">},</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">das</span><span class="p">))</span>
 </pre></div>
@@ -835,14 +836,14 @@ in-memory storage. Furthermore, some Document Stores offer fast Nearest Neighbor
 production.</p>
 </section>
 <section id="flow-and-client-simplified-post-behavior">
-<h2>Flow and Client: Simplified <code class="docutils literal notranslate"><span class="pre">.post()</span></code> behavior<a class="headerlink" href="#flow-and-client-simplified-post-behavior" title="Permalink to this headline">¶</a></h2>
+<h2>Flow and Client: Simplified <code class="docutils literal notranslate"><span class="pre">.post()</span></code> behavior<a class="headerlink" href="#flow-and-client-simplified-post-behavior" title="Permalink to this headline">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">client.post()</span></code> and <code class="docutils literal notranslate"><span class="pre">flow.post()</span></code> now return a flattened <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> instead of a list of <code class="docutils literal notranslate"><span class="pre">Response</span></code>s when no
 callback function is specified.</p>
 <p><code class="docutils literal notranslate"><span class="pre">.post()</span></code> can still be configured to return a list of Responses, by passing <code class="docutils literal notranslate"><span class="pre">return_responses=True</span></code> to the Client or Flow
 constructors.</p>
 </section>
 <section id="consistent-yaml-parsing-syntax">
-<h2>Consistent YAML parsing syntax<a class="headerlink" href="#consistent-yaml-parsing-syntax" title="Permalink to this headline">¶</a></h2>
+<h2>Consistent YAML parsing syntax<a class="headerlink" href="#consistent-yaml-parsing-syntax" title="Permalink to this headline">#</a></h2>
 <p>In Jina 3, YAML syntax is aligned with <a class="reference external" href="https://docs.github.com/en/actions/learn-github-actions/environment-variables">Github Actions notation</a>,
 which leads to the following changes:</p>
 <ul class="simple">
@@ -859,46 +860,46 @@ the former (<code class="docutils literal notranslate"><span class="pre">${{</sp
 </div>
 </section>
 <section id="common-errors-and-solutions">
-<h2>Common errors and solutions<a class="headerlink" href="#common-errors-and-solutions" title="Permalink to this headline">¶</a></h2>
+<h2>Common errors and solutions<a class="headerlink" href="#common-errors-and-solutions" title="Permalink to this headline">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">AttributeError:</span> <span class="pre">'Document'</span> <span class="pre">object</span> <span class="pre">has</span> <span class="pre">no</span> <span class="pre">attribute</span> <span class="pre">'buffer'</span></code></p>
 <details>
-<summary>Solution</summary>
+  <summary>Solution</summary>
 <p>Replace <code class="docutils literal notranslate"><span class="pre">doc.buffer</span></code> with <code class="docutils literal notranslate"><span class="pre">doc.blob</span></code> in your entire codebase</p>
 </details>
 <p><code class="docutils literal notranslate"><span class="pre">RuntimeError:</span> <span class="pre">Could</span> <span class="pre">not</span> <span class="pre">infer</span> <span class="pre">dtype</span> <span class="pre">of</span> <span class="pre">NoneType</span></code> while performing <code class="docutils literal notranslate"><span class="pre">doc.embed()</span></code></p>
 <details>
-<summary>Solution</summary>
+  <summary>Solution</summary>
 <p>Replace <code class="docutils literal notranslate"><span class="pre">doc.blob</span></code> with <code class="docutils literal notranslate"><span class="pre">doc.tensor</span></code> in your entire codebase</p>
 </details>
 <p><code class="docutils literal notranslate"><span class="pre">AttributeError:</span> <span class="pre">'DocumentArray'</span> <span class="pre">object</span> <span class="pre">has</span> <span class="pre">no</span> <span class="pre">attribute</span> <span class="pre">'get_attributes'</span></code></p>
 <details>
-<summary>Solution</summary>
+  <summary>Solution</summary>
 <p>Replace <code class="docutils literal notranslate"><span class="pre">docs.get_attributes('attribute')</span></code> with <code class="docutils literal notranslate"><span class="pre">docs[:,</span> <span class="pre">'attribute']</span></code></p>
 </details>
 <p><code class="docutils literal notranslate"><span class="pre">AttributeError:</span> <span class="pre">'Document'</span> <span class="pre">object</span> <span class="pre">has</span> <span class="pre">no</span> <span class="pre">attribute</span> <span class="pre">'SerializeToString'</span></code></p>
 <details>
-<summary>Solution</summary>
+  <summary>Solution</summary>
 <p>Replace <code class="docutils literal notranslate"><span class="pre">doc.SerializeToString</span></code> with <code class="docutils literal notranslate"><span class="pre">doc.to_bytes</span></code> or <code class="docutils literal notranslate"><span class="pre">doc.to_json</span></code></p>
 </details>
-<p><code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">Failed</span> <span class="pre">to</span> <span class="pre">initialize</span> <span class="pre">docarray.document.Document</span> <span class="pre">from</span> <span class="pre">obj=b"..."</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">Failed</span> <span class="pre">to</span> <span class="pre">initialize</span> <span class="pre">docarray.document.Document</span> <span class="pre">from</span> <span class="pre">obj=b&quot;...&quot;</span></code></p>
 <details>
-<summary>Solution</summary>
+  <summary>Solution</summary>
 <p>Replace <code class="docutils literal notranslate"><span class="pre">Document(bytes)</span></code> with <code class="docutils literal notranslate"><span class="pre">Document.from_bytes(bytes)</span></code></p>
 </details>
 <p><code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">batch()</span> <span class="pre">got</span> <span class="pre">an</span> <span class="pre">unexpected</span> <span class="pre">keyword</span> <span class="pre">argument</span> <span class="pre">'traversal_paths'</span></code></p>
 <details>
-<summary>Solution</summary>
-<p>Replace <code class="docutils literal notranslate"><span class="pre">docs.batch(traversal_path='path',</span> <span class="pre">batch_size=bs)</span></code> with <code class="docutils literal notranslate"><span class="pre">docs['@path'].batch(batch_size=bs)</span></code></p>
+  <summary>Solution</summary>
+<p>Replace <code class="docutils literal notranslate"><span class="pre">docs.batch(traversal_path='path',</span> <span class="pre">batch_size=bs)</span></code> with <code class="docutils literal notranslate"><span class="pre">docs['&#64;path'].batch(batch_size=bs)</span></code></p>
 </details>
 <p><code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">batch()</span> <span class="pre">got</span> <span class="pre">an</span> <span class="pre">unexpected</span> <span class="pre">keyword</span> <span class="pre">argument</span> <span class="pre">'require_attr'</span></code></p>
 <details>
-<summary>Solution</summary>
+  <summary>Solution</summary>
 <p>Replace <code class="docutils literal notranslate"><span class="pre">docs.batch(traversal_path='path',</span> <span class="pre">require_attr='attr')</span></code> with
 <code class="docutils literal notranslate"><span class="pre">DocumentArray(filter(lambda</span> <span class="pre">x:</span> <span class="pre">bool(x.attr)),</span> <span class="pre">docs).batch(batch_size=bs)</span></code></p>
 </details>
 <p><code class="docutils literal notranslate"><span class="pre">AttributeError:</span> <span class="pre">'Document'</span> <span class="pre">object</span> <span class="pre">has</span> <span class="pre">no</span> <span class="pre">attribute</span> <span class="pre">'docs'</span></code> when operating on the output of <code class="docutils literal notranslate"><span class="pre">flow.post()</span></code></p>
 <details>
-<summary>Solution</summary>
+  <summary>Solution</summary>
 <p>Remove <code class="docutils literal notranslate"><span class="pre">resp[i].docs</span></code> as <code class="docutils literal notranslate"><span class="pre">flow.post()</span></code> already returns a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code></p>
 </details></section>
 </section>
@@ -997,7 +998,7 @@ the former (<code class="docutils literal notranslate"><span class="pre">${{</sp
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/scripts/main.js"></script>
+    <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script src="../../_static/tabs.js"></script>

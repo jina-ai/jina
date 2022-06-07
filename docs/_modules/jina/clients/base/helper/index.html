@@ -3,15 +3,16 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/_modules/jina/clients/base/helper.html" />
 
-    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.clients.base.helper - Jina 3.5.0 documentation</title>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+        <title>jina.clients.base.helper - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -27,24 +28,27 @@
   --color-brand-content: #009191;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FBCB67;
-  --color-brand-content: #FBCB67;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   --color-brand-primary: #FBCB67;
   --color-brand-content: #FBCB67;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
@@ -53,17 +57,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -72,14 +72,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -94,7 +94,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -102,7 +102,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.5.0 documentation</div>
+                <div class="brand">Jina 3.5.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -488,6 +488,7 @@
 </div>
 
 </div>
+
             </div>
             
         </div>
@@ -543,14 +544,14 @@
 
 
 <div class="viewcode-block" id="AioHttpClientlet"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet">[docs]</a><span class="k">class</span> <span class="nc">AioHttpClientlet</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">"""aiohttp session manager"""</span>
+    <span class="sd">&quot;&quot;&quot;aiohttp session manager&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="s1">'JinaLogger'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""HTTP Client to be used with the streamer</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;HTTP Client to be used with the streamer</span>
 
 <span class="sd">        :param url: url to send http/websocket request to</span>
 <span class="sd">        :param logger: jina logger</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">msg_recv</span> <span class="o">=</span> <span class="mi">0</span>
@@ -559,26 +560,26 @@
 
 <div class="viewcode-block" id="AioHttpClientlet.send_message"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.send_message">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Send message to Gateway"""</span>
+        <span class="sd">&quot;&quot;&quot;Send message to Gateway&quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
 <div class="viewcode-block" id="AioHttpClientlet.recv_message"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.recv_message">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">recv_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Receive message from Gateway"""</span>
+        <span class="sd">&quot;&quot;&quot;Receive message from Gateway&quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""enter async context</span>
+        <span class="sd">&quot;&quot;&quot;enter async context</span>
 
 <span class="sd">        :return: start self</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 <div class="viewcode-block" id="AioHttpClientlet.start"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.start">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Create ClientSession and enter context</span>
+        <span class="sd">&quot;&quot;&quot;Create ClientSession and enter context</span>
 
 <span class="sd">        :return: self</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
             <span class="kn">import</span> <span class="nn">aiohttp</span>
 
@@ -590,41 +591,41 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AioHttpClientlet.close"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.close">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""Close ClientSession</span>
+        <span class="sd">&quot;&quot;&quot;Close ClientSession</span>
 
 <span class="sd">        :param args: positional args</span>
-<span class="sd">        :param kwargs: keyword args"""</span>
+<span class="sd">        :param kwargs: keyword args&quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="fm">__aexit__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="HTTPClientlet"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet">[docs]</a><span class="k">class</span> <span class="nc">HTTPClientlet</span><span class="p">(</span><span class="n">AioHttpClientlet</span><span class="p">):</span>
-    <span class="sd">"""HTTP Client to be used with the streamer"""</span>
+    <span class="sd">&quot;&quot;&quot;HTTP Client to be used with the streamer&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="HTTPClientlet.send_message"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.send_message">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">'Request'</span><span class="p">):</span>
-        <span class="sd">"""Sends a POST request to the server</span>
+<div class="viewcode-block" id="HTTPClientlet.send_message"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.send_message">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sends a POST request to the server</span>
 
 <span class="sd">        :param request: request as dict</span>
 <span class="sd">        :return: send post message</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">req_dict</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-        <span class="n">req_dict</span><span class="p">[</span><span class="s1">'exec_endpoint'</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">'header'</span><span class="p">][</span><span class="s1">'exec_endpoint'</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s1">'target_executor'</span> <span class="ow">in</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">'header'</span><span class="p">]:</span>
-            <span class="n">req_dict</span><span class="p">[</span><span class="s1">'target_executor'</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">'header'</span><span class="p">][</span><span class="s1">'target_executor'</span><span class="p">]</span>
+        <span class="n">req_dict</span><span class="p">[</span><span class="s1">&#39;exec_endpoint&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">][</span><span class="s1">&#39;exec_endpoint&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;target_executor&#39;</span> <span class="ow">in</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">]:</span>
+            <span class="n">req_dict</span><span class="p">[</span><span class="s1">&#39;target_executor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">][</span><span class="s1">&#39;target_executor&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">req_dict</span><span class="p">)</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="HTTPClientlet.recv_message"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.recv_message">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">recv_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Receive message for HTTP (sleep)</span>
+        <span class="sd">&quot;&quot;&quot;Receive message for HTTP (sleep)</span>
 
 <span class="sd">        :return: await sleep</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1e10</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="WsResponseIter"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.WsResponseIter">[docs]</a><span class="k">class</span> <span class="nc">WsResponseIter</span><span class="p">:</span>
-    <span class="sd">"""</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iterates over all the responses that come in over the websocket connection.</span>
 <span class="sd">    In contrast to the iterator built into AioHTTP, this also records the message that was sent at closing-time.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span> <span class="o">=</span> <span class="n">websocket</span>
@@ -642,29 +643,29 @@
 
 
 <div class="viewcode-block" id="WebsocketClientlet"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet">[docs]</a><span class="k">class</span> <span class="nc">WebsocketClientlet</span><span class="p">(</span><span class="n">AioHttpClientlet</span><span class="p">):</span>
-    <span class="sd">"""Websocket Client to be used with the streamer"""</span>
+    <span class="sd">&quot;&quot;&quot;Websocket Client to be used with the streamer&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">response_iter</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="WebsocketClientlet.send_message"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.send_message">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">'Request'</span><span class="p">):</span>
-        <span class="sd">"""Send request in bytes to the server.</span>
+<div class="viewcode-block" id="WebsocketClientlet.send_message"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.send_message">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Send request in bytes to the server.</span>
 
 <span class="sd">        :param request: request object</span>
 <span class="sd">        :return: send request as bytes awaitable</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="o">.</span><span class="n">send_bytes</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">())</span>
         <span class="k">except</span> <span class="ne">ConnectionResetError</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">'server connection closed already!'</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;server connection closed already!&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="WebsocketClientlet.send_eoi"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.send_eoi">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_eoi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""To confirm end of iteration, we send `bytes(True)` to the server.</span>
+        <span class="sd">&quot;&quot;&quot;To confirm end of iteration, we send `bytes(True)` to the server.</span>
 
 <span class="sd">        :return: send `bytes(True)` awaitable</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="o">.</span><span class="n">send_bytes</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">ConnectionResetError</span><span class="p">:</span>
@@ -672,15 +673,15 @@
             <span class="c1"># which raises a `ConnectionResetError`, this can be ignored.</span>
             <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="WebsocketClientlet.recv_message"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.recv_message">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">recv_message</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'DataRequest'</span><span class="p">:</span>
-        <span class="sd">"""Receive messages in bytes from server and convert to `DataRequest`</span>
+<div class="viewcode-block" id="WebsocketClientlet.recv_message"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.recv_message">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">recv_message</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DataRequest&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Receive messages in bytes from server and convert to `DataRequest`</span>
 
 <span class="sd">        ..note::</span>
 <span class="sd">            aiohttp allows only one task which can `receive` concurrently.</span>
-<span class="sd">            we need to make sure we don't create multiple tasks with `recv_message`</span>
+<span class="sd">            we need to make sure we don&#39;t create multiple tasks with `recv_message`</span>
 
 <span class="sd">        :yield: response objects received from server</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_iter</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">DataRequest</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
 
@@ -695,12 +696,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">close_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">""":return: the close message (reason) of the ws closing response"""</span>
+        <span class="sd">&quot;&quot;&quot;:return: the close message (reason) of the ws closing response&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_iter</span><span class="o">.</span><span class="n">close_message</span><span class="o">.</span><span class="n">extra</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_iter</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">close_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">""":return: the close code of the ws closing response"""</span>
+        <span class="sd">&quot;&quot;&quot;:return: the close code of the ws closing response&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="o">.</span><span class="n">close_code</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span> <span class="k">else</span> <span class="kc">None</span></div>
 </pre></div>
                 </article>
@@ -761,7 +762,7 @@
     <script src="../../../../../_static/jquery.js"></script>
     <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
-    <script src="../../../../../_static/scripts/main.js"></script>
+    <script src="../../../../../_static/scripts/furo.js"></script>
     <script src="../../../../../_static/clipboard.min.js"></script>
     <script src="../../../../../_static/copybutton.js"></script>
     <script src="../../../../../_static/tabs.js"></script>

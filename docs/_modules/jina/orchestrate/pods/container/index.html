@@ -3,15 +3,16 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
+        <link rel="canonical" href="https://docs.jina.ai/_modules/jina/orchestrate/pods/container.html" />
 
-    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>jina.orchestrate.pods.container - Jina 3.5.0 documentation</title>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+        <title>jina.orchestrate.pods.container - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/main.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/docbot.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" />
@@ -27,24 +28,27 @@
   --color-brand-content: #009191;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  --color-brand-primary: #FBCB67;
-  --color-brand-content: #FBCB67;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   --color-brand-primary: #FBCB67;
   --color-brand-content: #FBCB67;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-brand-primary: #FBCB67;
+  --color-brand-content: #FBCB67;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
@@ -53,17 +57,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -72,14 +72,14 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -94,7 +94,7 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
@@ -102,7 +102,7 @@
   </symbol>
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.5.0 documentation</div>
+                <div class="brand">Jina 3.5.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -488,6 +488,7 @@
 </div>
 
 </div>
+
             </div>
             
         </div>
@@ -556,12 +557,12 @@
 
 
 <span class="k">def</span> <span class="nf">_docker_run</span><span class="p">(</span>
-    <span class="n">client</span><span class="p">:</span> <span class="s1">'DockerClient'</span><span class="p">,</span>
-    <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span>
+    <span class="n">client</span><span class="p">:</span> <span class="s1">&#39;DockerClient&#39;</span><span class="p">,</span>
+    <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">,</span>
     <span class="n">container_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">envs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
     <span class="n">net_mode</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-    <span class="n">logger</span><span class="p">:</span> <span class="s1">'JinaLogger'</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="s1">&#39;JinaLogger&#39;</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="c1"># important to notice, that client is not assigned as instance member to avoid potential</span>
     <span class="c1"># heavy copy into new process memory space</span>
@@ -569,25 +570,25 @@
 
     <span class="kn">import</span> <span class="nn">docker</span>
 
-    <span class="n">docker_version</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">version</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'Version'</span><span class="p">)</span>
+    <span class="n">docker_version</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">version</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Version&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">docker_version</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">DockerVersionError</span><span class="p">(</span><span class="s1">'docker version can not be resolved'</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">DockerVersionError</span><span class="p">(</span><span class="s1">&#39;docker version can not be resolved&#39;</span><span class="p">)</span>
 
-    <span class="n">docker_version</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">docker_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">))</span>
-    <span class="c1"># docker daemon versions below 20.0x do not support "host.docker.internal:host-gateway"</span>
-    <span class="k">if</span> <span class="n">docker_version</span> <span class="o">&lt;</span> <span class="p">(</span><span class="s1">'20'</span><span class="p">,):</span>
+    <span class="n">docker_version</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">docker_version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span>
+    <span class="c1"># docker daemon versions below 20.0x do not support &quot;host.docker.internal:host-gateway&quot;</span>
+    <span class="k">if</span> <span class="n">docker_version</span> <span class="o">&lt;</span> <span class="p">(</span><span class="s1">&#39;20&#39;</span><span class="p">,):</span>
         <span class="k">raise</span> <span class="n">DockerVersionError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'docker version </span><span class="si">{</span><span class="s2">"."</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">docker_version</span><span class="p">)</span><span class="si">}</span><span class="s1"> is below 20.0.0 and does not '</span>
-            <span class="sa">f</span><span class="s1">'support "host.docker.internal:host-gateway" : https://github.com/docker/cli/issues/2664'</span>
+            <span class="sa">f</span><span class="s1">&#39;docker version </span><span class="si">{</span><span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">docker_version</span><span class="p">)</span><span class="si">}</span><span class="s1"> is below 20.0.0 and does not &#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;support &quot;host.docker.internal:host-gateway&quot; : https://github.com/docker/cli/issues/2664&#39;</span>
         <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">):</span>
-        <span class="n">uses_img</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'docker://'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'will use Docker image: </span><span class="si">{</span><span class="n">uses_img</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;docker://&#39;</span><span class="p">):</span>
+        <span class="n">uses_img</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;docker://&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;will use Docker image: </span><span class="si">{</span><span class="n">uses_img</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">'you are using legacy image format </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="si">}</span><span class="s1">, this may create some ambiguity. '</span>
-            <span class="sa">f</span><span class="s1">'please use the new format: "--uses docker://</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="si">}</span><span class="s1">"'</span>
+            <span class="sa">f</span><span class="s1">&#39;you are using legacy image format </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="si">}</span><span class="s1">, this may create some ambiguity. &#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;please use the new format: &quot;--uses docker://</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
         <span class="p">)</span>
         <span class="n">uses_img</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">uses</span>
 
@@ -605,12 +606,12 @@
         <span class="n">args</span><span class="p">,</span>
         <span class="n">set_pod_parser</span><span class="p">(),</span>
         <span class="n">taboo</span><span class="o">=</span><span class="p">{</span>
-            <span class="s1">'uses'</span><span class="p">,</span>
-            <span class="s1">'entrypoint'</span><span class="p">,</span>
-            <span class="s1">'volumes'</span><span class="p">,</span>
-            <span class="s1">'pull_latest'</span><span class="p">,</span>
-            <span class="s1">'docker_kwargs'</span><span class="p">,</span>
-            <span class="s1">'gpus'</span><span class="p">,</span>
+            <span class="s1">&#39;uses&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;entrypoint&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;volumes&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pull_latest&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;docker_kwargs&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;gpus&#39;</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span>
     <span class="n">img_not_found</span> <span class="o">=</span> <span class="kc">False</span>
@@ -618,11 +619,11 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uses_img</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">docker</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">ImageNotFound</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'can not find local image: </span><span class="si">{</span><span class="n">uses_img</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;can not find local image: </span><span class="si">{</span><span class="n">uses_img</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">img_not_found</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">if</span> <span class="n">img_not_found</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">BadImageNameError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'image: </span><span class="si">{</span><span class="n">uses_img</span><span class="si">}</span><span class="s1"> can not be found local &amp; remote.'</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">BadImageNameError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;image: </span><span class="si">{</span><span class="n">uses_img</span><span class="si">}</span><span class="s1"> can not be found local &amp; remote.&#39;</span><span class="p">)</span>
 
     <span class="n">_volumes</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">disable_auto_volume</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">volumes</span><span class="p">:</span>
@@ -637,16 +638,16 @@
 
     <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">volumes</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">volumes</span><span class="p">:</span>
-            <span class="n">paths</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">)</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
             <span class="n">local_path</span> <span class="o">=</span> <span class="n">paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">local_path</span><span class="p">))</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">container_path</span> <span class="o">=</span> <span class="n">paths</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">container_path</span> <span class="o">=</span> <span class="s1">'/'</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                <span class="n">container_path</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
             <span class="n">_volumes</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">local_path</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">'bind'</span><span class="p">:</span> <span class="n">container_path</span><span class="p">,</span>
-                <span class="s1">'mode'</span><span class="p">:</span> <span class="s1">'rw'</span><span class="p">,</span>
+                <span class="s1">&#39;bind&#39;</span><span class="p">:</span> <span class="n">container_path</span><span class="p">,</span>
+                <span class="s1">&#39;mode&#39;</span><span class="p">:</span> <span class="s1">&#39;rw&#39;</span><span class="p">,</span>
             <span class="p">}</span>
 
     <span class="n">device_requests</span> <span class="o">=</span> <span class="p">[]</span>
@@ -655,7 +656,7 @@
         <span class="k">del</span> <span class="n">args</span><span class="o">.</span><span class="n">gpus</span>
 
     <span class="n">_args</span> <span class="o">=</span> <span class="n">ArgNamespace</span><span class="o">.</span><span class="n">kwargs2list</span><span class="p">(</span><span class="n">non_defaults</span><span class="p">)</span>
-    <span class="n">ports</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/tcp'</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">}</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">net_mode</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">ports</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/tcp&#39;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">}</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">net_mode</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="n">docker_kwargs</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="n">container</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">containers</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
@@ -668,7 +669,7 @@
         <span class="n">volumes</span><span class="o">=</span><span class="n">_volumes</span><span class="p">,</span>
         <span class="n">network_mode</span><span class="o">=</span><span class="n">net_mode</span><span class="p">,</span>
         <span class="n">entrypoint</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">entrypoint</span><span class="p">,</span>
-        <span class="n">extra_hosts</span><span class="o">=</span><span class="p">{</span><span class="n">__docker_host__</span><span class="p">:</span> <span class="s1">'host-gateway'</span><span class="p">},</span>
+        <span class="n">extra_hosts</span><span class="o">=</span><span class="p">{</span><span class="n">__docker_host__</span><span class="p">:</span> <span class="s1">&#39;host-gateway&#39;</span><span class="p">},</span>
         <span class="n">device_requests</span><span class="o">=</span><span class="n">device_requests</span><span class="p">,</span>
         <span class="n">environment</span><span class="o">=</span><span class="n">envs</span><span class="p">,</span>
         <span class="o">**</span><span class="n">docker_kwargs</span><span class="p">,</span>
@@ -677,19 +678,19 @@
 
 
 <div class="viewcode-block" id="run"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.pods.container/#jina.orchestrate.pods.container.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
-    <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">,</span>
+    <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">container_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">net_mode</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">runtime_ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">envs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
-    <span class="n">is_started</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">],</span>
-    <span class="n">is_shutdown</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">],</span>
-    <span class="n">is_ready</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">'multiprocessing.Event'</span><span class="p">,</span> <span class="s1">'threading.Event'</span><span class="p">],</span>
+    <span class="n">is_started</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">],</span>
+    <span class="n">is_shutdown</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">],</span>
+    <span class="n">is_ready</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;multiprocessing.Event&#39;</span><span class="p">,</span> <span class="s1">&#39;threading.Event&#39;</span><span class="p">],</span>
 <span class="p">):</span>
-    <span class="sd">"""Method to be run in a process that stream logs from a Container</span>
+    <span class="sd">&quot;&quot;&quot;Method to be run in a process that stream logs from a Container</span>
 
-<span class="sd">    This method is the target for the Pod's `thread` or `process`</span>
+<span class="sd">    This method is the target for the Pod&#39;s `thread` or `process`</span>
 
 <span class="sd">    .. note::</span>
 <span class="sd">        :meth:`run` is running in subprocess/thread, the exception can not be propagated to the main process.</span>
@@ -697,7 +698,7 @@
 
 <span class="sd">    .. note::</span>
 <span class="sd">        Please note that env variables are process-specific. Subprocess inherits envs from</span>
-<span class="sd">        the main process. But Subprocess's envs do NOT affect the main process. It does NOT</span>
+<span class="sd">        the main process. But Subprocess&#39;s envs do NOT affect the main process. It does NOT</span>
 <span class="sd">        mess up user local system envs.</span>
 
 <span class="sd">    :param args: namespace args from the Pod</span>
@@ -709,11 +710,11 @@
 <span class="sd">    :param is_started: concurrency event to communicate runtime is properly started. Used for better logging</span>
 <span class="sd">    :param is_shutdown: concurrency event to communicate runtime is terminated</span>
 <span class="sd">    :param is_ready: concurrency event to communicate runtime is ready to receive messages</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">docker</span>
 
     <span class="n">log_kwargs</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="nb">vars</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
-    <span class="n">log_kwargs</span><span class="p">[</span><span class="s1">'log_config'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'docker'</span>
+    <span class="n">log_kwargs</span><span class="p">[</span><span class="s1">&#39;log_config&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;docker&#39;</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">JinaLogger</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">log_kwargs</span><span class="p">)</span>
 
     <span class="n">cancel</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
@@ -725,15 +726,15 @@
                 <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signame</span><span class="p">,</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">cancel</span><span class="o">.</span><span class="n">set</span><span class="p">())</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">' The process starting the container for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> will not be able to handle termination signals. '</span>
-                <span class="sa">f</span><span class="s1">' </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
+                <span class="sa">f</span><span class="s1">&#39; The process starting the container for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> will not be able to handle termination signals. &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
             <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
-            <span class="n">help_text</span><span class="o">=</span><span class="s1">'''If you see a 'DLL load failed' error, please reinstall `pywin32`.</span>
-<span class="s1">                If you're using conda, please use the command `conda install -c anaconda pywin32`'''</span><span class="p">,</span>
+            <span class="n">help_text</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;If you see a &#39;DLL load failed&#39; error, please reinstall `pywin32`.</span>
+<span class="s1">                If you&#39;re using conda, please use the command `conda install -c anaconda pywin32`&#39;&#39;&#39;</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="kn">import</span> <span class="nn">win32api</span>
 
@@ -786,7 +787,7 @@
                 <span class="p">):</span>
                     <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>  <span class="c1"># type: str</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">'\u001b\[.*?[@-~]'</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\u001b\[.*?[@-~]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span>
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">_run_async</span><span class="p">(</span><span class="n">container</span><span class="p">):</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
@@ -798,29 +799,29 @@
         <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_started</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">' Process terminated, the container fails to start, check the arguments or entrypoint'</span>
+                <span class="sa">f</span><span class="s1">&#39; Process terminated, the container fails to start, check the arguments or entrypoint&#39;</span>
             <span class="p">)</span>
         <span class="n">is_shutdown</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'process terminated'</span><span class="p">)</span></div>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;process terminated&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ContainerPod"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.pods.container/#jina.orchestrate.pods.container.ContainerPod">[docs]</a><span class="k">class</span> <span class="nc">ContainerPod</span><span class="p">(</span><span class="n">BasePod</span><span class="p">):</span>
-    <span class="sd">"""</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    :class:`ContainerPod` starts a runtime of :class:`BaseRuntime` inside a container. It leverages :class:`threading.Thread`</span>
 <span class="sd">    or :class:`multiprocessing.Process` to manage the logs and the lifecycle of docker container object in a robust way.</span>
-<span class="sd">    """</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">'argparse.Namespace'</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span>
-            <span class="ow">and</span> <span class="s1">'extra_hosts'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span>
-            <span class="ow">and</span> <span class="n">__docker_host__</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span><span class="p">[</span><span class="s1">'extra_hosts'</span><span class="p">]</span>
+            <span class="ow">and</span> <span class="s1">&#39;extra_hosts&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span>
+            <span class="ow">and</span> <span class="n">__docker_host__</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span><span class="p">[</span><span class="s1">&#39;extra_hosts&#39;</span><span class="p">]</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'extra_hosts'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;extra_hosts&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_net_mode</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">worker</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">container_name</span> <span class="o">=</span> <span class="n">slugify</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">random_name</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">container_name</span> <span class="o">=</span> <span class="n">slugify</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">random_name</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">net_mode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_ctrl_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_control_address</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_get_control_address</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -832,22 +833,22 @@
 
             <span class="k">if</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span>
-                <span class="ow">and</span> <span class="s1">'extra_hosts'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span>
-                <span class="ow">and</span> <span class="n">__docker_host__</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span><span class="p">[</span><span class="s1">'extra_hosts'</span><span class="p">]</span>
+                <span class="ow">and</span> <span class="s1">&#39;extra_hosts&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span>
+                <span class="ow">and</span> <span class="n">__docker_host__</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">docker_kwargs</span><span class="p">[</span><span class="s1">&#39;extra_hosts&#39;</span><span class="p">]</span>
             <span class="p">):</span>
                 <span class="n">ctrl_host</span> <span class="o">=</span> <span class="n">__docker_host__</span>
             <span class="k">elif</span> <span class="n">network</span><span class="p">:</span>
                 <span class="c1"># If the caller is already in a docker network, replace ctrl-host with network gateway</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">ctrl_host</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">network</span><span class="p">)</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">'IPAM'</span><span class="p">][</span><span class="s1">'Config'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span>
-                        <span class="s1">'Gateway'</span>
+                    <span class="n">ctrl_host</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">network</span><span class="p">)</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;IPAM&#39;</span><span class="p">][</span><span class="s1">&#39;Config&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span>
+                        <span class="s1">&#39;Gateway&#39;</span>
                     <span class="p">]</span>
                 <span class="k">except</span><span class="p">:</span>
                     <span class="n">ctrl_host</span> <span class="o">=</span> <span class="n">__docker_host__</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">ctrl_host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span>
 
-            <span class="n">ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">ctrl_host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
+            <span class="n">ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ctrl_host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
 
             <span class="n">net_node</span><span class="p">,</span> <span class="n">runtime_ctrl_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_network_for_dind_linux</span><span class="p">(</span>
                 <span class="n">client</span><span class="p">,</span> <span class="n">ctrl_address</span>
@@ -857,7 +858,7 @@
 
         <span class="k">return</span> <span class="n">net_node</span><span class="p">,</span> <span class="n">runtime_ctrl_address</span>
 
-    <span class="k">def</span> <span class="nf">_get_network_for_dind_linux</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="s1">'DockerClient'</span><span class="p">,</span> <span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_network_for_dind_linux</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="s1">&#39;DockerClient&#39;</span><span class="p">,</span> <span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">sys</span>
         <span class="kn">from</span> <span class="nn">platform</span> <span class="kn">import</span> <span class="n">uname</span>
 
@@ -865,16 +866,16 @@
         <span class="c1"># it will need to communicate using the `bridge` network.</span>
         <span class="c1"># In WSL, we need to set ports explicitly</span>
         <span class="n">net_mode</span><span class="p">,</span> <span class="n">runtime_ctrl_address</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ctrl_address</span>
-        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'linux'</span><span class="p">,</span> <span class="s1">'linux2'</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">'microsoft'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">uname</span><span class="p">()</span><span class="o">.</span><span class="n">release</span><span class="p">:</span>
-            <span class="n">net_mode</span> <span class="o">=</span> <span class="s1">'host'</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;linux&#39;</span><span class="p">,</span> <span class="s1">&#39;linux2&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;microsoft&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">uname</span><span class="p">()</span><span class="o">.</span><span class="n">release</span><span class="p">:</span>
+            <span class="n">net_mode</span> <span class="o">=</span> <span class="s1">&#39;host&#39;</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">bridge_network</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'bridge'</span><span class="p">)</span>
+                <span class="n">bridge_network</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">networks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;bridge&#39;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">bridge_network</span><span class="p">:</span>
-                    <span class="n">runtime_ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">bridge_network</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">"IPAM"</span><span class="p">][</span><span class="s2">"Config"</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">"Gateway"</span><span class="p">]</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="n">runtime_ctrl_address</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bridge_network</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;IPAM&quot;</span><span class="p">][</span><span class="s2">&quot;Config&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;Gateway&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">'Unable to set control address from "bridge" network: </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span>
-                    <span class="sa">f</span><span class="s1">' Control address set to </span><span class="si">{</span><span class="n">runtime_ctrl_address</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="sa">f</span><span class="s1">&#39;Unable to set control address from &quot;bridge&quot; network: </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39; Control address set to </span><span class="si">{</span><span class="n">runtime_ctrl_address</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">net_mode</span><span class="p">,</span> <span class="n">runtime_ctrl_address</span>
@@ -892,22 +893,22 @@
         <span class="k">return</span> <span class="n">container</span>
 
 <div class="viewcode-block" id="ContainerPod.start"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.pods.container/#jina.orchestrate.pods.container.ContainerPod.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Start the ContainerPod.</span>
+        <span class="sd">&quot;&quot;&quot;Start the ContainerPod.</span>
 <span class="sd">        This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.</span>
 <span class="sd">        .. #noqa: DAR201</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">worker</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span>
             <span class="n">target</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
             <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span>
-                <span class="s1">'args'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
-                <span class="s1">'name'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="s1">'container_name'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">container_name</span><span class="p">,</span>
-                <span class="s1">'net_mode'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">net_mode</span><span class="p">,</span>
-                <span class="s1">'runtime_ctrl_address'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_ctrl_address</span><span class="p">,</span>
-                <span class="s1">'envs'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_envs</span><span class="p">,</span>
-                <span class="s1">'is_started'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_started</span><span class="p">,</span>
-                <span class="s1">'is_shutdown'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">,</span>
-                <span class="s1">'is_ready'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="p">,</span>
+                <span class="s1">&#39;args&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+                <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s1">&#39;container_name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">container_name</span><span class="p">,</span>
+                <span class="s1">&#39;net_mode&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">net_mode</span><span class="p">,</span>
+                <span class="s1">&#39;runtime_ctrl_address&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_ctrl_address</span><span class="p">,</span>
+                <span class="s1">&#39;envs&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_envs</span><span class="p">,</span>
+                <span class="s1">&#39;is_started&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_started</span><span class="p">,</span>
+                <span class="s1">&#39;is_shutdown&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">,</span>
+                <span class="s1">&#39;is_ready&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="p">,</span>
             <span class="p">},</span>
             <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
@@ -917,25 +918,25 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="k">def</span> <span class="nf">_terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Terminate the Pod.</span>
+        <span class="sd">&quot;&quot;&quot;Terminate the Pod.</span>
 <span class="sd">        This method calls :meth:`terminate` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># terminate the docker</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_container</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="s1">'SIGTERM'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_container</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="s1">&#39;SIGTERM&#39;</span><span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">timeout_ctrl</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'terminating the runtime process'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;terminating the runtime process&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'runtime process properly terminated'</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;runtime process properly terminated&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ContainerPod.join"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.pods.container/#jina.orchestrate.pods.container.ContainerPod.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">"""Joins the Pod.</span>
+        <span class="sd">&quot;&quot;&quot;Joins the Pod.</span>
 <span class="sd">        This method calls :meth:`join` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.</span>
 
 <span class="sd">        :param args: extra positional arguments to pass to join</span>
 <span class="sd">        :param kwargs: extra keyword arguments to pass to join</span>
-<span class="sd">        """</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">docker</span>
 
         <span class="n">client</span> <span class="o">=</span> <span class="n">docker</span><span class="o">.</span><span class="n">from_env</span><span class="p">()</span>
@@ -948,9 +949,9 @@
                 <span class="n">containers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">containers</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">docker</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NotFound</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'joining the process'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;joining the process&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'successfully joined the process'</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;successfully joined the process&#39;</span><span class="p">)</span></div></div>
 </pre></div>
                 </article>
             </div>
@@ -1010,7 +1011,7 @@
     <script src="../../../../../_static/jquery.js"></script>
     <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
-    <script src="../../../../../_static/scripts/main.js"></script>
+    <script src="../../../../../_static/scripts/furo.js"></script>
     <script src="../../../../../_static/clipboard.min.js"></script>
     <script src="../../../../../_static/copybutton.js"></script>
     <script src="../../../../../_static/tabs.js"></script>
