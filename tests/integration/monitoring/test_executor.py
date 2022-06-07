@@ -59,3 +59,41 @@ def test_decorator_interface(port_generator):
             f'jina_proces_2_seconds_count{{runtime_name="executor0/rep-0"}} 1.0'
             in str(resp.content)
         )
+
+
+def test_context_manager_interface(port_generator):
+    class DummyExecutor(Executor):
+        @requests(on='/foo')
+        def foo(self, docs, **kwargs):
+
+            with self.monitor(
+                name='proces_seconds', documentation='process time in seconds '
+            ):
+                self._proces(docs)
+
+            with self.monitor(
+                name='proces_2_seconds', documentation='process 2 time in seconds '
+            ):
+                self.proces_2(docs)
+
+        def _proces(self, docs):
+            ...
+
+        def proces_2(self, docs):
+            ...
+
+    port = port_generator()
+    with Flow(monitoring=True, port_monitoring=port_generator()).add(
+        uses=DummyExecutor, monitoring=True, port_monitoring=port
+    ) as f:
+        f.post('/foo', inputs=DocumentArray.empty(4))
+
+        resp = req.get(f'http://localhost:{port}/')
+        assert (
+            f'jina_proces_seconds_count{{runtime_name="executor0/rep-0"}} 1.0'
+            in str(resp.content)
+        )
+        assert (
+            f'jina_proces_2_seconds_count{{runtime_name="executor0/rep-0"}} 1.0'
+            in str(resp.content)
+        )

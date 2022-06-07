@@ -229,12 +229,7 @@ def monitor(
 
         @functools.wraps(func)
         def _f(self, *args, **kwargs):
-            metric = self.get_metrics(name_, documentation_)
-
-            if metric:
-                with metric.time():
-                    return func(self, *args, **kwargs)
-            else:
+            with self.monitor(name_, documentation_):
                 return func(self, *args, **kwargs)
 
         return _f
