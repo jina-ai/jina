@@ -274,6 +274,20 @@ Behind this smooth experience is advanced management of Executors:
 
 ### Fast-lane to cloud-native
 
+Using Kubernetes becomes easy:
+
+```bash
+jina export kubernetes flow.yml ./my-k8s
+kubectl apply -R -f my-k8s
+```
+
+Using Docker Compose becomes easy:
+
+```bash
+jina export docker-compose flow.yml docker-compose.yml
+docker-compose up
+```
+
 Using Prometheus becomes easy:
 
 ```python
@@ -297,21 +311,8 @@ Using Grafana becomes easy, just [download this JSON](https://github.com/jina-ai
 <a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/grafana.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
 </p>
 
-Using Kubernetes becomes easy:
 
-```bash
-jina export kubernetes flow.yml ./my-k8s
-kubectl apply -R -f my-k8s
-```
-
-Using Docker Compose becomes easy:
-
-```bash
-jina export docker-compose flow.yml docker-compose.yml
-docker-compose up
-```
-
-Which cloud-native technology is still challenging to you? [Tell us](https://github.com/jina-ai/jina/issues), we will handle the complexity and make it easy for you.
+What cloud-native technology is still challenging to you? [Tell us](https://github.com/jina-ai/jina/issues), we will handle the complexity and make it easy for you.
 
 <!-- start support-pitch -->
 
