@@ -490,7 +490,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             == BaseExecutor.StandaloneExecutorType.EXTERNAL,
         )
 
-    def get_metrics(
+    def monitor(
         self, name: Optional[str] = None, documentation: Optional[str] = None
     ) -> Optional['Summary']:
         """
@@ -512,6 +512,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                     namespace='jina',
                     labelnames=('runtime_name',),
                 ).labels(self.runtime_args.name)
-            return self._metrics_buffer[name]
+            return self._metrics_buffer[name].time()
         else:
-            return None
+            return contextlib.nullcontext()
