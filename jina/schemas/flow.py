@@ -1,5 +1,5 @@
-from cli.export import api_to_dict
 from jina.schemas.helper import _cli_to_schema
+from jina_cli.export import api_to_dict
 
 _schema_flow_with = _cli_to_schema(
     api_to_dict(),

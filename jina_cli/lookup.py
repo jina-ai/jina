@@ -1,4 +1,4 @@
-from cli.export import api_to_dict
+from jina_cli.export import api_to_dict
 
 
 def _build_lookup_table():
@@ -121,6 +121,7 @@ def lookup_and_print(query: str):
             _prettyprint_help(helps[0], also_in=helps)
         elif len(helps) > 1:
             from collections import defaultdict
+
             from jina.helper import colored
 
             help_group = defaultdict(list)
