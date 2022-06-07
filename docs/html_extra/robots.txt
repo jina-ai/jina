@@ -1,2 +1,3 @@
 User-agent: *
-sitemap: https://docs.jina.ai/sitemap.xml
+Disallow: /
+sitemap: https://docs2.jina.ai/sitemap.xml
