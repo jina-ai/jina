@@ -156,21 +156,20 @@ emphasize-lines: 14, 16
 from jina import requests, Executor
 from docarray import DocumentArray
 
+def preprocessing(self, docs: DocumentArray):
+    ...
+
+def model_inference(self, tensor):
+    ...
+
 class MyExecutor(Executor):
-
-    def preprocessing(self, docs: DocumentArray):
-        ...
-
-    @monitor()
-    def model_inference(self, tensor):
-        ...
 
     @requests
     def encode(self, docs: DocumentArray, **kwargs):
         with self.monitor('preprocessing_seconds', 'Time preprocessing the requests'):
-            docs.tensors = self.preprocessing(docs)
+            docs.tensors = preprocessing(docs)
         with self.monitor('model_inference_seconds', 'Time doing inference the requests'):
-            docs.embedding = self.model_inference(docs.tensors)
+            docs.embedding = model_inference(docs.tensors)
 ```
 ````
 
