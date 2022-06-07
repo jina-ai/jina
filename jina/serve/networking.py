@@ -475,6 +475,7 @@ class GrpcConnectionPool:
         polling_type: PollingType = PollingType.ANY,
         endpoint: Optional[str] = None,
         timeout: Optional[float] = None,
+        retries: Optional[int] = None,
     ) -> List[asyncio.Task]:
         """Send a single message to target via one or all of the pooled connections, depending on polling_type. Convenience function wrapper around send_request.
         :param request: a single request to send
@@ -484,6 +485,7 @@ class GrpcConnectionPool:
         :param polling_type: defines if the message should be send to any or all pooled connections for the target
         :param endpoint: endpoint to target with the request
         :param timeout: timeout for sending the requests
+        :param retries: number of retries per gRPC call. If None or <0, it defaults to max(3, num_replicas)
         :return: list of asyncio.Task items for each send call
         """
         return self.send_requests(
@@ -494,6 +496,7 @@ class GrpcConnectionPool:
             polling_type=polling_type,
             endpoint=endpoint,
             timeout=timeout,
+            retries=retries,
         )
 
     def send_requests(
@@ -505,6 +508,7 @@ class GrpcConnectionPool:
         polling_type: PollingType = PollingType.ANY,
         endpoint: Optional[str] = None,
         timeout: Optional[float] = None,
+        retries: Optional[int] = None,
     ) -> List[asyncio.Task]:
         """Send a request to target via one or all of the pooled connections, depending on polling_type
 
@@ -515,6 +519,7 @@ class GrpcConnectionPool:
         :param polling_type: defines if the request should be send to any or all pooled connections for the target
         :param endpoint: endpoint to target with the requests
         :param timeout: timeout for sending the requests
+        :param retries: number of retries per gRPC call. If None or <0, it defaults to max(3, num_replicas)
         :return: list of asyncio.Task items for each send call
         """
         results = []
@@ -532,7 +537,7 @@ class GrpcConnectionPool:
 
         for replica_list in connections:
             task = self._send_requests(
-                requests, replica_list, endpoint, timeout=timeout
+                requests, replica_list, endpoint, timeout=timeout, retries=retries
             )
             results.append(task)
 
@@ -568,6 +573,7 @@ class GrpcConnectionPool:
         head: bool = False,
         shard_id: Optional[int] = None,
         timeout: Optional[float] = None,
+        retries: Optional[int] = None,
     ) -> asyncio.Task:
         """Send msg to target via only one of the pooled connections
         :param request: request to send
@@ -575,6 +581,7 @@ class GrpcConnectionPool:
         :param head: If True it is send to the head, otherwise to the worker pods
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param timeout: timeout for sending the requests
+        :param retries: number of retries per gRPC call. If None or <0, it defaults to max(3, num_replicas)
         :return: asyncio.Task representing the send call
         """
         return self.send_requests_once(
@@ -583,6 +590,7 @@ class GrpcConnectionPool:
             head=head,
             shard_id=shard_id,
             timeout=timeout,
+            retries=retries,
         )
 
     def send_requests_once(
@@ -593,6 +601,7 @@ class GrpcConnectionPool:
         shard_id: Optional[int] = None,
         endpoint: Optional[str] = None,
         timeout: Optional[float] = None,
+        retries: Optional[int] = None,
     ) -> asyncio.Task:
         """Send a request to target via only one of the pooled connections
 
@@ -602,11 +611,14 @@ class GrpcConnectionPool:
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param endpoint: endpoint to target with the requests
         :param timeout: timeout for sending the requests
+        :param retries: number of retries per gRPC call. If None or <0, it defaults to max(3, num_replicas)
         :return: asyncio.Task representing the send call
         """
         replicas = self._connections.get_replicas(deployment, head, shard_id)
         if replicas:
-            return self._send_requests(requests, replicas, endpoint, timeout=timeout)
+            return self._send_requests(
+                requests, replicas, endpoint, timeout=timeout, retries=retries
+            )
         else:
             self._logger.debug(
                 f'no available connections for deployment {deployment} and shard {shard_id}'
@@ -677,7 +689,7 @@ class GrpcConnectionPool:
         retry_i: int = 0,
         request_id: str = '',
         dest_addr: Set[str] = {''},
-        num_retries: int = 3,
+        num_retries: int = 0,
     ):
         # connection failures and cancelled requests should be retried
         # all other cases should not be retried and will be raised immediately
@@ -690,7 +702,7 @@ class GrpcConnectionPool:
             and e.code() != grpc.StatusCode.CANCELLED
         ):
             raise
-        elif e.code() == grpc.StatusCode.UNAVAILABLE and retry_i >= 2:
+        elif e.code() == grpc.StatusCode.UNAVAILABLE and retry_i >= num_retries - 1:
             self._logger.debug(f'GRPC call failed, retries exhausted')
             from jina.excepts import InternalNetworkError
 
@@ -712,13 +724,17 @@ class GrpcConnectionPool:
         connections: ReplicaList,
         endpoint: Optional[str] = None,
         timeout: Optional[float] = None,
+        retries: Optional[int] = None,
     ) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
         async def task_wrapper():
             metadata = (('endpoint', endpoint),) if endpoint else None
             tried_addresses = set()
-            num_retries = max(3, len(connections.get_all_connections()))
+            if retries is None or retries < 0:
+                num_retries = max(3, len(connections.get_all_connections()))
+            else:
+                num_retries = retries
             for i in range(num_retries):
                 current_connection = connections.get_next_connection()
                 tried_addresses.add(current_connection.address)
