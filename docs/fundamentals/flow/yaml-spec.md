@@ -11,7 +11,6 @@ To generate a YAML configuration from a `Flow` Python object, run `f.save_config
 
 The following constitutes an example Flow configuration:
 
-`flow.yml`/`flow.yaml`:
 ```yaml
 jtype: Flow
 version: '1'
@@ -52,7 +51,7 @@ Each item in the collection corresponds to on `f.add()` call and specifies one E
 All keyword arguments passed to the Flow `add()` method can be added.
 A complete list of these arguments can be found [here](https://docs.jina.ai/api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.add).
 
-**`uses`**
+#### `uses`
 
 `uses` can take a direct reference to a Python class, or a path to an Executor YAML specification, equivalently the `f.add(uses=...)` pattern.
 

@@ -1,5 +1,5 @@
 (kubernetes)=
-# How to deploy Jina on Kubernetes
+# How to deploy with Kubernetes
 
 Jina natively supports deploying your Flow and Executors on Kubernetes.
 

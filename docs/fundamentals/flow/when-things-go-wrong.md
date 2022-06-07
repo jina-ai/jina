@@ -1,12 +1,12 @@
 (flow-error-handling)=
-# Error handling
+# Handle exceptions
 
 When building a complex solution, unfortunately things go wrong sometimes.
 Jina does its best to recover from failures, handle them gracefully, and report useful failure information to the user.
 
 The following outlines a number of (more or less) common failure cases, and explains how Jina responds to each one of them.
 
-## Exceptions in Executor code
+## Executor errors
 
 In general there are two places where an Executor level error can be introduced.
 
@@ -92,3 +92,57 @@ Depending on the client-to-gateway protocol, the error message will be returned 
 - **WebSocket**: The stream closes with close code 1011 (*INTERNAL_ERROR*) and the message is contained in the WS close message
 
 For any of these protocols, the {ref}`Jina Client <client>` will raise a `ConnectionError` containing the error message.
+
+## Breakpoint and debug
+
+Standard Python breakpoints will not work inside `Executor` methods when called inside a Flow context manager. Nevertheless, `import epdb; epdb.set_trace()` will work just as a native python breakpoint. Note that you need to `pip install epdb` to have access to this type of breakpoints.
+
+
+````{tab} ✅ Do
+```{code-block} python
+---
+emphasize-lines: 7
+---
+from jina import Flow, Executor, requests
+ 
+class CustomExecutor(Executor):
+    @requests
+    def foo(self, **kwargs):
+        a = 25
+        import epdb; epdb.set_trace() 
+        print(f'\n\na={a}\n\n')
+ 
+def main():
+    f = Flow().add(uses=CustomExecutor)
+    with f:
+        f.post(on='')
+
+if __name__ == '__main__':
+    main()
+
+```
+````
+
+````{tab} 😔 Don't
+```{code-block} python
+---
+emphasize-lines: 7
+---
+from jina import Flow, Executor, requests
+ 
+class CustomExecutor(Executor):
+    @requests
+    def foo(self, **kwargs):
+        a = 25
+        breakpoint()
+        print(f'\n\na={a}\n\n')
+ 
+def main():
+    f = Flow().add(uses=CustomExecutor)
+    with f:
+        f.post(on='')
+ 
+if __name__ == '__main__':
+    main()
+```
+````

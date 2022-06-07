@@ -34,7 +34,7 @@ Applications built with Jina enjoy the following features out-of-the-box:
   - Async and non-blocking data processing over dynamic flows.
 
 ☁️ **Cloud-native**
-  - Seamless Docker integration: sharing, exploring, sandboxing, versioning and dependency control via [Jina Hub](https://hub.jina.ai).
+  - Seamless Docker container integration: sharing, exploring, sandboxing, versioning and dependency control via [Jina Hub](https://hub.jina.ai).
   - Fast deployment to Kubernetes, Docker Compose and Jina Cloud.
   - Full observability via Prometheus and Grafana.
 

@@ -49,15 +49,12 @@ fundamentals/architecture-overview
 
 fundamentals/executor/index
 fundamentals/flow/index
-fundamentals/clean-code
+fundamentals/gateway/index
+fundamentals/flow/client
+fundamentals/executor/hub/index
+how-to/index
 ```
 
-```{toctree}
-:caption: How-to
-:hidden:
-how-to/deploy
-how-to/executor
-```
 
 
 ```{toctree}

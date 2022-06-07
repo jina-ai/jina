@@ -1,94 +1,12 @@
-# Executor File Structure
+# File structure
 
-Besides organizing your Executor code inline (i.e. with `Flow.add()` in the same file), you can also write it as an "external" module and then use it via YAML. This is useful when your Executor's logic is too complicated to fit into a single file.
+Besides organizing your Executor code inline, you can also write it as an "external" module and then use it via YAML. This is useful when your Executor’s logic is too complicated to fit into a single file.
 
-
-`````{tab} Separate module
-
-````{dropdown} foo.py
-
-
-```python
-from docarray import Document
-from jina import Executor, Flow, requests
-
-
-class MyExecutor(Executor):
-
-    @requests
-    def foo(self, **kwargs):
-        print(kwargs)
-
+```{tip}
+The best practice is to use `jina hub new` to create a new Executor. It automatically generates the files you need in the correct structure.
 ```
 
-````
-
-
-````{dropdown} config.yml
-
-```yaml
-jtype: MyExecutor
-metas:
-  py_modules:
-    - foo.py
-  name: awesomeness
-  description: my first awesome executor
-requests:
-  /random_work: foo
-```
-
-````
-
-````{dropdown} flow.py
-
-```python
-from docarray import Document
-from jina import Flow
-
-f = Flow().add(uses='config.yml')
-
-with f:
-    f.post(on='/random_work', inputs=Document(), on_done=print)
-```
-
-````
-
-`````
-
-````{tab} Inline manner
-
-
-```python
-from jina import Executor, Flow, Document, requests
-
-
-class MyExecutor(Executor):
-
-    @requests
-    def foo(self, **kwargs):
-        print(kwargs)
-
-
-f = Flow().add(uses=MyExecutor)
-
-with f:
-    f.post(on='/random_work', inputs=Document(), on_done=print)
-```
-
-
-````
-
-## Best practice
-
-Use 
-
-```bash
-jina hub new
-```
-
-in the terminal to create an Executor bundle.
-
-## Single Python file
+## Single Python file + YAML
 
 When you are only working with a single python file (let's call it `my_executor.py`), you can simply put it at the root of the repository, and import it directly in `config.yml`
 
@@ -99,7 +17,9 @@ metas:
     - my_executor.py
 ```
 
-## Multiple Python files
+## Multiple Python files + YAML
+
+
 
 When you are working with multiple python files, you should organize them as a **Python package** and put them in a special folder inside
 your repository (as you would normally do with Python packages). Specifically, you should do the following:
@@ -140,6 +60,7 @@ from jina import Executor, requests
 
 from .helper import print_something
 
+
 class MyExecutor(Executor):
     @requests
     def foo(self, **kwargs):
@@ -173,4 +94,3 @@ This was a relatively simple example, but this way of structuring python modules
 Here you can then import from `utils/data.py` in `my_executor.py` like this: `from .utils.data import foo`, and do any other kinds of relative imports that python enables.
 
 The best thing is that no matter how complicated your package structure, "importing" it in your `config.yml` file is super easy - you always put only `executor/__init__.py` under `py_modules`.
-

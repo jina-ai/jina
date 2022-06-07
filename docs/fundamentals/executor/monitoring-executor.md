@@ -1,8 +1,8 @@
 (monitoring-executor)=
-# Monitor Executor with Custom Metrics
+# Monitor
 
-Jina allows you to monitor every part of a Flow, including Executor, with the Grafana/Prometheus.
-This section documents the ability to add custom monitoring to the Executor.
+
+This section documents the ability to add custom monitoring to the Executor with the Grafana/Prometheus.
 
 Custom metrics are useful when you want to monitor each subpart of your Executors. Jina allows you to leverage
 the full power of the [Prometheus Client](https://github.com/prometheus/client_python) to define useful metrics 
@@ -19,7 +19,7 @@ please refer to {ref}`this <monitoring-flow>` section.
 When the monitoring is enabled each Executor will expose its 
 own metrics. This means that in practice each of the Executors will expose a Prometheus endpoint using the [Prometheus Client](https://github.com/prometheus/client_python).
 
-By default, every method which is decorated by the `@request` decorator will be monitored, it will create a
+By default, every method which is decorated by the `@requests` decorator will be monitored, it will create a
 [Prometheus Summary](https://prometheus.io/docs/concepts/metric_types/#summary) which will keep track of the time of 
 the execution of the method.
 
@@ -76,8 +76,7 @@ your metrics name should finish with `seconds`
 Let's take an example to illustrate custom metrics:
 
 ```python
-from jina import requests, Executor
-from docarray import DocumentArray
+from jina import requests, Executor, DocumentArray
 
 
 class MyExecutor(Executor):
@@ -103,8 +102,7 @@ By default, only the `encode` function will be monitored.
 ---
 emphasize-lines: 6, 10
 ---
-from jina import requests,monitor,Executor
-from docarray import DocumentArray
+from jina import requests,monitor, Executor, DocumentArray
 
 class MyExecutor(Executor):
 
@@ -134,8 +132,7 @@ Let's see it in an example
 
 
 ```python
-from jina import requests, Executor
-from docarray import DocumentArray
+from jina import requests, Executor, DocumentArray
 
 from prometheus_client import Counter
 
