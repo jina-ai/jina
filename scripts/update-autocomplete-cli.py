@@ -1,4 +1,4 @@
-ac_file = '../cli/autocomplete.py'
+ac_file = '../jina_cli/autocomplete.py'
 
 
 def _update_autocomplete():
