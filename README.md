@@ -294,7 +294,7 @@ class MyExec(Executor):
 Using Grafana becomes easy, just [download this JSON](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json) and import it into Grafana:
 
 <p align="center">
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/grafana.png?raw=true" alt="Jina: Seamless Container Integration" width="100%"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/grafana.png?raw=true" alt="Jina: Seamless Container Integration" width="70%"></a>
 </p>
 
 Using Kubernetes becomes easy:
