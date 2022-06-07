@@ -717,7 +717,9 @@ def _create_head_runtime(
         runtime.run_forever()
 
 
-def _create_gateway_runtime(graph_description, pod_addresses, port, protocol='grpc'):
+def _create_gateway_runtime(
+    graph_description, pod_addresses, port, protocol='grpc', retries=-1
+):
     if protocol == 'http':
         gateway_runtime = HTTPGatewayRuntime
     elif protocol == 'websocket':
@@ -733,6 +735,8 @@ def _create_gateway_runtime(graph_description, pod_addresses, port, protocol='gr
                 pod_addresses,
                 '--port',
                 str(port),
+                '--retries',
+                str(retries),
             ]
         )
     ) as runtime:
