@@ -192,6 +192,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -13895,4 +13896,36 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```cfb97363```](https://github.com/jina-ai/jina/commit/cfb973631fbee824873276792c19bc1fd0ab5ed3)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```dc8b2cfb```](https://github.com/jina-ai/jina/commit/dc8b2cfb6ea83510b15af14969b9e1b49181ee21)] __-__ __version__: the next version will be 3.4.11 (*Jina Dev Bot*)
+
+<a name=release-note-3-5-0></a>
+## Release Note (`3.5.0`)
+
+> Release time: 2022-06-07 22:01:28
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  samsja,  Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```6fa5342d```](https://github.com/jina-ai/jina/commit/6fa5342d3ba0f005b2a3365dcde71a1182cd5004)] __-__ custom monitoring with context manager (#4892) (*samsja*)
+ - [[```385d6b4b```](https://github.com/jina-ai/jina/commit/385d6b4bc7de703d87fb9efd950c0c50e1cefc11)] __-__ avoid concurrent init for replicas in same machine (#4861) (*Joan Fontanals*)
+
+### 🧼 Code Refactoring
+
+ - [[```16b16b07```](https://github.com/jina-ai/jina/commit/16b16b07a66cd5a8fc7cca1d3f1c378a9c63d38c)] __-__ rename cli to jina_cli (#4890) (*Han Xiao*)
+ - [[```5f06cff0```](https://github.com/jina-ai/jina/commit/5f06cff0fbaee8834824508199a4f2b89e7ba09e)] __-__ remove hello worlds (#4869) (*Han Xiao*)
+ - [[```1b05b842```](https://github.com/jina-ai/jina/commit/1b05b842d7a2c851b5de2150591198ad0d9987dc)] __-__ remove unnecessary code (#4865) (*Han Xiao*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```abe735f6```](https://github.com/jina-ai/jina/commit/abe735f6509847378233ec8275e41103c86662e8)] __-__ update test path findings (#4870) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```98beb57b```](https://github.com/jina-ai/jina/commit/98beb57b7d4f57f837529f15503e44c594bf130b)] __-__ fix readme (*Han Xiao*)
+ - [[```d6a09588```](https://github.com/jina-ai/jina/commit/d6a095884e5c5689bdd7d2e2be7b4abd685874c8)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```d50fc367```](https://github.com/jina-ai/jina/commit/d50fc3679dc4476525d293eeeded16b593df7826)] __-__ __version__: the next version will be 3.4.12 (*Jina Dev Bot*)
 
