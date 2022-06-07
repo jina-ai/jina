@@ -274,9 +274,44 @@ Behind this smooth experience is advanced management of Executors:
 
 ### Fast-lane to cloud-native
 
-tba
+Using Prometheus becomes easy:
+
+```python
+from jina import Executor, requests, DocumentArray
 
 
+class MyExec(Executor):
+    @requests
+    def encode(self, docs: DocumentArray, **kwargs):
+        with self.monitor('preprocessing_seconds', 'Time preprocessing the requests'):
+            docs.tensors = preprocessing(docs)
+        with self.monitor(
+            'model_inference_seconds', 'Time doing inference the requests'
+        ):
+            docs.embedding = model_inference(docs.tensors)
+```
+
+Using Grafana becomes easy, just [download this JSON](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json) and import it into Grafana:
+
+<p align="center">
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/grafana.png?raw=true" alt="Jina: Seamless Container Integration" width="100%"></a>
+</p>
+
+Using Kubernetes becomes easy:
+
+```bash
+jina export kubernetes flow.yml ./my-k8s
+kubectl apply -R -f my-k8s
+```
+
+Using Docker Compose becomes easy:
+
+```bash
+jina export docker-compose flow.yml docker-compose.yml
+docker-compose up
+```
+
+Which cloud-native technology is still challenging to you? [Tell us](https://github.com/jina-ai/jina/issues), we will handle the complexity and make it easy for you.
 
 <!-- start support-pitch -->
 
