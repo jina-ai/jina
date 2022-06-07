@@ -8,6 +8,9 @@ on:
   push:
     branches-ignore:
       - '**'  # temporally disable this action
+    paths-ignore:
+      - 'scripts'
+      - 'tests'
 
 
 jobs:
