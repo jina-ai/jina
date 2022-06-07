@@ -58,19 +58,20 @@ class MyExecutor(Executor):
             doc.tensor = torch.tensor(np.random.random([10, 2]))
 ```
 
-## A small Jina application
+## A dummy Jina application
 
 
-Now let's write a small application with our new dependency. In our `app.py`, add the following code:
+Now let's write a dummy application with our new dependency. In our `app.py`, add the following code:
 
 ```python
 from jina import Flow, Document
 
 f = Flow().add(uses='executor1/config.yml')
 
-with f:
-    da = f.post('/get-tensor', [Document(), Document()])
-    print(da.tensors)
+if __name__ == '__main__':
+    with f:
+        da = f.post('/get-tensor', [Document(), Document()])
+        print(da.tensors)
 ```
 
 Once we save that, we can run our application by typing:

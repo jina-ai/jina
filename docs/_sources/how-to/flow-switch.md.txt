@@ -1,5 +1,5 @@
 (flow-switch)=
-# How to build switches in a Flow
+# How to add selection control to a Flow
 
 ````{admonition} Requirements
 :class: hint
@@ -18,9 +18,9 @@ If you are not yet familiar with the basics of the [DocArray query language](htt
 {ref}`filters <flow-filter>`, we recommend that you read the linked documentation pages first.
 ````
 
-Here you will learn where and how to use this feature, and how you can build *switches* into your Flow.
+Here you will learn where and how to use this feature, and how you can build *selection control* into your Flow.
 
-## Why do you need a switch?
+## Why do you need a selection control?
 
 {ref}`As you know <flow-complex-topologies>`, Jina Flows can define complex topologies that include multiple Executors,
 both in sequence and on parallel branches.
@@ -116,7 +116,7 @@ class ImageIndexer(Executor):
 ```
 ````
 
-```terminal
+```console
 [{'embedded_by': 'textIndexer'}, {'embedded_by': 'textIndexer'}]
 [[0.37511057 0.14902827 0.31666838]
  [0.18466062 0.17823904 0.20046065]]
@@ -131,7 +131,7 @@ As you can see, the image data was only processed by the `ImageIndexer`, and the
 However, there is a problem with this approach:
 Sometimes you can't easily control the endpoints of all Executors, for example when you are using the {ref}`Jina Hub <jina-hub>` or {ref}`external Executors <external-executor>`.
 
-To solve that problem, you can leverage filter condition to easily build a switch into your Flow.
+To solve that problem, you can leverage filter condition to easily add selection control into your Flow.
 
 ## Define the filter conditions
 
@@ -195,7 +195,7 @@ That's exactly what you want for your filter!
 
 Finally, you can assemble your Flow using these conditions and the Indexers from above.
 This time there is no need to choose different Executor endpoints for the Indexers, since the filters take care of the
-switch logic.
+selection control logic.
 
 ````{tab} Flow
 
@@ -288,7 +288,7 @@ And remember, with this solution the Documents don't even get *sent* to the inco
 
 ## What's next
 
-Now that you know how to use filter conditions to build switches, you can leverage this feature to build all kinds of business logic.
+Now that you know how to use filter conditions to add selection control, you can leverage this feature to build all kinds of business logic.
 
 You could differentiate between more than just two different data modalities, you could direct requests based on the Client they come from,
 ignore Documents that don't meet certain quality criteria, or route data to specialized Executors based on what the data

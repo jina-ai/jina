@@ -417,8 +417,8 @@ Here's how we need to modify our `main.py` script to use a GPU-base containerize
 ---
 emphasize-lines: 12
 ---
-from docarray import Document, DocumentArray
-from jina import Flow
+
+from jina import Flow, Document, DocumentArray
 
 from executor import SentenceEncoder
 

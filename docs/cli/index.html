@@ -10,19 +10,19 @@
   
 <meta property="og:url" content="https://docs.jina.ai/cli/index/" />
   
-<meta property="og:site_name" content="Jina 3.4.11 Documentation" />
+<meta property="og:site_name" content="Jina 3.5.0 Documentation" />
   
-<meta property="og:description" content="Positional Arguments: cli,, Possible choices: hello, executor, flow, ping, new, gateway, hub, help, pod, deployment, client, export-api,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-commands:: hello: Start hello world dem..." />
+<meta property="og:description" content="Positional Arguments: cli,, Possible choices: executor, flow, ping, export, new, gateway, hub, help, pod, deployment, client,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-commands:: executor: Start an Executor. Executor i..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.4.11 Documentation" />
+<meta property="og:image:alt" content="Jina 3.5.0 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">
-<meta property="og:description" content="Jina is the cloud-native neural search solution powered by the state-of-the-art AI and deep learning">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -35,10 +35,10 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Protocol Documentation" href="../proto/docs/" /><link rel="prev" title="cli.lookup module" href="../api/cli.lookup/" />
+    <link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Protocol Documentation" href="../proto/docs/" /><link rel="prev" title="jina.importer module" href="../api/jina.importer/" />
 
     <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2021.10.09"/>
-        <title>Command-Line Interface - Jina 3.4.11 documentation</title>
+        <title>Command-Line Interface - Jina 3.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -82,6 +82,7 @@
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
     
+
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
@@ -159,7 +160,7 @@
 
 
 <div class="page">
-    <header class="mobile-header" id="mobile-header">
+    <header class="mobile-header">
         <div class="header-left">
             <label class="nav-overlay-icon" for="__navigation">
                 <div class="visually-hidden">Toggle site navigation sidebar</div>
@@ -172,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../">
-                <div class="brand">Jina 3.4.11 documentation</div>
+                <div class="brand">Jina 3.5.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -200,7 +201,7 @@
             </label>
         </div>
     </header>
-    <aside class="sidebar-drawer" id="sidebar-drawer">
+    <aside class="sidebar-drawer">
         <div class="sidebar-container">
             
             <div class="sidebar-sticky"><a class="sidebar-brand" href="../">
@@ -221,90 +222,78 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../get-started/neural-search/">What is Neural Search?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../get-started/what-is-jina/#comparing-to-alternatives">Comparing to Alternatives</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../get-started/install/windows/">Jina on Windows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../get-started/install/troubleshooting/">Troubleshooting</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../get-started/create-app/">Create a New Project</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../get-started/hello-world/">Run Quick Demos</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../get-started/hello-world/fashion/">Fashion image search</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../get-started/hello-world/covid-19-chatbot/">Covid-19 chatbot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../get-started/hello-world/multimodal/">Multimodal search</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../fundamentals/architecture-overview/">Architecture Overview</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../fundamentals/architecture-overview/">Architecture Overview</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/executor-api/">Executor API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/executor-in-flow/">Executors inside a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/repository-structure/">Executor File Structure</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../fundamentals/executor/hub/">Share Executors via Jina Hub</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/hub-portal/">Hub Portal</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/create-hub-executor/">Create Executor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/push-executor/">Publish Executor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/use-hub-executor/">Use Hub Executors Locally</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../how-to/sandbox/">Use Hub Executor Remotely</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fundamentals/executor/hub/executor-best-practices/">Best Practices</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/containerize-executor/">Dockerize your Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/monitoring-executor/">Monitor Executor with Custom Metrics</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/executor-api/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/monitoring-executor/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/executor-run/">Run</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/executor-serve/">Serve</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/yaml-spec/">YAML specification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/executor-files/">File structure</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/create-flow/">Create a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/flow-api/">Configure Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/access-flow-api/">Access Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/client/">Python Client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/monitoring-flow/">Monitor Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/when-things-go-wrong/">Error handling</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/topologies/">Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/yaml-spec/">YAML specification</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/remarks/">Remarks</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../fundamentals/clean-code/">Clean &amp; Efficient Code</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">How-to</span></p>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../how-to/deploy/">Deploy</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../how-to/docker-compose/">How to run Jina with Docker Compose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how-to/kubernetes/">How to deploy Jina on Kubernetes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how-to/monitoring/">How to deploy and use the monitoring with Jina</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fundamentals/gateway/">Gateway</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../fundamentals/flow/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/access-flow-api/">Third-party clients</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../how-to/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../fundamentals/executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/hub/hub-portal/">Portal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/hub/push-executor/">Publish</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/sandbox/">Sandbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/debug-executor/">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/hub/executor-best-practices/">Best practices</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book sd-text-info" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/clean-code/">How to write clean &amp; efficient code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/async-executors/">How to use async coroutines in Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/scale-out/">How to scale out your Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/gpu-executor/">How to run Executors on GPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/external-executor/">How to use external Executors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how-to/flow-switch/">How to build switches in a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how-to/debug-executor/">How to debug an Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/flow-switch/">How to add selection control to a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/docker-compose/">How to deploy with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/kubernetes/">How to deploy with Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/monitoring/">How to add monitoring to Jina with Kubernetes</a></li>
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../get-started/migrate/">Migration to Jina 3</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../api/">Python API</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.clients.base/">jina.clients.base package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/">Python API</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/jina/">jina package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.clients/">jina.clients package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.clients.base/">jina.clients.base package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.clients.base.helper/">jina.clients.base.helper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.clients.base.http/">jina.clients.base.http module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.clients.request/">jina.clients.request package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.clients.request.asyncio/">jina.clients.request.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.clients.request.helper/">jina.clients.request.helper module</a></li>
 </ul>
@@ -316,44 +305,24 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.clients.websocket/">jina.clients.websocket module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.helloworld/">jina.helloworld package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.helloworld.chatbot/">jina.helloworld.chatbot package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../api/jina.helloworld.chatbot.app/">jina.helloworld.chatbot.app module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../api/jina.helloworld.chatbot.my_executors/">jina.helloworld.chatbot.my_executors module</a></li>
-</ul>
-</li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.helloworld.fashion/">jina.helloworld.fashion package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../api/jina.helloworld.fashion.app/">jina.helloworld.fashion.app module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../api/jina.helloworld.fashion.helper/">jina.helloworld.fashion.helper module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../api/jina.helloworld.fashion.my_executors/">jina.helloworld.fashion.my_executors module</a></li>
-</ul>
-</li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.helloworld.multimodal/">jina.helloworld.multimodal package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../api/jina.helloworld.multimodal.app/">jina.helloworld.multimodal.app module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../api/jina.helloworld.multimodal.my_executors/">jina.helloworld.multimodal.my_executors module</a></li>
-</ul>
-</li>
-<li class="toctree-l4"><a class="reference internal" href="../api/jina.helloworld.fork/">jina.helloworld.fork module</a></li>
-</ul>
-</li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.hubble/">jina.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.hubble/">jina.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.hubble.helper/">jina.hubble.helper module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.hubble.hubapi/">jina.hubble.hubapi module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.hubble.hubio/">jina.hubble.hubio module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.hubble.requirements/">jina.hubble.requirements module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.jaml.parsers/">jina.jaml.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.jaml.parsers.default/">jina.jaml.parsers.default package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.jaml/">jina.jaml package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.jaml.parsers/">jina.jaml.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.jaml.parsers.default/">jina.jaml.parsers.default package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.jaml.parsers.default.v1/">jina.jaml.parsers.default.v1 module</a></li>
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.jaml.parsers.executor/">jina.jaml.parsers.executor package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.jaml.parsers.executor/">jina.jaml.parsers.executor package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.jaml.parsers.executor.legacy/">jina.jaml.parsers.executor.legacy module</a></li>
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.jaml.parsers.flow/">jina.jaml.parsers.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.jaml.parsers.flow/">jina.jaml.parsers.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.jaml.parsers.flow.v1/">jina.jaml.parsers.flow.v1 module</a></li>
 </ul>
 </li>
@@ -363,17 +332,17 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.jaml.helper/">jina.jaml.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.logging/">jina.logging package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.logging.formatter/">jina.logging.formatter module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.logging.logger/">jina.logging.logger module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.logging.predefined/">jina.logging.predefined module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.logging.profile/">jina.logging.profile module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.orchestrate/">jina.orchestrate package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.orchestrate.deployments/">jina.orchestrate.deployments package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.orchestrate.deployments.config/">jina.orchestrate.deployments.config package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6 has-children"><a class="reference internal" href="../api/jina.orchestrate.deployments.config.k8slib/">jina.orchestrate.deployments.config.k8slib package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.orchestrate/">jina.orchestrate package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.orchestrate.deployments/">jina.orchestrate.deployments package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.orchestrate.deployments.config/">jina.orchestrate.deployments.config package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../api/jina.orchestrate.deployments.config.k8slib/">jina.orchestrate.deployments.config.k8slib package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l7"><a class="reference internal" href="../api/jina.orchestrate.deployments.config.k8slib.kubernetes_deployment/">jina.orchestrate.deployments.config.k8slib.kubernetes_deployment module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="../api/jina.orchestrate.deployments.config.k8slib.kubernetes_tools/">jina.orchestrate.deployments.config.k8slib.kubernetes_tools module</a></li>
 </ul>
@@ -385,13 +354,13 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.orchestrate.flow/">jina.orchestrate.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.orchestrate.flow/">jina.orchestrate.flow package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.orchestrate.flow.asyncio/">jina.orchestrate.flow.asyncio module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.orchestrate.flow.base/">jina.orchestrate.flow.base module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.orchestrate.flow.builder/">jina.orchestrate.flow.builder module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.orchestrate.pods/">jina.orchestrate.pods package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.orchestrate.pods/">jina.orchestrate.pods package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.orchestrate.pods.container/">jina.orchestrate.pods.container module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.orchestrate.pods.container_helper/">jina.orchestrate.pods.container_helper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.orchestrate.pods.factory/">jina.orchestrate.pods.factory module</a></li>
@@ -401,15 +370,15 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.orchestrate.helper/">jina.orchestrate.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.parsers/">jina.parsers package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.parsers.hubble/">jina.parsers.hubble package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.parsers.hubble.new/">jina.parsers.hubble.new module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.parsers.orchestrate/">jina.parsers.orchestrate package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.parsers.orchestrate.runtimes/">jina.parsers.orchestrate.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.parsers.orchestrate/">jina.parsers.orchestrate package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.parsers.orchestrate.runtimes/">jina.parsers.orchestrate.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.parsers.orchestrate.runtimes.container/">jina.parsers.orchestrate.runtimes.container module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.parsers.orchestrate.runtimes.distributed/">jina.parsers.orchestrate.runtimes.distributed module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.parsers.orchestrate.runtimes.head/">jina.parsers.orchestrate.runtimes.head module</a></li>
@@ -426,20 +395,19 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.client/">jina.parsers.client module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.create/">jina.parsers.create module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.deprecated/">jina.parsers.deprecated module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.export_api/">jina.parsers.export_api module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.export/">jina.parsers.export module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.flow/">jina.parsers.flow module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.helloworld/">jina.parsers.helloworld module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.helper/">jina.parsers.helper module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.parsers.ping/">jina.parsers.ping module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.proto/">jina.proto package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.proto.jina_pb2/">jina.proto.jina_pb2 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.proto.jina_pb2_grpc/">jina.proto.jina_pb2_grpc module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.proto.serializer/">jina.proto.serializer module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.schemas/">jina.schemas package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.schemas.deployment/">jina.schemas.deployment module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.schemas.executor/">jina.schemas.executor module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.schemas.flow/">jina.schemas.flow module</a></li>
@@ -447,25 +415,25 @@
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.schemas.meta/">jina.schemas.meta module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.serve/">jina.serve package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.serve.executors/">jina.serve.executors package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.serve/">jina.serve package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.serve.executors/">jina.serve.executors package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.serve.executors.decorators/">jina.serve.executors.decorators module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.serve.executors.metas/">jina.serve.executors.metas module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.serve.runtimes/">jina.serve.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" role="switch" type="checkbox"/><label for="toctree-checkbox-38"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.serve.runtimes.gateway/">jina.serve.runtimes.gateway package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" role="switch" type="checkbox"/><label for="toctree-checkbox-39"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6 has-children"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.graph/">jina.serve.runtimes.gateway.graph package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.serve.runtimes/">jina.serve.runtimes package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.serve.runtimes.gateway/">jina.serve.runtimes.gateway package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.graph/">jina.serve.runtimes.gateway.graph package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l7"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.graph.topology_graph/">jina.serve.runtimes.gateway.graph.topology_graph module</a></li>
 </ul>
 </li>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.grpc/">jina.serve.runtimes.gateway.grpc package</a></li>
-<li class="toctree-l6 has-children"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.http/">jina.serve.runtimes.gateway.http package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.http/">jina.serve.runtimes.gateway.http package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l7"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.http.app/">jina.serve.runtimes.gateway.http.app module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.http.models/">jina.serve.runtimes.gateway.http.models module</a></li>
 </ul>
 </li>
-<li class="toctree-l6 has-children"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.websocket/">jina.serve.runtimes.gateway.websocket package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.websocket/">jina.serve.runtimes.gateway.websocket package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l7"><a class="reference internal" href="../api/jina.serve.runtimes.gateway.websocket.app/">jina.serve.runtimes.gateway.websocket.app module</a></li>
 </ul>
 </li>
@@ -473,7 +441,7 @@
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.serve.runtimes.head/">jina.serve.runtimes.head package</a></li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.serve.runtimes.request_handlers/">jina.serve.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-43" name="toctree-checkbox-43" role="switch" type="checkbox"/><label for="toctree-checkbox-43"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../api/jina.serve.runtimes.request_handlers/">jina.serve.runtimes.request_handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-38" name="toctree-checkbox-38" role="switch" type="checkbox"/><label for="toctree-checkbox-38"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../api/jina.serve.runtimes.request_handlers.data_request_handler/">jina.serve.runtimes.request_handlers.data_request_handler module</a></li>
 </ul>
 </li>
@@ -483,15 +451,15 @@
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.serve.runtimes.monitoring/">jina.serve.runtimes.monitoring module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.serve.stream/">jina.serve.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-44" name="toctree-checkbox-44" role="switch" type="checkbox"/><label for="toctree-checkbox-44"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.serve.stream/">jina.serve.stream package</a><input class="toctree-checkbox" id="toctree-checkbox-39" name="toctree-checkbox-39" role="switch" type="checkbox"/><label for="toctree-checkbox-39"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.serve.stream.helper/">jina.serve.stream.helper module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../api/jina.serve.networking/">jina.serve.networking module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-45" name="toctree-checkbox-45" role="switch" type="checkbox"/><label for="toctree-checkbox-45"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-46" name="toctree-checkbox-46" role="switch" type="checkbox"/><label for="toctree-checkbox-46"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../api/jina.types.request.data/">jina.types.request.data module</a></li>
 </ul>
@@ -502,22 +470,19 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.checker/">jina.checker module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.enums/">jina.enums module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.excepts/">jina.excepts module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/jina.exporter/">jina.exporter module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.helper/">jina.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/jina.importer/">jina.importer module</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/cli/">cli package</a><input class="toctree-checkbox" id="toctree-checkbox-47" name="toctree-checkbox-47" role="switch" type="checkbox"/><label for="toctree-checkbox-47"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/cli.api/">cli.api module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/cli.autocomplete/">cli.autocomplete module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/cli.export/">cli.export module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/cli.known_plugins/">cli.known_plugins module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/cli.lookup/">cli.lookup module</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Command-Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../proto/docs/">Protocol Documentation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -562,9 +527,14 @@
     </aside>
     <div class="main">
         <div class="content">
-            <article role="main">
-                <div class="content-icon-container">
-                    <div class="theme-toggle-container theme-toggle-content">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>Back to top</span>
+                </a>
+                <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
                         <button class="theme-toggle">
                             <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
                             <svg class="theme-icon-when-auto">
@@ -588,17 +558,18 @@
                         </i>
                     </label>
                 </div>
-                <section id="command-line-interface">
+                <article role="main">
+                    <section id="command-line-interface">
 <h1>Command-Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">jina</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">vf</span><span class="p">]</span>
-            <span class="p">{</span><span class="n">hello</span><span class="p">,</span> <span class="n">executor</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">ping</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
+            <span class="p">{</span><span class="n">executor</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">ping</span><span class="p">,</span> <span class="n">export</span> <span class="o">...</span> <span class="mi">7</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
 </pre></div>
 </div>
 <section id="Positional Arguments">
 <h2>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="option-list">
 <dt><kbd>cli</kbd></dt>
-<dd><p>Possible choices: hello, executor, flow, ping, new, gateway, hub, help, pod, deployment, client, export-api</p>
+<dd><p>Possible choices: executor, flow, ping, export, new, gateway, hub, help, pod, deployment, client</p>
 </dd>
 </dl>
 </section>
@@ -615,169 +586,6 @@
 </section>
 <section id="Sub-commands:">
 <h2>Sub-commands:<a class="headerlink" href="#Sub-commands:" title="Permalink to this headline">¶</a></h2>
-<section id="hello">
-<h3>hello<a class="headerlink" href="#hello" title="Permalink to this headline">¶</a></h3>
-<p>Start hello world demos.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hello</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">fashion</span><span class="p">,</span> <span class="n">chatbot</span><span class="p">,</span> <span class="n">multimodal</span><span class="p">,</span> <span class="n">fork</span><span class="p">}</span> <span class="o">...</span>
-</pre></div>
-</div>
-<section id="subcommands">
-<h4>subcommands<a class="headerlink" href="#subcommands" title="Permalink to this headline">¶</a></h4>
-<p>use <cite>%(prog)-8s [sub-command] –help</cite> to get detailed information about each sub-command</p>
-<dl class="option-list">
-<dt><kbd>hello</kbd></dt>
-<dd><p>Possible choices: fashion, chatbot, multimodal, fork</p>
-</dd>
-</dl>
-</section>
-<section id="Sub-commands:_repeat1">
-<h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat1" title="Permalink to this headline">¶</a></h4>
-<section id="fashion">
-<h5>fashion<a class="headerlink" href="#fashion" title="Permalink to this headline">¶</a></h5>
-<p>Run a fashion search demo</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hello</span> <span class="n">fashion</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workdir</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">download</span><span class="o">-</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">url</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">labels</span><span class="o">-</span><span class="n">url</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">query</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">url</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">--</span><span class="n">query</span><span class="o">-</span><span class="n">labels</span><span class="o">-</span><span class="n">url</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">query</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">top</span><span class="o">-</span><span class="n">k</span><span class="p">]</span>
-</pre></div>
-</div>
-<section id="General arguments">
-<h6>General arguments<a class="headerlink" href="#General arguments" title="Permalink to this headline">¶</a></h6>
-<dl class="option-list">
-<dt><kbd>--workdir</kbd></dt>
-<dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “16b6d4b2cf4a4e018ba01bfaae3d5e22”</p>
-</dd>
-<dt><kbd>--download-proxy</kbd></dt>
-<dd><p>The proxy when downloading sample data</p>
-</dd>
-</dl>
-</section>
-<section id="Index arguments">
-<h6>Index arguments<a class="headerlink" href="#Index arguments" title="Permalink to this headline">¶</a></h6>
-<dl class="option-list">
-<dt><kbd>--index-data-url</kbd></dt>
-<dd><p>The url of index data (should be in idx3-ubyte.gz format)</p>
-<p>Default: “<a class="reference external" href="http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz">http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz</a>”</p>
-</dd>
-<dt><kbd>--index-labels-url</kbd></dt>
-<dd><p>The url of index labels data (should be in idx3-ubyte.gz format)</p>
-<p>Default: “<a class="reference external" href="http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz">http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz</a>”</p>
-</dd>
-</dl>
-</section>
-<section id="Search arguments">
-<h6>Search arguments<a class="headerlink" href="#Search arguments" title="Permalink to this headline">¶</a></h6>
-<dl class="option-list">
-<dt><kbd>--query-data-url</kbd></dt>
-<dd><p>The url of query data (should be in idx3-ubyte.gz format)</p>
-<p>Default: “<a class="reference external" href="http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz">http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz</a>”</p>
-</dd>
-<dt><kbd>--query-labels-url</kbd></dt>
-<dd><p>The url of query labels data (should be in idx3-ubyte.gz format)</p>
-<p>Default: “<a class="reference external" href="http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz">http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz</a>”</p>
-</dd>
-<dt><kbd>--num-query</kbd></dt>
-<dd><p>The number of queries to visualize</p>
-<p>Default: 128</p>
-</dd>
-<dt><kbd>--top-k</kbd></dt>
-<dd><p>Top-k results to retrieve and visualize</p>
-<p>Default: 50</p>
-</dd>
-</dl>
-</section>
-</section>
-<section id="chatbot">
-<h5>chatbot<a class="headerlink" href="#chatbot" title="Permalink to this headline">¶</a></h5>
-<p>Run a chatbot QA demo</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hello</span> <span class="n">chatbot</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workdir</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">download</span><span class="o">-</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">url</span><span class="p">]</span>
-                   <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
-</pre></div>
-</div>
-<section id="Named Arguments_repeat1">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat1" title="Permalink to this headline">¶</a></h6>
-<dl class="option-list">
-<dt><kbd>--index-data-url</kbd></dt>
-<dd><p>The url of index csv data</p>
-<p>Default: “<a class="reference external" href="https://static.jina.ai/chatbot/dataset.csv">https://static.jina.ai/chatbot/dataset.csv</a>”</p>
-</dd>
-<dt><kbd>--port</kbd></dt>
-<dd><p>The port of the host exposed to the public</p>
-<p>Default: 8080</p>
-</dd>
-<dt><kbd>--replicas</kbd></dt>
-<dd><p>The number of replicas when index and query</p>
-<p>Default: 2</p>
-</dd>
-</dl>
-</section>
-<section id="General arguments_repeat1">
-<h6>General arguments<a class="headerlink" href="#General arguments_repeat1" title="Permalink to this headline">¶</a></h6>
-<dl class="option-list">
-<dt><kbd>--workdir</kbd></dt>
-<dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “8c3f871719ad482f81329a0f6f35f443”</p>
-</dd>
-<dt><kbd>--download-proxy</kbd></dt>
-<dd><p>The proxy when downloading sample data</p>
-</dd>
-</dl>
-</section>
-</section>
-<section id="multimodal">
-<h5>multimodal<a class="headerlink" href="#multimodal" title="Permalink to this headline">¶</a></h5>
-<p>Run a multimodal search demo</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hello</span> <span class="n">multimodal</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workdir</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">download</span><span class="o">-</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">index</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">url</span><span class="p">]</span>
-                      <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span>
-</pre></div>
-</div>
-<section id="Named Arguments_repeat2">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat2" title="Permalink to this headline">¶</a></h6>
-<dl class="option-list">
-<dt><kbd>--index-data-url</kbd></dt>
-<dd><p>The url of index csv data</p>
-<p>Default: “<a class="reference external" href="https://static.jina.ai/multimodal/people-img.zip">https://static.jina.ai/multimodal/people-img.zip</a>”</p>
-</dd>
-<dt><kbd>--port</kbd></dt>
-<dd><p>The port of the host exposed to the public</p>
-<p>Default: 8080</p>
-</dd>
-</dl>
-</section>
-<section id="General arguments_repeat2">
-<h6>General arguments<a class="headerlink" href="#General arguments_repeat2" title="Permalink to this headline">¶</a></h6>
-<dl class="option-list">
-<dt><kbd>--workdir</kbd></dt>
-<dd><p>The workdir for hello-world demoall data, indices, shards and outputs will be saved there</p>
-<p>Default: “34c8362e3c564cc4b56f41176cc53382”</p>
-</dd>
-<dt><kbd>--download-proxy</kbd></dt>
-<dd><p>The proxy when downloading sample data</p>
-</dd>
-</dl>
-</section>
-</section>
-<section id="fork">
-<h5>fork<a class="headerlink" href="#fork" title="Permalink to this headline">¶</a></h5>
-<p>Fork a hello world project to a local directory.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hello</span> <span class="n">fork</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">fashion</span><span class="p">,</span> <span class="n">chatbot</span><span class="p">,</span> <span class="n">multimodal</span><span class="p">}</span> <span class="n">destination</span>
-</pre></div>
-</div>
-<section id="Positional Arguments_repeat1">
-<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat1" title="Permalink to this headline">¶</a></h6>
-<dl class="option-list">
-<dt><kbd>project</kbd></dt>
-<dd><p>Possible choices: fashion, chatbot, multimodal</p>
-<p>The hello world project to fork</p>
-</dd>
-<dt><kbd>destination</kbd></dt>
-<dd><p>The dest directory of the forked project. Note, it can not be an existing path.</p>
-</dd>
-</dl>
-</section>
-</section>
-</section>
-</section>
 <section id="executor">
 <h3>executor<a class="headerlink" href="#executor" title="Permalink to this headline">¶</a></h3>
 <p>Start an Executor. Executor is how Jina processes Document.</p>
@@ -795,7 +603,8 @@
               <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">compression</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -893,7 +702,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 52379</p>
+<p>Default: 64850</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -998,7 +807,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 61514</p>
+<p>Default: 54476</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1027,8 +836,8 @@ Python files, data files.</p>
 <h4>Head arguments<a class="headerlink" href="#Head arguments" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--compression</kbd></dt>
-<dd><p>The compression mechanism used when sending requests from the Head to the WorkerRuntimes. Possibilities are <cite>NoCompression, Gzip, Deflate</cite>. For more details, check <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">https://grpc.github.io/grpc/python/grpc.html#compression</a>.</p>
-<p>Default: “NoCompression”</p>
+<dd><p>Possible choices: NoCompression, Deflate, Gzip</p>
+<p>The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">https://grpc.github.io/grpc/python/grpc.html#compression</a>.</p>
 </dd>
 <dt><kbd>--uses-before-address</kbd></dt>
 <dd><p>The address of the uses-before runtime</p>
@@ -1114,8 +923,8 @@ Python files, data files.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">ping</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="n">host</span> <span class="n">port</span>
 </pre></div>
 </div>
-<section id="Positional Arguments_repeat2">
-<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat2" title="Permalink to this headline">¶</a></h4>
+<section id="Positional Arguments_repeat1">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>host</kbd></dt>
 <dd><p>The host address of the target Pod, e.g. 0.0.0.0</p>
@@ -1125,8 +934,8 @@ Python files, data files.</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat3">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat1">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--timeout</kbd></dt>
 <dd><p>Timeout in millisecond of one check
@@ -1140,14 +949,135 @@ Python files, data files.</p>
 </dl>
 </section>
 </section>
+<section id="export">
+<h3>export<a class="headerlink" href="#export" title="Permalink to this headline">¶</a></h3>
+<p>Export Jina API and Flow to JSONSchema, Kubernetes YAML, or SVG flowchart.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">export</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">flowchart</span><span class="p">,</span> <span class="n">kubernetes</span><span class="p">,</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose</span><span class="p">,</span> <span class="n">schema</span><span class="p">}</span> <span class="o">...</span>
+</pre></div>
+</div>
+<section id="subcommands">
+<h4>subcommands<a class="headerlink" href="#subcommands" title="Permalink to this headline">¶</a></h4>
+<p>use <cite>%(prog)-8s [sub-command] –help</cite> to get detailed information about each sub-command</p>
+<dl class="option-list">
+<dt><kbd>export</kbd></dt>
+<dd><p>Possible choices: flowchart, kubernetes, docker-compose, schema</p>
+</dd>
+</dl>
+</section>
+<section id="Sub-commands:_repeat1">
+<h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat1" title="Permalink to this headline">¶</a></h4>
+<section id="flowchart">
+<h5>flowchart<a class="headerlink" href="#flowchart" title="Permalink to this headline">¶</a></h5>
+<p>Export a Flow YAML file to a flowchart</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">export</span> <span class="n">flowchart</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">vertical</span><span class="o">-</span><span class="n">layout</span><span class="p">]</span> <span class="n">INPUT</span> <span class="n">OUTPUT</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat2">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat2" title="Permalink to this headline">¶</a></h6>
+<dl class="option-list">
+<dt><kbd>INPUT</kbd></dt>
+<dd><p>The input file path of a Flow YAML</p>
+</dd>
+<dt><kbd>OUTPUT</kbd></dt>
+<dd><p>The output path</p>
+</dd>
+</dl>
+</section>
+<section id="Named Arguments_repeat2">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat2" title="Permalink to this headline">¶</a></h6>
+<dl class="option-list">
+<dt><kbd>--vertical-layout</kbd></dt>
+<dd><p>If set, then the flowchart is rendered vertically from top to down.</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="kubernetes">
+<h5>kubernetes<a class="headerlink" href="#kubernetes" title="Permalink to this headline">¶</a></h5>
+<p>Export a Flow YAML file to a Kubernetes YAML bundle</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">export</span> <span class="n">kubernetes</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">k8s</span><span class="o">-</span><span class="n">namespace</span><span class="p">]</span> <span class="n">INPUT</span> <span class="n">OUTPUT</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat3">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat3" title="Permalink to this headline">¶</a></h6>
+<dl class="option-list">
+<dt><kbd>INPUT</kbd></dt>
+<dd><p>The input file path of a Flow YAML</p>
+</dd>
+<dt><kbd>OUTPUT</kbd></dt>
+<dd><p>The output path</p>
+</dd>
+</dl>
+</section>
+<section id="Named Arguments_repeat3">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat3" title="Permalink to this headline">¶</a></h6>
+<dl class="option-list">
+<dt><kbd>--k8s-namespace</kbd></dt>
+<dd><p>The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="docker-compose">
+<h5>docker-compose<a class="headerlink" href="#docker-compose" title="Permalink to this headline">¶</a></h5>
+<p>Export a Flow YAML file to a Docker Compose YAML file</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">export</span> <span class="n">docker</span><span class="o">-</span><span class="n">compose</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">network_name</span><span class="p">]</span> <span class="n">INPUT</span> <span class="n">OUTPUT</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat4">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat4" title="Permalink to this headline">¶</a></h6>
+<dl class="option-list">
+<dt><kbd>INPUT</kbd></dt>
+<dd><p>The input file path of a Flow YAML</p>
+</dd>
+<dt><kbd>OUTPUT</kbd></dt>
+<dd><p>The output path</p>
+</dd>
+</dl>
+</section>
+<section id="Named Arguments_repeat4">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this headline">¶</a></h6>
+<dl class="option-list">
+<dt><kbd>--network_name</kbd></dt>
+<dd><p>The name of the network that will be used by the deployment name.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="schema">
+<h5>schema<a class="headerlink" href="#schema" title="Permalink to this headline">¶</a></h5>
+<p>Export Jina Executor &amp; Flow API to JSONSchema files</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">export</span> <span class="n">schema</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">yaml</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">json</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">schema</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
+</pre></div>
+</div>
+<section id="Named Arguments_repeat5">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this headline">¶</a></h6>
+<dl class="option-list">
+<dt><kbd>--yaml-path</kbd></dt>
+<dd><p>The YAML file path for storing the exported API</p>
+</dd>
+<dt><kbd>--json-path</kbd></dt>
+<dd><p>The JSON file path for storing the exported API</p>
+</dd>
+<dt><kbd>--schema-path</kbd></dt>
+<dd><p>The JSONSchema file path for storing the exported API</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+</section>
 <section id="new">
 <h3>new<a class="headerlink" href="#new" title="Permalink to this headline">¶</a></h3>
 <p>Create a new Jina toy project with the predefined template.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">new</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">name</span>
 </pre></div>
 </div>
-<section id="Positional Arguments_repeat3">
-<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat3" title="Permalink to this headline">¶</a></h4>
+<section id="Positional Arguments_repeat5">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat5" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>name</kbd></dt>
 <dd><p>The name of the project</p>
@@ -1166,22 +1096,22 @@ Python files, data files.</p>
              <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">requests</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">title</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cors</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">default</span><span class="o">-</span><span class="n">swagger</span><span class="o">-</span><span class="n">ui</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">crud</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cors</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">crud</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">uvicorn</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">ssl</span><span class="o">-</span><span class="n">certfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssl</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">graphql</span><span class="o">-</span><span class="n">endpoint</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">conditions</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">addresses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">compression</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat4">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat4" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat6">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--protocol</kbd></dt>
 <dd><p>Possible choices: GRPC, HTTP, WEBSOCKET</p>
@@ -1301,7 +1231,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 61913</p>
+<p>Default: 61798</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1346,17 +1276,13 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </div></blockquote>
 <p>Default: False</p>
 </dd>
-<dt><kbd>--default-swagger-ui</kbd></dt>
-<dd><p>If set, the default swagger ui is used for <cite>/docs</cite> endpoint.</p>
-<p>Default: False</p>
-</dd>
 <dt><kbd>--no-debug-endpoints</kbd></dt>
-<dd><p>If set, /status /post endpoints are removed from HTTP interface.</p>
+<dd><p>If set, <cite>/status</cite> <cite>/post</cite> endpoints are removed from HTTP interface.</p>
 <p>Default: False</p>
 </dd>
 <dt><kbd>--no-crud-endpoints</kbd></dt>
 <dd><blockquote>
-<div><p>If set, /index, /search, /update, /delete endpoints are removed from HTTP interface.</p>
+<div><p>If set, <cite>/index</cite>, <cite>/search</cite>, <cite>/update</cite>, <cite>/delete</cite> endpoints are removed from HTTP interface.</p>
 <p>Any executor that has <cite>@requests(on=…)</cite> bind with those values will receive data requests.</p>
 </div></blockquote>
 <p>Default: False</p>
@@ -1409,11 +1335,11 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 65053</p>
+<p>Default: 55659</p>
 </dd>
 <dt><kbd>--compression</kbd></dt>
-<dd><p>The compression mechanism used when sending requests to Executors. Possibilites are: <cite>NoCompression, Gzip, Deflate</cite>. For more details, check <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">https://grpc.github.io/grpc/python/grpc.html#compression</a>.</p>
-<p>Default: “NoCompression”</p>
+<dd><p>Possible choices: NoCompression, Deflate, Gzip</p>
+<p>The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">https://grpc.github.io/grpc/python/grpc.html#compression</a>.</p>
 </dd>
 <dt><kbd>--timeout-send</kbd></dt>
 <dd><p>The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</p>
@@ -1444,7 +1370,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 54534</p>
+<p>Default: 52019</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1519,8 +1445,8 @@ Defaults to retaining whatever type is returned by the Executor.</p>
               <span class="n">path</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat5">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat5" title="Permalink to this headline">¶</a></h6>
+<section id="Named Arguments_repeat7">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>--no-usage</kbd></dt>
 <dd><p>If set, Hub executor usage will not be printed.</p>
@@ -1578,16 +1504,16 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="n">pull</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">usage</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="n">uri</span>
 </pre></div>
 </div>
-<section id="Positional Arguments_repeat4">
-<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat4" title="Permalink to this headline">¶</a></h6>
+<section id="Positional Arguments_repeat6">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat6" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>uri</kbd></dt>
 <dd><p>The URI of the executor to pull (e.g., jinahub[+docker]://NAME)</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat6">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat6" title="Permalink to this headline">¶</a></h6>
+<section id="Named Arguments_repeat8">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this headline">¶</a></h6>
 <dl class="option-list">
 <dt><kbd>--no-usage</kbd></dt>
 <dd><p>If set, Hub executor usage will not be printed.</p>
@@ -1617,8 +1543,8 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">help</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">query</span>
 </pre></div>
 </div>
-<section id="Positional Arguments_repeat5">
-<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat5" title="Permalink to this headline">¶</a></h4>
+<section id="Positional Arguments_repeat7">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>query</kbd></dt>
 <dd><p>Lookup the usage &amp; mention of the argument name in Jina API. The name can be fuzzy</p>
@@ -1642,9 +1568,9 @@ Defaults to retaining whatever type is returned by the Executor.</p>
          <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compression</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Essential arguments_repeat3">
@@ -1741,7 +1667,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 59202</p>
+<p>Default: 57135</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1846,7 +1772,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 56888</p>
+<p>Default: 64119</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1875,8 +1801,8 @@ Python files, data files.</p>
 <h4>Head arguments<a class="headerlink" href="#Head arguments_repeat1" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--compression</kbd></dt>
-<dd><p>The compression mechanism used when sending requests from the Head to the WorkerRuntimes. Possibilities are <cite>NoCompression, Gzip, Deflate</cite>. For more details, check <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">https://grpc.github.io/grpc/python/grpc.html#compression</a>.</p>
-<p>Default: “NoCompression”</p>
+<dd><p>Possible choices: NoCompression, Deflate, Gzip</p>
+<p>The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">https://grpc.github.io/grpc/python/grpc.html#compression</a>.</p>
 </dd>
 <dt><kbd>--uses-before-address</kbd></dt>
 <dd><p>The address of the uses-before runtime</p>
@@ -1914,7 +1840,8 @@ Python files, data files.</p>
                 <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">compression</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">when</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">external</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tls</span><span class="p">]</span>
@@ -2014,7 +1941,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 63212</p>
+<p>Default: 57692</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -2119,7 +2046,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 54217</p>
+<p>Default: 64687</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2148,8 +2075,8 @@ Python files, data files.</p>
 <h4>Head arguments<a class="headerlink" href="#Head arguments_repeat2" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--compression</kbd></dt>
-<dd><p>The compression mechanism used when sending requests from the Head to the WorkerRuntimes. Possibilities are <cite>NoCompression, Gzip, Deflate</cite>. For more details, check <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">https://grpc.github.io/grpc/python/grpc.html#compression</a>.</p>
-<p>Default: “NoCompression”</p>
+<dd><p>Possible choices: NoCompression, Deflate, Gzip</p>
+<p>The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">https://grpc.github.io/grpc/python/grpc.html#compression</a>.</p>
 </dd>
 <dt><kbd>--uses-before-address</kbd></dt>
 <dd><p>The address of the uses-before runtime</p>
@@ -2194,13 +2121,13 @@ Python files, data files.</p>
 </section>
 <section id="client">
 <h3>client<a class="headerlink" href="#client" title="Permalink to this headline">¶</a></h3>
-<p>Start a Python client that connects to a remote Jina gateway</p>
+<p>Start a Python client that connects to a Jina gateway</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">client</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">tls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">asyncio</span><span class="p">]</span>
             <span class="p">[</span><span class="o">--</span><span class="k">return</span><span class="o">-</span><span class="n">responses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat7">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat7" title="Permalink to this headline">¶</a></h4>
+<section id="Named Arguments_repeat9">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this headline">¶</a></h4>
 <dl class="option-list">
 <dt><kbd>--asyncio</kbd></dt>
 <dd><p>If set, then the input and output of this Client work in an asynchronous manner.</p>
@@ -2238,33 +2165,11 @@ Python files, data files.</p>
 </dl>
 </section>
 </section>
-<section id="export-api">
-<h3>export-api<a class="headerlink" href="#export-api" title="Permalink to this headline">¶</a></h3>
-<p>Export Jina API to JSON/YAML file for 3rd party applications</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">export</span><span class="o">-</span><span class="n">api</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">yaml</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">json</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">schema</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span>
-</pre></div>
-</div>
-<section id="Named Arguments_repeat8">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this headline">¶</a></h4>
-<dl class="option-list">
-<dt><kbd>--yaml-path</kbd></dt>
-<dd><p>The YAML file path for storing the exported API</p>
-</dd>
-<dt><kbd>--json-path</kbd></dt>
-<dd><p>The JSON file path for storing the exported API</p>
-</dd>
-<dt><kbd>--schema-path</kbd></dt>
-<dd><p>The JSONSchema file path for storing the exported API</p>
-</dd>
-</dl>
-</section>
-</section>
 </section>
 </section>
 
-            </article>
+                </article>
+            </div>
             <footer>
                 
                 <div class="related-pages">
@@ -2279,7 +2184,7 @@ Python files, data files.</p>
                             <use href="#svg-arrow-right"></use>
                         </svg>
                     </a>
-                    <a class="prev-page" href="../api/cli.lookup/">
+                    <a class="prev-page" href="../api/jina.importer/">
                         <svg>
                             <use href="#svg-arrow-right"></use>
                         </svg>
@@ -2288,31 +2193,40 @@ Python files, data files.</p>
                                 <span>Previous</span>
                             </div>
                             
-                            <div class="title">cli.lookup module</div>
+                            <div class="title">jina.importer module</div>
                             
                         </div>
                     </a>
                 </div>
-
-                <div class="related-information sd-d-inline-flex">
-                    <a href="https://jina.ai">Copyright &#169; Jina AI Limited. All rights reserved.</a>
-                    Last updated on Jun 03, 2022.
-                    <div class="social-btns">
-                    <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
-                    <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
-                    <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube" target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
-                    <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter" target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
-                    <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn" target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        <div class="copyright">
+                            Copyright &#169; Jina AI Limited. All rights reserved.
+                        </div><div class="last-updated">
+                            Last updated on Jun 07, 2022</div>
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/docarray/" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
                     </div>
                 </div>
                 
             </footer>
         </div>
-        <aside class="toc-drawer" id="toc-drawer">
+        <aside class="toc-drawer">
             
-
+            
             <div class="toc-sticky toc-scroll">
-                
                 <div class="toc-title-container">
           <span class="toc-title">
             Contents
@@ -2325,33 +2239,6 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#Positional Arguments">Positional Arguments</a></li>
 <li><a class="reference internal" href="#Named Arguments">Named Arguments</a></li>
 <li><a class="reference internal" href="#Sub-commands:">Sub-commands:</a><ul>
-<li><a class="reference internal" href="#hello">hello</a><ul>
-<li><a class="reference internal" href="#subcommands">subcommands</a></li>
-<li><a class="reference internal" href="#Sub-commands:_repeat1">Sub-commands:</a><ul>
-<li><a class="reference internal" href="#fashion">fashion</a><ul>
-<li><a class="reference internal" href="#General arguments">General arguments</a></li>
-<li><a class="reference internal" href="#Index arguments">Index arguments</a></li>
-<li><a class="reference internal" href="#Search arguments">Search arguments</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#chatbot">chatbot</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat1">Named Arguments</a></li>
-<li><a class="reference internal" href="#General arguments_repeat1">General arguments</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#multimodal">multimodal</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat2">Named Arguments</a></li>
-<li><a class="reference internal" href="#General arguments_repeat2">General arguments</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#fork">fork</a><ul>
-<li><a class="reference internal" href="#Positional Arguments_repeat1">Positional Arguments</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
 <li><a class="reference internal" href="#executor">executor</a><ul>
 <li><a class="reference internal" href="#Essential arguments">Essential arguments</a></li>
 <li><a class="reference internal" href="#Base Deployment arguments">Base Deployment arguments</a></li>
@@ -2370,16 +2257,42 @@ Python files, data files.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#ping">ping</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat1">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat1">Named Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#export">export</a><ul>
+<li><a class="reference internal" href="#subcommands">subcommands</a></li>
+<li><a class="reference internal" href="#Sub-commands:_repeat1">Sub-commands:</a><ul>
+<li><a class="reference internal" href="#flowchart">flowchart</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat2">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat2">Named Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#kubernetes">kubernetes</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat3">Positional Arguments</a></li>
 <li><a class="reference internal" href="#Named Arguments_repeat3">Named Arguments</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#docker-compose">docker-compose</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat4">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat4">Named Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#schema">schema</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat5">Named Arguments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#new">new</a><ul>
-<li><a class="reference internal" href="#Positional Arguments_repeat3">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Positional Arguments_repeat5">Positional Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#gateway">gateway</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat4">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat2">Essential arguments</a></li>
 <li><a class="reference internal" href="#Base Deployment arguments_repeat1">Base Deployment arguments</a></li>
 <li><a class="reference internal" href="#WorkerRuntime arguments_repeat1">WorkerRuntime arguments</a></li>
@@ -2398,14 +2311,14 @@ Python files, data files.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#push">push</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat5">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
 <li><a class="reference internal" href="#Push arguments">Push arguments</a></li>
 <li><a class="reference internal" href="#Visibility arguments">Visibility arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#pull">pull</a><ul>
-<li><a class="reference internal" href="#Positional Arguments_repeat4">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
+<li><a class="reference internal" href="#Positional Arguments_repeat6">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat8">Named Arguments</a></li>
 <li><a class="reference internal" href="#Pull arguments_repeat1">Pull arguments</a></li>
 </ul>
 </li>
@@ -2414,7 +2327,7 @@ Python files, data files.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#help">help</a><ul>
-<li><a class="reference internal" href="#Positional Arguments_repeat5">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Positional Arguments_repeat7">Positional Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#pod">pod</a><ul>
@@ -2443,12 +2356,8 @@ Python files, data files.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#client">client</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat7">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat9">Named Arguments</a></li>
 <li><a class="reference internal" href="#ClientGateway arguments">ClientGateway arguments</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#export-api">export-api</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat8">Named Arguments</a></li>
 </ul>
 </li>
 </ul>
@@ -2459,29 +2368,27 @@ Python files, data files.</p>
 
                     </div>
                 </div>
-                
             </div>
-
+            
             
         </aside>
-
     </div>
     <qa-bot
-        title="Jina Bot"
-        description="The cloud-native neural search framework"
+            title="DocArray Bot"
+            description="The data structure for unstructured data"
     >
         <template>
             <dl>
                 <dt>You can ask questions about our docs. Try:</dt>
-                <dd>Does Jina support Kubernetes?</dd>
-                <dd>What are the basic concepts in Jina?</dd>
-                <dd>How to share my Executor?</dd>
+                <dd>What is a DocumentArray?</dd>
+                <dd>How to use docarray with Jina?</dd>
+                <dd>How to find nearest neighbour of Documents?</dd>
             </dl>
         </template>
     </qa-bot>
-
 </div>
-<img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" /><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>

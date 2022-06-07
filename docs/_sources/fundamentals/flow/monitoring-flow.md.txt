@@ -1,5 +1,5 @@
 (monitoring-flow)=
-# Monitor Flow
+# Monitor
  
 A Jina {ref}`Flow <flow-cookbook>` exposes several core metrics that allow you to have a deeper look
 at what is happening inside it. Metrics allow you to, for example, monitor the overall performance 
@@ -11,7 +11,7 @@ Jina Flows expose metrics in the [Prometheus format](https://prometheus.io/docs/
 To visualize your metrics through a dashboard, we recommend [Grafana](https://grafana.com/)
 
 
-## Enable the monitoring in a Flow
+## Enable monitoring
 
 A {ref}`Flow <flow-cookbook>` is composed of several Pods, namely the Gateway, the Executors, and potentially a Head (see the {ref}`architecture overview <architecture-overview>` for more details). Each of these Pods is its own microservice. These services expose their own metrics using the [Prometheus client](https://prometheus.io/docs/instrumenting/clientlibs/).
 This means that they are as many metrics endpoints as there are Pods in your Flow. 
@@ -54,8 +54,8 @@ jina flow --uses flow.yaml
 This Flow will create two Pods, one for the Gateway, and one for the SimpleIndexer Executor, therefore it will create two 
 metrics endpoints:
 
-* `http://localhost:9090  ` for the gateway
-* `http://localhost:9091  ` for the SimpleIndexer
+* `http://localhost:9090` for the gateway
+* `http://localhost:9091` for the SimpleIndexer
 
 ````{admonition} Default Monitoring port
 :class: hint

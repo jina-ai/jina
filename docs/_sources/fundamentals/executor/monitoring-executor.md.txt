@@ -1,8 +1,8 @@
 (monitoring-executor)=
-# Monitor Executor with Custom Metrics
+# Monitor
 
-Jina allows you to monitor every part of a Flow, including Executor, with the Grafana/Prometheus.
-This section documents the ability to add custom monitoring to the Executor.
+
+This section documents the ability to add custom monitoring to the Executor with the Grafana/Prometheus.
 
 Custom metrics are useful when you want to monitor each subpart of your Executors. Jina allows you to leverage
 the full power of the [Prometheus Client](https://github.com/prometheus/client_python) to define useful metrics 
@@ -19,7 +19,7 @@ please refer to {ref}`this <monitoring-flow>` section.
 When the monitoring is enabled each Executor will expose its 
 own metrics. This means that in practice each of the Executors will expose a Prometheus endpoint using the [Prometheus Client](https://github.com/prometheus/client_python).
 
-By default, every method which is decorated by the `@request` decorator will be monitored, it will create a
+By default, every method which is decorated by the `@requests` decorator will be monitored, it will create a
 [Prometheus Summary](https://prometheus.io/docs/concepts/metric_types/#summary) which will keep track of the time of 
 the execution of the method.
 
@@ -64,6 +64,23 @@ def method(self):
     ...
 ```
 
+You can as well monitor internal part of your executor with a Context Manager:
+
+```python
+from jina import Executor, requests
+
+
+def process():
+    ...
+
+
+class MyExecutor(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        with self.monitor('processing_seconds', 'Time processing my document'):
+            docs = process(docs)
+```
+
 ````{admonition} respect Prometheus naming
 :class: caution
 You should respect Prometheus naming [conventions](https://prometheus.io/docs/practices/naming/#metric-names). 
@@ -76,8 +93,7 @@ your metrics name should finish with `seconds`
 Let's take an example to illustrate custom metrics:
 
 ```python
-from jina import requests, Executor
-from docarray import DocumentArray
+from jina import requests, Executor, DocumentArray
 
 
 class MyExecutor(Executor):
@@ -99,12 +115,12 @@ The encode function is composed of two sub-functions.
 
 By default, only the `encode` function will be monitored. 
 
+````{tab} Decorator
 ```{code-block} python
 ---
-emphasize-lines: 6, 10
+emphasize-lines: 5, 9
 ---
-from jina import requests,monitor,Executor
-from docarray import DocumentArray
+from jina import requests, monitor, Executor, DocumentArray
 
 class MyExecutor(Executor):
 
@@ -121,7 +137,32 @@ class MyExecutor(Executor):
         docs.tensors = self.preprocessing(docs)
         docs.embedding = self.model_inference(docs.tensors)
 ```
+````
 
+````{tab} Context manager
+
+```{code-block} python
+---
+emphasize-lines: 13, 15
+---
+from jina import requests, Executor, DocumentArray
+
+def preprocessing(self, docs: DocumentArray):
+    ...
+
+def model_inference(self, tensor):
+    ...
+
+class MyExecutor(Executor):
+
+    @requests
+    def encode(self, docs: DocumentArray, **kwargs):
+        with self.monitor('preprocessing_seconds', 'Time preprocessing the requests'):
+            docs.tensors = preprocessing(docs)
+        with self.monitor('model_inference_seconds', 'Time doing inference the requests'):
+            docs.embedding = model_inference(docs.tensors)
+```
+````
 
 ### Defining custom metrics directly with the Prometheus client
 
@@ -134,8 +175,7 @@ Let's see it in an example
 
 
 ```python
-from jina import requests, Executor
-from docarray import DocumentArray
+from jina import requests, Executor, DocumentArray
 
 from prometheus_client import Counter
 

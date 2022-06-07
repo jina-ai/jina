@@ -1,4 +1,4 @@
-# Clean & Efficient Code
+# How to write clean & efficient code
 
 Jina is designed as a lean and efficient framework. Solutions built on top of Jina also mean to be so. Here are some
 tips to help you write beautiful and efficient code.
@@ -6,8 +6,7 @@ tips to help you write beautiful and efficient code.
 ## Clean import
 
 ```python
-from docarray import Document, DocumentArray
-from jina import Executor, Flow, requests
+from jina import Executor, Flow, requests, Document, DocumentArray
 ```
 is often all you need. Copy-paste it as the first line of your code.
 
@@ -19,8 +18,8 @@ Use a [Python generator](https://docs.python.org/3/glossary.html#term-generator)
 ---
 emphasize-lines: 3, 4, 5
 ---
-from docarray import Document
-from jina import Flow
+
+from jina import Flow, Document
 
 def my_input():
    for _ in range(1000):
@@ -34,8 +33,7 @@ with f:
 
 ````{tab} 😔 Don't
 ```python
-from docarray import Document, DocumentArray
-from jina import Flow
+from jina import Flow, Document, DocumentArray
 
 my_input = DocumentArray([Document() for _ in range(1000)])
 
@@ -54,8 +52,8 @@ with f:
 ---
 emphasize-lines: 10
 ---
-from docarray import Document
-from jina import Flow
+
+from jina import Flow, Document
 
 def my_input():
    for _ in range(1000):
@@ -73,8 +71,8 @@ with f:
 ---
 emphasize-lines: 10
 ---
-from docarray import Document
-from jina import Flow
+
+from jina import Flow, Document
 
 def my_input():
    for _ in range(1000):
@@ -181,50 +179,6 @@ class MyExecutor(Executor):
    @requests
    def foo_need_pars_only(self, docs, parameters, docs_matrix, **kwargs):
       print(parameters)
-```
-````
-
-(debug-executor)=
-## Debug Executor outside of a Flow
-
-To debug an `Executor`, there is no need to use it in the Flow. Simply initiate it as an object and call its method.
-````{tab} ✅ Do
-```python
-from docarray import Document, DocumentArrayMemmap
-from jina import Executor, requests
-
-
-class MyExec(Executor):
-    @requests
-    def foo(self, docs, **kwargs):
-        for d in docs:
-            d.text = 'hello world'
-
-
-m = MyExec()
-da = DocumentArray([Document(text='test')])
-m.foo(da)
-print(da)
-```
-````
-
-````{tab} 😔 Don't
-```python
-from docarray import Document, DocumentArray
-from jina import Executor, requests, Flow
-
-
-class MyExec(Executor):
-    @requests
-    def foo(self, docs, **kwargs):
-        for d in docs:
-            d.text = 'hello world'
-
-
-da = DocumentArray([Document(text='test')])
-
-with Flow().add(uses=MyExec) as f:
-    f.post('/', da, on_done=print)
 ```
 ````
 
@@ -371,6 +325,7 @@ class SecondExecutor(Executor):
 ````{tab} 😔 Don't
 
 ```python
+
 from jina import Executor, requests
 
 class FirstExecutor(Executor):

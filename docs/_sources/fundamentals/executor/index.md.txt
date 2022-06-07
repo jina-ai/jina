@@ -45,10 +45,10 @@ Executor and Flow are the two fundamental concepts in Jina.
 :hidden:
 
 executor-api
-executor-in-flow
-repository-structure
-hub/index
-containerize-executor
+executor-methods
 monitoring-executor
+executor-run
+executor-serve
 yaml-spec
+executor-files
 ```

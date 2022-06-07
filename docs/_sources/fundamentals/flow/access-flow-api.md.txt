@@ -1,19 +1,9 @@
 (access-flow-api)=
-# Access Flow
+# Third-party clients
 
-Once you have {ref}`configured your Flow API <flow-api>` you can access it over the network.
-There are multiple ways of doing this.
+This page is about accessing the Flow with other clients, e.g. `curl`.
 
-```{admonition} See Also
-:class: seealso
-
-This page is about accessing the Flow with external clients.
-You can also use the Jina Client, provided by us in the `jina` package. 
-It supports all the protocols listed here under a convenient, simple API.
-Check its dedicated {ref}`documentation page <client>`.
-```
-
-## HTTP access
+## HTTP
 
 ```{admonition} Available Protocols
 :class: caution
@@ -26,124 +16,7 @@ Apart from using the {ref}`Jina Client <client>`, the most common way of interac
 You can always use `post` to interact with a Flow, using the `/post` HTTP endpoint.
 
 
-### Use HTTP client to send request
-
 With the help of [OpenAPI schema](https://swagger.io/specification/), one can send data requests to a Flow via `cURL`, JavaScript, [Postman](https://www.postman.com/), or any other HTTP client or programming library. 
-
-`````{tab} via cURL
-
-Here's an example that uses `cURL`.
-
-```bash
-curl --request POST 'http://localhost:12345/post' --header 'Content-Type: application/json' -d '{"data": [{"text": "hello world"}],"execEndpoint": "/search"}'
-```
-
-````{dropdown} Sample response
-
-```
-    {
-      "requestId": "e2978837-e5cb-45c6-a36d-588cf9b24309",
-      "data": {
-        "docs": [
-          {
-            "id": "84d9538e-f5be-11eb-8383-c7034ef3edd4",
-            "granularity": 0,
-            "adjacency": 0,
-            "parentId": "",
-            "text": "hello world",
-            "chunks": [],
-            "weight": 0.0,
-            "matches": [],
-            "mimeType": "",
-            "tags": {
-              "mimeType": "",
-              "parentId": ""
-            },
-            "location": [],
-            "offset": 0,
-            "embedding": null,
-            "scores": {},
-            "modality": "",
-            "evaluations": {}
-          }
-        ],
-        "groundtruths": []
-      },
-      "header": {
-        "execEndpoint": "/index",
-        "targetPeapod": "",
-        "noPropagate": false
-      },
-      "parameters": {},
-      "routes": [
-        {
-          "pod": "gateway",
-          "podId": "5742d5dd-43f1-451f-88e7-ece0588b7557",
-          "startTime": "2021-08-05T07:26:58.636258+00:00",
-          "endTime": "2021-08-05T07:26:58.636910+00:00",
-          "status": null
-        }
-      ],
-      "status": {
-        "code": 0,
-        "description": "",
-        "exception": null
-      }
-    }
-```
-
-````
-
-`````
-
-`````{tab} via JavaScript
-
-Sending a request from the front-end JavaScript code is a common use case too. Here's how this would look like:
-
-```javascript
-fetch('http://localhost:12345/post', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({"data": [{"text": "hello world"}],"execEndpoint": "/search"})
-}).then(response => response.json()).then(data => console.log(data));
-```
-
-````{dropdown} Output
-
-```javascript
-{
-  "data": [
-    {
-      "id": "37e6f1bc7ec82fc4ba75691315ae54a6",
-      "text": "hello world"
-      "matches": ...
-    },
-  "header": {
-    "requestId": "c725217aa7714de88039866fb5aa93d2",
-    "execEndpoint": "/index",
-    "targetExecutor": ""
-  },
-  "routes": [
-    {
-      "executor": "gateway",
-      "startTime": "2022-04-01T13:11:57.992497+00:00",
-      "endTime": "2022-04-01T13:11:57.997802+00:00"
-    },
-    {
-      "executor": "executor0",
-      "startTime": "2022-04-01T13:11:57.993686+00:00",
-      "endTime": "2022-04-01T13:11:57.997274+00:00"
-    }
-  ],
-  ]
-}
-```
-
-```` 
-
-`````
 
 ### Arguments
 
@@ -210,7 +83,122 @@ For a specific deployed Flow, you can get the same overview by accessing the `/r
 ```
 
 (swagger-ui)=
-### Use Swagger UI to send HTTP request
+
+### Use curl
+
+Here's an example that uses `cURL`.
+
+```bash
+curl --request POST 'http://localhost:12345/post' --header 'Content-Type: application/json' -d '{"data": [{"text": "hello world"}],"execEndpoint": "/search"}'
+```
+
+````{dropdown} Sample response
+
+```
+    {
+      "requestId": "e2978837-e5cb-45c6-a36d-588cf9b24309",
+      "data": {
+        "docs": [
+          {
+            "id": "84d9538e-f5be-11eb-8383-c7034ef3edd4",
+            "granularity": 0,
+            "adjacency": 0,
+            "parentId": "",
+            "text": "hello world",
+            "chunks": [],
+            "weight": 0.0,
+            "matches": [],
+            "mimeType": "",
+            "tags": {
+              "mimeType": "",
+              "parentId": ""
+            },
+            "location": [],
+            "offset": 0,
+            "embedding": null,
+            "scores": {},
+            "modality": "",
+            "evaluations": {}
+          }
+        ],
+        "groundtruths": []
+      },
+      "header": {
+        "execEndpoint": "/index",
+        "targetPeapod": "",
+        "noPropagate": false
+      },
+      "parameters": {},
+      "routes": [
+        {
+          "pod": "gateway",
+          "podId": "5742d5dd-43f1-451f-88e7-ece0588b7557",
+          "startTime": "2021-08-05T07:26:58.636258+00:00",
+          "endTime": "2021-08-05T07:26:58.636910+00:00",
+          "status": null
+        }
+      ],
+      "status": {
+        "code": 0,
+        "description": "",
+        "exception": null
+      }
+    }
+```
+
+````
+
+
+
+### Use Javascript
+
+Sending a request from the front-end JavaScript code is a common use case too. Here's how this would look like:
+
+```javascript
+fetch('http://localhost:12345/post', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({"data": [{"text": "hello world"}],"execEndpoint": "/search"})
+}).then(response => response.json()).then(data => console.log(data));
+```
+
+````{dropdown} Output
+
+```javascript
+{
+  "data": [
+    {
+      "id": "37e6f1bc7ec82fc4ba75691315ae54a6",
+      "text": "hello world"
+      "matches": ...
+    },
+  "header": {
+    "requestId": "c725217aa7714de88039866fb5aa93d2",
+    "execEndpoint": "/index",
+    "targetExecutor": ""
+  },
+  "routes": [
+    {
+      "executor": "gateway",
+      "startTime": "2022-04-01T13:11:57.992497+00:00",
+      "endTime": "2022-04-01T13:11:57.997802+00:00"
+    },
+    {
+      "executor": "executor0",
+      "startTime": "2022-04-01T13:11:57.993686+00:00",
+      "endTime": "2022-04-01T13:11:57.997274+00:00"
+    }
+  ],
+  ]
+}
+```
+
+````
+
+
+### Use Swagger UI
 
 Flows provide a customized [Swagger UI](https://swagger.io/tools/swagger-ui/) which can be used to interact with the Flow
 visually, through a web browser.
@@ -234,7 +222,7 @@ You can again use the [REST HTTP request schema](https://api.jina.ai/rest/), but
 
 Below, in `Responses`, you can see the reply, together with a visual representation of the returned Documents.
 
-### Postman Collection
+### Use Postman
 
 [Postman](https://www.postman.com/) is an application that allows the testing of web APIs from a graphical interface. You can store all the templates for your REST APIs in it, using Collections. 
 
@@ -243,7 +231,7 @@ We provide a suite of templates for the Jina Flow, in this [collection](https://
 This contribution was made by [Jonathan Rowley](https://jina-ai.slack.com/archives/C0169V26ATY/p1649689443888779?thread_ts=1649428823.420879&cid=C0169V26ATY), in our [community Slack](slack.jina.ai). 
 
 (flow-graphql)=
-## GraphQL Interface
+## GraphQL
 
 ````{admonition} See Also
 :class: seealso
@@ -303,7 +291,7 @@ and more.
 
 ## gRPC
 
-If you want to create a gRPC client in another language, you will need to compile the [Protobuf definitions](../../proto/docs.md). In Python, you can use our {ref}`own client <client>`.
+If you want to create a gRPC client in another language, you will need to compile the [Protobuf definition](../../proto/docs.md). In Python, you can use our {ref}`own client <client>`.
 
 ## Websocket
 
