@@ -1,5 +1,5 @@
 (jina-on-windows)=
-# Jina on Windows
+# On Windows
 
 You can install and use Jina on Windows.
 

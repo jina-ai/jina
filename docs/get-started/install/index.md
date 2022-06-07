@@ -4,6 +4,7 @@
 ```{toctree}
 :hidden:
 
+docker
 windows
 troubleshooting
 ```
