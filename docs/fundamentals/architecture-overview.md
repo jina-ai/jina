@@ -1,5 +1,5 @@
 (architecture-overview)=
-# Architecture Overview
+# Concepts Overview
 
 The figure below shows details on how the Flow and Executor abstractions translate into concrete microservices, providing all the 
 serving and scaling features of Jina.
