@@ -28,6 +28,8 @@ if TYPE_CHECKING:
 
     from jina.types.request.control import ControlRequest
 
+DEFAULT_MINIMUM_RETRIES = 3
+
 
 class ReplicaList:
     """
@@ -718,7 +720,10 @@ class GrpcConnectionPool:
             metadata = (('endpoint', endpoint),) if endpoint else None
             tried_addresses = set()
             if retries is None or retries < 0:
-                total_num_tries = max(3, len(connections.get_all_connections())) + 1
+                total_num_tries = (
+                    max(DEFAULT_MINIMUM_RETRIES, len(connections.get_all_connections()))
+                    + 1
+                )
             else:
                 total_num_tries = 1 + retries  # try once, then do all the retries
             for i in range(total_num_tries):
