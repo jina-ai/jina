@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/types/mixin.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
-        <title>jina.types.mixin - Jina 3.5.1 documentation</title>
+        <title>jina.types.mixin - Jina 3.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.5.1 documentation</div>
+                <div class="brand">Jina 3.6.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -217,6 +217,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/health-check/">Health and readiness check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -428,8 +429,8 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.request.data/">jina.types.request.data module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../api/jina.types.request.status/">jina.types.request.status module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../api/jina.types.mixin/">jina.types.mixin module</a></li>
@@ -531,7 +532,7 @@
                     <h1>Source code for jina.types.mixin</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">typename</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">deprecate_by</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">deprecate_by</span><span class="p">,</span> <span class="n">typename</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
@@ -549,7 +550,6 @@
 <span class="sd">            .. code-block:: python</span>
 
 <span class="sd">                class MyJinaType(ProtoTypeMixin):</span>
-
 <span class="sd">                    def __init__(self, proto: Optional[jina_pb2.SomePbMsg] = None):</span>
 <span class="sd">                        self._pb_body = proto or jina_pb2.SomePbMsg()</span>
 
@@ -566,21 +566,20 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span> <span class="n">preserving_proto_field_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="ProtoTypeMixin.to_dict"><a class="viewcode-back" href="../../../../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<div class="viewcode-block" id="ProtoTypeMixin.to_dict"><a class="viewcode-back" href="../../../../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the object in Python dictionary.</span>
 
 <span class="sd">        .. note::</span>
 <span class="sd">            Array like object such as :class:`numpy.ndarray` (i.e. anything described as :class:`jina_pb2.NdArrayProto`)</span>
 <span class="sd">            will be converted to Python list.</span>
 
+<span class="sd">        :param kwargs: Extra kwargs to be passed to MessageToDict, like use_integers_for_enums</span>
+
 <span class="sd">        :return: dict representation of the object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">google.protobuf.json_format</span> <span class="kn">import</span> <span class="n">MessageToDict</span>
 
-        <span class="k">return</span> <span class="n">MessageToDict</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span>
-            <span class="n">preserving_proto_field_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">MessageToDict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proto</span><span class="p">,</span> <span class="n">preserving_proto_field_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">proto</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;jina_pb2._reflection.GeneratedProtocolMessageType&#39;</span><span class="p">:</span>

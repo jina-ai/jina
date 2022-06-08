@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/clients/base/helper.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
-        <title>jina.clients.base.helper - Jina 3.5.1 documentation</title>
+        <title>jina.clients.base.helper - Jina 3.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.5.1 documentation</div>
+                <div class="brand">Jina 3.6.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -217,6 +217,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/health-check/">Health and readiness check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -428,8 +429,8 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.request.data/">jina.types.request.data module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.request.status/">jina.types.request.status module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.mixin/">jina.types.mixin module</a></li>
@@ -539,6 +540,7 @@
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
+<span class="kn">from</span> <span class="nn">jina.types.request.status</span> <span class="kn">import</span> <span class="n">StatusMessage</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
@@ -564,10 +566,19 @@
         <span class="sd">&quot;&quot;&quot;Send message to Gateway&quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 
+<div class="viewcode-block" id="AioHttpClientlet.send_dry_run"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.send_dry_run">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Query the dry_run endpoint from Gateway&quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
 <div class="viewcode-block" id="AioHttpClientlet.recv_message"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.recv_message">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">recv_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Receive message from Gateway&quot;&quot;&quot;</span>
         <span class="o">...</span></div>
+
+<div class="viewcode-block" id="AioHttpClientlet.recv_dry_run"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.recv_dry_run">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">recv_dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Receive dry run response from Gateway&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;enter async context</span>
@@ -614,8 +625,21 @@
             <span class="n">req_dict</span><span class="p">[</span><span class="s1">&#39;target_executor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">req_dict</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">][</span><span class="s1">&#39;target_executor&#39;</span><span class="p">]</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">req_dict</span><span class="p">)</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="HTTPClientlet.send_dry_run"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.send_dry_run">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Query the dry_run endpoint from Gateway</span>
+<span class="sd">        :return: send get message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span></div>
+
 <div class="viewcode-block" id="HTTPClientlet.recv_message"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.recv_message">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">recv_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Receive message for HTTP (sleep)</span>
+
+<span class="sd">        :return: await sleep</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1e10</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HTTPClientlet.recv_dry_run"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.recv_dry_run">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">recv_dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Receive dry run response for HTTP (sleep)</span>
 
 <span class="sd">        :return: await sleep</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -662,6 +686,17 @@
         <span class="k">except</span> <span class="ne">ConnectionResetError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;server connection closed already!&#39;</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="WebsocketClientlet.send_dry_run"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.send_dry_run">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Query the dry_run endpoint from Gateway</span>
+
+<span class="sd">        :return: send dry_run as bytes awaitable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="o">.</span><span class="n">send_bytes</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ConnectionResetError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;server connection closed already!&#39;</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="WebsocketClientlet.send_eoi"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.send_eoi">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">send_eoi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;To confirm end of iteration, we send `bytes(True)` to the server.</span>
 
@@ -685,6 +720,18 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_iter</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">DataRequest</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WebsocketClientlet.recv_dry_run"><a class="viewcode-back" href="../../../../../api/jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.recv_dry_run">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">recv_dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Receive dry run response in bytes from server</span>
+
+<span class="sd">        ..note::</span>
+<span class="sd">            aiohttp allows only one task which can `receive` concurrently.</span>
+<span class="sd">            we need to make sure we don&#39;t create multiple tasks with `recv_message`</span>
+
+<span class="sd">        :yield: response objects received from server</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">response_iter</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">StatusMessage</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span>

@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/clients/base/http.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
-        <title>jina.clients.base.http - Jina 3.5.1 documentation</title>
+        <title>jina.clients.base.http - Jina 3.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.5.1 documentation</div>
+                <div class="brand">Jina 3.6.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -217,6 +217,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/health-check/">Health and readiness check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -428,8 +429,8 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.request.data/">jina.types.request.data module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.request.status/">jina.types.request.status module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.mixin/">jina.types.mixin module</a></li>
@@ -552,6 +553,52 @@
 <div class="viewcode-block" id="HTTPBaseClient"><a class="viewcode-back" href="../../../../../api/jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient">[docs]</a><span class="k">class</span> <span class="nc">HTTPBaseClient</span><span class="p">(</span><span class="n">BaseClient</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A MixIn for HTTP Client.&quot;&quot;&quot;</span>
 
+    <span class="k">def</span> <span class="nf">_handle_response_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_status</span><span class="p">,</span> <span class="n">r_str</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">r_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_404_NOT_FOUND</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">BadClient</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;no such endpoint </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">r_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_503_SERVICE_UNAVAILABLE</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="s1">&#39;header&#39;</span> <span class="ow">in</span> <span class="n">r_str</span>
+                <span class="ow">and</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">]</span>
+                <span class="ow">and</span> <span class="s1">&#39;description&#39;</span> <span class="ow">in</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;description&#39;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">r_str</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">r_status</span> <span class="o">&lt;</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span> <span class="ow">or</span> <span class="n">r_status</span> <span class="o">&gt;</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_300_MULTIPLE_CHOICES</span>
+        <span class="p">):</span>  <span class="c1"># failure codes</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">r_str</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sends a dry run to the Flow to validate if the Flow is ready to receive requests</span>
+
+<span class="sd">        :param kwargs: potential kwargs received passed from the public interface</span>
+<span class="sd">        :return: boolean indicating the health/readiness of the Flow</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+
+        <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">proto</span> <span class="o">=</span> <span class="s1">&#39;https&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tls</span> <span class="k">else</span> <span class="s1">&#39;http&#39;</span>
+                <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">proto</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/dry_run&#39;</span>
+                <span class="n">iolet</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_async_context</span><span class="p">(</span>
+                    <span class="n">HTTPClientlet</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+                <span class="p">)</span>
+
+                <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">iolet</span><span class="o">.</span><span class="n">send_dry_run</span><span class="p">()</span>
+                <span class="n">r_status</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span>
+
+                <span class="n">r_str</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response_status</span><span class="p">(</span><span class="n">r_status</span><span class="p">,</span> <span class="n">r_str</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Error while fetching response from HTTP server </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_results</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">inputs</span><span class="p">:</span> <span class="s1">&#39;InputType&#39;</span><span class="p">,</span>
@@ -608,24 +655,7 @@
                     <span class="n">r_status</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span>
 
                     <span class="n">r_str</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="n">r_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_404_NOT_FOUND</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="n">BadClient</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;no such endpoint </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">r_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_503_SERVICE_UNAVAILABLE</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="p">(</span>
-                            <span class="s1">&#39;header&#39;</span> <span class="ow">in</span> <span class="n">r_str</span>
-                            <span class="ow">and</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">]</span>
-                            <span class="ow">and</span> <span class="s1">&#39;description&#39;</span> <span class="ow">in</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">]</span>
-                        <span class="p">):</span>
-                            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span>
-                                <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">][</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="s1">&#39;description&#39;</span><span class="p">]</span>
-                            <span class="p">)</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">r_str</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="p">(</span>
-                        <span class="n">r_status</span> <span class="o">&lt;</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span>
-                        <span class="ow">or</span> <span class="n">r_status</span> <span class="o">&gt;</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_300_MULTIPLE_CHOICES</span>
-                    <span class="p">):</span>  <span class="c1"># failure codes</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">r_str</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response_status</span><span class="p">(</span><span class="n">r_status</span><span class="p">,</span> <span class="n">r_str</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
 
                     <span class="n">da</span> <span class="o">=</span> <span class="kc">None</span>
                     <span class="k">if</span> <span class="s1">&#39;data&#39;</span> <span class="ow">in</span> <span class="n">r_str</span> <span class="ow">and</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

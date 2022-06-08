@@ -10,11 +10,11 @@
   
 <meta property="og:url" content="https://docs.jina.ai/api/jina.proto.serializer/" />
   
-<meta property="og:site_name" content="Jina 3.5.1 Documentation" />
+<meta property="og:site_name" content="Jina 3.6.0 Documentation" />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.5.1 Documentation" />
+<meta property="og:image:alt" content="Jina 3.6.0 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -37,7 +37,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.proto.serializer.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
-        <title>jina.proto.serializer module - Jina 3.5.1 documentation</title>
+        <title>jina.proto.serializer module - Jina 3.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -171,7 +171,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.5.1 documentation</div>
+                <div class="brand">Jina 3.6.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -248,6 +248,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Health and readiness check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -459,8 +460,8 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../jina.types.request.data/">jina.types.request.data module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../jina.types.request.status/">jina.types.request.status module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../jina.types.mixin/">jina.types.mixin module</a></li>
@@ -562,30 +563,6 @@
                     <section id="module-jina.proto.serializer">
 <span id="jina-proto-serializer-module"></span><h1>jina.proto.serializer module<a class="headerlink" href="#module-jina.proto.serializer" title="Permalink to this headline">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="jina.proto.serializer.ControlRequestProto">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.serializer.</span></span><span class="sig-name descname"><span class="pre">ControlRequestProto</span></span><a class="reference internal" href="../../_modules/jina/proto/serializer/#ControlRequestProto"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.ControlRequestProto" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This class is a drop-in replacement for gRPC default serializer.</p>
-<p>It replace default serializer to make sure we always work with <cite>Request</cite></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.proto.serializer.ControlRequestProto.SerializeToString">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SerializeToString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#ControlRequestProto.SerializeToString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.ControlRequestProto.SerializeToString" title="Permalink to this definition">#</a></dt>
-<dd><p># noqa: DAR101
-# noqa: DAR102
-# noqa: DAR201</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.proto.serializer.ControlRequestProto.FromString">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FromString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#ControlRequestProto.FromString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.ControlRequestProto.FromString" title="Permalink to this definition">#</a></dt>
-<dd><p># noqa: DAR101
-# noqa: DAR102
-# noqa: DAR201</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="jina.proto.serializer.DataRequestProto">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.serializer.</span></span><span class="sig-name descname"><span class="pre">DataRequestProto</span></span><a class="reference internal" href="../../_modules/jina/proto/serializer/#DataRequestProto"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.DataRequestProto" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -652,6 +629,30 @@ delegates the serializing and deserializing to the internal protobuf structure w
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.proto.serializer.EndpointsProto.FromString">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FromString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#EndpointsProto.FromString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.EndpointsProto.FromString" title="Permalink to this definition">#</a></dt>
+<dd><p># noqa: DAR101
+# noqa: DAR102
+# noqa: DAR201</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.serializer.StatusProto">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.serializer.</span></span><span class="sig-name descname"><span class="pre">StatusProto</span></span><a class="reference internal" href="../../_modules/jina/proto/serializer/#StatusProto"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.StatusProto" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Since the serializer is replacing the <a href="#id3"><span class="problematic" id="id4">`</span></a>jina_pb2 to know how to exactly serialize messages, this is just a placeholder that
+delegates the serializing and deserializing to the internal protobuf structure with no extra optimization.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.serializer.StatusProto.SerializeToString">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SerializeToString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#StatusProto.SerializeToString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.StatusProto.SerializeToString" title="Permalink to this definition">#</a></dt>
+<dd><p># noqa: DAR101
+# noqa: DAR102
+# noqa: DAR201</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.proto.serializer.StatusProto.FromString">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FromString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/serializer/#StatusProto.FromString"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.serializer.StatusProto.FromString" title="Permalink to this definition">#</a></dt>
 <dd><p># noqa: DAR101
 # noqa: DAR102
 # noqa: DAR201</p>

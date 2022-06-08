@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/websocket/app.html" />
 
     <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
-        <title>jina.serve.runtimes.gateway.websocket.app - Jina 3.5.1 documentation</title>
+        <title>jina.serve.runtimes.gateway.websocket.app - Jina 3.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../../">
-                <div class="brand">Jina 3.5.1 documentation</div>
+                <div class="brand">Jina 3.6.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -217,6 +217,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/health-check/">Health and readiness check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -428,8 +429,8 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../../../api/jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../../api/jina.types.request.data/">jina.types.request.data module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../../api/jina.types.request.status/">jina.types.request.status module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../../api/jina.types.mixin/">jina.types.mixin module</a></li>
@@ -530,15 +531,16 @@
                 <article role="main">
                     <h1>Source code for jina.serve.runtimes.gateway.websocket.app</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">jina.clients.request</span> <span class="kn">import</span> <span class="n">request_generator</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DataInputType</span><span class="p">,</span> <span class="n">WebsocketSubProtocols</span>
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">InternalNetworkError</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
+<span class="kn">from</span> <span class="nn">jina.types.request.status</span> <span class="kn">import</span> <span class="n">StatusMessage</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">CollectorRegistry</span>
@@ -635,7 +637,9 @@
             <span class="k">except</span> <span class="n">WebSocketDisconnect</span><span class="p">:</span>
                 <span class="k">pass</span>
 
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">send</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DataRequest</span><span class="p">,</span> <span class="n">StatusMessage</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">subprotocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_client</span><span class="p">(</span><span class="n">websocket</span><span class="p">)]</span>
             <span class="k">if</span> <span class="n">subprotocol</span> <span class="o">==</span> <span class="n">WebsocketSubProtocols</span><span class="o">.</span><span class="n">JSON</span><span class="p">:</span>
                 <span class="k">return</span> <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">send_json</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">)</span>
@@ -720,6 +724,92 @@
         <span class="k">except</span> <span class="n">WebSocketDisconnect</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Client successfully disconnected from server&#39;</span><span class="p">)</span>
             <span class="n">manager</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_singleton_result</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Streams results from AsyncPrefetchCall as a dict</span>
+
+<span class="sd">        :param request_iterator: request iterator, with length of 1</span>
+<span class="sd">        :return: the first result from the request iterator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">request_iterator</span><span class="o">=</span><span class="n">request_iterator</span><span class="p">):</span>
+            <span class="n">request_dict</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">request_dict</span>
+
+    <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+    <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+    <span class="kn">from</span> <span class="nn">jina.serve.executors</span> <span class="kn">import</span> <span class="n">__dry_run_endpoint__</span>
+    <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.models</span> <span class="kn">import</span> <span class="n">PROTO_TO_PYDANTIC_MODELS</span>
+
+    <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/dry_run&#39;</span><span class="p">,</span>
+        <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Get the readiness of Jina Flow service, sends an empty DocumentArray to the complete Flow to &#39;</span>
+        <span class="s1">&#39;validate connectivity&#39;</span><span class="p">,</span>
+        <span class="n">response_model</span><span class="o">=</span><span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="o">.</span><span class="n">StatusProto</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_dry_run_http</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the health of the complete Flow service.</span>
+<span class="sd">        .. # noqa: DAR201</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_get_singleton_result</span><span class="p">(</span>
+                <span class="n">request_generator</span><span class="p">(</span>
+                    <span class="n">exec_endpoint</span><span class="o">=</span><span class="n">__dry_run_endpoint__</span><span class="p">,</span>
+                    <span class="n">data</span><span class="o">=</span><span class="n">da</span><span class="p">,</span>
+                    <span class="n">data_type</span><span class="o">=</span><span class="n">DataInputType</span><span class="o">.</span><span class="n">DOCUMENT</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">status_message</span> <span class="o">=</span> <span class="n">StatusMessage</span><span class="p">()</span>
+            <span class="n">status_message</span><span class="o">.</span><span class="n">set_code</span><span class="p">(</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">status_message</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">status_message</span> <span class="o">=</span> <span class="n">StatusMessage</span><span class="p">()</span>
+            <span class="n">status_message</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">status_message</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">use_integers_for_enums</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@app</span><span class="o">.</span><span class="n">websocket</span><span class="p">(</span><span class="s1">&#39;/dry_run&#39;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">websocket_endpoint</span><span class="p">(</span>
+        <span class="n">websocket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span>
+    <span class="p">):</span>  <span class="c1"># &#39;response&#39; is a FastAPI response, not a Jina response</span>
+        <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
+        <span class="kn">from</span> <span class="nn">jina.serve.executors</span> <span class="kn">import</span> <span class="n">__dry_run_endpoint__</span>
+
+        <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
+
+        <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span>
+                <span class="n">request_iterator</span><span class="o">=</span><span class="n">request_generator</span><span class="p">(</span>
+                    <span class="n">exec_endpoint</span><span class="o">=</span><span class="n">__dry_run_endpoint__</span><span class="p">,</span>
+                    <span class="n">data</span><span class="o">=</span><span class="n">da</span><span class="p">,</span>
+                    <span class="n">data_type</span><span class="o">=</span><span class="n">DataInputType</span><span class="o">.</span><span class="n">DOCUMENT</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="n">status_message</span> <span class="o">=</span> <span class="n">StatusMessage</span><span class="p">()</span>
+            <span class="n">status_message</span><span class="o">.</span><span class="n">set_code</span><span class="p">(</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">websocket</span><span class="p">,</span> <span class="n">status_message</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="n">manager</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">_fits_ws_close_msg</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">())</span>  <span class="c1"># some messages are too long</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s1">&#39;Network error while connecting to deployment at </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1">. It may be down.&#39;</span>
+            <span class="p">)</span>
+            <span class="k">await</span> <span class="n">websocket</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">WS_1011_INTERNAL_ERROR</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">WebSocketDisconnect</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Client successfully disconnected from server&#39;</span><span class="p">)</span>
+            <span class="n">manager</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">manager</span><span class="o">.</span><span class="n">disconnect</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
+            <span class="n">status_message</span> <span class="o">=</span> <span class="n">StatusMessage</span><span class="p">()</span>
+            <span class="n">status_message</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">websocket</span><span class="p">,</span> <span class="n">status_message</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">app</span></div>
 </pre></div>

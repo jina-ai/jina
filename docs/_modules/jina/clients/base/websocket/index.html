@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/clients/base/websocket.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
-        <title>jina.clients.base.websocket - Jina 3.5.1 documentation</title>
+        <title>jina.clients.base.websocket - Jina 3.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.5.1 documentation</div>
+                <div class="brand">Jina 3.6.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -217,6 +217,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/health-check/">Health and readiness check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -428,8 +429,8 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.request.data/">jina.types.request.data module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.request.status/">jina.types.request.status module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.mixin/">jina.types.mixin module</a></li>
@@ -542,6 +543,7 @@
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_or_reuse_loop</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="kn">import</span> <span class="n">ProgressBar</span>
+<span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
 <span class="kn">from</span> <span class="nn">jina.serve.stream</span> <span class="kn">import</span> <span class="n">RequestStreamer</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -551,6 +553,55 @@
 
 <div class="viewcode-block" id="WebSocketBaseClient"><a class="viewcode-back" href="../../../../../api/jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient">[docs]</a><span class="k">class</span> <span class="nc">WebSocketBaseClient</span><span class="p">(</span><span class="n">BaseClient</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A Websocket Client.&quot;&quot;&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sends a dry run to the Flow to validate if the Flow is ready to receive requests</span>
+
+<span class="sd">        :param kwargs: potential kwargs received passed from the public interface</span>
+<span class="sd">        :return: boolean indicating the readiness of the Flow</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">proto</span> <span class="o">=</span> <span class="s1">&#39;wss&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tls</span> <span class="k">else</span> <span class="s1">&#39;ws&#39;</span>
+                <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">proto</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/dry_run&#39;</span>
+                <span class="n">iolet</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_async_context</span><span class="p">(</span>
+                    <span class="n">WebsocketClientlet</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+                <span class="p">)</span>
+
+                <span class="k">async</span> <span class="k">def</span> <span class="nf">_receive</span><span class="p">():</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">iolet</span><span class="o">.</span><span class="n">recv_dry_run</span><span class="p">():</span>
+                            <span class="k">return</span> <span class="n">response</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">&#39;Error while fetching response from Websocket server </span><span class="si">{</span><span class="n">exc</span><span class="si">!r}</span><span class="s1">&#39;</span>
+                        <span class="p">)</span>
+                        <span class="k">raise</span>
+
+                <span class="k">async</span> <span class="k">def</span> <span class="nf">_send</span><span class="p">():</span>
+                    <span class="k">return</span> <span class="k">await</span> <span class="n">iolet</span><span class="o">.</span><span class="n">send_dry_run</span><span class="p">()</span>
+
+                <span class="n">receive_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">_receive</span><span class="p">())</span>
+
+                <span class="k">if</span> <span class="n">receive_task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                        <span class="s1">&#39;receive task not running, can not send messages&#39;</span>
+                    <span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">send_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">_send</span><span class="p">())</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">response_result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">send_task</span><span class="p">,</span> <span class="n">receive_task</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">response_result</span><span class="o">.</span><span class="n">proto</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">finally</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">iolet</span><span class="o">.</span><span class="n">close_code</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">WS_1011_INTERNAL_ERROR</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">iolet</span><span class="o">.</span><span class="n">close_message</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="n">receive_task</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Error while getting response from websocket server </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_results</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

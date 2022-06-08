@@ -7,8 +7,8 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   jina.types.request.control
    jina.types.request.data
+   jina.types.request.status
 
 Module contents
 ---------------

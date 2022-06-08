@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/head.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
-        <title>jina.serve.runtimes.head - Jina 3.5.1 documentation</title>
+        <title>jina.serve.runtimes.head - Jina 3.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.5.1 documentation</div>
+                <div class="brand">Jina 3.6.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -217,6 +217,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/health-check/">Health and readiness check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -428,8 +429,8 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.request.data/">jina.types.request.data module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../api/jina.types.request.status/">jina.types.request.status module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../api/jina.types.mixin/">jina.types.mixin module</a></li>
@@ -539,6 +540,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">grpc</span>
+<span class="kn">from</span> <span class="nn">grpc_health.v1</span> <span class="kn">import</span> <span class="n">health</span><span class="p">,</span> <span class="n">health_pb2</span><span class="p">,</span> <span class="n">health_pb2_grpc</span>
 <span class="kn">from</span> <span class="nn">grpc_reflection.v1alpha</span> <span class="kn">import</span> <span class="n">reflection</span>
 
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PollingType</span>
@@ -548,7 +550,6 @@
 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.asyncio</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.request_handlers.data_request_handler</span> <span class="kn">import</span> <span class="n">DataRequestHandler</span>
-<span class="kn">from</span> <span class="nn">jina.types.request.control</span> <span class="kn">import</span> <span class="n">ControlRequest</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span><span class="p">,</span> <span class="n">Response</span>
 
 
@@ -568,6 +569,8 @@
 <span class="sd">        :param args: args from CLI</span>
 <span class="sd">        :param kwargs: keyword args</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span> <span class="o">=</span> <span class="n">health</span><span class="o">.</span><span class="n">HealthServicer</span><span class="p">(</span><span class="n">experimental_non_blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">args</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
@@ -679,19 +682,22 @@
             <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span>
         <span class="p">)</span>
         <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaDataRequestRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="p">)</span>
-        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaControlRequestRPCServicer_to_server</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span>
-        <span class="p">)</span>
         <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaDiscoverEndpointsRPCServicer_to_server</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span>
         <span class="p">)</span>
         <span class="n">service_names</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaSingleDataRequestRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
             <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaDataRequestRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
-            <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaControlRequestRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
             <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaDiscoverEndpointsRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
             <span class="n">reflection</span><span class="o">.</span><span class="n">SERVICE_NAME</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="c1"># Mark all services as healthy.</span>
+        <span class="n">health_pb2_grpc</span><span class="o">.</span><span class="n">add_HealthServicer_to_server</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">service_names</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">service</span><span class="p">,</span> <span class="n">health_pb2</span><span class="o">.</span><span class="n">HealthCheckResponse</span><span class="o">.</span><span class="n">SERVING</span><span class="p">)</span>
         <span class="n">reflection</span><span class="o">.</span><span class="n">enable_server_reflection</span><span class="p">(</span><span class="n">service_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="p">)</span>
 
         <span class="n">bind_addr</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;0.0.0.0:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
@@ -712,6 +718,7 @@
 
 <div class="viewcode-block" id="HeadRuntime.async_teardown"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Close the connection pool&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span><span class="o">.</span><span class="n">enter_graceful_shutdown</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
@@ -766,48 +773,6 @@
             <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_exception</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="n">executor</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
             <span class="n">context</span><span class="o">.</span><span class="n">set_trailing_metadata</span><span class="p">(((</span><span class="s1">&#39;is-error&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">),))</span>
             <span class="k">return</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
-
-<div class="viewcode-block" id="HeadRuntime.process_control"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.process_control">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">ControlRequest</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlRequest</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Process the received control request and return the input request</span>
-
-<span class="sd">        :param request: the data request to process</span>
-<span class="sd">        :param args: additional arguments in the grpc call, ignored</span>
-<span class="sd">        :returns: the input request</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug_enabled</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_log_control_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;ACTIVATE&#39;</span><span class="p">:</span>
-
-                <span class="k">for</span> <span class="n">relatedEntity</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">relatedEntities</span><span class="p">:</span>
-                    <span class="n">connection_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">relatedEntity</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">relatedEntity</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
-
-                    <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span>
-                        <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_name</span><span class="p">,</span>
-                        <span class="n">address</span><span class="o">=</span><span class="n">connection_string</span><span class="p">,</span>
-                        <span class="n">shard_id</span><span class="o">=</span><span class="n">relatedEntity</span><span class="o">.</span><span class="n">shard_id</span>
-                        <span class="k">if</span> <span class="n">relatedEntity</span><span class="o">.</span><span class="n">HasField</span><span class="p">(</span><span class="s1">&#39;shard_id&#39;</span><span class="p">)</span>
-                        <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-                    <span class="p">)</span>
-            <span class="k">elif</span> <span class="n">request</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s1">&#39;DEACTIVATE&#39;</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">relatedEntity</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">relatedEntities</span><span class="p">:</span>
-                    <span class="n">connection_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">relatedEntity</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">relatedEntity</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
-                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">remove_connection</span><span class="p">(</span>
-                        <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_name</span><span class="p">,</span>
-                        <span class="n">address</span><span class="o">=</span><span class="n">connection_string</span><span class="p">,</span>
-                        <span class="n">shard_id</span><span class="o">=</span><span class="n">relatedEntity</span><span class="o">.</span><span class="n">shard_id</span><span class="p">,</span>
-                    <span class="p">)</span>
-            <span class="k">return</span> <span class="n">request</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> add &quot;--quiet-error&quot; to suppress the exception details&#39;</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span>
-                <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                <span class="n">exc_info</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">quiet_error</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="HeadRuntime.endpoint_discovery"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime.endpoint_discovery">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">endpoint_discovery</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">EndpointsProto</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>

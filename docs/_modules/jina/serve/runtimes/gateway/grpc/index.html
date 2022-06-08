@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/grpc.html" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
-        <title>jina.serve.runtimes.gateway.grpc - Jina 3.5.1 documentation</title>
+        <title>jina.serve.runtimes.gateway.grpc - Jina 3.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.5.1 documentation</div>
+                <div class="brand">Jina 3.6.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -217,6 +217,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/health-check/">Health and readiness check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -428,8 +429,8 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../api/jina.types/">jina.types package</a><input class="toctree-checkbox" id="toctree-checkbox-40" name="toctree-checkbox-40" role="switch" type="checkbox"/><label for="toctree-checkbox-40"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../api/jina.types.request/">jina.types.request package</a><input class="toctree-checkbox" id="toctree-checkbox-41" name="toctree-checkbox-41" role="switch" type="checkbox"/><label for="toctree-checkbox-41"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.request.control/">jina.types.request.control module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.request.data/">jina.types.request.data module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../api/jina.types.request.status/">jina.types.request.status module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../../api/jina.types.mixin/">jina.types.mixin module</a></li>
@@ -529,9 +530,11 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.serve.runtimes.gateway.grpc</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">import</span> <span class="nn">grpc</span>
+<span class="kn">from</span> <span class="nn">grpc_health.v1</span> <span class="kn">import</span> <span class="n">health</span><span class="p">,</span> <span class="n">health_pb2</span><span class="p">,</span> <span class="n">health_pb2_grpc</span>
 <span class="kn">from</span> <span class="nn">grpc_reflection.v1alpha</span> <span class="kn">import</span> <span class="n">reflection</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span>
@@ -541,14 +544,25 @@
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway</span> <span class="kn">import</span> <span class="n">GatewayRuntime</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.request_handling</span> <span class="kn">import</span> <span class="n">RequestHandler</span>
 <span class="kn">from</span> <span class="nn">jina.serve.stream</span> <span class="kn">import</span> <span class="n">RequestStreamer</span>
+<span class="kn">from</span> <span class="nn">jina.types.request.status</span> <span class="kn">import</span> <span class="n">StatusMessage</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GRPCGatewayRuntime&#39;</span><span class="p">]</span>
-
-<span class="kn">from</span> <span class="nn">jina.types.request.control</span> <span class="kn">import</span> <span class="n">ControlRequest</span>
 
 
 <div class="viewcode-block" id="GRPCGatewayRuntime"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime">[docs]</a><span class="k">class</span> <span class="nc">GRPCGatewayRuntime</span><span class="p">(</span><span class="n">GatewayRuntime</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Gateway Runtime for gRPC.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the runtime</span>
+<span class="sd">        :param args: args from CLI</span>
+<span class="sd">        :param kwargs: keyword args</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span> <span class="o">=</span> <span class="n">health</span><span class="o">.</span><span class="n">HealthServicer</span><span class="p">(</span><span class="n">experimental_non_blocking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GRPCGatewayRuntime.async_setup"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -590,13 +604,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">Call</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">stream</span>
 
         <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
-        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaControlRequestRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
+        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaGatewayDryRunRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
 
         <span class="n">service_names</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
-            <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaControlRequestRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
+            <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaGatewayDryRunRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
             <span class="n">reflection</span><span class="o">.</span><span class="n">SERVICE_NAME</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="c1"># Mark all services as healthy.</span>
+        <span class="n">health_pb2_grpc</span><span class="o">.</span><span class="n">add_HealthServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">service</span> <span class="ow">in</span> <span class="n">service_names</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">service</span><span class="p">,</span> <span class="n">health_pb2</span><span class="o">.</span><span class="n">HealthCheckResponse</span><span class="o">.</span><span class="n">SERVING</span><span class="p">)</span>
         <span class="n">reflection</span><span class="o">.</span><span class="n">enable_server_reflection</span><span class="p">(</span><span class="n">service_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
 
         <span class="n">bind_addr</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">__default_host__</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
@@ -631,6 +650,7 @@
         <span class="sd">&quot;&quot;&quot;Close the connection pool&quot;&quot;&quot;</span>
         <span class="c1"># usually async_cancel should already have been called, but then its a noop</span>
         <span class="c1"># if the runtime is stopped without a sigterm (e.g. as a context manager, this can happen)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_health_servicer</span><span class="o">.</span><span class="n">enter_graceful_shutdown</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
@@ -643,21 +663,36 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection_pool</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">wait_for_termination</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="GRPCGatewayRuntime.process_control"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.process_control">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">process_control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">ControlRequest</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ControlRequest</span><span class="p">:</span>
+<div class="viewcode-block" id="GRPCGatewayRuntime.dry_run"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.dry_run">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Should be used to check readiness by sending STATUS ControlRequests.</span>
-<span class="sd">        Throws for any other command than STATUS.</span>
+<span class="sd">        Process the the call requested by having a dry run call to every Executor in the graph</span>
 
-<span class="sd">        :param request: the ControlRequest, should have command &#39;STATUS&#39;</span>
-<span class="sd">        :param args: additional arguments in the grpc call, ignored</span>
-<span class="sd">        :returns: will be the original request</span>
+<span class="sd">        :param empty: The service expects an empty protobuf message</span>
+<span class="sd">        :param context: grpc context</span>
+<span class="sd">        :returns: the response request</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+        <span class="kn">from</span> <span class="nn">jina.clients.request</span> <span class="kn">import</span> <span class="n">request_generator</span>
+        <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DataInputType</span>
+        <span class="kn">from</span> <span class="nn">jina.serve.executors</span> <span class="kn">import</span> <span class="n">__dry_run_endpoint__</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug_enabled</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_log_control_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">command</span> <span class="o">!=</span> <span class="s1">&#39;STATUS&#39;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;gateway only support STATUS ControlRequests&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">request</span></div></div>
+        <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">req_iterator</span> <span class="o">=</span> <span class="n">request_generator</span><span class="p">(</span>
+                <span class="n">exec_endpoint</span><span class="o">=</span><span class="n">__dry_run_endpoint__</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">da</span><span class="p">,</span>
+                <span class="n">data_type</span><span class="o">=</span><span class="n">DataInputType</span><span class="o">.</span><span class="n">DOCUMENT</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">request_iterator</span><span class="o">=</span><span class="n">req_iterator</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="n">status_message</span> <span class="o">=</span> <span class="n">StatusMessage</span><span class="p">()</span>
+            <span class="n">status_message</span><span class="o">.</span><span class="n">set_code</span><span class="p">(</span><span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">status_message</span><span class="o">.</span><span class="n">proto</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">status_message</span> <span class="o">=</span> <span class="n">StatusMessage</span><span class="p">()</span>
+            <span class="n">status_message</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">status_message</span><span class="o">.</span><span class="n">proto</span></div></div>
 </pre></div>
                 </article>
             </div>
