@@ -1,6 +1,6 @@
-# {octicon}`book;1em;sd-text-info` How-To
+# How-To
 
-Jina is a very powerful framework that can help you build distributed neural search applications, from start to finish.
+Jina is a very powerful framework that can help you build distributed multi-modal and cross-modal applications, from start to finish.
 
 ```{admonition} See Also
 :class: seealso

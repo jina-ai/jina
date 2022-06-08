@@ -1,4 +1,4 @@
-## Docker image
+# Docker image
 
 Our universal Docker image is ready-to-use on linux/amd64 and linux/arm64. The Docker image name always starts with `jinaai/jina` followed by a tag composed of three parts:
 
@@ -27,7 +27,7 @@ Examples:
 - `jinaai/jina:latest`: the latest release with Python 3.7 and the entrypoint of `jina`
 - `jinaai/jina:master`: the master with Python 3.7 and the entrypoint of `jina`
 
-### Image alias and updates
+## Image alias and updates
 
 | Event | Updated images | Aliases |
 | --- | --- | --- |
@@ -39,7 +39,11 @@ Examples:
   - `{extra} = ["", "-devel", "-standard", "-perf"]`
 
 
-### Image size on different tags
+## Image size on different tags
+
+```{warning}
+[Due to a known bug in shields.io/Docker Hub API](https://github.com/badges/shields/issues/7583), the following badge may show "invalid" status randomly.
+```
 
 |Image Size|
 | ---|

@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<meta property="og:title" content="Architecture Overview" />
+<meta property="og:title" content="Concepts Overview" />
   
 <meta property="og:type" content="website" />
   
@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.5.1 Documentation" />
   
-<meta property="og:description" content="The figure below shows details on how the Flow and Executor abstractions translate into concrete microservices, providing all the serving and scaling features of Jina. You will not need to understand every detail of this architecture in order to build your first Neural Search app using Jina. But ..." />
+<meta property="og:description" content="The figure below shows details on how the Flow and Executor abstractions translate into concrete microservices, providing all the serving and scaling features of Jina. You will not need to understand every detail of this architecture in order to build your first multi-modal/cross-modal app using ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -35,11 +35,11 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Executor" href="../executor/" /><link rel="prev" title="Create a New Project" href="../../get-started/create-app/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Executor" href="../executor/" /><link rel="prev" title="Create New Project" href="../../get-started/create-app/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/architecture-overview.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
-        <title>Architecture Overview - Jina 3.5.1 documentation</title>
+        <title>Concepts Overview - Jina 3.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -223,18 +223,18 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
     <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/troubleshooting/">Troubleshooting</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../get-started/create-app/">Create a New Project</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/create-app/">Create New Project</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
-<ul>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Concepts Overview</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../executor/executor-api/">Basic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -269,7 +269,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../executor/hub/executor-best-practices/">Best practices</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book sd-text-info" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-To</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../clean-code/">How to write clean &amp; efficient code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/async-executors/">How to use async coroutines in Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/scale-out/">How to scale out your Executor</a></li>
@@ -561,13 +561,13 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="architecture-overview">
-<span id="id1"></span><h1>Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permalink to this headline">#</a></h1>
+                    <section class="tex2jax_ignore mathjax_ignore" id="concepts-overview">
+<span id="architecture-overview"></span><h1>Concepts Overview<a class="headerlink" href="#concepts-overview" title="Permalink to this headline">#</a></h1>
 <p>The figure below shows details on how the Flow and Executor abstractions translate into concrete microservices, providing all the
 serving and scaling features of Jina.</p>
 <figure class="align-center">
 <img alt="../../_images/arch-overview.svg" src="../../_images/arch-overview.svg" /></figure>
-<p>You will not need to understand every detail of this architecture in order to build your first Neural Search app using Jina.
+<p>You will not need to understand every detail of this architecture in order to build your first multi-modal/cross-modal app using Jina.
 But it is useful in order to understand how Jina works, regardless of whether your microservice app runs locally,
 is orchestrated only by the Flow object itself, or is deployed using a cloud-native infrastructure such as Kubernetes.
 In fact, you might notice how some naming and concepts are inspired by the Kubernetes architecture.</p>
@@ -605,7 +605,7 @@ In fact, you might notice how some naming and concepts are inspired by the Kuber
                                 <span>Previous</span>
                             </div>
                             
-                            <div class="title">Create a New Project</div>
+                            <div class="title">Create New Project</div>
                             
                         </div>
                     </a>
@@ -615,7 +615,7 @@ In fact, you might notice how some naming and concepts are inspired by the Kuber
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 07, 2022</div>
+                            Last updated on Jun 08, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
