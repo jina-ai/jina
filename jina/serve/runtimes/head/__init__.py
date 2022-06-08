@@ -201,9 +201,15 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         return await self.process_data([request], context)
 
     def _handle_internalnetworkerror(self, err, context, response):
-        context.set_details(
-            f'|Head: Failed to connect to worker (Executor) pod at address {err.dest_addr}. It may be down.'
-        )
+        err_code = err.code()
+        if err_code == grpc.StatusCode.UNAVAILABLE:
+            context.set_details(
+                f'|Head: Failed to connect to worker (Executor) pod at address {err.dest_addr}. It may be down.'
+            )
+        elif err_code == grpc.StatusCode.DEADLINE_EXCEEDED:
+            context.set_details(
+                f'|Head: Connection to worker (Executor) pod at address {err.dest_addr} could be established, but timed out.'
+            )
         context.set_code(err.code())
         self.logger.error(f'Error while getting responses from Pods: {err.details()}')
         if err.request_id:

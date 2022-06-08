@@ -65,7 +65,15 @@ class TopologyGraph:
             if err_code == grpc.StatusCode.UNAVAILABLE:
                 err._details = (
                     err.details()
-                    + f' |Gateway: Communication error with deployment {self.name} at address(es) {err.dest_addr}. Head or worker(s) may be down.'
+                    + f' |Gateway: Communication error with deployment {self.name} at address(es) {err.dest_addr}. '
+                    f'Head or worker(s) may be down.'
+                )
+                raise err
+            elif err_code == grpc.StatusCode.DEADLINE_EXCEEDED:
+                err._details = (
+                    err.details()
+                    + f'|Gateway: Connection with deployment {self.name} at address(es) {err.dest_addr} could be established, but timed out.'
+                    f' You can increase the allowed time by setting `Flow(timeout_send=time_in_ms)`.'
                 )
                 raise err
             else:

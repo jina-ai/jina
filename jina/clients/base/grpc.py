@@ -114,6 +114,11 @@ class GRPCBaseClient(BaseClient):
                         f'{msg}\nThe ongoing request is terminated as the server is not available or closed already.'
                     )
                     raise ConnectionError(my_details) from None
+                elif my_code == grpc.StatusCode.DEADLINE_EXCEEDED:
+                    self.logger.error(
+                        f'{msg}\nThe ongoing request is terminated due to a server-side timeout.'
+                    )
+                    raise ConnectionError(my_details) from None
                 elif my_code == grpc.StatusCode.INTERNAL:
                     self.logger.error(f'{msg}\ninternal error on the server side')
                     raise err
