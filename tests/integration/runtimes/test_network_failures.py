@@ -51,9 +51,9 @@ def _create_gateway(port, graph, pod_addr, protocol, retries=-1):
     return p
 
 
-def _create_head(port, polling):
+def _create_head(port, polling, retries=-1):
     p = multiprocessing.Process(
-        target=_create_head_runtime, args=(port, 'head', polling)
+        target=_create_head_runtime, args=(port, 'head', polling, None, None, retries)
     )
     p.start()
     time.sleep(0.1)
@@ -601,3 +601,73 @@ def test_custom_num_retries(port_generator, retries, capfd):
         for p in worker_processes:
             p.terminate()
             p.join()
+
+
+@pytest.mark.parametrize('retries', [-1, 0, 5])
+def test_custom_num_retries_headful(port_generator, retries, capfd):
+    # create gateway and workers manually, then terminate worker process to provoke an error
+    worker_port = port_generator()
+    gateway_port = port_generator()
+    head_port = port_generator()
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
+
+    head_process = _create_head(head_port, 'ANY', retries=retries)
+    worker_process = _create_worker(worker_port)
+    gateway_process = _create_gateway(
+        gateway_port, graph_description, pod_addresses, 'grpc', retries=retries
+    )
+
+    time.sleep(1.0)
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{head_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{worker_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{gateway_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    # this would be done by the Pod, its adding the worker to the head
+    activate_msg = ControlRequest(command='ACTIVATE')
+    activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
+    GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
+
+    try:
+        # ----------- 1. ping Flow once to trigger endpoint discovery -----------
+        # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+        p = multiprocessing.Process(target=_send_request, args=(gateway_port, 'grpc'))
+        p.start()
+        p.join()
+        assert p.exitcode == 0
+        # kill worker
+        worker_process.terminate()
+        worker_process.join()
+        # ----------- 2. test that call will be retried the appropriate number of times -----------
+        # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+        p = multiprocessing.Process(
+            target=_test_custom_retry,
+            args=(gateway_port, worker_port, 'grpc', retries, capfd),
+        )
+        p.start()
+        p.join()
+        assert p.exitcode == 0
+    except Exception:
+        assert False
+    finally:  # clean up runtimes
+        gateway_process.terminate()
+        gateway_process.join()
+        worker_process.terminate()
+        worker_process.join()
+        head_process.terminate()
+        head_process.join()

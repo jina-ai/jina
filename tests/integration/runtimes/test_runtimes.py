@@ -702,11 +702,12 @@ def _create_worker_runtime(port, name='', executor=None):
 
 
 def _create_head_runtime(
-    port, name='', polling='ANY', uses_before=None, uses_after=None
+    port, name='', polling='ANY', uses_before=None, uses_after=None, retries=-1
 ):
     args = set_pod_parser().parse_args([])
     args.port = port
     args.name = name
+    args.retries = retries
     args.polling = PollingType.ANY if polling == 'ANY' else PollingType.ALL
     if uses_before:
         args.uses_before_address = uses_before
