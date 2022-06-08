@@ -3,7 +3,8 @@ import time
 
 import pytest
 
-from jina import Client, Document, Executor, requests
+from docarray import DocumentArray
+from jina import Client, Executor, requests
 from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
@@ -61,12 +62,8 @@ def _create_head(port, connection_list_dict, polling):
 def _send_request(gateway_port, protocol):
     """send request to gateway and see what happens"""
     c = Client(host='localhost', port=gateway_port, protocol=protocol)
-    return c.post(
-        '/foo',
-        inputs=[Document(text='hi') for _ in range(2)],
-        request_size=1,
-        return_responses=True,
-    )
+    res = c.post('/foo', inputs=DocumentArray.empty(2), request_size=1)
+    assert len(res) == 2
 
 
 def _test_error(gateway_port, error_ports, protocol):
@@ -162,7 +159,7 @@ async def test_runtimes_headless_topology(
         worker_process.join()
 
 
-@pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
+@pytest.mark.parametrize('protocol', ['grpc'])
 @pytest.mark.asyncio
 async def test_runtimes_reconnect(port_generator, protocol):
     # create gateway and workers manually, then terminate worker process to provoke an error
@@ -171,17 +168,8 @@ async def test_runtimes_reconnect(port_generator, protocol):
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
 
-    worker_process = _create_worker(worker_port)
     gateway_process = _create_gateway(
         gateway_port, graph_description, pod_addresses, protocol
-    )
-
-    time.sleep(1.0)
-
-    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
-        timeout=5.0,
-        ctrl_address=f'0.0.0.0:{worker_port}',
-        ready_or_shutdown_event=multiprocessing.Event(),
     )
 
     AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
@@ -191,15 +179,11 @@ async def test_runtimes_reconnect(port_generator, protocol):
     )
 
     try:
-        # just ping the Flow without having killed a worker before. This (also) performs endpoint discovery
+        # send request while Executor is not UP, WILL FAIL
         p = multiprocessing.Process(target=_send_request, args=(gateway_port, protocol))
         p.start()
         p.join()
-        # only now do we kill the worker, after having performed successful endpoint discovery
-        # so in this case, the actual request will fail, not the discovery, which is handled differently by Gateway
-        worker_process.terminate()  # kill worker
-        worker_process.join()
-        assert not worker_process.is_alive()
+        assert p.exitcode != 0  # The request will fail and raise
 
         worker_process = _create_worker(worker_port)
         AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
@@ -207,10 +191,36 @@ async def test_runtimes_reconnect(port_generator, protocol):
             ctrl_address=f'0.0.0.0:{worker_port}',
             ready_or_shutdown_event=multiprocessing.Event(),
         )
-
+        # send request while Executor is UP, WILL SUCCEED
         p = multiprocessing.Process(target=_send_request, args=(gateway_port, protocol))
         p.start()
         p.join()
+        assert p.exitcode == 0  # The request will not fail and raise
+        worker_process.terminate()  # kill worker
+        worker_process.join()
+        assert not worker_process.is_alive()
+
+        # send request while Executor is not UP, WILL FAIL
+        p = multiprocessing.Process(target=_send_request, args=(gateway_port, protocol))
+        p.start()
+        p.join()
+        assert p.exitcode != 0
+        time.sleep(1)
+
+        worker_process = _create_worker(worker_port)
+
+        assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ctrl_address=f'0.0.0.0:{worker_port}',
+            ready_or_shutdown_event=multiprocessing.Event(),
+        )
+        # time.sleep(1)
+        p = multiprocessing.Process(target=_send_request, args=(gateway_port, protocol))
+        p.start()
+        p.join()
+        assert (
+            p.exitcode == 0
+        )  # if exitcode != 0 then test in other process did not pass and this should fail
         # ----------- 2. test that gateways remain alive -----------
         # just do the same again, expecting the same failure
         worker_process.terminate()  # kill worker
@@ -219,6 +229,7 @@ async def test_runtimes_reconnect(port_generator, protocol):
         assert (
             worker_process.exitcode == 0
         )  # if exitcode != 0 then test in other process did not pass and this should fail
+
     except Exception:
         assert False
     finally:  # clean up runtimes
