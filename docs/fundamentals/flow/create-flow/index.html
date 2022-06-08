@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/create-flow/" />
   
-<meta property="og:site_name" content="Jina 3.6.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.6.1 Documentation" />
   
 <meta property="og:description" content="Flow defines how your Executors are connected together and how your data flows through them. Every Flow can be defined either purely in Python, or be loaded from a YAML file. Create: The most trivial Flow is the empty Flow and, like any other Flow, it can be instantiated purely in Python, or from..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.6.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.6.1 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/create-flow.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
-        <title>Basic - Jina 3.6.0 documentation</title>
+        <title>Basic - Jina 3.6.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.6.0 documentation</div>
+                <div class="brand">Jina 3.6.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -250,7 +250,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../monitoring-flow/">Monitor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../health-check/">Health and readiness check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../health-check/">Health &amp; readiness check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../yaml-spec/">YAML specification</a></li>
 </ul>
@@ -271,15 +271,15 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../how-to/">How-To</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../clean-code/">How to write clean &amp; efficient code</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/async-executors/">How to use async coroutines in Executors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/scale-out/">How to scale out your Executor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/gpu-executor/">How to run Executors on GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/external-executor/">How to use external Executors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/flow-switch/">How to add selection control to a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/docker-compose/">How to deploy with Docker Compose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/kubernetes/">How to deploy with Kubernetes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/monitoring/">How to add monitoring to Jina with Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/async-executors/">Use async coroutines in Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/scale-out/">Scale out your Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/gpu-executor/">Run Executors on GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/external-executor/">Use external Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/flow-switch/">Add selection control to a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/kubernetes/">Deploy with Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/monitoring/">Use monitoring with Jina in Kubernetes</a></li>
 </ul>
 </li>
 </ul>
@@ -758,10 +758,11 @@ This can be achieved by <em>blocking</em> the execution:</p>
 </pre></div>
 </div>
 <p>One can also do it in the terminal via:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina <span class="nb">export</span> docker-compose flow.yml docker-compose.yml 
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina <span class="nb">export</span> docker-compose flow.yml docker-compose.yml 
 </pre></div>
 </div>
 <p>This will generate a single <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> file containing all the Executors of the Flow.</p>
+<p>For an advance utilisation of Docker Compose with jina please refer to this <a class="reference internal" href="../../../how-to/docker-compose/#docker-compose"><span class="std std-ref">How to</span></a></p>
 </section>
 <section id="kubernetes">
 <h3>Kubernetes<a class="headerlink" href="#kubernetes" title="Permalink to this headline">#</a></h3>
@@ -772,11 +773,12 @@ This can be achieved by <em>blocking</em> the execution:</p>
 </pre></div>
 </div>
 <p>One can also do it in the terminal via:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina <span class="nb">export</span> docker-compose flow.yml ./my-k8s 
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina <span class="nb">export</span> kubernetes flow.yml ./my-k8s 
 </pre></div>
 </div>
 <p>This will generate the necessary Kubernetes configuration files for all the <code class="docutils literal notranslate"><span class="pre">Executors</span></code> of the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.
 The generated folder can be used directly with <code class="docutils literal notranslate"><span class="pre">kubectl</span></code> to deploy the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> to an existing Kubernetes cluster.</p>
+<p>For an advance utilisation of Kubernetes with jina please refer to this <a class="reference internal" href="../../../how-to/kubernetes/#kubernetes"><span class="std std-ref">How to</span></a></p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Based on your local Jina version, Jina Hub may rebuild the Docker image during the YAML generation process.

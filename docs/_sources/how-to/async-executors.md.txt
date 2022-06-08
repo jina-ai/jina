@@ -1,5 +1,5 @@
 (async-executors)=
-# How to use async coroutines in Executors
+# Use async coroutines in Executors
 
 
 You can naturally call async coroutines within `Executor`'s, allowing you to leverage the power of asynchronous
