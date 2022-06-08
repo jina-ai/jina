@@ -93,7 +93,7 @@ Depending on the client-to-gateway protocol, the error message will be returned 
 
 For any of these protocols, the {ref}`Jina Client <client>` will raise a `ConnectionError` containing the error message.
 
-## Breakpoint and debug
+## Debug via breakpoint
 
 Standard Python breakpoints will not work inside `Executor` methods when called inside a Flow context manager. Nevertheless, `import epdb; epdb.set_trace()` will work just as a native python breakpoint. Note that you need to `pip install epdb` to have access to this type of breakpoints.
 
