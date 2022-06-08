@@ -28,8 +28,10 @@ The specifics of this policy depend on the environment the Flow find itself in, 
 
 ````{admonition} Hint: Prevent Executor timeouts
 :class: hint
-If you regularly experience timouts on Executor calls, you may want to consider setting `Flow(timeout_send=time_in_ms)`
-to a larger value.
+If you regularly experience timouts on Executor calls, you may want to consider setting the Flow's `timeout_send` attribute to a larger value.
+You can do this by setting `Flow(timeout_send=time_in_ms)` in Python
+or `timeout_send: time_in_ms` in your Flow YAML with-block.
+
 Especially neural network forward passes on CPU (and other unusually expensive operations) can lead to timeouts with the default setting.
 ````
 
