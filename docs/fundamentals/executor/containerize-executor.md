@@ -35,7 +35,7 @@ FROM jinaai/jina:3-py37-perf
 or by including the `pip install jina` command as part of the image building process.  
 
 ```dockerfile
-RUN pip install jina==3
+RUN pip install jina
 ```
 
 ## Set Jina Executor CLI as entrypoint

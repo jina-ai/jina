@@ -24,7 +24,7 @@ Before you begin, make sure you meet these prerequisites:
 
 
 ```shell
-pip install jina==3.0.0
+pip install jina
 pip install sklearn==1.0.2
 pip install pqlite==0.2.3
 ```
