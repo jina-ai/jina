@@ -47,6 +47,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             compression=args.compression,
             metrics_registry=self.metrics_registry,
         )
+        self._retries = self.args.retries
 
         if self.metrics_registry:
             with ImportExtensions(
@@ -329,7 +330,10 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 response,
                 uses_before_metadata,
             ) = await self.connection_pool.send_requests_once(
-                requests, deployment='uses_before', timeout=self.timeout_send
+                requests,
+                deployment='uses_before',
+                timeout=self.timeout_send,
+                retries=self._retries,
             )
             requests = [response]
 
@@ -338,6 +342,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             deployment=self._deployment_name,
             polling_type=self._polling[endpoint],
             timeout=self.timeout_send,
+            retries=self._retries,
         )
 
         worker_results = await asyncio.gather(*worker_send_tasks)
@@ -356,7 +361,10 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 response_request,
                 uses_after_metadata,
             ) = await self.connection_pool.send_requests_once(
-                worker_results, deployment='uses_after', timeout=self.timeout_send
+                worker_results,
+                deployment='uses_after',
+                timeout=self.timeout_send,
+                retries=self._retries,
             )
         elif len(worker_results) > 1 and self._reduce:
             DataRequestHandler.reduce_requests(worker_results)
