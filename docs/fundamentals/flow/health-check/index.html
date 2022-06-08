@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<meta property="og:title" content="Health & readiness check" />
+<meta property="og:title" content="Readiness & health check" />
   
 <meta property="og:type" content="website" />
   
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/health-check.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
-        <title>Health &amp; readiness check - Jina 3.6.1 documentation</title>
+        <title>Readiness &amp; health check - Jina 3.6.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -230,7 +230,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/troubleshooting/">Troubleshooting</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../get-started/create-app/">Create New Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get-started/create-app/">Create Project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Glossary</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
@@ -250,7 +250,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../monitoring-flow/">Monitor</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Health &amp; readiness check</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Readiness &amp; health check</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../yaml-spec/">YAML specification</a></li>
 </ul>
@@ -562,8 +562,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="health-readiness-check">
-<h1>Health &amp; readiness check<a class="headerlink" href="#health-readiness-check" title="Permalink to this headline">#</a></h1>
+                    <section class="tex2jax_ignore mathjax_ignore" id="readiness-health-check">
+<h1>Readiness &amp; health check<a class="headerlink" href="#readiness-health-check" title="Permalink to this headline">#</a></h1>
 <p>Every Jina Flow consists of a <a class="reference internal" href="../../architecture-overview/#architecture-overview"><span class="std std-ref">number of microservices</span></a>,
 each of which have to be healthy before the Flow is ready to receive requests.</p>
 <p>Each Flow microservice provides a health check in the form of a <a class="reference external" href="https://github.com/grpc/grpc/blob/master/doc/health-checking.md">standardized gRPC endpoint</a> that exposes this information to the outside world.
@@ -875,7 +875,7 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
                 <div class="toc-tree-container">
                     <div class="toc-tree">
                         <ul>
-<li><a class="reference internal" href="#">Health &amp; readiness check</a><ul>
+<li><a class="reference internal" href="#">Readiness &amp; health check</a><ul>
 <li><a class="reference internal" href="#readiness-of-complete-flow">Readiness of complete Flow</a><ul>
 <li><a class="reference internal" href="#flow-status-using-third-party-clients">Flow status using third-party clients</a><ul>
 <li><a class="reference internal" href="#using-grpc">Using gRPC</a></li>
