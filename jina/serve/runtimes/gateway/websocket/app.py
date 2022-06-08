@@ -187,7 +187,7 @@ def get_fastapi_app(
 
             manager.disconnect(websocket)
             fallback_msg = (
-                f'Connection to deployment at {err.dest_addr} timed out. Use `Flow(timeout_send=time_in_ms)` to increase the allowed time.'
+                f'Connection to deployment at {err.dest_addr} timed out. You can adjust `Flow(timeout_send=...)`.'
                 if err.code() == grpc.StatusCode.DEADLINE_EXCEEDED
                 else f'Network error while connecting to deployment at {err.dest_addr}. It may be down.'
             )
