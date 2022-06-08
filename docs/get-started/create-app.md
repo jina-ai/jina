@@ -1,4 +1,4 @@
-# Create New Project
+# Create Project
 
 Let’s write a small application with our new Jina development environment. To start, we'll use Jina CLI to make a new project for us. In your terminal of choice run:
 
