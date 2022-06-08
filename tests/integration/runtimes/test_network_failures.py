@@ -162,6 +162,72 @@ async def test_runtimes_headless_topology(
         worker_process.join()
 
 
+@pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
+@pytest.mark.asyncio
+async def test_runtimes_reconnect(port_generator, protocol):
+    # create gateway and workers manually, then terminate worker process to provoke an error
+    worker_port = port_generator()
+    gateway_port = port_generator()
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
+
+    worker_process = _create_worker(worker_port)
+    gateway_process = _create_gateway(
+        gateway_port, graph_description, pod_addresses, protocol
+    )
+
+    time.sleep(1.0)
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{worker_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{gateway_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    try:
+        # just ping the Flow without having killed a worker before. This (also) performs endpoint discovery
+        p = multiprocessing.Process(target=_send_request, args=(gateway_port, protocol))
+        p.start()
+        p.join()
+        # only now do we kill the worker, after having performed successful endpoint discovery
+        # so in this case, the actual request will fail, not the discovery, which is handled differently by Gateway
+        worker_process.terminate()  # kill worker
+        worker_process.join()
+        assert not worker_process.is_alive()
+
+        worker_process = _create_worker(worker_port)
+        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ctrl_address=f'0.0.0.0:{worker_port}',
+            ready_or_shutdown_event=multiprocessing.Event(),
+        )
+
+        p = multiprocessing.Process(target=_send_request, args=(gateway_port, protocol))
+        p.start()
+        p.join()
+        # ----------- 2. test that gateways remain alive -----------
+        # just do the same again, expecting the same failure
+        worker_process.terminate()  # kill worker
+        worker_process.join()
+        assert not worker_process.is_alive()
+        assert (
+            worker_process.exitcode == 0
+        )  # if exitcode != 0 then test in other process did not pass and this should fail
+    except Exception:
+        assert False
+    finally:  # clean up runtimes
+        gateway_process.terminate()
+        worker_process.terminate()
+        gateway_process.join()
+        worker_process.join()
+
+
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 @pytest.mark.asyncio
 async def test_runtimes_replicas(port_generator, protocol):
