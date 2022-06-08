@@ -235,12 +235,13 @@ f.to_docker_compose_yaml()
 
 One can also do it in the terminal via:
 
-```bash
+```shell
 jina export docker-compose flow.yml docker-compose.yml 
 ```
 
 This will generate a single `docker-compose.yml` file containing all the Executors of the Flow.
 
+For an advance utilisation of Docker Compose with jina please refer to this {ref}`How to <docker-compose>` 
 
 
 ### Kubernetes
@@ -254,13 +255,14 @@ f.to_kubernetes_yaml('flow_k8s_configuration')
 
 One can also do it in the terminal via:
 
-```bash
-jina export docker-compose flow.yml ./my-k8s 
+```shell
+jina export kubernetes flow.yml ./my-k8s 
 ```
 
 This will generate the necessary Kubernetes configuration files for all the `Executors` of the `Flow`.
 The generated folder can be used directly with `kubectl` to deploy the `Flow` to an existing Kubernetes cluster.
 
+For an advance utilisation of Kubernetes with jina please refer to this {ref}`How to <kubernetes>` 
 
 
 ```{tip}
