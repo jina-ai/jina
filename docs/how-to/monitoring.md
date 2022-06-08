@@ -1,5 +1,5 @@
 (monitoring)=
-# How to deploy and use the monitoring with Jina
+# How to add monitoring to Jina with Kubernetes
 
 First, let's have some context on the monitoring stack that we will be using during this guide.
 To leverage the {ref}`metrics <monitoring-flow>` that Jina exposes, we recommend using the Prometheus/Grafana stack. In this setup, Jina will expose different {ref}`metrics endpoint <monitoring-flow>`, and Prometheus will then be in charge of scraping these endpoints, as well as
@@ -12,7 +12,7 @@ Jina supports exposing the metrics, you are in charge of installing and managing
 
 We will show you in this guide how to easily deploy the Prometheus/Grafana stack and used them to monitor a Flow.
 
-## 1 - Deploying the Flow and the monitoring stack
+## Deploying the Flow and the monitoring stack
 
 ### Deploying on Kubernetes
 
@@ -23,19 +23,6 @@ Fortunately, the [Prometheus operator for Kubernetes](https://github.com/prometh
 Deploying your Jina Flow on Kubernetes is the recommended way to leverage the full potential of the monitoring feature because:
 * The Prometheus operator can automatically discover new endpoints to scrape
 * You can extend your monitoring with the rich built-in Kubernetes metrics
-
-You need to have access to a Kubernetes cluster to follow the rest of this guide.
-
-You can easily have a Kubernetes cluster on your local machine:
-- [minikube](https://minikube.sigs.k8s.io/docs/)
-- [microk8s](https://microk8s.io/)
-
-Or you can use a  managed Kubernetes solution on the cloud:
-- [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine),
-- [Amazon EKS](https://aws.amazon.com/eks),
-- [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service),
-
-
 
 Deploying Prometheus and Grafana on your k8s cluster is as easy as executing the following line:
 
@@ -159,7 +146,7 @@ in contrast with deploying on Kubernetes, you need to tell Prometheus which port
 ports by modifying this [file](https://github.com/jina-ai/example-grafana-prometheus/blob/8baf519f7258da68cfe224775fc90537a749c305/prometheus-grafana-local/prometheus/prometheus.yml#L64)
 ```
 
-## 2- Using Grafana to visualize metrics
+## Using Grafana to visualize metrics
 
 Once you can access the Grafana homepage then go to `Browse` then `import` and copy and paste the [JSON file](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json) 
 
@@ -180,8 +167,7 @@ You should query your Flow generate the first metrics. Othewise the dashboard wi
 You can query the flow by doing :
 
 ```python
-from jina import Client
-from docarray import DocumentArray
+from jina import Client, DocumentArray
 
 client = Client(port=51000)
 client.index(inputs=DocumentArray.empty(size=4))

@@ -1,5 +1,5 @@
 (kubernetes)=
-# How to deploy Jina on Kubernetes
+# How to deploy with Kubernetes
 
 Deploying a Flow in Kubernetes is the recommended way of using Jina in production.
 

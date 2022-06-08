@@ -1,15 +1,12 @@
 (client)=
-# Python Client
-The most convenient way to work with the `Flow` API is the Python Client.
-It enables you to send `Documents` to a running `Flow` in a number of different ways, as shown below.
+# Client
+Client enables you to send `Documents` to a running Flow in a number of different ways, as shown below.
 
+Clients support three different networking protocols: HTTP, gRPC, WebSocket and GraphQL
 
-## HTTP, gRPC, and WebSocket
+For each of them, you first connect your Client to the API Gateway, before you can send requests to it.
 
-Jina Flows and Clients support three different networking protocols: HTTP, gRPC, and WebSocket.
-For each of them, you first connect your Client to the Flow, before you can send requests to it.
-
-### Connect Client to a Flow
+## Connect
 
 If there is not already a Flow running in the background or on the network, you can start one:
 
@@ -113,7 +110,7 @@ c = Client(port=f.port)
 ```
 ````
 
-### Send requests to the Flow
+## Send data
 
 After a Client has connected to a Flow, it can send requests to the Flow using its `.post()` method.
 This expects as inputs the {ref}`Executor endpoint <exec-endpoint>` that you want to target, as well as a Document or Iterable of Documents:
@@ -153,58 +150,7 @@ However, once your solution is deployed remotely, the Flow interface is not pres
 Hence, `flow.post()` is not recommended outside of testing or debugging use cases.
 ```
 
-
-### Batching Requests
-
-Especially during indexing, a Client can send up to thousands or millions of Documents to a `Flow`.
-Those Documents are internally batched into a `Request`, providing a smaller memory footprint and faster response times thanks
-to {ref}`callback functions <callback-functions>`.
-
-The size of these batches can be controlled with the `request_size` keyword.
-The default `request_size` is 100 `Documents`. The optimal size will depend on your use case.
-```python
-from docarray import Document, DocumentArray
-from jina import Flow, Client
-
-with Flow() as f:
-    client = Client(port=f.port)
-    client.post('/', DocumentArray(Document() for _ in range(100)), request_size=10)
-```
-
-### Targeting a specific Executor
-Usually a `Flow` will send each request to all Executors with matching endpoints as configured. But the `Client` also allows you to only target specific Executors in a `Flow` using the `target_executor` keyword. The request will then only be processed by the Executors which match the provided target_executor regex. Its usage is shown in the listing below.
-
-```python
-from docarray import Document, DocumentArray
-from jina import Client, Executor, Flow, requests
-
-
-class FooExecutor(Executor):
-    @requests
-    def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text=f'foo was here and got {len(docs)} document'))
-
-
-class BarExecutor(Executor):
-    @requests
-    def bar(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text=f'bar was here and got {len(docs)} document'))
-
-
-f = (
-    Flow()
-    .add(uses=FooExecutor, name='fooExecutor')
-    .add(uses=BarExecutor, name='barExecutor')
-)
-
-with f:  # Using it as a Context Manager will start the Flow
-    client = Client(port=f.port)
-    docs = client.post(on='/', target_executor='bar*')
-    print(docs.texts)
-```
-This will send the request to all Executors whose names start with 'bar', such as 'barExecutor'.
-In the simplest case, you can specify a precise Executor name, and the request will be sent only to that single Executor.
-### Request parameters
+## Send parameters
 
 The Client can also send parameters to the Executors as shown below:
 
@@ -242,7 +188,93 @@ This might be useful to control `Executor` objects during their lifetime.
 ````
 
 (callback-functions)=
-### Processing results using callback functions
+
+
+## Async send
+
+There also exists an async version of the Python Client which works with `.post()` and `.mutate()`.
+
+While the standard `Client` is also asynchronous under the hood, its async version exposes this fact to the outside world,
+by allowing *coroutines* as input, and returning an *asynchronous iterator*.
+This means you can iterate over Responses one by one, as they come in.
+
+```python
+import asyncio
+
+from docarray import Document
+from jina import Client, Flow
+
+
+async def async_inputs():
+    for _ in range(10):
+        yield Document()
+        await asyncio.sleep(0.1)
+
+
+async def run_client(port):
+    client = Client(port=port, asyncio=True)
+    async for resp in client.post('/', async_inputs, request_size=1):
+        print(resp)
+
+
+with Flow() as f:  # Using it as a Context Manager will start the Flow
+    asyncio.run(run_client(f.port))
+```
+
+
+## Batch data
+
+Especially during indexing, a Client can send up to thousands or millions of Documents to a `Flow`.
+Those Documents are internally batched into a `Request`, providing a smaller memory footprint and faster response times thanks
+to {ref}`callback functions <callback-functions>`.
+
+The size of these batches can be controlled with the `request_size` keyword.
+The default `request_size` is 100 `Documents`. The optimal size will depend on your use case.
+```python
+from docarray import Document, DocumentArray
+from jina import Flow, Client
+
+with Flow() as f:
+    client = Client(port=f.port)
+    client.post('/', DocumentArray(Document() for _ in range(100)), request_size=10)
+```
+
+## Bypass Executor
+
+Usually a `Flow` will send each request to all Executors with matching endpoints as configured. But the `Client` also allows you to only target specific Executors in a `Flow` using the `target_executor` keyword. The request will then only be processed by the Executors which match the provided target_executor regex. Its usage is shown in the listing below.
+
+```python
+from jina import Client, Executor, Flow, requests, Document, DocumentArray
+
+
+class FooExecutor(Executor):
+    @requests
+    async def foo(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text=f'foo was here and got {len(docs)} document'))
+
+
+class BarExecutor(Executor):
+    @requests
+    async def bar(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text=f'bar was here and got {len(docs)} document'))
+
+
+f = (
+    Flow()
+    .add(uses=FooExecutor, name='fooExecutor')
+    .add(uses=BarExecutor, name='barExecutor')
+)
+
+with f:  # Using it as a Context Manager will start the Flow
+    client = Client(port=f.port)
+    docs = client.post(on='/', target_executor='bar*')
+    print(docs.texts)
+```
+This will send the request to all Executors whose names start with 'bar', such as 'barExecutor'.
+In the simplest case, you can specify a precise Executor name, and the request will be sent only to that single Executor.
+
+
+## Callbacks
 
 After performing `client.post()`, you may want to further process the obtained results.
 
@@ -332,7 +364,6 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
         on_always=lambda x: x.docs.save(fp),
     )
 ```
-### On failure callback
 
 Additionally, the `on_error` callback can be triggered by a raise of an exception. The callback must take an optional 
 `exception` parameters as an argument.
@@ -342,11 +373,11 @@ def on_error(resp, exception: Exception):
     ...
 ```
 
-### Returning results from .post()
+## Returns
 
-If no callback is provided, `client.post()` returns a flattened `DocumentArray` containing all Documents of all Requests.
+`client.post()` returns a flattened `DocumentArray` containing all Documents of all Requests.
 
-By setting `return_responses=True` as an argument to `client.post(return_responses=True), this behavior can be modified to return a list of Responses
+By setting `return_responses=True` as an argument to `client.post(return_responses=True)`, this behavior can be modified to return a list of Responses
 (`DataRequest`s) instead.
 
 If a callback is provided, no results will be returned.
@@ -419,10 +450,11 @@ with Flow() as f:
 ````
 
 
-### Custom gRPC compression for GRPC Client
+## Enable compression
 
-If the communication to the `Flow` needs to be done via gRPC, you can pass `compression` parameter to `client.post` to benefit from (`grpc compression`)[https://grpc.github.io/grpc/python/grpc.html#compression] methods. 
-The supported methods are: `NoCompression`, `Gzip` and `Deflate`.
+If the communication to the Gateway is via gRPC, you can pass `compression` parameter to `client.post` to benefit from (gRPC compression)[https://grpc.github.io/grpc/python/grpc.html#compression] methods. 
+
+The supported choices are: None, `NoCompression`, `Gzip` and `Deflate`.
 
 ```python
 from jina import Client
@@ -431,7 +463,7 @@ client = Client()
 client.post(..., compression='Gzip')
 ```
 
-### TLS support
+## Enable TLS
 
 To connect to a Flow that has been {ref}`configured to use TLS <flow-tls>` in combination with gRPC, http, or websocket,
 set the Client's `tls` parameter to `True`:
@@ -450,7 +482,7 @@ Client(host='wss://my.awesome.flow:1234')
 Client(host='grpcs://my.awesome.flow:1234')
 ```
 
-## GraphQL
+## Use GraphQL
 
 The Jina Client additionally supports fetching data via GraphQL mutations using `client.mutate()`:
 
@@ -474,33 +506,8 @@ response = c.mutate(mutation=mut)
 
 For details on the allowed mutation arguments and response fields, see {ref}`here <flow-graphql>`.
 
-## Async Python Client
+```{toctree}
+:hidden:
 
-There also exists an async version of the Python Client which works with `.post()` and `.mutate()`.
-
-While the standard `Client` is also asynchronous under the hood, its async version exposes this fact to the outside world,
-by allowing *coroutines* as input, and returning an *asynchronous iterator*.
-This means you can iterate over Responses one by one, as they come in.
-
-```python
-import asyncio
-
-from docarray import Document
-from jina import Client, Flow
-
-
-async def async_inputs():
-    for _ in range(10):
-        yield Document()
-        await asyncio.sleep(0.1)
-
-
-async def run_client(port):
-    client = Client(port=port, asyncio=True)
-    async for resp in client.post('/', async_inputs, request_size=1):
-        print(resp)
-
-
-with Flow() as f:  # Using it as a Context Manager will start the Flow
-    asyncio.run(run_client(f.port))
+access-flow-api
 ```

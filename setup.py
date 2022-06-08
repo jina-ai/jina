@@ -159,7 +159,7 @@ setup(
     extras_require=all_deps,
     entry_points={
         'console_scripts': [
-            'jina=cli:main',
+            'jina=jina_cli:main',
         ],
     },
     cmdclass={

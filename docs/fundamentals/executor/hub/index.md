@@ -1,5 +1,5 @@
 (jina-hub)=
-# Share Executors via Jina Hub
+# Hub
 
 Now that you understand that Executor is a building block in Jina, the following questions may arise:
 
@@ -62,5 +62,6 @@ create-hub-executor
 push-executor
 use-hub-executor
 ../../../how-to/sandbox
+../../../how-to/debug-executor
 executor-best-practices
 ```

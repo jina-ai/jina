@@ -1,7 +1,7 @@
 (docker-compose)=
-# How to run Jina with Docker Compose
+# How to deploy with Docker Compose
 
-Jina is a cloud-native neural search framework. Therefore, one of the simplest ways of either prototyping or serving in
+One of the simplest ways of either prototyping or serving in
 production is to run your `Flow` with `docker-compose`.
 
 A `Flow` is composed of `Executors` which run Python code

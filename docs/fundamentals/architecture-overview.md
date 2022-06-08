@@ -1,5 +1,5 @@
 (architecture-overview)=
-# Architecture Overview
+# Concepts Overview
 
 The figure below shows details on how the Flow and Executor abstractions translate into concrete microservices, providing all the 
 serving and scaling features of Jina.
@@ -9,7 +9,7 @@ serving and scaling features of Jina.
 :align: center
 ```
 
-You will not need to understand every detail of this architecture in order to build your first Neural Search app using Jina.
+You will not need to understand every detail of this architecture in order to build your first multi-modal/cross-modal app using Jina.
 But it is useful in order to understand how Jina works, regardless of whether your microservice app runs locally,
 is orchestrated only by the Flow object itself, or is deployed using a cloud-native infrastructure such as Kubernetes.
 In fact, you might notice how some naming and concepts are inspired by the Kubernetes architecture.

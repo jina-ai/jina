@@ -1,6 +1,6 @@
-# Learn how to use Jina in depth
+# How-To
 
-Jina is a very powerful framework that can help you build distributed neural search applications, from start to finish.
+Jina is a very powerful framework that can help you build distributed multi-modal and cross-modal applications, from start to finish.
 
 ```{admonition} See Also
 :class: seealso
@@ -8,8 +8,7 @@ If you are completely new to Jina, you should check out its {ref}`overview <arch
 You may also find the [learning portal](https://learn.jina.ai/) useful to get off the ground.
 ```
 
-In order to get you started on your more ambitious projects, we compiled a list of how-to tutorials that guide you
-through some of Jina's more advanced features. Happy coding!
+In order to get you started on your more ambitious projects, we compiled a list of how-to tutorials that guide you through some of Jina's more advanced features. Happy coding!
 
 ## Executor
 
@@ -49,9 +48,13 @@ can put that into practice you can find {ref}`here <kubernetes>`.
 ```{toctree}
 :hidden:
 
+../fundamentals/clean-code
+async-executors
+scale-out
+gpu-executor
+external-executor
+flow-switch
 docker-compose
 kubernetes
-gpu-executor
-async-executors
-sandbox
+monitoring
 ```

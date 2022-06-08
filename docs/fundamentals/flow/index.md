@@ -1,7 +1,7 @@
 (flow-cookbook)=
 # Flow
 
-A {class}`~jina.Flow` orchestrates Executors into a processing pipeline to build a neural search application.
+A {class}`~jina.Flow` orchestrates Executors into a processing pipeline to build a multi-modal/cross-modal application.
 Documents "flow" through the created pipeline and are processed by Executors.
 
 You can think of Flow as an interface to configure and launch your {ref}`microservice architecture <architecture-overview>`,
@@ -25,7 +25,7 @@ The most important methods of the `Flow` object are the following:
 
 ## Why should you use a Flow?
 
-Once you have learned DocumentArray and Executor, you are able to split your neural search application into different independent modules and services.
+Once you have learned DocumentArray and Executor, you are able to split your multi-modal/cross-modal application into different independent modules and services.
 But you need to chain them together in order to bring real value and to build and serve an application. That's exactly what Flows enable you to do.
 
 - Flows connect microservices (Executors) to build a service with proper client/server style interface over HTTP, gRPC, or Websocket
@@ -142,11 +142,10 @@ Executor and Flow are the two fundamental concepts in Jina.
 :hidden:
 
 create-flow
+add-executors
+topologies
 flow-api
-access-flow-api
-client
 monitoring-flow
 when-things-go-wrong
 yaml-spec
-remarks
 ```

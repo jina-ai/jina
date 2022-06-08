@@ -762,7 +762,7 @@ def warn_unknown_args(unknown_args: List[str]):
     :param unknown_args: arguments that are possibly unknown to Jina
     """
 
-    from cli.lookup import _build_lookup_table
+    from jina_cli.lookup import _build_lookup_table
 
     all_args = _build_lookup_table()[0]
     has_migration_tip = False

@@ -39,7 +39,7 @@ area/docker:
   - ./.dockerignore
 
 area/cli:
-  - cli/**/*
+  - jina_cli/**/*
 
 area/docarray:
   - docarray/**/*

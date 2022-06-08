@@ -1,5 +1,5 @@
 (push-executor)=
-# Publish Executor
+# Publish
 
 If you want to share your Executor, you can push it to Jina Hub.
 

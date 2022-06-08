@@ -39,25 +39,21 @@ Now that you’re set up, let’s dive into more of how Jina works and how to bu
 
 get-started/install/index
 get-started/create-app
-fundamentals/architecture-overview
 ```
 
 ```{toctree}
 :caption: User Guides
 :hidden:
 
-
+fundamentals/architecture-overview
 fundamentals/executor/index
 fundamentals/flow/index
-fundamentals/clean-code
+fundamentals/gateway/index
+fundamentals/flow/client
+fundamentals/executor/hub/index
+how-to/index
 ```
 
-```{toctree}
-:caption: How-to
-:hidden:
-how-to/deploy
-how-to/executor
-```
 
 
 ```{toctree}

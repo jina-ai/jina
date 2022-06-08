@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block body -%}
+{{ super() }}
 {% include "partials/icons.html" %}
 
 <input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
@@ -13,7 +14,7 @@
 </label>
 
 {% if theme_announcement -%}
-<div class="announcement" id="announcement">
+<div class="announcement">
     <aside class="announcement-content">
         {% block announcement %} {{ theme_announcement }} {% endblock announcement %}
     </aside>
@@ -21,7 +22,7 @@
 {%- endif %}
 
 <div class="page">
-    <header class="mobile-header" id="mobile-header">
+    <header class="mobile-header">
         <div class="header-left">
             <label class="nav-overlay-icon" for="__navigation">
                 <div class="visually-hidden">Toggle site navigation sidebar</div>
@@ -34,7 +35,7 @@
         </div>
         <div class="header-center">
             <a href="{{ pathto(master_doc) }}">
-                <div class="brand">{{ docstitle }}</div>
+                <div class="brand">{{ docstitle if docstitle else project }}</div>
             </a>
         </div>
         <div class="header-right">
@@ -62,7 +63,7 @@
             </label>
         </div>
     </header>
-    <aside class="sidebar-drawer" id="sidebar-drawer">
+    <aside class="sidebar-drawer">
         <div class="sidebar-container">
             {% block left_sidebar %}
             <div class="sidebar-sticky">
@@ -75,8 +76,32 @@
     </aside>
     <div class="main">
         <div class="content">
-            <article role="main">
+            <div class="article-container">
+                <a href="#" class="back-to-top muted-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+                    </svg>
+                    <span>{% trans %}Back to top{% endtrans %}</span>
+                </a>
                 <div class="content-icon-container">
+                    {#- Edit this page, on GitHub -#}
+                    {%- if READTHEDOCS and conf_py_path and page_source_suffix and github_user != "None" and github_repo
+                    != "None" and github_version %}
+                    <div class="edit-this-page">
+                        <a class="muted-link"
+                           href="https://github.com/{{ github_user }}/{{ github_repo }}/edit/{{ github_version }}{{ conf_py_path }}{{ pagename }}{{ page_source_suffix }}"
+                           title="{{ _(" Edit this page") }}">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4"/>
+                            <line x1="13.5" y1="6.5" x2="17.5" y2="10.5"/>
+                        </svg>
+                        <span class="visually-hidden">{{ _("Edit this page") }}</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                    {#- Theme toggle -#}
                     <div class="theme-toggle-container theme-toggle-content">
                         <button class="theme-toggle">
                             <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
@@ -91,7 +116,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon"
+                    <label class="toc-overlay-icon toc-content-icon{% if furo_hide_toc %} no-toc{% endif %}"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -101,8 +126,10 @@
                         </i>
                     </label>
                 </div>
-                {% block content %}{{ body }}{% endblock %}
-            </article>
+                <article role="main">
+                    {% block content %}{{ body }}{% endblock %}
+                </article>
+            </div>
             <footer>
                 {% block footer %}
                 <div class="related-pages">
@@ -137,40 +164,51 @@
                     </a>
                     {%- endif %}
                 </div>
-
-                <div class="related-information sd-d-inline-flex">
-                    {%- if show_copyright %}
-                    {%- if hasdoc('copyright') %}
-                    {% trans path=pathto('copyright'), copyright=copyright|e -%}
-                    <a href="{{ path }}">Copyright &#169; {{ copyright }}.</a>
-                    {%- endtrans %}
-                    {%- else %}
-                    {% trans copyright=copyright|e -%}
-                    <a href="https://jina.ai">Copyright &#169; {{ copyright }}</a>
-                    {%- endtrans %}
-                    {%- endif %}
-                    {%- endif %}
-                    {%- if last_updated %}
-                    {% trans last_updated=last_updated|e -%}
-                    Last updated on {{ last_updated }}.
-                    {%- endtrans %}
-                    {%- endif %}
-                    <div class="social-btns">
-                    <a class='social-btn' href="https://github.com/jina-ai/jina/" aria-label="GitHub" target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
-                    <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank" rel="noreferrer"> <i class="fab fa-slack"></i></a>
-                    <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube" target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
-                    <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter" target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
-                    <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn" target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                <div class="bottom-of-page">
+                    <div class="left-details">
+                        {%- if show_copyright %}
+                        <div class="copyright">
+                            {%- if hasdoc('copyright') %}
+                            {% trans path=pathto('copyright'), copyright=copyright|e -%}
+                            <a href="{{ path }}">Copyright</a> &#169; {{ copyright }}
+                            {%- endtrans %}
+                            {%- else %}
+                            {% trans copyright=copyright|e -%}
+                            Copyright &#169; {{ copyright }}
+                            {%- endtrans %}
+                            {%- endif %}
+                        </div>
+                        {%- endif %}
+                        {%- if last_updated -%}
+                        <div class="last-updated">
+                            {% trans last_updated=last_updated|e -%}
+                            Last updated on {{ last_updated }}
+                            {%- endtrans -%}
+                        </div>
+                        {%- endif %}
+                    </div>
+                    <div class="right-details">
+                        <div class="social-btns">
+                            <a class='social-btn' href="https://github.com/jina-ai/docarray/" aria-label="GitHub"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-github"></i></a>
+                            <a class='social-btn' href="https://slack.jina.ai" aria-label="Slack" target="_blank"
+                               rel="noreferrer"> <i class="fab fa-slack"></i></a>
+                            <a class='social-btn' href="https://youtube.com/c/jina-ai" aria-label="YouTube"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-youtube"></i></a>
+                            <a class='social-btn' href="https://twitter.com/JinaAI_" aria-label="Twitter"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-twitter"></i></a>
+                            <a class='social-btn' href="https://www.linkedin.com/company/jinaai/" aria-label="LinkedIn"
+                               target="_blank" rel="noreferrer"> <i class="fab fa-linkedin"></i></a>
+                        </div>
                     </div>
                 </div>
                 {% endblock footer %}
             </footer>
         </div>
-        <aside class="toc-drawer" id="toc-drawer">
+        <aside class="toc-drawer{% if furo_hide_toc %} no-toc{% endif %}">
             {% block right_sidebar %}
-
+            {% if not furo_hide_toc %}
             <div class="toc-sticky toc-scroll">
-                {% if not furo_hide_toc %}
                 <div class="toc-title-container">
           <span class="toc-title">
             {{ _("Contents") }}
@@ -181,27 +219,25 @@
                         {{ toc }}
                     </div>
                 </div>
-                {% endif %}
             </div>
-
+            {% endif %}
             {% endblock right_sidebar %}
         </aside>
-
     </div>
     <qa-bot
-        title="Jina Bot"
-        description="Build cross-modal and multi-modal applications on the cloud"
+            title="DocArray Bot"
+            description="The data structure for unstructured data"
     >
         <template>
             <dl>
                 <dt>You can ask questions about our docs. Try:</dt>
-                <dd>Does Jina support Kubernetes?</dd>
-                <dd>What are the basic concepts in Jina?</dd>
-                <dd>How to share my Executor?</dd>
+                <dd>What is a DocumentArray?</dd>
+                <dd>How to use docarray with Jina?</dd>
+                <dd>How to find nearest neighbour of Documents?</dd>
             </dl>
         </template>
     </qa-bot>
-
 </div>
-<img referrerpolicy="no-referrer-when-downgrade" src="https://static.scarf.sh/a.png?x-pxid=1b470c1d-3b55-4d38-baa8-989bfba2a218" />
+<img referrerpolicy="no-referrer-when-downgrade"
+     src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/>
 {%- endblock %}

@@ -10,7 +10,7 @@ def _get_run_args(print_args: bool = True):
 
     console = get_rich_console()
 
-    silent_print = {'help', 'hub'}
+    silent_print = {'help', 'hub', 'export'}
 
     parser = get_main_parser()
     if len(sys.argv) > 1:
@@ -68,7 +68,7 @@ def _get_run_args(print_args: bool = True):
 
 
 def _quick_ac_lookup():
-    from cli.autocomplete import ac_table
+    from jina_cli.autocomplete import ac_table
 
     if len(sys.argv) > 1:
         if sys.argv[1] == 'commands':
@@ -97,7 +97,7 @@ def _try_plugin_command():
     if len(argv) < 2:  # no command given
         return False
 
-    from cli.autocomplete import ac_table
+    from jina_cli.autocomplete import ac_table
 
     if argv[1] in ac_table['commands']:  # native command can't be plugin command
         return False
@@ -111,7 +111,7 @@ def _try_plugin_command():
         subprocess.run([cmd] + argv[2:])
         return True
 
-    from cli.known_plugins import plugin_info
+    from jina_cli.known_plugins import plugin_info
 
     if subcommand in plugin_info:
         from jina.helper import get_rich_console
@@ -136,7 +136,7 @@ def main():
     if not found_plugin:
         _quick_ac_lookup()
 
-        from cli import api
+        from jina_cli import api
 
         args = _get_run_args()
 

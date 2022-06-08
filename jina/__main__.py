@@ -1,4 +1,4 @@
 if __name__ == '__main__':
-    from cli import main
+    from jina_cli import main
 
     main()

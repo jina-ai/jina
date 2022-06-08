@@ -5,11 +5,11 @@ import time
 
 import pytest
 
-from cli.api import gateway, executor_native
-from jina import Executor, DocumentArray, Document, requests
+from jina import Document, DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.networking import GrpcConnectionPool
+from jina_cli.api import executor_native, gateway
 
 
 class DummyExecutor(Executor):

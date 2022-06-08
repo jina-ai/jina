@@ -1,11 +1,10 @@
 (flow)=
 
-# Configure Flow
+# Gateway
 
-**Flow** ties Executors together into a processing pipeline, provides scalability and facilitates deployments in the cloud.
-Every `Flow` provides an API to receive requests over the network. Supported protocols are gRPC, HTTP and WebSocket.
+Every `Flow` provides an API Gateway to receive requests over the network. Supported protocols are gRPC, HTTP and WebSocket with TLS.
 
-There are two ways of defining a Flow, either directly from the Python API or using yaml files. For each section we will show you both possibles way of configuring your flow.
+There are two ways of defining a gateway, either directly from the Python API or using yaml files. For each section we will show you both possibles way of configuring your gateway.
 
 ```{admonition} Jina Client
 :class: caution
@@ -312,6 +311,18 @@ For more details about the Jina GraphQL enpoint, see {ref}`here <flow-graphql>`.
 ````
 
 
+## Custom gRPC compression
+
+Communication between `Executors` inside a `Flow` is done via `grpc`. To optimize the performance and the bandwith of this connections,
+Jina allows the users to specify their (`compression`)[https://grpc.github.io/grpc/python/grpc.html#compression] by passing this `compression` argument to the Flow.
+
+The supported methods are: `NoCompression`, `Gzip` and `Deflate`.
+
+```python
+from jina import Flow
+
+f = Flow(compression='Gzip').add(...)
+```
 
 (flow-tls)=
 ## Enable TLS
@@ -400,41 +411,7 @@ with Flow(timeout_send=1000) as f:
 ```
 The example above limits every request to the Executors in the Flow to a timeout of 1 second.
 
-## Generate deployment configuration
 
-To deploy a `Flow` you will need to deploy the Executors it is composed of.
-The `Flow` is offering convenience functions to generate the necessary configuration files for some use cases.
-At the moment, `Docker-Compose` and `Kubernetes` are supported.
-
-```{admonition} See also
-:class: seealso
-For more in-depth guides on Flow deployment, take a look at our how-tos for {ref}`Docker-compose <docker-compose>` and
-{ref}`Kubernetes <kubernetes>`.
-```
-
-\
-**Docker-Compose**
-```python
-from jina import Flow
-
-f = Flow().add()
-f.to_docker_compose_yaml()
-```
-This will generate a single `docker-compose.yml` file containing all the `Executors` of the `Flow`.
-
-\
-**Kubernetes**
-```python
-from jina import Flow
-
-f = Flow().add()
-f.to_kubernetes_yaml('flow_k8s_configuration')
-```
-This will generate the necessary Kubernetes configuration files for all the `Executors` of the `Flow`.
-The generated folder can be used directly with `kubectl` to deploy the `Flow` to an existing Kubernetes cluster.
-
-Based on your local Jina version, Jina Hub may rebuild the Docker image during the YAML generation process.
-If you do not wish to rebuild the image, set the environment variable `JINA_HUB_NO_IMAGE_REBUILD`.
 
 ## See further
 
@@ -442,3 +419,4 @@ If you do not wish to rebuild the image, set the environment variable `JINA_HUB_
 - {ref}`Deployment with Kubernetes <kubernetes>` 
 - {ref}`Deployment with Docker Compose <docker-compose>`
 - {ref}`Executors inside a Flow <executor-in-flow>`
+

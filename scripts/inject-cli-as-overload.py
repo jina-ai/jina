@@ -1,6 +1,6 @@
 import re
 
-from cli.export import api_to_dict
+from jina_cli.export import api_to_dict
 
 
 def _cli_to_schema(

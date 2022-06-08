@@ -138,43 +138,15 @@ def client(args: 'Namespace'):
     Client(args)
 
 
-def export_api(args: 'Namespace'):
+def export(args: 'Namespace'):
     """
     Export the API
 
     :param args: arguments coming from the CLI.
     """
-    import json
+    from jina import exporter
 
-    from cli.export import api_to_dict
-    from jina import __version__
-    from jina.jaml import JAML
-    from jina.logging.predefined import default_logger
-    from jina.schemas import get_full_schema
-
-    if args.yaml_path:
-        dump_api = api_to_dict()
-        for yp in args.yaml_path:
-            f_name = (yp % __version__) if '%s' in yp else yp
-            with open(f_name, 'w', encoding='utf8') as fp:
-                JAML.dump(dump_api, fp)
-            default_logger.info(f'API is exported to {f_name}')
-
-    if args.json_path:
-        dump_api = api_to_dict()
-        for jp in args.json_path:
-            f_name = (jp % __version__) if '%s' in jp else jp
-            with open(f_name, 'w', encoding='utf8') as fp:
-                json.dump(dump_api, fp, sort_keys=True)
-            default_logger.info(f'API is exported to {f_name}')
-
-    if args.schema_path:
-        dump_api = get_full_schema()
-        for jp in args.schema_path:
-            f_name = (jp % __version__) if '%s' in jp else jp
-            with open(f_name, 'w', encoding='utf8') as fp:
-                json.dump(dump_api, fp, sort_keys=True)
-            default_logger.info(f'API is exported to {f_name}')
+    getattr(exporter, f'export_{args.export.replace("-", "_")}')(args)
 
 
 def flow(args: 'Namespace'):
@@ -224,6 +196,6 @@ def help(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from cli.lookup import lookup_and_print
+    from jina_cli.lookup import lookup_and_print
 
     lookup_and_print(args.query.lower())

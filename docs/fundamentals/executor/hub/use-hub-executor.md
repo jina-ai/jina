@@ -1,5 +1,5 @@
 (use-hub-executor)=
-# Use Hub Executors Locally
+# Use
 
 
 We provide three ways of using Hub Executors in your project. Each has its own use case and benefits.
@@ -30,7 +30,7 @@ Hub Executors are cached locally on the first pull. Afterwards, they will not be
 To keep up-to-date with upstream, use `.from_hub(..., force_update=True)`.
 ```
 
-## Use in a Flow: via Docker
+## Use in Flow as container
 
 Use prebuilt images from Hub in your Python code:
 
@@ -75,7 +75,31 @@ with f:
 ```
 ````
 
-## Use in a Flow: via source code
+### Mount local volumes
+
+You can mount volumes into your dockerized Executor by passing a list of volumes to the `volumes` argument:
+
+```python
+f = Flow().add(
+    uses='docker://my_containerized_executor',
+    volumes=['host/path:/path/in/container', 'other/volume:/app'],
+)
+```
+
+````{admonition} Hint
+:class: hint
+If you want your containerized Executor to operate inside one of these volumes, remember to set its {ref}`workspace <executor-workspace>` accordingly!
+````
+
+If you do not specify `volumes`, Jina will automatically mount a volume into the container.
+In this case, the volume source will be your {ref}`default Executor workspace <executor-workspace>`, and the volume destination will
+be `/app`. Additionally, automatic volume setting will try to move the Executor's workspace into the volume destination.
+Depending on the default executor workspace on your system this may not always succeed, so explicitly mounting a volume and setting
+a workspace is recommended.
+
+You can disable automatic volume setting by passing `f.add(..., disable_auto_volume=True)`.
+
+## Use in Flow via source code
 
 Use the source code from `Hubble` in your Python code:
 
@@ -85,7 +109,7 @@ from jina import Flow
 f = Flow().add(uses='jinahub://<UUID>[:<SECRET>][/<TAG>]')
 ```
 
-## Override default parameters
+## Set/override default parameters
 
 The default parameters of the published Executor may not be ideal for your use case. You can override
 any of these by passing `uses_with` and `uses_metas` as parameters.
@@ -102,7 +126,7 @@ f = Flow().add(
 
 
 (pull-executor)=
-## Pulling without using
+## Pull only
 
 You can also use `jina hub` CLI to pull an Executor without actually using it in the Flow.
 
