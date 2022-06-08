@@ -7,7 +7,6 @@
     - [DocumentArrayProto](#docarray-DocumentArrayProto)
   
 - [jina.proto](#jina-proto)
-    - [ControlRequestProto](#jina-ControlRequestProto)
     - [DataRequestListProto](#jina-DataRequestListProto)
     - [DataRequestProto](#jina-DataRequestProto)
     - [DataRequestProto.DataContentProto](#jina-DataRequestProto-DataContentProto)
@@ -18,12 +17,11 @@
     - [StatusProto](#jina-StatusProto)
     - [StatusProto.ExceptionProto](#jina-StatusProto-ExceptionProto)
   
-    - [ControlRequestProto.Command](#jina-ControlRequestProto-Command)
     - [StatusProto.StatusCode](#jina-StatusProto-StatusCode)
   
-    - [JinaControlRequestRPC](#jina-JinaControlRequestRPC)
     - [JinaDataRequestRPC](#jina-JinaDataRequestRPC)
     - [JinaDiscoverEndpointsRPC](#jina-JinaDiscoverEndpointsRPC)
+    - [JinaGatewayDryRunRPC](#jina-JinaGatewayDryRunRPC)
     - [JinaRPC](#jina-JinaRPC)
     - [JinaSingleDataRequestRPC](#jina-JinaSingleDataRequestRPC)
   
@@ -61,23 +59,6 @@ this file is just a place holder for the DA coming from docarray dependency
 <p align="right"><a href="#top">Top</a></p>
 
 ## jina.proto
-
-
-
-<a name="jina-ControlRequestProto"></a>
-
-### ControlRequestProto
-Represents a ControlRequest
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| header | [HeaderProto](#jina-HeaderProto) |  | header contains meta info defined by the user |
-| command | [ControlRequestProto.Command](#jina-ControlRequestProto-Command) |  | the control command |
-| relatedEntities | [RelatedEntity](#jina-RelatedEntity) | repeated | list of entities this ControlMessage is related to |
-
-
-
 
 
 
@@ -177,7 +158,7 @@ Represents an entity (like an ExecutorRuntime)
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [string](#string) |  | unique id of the entity, like the name of a pea |
+| id | [string](#string) |  | unique id of the entity, like the name of a pod |
 | address | [string](#string) |  | address of the entity, could be an IP address, domain name etc, does not include port |
 | port | [uint32](#uint32) |  | port this entity is listening on |
 | shard_id | [uint32](#uint32) | optional | the id of the shard it belongs to, if it is a shard |
@@ -236,26 +217,13 @@ Represents a Status
 | name | [string](#string) |  | the class name of the exception |
 | args | [string](#string) | repeated | the list of arguments given to the exception constructor. |
 | stacks | [string](#string) | repeated | the exception traceback stacks |
-| executor | [string](#string) |  | the name of the executor bind to that peapod (if applicable) |
+| executor | [string](#string) |  | the name of the executor bind to that Executor (if applicable) |
 
 
 
 
 
  
-
-
-<a name="jina-ControlRequestProto-Command"></a>
-
-### ControlRequestProto.Command
-
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| STATUS | 0 | check the status of the BasePod |
-| ACTIVATE | 1 | used to add Pods to a Pod |
-| DEACTIVATE | 2 | used to remove Pods from a Pod |
-
 
 
 <a name="jina-StatusProto-StatusCode"></a>
@@ -266,27 +234,12 @@ Represents a Status
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | SUCCESS | 0 | success |
-| PENDING | 1 | there are pending messages, more messages are followed |
-| READY | 2 | ready to use |
-| ERROR | 3 | error |
-| ERROR_DUPLICATE | 4 | already a existing pod running |
-| ERROR_NOTALLOWED | 5 | not allowed to open pod remotely |
-| ERROR_CHAINED | 6 | chained from the previous error |
+| ERROR | 1 | error |
 
 
  
 
  
-
-
-<a name="jina-JinaControlRequestRPC"></a>
-
-### JinaControlRequestRPC
-jina gRPC service for ControlRequests.
-
-| Method Name | Request Type | Response Type | Description |
-| ----------- | ------------ | ------------- | ------------|
-| process_control | [ControlRequestProto](#jina-ControlRequestProto) | [ControlRequestProto](#jina-ControlRequestProto) | Used for passing ControlRequests to the Executors |
 
 
 <a name="jina-JinaDataRequestRPC"></a>
@@ -307,6 +260,16 @@ jina gRPC service to expose Endpoints from Executors.
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | endpoint_discovery | [.google.protobuf.Empty](#google-protobuf-Empty) | [EndpointsProto](#jina-EndpointsProto) |  |
+
+
+<a name="jina-JinaGatewayDryRunRPC"></a>
+
+### JinaGatewayDryRunRPC
+jina gRPC service to expose Endpoints from Executors.
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| dry_run | [.google.protobuf.Empty](#google-protobuf-Empty) | [StatusProto](#jina-StatusProto) |  |
 
 
 <a name="jina-JinaRPC"></a>

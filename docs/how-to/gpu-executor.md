@@ -1,5 +1,5 @@
 (gpu-executor)=
-# How to run Executors on GPU
+# Run Executors on GPU
 
 This document will show you how to use an Executor on a GPU, both locally and in a
 Docker container. You will also learn how to use GPU with pre-built Hub executors.

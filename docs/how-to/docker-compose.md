@@ -1,5 +1,5 @@
 (docker-compose)=
-# How to deploy with Docker Compose
+# Deploy with Docker Compose
 
 One of the simplest ways of either prototyping or serving in
 production is to run your `Flow` with `docker-compose`.
