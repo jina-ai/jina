@@ -1,6 +1,8 @@
+import argparse
 import os
 
 import grpc
+from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
 from jina import __default_host__
@@ -10,14 +12,25 @@ from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.gateway.request_handling import RequestHandler
 from jina.serve.stream import RequestStreamer
+from jina.types.request.status import StatusMessage
 
 __all__ = ['GRPCGatewayRuntime']
-
-from jina.types.request.control import ControlRequest
 
 
 class GRPCGatewayRuntime(GatewayRuntime):
     """Gateway Runtime for gRPC."""
+
+    def __init__(
+        self,
+        args: argparse.Namespace,
+        **kwargs,
+    ):
+        """Initialize the runtime
+        :param args: args from CLI
+        :param kwargs: keyword args
+        """
+        self._health_servicer = health.HealthServicer(experimental_non_blocking=True)
+        super().__init__(args, **kwargs)
 
     async def async_setup(self):
         """
@@ -59,13 +72,18 @@ class GRPCGatewayRuntime(GatewayRuntime):
         self.streamer.Call = self.streamer.stream
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self.streamer, self.server)
-        jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(self, self.server)
+        jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self, self.server)
 
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,
-            jina_pb2.DESCRIPTOR.services_by_name['JinaControlRequestRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaGatewayDryRunRPC'].full_name,
             reflection.SERVICE_NAME,
         )
+        # Mark all services as healthy.
+        health_pb2_grpc.add_HealthServicer_to_server(self._health_servicer, self.server)
+
+        for service in service_names:
+            self._health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
         reflection.enable_server_reflection(service_names, self.server)
 
         bind_addr = f'{__default_host__}:{self.args.port}'
@@ -100,6 +118,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
         """Close the connection pool"""
         # usually async_cancel should already have been called, but then its a noop
         # if the runtime is stopped without a sigterm (e.g. as a context manager, this can happen)
+        self._health_servicer.enter_graceful_shutdown()
         await self.async_cancel()
         await self._connection_pool.close()
 
@@ -112,18 +131,33 @@ class GRPCGatewayRuntime(GatewayRuntime):
         self._connection_pool.start()
         await self.server.wait_for_termination()
 
-    async def process_control(self, request: ControlRequest, *args) -> ControlRequest:
+    async def dry_run(self, empty, context) -> jina_pb2.StatusProto:
         """
-        Should be used to check readiness by sending STATUS ControlRequests.
-        Throws for any other command than STATUS.
+        Process the the call requested by having a dry run call to every Executor in the graph
 
-        :param request: the ControlRequest, should have command 'STATUS'
-        :param args: additional arguments in the grpc call, ignored
-        :returns: will be the original request
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
         """
+        from docarray import DocumentArray
+        from jina.clients.request import request_generator
+        from jina.enums import DataInputType
+        from jina.serve.executors import __dry_run_endpoint__
 
-        if self.logger.debug_enabled:
-            self._log_control_request(request)
-        if request.command != 'STATUS':
-            raise ValueError('gateway only support STATUS ControlRequests')
-        return request
+        da = DocumentArray()
+
+        try:
+            req_iterator = request_generator(
+                exec_endpoint=__dry_run_endpoint__,
+                data=da,
+                data_type=DataInputType.DOCUMENT,
+            )
+            async for _ in self.streamer.stream(request_iterator=req_iterator):
+                pass
+            status_message = StatusMessage()
+            status_message.set_code(jina_pb2.StatusProto.SUCCESS)
+            return status_message.proto
+        except Exception as ex:
+            status_message = StatusMessage()
+            status_message.set_exception(ex)
+            return status_message.proto

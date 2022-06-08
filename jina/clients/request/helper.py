@@ -1,10 +1,8 @@
 """Module for helper functions for clients."""
 from typing import Tuple
 
-from docarray import DocumentArray, Document
-
+from docarray import Document, DocumentArray
 from jina.enums import DataInputType
-from jina.excepts import BadRequestType
 from jina.types.request.data import DataRequest
 
 
@@ -72,30 +70,3 @@ def _add_docs(req, batch, data_type, _kwargs):
             d, data_type = _new_doc_from_data(content, data_type, **_kwargs)
             da.append(d)
     req.data.docs = da
-
-
-def _add_control_propagate(req, kwargs):
-    from jina.proto import jina_pb2
-
-    extra_kwargs = kwargs[
-        'extra_kwargs'
-    ]  #: control command and args are stored inside extra_kwargs
-    _available_commands = dict(
-        jina_pb2.RequestProto.ControlRequestProto.DESCRIPTOR.enum_values_by_name
-    )
-
-    if 'command' in extra_kwargs:
-        command = extra_kwargs['command']
-    else:
-        raise BadRequestType(
-            'sending ControlRequest from Client must contain the field `command`'
-        )
-
-    if command in _available_commands:
-        req.control.command = getattr(
-            jina_pb2.RequestProto.ControlRequestProto, command
-        )
-    else:
-        raise ValueError(
-            f'command "{command}" is not supported, must be one of {_available_commands}'
-        )

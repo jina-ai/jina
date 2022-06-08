@@ -469,10 +469,7 @@ async def test_grpc_gateway_runtime_reflection():
     async with grpc.aio.insecure_channel(f'127.0.0.1:{port}') as channel:
         service_names = await GrpcConnectionPool.get_available_services(channel)
 
-    assert all(
-        service_name in service_names
-        for service_name in ['jina.JinaControlRequestRPC', 'jina.JinaRPC']
-    )
+    assert all(service_name in service_names for service_name in ['jina.JinaRPC'])
 
     p.terminate()
     p.join()

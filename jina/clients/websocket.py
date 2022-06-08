@@ -1,14 +1,14 @@
 from jina.clients.base.websocket import WebSocketBaseClient
-from jina.clients.mixin import AsyncPostMixin, PostMixin
+from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin
 
 
-class WebSocketClient(WebSocketBaseClient, PostMixin):
+class WebSocketClient(WebSocketBaseClient, PostMixin, HealthCheckMixin):
     """
     A client communicates the server with WebSocket protocol.
     """
 
 
-class AsyncWebSocketClient(WebSocketBaseClient, AsyncPostMixin):
+class AsyncWebSocketClient(WebSocketBaseClient, AsyncPostMixin, HealthCheckMixin):
     """
     A client communicates the server with WebSocket protocol.
 

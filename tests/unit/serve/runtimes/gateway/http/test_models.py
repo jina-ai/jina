@@ -19,7 +19,7 @@ def test_enum_definitions():
     status_code_enum_definition = PROTO_TO_PYDANTIC_MODELS.StatusProto().schema()[
         'definitions'
     ]['StatusCode']
-    assert status_code_enum_definition['enum'] == [0, 1, 2, 3, 4, 5, 6]
+    assert status_code_enum_definition['enum'] == [0, 1]
 
 
 def test_timestamp():

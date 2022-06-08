@@ -1,9 +1,11 @@
 import copy
+import json
 import os
 import re
 import subprocess
 from abc import abstractmethod
 from argparse import Namespace
+from collections import defaultdict
 from contextlib import ExitStack
 from itertools import cycle
 from typing import Dict, List, Optional, Set, Union
@@ -14,9 +16,8 @@ from jina.helper import CatchAllCleanupContextManager
 from jina.hubble.helper import replace_secret_of_hub_uri
 from jina.hubble.hubio import HubIO
 from jina.jaml.helper import complete_path
-from jina.orchestrate.pods.container import ContainerPod
 from jina.orchestrate.pods.factory import PodFactory
-from jina.serve.networking import GrpcConnectionPool, host_is_local, in_docker
+from jina.serve.networking import host_is_local, in_docker
 
 WRAPPED_SLICE_BASE = r'\[[-\d:]+\]'
 
@@ -289,6 +290,17 @@ class Deployment(BaseDeployment):
         return is_sandbox
 
     @property
+    def _is_docker(self) -> bool:
+        """
+        Check if this deployment is to be run in docker.
+
+        :return: True if this deployment is to be run in docker
+        """
+        uses = getattr(self.args, 'uses', '')
+        is_docker = uses.startswith('jinahub+docker://') or uses.startswith('docker://')
+        return is_docker
+
+    @property
     def tls_enabled(self):
         """
         Checks whether secure connection via tls is enabled for this Deployment.
@@ -464,51 +476,26 @@ class Deployment(BaseDeployment):
     def __eq__(self, other: 'BaseDeployment'):
         return self.num_pods == other.num_pods and self.name == other.name
 
-    def activate(self):
-        """
-        Activate all worker pods in this deployment by registering them with the head
-        """
-        if self.head_pod is not None:
-            for shard_id in self.pod_args['pods']:
-                for pod_idx, pod_args in enumerate(self.pod_args['pods'][shard_id]):
-                    worker_host = self.get_worker_host(
-                        pod_args, self.shards[shard_id]._pods[pod_idx], self.head_pod
-                    )
-                    GrpcConnectionPool.activate_worker_sync(
-                        worker_host,
-                        int(pod_args.port),
-                        self.head_pod.runtime_ctrl_address,
-                        shard_id,
-                    )
-
     @staticmethod
-    def get_worker_host(pod_args, pod, head_pod):
+    def get_worker_host(pod_args, pod_is_container, head_is_container):
         """
         Check if the current pod and head are both containerized on the same host
         If so __docker_host__ needs to be advertised as the worker's address to the head
 
         :param pod_args: arguments of the worker pod
-        :param pod: the worker pod
-        :param head_pod: head pod communicating with the worker pod
-        :return: host to use in activate messages
+        :param pod_is_container: boolean specifying if pod is to be run in container
+        :param head_is_container: boolean specifying if head pod is to be run in container
+        :return: host to pass in connection list of the head
         """
         # Check if the current pod and head are both containerized on the same host
         # If so __docker_host__ needs to be advertised as the worker's address to the head
         worker_host = (
             __docker_host__
-            if Deployment._is_container_to_container(pod, head_pod)
+            if (pod_is_container and (head_is_container or in_docker()))
             and host_is_local(pod_args.host)
             else pod_args.host
         )
         return worker_host
-
-    @staticmethod
-    def _is_container_to_container(pod, head_pod):
-        # Check if both shard_id/pod_idx and the head are containerized
-        # if the head is not containerized, it still could mean that the deployment itself is containerized
-        return type(pod) == ContainerPod and (
-            type(head_pod) == ContainerPod or in_docker()
-        )
 
     def start(self) -> 'Deployment':
         """
@@ -549,8 +536,6 @@ class Deployment(BaseDeployment):
             )
             self.enter_context(self.shards[shard_id])
 
-        if not getattr(self.args, 'noblock_on_start', False):
-            self.activate()
         return self
 
     def wait_start_success(self) -> None:
@@ -571,7 +556,6 @@ class Deployment(BaseDeployment):
                 self.head_pod.wait_start_success()
             for shard_id in self.shards:
                 self.shards[shard_id].wait_start_success()
-            self.activate()
         except:
             self.close()
             raise
@@ -782,7 +766,17 @@ class Deployment(BaseDeployment):
                 )
 
             parsed_args['head'] = BaseDeployment._copy_to_head_args(args)
+
         parsed_args['pods'] = self._set_pod_args(args)
+
+        if parsed_args['head'] is not None:
+            connection_list = defaultdict(list)
+
+            for shard_id in parsed_args['pods']:
+                for pod_idx, pod_args in enumerate(parsed_args['pods'][shard_id]):
+                    worker_host = self.get_worker_host(pod_args, self._is_docker, False)
+                    connection_list[shard_id].append(f'{worker_host}:{pod_args.port}')
+            parsed_args['head'].connection_list = json.dumps(connection_list)
 
         return parsed_args
 

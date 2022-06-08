@@ -12,7 +12,7 @@ from jina.excepts import (
     InternalNetworkError,
 )
 from jina.logging.profile import ProgressBar
-from jina.proto import jina_pb2_grpc
+from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 
 if TYPE_CHECKING:
@@ -24,6 +24,34 @@ class GRPCBaseClient(BaseClient):
 
     It manages the asyncio event loop internally, so all interfaces are synchronous from the outside.
     """
+
+    async def _dry_run(self, **kwargs) -> bool:
+        """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
+
+        :param kwargs: potential kwargs received passed from the public interface
+        :return: boolean indicating the health/readiness of the Flow
+        """
+        try:
+            async with GrpcConnectionPool.get_grpc_channel(
+                f'{self.args.host}:{self.args.port}',
+                asyncio=True,
+                tls=self.args.tls,
+            ) as channel:
+                stub = jina_pb2_grpc.JinaGatewayDryRunRPCStub(channel)
+                self.logger.debug(f'connected to {self.args.host}:{self.args.port}')
+                call_result = stub.dry_run(
+                    jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(), **kwargs
+                )
+                metadata, response = (
+                    await call_result.trailing_metadata(),
+                    await call_result,
+                )
+                if response.code == jina_pb2.StatusProto.SUCCESS:
+                    return True
+        except Exception as e:
+            self.logger.error(f'Error while getting response from grpc server {e!r}')
+
+        return False
 
     async def _get_results(
         self,

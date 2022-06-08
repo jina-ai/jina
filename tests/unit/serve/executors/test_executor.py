@@ -253,6 +253,10 @@ def test_workspace_not_exists(tmpdir):
     ],
 )
 def test_override_requests(uses_requests, expected):
+    from jina.serve.executors import __dry_run_endpoint__
+
+    expected.add(__dry_run_endpoint__)
+
     class OverrideExec(Executor):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)

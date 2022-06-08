@@ -5,11 +5,9 @@ import pytest
 
 from jina import Client, Document, Executor, requests
 from jina.parsers import set_gateway_parser, set_pod_parser
-from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
-from jina.types.request.control import ControlRequest
 
 from .test_runtimes import _create_gateway_runtime, _create_head_runtime
 
@@ -49,6 +47,7 @@ def _create_gateway(port, graph, pod_addr, protocol, retries=-1):
     p.start()
     time.sleep(0.1)
     return p
+
 
 
 def _create_head(port, polling, retries=-1):
@@ -230,7 +229,9 @@ async def test_runtimes_headful_topology(port_generator, protocol, terminate_hea
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
-    head_process = _create_head(head_port, 'ANY')
+    connection_list_dict = {'0': [f'127.0.0.1:{worker_port}']}
+
+    head_process = _create_head(head_port, connection_list_dict, 'ANY')
     worker_process = _create_worker(worker_port)
     gateway_process = _create_gateway(
         gateway_port, graph_description, pod_addresses, protocol
@@ -255,11 +256,6 @@ async def test_runtimes_headful_topology(port_generator, protocol, terminate_hea
         ctrl_address=f'0.0.0.0:{gateway_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
-
-    # this would be done by the Pod, its adding the worker to the head
-    activate_msg = ControlRequest(command='ACTIVATE')
-    activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
-    GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     # terminate pod, either head or worker behind the head
     if terminate_head:
