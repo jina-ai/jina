@@ -187,6 +187,16 @@ Once the Flow is deployed on Kubernetes, you can use all the native Kubernetes t
 
 You can use this to [add or remove replicas](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#scaling-a-deployment), to run [rolling update](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#updating-a-deployment) operations, etc ...
 
+````{admonition} Caution
+:class: caution
+
+Many service meshes have the ability to perform retries themselves.
+Be careful about setting up service mesh level retries in combination with Jina, as it may lead to unwanted behaviour in combination with
+Jina's own {ref}`retry policy <flow-error-handling>`.
+
+Instead, you may want to disable Jina level retries by setting `Flow(retries=0)` in Python, or `retries: 0` in the Flow
+YAML `with` block.
+````
 
 ### Deploy your Flow with shards and replicas
 
@@ -239,7 +249,6 @@ If you already have the simple Flow from the first example running on your clust
 ```shell
 kubectl apply -R -f ./k8s_flow
 ```
-
 
 ## Scaling the Gateway
 The Gateway is responsible for providing the API of the {ref}`Flow <flow>`.

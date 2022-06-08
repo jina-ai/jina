@@ -25,6 +25,13 @@ When an {ref}`Executor or Head <architecture-overview>` can't be reached by the 
 to the faulty deployment according to a retry policy.
 The specifics of this policy depend on the environment the Flow find itself in, and are outlined below.
 
+````{admonition} Hint: Custom retry policy
+:class: hint
+You can override the default retry policy and instead choose a number of retries performed for each Executor.
+To perform `n` retries, set `Flow(retries=n)` in Python, or `retries: n` in the Flow
+YAML `with` block.
+````
+
 If, during the complete execution of this policy, no successful call to any Executor replica could be made, the request is aborted
 and the failure is {ref}`reported to the client <failure-reporting>`.
 
@@ -74,6 +81,9 @@ If a service mesh is installed alongside Jina in the Kubernetes cluster, the fol
 Many service meshes have the ability to perform retries themselves.
 Be careful about setting up service mesh level retries in combination with Jina, as it may lead to unwanted behaviour in combination with
 Jina's own retry policy.
+
+Instead, you may want to disable Jina level retries by setting `Flow(retries=0)` in Python, or `retries: 0` in the Flow
+YAML `with` block.
 ````
 
 (failure-reporting)=
