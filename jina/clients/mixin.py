@@ -88,6 +88,18 @@ class AsyncMutateMixin(MutateMixin):
         )
 
 
+class HealthCheckMixin:
+    """The Health check Mixin for Client and Flow to expose `dry_run` API"""
+
+    def dry_run(self, **kwargs) -> bool:
+        """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
+
+        :param kwargs: potential kwargs received passed from the public interface
+        :return: boolean indicating the health/readiness of the Flow
+        """
+        return run_async(self.client._dry_run, **kwargs)
+
+
 class PostMixin:
     """The Post Mixin class for Client and Flow"""
 

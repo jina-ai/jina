@@ -1,5 +1,5 @@
 import asyncio
-import multiprocessing
+import json
 import os
 import time
 
@@ -11,10 +11,8 @@ from jina.helper import random_port
 from jina.orchestrate.pods import Pod
 from jina.orchestrate.pods.container import ContainerPod
 from jina.parsers import set_gateway_parser, set_pod_parser
-from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.head import HeadRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
-from jina.types.request.control import ControlRequest
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -61,8 +59,12 @@ async def test_pods_trivial_topology(
     # create a single worker pod
     worker_pod = _create_worker_pod(worker_port)
 
+    # this would be done by the Pod, its adding the worker to the head
+    worker_host, worker_port = worker_pod.runtime_ctrl_address.split(':')
+    connection_list_dict = {'0': [f'{worker_host}:{worker_port}']}
+
     # create a single head pod
-    head_pod = _create_head_pod(head_port)
+    head_pod = _create_head_pod(head_port, connection_list_dict)
 
     # create a single gateway pod
     gateway_pod = _create_gateway_pod(graph_description, pod_addresses, port)
@@ -86,14 +88,6 @@ async def test_pods_trivial_topology(
         worker_pod.ready_or_shutdown.event.wait(timeout=5.0)
         gateway_pod.ready_or_shutdown.event.wait(timeout=5.0)
 
-        # this would be done by the Pod, its adding the worker to the head
-        activate_msg = ControlRequest(command='ACTIVATE')
-        worker_host, worker_port = worker_pod.runtime_ctrl_address.split(':')
-        activate_msg.add_related_entity('worker', worker_host, int(worker_port))
-        assert GrpcConnectionPool.send_request_sync(
-            activate_msg, head_pod.runtime_ctrl_address
-        )
-
         # send requests to the gateway
         c = Client(host='localhost', port=port, asyncio=True)
         responses = c.post(
@@ -115,13 +109,14 @@ def _create_worker_pod(port):
     return ContainerPod(args)
 
 
-def _create_head_pod(port):
+def _create_head_pod(port, connection_list_dict):
     args = set_pod_parser().parse_args([])
     args.port = port
     args.name = 'head'
     args.pod_role = PodRoleType.HEAD
     args.polling = PollingType.ANY
     args.uses = 'docker://head-runtime'
+    args.connection_list = json.dumps(connection_list_dict)
     return ContainerPod(args)
 
 

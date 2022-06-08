@@ -9,8 +9,8 @@ from threading import Event
 import grpc
 import pytest
 import requests as req
-from docarray import Document
 
+from docarray import Document
 from jina import DocumentArray, Executor, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_pod_parser
@@ -367,7 +367,6 @@ async def test_worker_runtime_reflection():
     assert all(
         service_name in service_names
         for service_name in [
-            'jina.JinaControlRequestRPC',
             'jina.JinaDataRequestRPC',
             'jina.JinaSingleDataRequestRPC',
         ]

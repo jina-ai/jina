@@ -23,7 +23,11 @@ from jina.serve.executors.decorators import (
 if TYPE_CHECKING:
     from prometheus_client import Summary
 
-__all__ = ['BaseExecutor']
+    from docarray import DocumentArray
+
+__dry_run_endpoint__ = '_jina_dry_run_'
+
+__all__ = ['BaseExecutor', __dry_run_endpoint__]
 
 
 class ExecutorType(type(JAMLCompatible), type):
@@ -114,6 +118,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._add_runtime_args(runtime_args)
         self._init_monitoring()
         self.logger = JinaLogger(self.__class__.__name__)
+        if __dry_run_endpoint__ not in self.requests:
+            self.requests[__dry_run_endpoint__] = self._dry_run_func
+        else:
+            self.logger.warning(
+                f' Endpoint {__dry_run_endpoint__} is defined by the Executor. Be aware that this endpoint is usually reserved to enable health checks from the Client through the gateway.'
+                f' So it is recommended not to expose this endpoint. '
+            )
+
+    def _dry_run_func(self, *args, **kwargs):
+        pass
 
     def _add_runtime_args(self, _runtime_args: Optional[Dict]):
         if _runtime_args:

@@ -96,16 +96,53 @@ def get_fastapi_app(
 
         @app.get(
             path='/',
-            summary='Get the health of Jina service',
+            summary='Get the health of Jina Gateway service',
             response_model=JinaHealthModel,
         )
-        async def _health():
+        async def _gateway_health():
             """
-            Get the health of this Jina service.
+            Get the health of this Gateway service.
             .. # noqa: DAR201
 
             """
             return {}
+
+        from docarray import DocumentArray
+        from jina.proto import jina_pb2
+        from jina.serve.executors import __dry_run_endpoint__
+        from jina.serve.runtimes.gateway.http.models import PROTO_TO_PYDANTIC_MODELS
+        from jina.types.request.status import StatusMessage
+
+        @app.get(
+            path='/dry_run',
+            summary='Get the readiness of Jina Flow service, sends an empty DocumentArray to the complete Flow to '
+            'validate connectivity',
+            response_model=PROTO_TO_PYDANTIC_MODELS.StatusProto,
+        )
+        async def _flow_health():
+            """
+            Get the health of the complete Flow service.
+            .. # noqa: DAR201
+
+            """
+
+            da = DocumentArray()
+
+            try:
+                _ = await _get_singleton_result(
+                    request_generator(
+                        exec_endpoint=__dry_run_endpoint__,
+                        data=da,
+                        data_type=DataInputType.DOCUMENT,
+                    )
+                )
+                status_message = StatusMessage()
+                status_message.set_code(jina_pb2.StatusProto.SUCCESS)
+                return status_message.to_dict()
+            except Exception as ex:
+                status_message = StatusMessage()
+                status_message.set_exception(ex)
+                return status_message.to_dict(use_integers_for_enums=True)
 
         @app.get(
             path='/status',
@@ -180,6 +217,8 @@ def get_fastapi_app(
     def _generate_exception_header(error: InternalNetworkError):
         import traceback
 
+        from jina.proto.serializer import DataRequest
+
         exception_dict = {
             'name': str(error.__class__),
             'stacks': [
@@ -188,7 +227,7 @@ def get_fastapi_app(
             'executor': '',
         }
         status_dict = {
-            'code': 3,  # status error
+            'code': DataRequest().status.ERROR,
             'description': error.details() if error.details() else '',
             'exception': exception_dict,
         }
@@ -263,13 +302,14 @@ def get_fastapi_app(
             from dataclasses import asdict
 
             import strawberry
-            from docarray import DocumentArray
             from docarray.document.strawberry_type import (
                 JSONScalar,
                 StrawberryDocument,
                 StrawberryDocumentInput,
             )
             from strawberry.fastapi import GraphQLRouter
+
+            from docarray import DocumentArray
 
             async def get_docs_from_endpoint(
                 data, target_executor, parameters, exec_endpoint

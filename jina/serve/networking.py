@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 
 import grpc
 from grpc.aio import AioRpcError
+from grpc_health.v1 import health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha.reflection_pb2 import ServerReflectionRequest
 from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 
@@ -16,7 +17,6 @@ from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.types.request import Request
-from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
 
 TLS_PROTOCOL_SCHEMES = ['grpcs', 'https', 'wss']
@@ -25,6 +25,8 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from prometheus_client import CollectorRegistry
+
+    from jina.types.request.control import ControlRequest
 
 
 class ReplicaList:
@@ -153,7 +155,6 @@ class GrpcConnectionPool:
         """
 
         STUB_MAPPING = {
-            'jina.JinaControlRequestRPC': jina_pb2_grpc.JinaControlRequestRPCStub,
             'jina.JinaDataRequestRPC': jina_pb2_grpc.JinaDataRequestRPCStub,
             'jina.JinaSingleDataRequestRPC': jina_pb2_grpc.JinaSingleDataRequestRPCStub,
             'jina.JinaDiscoverEndpointsRPC': jina_pb2_grpc.JinaDiscoverEndpointsRPCStub,
@@ -175,7 +176,6 @@ class GrpcConnectionPool:
             stubs = defaultdict(lambda: None)
             for service in available_services:
                 stubs[service] = self.STUB_MAPPING[service](self.channel)
-            self.control_stub = stubs['jina.JinaControlRequestRPC']
             self.data_list_stub = stubs['jina.JinaDataRequestRPC']
             self.single_data_stub = stubs['jina.JinaSingleDataRequestRPC']
             self.stream_stub = stubs['jina.JinaRPC']
@@ -264,20 +264,6 @@ class GrpcConnectionPool:
                 else:
                     raise ValueError(
                         'Can not send list of DataRequests. gRPC endpoint not available.'
-                    )
-            elif request_type == ControlRequest:
-                if self.control_stub:
-                    call_result = self.control_stub.process_control(
-                        requests[0], timeout=timeout
-                    )
-                    metadata, response = (
-                        await call_result.trailing_metadata(),
-                        await call_result,
-                    )
-                    return response, metadata
-                else:
-                    raise ValueError(
-                        'Can not send ControlRequest. gRPC endpoint not available.'
                     )
             else:
                 raise ValueError(f'Unsupported request type {type(requests[0])}')
@@ -508,7 +494,7 @@ class GrpcConnectionPool:
     ) -> List[asyncio.Task]:
         """Send a request to target via one or all of the pooled connections, depending on polling_type
 
-        :param requests: request (DataRequest/ControlRequest) to send
+        :param requests: request (DataRequest) to send
         :param deployment: name of the Jina deployment to send the request to
         :param head: If True it is send to the head, otherwise to the worker pods
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
@@ -807,81 +793,6 @@ class GrpcConnectionPool:
         return insecure_channel(address, options)
 
     @staticmethod
-    def activate_worker_sync(
-        worker_host: str,
-        worker_port: int,
-        target_head: str,
-        shard_id: Optional[int] = None,
-    ) -> ControlRequest:
-        """
-        Register a given worker to a head by sending an activate request
-
-        :param worker_host: the host address of the worker
-        :param worker_port: the port of the worker
-        :param target_head: address of the head to send the activate request to
-        :param shard_id: id of the shard the worker belongs to
-        :returns: the response request
-        """
-        activate_request = ControlRequest(command='ACTIVATE')
-        activate_request.add_related_entity(
-            'worker', worker_host, worker_port, shard_id
-        )
-
-        if os.name != 'nt':
-            os.unsetenv('http_proxy')
-            os.unsetenv('https_proxy')
-
-        return GrpcConnectionPool.send_request_sync(activate_request, target_head)
-
-    @staticmethod
-    async def activate_worker(
-        worker_host: str,
-        worker_port: int,
-        target_head: str,
-        shard_id: Optional[int] = None,
-    ) -> ControlRequest:
-        """
-        Register a given worker to a head by sending an activate request
-
-        :param worker_host: the host address of the worker
-        :param worker_port: the port of the worker
-        :param target_head: address of the head to send the activate request to
-        :param shard_id: id of the shard the worker belongs to
-        :returns: the response request
-        """
-        activate_request = ControlRequest(command='ACTIVATE')
-        activate_request.add_related_entity(
-            'worker', worker_host, worker_port, shard_id
-        )
-        return await GrpcConnectionPool.send_request_async(
-            activate_request, target_head
-        )
-
-    @staticmethod
-    async def deactivate_worker(
-        worker_host: str,
-        worker_port: int,
-        target_head: str,
-        shard_id: Optional[int] = None,
-    ) -> ControlRequest:
-        """
-        Remove a given worker to a head by sending a deactivate request
-
-        :param worker_host: the host address of the worker
-        :param worker_port: the port of the worker
-        :param target_head: address of the head to send the deactivate request to
-        :param shard_id: id of the shard the worker belongs to
-        :returns: the response request
-        """
-        activate_request = ControlRequest(command='DEACTIVATE')
-        activate_request.add_related_entity(
-            'worker', worker_host, worker_port, shard_id
-        )
-        return await GrpcConnectionPool.send_request_async(
-            activate_request, target_head
-        )
-
-    @staticmethod
     def send_request_sync(
         request: Request,
         target: str,
@@ -910,18 +821,47 @@ class GrpcConnectionPool:
                     tls=tls,
                     root_certificates=root_certificates,
                 ) as channel:
-                    if type(request) == DataRequest:
-                        metadata = (('endpoint', endpoint),) if endpoint else None
-                        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
-                        response, call = stub.process_single_data.with_call(
-                            request,
-                            timeout=timeout,
-                            metadata=metadata,
-                        )
-                    elif type(request) == ControlRequest:
-                        stub = jina_pb2_grpc.JinaControlRequestRPCStub(channel)
-                        response = stub.process_control(request, timeout=timeout)
+                    metadata = (('endpoint', endpoint),) if endpoint else None
+                    stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+                    response, call = stub.process_single_data.with_call(
+                        request,
+                        timeout=timeout,
+                        metadata=metadata,
+                    )
                     return response
+            except grpc.RpcError as e:
+                if e.code() != grpc.StatusCode.UNAVAILABLE or i == 2:
+                    raise
+
+    @staticmethod
+    def send_health_check_sync(
+        target: str,
+        timeout=100.0,
+        tls=False,
+        root_certificates: Optional[str] = None,
+    ) -> health_pb2.HealthCheckResponse:
+        """
+        Sends a request synchronously to the target via grpc
+
+        :param target: where to send the request to, like 127.0.0.1:8080
+        :param timeout: timeout for the send
+        :param tls: if True, use tls encryption for the grpc channel
+        :param root_certificates: the path to the root certificates for tls, only used if tls is True
+
+        :returns: the response health check
+        """
+
+        for i in range(3):
+            try:
+                with GrpcConnectionPool.get_grpc_channel(
+                    target,
+                    tls=tls,
+                    root_certificates=root_certificates,
+                ) as channel:
+                    health_check_req = health_pb2.HealthCheckRequest()
+                    health_check_req.service = ''
+                    stub = health_pb2_grpc.HealthStub(channel)
+                    return stub.Check(health_check_req, timeout=timeout)
             except grpc.RpcError as e:
                 if e.code() != grpc.StatusCode.UNAVAILABLE or i == 2:
                     raise
@@ -1005,12 +945,8 @@ class GrpcConnectionPool:
             tls=tls,
             root_certificates=root_certificates,
         ) as channel:
-            if type(request) == DataRequest:
-                stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
-                return await stub.process_single_data(request, timeout=timeout)
-            elif type(request) == ControlRequest:
-                stub = jina_pb2_grpc.JinaControlRequestRPCStub(channel)
-                return await stub.process_control(request, timeout=timeout)
+            stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+            return await stub.process_single_data(request, timeout=timeout)
 
     @staticmethod
     def create_async_channel_stub(
@@ -1024,7 +960,7 @@ class GrpcConnectionPool:
         :param root_certificates: the path to the root certificates for tls, only u
         :param summary: Optional Prometheus summary object
 
-        :returns: DataRequest/ControlRequest stubs and an async grpc channel
+        :returns: DataRequest stubs and an async grpc channel
         """
         channel = GrpcConnectionPool.get_grpc_channel(
             address,
@@ -1057,7 +993,11 @@ class GrpcConnectionPool:
                 [
                     service.name
                     for service in res.list_services_response.service
-                    if service.name != 'grpc.reflection.v1alpha.ServerReflection'
+                    if service.name
+                    not in {
+                        'grpc.reflection.v1alpha.ServerReflection',
+                        'jina.JinaGatewayDryRunRPC',
+                    }
                 ]
             )
         return service_names[0]

@@ -48,7 +48,8 @@ def test_func_failure():
             inputs=[(Document(), Document()) for _ in range(3)],
             return_responses=True,
         )
-        assert results[0].header.status.code == 3
+
+    assert results[0].header.status.code == 1
 
 
 def test_func_default_routing():

@@ -4,13 +4,13 @@ from abc import ABC
 from typing import List
 
 import grpc
+from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
-from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
 
 
@@ -26,6 +26,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param args: args from CLI
         :param kwargs: keyword args
         """
+        self._health_servicer = health.HealthServicer(experimental_non_blocking=True)
         super().__init__(args, **kwargs)
 
     async def async_setup(self):
@@ -78,19 +79,23 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             self, self._grpc_server
         )
         jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(self, self._grpc_server)
-        jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
-            self, self._grpc_server
-        )
+
         jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server(
             self, self._grpc_server
         )
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
-            jina_pb2.DESCRIPTOR.services_by_name['JinaControlRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDiscoverEndpointsRPC'].full_name,
             reflection.SERVICE_NAME,
         )
+        # Mark all services as healthy.
+        health_pb2_grpc.add_HealthServicer_to_server(
+            self._health_servicer, self._grpc_server
+        )
+
+        for service in service_names:
+            self._health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
         reflection.enable_server_reflection(service_names, self._grpc_server)
         bind_addr = f'0.0.0.0:{self.args.port}'
         self.logger.debug(f'start listening on {bind_addr}')
@@ -112,6 +117,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_teardown(self):
         """Close the data request handler"""
+        self._health_servicer.enter_graceful_shutdown()
         await self.async_cancel()
         self._data_request_handler.close()
 
@@ -166,32 +172,3 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 requests[0].add_exception(ex, self._data_request_handler._executor)
                 context.set_trailing_metadata((('is-error', 'true'),))
                 return requests[0]
-
-    async def process_control(self, request: ControlRequest, *args) -> ControlRequest:
-        """
-        Process the received control request and return the same request
-
-        :param request: the control request to process
-        :param args: additional arguments in the grpc call, ignored
-        :returns: the input request
-        """
-        try:
-            if self.logger.debug_enabled:
-                self._log_control_request(request)
-
-            if request.command == 'STATUS':
-                pass
-            else:
-                raise RuntimeError(
-                    f'WorkerRuntime received unsupported ControlRequest command {request.command}'
-                )
-        except (RuntimeError, Exception) as ex:
-            self.logger.error(
-                f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
-                if not self.args.quiet_error
-                else '',
-                exc_info=not self.args.quiet_error,
-            )
-
-            request.add_exception(ex, self._data_request_handler._executor)
-        return request

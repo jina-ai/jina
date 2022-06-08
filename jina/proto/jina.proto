@@ -56,12 +56,7 @@ message StatusProto {
 
     enum StatusCode {
         SUCCESS = 0; // success
-        PENDING = 1; // there are pending messages, more messages are followed
-        READY = 2; // ready to use
-        ERROR = 3; // error
-        ERROR_DUPLICATE = 4; // already a existing pod running
-        ERROR_NOTALLOWED = 5; // not allowed to open pod remotely
-        ERROR_CHAINED = 6; // chained from the previous error
+        ERROR = 1; // error
     }
 
     // status code
@@ -80,7 +75,7 @@ message StatusProto {
         // the exception traceback stacks
         repeated string stacks = 3;
 
-        // the name of the executor bind to that peapod (if applicable)
+        // the name of the executor bind to that Executor (if applicable)
         string executor = 4;
     }
 
@@ -93,29 +88,10 @@ message StatusProto {
  * Represents an entity (like an ExecutorRuntime)
  */
 message RelatedEntity {
-    string id = 1; // unique id of the entity, like the name of a pea
+    string id = 1; // unique id of the entity, like the name of a pod
     string address = 2; // address of the entity, could be an IP address, domain name etc, does not include port
     uint32 port = 3; // port this entity is listening on
     optional uint32 shard_id = 4; // the id of the shard it belongs to, if it is a shard
-}
-
-
-/**
- * Represents a ControlRequest
- */
-message ControlRequestProto {
-
-    HeaderProto header = 1; // header contains meta info defined by the user
-
-    enum Command {
-            STATUS = 0; // check the status of the BasePod
-            ACTIVATE = 1; // used to add Pods to a Pod
-            DEACTIVATE = 2; // used to remove Pods from a Pod
-    }
-
-    Command command = 2; // the control command
-
-    repeated RelatedEntity relatedEntities = 3; // list of entities this ControlMessage is related to
 }
 
 
@@ -146,15 +122,6 @@ message DataRequestProto {
  */
 message DataRequestListProto {
     repeated DataRequestProto requests = 1; // requests in this list
-}
-
-/**
- * jina gRPC service for ControlRequests.
- */
-service JinaControlRequestRPC {
-    // Used for passing ControlRequests to the Executors
-    rpc process_control (ControlRequestProto) returns (ControlRequestProto) {
-    }
 }
 
 /**
@@ -190,6 +157,15 @@ service JinaRPC {
  */
 service JinaDiscoverEndpointsRPC {
     rpc endpoint_discovery (google.protobuf.Empty) returns (EndpointsProto) {
+    }
+}
+
+
+/**
+ * jina gRPC service to expose Endpoints from Executors.
+ */
+service JinaGatewayDryRunRPC {
+    rpc dry_run (google.protobuf.Empty) returns (StatusProto) {
     }
 }
 

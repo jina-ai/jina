@@ -6,86 +6,6 @@ from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 from . import serializer as jina__pb2
 
 
-class JinaControlRequestRPCStub(object):
-    """*
-    jina gRPC service for ControlRequests.
-    """
-
-    def __init__(self, channel):
-        """Constructor.
-
-        Args:
-            channel: A grpc.Channel.
-        """
-        self.process_control = channel.unary_unary(
-            '/jina.JinaControlRequestRPC/process_control',
-            request_serializer=jina__pb2.ControlRequestProto.SerializeToString,
-            response_deserializer=jina__pb2.ControlRequestProto.FromString,
-        )
-
-
-class JinaControlRequestRPCServicer(object):
-    """*
-    jina gRPC service for ControlRequests.
-    """
-
-    def process_control(self, request, context):
-        """Used for passing ControlRequests to the Executors"""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-
-def add_JinaControlRequestRPCServicer_to_server(servicer, server):
-    rpc_method_handlers = {
-        'process_control': grpc.unary_unary_rpc_method_handler(
-            servicer.process_control,
-            request_deserializer=jina__pb2.ControlRequestProto.FromString,
-            response_serializer=jina__pb2.ControlRequestProto.SerializeToString,
-        ),
-    }
-    generic_handler = grpc.method_handlers_generic_handler(
-        'jina.JinaControlRequestRPC', rpc_method_handlers
-    )
-    server.add_generic_rpc_handlers((generic_handler,))
-
-
-# This class is part of an EXPERIMENTAL API.
-class JinaControlRequestRPC(object):
-    """*
-    jina gRPC service for ControlRequests.
-    """
-
-    @staticmethod
-    def process_control(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
-    ):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/jina.JinaControlRequestRPC/process_control',
-            jina__pb2.ControlRequestProto.SerializeToString,
-            jina__pb2.ControlRequestProto.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-        )
-
-
 class JinaDataRequestRPCStub(object):
     """*
     jina gRPC service for DataRequests.
@@ -331,7 +251,7 @@ class JinaRPC(object):
 
 class JinaDiscoverEndpointsRPCStub(object):
     """*
-    jina gRPC service for DataRequests.
+    jina gRPC service to expose Endpoints from Executors.
     """
 
     def __init__(self, channel):
@@ -349,7 +269,7 @@ class JinaDiscoverEndpointsRPCStub(object):
 
 class JinaDiscoverEndpointsRPCServicer(object):
     """*
-    jina gRPC service for DataRequests.
+    jina gRPC service to expose Endpoints from Executors.
     """
 
     def endpoint_discovery(self, request, context):
@@ -376,7 +296,7 @@ def add_JinaDiscoverEndpointsRPCServicer_to_server(servicer, server):
 # This class is part of an EXPERIMENTAL API.
 class JinaDiscoverEndpointsRPC(object):
     """*
-    jina gRPC service for DataRequests.
+    jina gRPC service to expose Endpoints from Executors.
     """
 
     @staticmethod
@@ -398,6 +318,86 @@ class JinaDiscoverEndpointsRPC(object):
             '/jina.JinaDiscoverEndpointsRPC/endpoint_discovery',
             google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             jina__pb2.EndpointsProto.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+        )
+
+
+class JinaGatewayDryRunRPCStub(object):
+    """*
+    jina gRPC service to expose Endpoints from Executors.
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.dry_run = channel.unary_unary(
+            '/jina.JinaGatewayDryRunRPC/dry_run',
+            request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            response_deserializer=jina__pb2.StatusProto.FromString,
+        )
+
+
+class JinaGatewayDryRunRPCServicer(object):
+    """*
+    jina gRPC service to expose Endpoints from Executors.
+    """
+
+    def dry_run(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_JinaGatewayDryRunRPCServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+        'dry_run': grpc.unary_unary_rpc_method_handler(
+            servicer.dry_run,
+            request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            response_serializer=jina__pb2.StatusProto.SerializeToString,
+        ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+        'jina.JinaGatewayDryRunRPC', rpc_method_handlers
+    )
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+# This class is part of an EXPERIMENTAL API.
+class JinaGatewayDryRunRPC(object):
+    """*
+    jina gRPC service to expose Endpoints from Executors.
+    """
+
+    @staticmethod
+    def dry_run(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/jina.JinaGatewayDryRunRPC/dry_run',
+            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            jina__pb2.StatusProto.FromString,
             options,
             channel_credentials,
             insecure,

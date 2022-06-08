@@ -71,7 +71,7 @@ class TopologyGraph:
             else:
                 raise
 
-        def get_endpoints(self, connection_pool: GrpcConnectionPool):
+        def get_endpoints(self, connection_pool: GrpcConnectionPool) -> asyncio.Task:
             return connection_pool.send_discover_endpoint(self.name)
 
         async def _wait_previous_and_send(
@@ -300,3 +300,29 @@ class TopologyGraph:
         :return: A list of nodes
         """
         return self._origin_nodes
+
+    @property
+    def all_nodes(self):
+        """
+        The set of all the nodes inside this Graph
+
+        :return: A list of nodes
+        """
+
+        def _get_all_nodes(node, accum, accum_names):
+            if node.name not in accum_names:
+                accum.append(node)
+                accum_names.append(node.name)
+            for n in node.outgoing_nodes:
+                _get_all_nodes(n, accum, accum_names)
+            return accum, accum_names
+
+        nodes = []
+        node_names = []
+        for origin_node in self.origin_nodes:
+            subtree_nodes, subtree_node_names = _get_all_nodes(origin_node, [], [])
+            for st_node, st_node_name in zip(subtree_nodes, subtree_node_names):
+                if st_node_name not in node_names:
+                    nodes.append(st_node)
+                    node_names.append(st_node_name)
+        return nodes

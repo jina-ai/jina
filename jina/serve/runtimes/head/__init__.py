@@ -8,6 +8,7 @@ from collections import defaultdict
 from typing import Dict, List, Optional, Tuple
 
 import grpc
+from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
 from jina.enums import PollingType
@@ -17,7 +18,6 @@ from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
-from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest, Response
 
 
@@ -37,6 +37,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :param args: args from CLI
         :param kwargs: keyword args
         """
+        self._health_servicer = health.HealthServicer(experimental_non_blocking=True)
+
         super().__init__(args, **kwargs)
         if args.name is None:
             args.name = ''
@@ -148,19 +150,22 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             self, self._grpc_server
         )
         jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(self, self._grpc_server)
-        jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
-            self, self._grpc_server
-        )
         jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server(
             self, self._grpc_server
         )
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
-            jina_pb2.DESCRIPTOR.services_by_name['JinaControlRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDiscoverEndpointsRPC'].full_name,
             reflection.SERVICE_NAME,
         )
+        # Mark all services as healthy.
+        health_pb2_grpc.add_HealthServicer_to_server(
+            self._health_servicer, self._grpc_server
+        )
+
+        for service in service_names:
+            self._health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
         reflection.enable_server_reflection(service_names, self._grpc_server)
 
         bind_addr = f'0.0.0.0:{self.args.port}'
@@ -181,6 +186,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_teardown(self):
         """Close the connection pool"""
+        self._health_servicer.enter_graceful_shutdown()
         await self.async_cancel()
         await self.connection_pool.close()
 
@@ -235,48 +241,6 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             requests[0].add_exception(ex, executor=None)
             context.set_trailing_metadata((('is-error', 'true'),))
             return requests[0]
-
-    async def process_control(self, request: ControlRequest, *args) -> ControlRequest:
-        """
-        Process the received control request and return the input request
-
-        :param request: the data request to process
-        :param args: additional arguments in the grpc call, ignored
-        :returns: the input request
-        """
-        try:
-            if self.logger.debug_enabled:
-                self._log_control_request(request)
-
-            if request.command == 'ACTIVATE':
-
-                for relatedEntity in request.relatedEntities:
-                    connection_string = f'{relatedEntity.address}:{relatedEntity.port}'
-
-                    self.connection_pool.add_connection(
-                        deployment=self._deployment_name,
-                        address=connection_string,
-                        shard_id=relatedEntity.shard_id
-                        if relatedEntity.HasField('shard_id')
-                        else None,
-                    )
-            elif request.command == 'DEACTIVATE':
-                for relatedEntity in request.relatedEntities:
-                    connection_string = f'{relatedEntity.address}:{relatedEntity.port}'
-                    await self.connection_pool.remove_connection(
-                        deployment=self._deployment_name,
-                        address=connection_string,
-                        shard_id=relatedEntity.shard_id,
-                    )
-            return request
-        except (RuntimeError, Exception) as ex:
-            self.logger.error(
-                f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
-                if not self.args.quiet_error
-                else '',
-                exc_info=not self.args.quiet_error,
-            )
-            raise
 
     async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
         """

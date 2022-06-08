@@ -12,7 +12,6 @@ from jina.importer import ImportExtensions
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.base import BaseRuntime
 from jina.serve.runtimes.monitoring import MonitoringMixin
-from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
@@ -148,12 +147,15 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
         """
 
         try:
-            GrpcConnectionPool.send_request_sync(
-                ControlRequest('STATUS'), ctrl_address, timeout=1.0
+            from grpc_health.v1 import health_pb2, health_pb2_grpc
+
+            response = GrpcConnectionPool.send_health_check_sync(
+                ctrl_address, timeout=1.0
             )
-        except RpcError as e:
+            # TODO: Get the proper value of the ServingStatus SERVING KEY
+            return response.status == 1
+        except RpcError:
             return False
-        return True
 
     @staticmethod
     def wait_for_ready_or_shutdown(
@@ -181,16 +183,8 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
             time.sleep(0.1)
         return False
 
-    def _log_info_msg(self, request: Union[ControlRequest, DataRequest]):
-        if type(request) == DataRequest:
-            self._log_data_request(request)
-        elif type(request) == ControlRequest:
-            self._log_control_request(request)
-
-    def _log_control_request(self, request: ControlRequest):
-        self.logger.debug(
-            f'recv ControlRequest {request.command} with id: {request.header.request_id}'
-        )
+    def _log_info_msg(self, request: DataRequest):
+        self._log_data_request(request)
 
     def _log_data_request(self, request: DataRequest):
         self.logger.debug(
