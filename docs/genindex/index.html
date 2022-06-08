@@ -197,10 +197,10 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../get-started/create-app/">Create New Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fundamentals/architecture-overview/">Glossary</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../fundamentals/architecture-overview/">Concepts Overview</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/executor-api/">Basic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -799,6 +799,8 @@
 </li>
         <li><a href="../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.clear">clear() (jina.types.mixin.ProtoTypeMixin method)</a>
 </li>
+        <li><a href="../fundamentals/architecture-overview/#term-Client"><strong>Client</strong></a>
+</li>
         <li><a href="../api/jina.clients.base/#jina.clients.base.BaseClient.client">client (jina.clients.base.BaseClient property)</a>
 
         <ul>
@@ -919,8 +921,12 @@
         </ul></li>
         <li><a href="../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.deploy_public_sandbox">deploy_public_sandbox() (jina.hubble.hubio.HubIO static method)</a>
 </li>
-        <li><a href="../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment">Deployment (class in jina.orchestrate.deployments)</a>
+        <li><a href="../fundamentals/architecture-overview/#term-Deployment"><strong>Deployment</strong></a>
+
+        <ul>
+          <li><a href="../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment">(class in jina.orchestrate.deployments)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.DeploymentRoleType.DEPLOYMENT">DEPLOYMENT (jina.enums.DeploymentRoleType attribute)</a>
 </li>
         <li><a href="../api/jina_cli.api/#jina_cli.api.deployment">deployment() (in module jina_cli.api)</a>
@@ -935,10 +941,10 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.DataInputType.DICT">DICT (jina.enums.DataInputType attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.dict">dict() (jina.types.mixin.ProtoTypeMixin method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.orchestrate.deployments.config.k8slib.kubernetes_deployment/#jina.orchestrate.deployments.config.k8slib.kubernetes_deployment.dictionary_to_cli_param">dictionary_to_cli_param() (in module jina.orchestrate.deployments.config.k8slib.kubernetes_deployment)</a>
 </li>
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.disk_cache_offline">disk_cache_offline() (in module jina.hubble.helper)</a>
@@ -951,12 +957,20 @@
 </li>
         <li><a href="../api/jina.types.request.data/#jina.types.request.data.DataRequest.docs">docs (jina.types.request.data.DataRequest property)</a>
 </li>
-        <li><a href="../api/jina/#jina.Document">Document (class in jina)</a>
+        <li><a href="../fundamentals/architecture-overview/#term-Document"><strong>Document</strong></a>
+
+        <ul>
+          <li><a href="../api/jina/#jina.Document">(class in jina)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.DataInputType.DOCUMENT">DOCUMENT (jina.enums.DataInputType attribute)</a>
 </li>
-        <li><a href="../api/jina/#jina.DocumentArray">DocumentArray (class in jina)</a>
+        <li><a href="../fundamentals/architecture-overview/#term-DocumentArray"><strong>DocumentArray</strong></a>
+
+        <ul>
+          <li><a href="../api/jina/#jina.DocumentArray">(class in jina)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina.helper/#jina.helper.download_mermaid_url">download_mermaid_url() (in module jina.helper)</a>
 </li>
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.download_with_resume">download_with_resume() (in module jina.hubble.helper)</a>
@@ -1027,8 +1041,12 @@
 </li>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.exec_endpoint">exec_endpoint (jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel attribute)</a>
 </li>
-        <li><a href="../api/jina/#jina.Executor">Executor (in module jina)</a>
+        <li><a href="../fundamentals/architecture-overview/#term-Executor"><strong>Executor</strong></a>
+
+        <ul>
+          <li><a href="../api/jina/#jina.Executor">(in module jina)</a>
 </li>
+        </ul></li>
         <li><a href="../api/jina_cli.api/#jina_cli.api.executor">executor() (in module jina_cli.api)</a>
 </li>
     </ul></td>
@@ -1090,9 +1108,11 @@
 </li>
         <li><a href="../api/jina.helper/#jina.helper.ArgNamespace.flatten_to_dict">flatten_to_dict() (jina.helper.ArgNamespace static method)</a>
 </li>
-        <li><a href="../api/jina/#jina.Flow">Flow (class in jina)</a>
+        <li><a href="../fundamentals/architecture-overview/#term-Flow"><strong>Flow</strong></a>
 
         <ul>
+          <li><a href="../api/jina/#jina.Flow">(class in jina)</a>
+</li>
           <li><a href="../api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow">(class in jina.orchestrate.flow.base)</a>
 </li>
         </ul></li>
@@ -1102,10 +1122,10 @@
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.FlowBuildLevelError">FlowBuildLevelError</a>
 </li>
-        <li><a href="../api/jina.enums/#jina.enums.FlowInspectType">FlowInspectType (class in jina.enums)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.enums/#jina.enums.FlowInspectType">FlowInspectType (class in jina.enums)</a>
+</li>
         <li><a href="../api/jina.excepts/#jina.excepts.FlowMissingDeploymentError">FlowMissingDeploymentError</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.FlowTopologyError">FlowTopologyError</a>
@@ -1142,6 +1162,8 @@
   <h2>G</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../fundamentals/architecture-overview/#term-Gateway"><strong>Gateway</strong></a>
+</li>
         <li><a href="../api/jina.enums/#jina.enums.DeploymentRoleType.GATEWAY">GATEWAY (jina.enums.DeploymentRoleType attribute)</a>
 
         <ul>
@@ -1265,6 +1287,8 @@
         <li><a href="../api/jina.enums/#jina.enums.FlowBuildLevel.GRAPH">GRAPH (jina.enums.FlowBuildLevel attribute)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.GatewayProtocolType.GRPC">GRPC (jina.enums.GatewayProtocolType attribute)</a>
+</li>
+        <li><a href="../fundamentals/architecture-overview/#term-gRPC-Websocket-HTTP"><strong>gRPC, Websocket, HTTP</strong></a>
 </li>
         <li><a href="../api/jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient">GRPCBaseClient (class in jina.clients.base.grpc)</a>
 </li>
@@ -3377,6 +3401,8 @@
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.TimeContext.time_attrs">time_attrs (jina.logging.profile.TimeContext attribute)</a>
 </li>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.TimeContext">TimeContext (class in jina.logging.profile)</a>
+</li>
+        <li><a href="../fundamentals/architecture-overview/#term-TLS"><strong>TLS</strong></a>
 </li>
         <li><a href="../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.tls_enabled">tls_enabled (jina.orchestrate.deployments.Deployment property)</a>
 </li>

@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<meta property="og:title" content="Concepts Overview" />
+<meta property="og:title" content="Glossary" />
   
 <meta property="og:type" content="website" />
   
@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.6.1 Documentation" />
   
-<meta property="og:description" content="The figure below shows details on how the Flow and Executor abstractions translate into concrete microservices, providing all the serving and scaling features of Jina. You will not need to understand every detail of this architecture in order to build your first multi-modal/cross-modal app using ..." />
+<meta property="og:description" content="This chapter introduces the terminologies you will encounter in the docs. But first, let’s look at the code below: Server Client Running it gives you: What happens underneath is depicted in the following animation: The following concepts will be covered in the user guide: Document, Document is th..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/architecture-overview.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
-        <title>Concepts Overview - Jina 3.6.1 documentation</title>
+        <title>Glossary - Jina 3.6.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -223,7 +223,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
     <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
@@ -231,10 +231,10 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/create-app/">Create New Project</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Glossary</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
-<ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Concepts Overview</a></li>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../executor/executor-api/">Basic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -562,23 +562,73 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="concepts-overview">
-<span id="architecture-overview"></span><h1>Concepts Overview<a class="headerlink" href="#concepts-overview" title="Permalink to this headline">#</a></h1>
-<p>The figure below shows details on how the Flow and Executor abstractions translate into concrete microservices, providing all the
-serving and scaling features of Jina.</p>
+                    <section class="tex2jax_ignore mathjax_ignore" id="glossary">
+<span id="architecture-overview"></span><h1>Glossary<a class="headerlink" href="#glossary" title="Permalink to this headline">#</a></h1>
+<p>This chapter introduces the terminologies you will encounter in the docs. But first, let’s look at the code below:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Server</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span>
+
+
+<span class="k">class</span> <span class="nc">FooExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">add_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39;hello, world!&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">BarExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">add_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39;goodbye!&#39;</span>
+
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">FooExec</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">BarExec</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Client</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Running it gives you:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[&#39;hello, world!goodbye!&#39;, &#39;hello, world!goodbye!&#39;]
+</pre></div>
+</div>
+<p>What happens underneath is depicted in the following animation:</p>
 <figure class="align-center">
 <img alt="../../_images/arch-overview.svg" src="../../_images/arch-overview.svg" /></figure>
-<p>You will not need to understand every detail of this architecture in order to build your first multi-modal/cross-modal app using Jina.
-But it is useful in order to understand how Jina works, regardless of whether your microservice app runs locally,
-is orchestrated only by the Flow object itself, or is deployed using a cloud-native infrastructure such as Kubernetes.
-In fact, you might notice how some naming and concepts are inspired by the Kubernetes architecture.</p>
-<p>The following concepts may appear in the docs, but you don’t need to master them as they are mainly designed for advanced or internal use:</p>
-<ul class="simple">
-<li><p><strong>Gateway</strong>: The Gateway is a service started by the Flow which is responsible for exposing the <code class="docutils literal notranslate"><span class="pre">HTTP</span></code>, <code class="docutils literal notranslate"><span class="pre">Websocket</span></code> or <code class="docutils literal notranslate"><span class="pre">gRPC</span></code> endpoints to the client. It is the service that the clients of your app will actually talk to. Additionally, it keeps knowledge of the topology of the Flow to guarantee that the <code class="docutils literal notranslate"><span class="pre">Documents</span></code> are processed by the Executors in the proper order. It communicates with the Deployments via <code class="docutils literal notranslate"><span class="pre">gRPC</span></code>.</p></li>
-<li><p><strong>Deployment</strong>: Deployment is an abstraction around Executor that lets the <code class="docutils literal notranslate"><span class="pre">Gateway</span></code> communicate with an Executor. It encapsulates and abstracts internal replication details.</p></li>
-<li><p><strong>Pod</strong>: A Pod is a simple abstraction over a runtime that runs any Jina service, be it a process, a Docker container, or a Kubernetes Pod.</p></li>
-<li><p><strong>Head</strong>: The Head is a service added to a sharded Deployment by Jina. It manages the communication to the different shards based on the configured polling strategy. It communicates with the Executors via <code class="docutils literal notranslate"><span class="pre">gRPC</span></code>.</p></li>
-</ul>
+<p>The following concepts will be covered in the user guide:</p>
+<dl class="glossary simple">
+<dt id="term-Document">Document<a class="headerlink" href="#term-Document" title="Permalink to this term">#</a></dt><dd><p>Document is the fundamental data structure in Jina for representing multi-modal and cross-modal data. It is the essential element of IO in Jina. More information can be found in <a class="reference external" href="https://docarray.jina.ai/fundamentals/document/">DocArray’s Docs</a>.</p>
+</dd>
+<dt id="term-DocumentArray">DocumentArray<a class="headerlink" href="#term-DocumentArray" title="Permalink to this term">#</a></dt><dd><p>DocumentArray is a list-like container of multiple Documents. More information can be found in <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/">DocArray’s Docs</a>.</p>
+</dd>
+<dt id="term-Executor">Executor <a class="headerlink" href="#term-Executor" title="Permalink to this term">#</a></dt><dd><p>Execurtor is a Python class that has a group of functions using <a class="reference internal" href="#term-DocumentArray"><span class="xref std std-term">DocumentArray</span></a> as IO. Loosely speaking, each Executor is a microservice.</p>
+</dd>
+<dt id="term-Flow">Flow<a class="headerlink" href="#term-Flow" title="Permalink to this term">#</a></dt><dd><p>Flow ties multiple Executors together into a logic pipeline to achieve a task. If Executor is a microservice, then Flow is the end-to-end service.</p>
+</dd>
+<dt id="term-Gateway">Gateway<a class="headerlink" href="#term-Gateway" title="Permalink to this term">#</a></dt><dd><p>Gateway is the entrypoint of a <a class="reference internal" href="#term-Flow"><span class="xref std std-term">Flow</span></a>. It exposes multiple protocols for external communications; it routes all internal traffics.</p>
+</dd>
+<dt id="term-Client">Client<a class="headerlink" href="#term-Client" title="Permalink to this term">#</a></dt><dd><p>Client is for connecting to a <a class="reference internal" href="#term-Gateway"><span class="xref std std-term">Gateway</span></a> and sending/receiving data from it.</p>
+</dd>
+<dt id="term-Deployment">Deployment<a class="headerlink" href="#term-Deployment" title="Permalink to this term">#</a></dt><dd><p>Deployment is an abstraction around Executor that lets the <a class="reference internal" href="#term-Gateway"><span class="xref std std-term">Gateway</span></a> communicate with an Executor. It encapsulates and abstracts internal replication details.</p>
+</dd>
+<dt id="term-gRPC-Websocket-HTTP">gRPC, Websocket, HTTP<a class="headerlink" href="#term-gRPC-Websocket-HTTP" title="Permalink to this term">#</a></dt><dd><p>They are network protocols for transmitting data. gRPC is always used between <a class="reference internal" href="#term-Gateway"><span class="xref std std-term">Gateway</span></a> and <a class="reference internal" href="#term-Deployment"><span class="xref std std-term">Deployment</span></a> communication.</p>
+</dd>
+<dt id="term-TLS">TLS<a class="headerlink" href="#term-TLS" title="Permalink to this term">#</a></dt><dd><p>TLS is a security protocol designed to facilitate privacy and data security for communications over the Internet. The communication between <a class="reference internal" href="#term-Client"><span class="xref std std-term">Client</span></a> and <a class="reference internal" href="#term-Gateway"><span class="xref std std-term">Gateway</span></a> i protected by TLS.</p>
+</dd>
+</dl>
 </section>
 
                 </article>
