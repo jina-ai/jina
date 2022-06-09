@@ -37,7 +37,7 @@ Applications built with Jina enjoy the following features out-of-the-box:
 
 ☁️ **Cloud-native**
   - Seamless Docker container integration: sharing, exploring, sandboxing, versioning and dependency control via [Jina Hub](https://hub.jina.ai).
-  - Fast deployment to Kubernetes, Docker Compose and Jina Cloud.
+  - Fast deployment to Kubernetes, Docker Compose and [Jina Cloud](https://docs.jina.ai/fundamentals/jcloud/).
   - Full observability via Prometheus and Grafana.
 
 🍱 **Ecosystem**

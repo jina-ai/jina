@@ -1,5 +1,9 @@
 # Basic
 
+```{tip}
+JCloud client is an opensource project. [Check here for its repository](https://github.com/jina-ai/jcloud). 
+```
+
 ## Install
 
 ```bash
