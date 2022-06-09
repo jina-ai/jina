@@ -148,6 +148,7 @@ topologies
 flow-api
 monitoring-flow
 health-check
+expose-jina-info
 when-things-go-wrong
 yaml-spec
 ```

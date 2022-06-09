@@ -103,3 +103,11 @@ def mixin_pod_parser(parser):
         dest='port_monitoring',
         help=f'The port on which the prometheus server is exposed, default port is {__default_port_monitoring__} ',
     )
+
+    gp.add_argument(
+        '--retries',
+        type=int,
+        default=-1,
+        dest='retries',
+        help=f'Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)',
+    )

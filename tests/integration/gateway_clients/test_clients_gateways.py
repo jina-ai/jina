@@ -88,6 +88,7 @@ class DummyNoDocAccessMockConnectionPool:
         head: bool,
         endpoint: str = None,
         timeout: float = 1.0,
+        retries: int = -1,
     ) -> asyncio.Task:
         async def task_wrapper():
             import random
@@ -112,6 +113,7 @@ class DummyMockConnectionPool:
         head: bool,
         endpoint: str = None,
         timeout: float = 1.0,
+        retries: int = -1,
     ) -> asyncio.Task:
         assert head
         request = requests[0]

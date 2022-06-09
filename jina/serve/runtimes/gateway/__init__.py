@@ -43,6 +43,7 @@ class GatewayRuntime(AsyncNewLoopRuntime, ABC):
             graph_conditions,
             deployments_disable_reduce,
             timeout_send=self.timeout_send,
+            retries=self.args.retries,
         )
 
     def _set_connection_pool(self):
