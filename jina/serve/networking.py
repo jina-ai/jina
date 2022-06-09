@@ -157,6 +157,7 @@ class GrpcConnectionPool:
             'jina.JinaSingleDataRequestRPC': jina_pb2_grpc.JinaSingleDataRequestRPCStub,
             'jina.JinaDiscoverEndpointsRPC': jina_pb2_grpc.JinaDiscoverEndpointsRPCStub,
             'jina.JinaRPC': jina_pb2_grpc.JinaRPCStub,
+            'jina.JinaInfoRPC': jina_pb2_grpc.JinaInfoRPCStub,
         }
 
         def __init__(self, address, channel, summary):
