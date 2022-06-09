@@ -1,4 +1,4 @@
-# Expose Information on microservices
+# Expose Information on Executor and Gateway
 Every Jina Flow consists of a {ref}`number of microservices <architecture-overview>`,
 each of which may live in different environments, and even run different Jina versions.
 
