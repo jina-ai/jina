@@ -166,6 +166,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         replicas: Optional[int] = 1,
+        retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'GRPCGatewayRuntime',
         shards: Optional[int] = 1,
         ssl_certfile: Optional[str] = None,
@@ -242,6 +243,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param replicas: The number of replicas in the deployment
+        :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
         :param ssl_certfile: the path to the certificate file
@@ -653,6 +655,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         quiet_error: Optional[bool] = False,
         quiet_remote_logs: Optional[bool] = False,
         replicas: Optional[int] = 1,
+        retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'WorkerRuntime',
         shards: Optional[int] = 1,
         timeout_ctrl: Optional[int] = 60,
@@ -735,6 +738,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param quiet_remote_logs: Do not display the streaming of remote logs on local console
         :param replicas: The number of replicas in the deployment
+        :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
