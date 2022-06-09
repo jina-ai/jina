@@ -13,6 +13,7 @@ from grpc_reflection.v1alpha import reflection
 
 from jina.enums import PollingType
 from jina.excepts import InternalNetworkError
+from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
@@ -153,10 +154,12 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server(
             self, self._grpc_server
         )
+        jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self._grpc_server)
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDiscoverEndpointsRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaInfoRPC'].full_name,
             reflection.SERVICE_NAME,
         )
         # Mark all services as healthy.
@@ -349,3 +352,17 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             for key, value in uses_after_metadata:
                 merged_metadata[key] = value
         return merged_metadata
+
+    async def _status(self, empty, context) -> jina_pb2.JinaInfoProto:
+        """
+        Process the the call requested and return the JinaInfo of the Runtime
+
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
+        """
+        infoProto = jina_pb2.JinaInfoProto()
+        version, env_info = get_full_version()
+        infoProto.jina = version
+        infoProto.envs = env_info
+        return infoProto

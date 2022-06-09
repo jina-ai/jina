@@ -9,7 +9,6 @@ from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
-from jina.logging.profile import used_memory_readable
 
 if TYPE_CHECKING:
     from prometheus_client import CollectorRegistry
@@ -147,7 +146,7 @@ def get_fastapi_app(
         @app.get(
             path='/status',
             summary='Get the status of Jina service',
-            response_model=JinaStatusModel,
+            response_model=PROTO_TO_PYDANTIC_MODELS.JinaInfoProto,
             tags=['Debug'],
         )
         async def _status():
@@ -158,12 +157,8 @@ def get_fastapi_app(
 
             .. # noqa: DAR201
             """
-            _info = get_full_version()
-            return {
-                'jina': _info[0],
-                'envs': _info[1],
-                'used_memory': used_memory_readable(),
-            }
+            version, env_info = get_full_version()
+            return {'jina': version, 'envs': env_info}
 
         @app.post(
             path='/post',

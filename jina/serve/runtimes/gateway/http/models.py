@@ -223,18 +223,6 @@ class JinaHealthModel(BaseModel):
     ...
 
 
-class JinaStatusModel(BaseModel):
-    """Pydantic BaseModel for Jina status, used as the response model in REST app."""
-
-    jina: Dict
-    envs: Dict
-    used_memory: str
-
-    class Config:
-        alias_generator = _to_camel_case
-        allow_population_by_field_name = True
-
-
 class JinaRequestModel(BaseModel):
     """
     Jina HTTP request model.
