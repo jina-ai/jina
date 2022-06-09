@@ -277,8 +277,8 @@ see their [website](https://www.uvicorn.org/settings/).
 
 ## Get status
 
-```{warning} Consistent version
-Even though you can theoretically run Executors and Gateways in different Jina versions, it is recommended for them to work with the same Jina version, and the same as the client used to interact with them.
+```{tip}
+Though you can run Executors, Gateway and Client in different Jina versions, it is recommended to work with the same Jina version.
 ```
 
 Gateway provides an endpoint that exposes relevant information about the environment where it runs. 
