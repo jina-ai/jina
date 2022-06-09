@@ -37,21 +37,22 @@ def _create_worker(port):
     return p
 
 
-def _create_gateway(port, graph, pod_addr, protocol):
+def _create_gateway(port, graph, pod_addr, protocol, retries=-1):
     # create a single worker runtime
     # create a single gateway runtime
     p = multiprocessing.Process(
         target=_create_gateway_runtime,
-        args=(graph, pod_addr, port, protocol),
+        args=(graph, pod_addr, port, protocol, retries),
     )
     p.start()
     time.sleep(0.1)
     return p
 
 
-def _create_head(port, connection_list_dict, polling):
+def _create_head(port, connection_list_dict, polling, retries=-1):
     p = multiprocessing.Process(
-        target=_create_head_runtime, args=(port, connection_list_dict, 'head', polling)
+        target=_create_head_runtime,
+        args=(port, connection_list_dict, 'head', polling, None, None, retries),
     )
     p.start()
     time.sleep(0.1)
@@ -521,3 +522,146 @@ async def test_replica_retry_all_fail(port_generator):
         for p in worker_processes:
             p.terminate()
             p.join()
+
+
+def _test_custom_retry(gateway_port, error_ports, protocol, retries, capfd):
+    with pytest.raises(ConnectionError) as err_info:
+        _send_request(gateway_port, protocol)
+    out, err = capfd.readouterr()
+    if retries > 0:  # do as many retries as specified
+        for i in range(retries):
+            assert f'retry attempt {i+1}/{retries}' in out
+    elif retries == 0:  # do no retries
+        assert 'retry attempt' not in out
+    elif retries < 0:  # use default retry policy, doing at least 3 retries
+        for i in range(3):
+            assert f'retry attempt {i+1}' in out
+
+
+@pytest.mark.parametrize('retries', [-1, 0, 5])
+def test_custom_num_retries(port_generator, retries, capfd):
+    # test that the user can set the number of grpc retries for failed calls
+    # if negative number is given, test that default policy applies: hit every replica at least once
+    # create gateway and workers manually, then terminate worker process to provoke an error
+    num_replicas = 3
+    worker_ports = [port_generator() for _ in range(num_replicas)]
+    worker0_port, worker1_port, worker2_port = worker_ports
+    gateway_port = port_generator()
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["0.0.0.0:{worker0_port}", "0.0.0.0:{worker1_port}", "0.0.0.0:{worker2_port}"]}}'
+
+    worker_processes = []
+    for p in worker_ports:
+        worker_processes.append(_create_worker(p))
+        time.sleep(0.1)
+        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ctrl_address=f'0.0.0.0:{p}',
+            ready_or_shutdown_event=multiprocessing.Event(),
+        )
+
+    gateway_process = _create_gateway(
+        gateway_port, graph_description, pod_addresses, 'grpc', retries=retries
+    )
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{gateway_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    try:
+        # ----------- 1. ping Flow once to trigger endpoint discovery -----------
+        # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+        p = multiprocessing.Process(target=_send_request, args=(gateway_port, 'grpc'))
+        p.start()
+        p.join()
+        assert p.exitcode == 0
+        # kill all workers
+        for p in worker_processes:
+            p.terminate()
+            p.join()
+        # ----------- 2. test that call will be retried the appropriate number of times -----------
+        # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+        p = multiprocessing.Process(
+            target=_test_custom_retry,
+            args=(gateway_port, worker_ports, 'grpc', retries, capfd),
+        )
+        p.start()
+        p.join()
+        assert p.exitcode == 0
+    except Exception:
+        assert False
+    finally:  # clean up runtimes
+        gateway_process.terminate()
+        gateway_process.join()
+        for p in worker_processes:
+            p.terminate()
+            p.join()
+
+
+@pytest.mark.parametrize('retries', [-1, 0, 5])
+def test_custom_num_retries_headful(port_generator, retries, capfd):
+    # create gateway and workers manually, then terminate worker process to provoke an error
+    worker_port = port_generator()
+    gateway_port = port_generator()
+    head_port = port_generator()
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
+
+    connection_list_dict = {'0': [f'127.0.0.1:{worker_port}']}
+
+    head_process = _create_head(head_port, connection_list_dict, 'ANY', retries=retries)
+
+    worker_process = _create_worker(worker_port)
+    gateway_process = _create_gateway(
+        gateway_port, graph_description, pod_addresses, 'grpc', retries=retries
+    )
+
+    time.sleep(1.0)
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{head_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{worker_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{gateway_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    try:
+        # ----------- 1. ping Flow once to trigger endpoint discovery -----------
+        # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+        p = multiprocessing.Process(target=_send_request, args=(gateway_port, 'grpc'))
+        p.start()
+        p.join()
+        assert p.exitcode == 0
+        # kill worker
+        worker_process.terminate()
+        worker_process.join()
+        # ----------- 2. test that call will be retried the appropriate number of times -----------
+        # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+        p = multiprocessing.Process(
+            target=_test_custom_retry,
+            args=(gateway_port, worker_port, 'grpc', retries, capfd),
+        )
+        p.start()
+        p.join()
+        assert p.exitcode == 0
+    except Exception:
+        assert False
+    finally:  # clean up runtimes
+        gateway_process.terminate()
+        gateway_process.join()
+        worker_process.terminate()
+        worker_process.join()
+        head_process.terminate()
+        head_process.join()

@@ -838,6 +838,8 @@ class ArgNamespace:
             args += positional_args
         p_args, unknown_args = parser.parse_known_args(args)
         unknown_args = list(filter(lambda x: x.startswith('--'), unknown_args))
+        if '--jcloud' in unknown_args:
+            unknown_args.remove('--jcloud')
         if warn_unknown and unknown_args:
             _leftovers = set(unknown_args)
             if fallback_parsers:

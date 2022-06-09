@@ -5,5 +5,5 @@ This section includes the API documentation from the `jina` codebase. These are 
 ```{toctree}
 
 api/jina
-api/cli
+api/jina_cli
 ```
