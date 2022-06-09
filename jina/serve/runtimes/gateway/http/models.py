@@ -9,7 +9,7 @@ from google.protobuf.descriptor import Descriptor, FieldDescriptor
 from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 from pydantic import BaseConfig, BaseModel, Field, create_model, root_validator
 
-from jina.proto.jina_pb2 import DataRequestProto, RouteProto, StatusProto
+from jina.proto.jina_pb2 import DataRequestProto, JinaInfoProto, RouteProto, StatusProto
 
 PROTO_TO_PYDANTIC_MODELS = SimpleNamespace()
 PROTOBUF_TO_PYTHON_TYPE = {
@@ -202,11 +202,7 @@ def protobuf_to_pydantic_model(
     return model
 
 
-for proto in (
-    RouteProto,
-    StatusProto,
-    DataRequestProto,
-):
+for proto in (RouteProto, StatusProto, DataRequestProto, JinaInfoProto):
     protobuf_to_pydantic_model(proto)
 
 

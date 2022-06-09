@@ -26,8 +26,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from prometheus_client import CollectorRegistry
 
-    from jina.types.request.control import ControlRequest
-
 
 class ReplicaList:
     """

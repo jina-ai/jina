@@ -20,7 +20,7 @@ message RouteProto {
 }
 
 message JinaInfoProto {
-    string jina = 1; // the jina version running
+    map<string, string> jina = 1; // the jina version running
     map<string, string> envs = 2; // the environment variable setting
 }
 

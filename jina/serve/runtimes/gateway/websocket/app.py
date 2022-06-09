@@ -158,6 +158,10 @@ def get_fastapi_app(
         .. # noqa: DAR201
         """
         version, env_info = get_full_version()
+        for k, v in version.items():
+            version[k] = str(v)
+        for k, v in env_info.items():
+            env_info[k] = str(v)
         return {'jina': version, 'envs': env_info}
 
     @app.on_event('shutdown')

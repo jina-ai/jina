@@ -363,6 +363,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         """
         infoProto = jina_pb2.JinaInfoProto()
         version, env_info = get_full_version()
-        infoProto.jina = version
-        infoProto.envs = env_info
+        for k, v in version.items():
+            infoProto.jina[k] = str(v)
+        for k, v in env_info.items():
+            infoProto.envs[k] = str(v)
         return infoProto
