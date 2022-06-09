@@ -10,7 +10,7 @@ Each Flow microservice provides an endpoint that exposes relevant information ab
 
 This information exposes information in a dict-like structure with the following keys:
 - jina: A dictionary containing information about the system and the versions of several packages including jina package itself
-- envs: A dictionary containing all the values if set of the environment variables used in Jina #TODO: Link to table with all of them
+- envs: A dictionary containing all the values if set of the {ref}`environment variables used in Jina <jina-env-vars>`
 
 
 ## Access Information of GRPC-based microservices
@@ -81,7 +81,6 @@ The error-free output below signifies a correctly running Flow:
     "JINA_MP_START_METHOD": "(unset)",
     "JINA_RANDOM_PORT_MAX": "(unset)",
     "JINA_RANDOM_PORT_MIN": "(unset)",
-    "JINA_VCS_VERSION": "(unset)"
   }
 }
 ```
@@ -95,5 +94,5 @@ curl http://localhost:12345/status
 ```
 
 ```text
-{"jina":{"jina":"######","docarray":"######","jina-proto":"######","jina-vcs-tag":"(unset)","protobuf":"######","proto-backend":"######","grpcio":"######","pyyaml":"######","python":"######","platform":"######","platform-release":"######","platform-version":"######","architecture":"######","processor":"######","uid":"######","session-id":"######","uptime":"######","ci-vendor":"(unset)"},"envs":{"JINA_AUTH_TOKEN":"(unset)","JINA_DEFAULT_HOST":"(unset)","JINA_DEFAULT_TIMEOUT_CTRL":"(unset)","JINA_DEFAULT_WORKSPACE_BASE":"######","JINA_DEPLOYMENT_NAME":"(unset)","JINA_DISABLE_UVLOOP":"(unset)","JINA_EARLY_STOP":"(unset)","JINA_FULL_CLI":"(unset)","JINA_GATEWAY_IMAGE":"(unset)","JINA_GRPC_RECV_BYTES":"(unset)","JINA_GRPC_SEND_BYTES":"(unset)","JINA_HUBBLE_REGISTRY":"(unset)","JINA_HUB_CACHE_DIR":"(unset)","JINA_HUB_NO_IMAGE_REBUILD":"(unset)","JINA_HUB_ROOT":"(unset)","JINA_LOG_CONFIG":"(unset)","JINA_LOG_LEVEL":"(unset)","JINA_LOG_NO_COLOR":"(unset)","JINA_MP_START_METHOD":"(unset)","JINA_RANDOM_PORT_MAX":"(unset)","JINA_RANDOM_PORT_MIN":"(unset)","JINA_VCS_VERSION":"(unset)","JINA_DISABLE_HEALTHCHECK_LOGS":"(unset)","JINA_LOCKS_ROOT":"(unset)"}}%
+{"jina":{"jina":"######","docarray":"######","jina-proto":"######","jina-vcs-tag":"(unset)","protobuf":"######","proto-backend":"######","grpcio":"######","pyyaml":"######","python":"######","platform":"######","platform-release":"######","platform-version":"######","architecture":"######","processor":"######","uid":"######","session-id":"######","uptime":"######","ci-vendor":"(unset)"},"envs":{"JINA_AUTH_TOKEN":"(unset)","JINA_DEFAULT_HOST":"(unset)","JINA_DEFAULT_TIMEOUT_CTRL":"(unset)","JINA_DEFAULT_WORKSPACE_BASE":"######","JINA_DEPLOYMENT_NAME":"(unset)","JINA_DISABLE_UVLOOP":"(unset)","JINA_EARLY_STOP":"(unset)","JINA_FULL_CLI":"(unset)","JINA_GATEWAY_IMAGE":"(unset)","JINA_GRPC_RECV_BYTES":"(unset)","JINA_GRPC_SEND_BYTES":"(unset)","JINA_HUBBLE_REGISTRY":"(unset)","JINA_HUB_CACHE_DIR":"(unset)","JINA_HUB_NO_IMAGE_REBUILD":"(unset)","JINA_HUB_ROOT":"(unset)","JINA_LOG_CONFIG":"(unset)","JINA_LOG_LEVEL":"(unset)","JINA_LOG_NO_COLOR":"(unset)","JINA_MP_START_METHOD":"(unset)","JINA_RANDOM_PORT_MAX":"(unset)","JINA_RANDOM_PORT_MIN":"(unset)","JINA_DISABLE_HEALTHCHECK_LOGS":"(unset)","JINA_LOCKS_ROOT":"(unset)"}}%
 ```
