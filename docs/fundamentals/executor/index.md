@@ -51,4 +51,5 @@ executor-run
 executor-serve
 yaml-spec
 executor-files
+dockerize-exec
 ```

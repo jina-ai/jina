@@ -7,7 +7,7 @@ from grpc_reflection.v1alpha import reflection
 
 from jina import __default_host__
 from jina.excepts import PortAlreadyUsed
-from jina.helper import is_port_free
+from jina.helper import get_full_version, is_port_free
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.gateway.request_handling import RequestHandler
@@ -73,10 +73,12 @@ class GRPCGatewayRuntime(GatewayRuntime):
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self.streamer, self.server)
         jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self, self.server)
+        jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self.server)
 
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaGatewayDryRunRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaInfoRPC'].full_name,
             reflection.SERVICE_NAME,
         )
         # Mark all services as healthy.
@@ -161,3 +163,19 @@ class GRPCGatewayRuntime(GatewayRuntime):
             status_message = StatusMessage()
             status_message.set_exception(ex)
             return status_message.proto
+
+    async def _status(self, empty, context) -> jina_pb2.JinaInfoProto:
+        """
+        Process the the call requested and return the JinaInfo of the Runtime
+
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
+        """
+        infoProto = jina_pb2.JinaInfoProto()
+        version, env_info = get_full_version()
+        for k, v in version.items():
+            infoProto.jina[k] = str(v)
+        for k, v in env_info.items():
+            infoProto.envs[k] = str(v)
+        return infoProto

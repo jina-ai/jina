@@ -13,6 +13,7 @@ from grpc_reflection.v1alpha import reflection
 
 from jina.enums import PollingType
 from jina.excepts import InternalNetworkError
+from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
@@ -49,6 +50,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             compression=args.compression,
             metrics_registry=self.metrics_registry,
         )
+        self._retries = self.args.retries
 
         if self.metrics_registry:
             with ImportExtensions(
@@ -153,10 +155,12 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server(
             self, self._grpc_server
         )
+        jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self._grpc_server)
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDiscoverEndpointsRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaInfoRPC'].full_name,
             reflection.SERVICE_NAME,
         )
         # Mark all services as healthy.
@@ -201,9 +205,15 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         return await self.process_data([request], context)
 
     def _handle_internalnetworkerror(self, err, context, response):
-        context.set_details(
-            f'|Head: Failed to connect to worker (Executor) pod at address {err.dest_addr}. It may be down.'
-        )
+        err_code = err.code()
+        if err_code == grpc.StatusCode.UNAVAILABLE:
+            context.set_details(
+                f'|Head: Failed to connect to worker (Executor) pod at address {err.dest_addr}. It may be down.'
+            )
+        elif err_code == grpc.StatusCode.DEADLINE_EXCEEDED:
+            context.set_details(
+                f'|Head: Connection to worker (Executor) pod at address {err.dest_addr} could be established, but timed out.'
+            )
         context.set_code(err.code())
         self.logger.error(f'Error while getting responses from Pods: {err.details()}')
         if err.request_id:
@@ -293,7 +303,10 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 response,
                 uses_before_metadata,
             ) = await self.connection_pool.send_requests_once(
-                requests, deployment='uses_before', timeout=self.timeout_send
+                requests,
+                deployment='uses_before',
+                timeout=self.timeout_send,
+                retries=self._retries,
             )
             requests = [response]
 
@@ -302,6 +315,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             deployment=self._deployment_name,
             polling_type=self._polling[endpoint],
             timeout=self.timeout_send,
+            retries=self._retries,
         )
 
         worker_results = await asyncio.gather(*worker_send_tasks)
@@ -320,7 +334,10 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 response_request,
                 uses_after_metadata,
             ) = await self.connection_pool.send_requests_once(
-                worker_results, deployment='uses_after', timeout=self.timeout_send
+                worker_results,
+                deployment='uses_after',
+                timeout=self.timeout_send,
+                retries=self._retries,
             )
         elif len(worker_results) > 1 and self._reduce:
             DataRequestHandler.reduce_requests(worker_results)
@@ -349,3 +366,19 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             for key, value in uses_after_metadata:
                 merged_metadata[key] = value
         return merged_metadata
+
+    async def _status(self, empty, context) -> jina_pb2.JinaInfoProto:
+        """
+        Process the the call requested and return the JinaInfo of the Runtime
+
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
+        """
+        infoProto = jina_pb2.JinaInfoProto()
+        version, env_info = get_full_version()
+        for k, v in version.items():
+            infoProto.jina[k] = str(v)
+        for k, v in env_info.items():
+            infoProto.envs[k] = str(v)
+        return infoProto

@@ -272,7 +272,11 @@ def _create_runtime(args):
 
     def start_runtime(runtime_args, handle_queue, cancel_event):
         def _send_requests_mock(
-            request: List[Request], connection, endpoint, timeout=1.0
+            request: List[Request],
+            connection,
+            endpoint,
+            timeout=1.0,
+            retries=-1,
         ) -> asyncio.Task:
             async def mock_task_wrapper(new_requests, *args, **kwargs):
                 handle_queue.put('mock_called')

@@ -39,13 +39,13 @@ Now that you’re set up, let’s dive into more of how Jina works and how to bu
 
 get-started/install/index
 get-started/create-app
+fundamentals/architecture-overview
 ```
 
 ```{toctree}
 :caption: User Guides
 :hidden:
 
-fundamentals/architecture-overview
 fundamentals/executor/index
 fundamentals/flow/index
 fundamentals/gateway/index
@@ -64,6 +64,7 @@ how-to/index
 api
 cli/index
 proto/docs
+envs/index
 ```
 
 ```{toctree}

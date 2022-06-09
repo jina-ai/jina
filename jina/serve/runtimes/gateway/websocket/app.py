@@ -1,10 +1,10 @@
 import argparse
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional, Union
 
-from docarray import DocumentArray
 from jina.clients.request import request_generator
 from jina.enums import DataInputType, WebsocketSubProtocols
 from jina.excepts import InternalNetworkError
+from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.types.request.data import DataRequest
@@ -145,6 +145,25 @@ def get_fastapi_app(
         """
         return {}
 
+    @app.get(
+        path='/status',
+        summary='Get the status of Jina service',
+    )
+    async def _status():
+        """
+        Get the status of this Jina service.
+
+        This is equivalent to running `jina -vf` from command line.
+
+        .. # noqa: DAR201
+        """
+        version, env_info = get_full_version()
+        for k, v in version.items():
+            version[k] = str(v)
+        for k, v in env_info.items():
+            env_info[k] = str(v)
+        return {'jina': version, 'envs': env_info}
+
     @app.on_event('shutdown')
     async def _shutdown():
         await connection_pool.close()
@@ -182,11 +201,20 @@ def get_fastapi_app(
             async for msg in streamer.stream(request_iterator=req_iter()):
                 await manager.send(websocket, msg)
         except InternalNetworkError as err:
+            import grpc
+
             manager.disconnect(websocket)
+            fallback_msg = (
+                f'Connection to deployment at {err.dest_addr} timed out. You can adjust `timeout_send` attribute.'
+                if err.code() == grpc.StatusCode.DEADLINE_EXCEEDED
+                else f'Network error while connecting to deployment at {err.dest_addr}. It may be down.'
+            )
             msg = (
                 err.details()
-                if _fits_ws_close_msg(err.details())  # some messages are too long
-                else f'Network error while connecting to deployment at {err.dest_addr}. It may be down.'
+                if _fits_ws_close_msg(
+                    err.details()
+                )  # some messages are too long for ws closing message
+                else fallback_msg
             )
             await websocket.close(code=status.WS_1011_INTERNAL_ERROR, reason=msg)
         except WebSocketDisconnect:
@@ -205,6 +233,7 @@ def get_fastapi_app(
             return request_dict
 
     from docarray import DocumentArray
+
     from jina.proto import jina_pb2
     from jina.serve.executors import __dry_run_endpoint__
     from jina.serve.runtimes.gateway.http.models import PROTO_TO_PYDANTIC_MODELS

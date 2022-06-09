@@ -1,5 +1,5 @@
 (monitoring)=
-# How to add monitoring to Jina with Kubernetes
+# Use monitoring with Jina in Kubernetes
 
 First, let's have some context on the monitoring stack that we will be using during this guide.
 To leverage the {ref}`metrics <monitoring-flow>` that Jina exposes, we recommend using the Prometheus/Grafana stack. In this setup, Jina will expose different {ref}`metrics endpoint <monitoring-flow>`, and Prometheus will then be in charge of scraping these endpoints, as well as
@@ -35,12 +35,32 @@ setting the `serviceMonitorSelectorNilUsesHelmValues` to false allows the Promet
 
 Let's now deploy the Flow that we want to monitor:
 
+
+
+````{tab} via YAML
+This example shows how to start a Flow with monitoring enabled via yaml:
+
+In a `flow.yaml` file
+```yaml
+jtype: Flow
+with:
+  monitoring: true
+executors:
+- uses: jinahub://SimpleIndexer
+```
+
+```bash
+jina export kubernetes flow.yml ./config ```
+````
+
+````{tab} via Python API
 ```python
 from jina import Flow
 
 f = Flow(monitoring=True).add(uses='jinahub+docker://SimpleIndexer')
 f.to_kubernetes_yaml('config')
 ```
+````
 
 This will create a `config` folder containing the Kubernetes YAML definition of the Flow.
 

@@ -24,7 +24,10 @@ class HTTPBaseClient(BaseClient):
     def _handle_response_status(self, r_status, r_str, url):
         if r_status == status.HTTP_404_NOT_FOUND:
             raise BadClient(f'no such endpoint {url}')
-        elif r_status == status.HTTP_503_SERVICE_UNAVAILABLE:
+        elif (
+            r_status == status.HTTP_503_SERVICE_UNAVAILABLE
+            or r_status == status.HTTP_504_GATEWAY_TIMEOUT
+        ):
             if (
                 'header' in r_str
                 and 'status' in r_str['header']

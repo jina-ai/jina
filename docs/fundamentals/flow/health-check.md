@@ -1,4 +1,4 @@
-# Health & readiness check
+# Readiness & health check
 Every Jina Flow consists of a {ref}`number of microservices <architecture-overview>`,
 each of which have to be healthy before the Flow is ready to receive requests.
 

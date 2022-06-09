@@ -9,7 +9,6 @@ from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
-from jina.logging.profile import used_memory_readable
 
 if TYPE_CHECKING:
     from prometheus_client import CollectorRegistry
@@ -43,7 +42,6 @@ def get_fastapi_app(
             JinaEndpointRequestModel,
             JinaRequestModel,
             JinaResponseModel,
-            JinaStatusModel,
         )
 
     app = FastAPI(
@@ -108,9 +106,13 @@ def get_fastapi_app(
             return {}
 
         from docarray import DocumentArray
+
         from jina.proto import jina_pb2
         from jina.serve.executors import __dry_run_endpoint__
-        from jina.serve.runtimes.gateway.http.models import PROTO_TO_PYDANTIC_MODELS
+        from jina.serve.runtimes.gateway.http.models import (
+            PROTO_TO_PYDANTIC_MODELS,
+            JinaInfoModel,
+        )
         from jina.types.request.status import StatusMessage
 
         @app.get(
@@ -147,7 +149,7 @@ def get_fastapi_app(
         @app.get(
             path='/status',
             summary='Get the status of Jina service',
-            response_model=JinaStatusModel,
+            response_model=JinaInfoModel,
             tags=['Debug'],
         )
         async def _status():
@@ -158,12 +160,12 @@ def get_fastapi_app(
 
             .. # noqa: DAR201
             """
-            _info = get_full_version()
-            return {
-                'jina': _info[0],
-                'envs': _info[1],
-                'used_memory': used_memory_readable(),
-            }
+            version, env_info = get_full_version()
+            for k, v in version.items():
+                version[k] = str(v)
+            for k, v in env_info.items():
+                env_info[k] = str(v)
+            return {'jina': version, 'envs': env_info}
 
         @app.post(
             path='/post',
@@ -204,7 +206,14 @@ def get_fastapi_app(
                     request_generator(**req_generator_input)
                 )
             except InternalNetworkError as err:
-                response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+                import grpc
+
+                if err.code() == grpc.StatusCode.UNAVAILABLE:
+                    response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+                elif err.code() == grpc.StatusCode.DEADLINE_EXCEEDED:
+                    response.status_code = status.HTTP_504_GATEWAY_TIMEOUT
+                else:
+                    response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
                 result = bd  # send back the request
                 result['header'] = _generate_exception_header(
                     err
@@ -302,14 +311,13 @@ def get_fastapi_app(
             from dataclasses import asdict
 
             import strawberry
+            from docarray import DocumentArray
             from docarray.document.strawberry_type import (
                 JSONScalar,
                 StrawberryDocument,
                 StrawberryDocumentInput,
             )
             from strawberry.fastapi import GraphQLRouter
-
-            from docarray import DocumentArray
 
             async def get_docs_from_endpoint(
                 data, target_executor, parameters, exec_endpoint

@@ -1,5 +1,5 @@
 (docker-compose)=
-# How to deploy with Docker Compose
+# Deploy with Docker Compose
 
 One of the simplest ways of either prototyping or serving in
 production is to run your `Flow` with `docker-compose`.
@@ -46,26 +46,10 @@ neighbor retrieval on image embeddings.
 
 ### Deploy your Flow
 
-First let's define the Flow.
+First let's define the Flow and generate the Docker Compose YAML configuration from it
 
-````{tab} Python
-```python
-from jina import Flow
-
-flow = (
-    Flow(port=8080, protocol='http')
-    .add(name='encoder', uses='jinahub+docker://CLIPEncoder', replicas=2)
-    .add(
-        name='indexer',
-        uses='jinahub+docker://AnnLiteIndexer',
-        uses_with={'dim': 512},
-        shards=2,
-    )
-)
-```
-````
 ````{tab} YAML
-
+In a `flow.yml` file :
 ```yaml
 jtype: Flow
 with:
@@ -81,13 +65,31 @@ executors:
     dim: 512
   shards: 2
 ```
+then in a shell do:
+```shell
+jina export docker-compose flow.yml docker-compose.yml 
+```
 ````
 
-Now, we can generate Docker Compose YAML configuration from the Flow:
 
+````{tab} Python
+In python run
 ```python
+from jina import Flow
+
+flow = (
+    Flow(port=8080, protocol='http')
+    .add(name='encoder', uses='jinahub+docker://CLIPEncoder', replicas=2)
+    .add(
+        name='indexer',
+        uses='jinahub+docker://AnnLiteIndexer',
+        uses_with={'dim': 512},
+        shards=2,
+    )
+)
 flow.to_docker_compose_yaml('docker-compose.yml')
 ```
+````
 
 ````{admonition} Hint
 :class: hint

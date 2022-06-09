@@ -36,6 +36,7 @@ class TopologyGraph:
             filter_condition: dict = None,
             reduce: bool = True,
             timeout_send: Optional[float] = None,
+            retries: Optional[int] = -1,
         ):
             self.name = name
             self.outgoing_nodes = []
@@ -48,6 +49,7 @@ class TopologyGraph:
             self._filter_condition = filter_condition
             self._reduce = reduce
             self._timeout_send = timeout_send
+            self._retries = retries
 
         @property
         def leaf(self):
@@ -65,7 +67,15 @@ class TopologyGraph:
             if err_code == grpc.StatusCode.UNAVAILABLE:
                 err._details = (
                     err.details()
-                    + f' |Gateway: Communication error with deployment {self.name} at address(es) {err.dest_addr}. Head or worker(s) may be down.'
+                    + f' |Gateway: Communication error with deployment {self.name} at address(es) {err.dest_addr}. '
+                    f'Head or worker(s) may be down.'
+                )
+                raise err
+            elif err_code == grpc.StatusCode.DEADLINE_EXCEEDED:
+                err._details = (
+                    err.details()
+                    + f'|Gateway: Connection with deployment {self.name} at address(es) {err.dest_addr} could be established, but timed out.'
+                    f' You can increase the allowed time by setting `timeout_send` in your Flow YAML `with` block or Flow `__init__()` method.'
                 )
                 raise err
             else:
@@ -123,6 +133,7 @@ class TopologyGraph:
                             head=True,
                             endpoint=endpoint,
                             timeout=self._timeout_send,
+                            retries=self._retries,
                         )
                     except InternalNetworkError as err:
                         self._handle_internalnetworkerror(err)
@@ -237,6 +248,7 @@ class TopologyGraph:
         graph_conditions: Dict = {},
         deployments_disable_reduce: List[str] = [],
         timeout_send: Optional[float] = 1.0,
+        retries: Optional[int] = -1,
         *args,
         **kwargs,
     ):
@@ -269,6 +281,7 @@ class TopologyGraph:
                 filter_condition=condition,
                 reduce=node_name not in deployments_disable_reduce,
                 timeout_send=timeout_send,
+                retries=retries,
             )
 
         for node_name, outgoing_node_names in graph_representation.items():

@@ -1,25 +1,87 @@
 (architecture-overview)=
-# Concepts Overview
+# Glossary
 
-The figure below shows details on how the Flow and Executor abstractions translate into concrete microservices, providing all the 
-serving and scaling features of Jina.
+This chapter introduces the terminologies you will encounter in the docs. But first, let's look at the code below:
+
+````{tab} Server
+```python
+from jina import DocumentArray, Executor, Flow, requests
+
+
+class FooExec(Executor):
+    @requests
+    async def add_text(self, docs: DocumentArray, **kwargs):
+        for d in docs:
+            d.text += 'hello, world!'
+
+
+class BarExec(Executor):
+    @requests
+    async def add_text(self, docs: DocumentArray, **kwargs):
+        for d in docs:
+            d.text += 'goodbye!'
+
+
+f = Flow(port=12345).add(uses=FooExec, replicas=3).add(uses=BarExec, replicas=2)
+
+with f:
+    f.block()
+```
+````
+
+````{tab} Client
+```python
+from jina import Client, DocumentArray
+
+c = Client(port=12345)
+r = c.post('/', DocumentArray.empty(2))
+print(r.texts)
+```
+````
+
+Running it gives you:
+
+```text
+['hello, world!goodbye!', 'hello, world!goodbye!']
+```
+
+
+What happens underneath is depicted in the following animation:
 
 
 ```{figure} arch-overview.svg
 :align: center
 ```
 
-You will not need to understand every detail of this architecture in order to build your first multi-modal/cross-modal app using Jina.
-But it is useful in order to understand how Jina works, regardless of whether your microservice app runs locally,
-is orchestrated only by the Flow object itself, or is deployed using a cloud-native infrastructure such as Kubernetes.
-In fact, you might notice how some naming and concepts are inspired by the Kubernetes architecture.
 
-The following concepts may appear in the docs, but you don't need to master them as they are mainly designed for advanced or internal use:
+The following concepts will be covered in the user guide:
 
-  - **Gateway**: The Gateway is a service started by the Flow which is responsible for exposing the `HTTP`, `Websocket` or `gRPC` endpoints to the client. It is the service that the clients of your app will actually talk to. Additionally, it keeps knowledge of the topology of the Flow to guarantee that the `Documents` are processed by the Executors in the proper order. It communicates with the Deployments via `gRPC`.
+```{glossary}
 
-  - **Deployment**: Deployment is an abstraction around Executor that lets the `Gateway` communicate with an Executor. It encapsulates and abstracts internal replication details.
+Document
+    Document is the fundamental data structure in Jina for representing multi-modal and cross-modal data. It is the essential element of IO in Jina. More information can be found in [DocArray's Docs](https://docarray.jina.ai/fundamentals/document/). 
 
-  - **Pod**: A Pod is a simple abstraction over a runtime that runs any Jina service, be it a process, a Docker container, or a Kubernetes Pod.
+DocumentArray
+    DocumentArray is a list-like container of multiple Documents. More information can be found in [DocArray's Docs](https://docarray.jina.ai/fundamentals/documentarray/). 
+    
+Executor 
+    Execurtor is a Python class that has a group of functions using {term}`DocumentArray` as IO. Loosely speaking, each Executor is a microservice. 
 
-  - **Head**: The Head is a service added to a sharded Deployment by Jina. It manages the communication to the different shards based on the configured polling strategy. It communicates with the Executors via `gRPC`.
+Flow
+    Flow ties multiple Executors together into a logic pipeline to achieve a task. If Executor is a microservice, then Flow is the end-to-end service. 
+
+Gateway
+    Gateway is the entrypoint of a {term}`Flow`. It exposes multiple protocols for external communications; it routes all internal traffics.
+    
+Client
+    Client is for connecting to a {term}`Gateway` and sending/receiving data from it.
+
+Deployment
+    Deployment is an abstraction around Executor that lets the {term}`Gateway` communicate with an Executor. It encapsulates and abstracts internal replication details.
+
+gRPC, Websocket, HTTP
+    They are network protocols for transmitting data. gRPC is always used between {term}`Gateway` and {term}`Deployment` communication.
+
+TLS
+    TLS is a security protocol designed to facilitate privacy and data security for communications over the Internet. The communication between {term}`Client` and {term}`Gateway` i protected by TLS.
+```
