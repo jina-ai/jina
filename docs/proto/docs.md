@@ -12,6 +12,9 @@
     - [DataRequestProto.DataContentProto](#jina-DataRequestProto-DataContentProto)
     - [EndpointsProto](#jina-EndpointsProto)
     - [HeaderProto](#jina-HeaderProto)
+    - [JinaInfoProto](#jina-JinaInfoProto)
+    - [JinaInfoProto.EnvsEntry](#jina-JinaInfoProto-EnvsEntry)
+    - [JinaInfoProto.JinaEntry](#jina-JinaInfoProto-JinaEntry)
     - [RelatedEntity](#jina-RelatedEntity)
     - [RouteProto](#jina-RouteProto)
     - [StatusProto](#jina-StatusProto)
@@ -22,6 +25,7 @@
     - [JinaDataRequestRPC](#jina-JinaDataRequestRPC)
     - [JinaDiscoverEndpointsRPC](#jina-JinaDiscoverEndpointsRPC)
     - [JinaGatewayDryRunRPC](#jina-JinaGatewayDryRunRPC)
+    - [JinaInfoRPC](#jina-JinaInfoRPC)
     - [JinaRPC](#jina-JinaRPC)
     - [JinaSingleDataRequestRPC](#jina-JinaSingleDataRequestRPC)
   
@@ -150,6 +154,54 @@ Represents a Header.
 
 
 
+<a name="jina-JinaInfoProto"></a>
+
+### JinaInfoProto
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| jina | [JinaInfoProto.JinaEntry](#jina-JinaInfoProto-JinaEntry) | repeated | information about the system running and package version information including jina |
+| envs | [JinaInfoProto.EnvsEntry](#jina-JinaInfoProto-EnvsEntry) | repeated | the environment variable setting |
+
+
+
+
+
+
+<a name="jina-JinaInfoProto-EnvsEntry"></a>
+
+### JinaInfoProto.EnvsEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="jina-JinaInfoProto-JinaEntry"></a>
+
+### JinaInfoProto.JinaEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="jina-RelatedEntity"></a>
 
 ### RelatedEntity
@@ -270,6 +322,16 @@ jina gRPC service to expose Endpoints from Executors.
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | dry_run | [.google.protobuf.Empty](#google-protobuf-Empty) | [StatusProto](#jina-StatusProto) |  |
+
+
+<a name="jina-JinaInfoRPC"></a>
+
+### JinaInfoRPC
+jina gRPC service to expose information about running jina version and environment.
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| _status | [.google.protobuf.Empty](#google-protobuf-Empty) | [JinaInfoProto](#jina-JinaInfoProto) |  |
 
 
 <a name="jina-JinaRPC"></a>

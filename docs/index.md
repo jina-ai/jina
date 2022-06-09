@@ -51,6 +51,7 @@ fundamentals/flow/index
 fundamentals/gateway/index
 fundamentals/flow/client
 fundamentals/executor/hub/index
+fundamentals/jcloud/index
 how-to/index
 ```
 
