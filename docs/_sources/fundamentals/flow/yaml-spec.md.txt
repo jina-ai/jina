@@ -68,12 +68,12 @@ This means that the following variable substitutions are supported:
 
 Use `${{ ENV.VAR }}` to refer to the environment variable `VAR`.
 
-## Context variables
+### Context variables
 
 Use `${{ CONTEXT.VAR }}` to refer to the context variable `VAR`.
 Context variables can be passed to `f.load_config(..., context=...)` in the form of a Python dictionary.
 
-## Relative paths
+### Relative paths
 
 Use `${{root.path.to.var}}` to refer to the variable `var` within the same YAML file, found at the provided path in the file's structure.
 Note that the only difference between environment variable syntax and relative path syntax is the omission of spaces in the latter.

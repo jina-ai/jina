@@ -477,6 +477,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.importer/">jina.importer module</a></li>
 </ul>
 </li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina_cli/">jina_cli package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina_cli.api/">jina_cli.api module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina_cli.autocomplete/">jina_cli.autocomplete module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina_cli.export/">jina_cli.export module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina_cli.known_plugins/">jina_cli.known_plugins module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina_cli.lookup/">jina_cli.lookup module</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/">Command-Line Interface</a></li>
@@ -627,16 +635,16 @@ A complete list of these arguments can be found <a class="reference external" hr
 <h3>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">#</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">${{</span> <span class="pre">ENV.VAR</span> <span class="pre">}}</span></code> to refer to the environment variable <code class="docutils literal notranslate"><span class="pre">VAR</span></code>.</p>
 </section>
-</section>
 <section id="context-variables">
-<h2>Context variables<a class="headerlink" href="#context-variables" title="Permalink to this headline">#</a></h2>
+<h3>Context variables<a class="headerlink" href="#context-variables" title="Permalink to this headline">#</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">${{</span> <span class="pre">CONTEXT.VAR</span> <span class="pre">}}</span></code> to refer to the context variable <code class="docutils literal notranslate"><span class="pre">VAR</span></code>.
 Context variables can be passed to <code class="docutils literal notranslate"><span class="pre">f.load_config(...,</span> <span class="pre">context=...)</span></code> in the form of a Python dictionary.</p>
 </section>
 <section id="relative-paths">
-<h2>Relative paths<a class="headerlink" href="#relative-paths" title="Permalink to this headline">#</a></h2>
+<h3>Relative paths<a class="headerlink" href="#relative-paths" title="Permalink to this headline">#</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">${{root.path.to.var}}</span></code> to refer to the variable <code class="docutils literal notranslate"><span class="pre">var</span></code> within the same YAML file, found at the provided path in the file’s structure.
 Note that the only difference between environment variable syntax and relative path syntax is the omission of spaces in the latter.</p>
+</section>
 </section>
 </section>
 
@@ -675,7 +683,7 @@ Note that the only difference between environment variable syntax and relative p
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 08, 2022</div>
+                            Last updated on Jun 09, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -721,10 +729,10 @@ Note that the only difference between environment variable syntax and relative p
 </li>
 <li><a class="reference internal" href="#variables">Variables</a><ul>
 <li><a class="reference internal" href="#environment-variables">Environment variables</a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#context-variables">Context variables</a></li>
 <li><a class="reference internal" href="#relative-paths">Relative paths</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.6.1 Documentation" />
   
-<meta property="og:description" content="This section documents the ability to add custom monitoring to the Executor with the Grafana/Prometheus. Custom metrics are useful when you want to monitor each subpart of your Executors. Jina allows you to leverage the full power of the Prometheus Client to define useful metrics for each of your..." />
+<meta property="og:description" content="By default, every method which is decorated by the@requests decorator will be monitored, it will create a Prometheus Summary which will keep track of the time of the execution of the method. This section documents the ability to add custom monitoring to the Executor with the Grafana/Prometheus. C..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -477,6 +477,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../api/jina.importer/">jina.importer module</a></li>
 </ul>
 </li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/jina_cli/">jina_cli package</a><input class="toctree-checkbox" id="toctree-checkbox-42" name="toctree-checkbox-42" role="switch" type="checkbox"/><label for="toctree-checkbox-42"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina_cli.api/">jina_cli.api module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina_cli.autocomplete/">jina_cli.autocomplete module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina_cli.export/">jina_cli.export module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina_cli.known_plugins/">jina_cli.known_plugins module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/jina_cli.lookup/">jina_cli.lookup module</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/">Command-Line Interface</a></li>
@@ -564,21 +572,21 @@
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="monitor">
 <span id="monitoring-executor"></span><h1>Monitor<a class="headerlink" href="#monitor" title="Permalink to this headline">#</a></h1>
+<p>By default, every method which is decorated by the <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> decorator will be monitored, it will create a
+<a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Prometheus Summary</a> which will keep track of the time of
+the execution of the method.</p>
 <p>This section documents the ability to add custom monitoring to the Executor with the Grafana/Prometheus.</p>
 <p>Custom metrics are useful when you want to monitor each subpart of your Executors. Jina allows you to leverage
 the full power of the <a class="reference external" href="https://github.com/prometheus/client_python">Prometheus Client</a> to define useful metrics
 for each of your Executors. We provide a convenient wrapper as well, i.e <code class="docutils literal notranslate"><span class="pre">&#64;monitor()</span></code>, which let you easily monitor
 sub-method of your Executor.</p>
+<p>When the monitoring is enabled each Executor will expose its
+own metrics. This means that in practice each of the Executors will expose a Prometheus endpoint using the <a class="reference external" href="https://github.com/prometheus/client_python">Prometheus Client</a>.</p>
 <div class="seealso admonition">
 <p class="admonition-title">Full detail on monitoring</p>
 <p>This section describes how to define and use <strong>custom</strong> metrics. To use the default metrics exposed by the Executor
 please refer to <a class="reference internal" href="../../flow/monitoring-flow/#monitoring-flow"><span class="std std-ref">this</span></a> section.</p>
 </div>
-<p>When the monitoring is enabled each Executor will expose its
-own metrics. This means that in practice each of the Executors will expose a Prometheus endpoint using the <a class="reference external" href="https://github.com/prometheus/client_python">Prometheus Client</a>.</p>
-<p>By default, every method which is decorated by the <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> decorator will be monitored, it will create a
-<a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Prometheus Summary</a> which will keep track of the time of
-the execution of the method.</p>
 <section id="define-custom-metrics">
 <h2>Define custom metrics<a class="headerlink" href="#define-custom-metrics" title="Permalink to this headline">#</a></h2>
 <p>Sometimes monitoring the <code class="docutils literal notranslate"><span class="pre">encoding</span></code> method is not enough, you need to break it up into multiple parts that you want to
@@ -586,12 +594,26 @@ monitor one by one.</p>
 <p>It could be useful if your encoding phase is composed of two tasks: image processing and
 image embedding. By using custom metrics on these two tasks you can identify potential bottlenecks.</p>
 <p>Overall the ability to add custom metrics allows you to have the full flexibility on the monitoring of your Executor.</p>
-<section id="defining-custom-metrics-with-monitor">
-<h3>Defining custom metrics with <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code><a class="headerlink" href="#defining-custom-metrics-with-monitor" title="Permalink to this headline">#</a></h3>
-<div class="hint admonition">
-<p class="admonition-title">Using &#64;monitor</p>
-<p>Adding the custom monitoring on a method is as straightforward as decorating the method with <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code></p>
+<section id="use-context-manager">
+<h3>Use context manager<a class="headerlink" href="#use-context-manager" title="Permalink to this headline">#</a></h3>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">self.monitor</span></code> to monitor the internal blocks of your function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="s1">&#39;processing_seconds&#39;</span><span class="p">,</span> <span class="s1">&#39;Time processing my document&#39;</span><span class="p">):</span>
+            <span class="n">docs</span> <span class="o">=</span> <span class="n">process</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="s1">&#39;update_seconds&#39;</span><span class="p">,</span> <span class="s1">&#39;Time updates my document&#39;</span><span class="p">):</span>
+            <span class="n">docs</span> <span class="o">=</span> <span class="n">update</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+</pre></div>
 </div>
+</section>
+<section id="use-monitor-decorator">
+<h3>Use <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> decorator<a class="headerlink" href="#use-monitor-decorator" title="Permalink to this headline">#</a></h3>
+<p>Adding the custom monitoring on a method is as straightforward as decorating the method with <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">monitor</span>
 
 
@@ -612,26 +634,43 @@ of the function. However, you can name it by yourself by doing :</p>
     <span class="o">...</span>
 </pre></div>
 </div>
-<p>You can as well monitor internal part of your executor with a Context Manager:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
-
-
-<span class="k">def</span> <span class="nf">process</span><span class="p">():</span>
-    <span class="o">...</span>
-
-
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">(</span><span class="s1">&#39;processing_seconds&#39;</span><span class="p">,</span> <span class="s1">&#39;Time processing my document&#39;</span><span class="p">):</span>
-            <span class="n">docs</span> <span class="o">=</span> <span class="n">process</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
-</pre></div>
-</div>
 <div class="caution admonition">
 <p class="admonition-title">respect Prometheus naming</p>
 <p>You should respect Prometheus naming <a class="reference external" href="https://prometheus.io/docs/practices/naming/#metric-names">conventions</a>.
 therefore because <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> creates a <a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a> under the hood
 your metrics name should finish with <code class="docutils literal notranslate"><span class="pre">seconds</span></code></p>
+</div>
+</section>
+<section id="use-prometheus-client">
+<h3>Use Prometheus client<a class="headerlink" href="#use-prometheus-client" title="Permalink to this headline">#</a></h3>
+<p>Under the hood, the monitoring feature of the Executor is handled by the
+Python <a class="reference external" href="https://github.com/prometheus/client_python">Prometheus-client</a>. The <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> decorator is a convenient tool
+to monitor sub-methods of an Executor, but you might need more flexibility and that is why you can access the Prometheus
+client directly from the Executor to define every kind of metric supported by Prometheus.</p>
+<p>Let’s see it in an example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+<span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">Counter</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_count_total&#39;</span><span class="p">,</span>
+            <span class="n">documentation</span><span class="o">=</span><span class="s1">&#39;my count&#39;</span><span class="p">,</span>
+            <span class="n">registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="o">.</span><span class="n">inc</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This will create a Prometheus <a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#counter">Counter</a>.</p>
+<div class="caution admonition">
+<p class="admonition-title">Directly using the Prometheus client</p>
+<p>You need to pass the metrics registry from the Executor when creating custom metrics directly with the Prometheus client.</p>
 </div>
 </section>
 </section>
@@ -702,38 +741,6 @@ your metrics name should finish with <code class="docutils literal notranslate">
 </div>
 </div>
 </div>
-<section id="defining-custom-metrics-directly-with-the-prometheus-client">
-<h3>Defining custom metrics directly with the Prometheus client<a class="headerlink" href="#defining-custom-metrics-directly-with-the-prometheus-client" title="Permalink to this headline">#</a></h3>
-<p>Under the hood, the monitoring feature of the Executor is handled by the
-Python <a class="reference external" href="https://github.com/prometheus/client_python">Prometheus-client</a>. The <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> decorator is a convenient tool
-to monitor sub-methods of an Executor, but you might need more flexibility and that is why you can access the Prometheus
-client directly from the Executor to define every kind of metric supported by Prometheus.</p>
-<p>Let’s see it in an example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">DocumentArray</span>
-
-<span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">Counter</span>
-
-
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_count_total&#39;</span><span class="p">,</span>
-            <span class="n">documentation</span><span class="o">=</span><span class="s1">&#39;my count&#39;</span><span class="p">,</span>
-            <span class="n">registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runtime_args</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
-        <span class="p">)</span>
-
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="o">.</span><span class="n">inc</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">docs</span><span class="p">))</span>
-</pre></div>
-</div>
-<p>This will create a Prometheus <a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#counter">Counter</a>.</p>
-<div class="caution admonition">
-<p class="admonition-title">Directly using the Prometheus client</p>
-<p>You need to pass the metrics registry from the Executor when creating custom metrics directly with the Prometheus client.</p>
-</div>
-</section>
 </section>
 <section id="see-further">
 <h2>See further<a class="headerlink" href="#see-further" title="Permalink to this headline">#</a></h2>
@@ -779,7 +786,7 @@ client directly from the Executor to define every kind of metric supported by Pr
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 08, 2022</div>
+                            Last updated on Jun 09, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -813,13 +820,12 @@ client directly from the Executor to define every kind of metric supported by Pr
                         <ul>
 <li><a class="reference internal" href="#">Monitor</a><ul>
 <li><a class="reference internal" href="#define-custom-metrics">Define custom metrics</a><ul>
-<li><a class="reference internal" href="#defining-custom-metrics-with-monitor">Defining custom metrics with <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code></a></li>
+<li><a class="reference internal" href="#use-context-manager">Use context manager</a></li>
+<li><a class="reference internal" href="#use-monitor-decorator">Use <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> decorator</a></li>
+<li><a class="reference internal" href="#use-prometheus-client">Use Prometheus client</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#example">Example</a><ul>
-<li><a class="reference internal" href="#defining-custom-metrics-directly-with-the-prometheus-client">Defining custom metrics directly with the Prometheus client</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#example">Example</a></li>
 <li><a class="reference internal" href="#see-further">See further</a></li>
 </ul>
 </li>
