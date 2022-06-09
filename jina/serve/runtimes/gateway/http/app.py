@@ -108,7 +108,10 @@ def get_fastapi_app(
         from docarray import DocumentArray
         from jina.proto import jina_pb2
         from jina.serve.executors import __dry_run_endpoint__
-        from jina.serve.runtimes.gateway.http.models import PROTO_TO_PYDANTIC_MODELS
+        from jina.serve.runtimes.gateway.http.models import (
+            PROTO_TO_PYDANTIC_MODELS,
+            JinaInfoModel,
+        )
         from jina.types.request.status import StatusMessage
 
         @app.get(
@@ -145,7 +148,7 @@ def get_fastapi_app(
         @app.get(
             path='/status',
             summary='Get the status of Jina service',
-            response_model=PROTO_TO_PYDANTIC_MODELS.JinaInfoProto,
+            response_model=JinaInfoModel,
             tags=['Debug'],
         )
         async def _status():
