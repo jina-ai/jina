@@ -688,9 +688,13 @@ class GrpcConnectionPool:
         if (
             e.code() != grpc.StatusCode.UNAVAILABLE
             and e.code() != grpc.StatusCode.CANCELLED
+            and e.code() != grpc.StatusCode.DEADLINE_EXCEEDED
         ):
             raise
-        elif e.code() == grpc.StatusCode.UNAVAILABLE and retry_i >= num_retries - 1:
+        elif (
+            e.code() == grpc.StatusCode.UNAVAILABLE
+            or e.code() == grpc.StatusCode.DEADLINE_EXCEEDED
+        ) and retry_i >= num_retries - 1:
             self._logger.debug(f'GRPC call failed, retries exhausted')
             from jina.excepts import InternalNetworkError
 

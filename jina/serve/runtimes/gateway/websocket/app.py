@@ -2,6 +2,7 @@ import argparse
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional, Union
 
 from docarray import DocumentArray
+
 from jina.clients.request import request_generator
 from jina.enums import DataInputType, WebsocketSubProtocols
 from jina.excepts import InternalNetworkError
@@ -182,11 +183,20 @@ def get_fastapi_app(
             async for msg in streamer.stream(request_iterator=req_iter()):
                 await manager.send(websocket, msg)
         except InternalNetworkError as err:
+            import grpc
+
             manager.disconnect(websocket)
+            fallback_msg = (
+                f'Connection to deployment at {err.dest_addr} timed out. You can adjust `timeout_send` attribute.'
+                if err.code() == grpc.StatusCode.DEADLINE_EXCEEDED
+                else f'Network error while connecting to deployment at {err.dest_addr}. It may be down.'
+            )
             msg = (
                 err.details()
-                if _fits_ws_close_msg(err.details())  # some messages are too long
-                else f'Network error while connecting to deployment at {err.dest_addr}. It may be down.'
+                if _fits_ws_close_msg(
+                    err.details()
+                )  # some messages are too long for ws closing message
+                else fallback_msg
             )
             await websocket.close(code=status.WS_1011_INTERNAL_ERROR, reason=msg)
         except WebSocketDisconnect:
@@ -205,6 +215,7 @@ def get_fastapi_app(
             return request_dict
 
     from docarray import DocumentArray
+
     from jina.proto import jina_pb2
     from jina.serve.executors import __dry_run_endpoint__
     from jina.serve.runtimes.gateway.http.models import PROTO_TO_PYDANTIC_MODELS
