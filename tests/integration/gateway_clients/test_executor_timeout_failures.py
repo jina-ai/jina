@@ -12,10 +12,11 @@ class SlowExecutor(Executor):
         time.sleep(0.2)
 
 
-def _test_error(flow, error_port=None):
-    with flow:
+def _test_error(flow_kwargs, add_kwargs, error_port=None):
+    f = Flow(**flow_kwargs).add(**add_kwargs)
+    with f:
         with pytest.raises(ConnectionError) as err_info:
-            flow.index(inputs=[])
+            f.index(inputs=[])
     if error_port:
         assert str(error_port) in err_info.value.args[0]
 
@@ -23,10 +24,13 @@ def _test_error(flow, error_port=None):
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_headless_exec_timeout(port_generator, protocol):
     exec_port = port_generator()
-    f = Flow(timeout_send=1, protocol=protocol).add(uses=SlowExecutor, port=exec_port)
+    flow_kwargs = {'timeout_send': 1, 'protocol': protocol}
+    add_kwargs = {'uses': SlowExecutor, 'port': exec_port}
 
     # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
-    p = multiprocessing.Process(target=_test_error, args=(f, exec_port))
+    p = multiprocessing.Process(
+        target=_test_error, args=(flow_kwargs, add_kwargs, exec_port)
+    )
     p.start()
     p.join()
     assert (
@@ -36,10 +40,11 @@ def test_headless_exec_timeout(port_generator, protocol):
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_headfull_exec_timeout(port_generator, protocol):
-    f = Flow(timeout_send=1, protocol=protocol).add(uses=SlowExecutor, shards=2)
+    flow_kwargs = {'timeout_send': 1, 'protocol': protocol}
+    add_kwargs = {'uses': SlowExecutor, 'shards': 2}
 
     # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
-    p = multiprocessing.Process(target=_test_error, args=(f,))
+    p = multiprocessing.Process(target=_test_error, args=(flow_kwargs, add_kwargs))
     p.start()
     p.join()
     assert (
