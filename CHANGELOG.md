@@ -194,6 +194,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -13957,4 +13958,36 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```4c16fc7a```](https://github.com/jina-ai/jina/commit/4c16fc7a768f970f9e897d0cf3c5156db89a8c8f)] __-__ fix readme (*Han Xiao*)
  - [[```330ddfcd```](https://github.com/jina-ai/jina/commit/330ddfcde0bad2bac71ea957785e34ec054cb4d2)] __-__ fix doc build (*Han Xiao*)
  - [[```de25c2b8```](https://github.com/jina-ai/jina/commit/de25c2b88117bb51ab5d48739b8b1cc594aea025)] __-__ __version__: the next version will be 3.5.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-6-1></a>
+## Release Note (`3.6.1`)
+
+> Release time: 2022-06-09 13:25:12
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Johannes Messner,  Zhaofeng Miao,  Ziniu Yu,  Han Xiao,  Jina Dev Bot,  samsja,  🙇
+
+
+### 🆕 New Features
+
+ - [[```cd88dace```](https://github.com/jina-ai/jina/commit/cd88dace09eabc9970b7c4bc73500a30f75cf07f)] __-__ add jina info service to all Runtimes (#4902) (*Joan Fontanals*)
+ - [[```a697bdd9```](https://github.com/jina-ai/jina/commit/a697bdd9d0b521f47cead1b1637767deb404ca6b)] __-__ error handling for executor timeouts (#4899) (*Johannes Messner*)
+ - [[```b174b5fb```](https://github.com/jina-ai/jina/commit/b174b5fb433aac81c71aef3069266710de80cf51)] __-__ add argument to control number of grpc retries (#4883) (*Johannes Messner*)
+ - [[```6bf97eb4```](https://github.com/jina-ai/jina/commit/6bf97eb480694c8af78828d67594e24a4e007572)] __-__ avoid warning jcloud arg (#4896) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```e77b8020```](https://github.com/jina-ai/jina/commit/e77b80209dec60bc11787efeb14baa96c840e701)] __-__ __hub__: replace the fomula (#4905) (*Zhaofeng Miao*)
+ - [[```35a0d78a```](https://github.com/jina-ai/jina/commit/35a0d78ae7dd9ae6e288b787408546a9bd40cc59)] __-__ correct header indention (#4904) (*Ziniu Yu*)
+ - [[```d34f9161```](https://github.com/jina-ai/jina/commit/d34f9161337fef4f8b8bfc0b620ef0a863094ae5)] __-__ __monitor__: restructure monitor (#4903) (*Han Xiao*)
+ - [[```17270e27```](https://github.com/jina-ai/jina/commit/17270e27289dd8c59969de1fe00301b6d098b6d8)] __-__ docs improvements (#4900) (*samsja*)
+
+### 🍹 Other Improvements
+
+ - [[```af6e8224```](https://github.com/jina-ai/jina/commit/af6e8224913899a7ea9d3ca7121142620eef33c7)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```efac46a2```](https://github.com/jina-ai/jina/commit/efac46a2ba5641c782eb5aeb62842ab592a18d94)] __-__ fix readme (*Han Xiao*)
+ - [[```ba243383```](https://github.com/jina-ai/jina/commit/ba2433836a2dcf9c8df78b0ec6ee9038d8aae7bc)] __-__ remove pages from .github folder (#4898) (*Joan Fontanals*)
+ - [[```c7a06cbd```](https://github.com/jina-ai/jina/commit/c7a06cbdf4453a2af018fb6cc03cea6277e21aef)] __-__ __version__: the next version will be 3.6.1 (*Jina Dev Bot*)
 
