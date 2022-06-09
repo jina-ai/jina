@@ -1,20 +1,20 @@
 (executor)=
 
 
-# Basic
+# Basics
 
 
 ```{tip}
 Executor uses `docarray.DocumentArray` as input and output data structure. Please first [read DocArray's docs](https://docarray.jina.ai) to get an impression how does it work.   
 ```
 
-{class}`~jina.Executor` is a self-contained component and performs a group of tasks on a `DocumentArray`. 
+{class}~jina.Executor` is a self-contained component and performs a group of tasks on a `DocumentArray`. 
 It encapsulates functions that process `DocumentArray`s. Inside the Executor, these functions are decorated with `@requests`. To create an Executor, you only need to follow three principles:
 
-1. An `Executor` should subclass directly from the `jina.Executor` class.
-2. An `Executor` class is a bag of functions with shared state or configuration (via `self`); it can contain an arbitrary number of
+1. An Executor should subclass directly from the `jina.Executor` class.
+2. An Executor class is a bag of functions with shared state or configuration (via `self`); it can contain an arbitrary number of
   functions with arbitrary names.
-3. Functions decorated by `@requests` will be invoked according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions.
+3. Functions decorated by {function}`@~jina.requests` will be invoked according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions.
 
 ## Constructor
 
@@ -26,7 +26,7 @@ You can name your executor class freely.
 
 ### `__init__`
 
-No need to implement `__init__` if your `Executor` does not contain initial states.
+No need to implement `__init__` if your Executor does not contain initial states.
 
 If your executor has `__init__`, it needs to carry `**kwargs` in the signature and call `super().__init__(**kwargs)`
 in the body:
@@ -56,11 +56,11 @@ or modify their values before passing them to `super().__init__()`.
 You might need to execute some logic when your Executor's destructor is called.
 
 For example, you want to persist data to the disk (e.g. in-memory indexed data, fine-tuned model,...). 
-To do so, you can overwrite the `close` method and add your logic.
+To do so, you can overwrite the {function}`@~jina.BaseExecutor.close()` method and add your logic.
 
-Jina will make sure that the `close` method is executed when the `Executor` is terminated inside a Flow or when deployed in any cloud-native environment.
+Jina will make sure that the {function}`@~jina.BaseExecutor.close()` method is executed when the Executor is terminated inside a Flow or when deployed in any cloud-native environment.
 
-You can think of this as `Jina` using the `Executor` as a context manager, making sure that the `close` method is always executed.
+You can think of this as Jina using the Executor as a context manager, making sure that the {function}`@~jina.BaseExecutor.close()` method is always executed.
 
 ```python
 from jina import Executor
@@ -77,7 +77,7 @@ class MyExec(Executor):
 
 ## Attributes
 
-When implementing an `Executor`, if your Executor overrides `__init__`, it needs to carry `**kwargs` in the signature and call `super().__init__(**kwargs)`
+When implementing an Executor, if your Executor overrides `__init__`, it needs to carry `**kwargs` in the signature and call `super().__init__(**kwargs)`
                                  
 ```python
 from jina import Executor
@@ -98,7 +98,7 @@ These `special` arguments are `workspace`, `requests`, `metas`, `runtime_args`.
 (executor-workspace)=
 ### `workspace`
 
-Each `Executor` has a special *workspace* that is reserved for that specific Executor instance.
+Each Executor has a special *workspace* that is reserved for that specific Executor instance.
 The `.workspace` property contains the path to this workspace.
 
 This `workspace` is based on the workspace passed when adding the Executor: `flow.add(..., workspace='path/to/workspace/')`.
@@ -128,18 +128,18 @@ Instead, you can add `export JINA_DEFAULT_WORKSPACE_BASE=$YOUR_WOKSPACE` after t
 (executor-requests)=
 ### `requests`
 
-By default, an `Executor` object contains `.requests` as an attribute when loaded from the `Flow`. This attribute is a `Dict` describing the mapping between Executor methods and network endpoints: It holds endpoint strings as keys, and pointers to functions as values. 
+By default, an Executor object contains `.requests` as an attribute when loaded from the `Flow`. This attribute is a `Dict` describing the mapping between Executor methods and network endpoints: It holds endpoint strings as keys, and pointers to functions as values. 
 
 These can be provided to the Executor via the {ref}`Python or YAML API <executor-api>`.
 
 (executor-metas)=
 ### `metas`
 
-An `Executor` object contains `.metas` as an attribute when loaded from the `Flow`. It is of [`SimpleNamespace`](https://docs.python.org/3/library/types.html#types.SimpleNamespace) type and contains some key-value information. 
+An Executor object contains `.metas` as an attribute when loaded from the `Flow`. It is of [`SimpleNamespace`](https://docs.python.org/3/library/types.html#types.SimpleNamespace) type and contains some key-value information. 
 
 The list of the `metas` are:
 
-- `name`: Name given to the `Executor`
+- `name`: Name given to the Executor
 - `description`: Optional description of the Executor
 - `py_modules`: List of Python modules needed to import the Executor
 
@@ -147,7 +147,7 @@ These can be provided to the Executor via the {ref}`Python or YAML API <executor
 
 ### `runtime_args`
 
-By default, an `Executor` object contains `.runtime_args` as an attribute when loaded from the `Flow`. It is of [`SimpleNamespace`](https://docs.python.org/3/library/types.html#types.SimpleNamespace) type and contains information in key-value format. 
+By default, an Executor object contains `.runtime_args` as an attribute when loaded from the Flow. It is of [`SimpleNamespace`](https://docs.python.org/3/library/types.html#types.SimpleNamespace) type and contains information in key-value format. 
 As the name suggests, `runtime_args` are dynamically determined during runtime, meaning that you don't know the value before running the `Executor`. These values are often related to the system/network environment around the `Executor`, and less about the `Executor` itself, like `shard_id` and `replicas`. They are usually set with the {meth}`~jina.orchestrate.flow.base.Flow.add` method.
 
 The list of the `runtime_args` is:
