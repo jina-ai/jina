@@ -618,20 +618,523 @@
 </section>
 <section id="with">
 <h3><code class="docutils literal notranslate"><span class="pre">with</span></code><a class="headerlink" href="#with" title="Permalink to this headline">#</a></h3>
-<p>Keyword arguments passed to the Flow <code class="docutils literal notranslate"><span class="pre">__init__()</span></code> method. A complete list of these arguments can be found <a class="reference external" href="https://docs.jina.ai/api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow">here</a>,
-or by running <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">flow</span> <span class="pre">--help</span></code>.</p>
+<p>Keyword arguments passed to Flow <code class="docutils literal notranslate"><span class="pre">__init__()</span></code> method. You can set Flow-specific arguments and Gateway-specific arguments here:</p>
+<section id="flow-arguments">
+<h4>Flow arguments<a class="headerlink" href="#flow-arguments" title="Permalink to this headline">#</a></h4>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>The name of this object.<br><br>    This will be used in the following places:<br>    - how you refer to this object in Python/YAML/CLI<br>    - visualization<br>    - log message header<br>    - …<br><br>    When not given, then the default naming strategy will apply.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code></p></td>
+<td><p>The working directory for any IO operations in this object. If not set, then derive from its parent <code class="docutils literal notranslate"><span class="pre">workspace</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">log_config</span></code></p></td>
+<td><p>The YAML config of the logger used in this object.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">default</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">quiet</span></code></p></td>
+<td><p>If set, then no log will be emitted from this object.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">quiet_error</span></code></p></td>
+<td><p>If set, then exception stack information will not be added to the log</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uses</span></code></p></td>
+<td><p>The YAML file represents a flow</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">env</span></code></p></td>
+<td><p>The map of environment variables that are available inside runtime</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">inspect</span></code></p></td>
+<td><p>The strategy on those inspect deployments in the flow.<br><br>    If <code class="docutils literal notranslate"><span class="pre">REMOVE</span></code> is given then all inspect deployments are removed when building the flow.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">COLLECT</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="gateway-arguments">
+<h4>Gateway arguments<a class="headerlink" href="#gateway-arguments" title="Permalink to this headline">#</a></h4>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>The name of this object.<br><br>    This will be used in the following places:<br>    - how you refer to this object in Python/YAML/CLI<br>    - visualization<br>    - log message header<br>    - …<br><br>    When not given, then the default naming strategy will apply.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gateway</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code></p></td>
+<td><p>The working directory for any IO operations in this object. If not set, then derive from its parent <code class="docutils literal notranslate"><span class="pre">workspace</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">log_config</span></code></p></td>
+<td><p>The YAML config of the logger used in this object.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">default</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">quiet</span></code></p></td>
+<td><p>If set, then no log will be emitted from this object.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">quiet_error</span></code></p></td>
+<td><p>If set, then exception stack information will not be added to the log</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">timeout_ctrl</span></code></p></td>
+<td><p>The timeout in milliseconds of the control request, -1 for waiting forever</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">60</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">polling</span></code></p></td>
+<td><p>The polling strategy of the Deployment and its endpoints (when <code class="docutils literal notranslate"><span class="pre">shards&gt;1</span></code>).<br>    Can be defined for all endpoints of a Deployment or by endpoint.<br>    Define per Deployment:<br>    - ANY: only one (whoever is idle) Pod polls the message<br>    - ALL: all Pods poll the message (like a broadcast)<br>    Define per Endpoint:<br>    JSON dict, {endpoint: PollingType}<br>    {‘/custom’: ‘ALL’, ‘/search’: ‘ANY’, ‘*’: ‘ANY’}</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ANY</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uses</span></code></p></td>
+<td><p>The config of the executor, it could be one of the followings:<br>        * an Executor YAML file (.yml, .yaml, .jaml)<br>        * a Jina Hub Executor (must start with <code class="docutils literal notranslate"><span class="pre">jinahub://</span></code> or <code class="docutils literal notranslate"><span class="pre">jinahub+docker://</span></code>)<br>        * a docker image (must start with <code class="docutils literal notranslate"><span class="pre">docker://</span></code>)<br>        * the string literal of a YAML config (must start with <code class="docutils literal notranslate"><span class="pre">!</span></code> or <code class="docutils literal notranslate"><span class="pre">jtype:</span> </code>)<br>        * the string literal of a JSON config<br><br>        When use it under Python, one can use the following values additionally:<br>        - a Python dict that represents the config<br>        - a text file stream has <code class="docutils literal notranslate"><span class="pre">.read()</span></code> interface</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BaseExecutor</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uses_with</span></code></p></td>
+<td><p>Dictionary of keyword arguments that will override the <code class="docutils literal notranslate"><span class="pre">with</span></code> configuration in <code class="docutils literal notranslate"><span class="pre">uses</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uses_metas</span></code></p></td>
+<td><p>Dictionary of keyword arguments that will override the <code class="docutils literal notranslate"><span class="pre">metas</span></code> configuration in <code class="docutils literal notranslate"><span class="pre">uses</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uses_requests</span></code></p></td>
+<td><p>Dictionary of keyword arguments that will override the <code class="docutils literal notranslate"><span class="pre">requests</span></code> configuration in <code class="docutils literal notranslate"><span class="pre">uses</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code></p></td>
+<td><p>The customized python modules need to be imported before loading the executor<br><br>Note that the recommended way is to only import a single module - a simple python file, if your<br>executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,<br>which should be structured as a python package. For more details, please see the<br><code class="docutils literal notranslate"><span class="pre">Executor</span> <span class="pre">cookbook</span> <span class="pre">&lt;https://docs.jina.ai/fundamentals/executor/repository-structure/&gt;</span></code>__</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">array</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">port</span></code></p></td>
+<td><p>The port for input data to bind to, default is a random port between [49152, 65535]</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">host_in</span></code></p></td>
+<td><p>The host address for binding to, by default it is 0.0.0.0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">native</span></code></p></td>
+<td><p>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">output_array_type</span></code></p></td>
+<td><p>The type of array <code class="docutils literal notranslate"><span class="pre">tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">embedding</span></code> will be serialized to.<br><br>Supports the same types as <code class="docutils literal notranslate"><span class="pre">docarray.to_protobuf(..,</span> <span class="pre">ndarray_type=...)</span></code>, which can be found <br><code class="docutils literal notranslate"><span class="pre">here</span> <span class="pre">&lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;</span></code>.<br>Defaults to retaining whatever type is returned by the Executor.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">prefetch</span></code></p></td>
+<td><p>Number of requests fetched from the client before feeding into the first Executor. <br>    <br>    Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">title</span></code></p></td>
+<td><p>The title of this HTTP server. It will be used in automatics docs such as Swagger UI.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p>The description of this HTTP server. It will be used in automatics docs such as Swagger UI.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cors</span></code></p></td>
+<td><p>If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">no_debug_endpoints</span></code></p></td>
+<td><p>If set, <code class="docutils literal notranslate"><span class="pre">/status</span></code> <code class="docutils literal notranslate"><span class="pre">/post</span></code> endpoints are removed from HTTP interface.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">no_crud_endpoints</span></code></p></td>
+<td><p>If set, <code class="docutils literal notranslate"><span class="pre">/index</span></code>, <code class="docutils literal notranslate"><span class="pre">/search</span></code>, <code class="docutils literal notranslate"><span class="pre">/update</span></code>, <code class="docutils literal notranslate"><span class="pre">/delete</span></code> endpoints are removed from HTTP interface.<br><br>        Any executor that has <code class="docutils literal notranslate"><span class="pre">&#64;requests(on=...)</span></code> bind with those values will receive data requests.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">expose_endpoints</span></code></p></td>
+<td><p>A JSON string that represents a map from executor endpoints (<code class="docutils literal notranslate"><span class="pre">&#64;requests(on=...)</span></code>) to HTTP endpoints.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uvicorn_kwargs</span></code></p></td>
+<td><p>Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server<br><br>More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">grpc_server_kwargs</span></code></p></td>
+<td><p>Dictionary of kwargs arguments that will be passed to the grpc server when starting the server # todo update</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ssl_certfile</span></code></p></td>
+<td><p>the path to the certificate file</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ssl_keyfile</span></code></p></td>
+<td><p>the path to the key file</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">expose_graphql_endpoint</span></code></p></td>
+<td><p>If set, /graphql endpoint is added to HTTP interface.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">protocol</span></code></p></td>
+<td><p>Communication protocol between server and client.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GRPC</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">host</span></code></p></td>
+<td><p>The host address of the runtime, by default it is 0.0.0.0.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">proxy</span></code></p></td>
+<td><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">graph_description</span></code></p></td>
+<td><p>Routing graph for the gateway</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{}</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">graph_conditions</span></code></p></td>
+<td><p>Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">deployments_addresses</span></code></p></td>
+<td><p>dictionary JSON with the input addresses of each Deployment</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{}</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">deployments_disable_reduce</span></code></p></td>
+<td><p>list JSON disabling the built-in merging mechanism for each Deployment listed</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[]</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">compression</span></code></p></td>
+<td><p>The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timeout_send</span></code></p></td>
+<td><p>The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">runtime_cls</span></code></p></td>
+<td><p>The runtime class to run inside the Pod</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GRPCGatewayRuntime</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timeout_ready</span></code></p></td>
+<td><p>The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">600000</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">env</span></code></p></td>
+<td><p>The map of environment variables that are available inside runtime</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">shards</span></code></p></td>
+<td><p>The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">replicas</span></code></p></td>
+<td><p>The number of replicas in the deployment</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">monitoring</span></code></p></td>
+<td><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code></p></td>
+<td><p>The port on which the prometheus server is exposed, default port is 9090</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">9090</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">retries</span></code></p></td>
+<td><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-1</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 </section>
 <section id="executors">
 <h3><code class="docutils literal notranslate"><span class="pre">executors</span></code><a class="headerlink" href="#executors" title="Permalink to this headline">#</a></h3>
 <p>Collection of Executors used in the Flow.
-Each item in the collection corresponds to on <code class="docutils literal notranslate"><span class="pre">f.add()</span></code> call and specifies one Executor.</p>
-<p>All keyword arguments passed to the Flow <code class="docutils literal notranslate"><span class="pre">add()</span></code> method can be added.
-A complete list of these arguments can be found <a class="reference external" href="https://docs.jina.ai/api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.add">here</a>.</p>
-<section id="uses">
-<h4><code class="docutils literal notranslate"><span class="pre">uses</span></code><a class="headerlink" href="#uses" title="Permalink to this headline">#</a></h4>
-<p><code class="docutils literal notranslate"><span class="pre">uses</span></code> can take a direct reference to a Python class, or a path to an Executor YAML specification, equivalently the <code class="docutils literal notranslate"><span class="pre">f.add(uses=...)</span></code> pattern.</p>
-<p>Alternatively, an Executor YAML configuration can be proved directly inline in the Flow YAML configuration, like shown in the example above.</p>
-</section>
+Each item in the collection corresponds to on <a class="reference internal" href="../../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> call and specifies one Executor.</p>
+<p>All keyword arguments passed to the Flow <code class="docutils literal notranslate"><span class="pre">.add()</span></code> method can be used here.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>The name of this object.<br><br>    This will be used in the following places:<br>    - how you refer to this object in Python/YAML/CLI<br>    - visualization<br>    - log message header<br>    - …<br><br>    When not given, then the default naming strategy will apply.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code></p></td>
+<td><p>The working directory for any IO operations in this object. If not set, then derive from its parent <code class="docutils literal notranslate"><span class="pre">workspace</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">log_config</span></code></p></td>
+<td><p>The YAML config of the logger used in this object.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">default</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">quiet</span></code></p></td>
+<td><p>If set, then no log will be emitted from this object.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">quiet_error</span></code></p></td>
+<td><p>If set, then exception stack information will not be added to the log</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">timeout_ctrl</span></code></p></td>
+<td><p>The timeout in milliseconds of the control request, -1 for waiting forever</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">60</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">polling</span></code></p></td>
+<td><p>The polling strategy of the Deployment and its endpoints (when <code class="docutils literal notranslate"><span class="pre">shards&gt;1</span></code>).<br>    Can be defined for all endpoints of a Deployment or by endpoint.<br>    Define per Deployment:<br>    - ANY: only one (whoever is idle) Pod polls the message<br>    - ALL: all Pods poll the message (like a broadcast)<br>    Define per Endpoint:<br>    JSON dict, {endpoint: PollingType}<br>    {‘/custom’: ‘ALL’, ‘/search’: ‘ANY’, ‘*’: ‘ANY’}</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ANY</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uses</span></code></p></td>
+<td><p>The config of the executor, it could be one of the followings:<br>        * an Executor YAML file (.yml, .yaml, .jaml)<br>        * a Jina Hub Executor (must start with <code class="docutils literal notranslate"><span class="pre">jinahub://</span></code> or <code class="docutils literal notranslate"><span class="pre">jinahub+docker://</span></code>)<br>        * a docker image (must start with <code class="docutils literal notranslate"><span class="pre">docker://</span></code>)<br>        * the string literal of a YAML config (must start with <code class="docutils literal notranslate"><span class="pre">!</span></code> or <code class="docutils literal notranslate"><span class="pre">jtype:</span> </code>)<br>        * the string literal of a JSON config<br><br>        When use it under Python, one can use the following values additionally:<br>        - a Python dict that represents the config<br>        - a text file stream has <code class="docutils literal notranslate"><span class="pre">.read()</span></code> interface</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">BaseExecutor</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uses_with</span></code></p></td>
+<td><p>Dictionary of keyword arguments that will override the <code class="docutils literal notranslate"><span class="pre">with</span></code> configuration in <code class="docutils literal notranslate"><span class="pre">uses</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uses_metas</span></code></p></td>
+<td><p>Dictionary of keyword arguments that will override the <code class="docutils literal notranslate"><span class="pre">metas</span></code> configuration in <code class="docutils literal notranslate"><span class="pre">uses</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uses_requests</span></code></p></td>
+<td><p>Dictionary of keyword arguments that will override the <code class="docutils literal notranslate"><span class="pre">requests</span></code> configuration in <code class="docutils literal notranslate"><span class="pre">uses</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code></p></td>
+<td><p>The customized python modules need to be imported before loading the executor<br><br>Note that the recommended way is to only import a single module - a simple python file, if your<br>executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,<br>which should be structured as a python package. For more details, please see the<br><code class="docutils literal notranslate"><span class="pre">Executor</span> <span class="pre">cookbook</span> <span class="pre">&lt;https://docs.jina.ai/fundamentals/executor/repository-structure/&gt;</span></code>__</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">array</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">port</span></code></p></td>
+<td><p>The port for input data to bind to, default is a random port between [49152, 65535]</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">host_in</span></code></p></td>
+<td><p>The host address for binding to, by default it is 0.0.0.0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">native</span></code></p></td>
+<td><p>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">output_array_type</span></code></p></td>
+<td><p>The type of array <code class="docutils literal notranslate"><span class="pre">tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">embedding</span></code> will be serialized to.<br><br>Supports the same types as <code class="docutils literal notranslate"><span class="pre">docarray.to_protobuf(..,</span> <span class="pre">ndarray_type=...)</span></code>, which can be found <br><code class="docutils literal notranslate"><span class="pre">here</span> <span class="pre">&lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;</span></code>.<br>Defaults to retaining whatever type is returned by the Executor.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">entrypoint</span></code></p></td>
+<td><p>The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">docker_kwargs</span></code></p></td>
+<td><p>Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker ‘<br>container. <br><br>More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">volumes</span></code></p></td>
+<td><p>The path on the host to be mounted inside the container. <br><br>Note, <br>- If separated by <code class="docutils literal notranslate"><span class="pre">:</span></code>, then the first part will be considered as the local host path and the second part is the path in the container system. <br>- If no split provided, then the basename of that directory will be mounted into container’s root path, e.g. <code class="docutils literal notranslate"><span class="pre">--volumes=&quot;/user/test/my-workspace&quot;</span></code> will be mounted into <code class="docutils literal notranslate"><span class="pre">/my-workspace</span></code> inside the container. <br>- All volumes are mounted with read-write mode.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">array</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gpus</span></code></p></td>
+<td><p>This argument allows dockerized Jina executor discover local gpu devices.<br><br>    Note, <br>    - To access all gpus, use <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">all</span></code>.<br>    - To access multiple gpus, e.g. make use of 2 gpus, use <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">2</span></code>.<br>    - To access specified gpus based on device id, use <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">device=[YOUR-GPU-DEVICE-ID]</span></code><br>    - To access specified gpus based on multiple device id, use <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]</span></code><br>    - To specify more parameters, use `–gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">disable_auto_volume</span></code></p></td>
+<td><p>Do not automatically mount a volume for dockerized Executors.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">host</span></code></p></td>
+<td><p>The host address of the runtime, by default it is 0.0.0.0.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">quiet_remote_logs</span></code></p></td>
+<td><p>Do not display the streaming of remote logs on local console</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">upload_files</span></code></p></td>
+<td><p>The files on the host to be uploaded to the remote<br>workspace. This can be useful when your Deployment has more<br>file dependencies beyond a single YAML file, e.g.<br>Python files, data files.<br><br>Note,<br>- currently only flatten structure is supported, which means if you upload <code class="docutils literal notranslate"><span class="pre">[./foo/a.py,</span> <span class="pre">./foo/b.pp,</span> <span class="pre">./bar/c.yml]</span></code>, then they will be put under the <em>same</em> workspace on the remote, losing all hierarchies.<br>- by default, <code class="docutils literal notranslate"><span class="pre">--uses</span></code> YAML file is always uploaded.<br>- uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use <code class="docutils literal notranslate"><span class="pre">--workspace-id</span></code> to specify the workspace.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">array</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">runtime_cls</span></code></p></td>
+<td><p>The runtime class to run inside the Pod</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">WorkerRuntime</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">timeout_ready</span></code></p></td>
+<td><p>The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">600000</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">env</span></code></p></td>
+<td><p>The map of environment variables that are available inside runtime</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">shards</span></code></p></td>
+<td><p>The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">replicas</span></code></p></td>
+<td><p>The number of replicas in the deployment</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">monitoring</span></code></p></td>
+<td><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code></p></td>
+<td><p>The port on which the prometheus server is exposed, default port is 9090</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">9090</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">retries</span></code></p></td>
+<td><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">-1</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">install_requirements</span></code></p></td>
+<td><p>If set, install <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> in the Hub Executor bundle to local</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">force_update</span></code></p></td>
+<td><p>If set, always pull the latest Hub Executor bundle even it exists on local</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compression</span></code></p></td>
+<td><p>The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uses_before_address</span></code></p></td>
+<td><p>The address of the uses-before runtime</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uses_after_address</span></code></p></td>
+<td><p>The address of the uses-before runtime</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">connection_list</span></code></p></td>
+<td><p>dictionary JSON with a list of connections to configure</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">disable_reduce</span></code></p></td>
+<td><p>Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">timeout_send</span></code></p></td>
+<td><p>The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 </section>
 <section id="variables">
@@ -640,7 +1143,7 @@ A complete list of these arguments can be found <a class="reference external" hr
 <p>This means that the following variable substitutions are supported:</p>
 <section id="environment-variables">
 <h3>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">#</a></h3>
-<p>Use <code class="docutils literal notranslate"><span class="pre">${{</span> <span class="pre">ENV.VAR</span> <span class="pre">}}</span></code> to refer to the environment variable <code class="docutils literal notranslate"><span class="pre">VAR</span></code>.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">${{</span> <span class="pre">ENV.VAR</span> <span class="pre">}}</span></code> to refer to the environment variable <code class="docutils literal notranslate"><span class="pre">VAR</span></code>. You can find all <a class="reference internal" href="../../../envs/#jina-env-vars"><span class="std std-ref">Jina environment variables here</span></a>.</p>
 </section>
 <section id="context-variables">
 <h3>Context variables<a class="headerlink" href="#context-variables" title="Permalink to this headline">#</a></h3>
@@ -727,11 +1230,12 @@ Note that the only difference between environment variable syntax and relative p
 <li><a class="reference internal" href="#fields">Fields</a><ul>
 <li><a class="reference internal" href="#jtype"><code class="docutils literal notranslate"><span class="pre">jtype</span></code></a></li>
 <li><a class="reference internal" href="#version"><code class="docutils literal notranslate"><span class="pre">version</span></code></a></li>
-<li><a class="reference internal" href="#with"><code class="docutils literal notranslate"><span class="pre">with</span></code></a></li>
-<li><a class="reference internal" href="#executors"><code class="docutils literal notranslate"><span class="pre">executors</span></code></a><ul>
-<li><a class="reference internal" href="#uses"><code class="docutils literal notranslate"><span class="pre">uses</span></code></a></li>
+<li><a class="reference internal" href="#with"><code class="docutils literal notranslate"><span class="pre">with</span></code></a><ul>
+<li><a class="reference internal" href="#flow-arguments">Flow arguments</a></li>
+<li><a class="reference internal" href="#gateway-arguments">Gateway arguments</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#executors"><code class="docutils literal notranslate"><span class="pre">executors</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#variables">Variables</a><ul>
