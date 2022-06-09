@@ -130,7 +130,7 @@ class StatusProto:
 
 
 class JinaInfoProto:
-    """Since the serializer is replacing the `jina_pb2 to know how to exactly serialize messages, this is just a placeholder that
+    """Since the serializer is replacing the `jina_pb2` to know how to exactly serialize messages, this is just a placeholder that
     delegates the serializing and deserializing to the internal protobuf structure with no extra optimization.
     """
 
