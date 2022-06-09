@@ -621,11 +621,9 @@ the basic entrypoint of the image calls <code class="docutils literal notranslat
 <div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;jina&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;executor&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--uses&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;config.yml&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Name your config config.yml
-Even though you can theoretically name your Executor config file like you want. We <strong>strongly encourage</strong> you to name
-it <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> otherwise using your containerize Executor with Kubernetes will require extra step.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>We <strong>strongly encourage</strong> you to name the Executor YAML as <code class="docutils literal notranslate"><span class="pre">config.yml</span></code>, otherwise using your containerize Executor with Kubernetes will require extra step.</p>
 </div>
 </section>
 <section id="example-dockerized-executor">

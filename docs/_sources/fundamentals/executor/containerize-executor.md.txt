@@ -50,9 +50,8 @@ the basic entrypoint of the image calls `jina executor` {ref}`CLI <../api/cli>` 
 ENTRYPOINT ["jina", "executor", "--uses", "config.yml"]
 ```
 
-```{warning} Name your config config.yml
-Even though you can theoretically name your Executor config file like you want. We **strongly encourage** you to name
-it `config.yml` otherwise using your containerize Executor with Kubernetes will require extra step.
+```{tip}
+We **strongly encourage** you to name the Executor YAML as `config.yml`, otherwise using your containerize Executor with Kubernetes will require extra step.
 ```
 
 ## Example: Dockerized Executor
