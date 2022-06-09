@@ -64,6 +64,7 @@ how-to/index
 api
 cli/index
 proto/docs
+envs/index
 ```
 
 ```{toctree}

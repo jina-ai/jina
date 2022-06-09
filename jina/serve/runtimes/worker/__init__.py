@@ -7,6 +7,7 @@ import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
+from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
@@ -83,10 +84,12 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server(
             self, self._grpc_server
         )
+        jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self._grpc_server)
         service_names = (
             jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaDiscoverEndpointsRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaInfoRPC'].full_name,
             reflection.SERVICE_NAME,
         )
         # Mark all services as healthy.
@@ -172,3 +175,19 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 requests[0].add_exception(ex, self._data_request_handler._executor)
                 context.set_trailing_metadata((('is-error', 'true'),))
                 return requests[0]
+
+    async def _status(self, empty, context) -> jina_pb2.JinaInfoProto:
+        """
+        Process the the call requested and return the JinaInfo of the Runtime
+
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
+        """
+        infoProto = jina_pb2.JinaInfoProto()
+        version, env_info = get_full_version()
+        for k, v in version.items():
+            infoProto.jina[k] = str(v)
+        for k, v in env_info.items():
+            infoProto.envs[k] = str(v)
+        return infoProto

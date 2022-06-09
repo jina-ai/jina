@@ -19,6 +19,11 @@ message RouteProto {
     StatusProto status = 4; // the status of the execution
 }
 
+message JinaInfoProto {
+    map<string, string> jina = 1; // information about the system running and package version information including jina
+    map<string, string> envs = 2; // the environment variable setting
+}
+
 
 /**
  * Represents a Header.
@@ -166,6 +171,14 @@ service JinaDiscoverEndpointsRPC {
  */
 service JinaGatewayDryRunRPC {
     rpc dry_run (google.protobuf.Empty) returns (StatusProto) {
+    }
+}
+
+/**
+ * jina gRPC service to expose information about running jina version and environment.
+ */
+service JinaInfoRPC {
+    rpc _status (google.protobuf.Empty) returns (JinaInfoProto) {
     }
 }
 

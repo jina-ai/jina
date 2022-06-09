@@ -407,3 +407,83 @@ class JinaGatewayDryRunRPC(object):
             timeout,
             metadata,
         )
+
+
+class JinaInfoRPCStub(object):
+    """*
+    jina gRPC service to expose information about running jina version and environment.
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self._status = channel.unary_unary(
+            '/jina.JinaInfoRPC/_status',
+            request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            response_deserializer=jina__pb2.JinaInfoProto.FromString,
+        )
+
+
+class JinaInfoRPCServicer(object):
+    """*
+    jina gRPC service to expose information about running jina version and environment.
+    """
+
+    def _status(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_JinaInfoRPCServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+        '_status': grpc.unary_unary_rpc_method_handler(
+            servicer._status,
+            request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            response_serializer=jina__pb2.JinaInfoProto.SerializeToString,
+        ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+        'jina.JinaInfoRPC', rpc_method_handlers
+    )
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+# This class is part of an EXPERIMENTAL API.
+class JinaInfoRPC(object):
+    """*
+    jina gRPC service to expose information about running jina version and environment.
+    """
+
+    @staticmethod
+    def _status(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/jina.JinaInfoRPC/_status',
+            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            jina__pb2.JinaInfoProto.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+        )
