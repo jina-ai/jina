@@ -49,10 +49,10 @@ def _create_gateway(port, graph, pod_addr, protocol, retries=-1):
     return p
 
 
-
-def _create_head(port, polling, retries=-1):
+def _create_head(port, connection_list_dict, polling, retries=-1):
     p = multiprocessing.Process(
-        target=_create_head_runtime, args=(port, 'head', polling, None, None, retries)
+        target=_create_head_runtime,
+        args=(port, connection_list_dict, 'head', polling, None, None, retries),
     )
     p.start()
     time.sleep(0.1)
@@ -608,7 +608,10 @@ def test_custom_num_retries_headful(port_generator, retries, capfd):
     graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
     pod_addresses = f'{{"pod0": ["0.0.0.0:{head_port}"]}}'
 
-    head_process = _create_head(head_port, 'ANY', retries=retries)
+    connection_list_dict = {'0': [f'127.0.0.1:{worker_port}']}
+
+    head_process = _create_head(head_port, connection_list_dict, 'ANY', retries=retries)
+
     worker_process = _create_worker(worker_port)
     gateway_process = _create_gateway(
         gateway_port, graph_description, pod_addresses, 'grpc', retries=retries
@@ -633,11 +636,6 @@ def test_custom_num_retries_headful(port_generator, retries, capfd):
         ctrl_address=f'0.0.0.0:{gateway_port}',
         ready_or_shutdown_event=multiprocessing.Event(),
     )
-
-    # this would be done by the Pod, its adding the worker to the head
-    activate_msg = ControlRequest(command='ACTIVATE')
-    activate_msg.add_related_entity('worker', '127.0.0.1', worker_port)
-    GrpcConnectionPool.send_request_sync(activate_msg, f'127.0.0.1:{head_port}')
 
     try:
         # ----------- 1. ping Flow once to trigger endpoint discovery -----------
