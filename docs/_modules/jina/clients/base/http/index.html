@@ -218,6 +218,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/expose-jina-info/">Expose Information on microservices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -456,6 +457,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/">Command-Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../envs/">Environment Variables in Jina</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -564,7 +566,10 @@
     <span class="k">def</span> <span class="nf">_handle_response_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_status</span><span class="p">,</span> <span class="n">r_str</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">r_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_404_NOT_FOUND</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">BadClient</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;no such endpoint </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">r_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_503_SERVICE_UNAVAILABLE</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">r_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_503_SERVICE_UNAVAILABLE</span>
+            <span class="ow">or</span> <span class="n">r_status</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_504_GATEWAY_TIMEOUT</span>
+        <span class="p">):</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="s1">&#39;header&#39;</span> <span class="ow">in</span> <span class="n">r_str</span>
                 <span class="ow">and</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">]</span>

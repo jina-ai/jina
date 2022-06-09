@@ -218,6 +218,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/expose-jina-info/">Expose Information on microservices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -456,6 +457,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Command-Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../envs/">Environment Variables in Jina</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -947,6 +949,86 @@
             <span class="n">timeout</span><span class="p">,</span>
             <span class="n">metadata</span><span class="p">,</span>
         <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="JinaInfoRPCStub"><a class="viewcode-back" href="../../../../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaInfoRPCStub">[docs]</a><span class="k">class</span> <span class="nc">JinaInfoRPCStub</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*</span>
+<span class="sd">    jina gRPC service to expose information about running jina version and environment.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            channel: A grpc.Channel.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">unary_unary</span><span class="p">(</span>
+            <span class="s1">&#39;/jina.JinaInfoRPC/_status&#39;</span><span class="p">,</span>
+            <span class="n">request_serializer</span><span class="o">=</span><span class="n">google_dot_protobuf_dot_empty__pb2</span><span class="o">.</span><span class="n">Empty</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">,</span>
+            <span class="n">response_deserializer</span><span class="o">=</span><span class="n">jina__pb2</span><span class="o">.</span><span class="n">JinaInfoProto</span><span class="o">.</span><span class="n">FromString</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JinaInfoRPCServicer"><a class="viewcode-back" href="../../../../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaInfoRPCServicer">[docs]</a><span class="k">class</span> <span class="nc">JinaInfoRPCServicer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*</span>
+<span class="sd">    jina gRPC service to expose information about running jina version and environment.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Missing associated documentation comment in .proto file.&quot;&quot;&quot;</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">set_code</span><span class="p">(</span><span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNIMPLEMENTED</span><span class="p">)</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">set_details</span><span class="p">(</span><span class="s1">&#39;Method not implemented!&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Method not implemented!&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="add_JinaInfoRPCServicer_to_server"><a class="viewcode-back" href="../../../../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaInfoRPCServicer_to_server">[docs]</a><span class="k">def</span> <span class="nf">add_JinaInfoRPCServicer_to_server</span><span class="p">(</span><span class="n">servicer</span><span class="p">,</span> <span class="n">server</span><span class="p">):</span>
+    <span class="n">rpc_method_handlers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;_status&#39;</span><span class="p">:</span> <span class="n">grpc</span><span class="o">.</span><span class="n">unary_unary_rpc_method_handler</span><span class="p">(</span>
+            <span class="n">servicer</span><span class="o">.</span><span class="n">_status</span><span class="p">,</span>
+            <span class="n">request_deserializer</span><span class="o">=</span><span class="n">google_dot_protobuf_dot_empty__pb2</span><span class="o">.</span><span class="n">Empty</span><span class="o">.</span><span class="n">FromString</span><span class="p">,</span>
+            <span class="n">response_serializer</span><span class="o">=</span><span class="n">jina__pb2</span><span class="o">.</span><span class="n">JinaInfoProto</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">}</span>
+    <span class="n">generic_handler</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">method_handlers_generic_handler</span><span class="p">(</span>
+        <span class="s1">&#39;jina.JinaInfoRPC&#39;</span><span class="p">,</span> <span class="n">rpc_method_handlers</span>
+    <span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">add_generic_rpc_handlers</span><span class="p">((</span><span class="n">generic_handler</span><span class="p">,))</span></div>
+
+
+<span class="c1"># This class is part of an EXPERIMENTAL API.</span>
+<div class="viewcode-block" id="JinaInfoRPC"><a class="viewcode-back" href="../../../../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaInfoRPC">[docs]</a><span class="k">class</span> <span class="nc">JinaInfoRPC</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;*</span>
+<span class="sd">    jina gRPC service to expose information about running jina version and environment.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_status</span><span class="p">(</span>
+        <span class="n">request</span><span class="p">,</span>
+        <span class="n">target</span><span class="p">,</span>
+        <span class="n">options</span><span class="o">=</span><span class="p">(),</span>
+        <span class="n">channel_credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">call_credentials</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">insecure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">compression</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">wait_for_ready</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">grpc</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">unary_unary</span><span class="p">(</span>
+            <span class="n">request</span><span class="p">,</span>
+            <span class="n">target</span><span class="p">,</span>
+            <span class="s1">&#39;/jina.JinaInfoRPC/_status&#39;</span><span class="p">,</span>
+            <span class="n">google_dot_protobuf_dot_empty__pb2</span><span class="o">.</span><span class="n">Empty</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">,</span>
+            <span class="n">jina__pb2</span><span class="o">.</span><span class="n">JinaInfoProto</span><span class="o">.</span><span class="n">FromString</span><span class="p">,</span>
+            <span class="n">options</span><span class="p">,</span>
+            <span class="n">channel_credentials</span><span class="p">,</span>
+            <span class="n">insecure</span><span class="p">,</span>
+            <span class="n">call_credentials</span><span class="p">,</span>
+            <span class="n">compression</span><span class="p">,</span>
+            <span class="n">wait_for_ready</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="p">,</span>
+        <span class="p">)</span></div>
 </pre></div>
                 </article>
             </div>

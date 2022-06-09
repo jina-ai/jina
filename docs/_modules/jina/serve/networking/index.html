@@ -218,6 +218,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/expose-jina-info/">Expose Information on microservices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -456,6 +457,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Command-Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../envs/">Environment Variables in Jina</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -566,8 +568,8 @@
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">CollectorRegistry</span>
 
-    <span class="kn">from</span> <span class="nn">jina.types.request.control</span> <span class="kn">import</span> <span class="n">ControlRequest</span>
 
+<span class="n">DEFAULT_MINIMUM_RETRIES</span> <span class="o">=</span> <span class="mi">3</span>
 
 <div class="viewcode-block" id="ReplicaList"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList">[docs]</a><span class="k">class</span> <span class="nc">ReplicaList</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -699,6 +701,7 @@
             <span class="s1">&#39;jina.JinaSingleDataRequestRPC&#39;</span><span class="p">:</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaSingleDataRequestRPCStub</span><span class="p">,</span>
             <span class="s1">&#39;jina.JinaDiscoverEndpointsRPC&#39;</span><span class="p">:</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaDiscoverEndpointsRPCStub</span><span class="p">,</span>
             <span class="s1">&#39;jina.JinaRPC&#39;</span><span class="p">:</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaRPCStub</span><span class="p">,</span>
+            <span class="s1">&#39;jina.JinaInfoRPC&#39;</span><span class="p">:</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaInfoRPCStub</span><span class="p">,</span>
         <span class="p">}</span>
 
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">summary</span><span class="p">):</span>
@@ -1001,6 +1004,7 @@
         <span class="n">polling_type</span><span class="p">:</span> <span class="n">PollingType</span> <span class="o">=</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Send a single message to target via one or all of the pooled connections, depending on polling_type. Convenience function wrapper around send_request.</span>
 <span class="sd">        :param request: a single request to send</span>
@@ -1010,6 +1014,7 @@
 <span class="sd">        :param polling_type: defines if the message should be send to any or all pooled connections for the target</span>
 <span class="sd">        :param endpoint: endpoint to target with the request</span>
 <span class="sd">        :param timeout: timeout for sending the requests</span>
+<span class="sd">        :param retries: number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</span>
 <span class="sd">        :return: list of asyncio.Task items for each send call</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_requests</span><span class="p">(</span>
@@ -1020,6 +1025,7 @@
             <span class="n">polling_type</span><span class="o">=</span><span class="n">polling_type</span><span class="p">,</span>
             <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
             <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="GrpcConnectionPool.send_requests"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_requests">[docs]</a>    <span class="k">def</span> <span class="nf">send_requests</span><span class="p">(</span>
@@ -1031,6 +1037,7 @@
         <span class="n">polling_type</span><span class="p">:</span> <span class="n">PollingType</span> <span class="o">=</span> <span class="n">PollingType</span><span class="o">.</span><span class="n">ANY</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Send a request to target via one or all of the pooled connections, depending on polling_type</span>
 
@@ -1041,6 +1048,7 @@
 <span class="sd">        :param polling_type: defines if the request should be send to any or all pooled connections for the target</span>
 <span class="sd">        :param endpoint: endpoint to target with the requests</span>
 <span class="sd">        :param timeout: timeout for sending the requests</span>
+<span class="sd">        :param retries: number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</span>
 <span class="sd">        :return: list of asyncio.Task items for each send call</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1058,7 +1066,7 @@
 
         <span class="k">for</span> <span class="n">replica_list</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
             <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_requests</span><span class="p">(</span>
-                <span class="n">requests</span><span class="p">,</span> <span class="n">replica_list</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span>
+                <span class="n">requests</span><span class="p">,</span> <span class="n">replica_list</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="n">retries</span>
             <span class="p">)</span>
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
 
@@ -1094,6 +1102,7 @@
         <span class="n">head</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Send msg to target via only one of the pooled connections</span>
 <span class="sd">        :param request: request to send</span>
@@ -1101,6 +1110,7 @@
 <span class="sd">        :param head: If True it is send to the head, otherwise to the worker pods</span>
 <span class="sd">        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL</span>
 <span class="sd">        :param timeout: timeout for sending the requests</span>
+<span class="sd">        :param retries: number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</span>
 <span class="sd">        :return: asyncio.Task representing the send call</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_requests_once</span><span class="p">(</span>
@@ -1109,6 +1119,7 @@
             <span class="n">head</span><span class="o">=</span><span class="n">head</span><span class="p">,</span>
             <span class="n">shard_id</span><span class="o">=</span><span class="n">shard_id</span><span class="p">,</span>
             <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="GrpcConnectionPool.send_requests_once"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_requests_once">[docs]</a>    <span class="k">def</span> <span class="nf">send_requests_once</span><span class="p">(</span>
@@ -1119,6 +1130,7 @@
         <span class="n">shard_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Send a request to target via only one of the pooled connections</span>
 
@@ -1128,11 +1140,14 @@
 <span class="sd">        :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL</span>
 <span class="sd">        :param endpoint: endpoint to target with the requests</span>
 <span class="sd">        :param timeout: timeout for sending the requests</span>
+<span class="sd">        :param retries: number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</span>
 <span class="sd">        :return: asyncio.Task representing the send call</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">replicas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">get_replicas</span><span class="p">(</span><span class="n">deployment</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">shard_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">replicas</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">replicas</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_requests</span><span class="p">(</span>
+                <span class="n">requests</span><span class="p">,</span> <span class="n">replicas</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="n">retries</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;no available connections for deployment </span><span class="si">{</span><span class="n">deployment</span><span class="si">}</span><span class="s1"> and shard </span><span class="si">{</span><span class="n">shard_id</span><span class="si">}</span><span class="s1">&#39;</span>
@@ -1203,7 +1218,7 @@
         <span class="n">retry_i</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
         <span class="n">dest_addr</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;&#39;</span><span class="p">},</span>
-        <span class="n">num_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">num_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># connection failures and cancelled requests should be retried</span>
         <span class="c1"># all other cases should not be retried and will be raised immediately</span>
@@ -1214,9 +1229,13 @@
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">!=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span>
             <span class="ow">and</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">!=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">CANCELLED</span>
+            <span class="ow">and</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">!=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">DEADLINE_EXCEEDED</span>
         <span class="p">):</span>
             <span class="k">raise</span>
-        <span class="k">elif</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span> <span class="ow">and</span> <span class="n">retry_i</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span>
+            <span class="ow">or</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">DEADLINE_EXCEEDED</span>
+        <span class="p">)</span> <span class="ow">and</span> <span class="n">retry_i</span> <span class="o">&gt;=</span> <span class="n">num_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;GRPC call failed, retries exhausted&#39;</span><span class="p">)</span>
             <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">InternalNetworkError</span>
 
@@ -1228,7 +1247,7 @@
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;GRPC call failed with code </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">()</span><span class="si">}</span><span class="s1">, retry attempt </span><span class="si">{</span><span class="n">retry_i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">num_retries</span><span class="si">}</span><span class="s1">.&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;GRPC call failed with code </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">code</span><span class="p">()</span><span class="si">}</span><span class="s1">, retry attempt </span><span class="si">{</span><span class="n">retry_i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">num_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="si">}</span><span class="s1">.&#39;</span>
                 <span class="sa">f</span><span class="s1">&#39; Trying next replica, if available.&#39;</span>
             <span class="p">)</span>
 
@@ -1238,14 +1257,21 @@
         <span class="n">connections</span><span class="p">:</span> <span class="n">ReplicaList</span><span class="p">,</span>
         <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">:</span>
         <span class="c1"># this wraps the awaitable object from grpc as a coroutine so it can be used as a task</span>
         <span class="c1"># the grpc call function is not a coroutine but some _AioCall</span>
         <span class="k">async</span> <span class="k">def</span> <span class="nf">task_wrapper</span><span class="p">():</span>
             <span class="n">metadata</span> <span class="o">=</span> <span class="p">((</span><span class="s1">&#39;endpoint&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">),)</span> <span class="k">if</span> <span class="n">endpoint</span> <span class="k">else</span> <span class="kc">None</span>
             <span class="n">tried_addresses</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-            <span class="n">num_retries</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">connections</span><span class="o">.</span><span class="n">get_all_connections</span><span class="p">()))</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_retries</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">retries</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">retries</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">total_num_tries</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="nb">max</span><span class="p">(</span><span class="n">DEFAULT_MINIMUM_RETRIES</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">connections</span><span class="o">.</span><span class="n">get_all_connections</span><span class="p">()))</span>
+                    <span class="o">+</span> <span class="mi">1</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">total_num_tries</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">retries</span>  <span class="c1"># try once, then do all the retries</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">total_num_tries</span><span class="p">):</span>
                 <span class="n">current_connection</span> <span class="o">=</span> <span class="n">connections</span><span class="o">.</span><span class="n">get_next_connection</span><span class="p">()</span>
                 <span class="n">tried_addresses</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">current_connection</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
                 <span class="k">try</span><span class="p">:</span>
@@ -1261,7 +1287,7 @@
                         <span class="n">retry_i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
                         <span class="n">request_id</span><span class="o">=</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">request_id</span><span class="p">,</span>
                         <span class="n">dest_addr</span><span class="o">=</span><span class="n">tried_addresses</span><span class="p">,</span>
-                        <span class="n">num_retries</span><span class="o">=</span><span class="n">num_retries</span><span class="p">,</span>
+                        <span class="n">num_retries</span><span class="o">=</span><span class="n">total_num_tries</span><span class="p">,</span>
                     <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">task_wrapper</span><span class="p">())</span>

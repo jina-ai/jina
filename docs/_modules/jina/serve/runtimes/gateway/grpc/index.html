@@ -218,6 +218,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/expose-jina-info/">Expose Information on microservices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -456,6 +457,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../cli/">Command-Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../envs/">Environment Variables in Jina</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -547,7 +549,7 @@
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span>
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">PortAlreadyUsed</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">is_port_free</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_full_version</span><span class="p">,</span> <span class="n">is_port_free</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span><span class="p">,</span> <span class="n">jina_pb2_grpc</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway</span> <span class="kn">import</span> <span class="n">GatewayRuntime</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.request_handling</span> <span class="kn">import</span> <span class="n">RequestHandler</span>
@@ -613,10 +615,12 @@
 
         <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">streamer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
         <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaGatewayDryRunRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
+        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaInfoRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
 
         <span class="n">service_names</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
             <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaGatewayDryRunRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
+            <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaInfoRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
             <span class="n">reflection</span><span class="o">.</span><span class="n">SERVICE_NAME</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># Mark all services as healthy.</span>
@@ -700,7 +704,23 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="n">status_message</span> <span class="o">=</span> <span class="n">StatusMessage</span><span class="p">()</span>
             <span class="n">status_message</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">status_message</span><span class="o">.</span><span class="n">proto</span></div></div>
+            <span class="k">return</span> <span class="n">status_message</span><span class="o">.</span><span class="n">proto</span></div>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">JinaInfoProto</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process the the call requested and return the JinaInfo of the Runtime</span>
+
+<span class="sd">        :param empty: The service expects an empty protobuf message</span>
+<span class="sd">        :param context: grpc context</span>
+<span class="sd">        :returns: the response request</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">infoProto</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">JinaInfoProto</span><span class="p">()</span>
+        <span class="n">version</span><span class="p">,</span> <span class="n">env_info</span> <span class="o">=</span> <span class="n">get_full_version</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">version</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">infoProto</span><span class="o">.</span><span class="n">jina</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">env_info</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">infoProto</span><span class="o">.</span><span class="n">envs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">infoProto</span></div>
 </pre></div>
                 </article>
             </div>

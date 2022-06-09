@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.6.1 Documentation" />
   
-<meta property="og:description" content="Table of Contents: docarray.proto- DocumentArrayProto., jina.proto- DataRequestListProto, DataRequestProto, DataRequestProto.DataContentProto, EndpointsProto, HeaderProto, RelatedEntity, RouteProto, StatusProto, StatusProto.ExceptionProto, StatusProto.StatusCode, JinaDataRequestRPC, JinaDiscoverE..." />
+<meta property="og:description" content="Table of Contents: docarray.proto- DocumentArrayProto., jina.proto- DataRequestListProto, DataRequestProto, DataRequestProto.DataContentProto, EndpointsProto, HeaderProto, JinaInfoProto, JinaInfoProto.EnvsEntry, JinaInfoProto.JinaEntry, RelatedEntity, RouteProto, StatusProto, StatusProto.Exceptio..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -35,7 +35,7 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Migrate Jina 2 to Jina 3" href="../../get-started/migrate/" /><link rel="prev" title="Command-Line Interface" href="../../cli/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Environment Variables in Jina" href="../../envs/" /><link rel="prev" title="Command-Line Interface" href="../../cli/" />
         <link rel="canonical" href="https://docs.jina.ai/proto/docs.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
@@ -251,6 +251,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/expose-jina-info/">Expose Information on microservices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -489,6 +490,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/">Command-Line Interface</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../envs/">Environment Variables in Jina</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -588,6 +590,9 @@
 <li><p><a class="reference external" href="#jina-DataRequestProto-DataContentProto">DataRequestProto.DataContentProto</a></p></li>
 <li><p><a class="reference external" href="#jina-EndpointsProto">EndpointsProto</a></p></li>
 <li><p><a class="reference external" href="#jina-HeaderProto">HeaderProto</a></p></li>
+<li><p><a class="reference external" href="#jina-JinaInfoProto">JinaInfoProto</a></p></li>
+<li><p><a class="reference external" href="#jina-JinaInfoProto-EnvsEntry">JinaInfoProto.EnvsEntry</a></p></li>
+<li><p><a class="reference external" href="#jina-JinaInfoProto-JinaEntry">JinaInfoProto.JinaEntry</a></p></li>
 <li><p><a class="reference external" href="#jina-RelatedEntity">RelatedEntity</a></p></li>
 <li><p><a class="reference external" href="#jina-RouteProto">RouteProto</a></p></li>
 <li><p><a class="reference external" href="#jina-StatusProto">StatusProto</a></p></li>
@@ -596,6 +601,7 @@
 <li><p><a class="reference external" href="#jina-JinaDataRequestRPC">JinaDataRequestRPC</a></p></li>
 <li><p><a class="reference external" href="#jina-JinaDiscoverEndpointsRPC">JinaDiscoverEndpointsRPC</a></p></li>
 <li><p><a class="reference external" href="#jina-JinaGatewayDryRunRPC">JinaGatewayDryRunRPC</a></p></li>
+<li><p><a class="reference external" href="#jina-JinaInfoRPC">JinaInfoRPC</a></p></li>
 <li><p><a class="reference external" href="#jina-JinaRPC">JinaRPC</a></p></li>
 <li><p><a class="reference external" href="#jina-JinaSingleDataRequestRPC">JinaSingleDataRequestRPC</a></p></li>
 </ul>
@@ -782,6 +788,90 @@ This should be replaced by streaming</p>
 <td><a href="#uint32">uint32</a></td>
 <td>optional</td>
 <td>epoch time in seconds after which the request should be dropped</td>
+</tr>
+</tbody>
+</table>
+<p><a name="jina-JinaInfoProto"></a></p>
+</section>
+<section id="jinainfoproto">
+<h3>JinaInfoProto<a class="headerlink" href="#jinainfoproto" title="Permalink to this headline">#</a></h3>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>jina</td>
+<td><a href="#jina-JinaInfoProto-JinaEntry">JinaInfoProto.JinaEntry</a></td>
+<td>repeated</td>
+<td>information about the system running and package version information including jina</td>
+</tr>
+<tr>
+<td>envs</td>
+<td><a href="#jina-JinaInfoProto-EnvsEntry">JinaInfoProto.EnvsEntry</a></td>
+<td>repeated</td>
+<td>the environment variable setting</td>
+</tr>
+</tbody>
+</table>
+<p><a name="jina-JinaInfoProto-EnvsEntry"></a></p>
+</section>
+<section id="jinainfoproto-envsentry">
+<h3>JinaInfoProto.EnvsEntry<a class="headerlink" href="#jinainfoproto-envsentry" title="Permalink to this headline">#</a></h3>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>value</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a name="jina-JinaInfoProto-JinaEntry"></a></p>
+</section>
+<section id="jinainfoproto-jinaentry">
+<h3>JinaInfoProto.JinaEntry<a class="headerlink" href="#jinainfoproto-jinaentry" title="Permalink to this headline">#</a></h3>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Label</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>value</td>
+<td><a href="#string">string</a></td>
+<td></td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -1039,6 +1129,29 @@ thus end_time - start_time includes Executor computation, runtime overhead, seri
 </tr>
 </tbody>
 </table>
+<p><a name="jina-JinaInfoRPC"></a></p>
+</section>
+<section id="jinainforpc">
+<h3>JinaInfoRPC<a class="headerlink" href="#jinainforpc" title="Permalink to this headline">#</a></h3>
+<p>jina gRPC service to expose information about running jina version and environment.</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Method Name</th>
+<th>Request Type</th>
+<th>Response Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>_status</td>
+<td><a href="#google-protobuf-Empty">.google.protobuf.Empty</a></td>
+<td><a href="#jina-JinaInfoProto">JinaInfoProto</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <p><a name="jina-JinaRPC"></a></p>
 </section>
 <section id="jinarpc">
@@ -1280,12 +1393,12 @@ This is used to send requests to Executors when a list of requests is not needed
             <footer>
                 
                 <div class="related-pages">
-                    <a class="next-page" href="../../get-started/migrate/">
+                    <a class="next-page" href="../../envs/">
                         <div class="page-info">
                             <div class="context">
                                 <span>Next</span>
                             </div>
-                            <div class="title">Migrate Jina 2 to Jina 3</div>
+                            <div class="title">Environment Variables in Jina</div>
                         </div>
                         <svg>
                             <use href="#svg-arrow-right"></use>
@@ -1354,6 +1467,9 @@ This is used to send requests to Executors when a list of requests is not needed
 <li><a class="reference internal" href="#datarequestproto-datacontentproto">DataRequestProto.DataContentProto</a></li>
 <li><a class="reference internal" href="#endpointsproto">EndpointsProto</a></li>
 <li><a class="reference internal" href="#headerproto">HeaderProto</a></li>
+<li><a class="reference internal" href="#jinainfoproto">JinaInfoProto</a></li>
+<li><a class="reference internal" href="#jinainfoproto-envsentry">JinaInfoProto.EnvsEntry</a></li>
+<li><a class="reference internal" href="#jinainfoproto-jinaentry">JinaInfoProto.JinaEntry</a></li>
 <li><a class="reference internal" href="#relatedentity">RelatedEntity</a></li>
 <li><a class="reference internal" href="#routeproto">RouteProto</a></li>
 <li><a class="reference internal" href="#statusproto">StatusProto</a></li>
@@ -1362,6 +1478,7 @@ This is used to send requests to Executors when a list of requests is not needed
 <li><a class="reference internal" href="#jinadatarequestrpc">JinaDataRequestRPC</a></li>
 <li><a class="reference internal" href="#jinadiscoverendpointsrpc">JinaDiscoverEndpointsRPC</a></li>
 <li><a class="reference internal" href="#jinagatewaydryrunrpc">JinaGatewayDryRunRPC</a></li>
+<li><a class="reference internal" href="#jinainforpc">JinaInfoRPC</a></li>
 <li><a class="reference internal" href="#jinarpc">JinaRPC</a></li>
 <li><a class="reference internal" href="#jinasingledatarequestrpc">JinaSingleDataRequestRPC</a></li>
 </ul>

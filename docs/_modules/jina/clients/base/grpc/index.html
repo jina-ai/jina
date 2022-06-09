@@ -218,6 +218,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/expose-jina-info/">Expose Information on microservices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -456,6 +457,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/">Command-Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../envs/">Environment Variables in Jina</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -652,6 +654,11 @@
                 <span class="k">if</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">The ongoing request is terminated as the server is not available or closed already.&#39;</span>
+                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">my_details</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+                <span class="k">elif</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">DEADLINE_EXCEEDED</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s1">The ongoing request is terminated due to a server-side timeout.&#39;</span>
                     <span class="p">)</span>
                     <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">my_details</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
                 <span class="k">elif</span> <span class="n">my_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">INTERNAL</span><span class="p">:</span>

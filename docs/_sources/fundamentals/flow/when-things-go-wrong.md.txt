@@ -23,7 +23,25 @@ In all cases, the {ref}`Jina Client <client>` will raise an Exception.
 
 When an {ref}`Executor or Head <architecture-overview>` can't be reached by the Flow's gateway, it attempts to re-connect
 to the faulty deployment according to a retry policy.
+The same applies to calls to Executors that time out.
 The specifics of this policy depend on the environment the Flow find itself in, and are outlined below.
+
+
+````{admonition} Hint: Prevent Executor timeouts
+:class: hint
+If you regularly experience timouts on Executor calls, you may want to consider setting the Flow's `timeout_send` attribute to a larger value.
+You can do this by setting `Flow(timeout_send=time_in_ms)` in Python
+or `timeout_send: time_in_ms` in your Flow YAML with-block.
+
+Especially neural network forward passes on CPU (and other unusually expensive operations) can lead to timeouts with the default setting.
+```
+
+````{admonition} Hint: Custom retry policy
+:class: hint
+You can override the default retry policy and instead choose a number of retries performed for each Executor.
+To perform `n` retries, set `Flow(retries=n)` in Python, or `retries: n` in the Flow
+YAML `with` block.
+````
 
 If, during the complete execution of this policy, no successful call to any Executor replica could be made, the request is aborted
 and the failure is {ref}`reported to the client <failure-reporting>`.
@@ -74,6 +92,9 @@ If a service mesh is installed alongside Jina in the Kubernetes cluster, the fol
 Many service meshes have the ability to perform retries themselves.
 Be careful about setting up service mesh level retries in combination with Jina, as it may lead to unwanted behaviour in combination with
 Jina's own retry policy.
+
+Instead, you may want to disable Jina level retries by setting `Flow(retries=0)` in Python, or `retries: 0` in the Flow
+YAML `with` block.
 ````
 
 (failure-reporting)=
@@ -85,13 +106,21 @@ The resulting error message will contain the *network address* of the failing Ex
 If multiple replicas are present, all addresses will be reported - unless the Flow is deployed using Kubernetes, in which
 case the replicas are managed by k8s and only a single address is available.
 
-Depending on the client-to-gateway protocol, the error message will be returned in one of the following ways:
+Depending on the client-to-gateway protocol, and they type of error, the error message will be returned in one of the following ways:
+
+**Could not connect to Executor:**
 
 - **gRPC**: A response with the gRPC status code 14 (*UNAVAILABLE*) is issued, and the error message is contained in the `details` field
 - **HTTP**: A response with the HTTP status code 503 (*SERVICE_UNAVAILABLE*) is issued, and the error message is contained in `response['header']['status']['description']`
 - **WebSocket**: The stream closes with close code 1011 (*INTERNAL_ERROR*) and the message is contained in the WS close message
 
-For any of these protocols, the {ref}`Jina Client <client>` will raise a `ConnectionError` containing the error message.
+**Call to Executor timed out:**
+
+- **gRPC**: A response with the gRPC status code 4 (*DEADLINE_EXCEEDED*) is issued, and the error message is contained in the `details` field
+- **HTTP**: A response with the HTTP status code 504 (*GATEWAY_TIMEOUT*) is issued, and the error message is contained in `response['header']['status']['description']`
+- **WebSocket**: The stream closes with close code 1011 (*INTERNAL_ERROR*) and the message is contained in the WS close message
+
+For any of these scenarios, the {ref}`Jina Client <client>` will raise a `ConnectionError` containing the error message.
 
 ## Debug via breakpoint
 

@@ -218,6 +218,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/expose-jina-info/">Expose Information on microservices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -456,6 +457,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/">Command-Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../envs/">Environment Variables in Jina</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -667,6 +669,33 @@
         <span class="n">sp</span><span class="o">.</span><span class="n">ParseFromString</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">sp</span></div></div>
+
+
+<div class="viewcode-block" id="JinaInfoProto"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.JinaInfoProto">[docs]</a><span class="k">class</span> <span class="nc">JinaInfoProto</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Since the serializer is replacing the `jina_pb2` to know how to exactly serialize messages, this is just a placeholder that</span>
+<span class="sd">    delegates the serializing and deserializing to the internal protobuf structure with no extra optimization.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="JinaInfoProto.SerializeToString"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.JinaInfoProto.SerializeToString">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">SerializeToString</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        # noqa: DAR101</span>
+<span class="sd">        # noqa: DAR102</span>
+<span class="sd">        # noqa: DAR201</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">SerializeToString</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="JinaInfoProto.FromString"><a class="viewcode-back" href="../../../../api/jina.proto.serializer/#jina.proto.serializer.JinaInfoProto.FromString">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">FromString</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        # noqa: DAR101</span>
+<span class="sd">        # noqa: DAR102</span>
+<span class="sd">        # noqa: DAR201</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ip</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">JinaInfoProto</span><span class="p">()</span>
+        <span class="n">ip</span><span class="o">.</span><span class="n">ParseFromString</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ip</span></div></div>
 </pre></div>
                 </article>
             </div>

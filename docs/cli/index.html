@@ -251,6 +251,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/monitoring-flow/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/expose-jina-info/">Expose Information on microservices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -489,6 +490,7 @@
 </li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Command-Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../envs/">Environment Variables in Jina</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -613,8 +615,8 @@
               <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
 </pre></div>
@@ -713,7 +715,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 55078</p>
+<p>Default: 61378</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -818,7 +820,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 57763</p>
+<p>Default: 58961</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -827,6 +829,10 @@ Python files, data files.</p>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default port is 9090</p>
 <p>Default: 9090</p>
+</dd>
+<dt><kbd>--retries</kbd></dt>
+<dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
+<p>Default: -1</p>
 </dd>
 </dl>
 </section>
@@ -1118,7 +1124,7 @@ Python files, data files.</p>
              <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Named Arguments_repeat6">
@@ -1242,7 +1248,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 53232</p>
+<p>Default: 57388</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1346,7 +1352,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 53269</p>
+<p>Default: 53296</p>
 </dd>
 <dt><kbd>--compression</kbd></dt>
 <dd><p>Possible choices: NoCompression, Deflate, Gzip</p>
@@ -1381,7 +1387,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 53609</p>
+<p>Default: 57402</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1390,6 +1396,10 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default port is 9090</p>
 <p>Default: 9090</p>
+</dd>
+<dt><kbd>--retries</kbd></dt>
+<dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
+<p>Default: -1</p>
 </dd>
 </dl>
 </section>
@@ -1578,8 +1588,9 @@ Defaults to retaining whatever type is returned by the Executor.</p>
          <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
 </pre></div>
@@ -1678,7 +1689,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 60049</p>
+<p>Default: 54917</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1783,7 +1794,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 63981</p>
+<p>Default: 53017</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1792,6 +1803,10 @@ Python files, data files.</p>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default port is 9090</p>
 <p>Default: 9090</p>
+</dd>
+<dt><kbd>--retries</kbd></dt>
+<dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
+<p>Default: -1</p>
 </dd>
 </dl>
 </section>
@@ -1850,7 +1865,8 @@ Python files, data files.</p>
                 <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
@@ -1952,7 +1968,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 61252</p>
+<p>Default: 58222</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -2057,7 +2073,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 50876</p>
+<p>Default: 63285</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2066,6 +2082,10 @@ Python files, data files.</p>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default port is 9090</p>
 <p>Default: 9090</p>
+</dd>
+<dt><kbd>--retries</kbd></dt>
+<dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
+<p>Default: -1</p>
 </dd>
 </dl>
 </section>

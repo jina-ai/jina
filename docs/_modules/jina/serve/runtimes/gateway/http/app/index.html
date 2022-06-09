@@ -218,6 +218,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/expose-jina-info/">Expose Information on microservices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -456,6 +457,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../../cli/">Command-Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../envs/">Environment Variables in Jina</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -549,7 +551,6 @@
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_full_version</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
-<span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="kn">import</span> <span class="n">used_memory_readable</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">CollectorRegistry</span>
@@ -583,7 +584,6 @@
             <span class="n">JinaEndpointRequestModel</span><span class="p">,</span>
             <span class="n">JinaRequestModel</span><span class="p">,</span>
             <span class="n">JinaResponseModel</span><span class="p">,</span>
-            <span class="n">JinaStatusModel</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span>
@@ -648,9 +648,13 @@
             <span class="k">return</span> <span class="p">{}</span>
 
         <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
         <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span>
         <span class="kn">from</span> <span class="nn">jina.serve.executors</span> <span class="kn">import</span> <span class="n">__dry_run_endpoint__</span>
-        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.models</span> <span class="kn">import</span> <span class="n">PROTO_TO_PYDANTIC_MODELS</span>
+        <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.models</span> <span class="kn">import</span> <span class="p">(</span>
+            <span class="n">PROTO_TO_PYDANTIC_MODELS</span><span class="p">,</span>
+            <span class="n">JinaInfoModel</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="kn">from</span> <span class="nn">jina.types.request.status</span> <span class="kn">import</span> <span class="n">StatusMessage</span>
 
         <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
@@ -687,7 +691,7 @@
         <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/status&#39;</span><span class="p">,</span>
             <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Get the status of Jina service&#39;</span><span class="p">,</span>
-            <span class="n">response_model</span><span class="o">=</span><span class="n">JinaStatusModel</span><span class="p">,</span>
+            <span class="n">response_model</span><span class="o">=</span><span class="n">JinaInfoModel</span><span class="p">,</span>
             <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Debug&#39;</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="k">async</span> <span class="k">def</span> <span class="nf">_status</span><span class="p">():</span>
@@ -698,12 +702,12 @@
 
 <span class="sd">            .. # noqa: DAR201</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="n">_info</span> <span class="o">=</span> <span class="n">get_full_version</span><span class="p">()</span>
-            <span class="k">return</span> <span class="p">{</span>
-                <span class="s1">&#39;jina&#39;</span><span class="p">:</span> <span class="n">_info</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                <span class="s1">&#39;envs&#39;</span><span class="p">:</span> <span class="n">_info</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                <span class="s1">&#39;used_memory&#39;</span><span class="p">:</span> <span class="n">used_memory_readable</span><span class="p">(),</span>
-            <span class="p">}</span>
+            <span class="n">version</span><span class="p">,</span> <span class="n">env_info</span> <span class="o">=</span> <span class="n">get_full_version</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">version</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">version</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">env_info</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">env_info</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;jina&#39;</span><span class="p">:</span> <span class="n">version</span><span class="p">,</span> <span class="s1">&#39;envs&#39;</span><span class="p">:</span> <span class="n">env_info</span><span class="p">}</span>
 
         <span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
             <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/post&#39;</span><span class="p">,</span>
@@ -744,7 +748,14 @@
                     <span class="n">request_generator</span><span class="p">(</span><span class="o">**</span><span class="n">req_generator_input</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_503_SERVICE_UNAVAILABLE</span>
+                <span class="kn">import</span> <span class="nn">grpc</span>
+
+                <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
+                    <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_503_SERVICE_UNAVAILABLE</span>
+                <span class="k">elif</span> <span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">()</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">DEADLINE_EXCEEDED</span><span class="p">:</span>
+                    <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_504_GATEWAY_TIMEOUT</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_500_INTERNAL_SERVER_ERROR</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="n">bd</span>  <span class="c1"># send back the request</span>
                 <span class="n">result</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_generate_exception_header</span><span class="p">(</span>
                     <span class="n">err</span>
@@ -842,14 +853,13 @@
             <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">asdict</span>
 
             <span class="kn">import</span> <span class="nn">strawberry</span>
+            <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
             <span class="kn">from</span> <span class="nn">docarray.document.strawberry_type</span> <span class="kn">import</span> <span class="p">(</span>
                 <span class="n">JSONScalar</span><span class="p">,</span>
                 <span class="n">StrawberryDocument</span><span class="p">,</span>
                 <span class="n">StrawberryDocumentInput</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="kn">from</span> <span class="nn">strawberry.fastapi</span> <span class="kn">import</span> <span class="n">GraphQLRouter</span>
-
-            <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
             <span class="k">async</span> <span class="k">def</span> <span class="nf">get_docs_from_endpoint</span><span class="p">(</span>
                 <span class="n">data</span><span class="p">,</span> <span class="n">target_executor</span><span class="p">,</span> <span class="n">parameters</span><span class="p">,</span> <span class="n">exec_endpoint</span>

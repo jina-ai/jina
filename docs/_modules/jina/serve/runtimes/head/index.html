@@ -218,6 +218,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/expose-jina-info/">Expose Information on microservices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -456,6 +457,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/">Command-Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../envs/">Environment Variables in Jina</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -553,6 +555,7 @@
 
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PollingType</span>
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">InternalNetworkError</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_full_version</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span><span class="p">,</span> <span class="n">jina_pb2_grpc</span>
 <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">GrpcConnectionPool</span>
@@ -589,6 +592,7 @@
             <span class="n">compression</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span>
             <span class="n">metrics_registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_retries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">retries</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
@@ -693,10 +697,12 @@
         <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaDiscoverEndpointsRPCServicer_to_server</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span>
         <span class="p">)</span>
+        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaInfoRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span><span class="p">)</span>
         <span class="n">service_names</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaSingleDataRequestRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
             <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaDataRequestRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
             <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaDiscoverEndpointsRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
+            <span class="n">jina_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">services_by_name</span><span class="p">[</span><span class="s1">&#39;JinaInfoRPC&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">full_name</span><span class="p">,</span>
             <span class="n">reflection</span><span class="o">.</span><span class="n">SERVICE_NAME</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># Mark all services as healthy.</span>
@@ -741,9 +747,15 @@
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_data</span><span class="p">([</span><span class="n">request</span><span class="p">],</span> <span class="n">context</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_handle_internalnetworkerror</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
-        <span class="n">context</span><span class="o">.</span><span class="n">set_details</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;|Head: Failed to connect to worker (Executor) pod at address </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1">. It may be down.&#39;</span>
-        <span class="p">)</span>
+        <span class="n">err_code</span> <span class="o">=</span> <span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">err_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">set_details</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;|Head: Failed to connect to worker (Executor) pod at address </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1">. It may be down.&#39;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">err_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">DEADLINE_EXCEEDED</span><span class="p">:</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">set_details</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;|Head: Connection to worker (Executor) pod at address </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1"> could be established, but timed out.&#39;</span>
+            <span class="p">)</span>
         <span class="n">context</span><span class="o">.</span><span class="n">set_code</span><span class="p">(</span><span class="n">err</span><span class="o">.</span><span class="n">code</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Error while getting responses from Pods: </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">request_id</span><span class="p">:</span>
@@ -833,7 +845,10 @@
                 <span class="n">response</span><span class="p">,</span>
                 <span class="n">uses_before_metadata</span><span class="p">,</span>
             <span class="p">)</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">send_requests_once</span><span class="p">(</span>
-                <span class="n">requests</span><span class="p">,</span> <span class="n">deployment</span><span class="o">=</span><span class="s1">&#39;uses_before&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span>
+                <span class="n">requests</span><span class="p">,</span>
+                <span class="n">deployment</span><span class="o">=</span><span class="s1">&#39;uses_before&#39;</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span><span class="p">,</span>
+                <span class="n">retries</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_retries</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">requests</span> <span class="o">=</span> <span class="p">[</span><span class="n">response</span><span class="p">]</span>
 
@@ -842,6 +857,7 @@
             <span class="n">deployment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deployment_name</span><span class="p">,</span>
             <span class="n">polling_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_polling</span><span class="p">[</span><span class="n">endpoint</span><span class="p">],</span>
             <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span><span class="p">,</span>
+            <span class="n">retries</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_retries</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">worker_results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">worker_send_tasks</span><span class="p">)</span>
@@ -860,7 +876,10 @@
                 <span class="n">response_request</span><span class="p">,</span>
                 <span class="n">uses_after_metadata</span><span class="p">,</span>
             <span class="p">)</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection_pool</span><span class="o">.</span><span class="n">send_requests_once</span><span class="p">(</span>
-                <span class="n">worker_results</span><span class="p">,</span> <span class="n">deployment</span><span class="o">=</span><span class="s1">&#39;uses_after&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span>
+                <span class="n">worker_results</span><span class="p">,</span>
+                <span class="n">deployment</span><span class="o">=</span><span class="s1">&#39;uses_after&#39;</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span><span class="p">,</span>
+                <span class="n">retries</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_retries</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">worker_results</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reduce</span><span class="p">:</span>
             <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">reduce_requests</span><span class="p">(</span><span class="n">worker_results</span><span class="p">)</span>
@@ -888,7 +907,23 @@
         <span class="k">if</span> <span class="n">uses_after_metadata</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">uses_after_metadata</span><span class="p">:</span>
                 <span class="n">merged_metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="k">return</span> <span class="n">merged_metadata</span></div>
+        <span class="k">return</span> <span class="n">merged_metadata</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">empty</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">JinaInfoProto</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process the the call requested and return the JinaInfo of the Runtime</span>
+
+<span class="sd">        :param empty: The service expects an empty protobuf message</span>
+<span class="sd">        :param context: grpc context</span>
+<span class="sd">        :returns: the response request</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">infoProto</span> <span class="o">=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">JinaInfoProto</span><span class="p">()</span>
+        <span class="n">version</span><span class="p">,</span> <span class="n">env_info</span> <span class="o">=</span> <span class="n">get_full_version</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">version</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">infoProto</span><span class="o">.</span><span class="n">jina</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">env_info</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">infoProto</span><span class="o">.</span><span class="n">envs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">infoProto</span></div>
 </pre></div>
                 </article>
             </div>

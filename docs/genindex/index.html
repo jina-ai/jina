@@ -217,6 +217,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/monitoring-flow/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/expose-jina-info/">Expose Information on microservices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -455,6 +456,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../cli/">Command-Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../envs/">Environment Variables in Jina</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -571,6 +573,8 @@
 </li>
         <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server">add_JinaGatewayDryRunRPCServicer_to_server() (in module jina.proto.jina_pb2_grpc)</a>
 </li>
+        <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaInfoRPCServicer_to_server">add_JinaInfoRPCServicer_to_server() (in module jina.proto.jina_pb2_grpc)</a>
+</li>
         <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaRPCServicer_to_server">add_JinaRPCServicer_to_server() (in module jina.proto.jina_pb2_grpc)</a>
 </li>
         <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server">add_JinaSingleDataRequestRPCServicer_to_server() (in module jina.proto.jina_pb2_grpc)</a>
@@ -593,12 +597,12 @@
         </ul></li>
         <li><a href="../api/jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet">AioHttpClientlet (class in jina.clients.base.helper)</a>
 </li>
-        <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config.alias_generator">alias_generator() (jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config method)</a>
+        <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.Config.alias_generator">alias_generator() (jina.serve.runtimes.gateway.http.models.JinaInfoModel.Config method)</a>
 
         <ul>
-          <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config.alias_generator">(jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config method)</a>
+          <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config.alias_generator">(jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config method)</a>
 </li>
-          <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaStatusModel.Config.alias_generator">(jina.serve.runtimes.gateway.http.models.JinaStatusModel.Config method)</a>
+          <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config.alias_generator">(jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config method)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.enums/#jina.enums.PollingType.ALL">ALL (jina.enums.PollingType attribute)</a>
@@ -612,11 +616,11 @@
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.allow_population_by_field_name">allow_population_by_field_name (jina.serve.runtimes.gateway.http.models.CustomConfig attribute)</a>
 
         <ul>
+          <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.Config.allow_population_by_field_name">(jina.serve.runtimes.gateway.http.models.JinaInfoModel.Config attribute)</a>
+</li>
           <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config.allow_population_by_field_name">(jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config attribute)</a>
 </li>
           <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config.allow_population_by_field_name">(jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config attribute)</a>
-</li>
-          <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaStatusModel.Config.allow_population_by_field_name">(jina.serve.runtimes.gateway.http.models.JinaStatusModel.Config attribute)</a>
 </li>
         </ul></li>
         <li><a href="../api/jina.orchestrate.flow.builder/#jina.orchestrate.flow.builder.allowed_levels">allowed_levels() (in module jina.orchestrate.flow.builder)</a>
@@ -1041,7 +1045,7 @@
           <li><a href="../api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.env">(jina.orchestrate.flow.base.Flow property)</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaStatusModel.envs">envs (jina.serve.runtimes.gateway.http.models.JinaStatusModel attribute)</a>
+        <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.envs">envs (jina.serve.runtimes.gateway.http.models.JinaInfoModel attribute)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.LogVerbosity.ERROR">ERROR (jina.enums.LogVerbosity attribute)</a>
 </li>
@@ -1130,10 +1134,10 @@
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.FlowBuildLevelError">FlowBuildLevelError</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.enums/#jina.enums.FlowInspectType">FlowInspectType (class in jina.enums)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.excepts/#jina.excepts.FlowMissingDeploymentError">FlowMissingDeploymentError</a>
 </li>
         <li><a href="../api/jina.excepts/#jina.excepts.FlowTopologyError">FlowTopologyError</a>
@@ -1158,6 +1162,8 @@
           <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.DataRequestProto.FromString">(jina.proto.serializer.DataRequestProto static method)</a>
 </li>
           <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.EndpointsProto.FromString">(jina.proto.serializer.EndpointsProto static method)</a>
+</li>
+          <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.JinaInfoProto.FromString">(jina.proto.serializer.JinaInfoProto static method)</a>
 </li>
           <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.StatusProto.FromString">(jina.proto.serializer.StatusProto static method)</a>
 </li>
@@ -1485,7 +1491,7 @@
           <li><a href="../api/jina/#module-jina">module</a>
 </li>
         </ul></li>
-        <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaStatusModel.jina">jina (jina.serve.runtimes.gateway.http.models.JinaStatusModel attribute)</a>
+        <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.jina">jina (jina.serve.runtimes.gateway.http.models.JinaInfoModel attribute)</a>
 </li>
         <li>
     jina.checker
@@ -1991,8 +1997,6 @@
           <li><a href="../api/jina.parsers.orchestrate/#module-jina.parsers.orchestrate">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.parsers.orchestrate.base
 
@@ -2000,6 +2004,8 @@
           <li><a href="../api/jina.parsers.orchestrate.base/#module-jina.parsers.orchestrate.base">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     jina.parsers.orchestrate.deployment
 
@@ -2409,6 +2415,18 @@
 </li>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel">JinaHealthModel (class in jina.serve.runtimes.gateway.http.models)</a>
 </li>
+        <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel">JinaInfoModel (class in jina.serve.runtimes.gateway.http.models)</a>
+</li>
+        <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.Config">JinaInfoModel.Config (class in jina.serve.runtimes.gateway.http.models)</a>
+</li>
+        <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.JinaInfoProto">JinaInfoProto (class in jina.proto.serializer)</a>
+</li>
+        <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaInfoRPC">JinaInfoRPC (class in jina.proto.jina_pb2_grpc)</a>
+</li>
+        <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaInfoRPCServicer">JinaInfoRPCServicer (class in jina.proto.jina_pb2_grpc)</a>
+</li>
+        <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaInfoRPCStub">JinaInfoRPCStub (class in jina.proto.jina_pb2_grpc)</a>
+</li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader">JinaLoader (class in jina.jaml.helper)</a>
 </li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.JinaLogger">JinaLogger (class in jina.logging.logger)</a>
@@ -2434,10 +2452,6 @@
         <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPCServicer">JinaSingleDataRequestRPCServicer (class in jina.proto.jina_pb2_grpc)</a>
 </li>
         <li><a href="../api/jina.proto.jina_pb2_grpc/#jina.proto.jina_pb2_grpc.JinaSingleDataRequestRPCStub">JinaSingleDataRequestRPCStub (class in jina.proto.jina_pb2_grpc)</a>
-</li>
-        <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaStatusModel">JinaStatusModel (class in jina.serve.runtimes.gateway.http.models)</a>
-</li>
-        <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaStatusModel.Config">JinaStatusModel.Config (class in jina.serve.runtimes.gateway.http.models)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.DeploymentRoleType.JOIN">JOIN (jina.enums.DeploymentRoleType attribute)</a>
 </li>
@@ -3291,6 +3305,8 @@
 </li>
           <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.EndpointsProto.SerializeToString">(jina.proto.serializer.EndpointsProto static method)</a>
 </li>
+          <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.JinaInfoProto.SerializeToString">(jina.proto.serializer.JinaInfoProto static method)</a>
+</li>
           <li><a href="../api/jina.proto.serializer/#jina.proto.serializer.StatusProto.SerializeToString">(jina.proto.serializer.StatusProto static method)</a>
 </li>
         </ul></li>
@@ -3492,10 +3508,10 @@
         </ul></li>
         <li><a href="../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.update_pod_args">update_pod_args() (jina.orchestrate.deployments.Deployment method)</a>
 </li>
-        <li><a href="../api/jina.orchestrate.pods.helper/#jina.orchestrate.pods.helper.update_runtime_cls">update_runtime_cls() (in module jina.orchestrate.pods.helper)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina.orchestrate.pods.helper/#jina.orchestrate.pods.helper.update_runtime_cls">update_runtime_cls() (in module jina.orchestrate.pods.helper)</a>
+</li>
         <li><a href="../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.update_sandbox_args">update_sandbox_args() (jina.orchestrate.deployments.Deployment method)</a>
 </li>
         <li><a href="../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.update_worker_pod_args">update_worker_pod_args() (jina.orchestrate.deployments.Deployment method)</a>
@@ -3503,8 +3519,6 @@
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.upload_file">upload_file() (in module jina.hubble.helper)</a>
 </li>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.use_enum_values">use_enum_values (jina.serve.runtimes.gateway.http.models.CustomConfig attribute)</a>
-</li>
-        <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaStatusModel.used_memory">used_memory (jina.serve.runtimes.gateway.http.models.JinaStatusModel attribute)</a>
 </li>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.used_memory">used_memory() (in module jina.logging.profile)</a>
 </li>

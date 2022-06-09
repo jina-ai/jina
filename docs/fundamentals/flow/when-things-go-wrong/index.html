@@ -35,7 +35,7 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="YAML specification" href="../yaml-spec/" /><link rel="prev" title="Readiness &amp; health check" href="../health-check/" />
+    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="YAML specification" href="../yaml-spec/" /><link rel="prev" title="Expose Information on microservices" href="../expose-jina-info/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/when-things-go-wrong.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
@@ -251,6 +251,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../monitoring-flow/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../expose-jina-info/">Expose Information on microservices</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../yaml-spec/">YAML specification</a></li>
 </ul>
@@ -489,6 +490,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/">Command-Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../envs/">Environment Variables in Jina</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -589,7 +591,23 @@ If the gRPC or WebSocket protocols are used, the networking stream is not interr
 <h2>Network errors<a class="headerlink" href="#network-errors" title="Permalink to this headline">#</a></h2>
 <p>When an <a class="reference internal" href="../../architecture-overview/#architecture-overview"><span class="std std-ref">Executor or Head</span></a> can’t be reached by the Flow’s gateway, it attempts to re-connect
 to the faulty deployment according to a retry policy.
+The same applies to calls to Executors that time out.
 The specifics of this policy depend on the environment the Flow find itself in, and are outlined below.</p>
+<div class="hint admonition">
+<p class="admonition-title">Hint: Prevent Executor timeouts</p>
+<p>If you regularly experience timouts on Executor calls, you may want to consider setting the Flow’s <code class="docutils literal notranslate"><span class="pre">timeout_send</span></code> attribute to a larger value.
+You can do this by setting <code class="docutils literal notranslate"><span class="pre">Flow(timeout_send=time_in_ms)</span></code> in Python
+or <code class="docutils literal notranslate"><span class="pre">timeout_send:</span> <span class="pre">time_in_ms</span></code> in your Flow YAML with-block.</p>
+<p>Especially neural network forward passes on CPU (and other unusually expensive operations) can lead to timeouts with the default setting.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
+````{admonition} Hint: Custom retry policy
+:class: hint
+You can override the default retry policy and instead choose a number of retries performed for each Executor.
+To perform `n` retries, set `Flow(retries=n)` in Python, or `retries: n` in the Flow
+YAML `with` block.
+</pre></div>
+</div>
+</div>
 <p>If, during the complete execution of this policy, no successful call to any Executor replica could be made, the request is aborted
 and the failure is <a class="reference internal" href="#failure-reporting"><span class="std std-ref">reported to the client</span></a>.</p>
 <section id="request-retries-local-deployment">
@@ -632,6 +650,8 @@ If you want to learn more about this limitation, see <a class="reference externa
 <p>Many service meshes have the ability to perform retries themselves.
 Be careful about setting up service mesh level retries in combination with Jina, as it may lead to unwanted behaviour in combination with
 Jina’s own retry policy.</p>
+<p>Instead, you may want to disable Jina level retries by setting <code class="docutils literal notranslate"><span class="pre">Flow(retries=0)</span></code> in Python, or <code class="docutils literal notranslate"><span class="pre">retries:</span> <span class="pre">0</span></code> in the Flow
+YAML <code class="docutils literal notranslate"><span class="pre">with</span></code> block.</p>
 </div>
 </section>
 <section id="failure-reporting">
@@ -640,13 +660,20 @@ Jina’s own retry policy.</p>
 <p>The resulting error message will contain the <em>network address</em> of the failing Executor.
 If multiple replicas are present, all addresses will be reported - unless the Flow is deployed using Kubernetes, in which
 case the replicas are managed by k8s and only a single address is available.</p>
-<p>Depending on the client-to-gateway protocol, the error message will be returned in one of the following ways:</p>
+<p>Depending on the client-to-gateway protocol, and they type of error, the error message will be returned in one of the following ways:</p>
+<p><strong>Could not connect to Executor:</strong></p>
 <ul class="simple">
 <li><p><strong>gRPC</strong>: A response with the gRPC status code 14 (<em>UNAVAILABLE</em>) is issued, and the error message is contained in the <code class="docutils literal notranslate"><span class="pre">details</span></code> field</p></li>
 <li><p><strong>HTTP</strong>: A response with the HTTP status code 503 (<em>SERVICE_UNAVAILABLE</em>) is issued, and the error message is contained in <code class="docutils literal notranslate"><span class="pre">response['header']['status']['description']</span></code></p></li>
 <li><p><strong>WebSocket</strong>: The stream closes with close code 1011 (<em>INTERNAL_ERROR</em>) and the message is contained in the WS close message</p></li>
 </ul>
-<p>For any of these protocols, the <a class="reference internal" href="../client/#client"><span class="std std-ref">Jina Client</span></a> will raise a <code class="docutils literal notranslate"><span class="pre">ConnectionError</span></code> containing the error message.</p>
+<p><strong>Call to Executor timed out:</strong></p>
+<ul class="simple">
+<li><p><strong>gRPC</strong>: A response with the gRPC status code 4 (<em>DEADLINE_EXCEEDED</em>) is issued, and the error message is contained in the <code class="docutils literal notranslate"><span class="pre">details</span></code> field</p></li>
+<li><p><strong>HTTP</strong>: A response with the HTTP status code 504 (<em>GATEWAY_TIMEOUT</em>) is issued, and the error message is contained in <code class="docutils literal notranslate"><span class="pre">response['header']['status']['description']</span></code></p></li>
+<li><p><strong>WebSocket</strong>: The stream closes with close code 1011 (<em>INTERNAL_ERROR</em>) and the message is contained in the WS close message</p></li>
+</ul>
+<p>For any of these scenarios, the <a class="reference internal" href="../client/#client"><span class="std std-ref">Jina Client</span></a> will raise a <code class="docutils literal notranslate"><span class="pre">ConnectionError</span></code> containing the error message.</p>
 </section>
 </section>
 <section id="debug-via-breakpoint">
@@ -713,7 +740,7 @@ case the replicas are managed by k8s and only a single address is available.</p>
                             <use href="#svg-arrow-right"></use>
                         </svg>
                     </a>
-                    <a class="prev-page" href="../health-check/">
+                    <a class="prev-page" href="../expose-jina-info/">
                         <svg>
                             <use href="#svg-arrow-right"></use>
                         </svg>
@@ -722,7 +749,7 @@ case the replicas are managed by k8s and only a single address is available.</p>
                                 <span>Previous</span>
                             </div>
                             
-                            <div class="title">Readiness &amp; health check</div>
+                            <div class="title">Expose Information on microservices</div>
                             
                         </div>
                     </a>

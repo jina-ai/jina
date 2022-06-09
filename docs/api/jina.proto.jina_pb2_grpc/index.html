@@ -251,6 +251,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/expose-jina-info/">Expose Information on microservices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -489,6 +490,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/">Command-Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../envs/">Environment Variables in Jina</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -829,6 +831,46 @@ This is used to send requests to Executors when a list of requests is not needed
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dry_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insecure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for_ready</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaGatewayDryRunRPC.dry_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaGatewayDryRunRPC.dry_run" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaInfoRPCStub">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaInfoRPCStub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaInfoRPCStub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaInfoRPCStub" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>jina gRPC service to expose information about running jina version and environment.</p>
+<p>Constructor.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>channel: A grpc.Channel.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaInfoRPCServicer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaInfoRPCServicer</span></span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaInfoRPCServicer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaInfoRPCServicer" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>jina gRPC service to expose information about running jina version and environment.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.add_JinaInfoRPCServicer_to_server">
+<span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">add_JinaInfoRPCServicer_to_server</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">servicer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#add_JinaInfoRPCServicer_to_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.add_JinaInfoRPCServicer_to_server" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.proto.jina_pb2_grpc.JinaInfoRPC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.proto.jina_pb2_grpc.</span></span><span class="sig-name descname"><span class="pre">JinaInfoRPC</span></span><a class="reference internal" href="../../_modules/jina/proto/jina_pb2_grpc/#JinaInfoRPC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.proto.jina_pb2_grpc.JinaInfoRPC" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>jina gRPC service to expose information about running jina version and environment.</p>
 </dd></dl>
 
 </section>

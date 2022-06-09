@@ -218,6 +218,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/expose-jina-info/">Expose Information on microservices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/when-things-go-wrong/">Handle exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../../fundamentals/flow/yaml-spec/">YAML specification</a></li>
 </ul>
@@ -456,6 +457,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../../cli/">Command-Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../../proto/docs/">Protocol Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../../envs/">Environment Variables in Jina</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -576,6 +578,7 @@
             <span class="n">filter_condition</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">reduce</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">outgoing_nodes</span> <span class="o">=</span> <span class="p">[]</span>
@@ -588,6 +591,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_filter_condition</span> <span class="o">=</span> <span class="n">filter_condition</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_reduce</span> <span class="o">=</span> <span class="n">reduce</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_timeout_send</span> <span class="o">=</span> <span class="n">timeout_send</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_retries</span> <span class="o">=</span> <span class="n">retries</span>
 
         <span class="nd">@property</span>
         <span class="k">def</span> <span class="nf">leaf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -605,7 +609,15 @@
             <span class="k">if</span> <span class="n">err_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">UNAVAILABLE</span><span class="p">:</span>
                 <span class="n">err</span><span class="o">.</span><span class="n">_details</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
-                    <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; |Gateway: Communication error with deployment </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> at address(es) </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1">. Head or worker(s) may be down.&#39;</span>
+                    <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39; |Gateway: Communication error with deployment </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> at address(es) </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1">. &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;Head or worker(s) may be down.&#39;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">err</span>
+            <span class="k">elif</span> <span class="n">err_code</span> <span class="o">==</span> <span class="n">grpc</span><span class="o">.</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">DEADLINE_EXCEEDED</span><span class="p">:</span>
+                <span class="n">err</span><span class="o">.</span><span class="n">_details</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">err</span><span class="o">.</span><span class="n">details</span><span class="p">()</span>
+                    <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;|Gateway: Connection with deployment </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> at address(es) </span><span class="si">{</span><span class="n">err</span><span class="o">.</span><span class="n">dest_addr</span><span class="si">}</span><span class="s1"> could be established, but timed out.&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39; You can increase the allowed time by setting `timeout_send` in your Flow YAML `with` block or Flow `__init__()` method.&#39;</span>
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="n">err</span>
             <span class="k">else</span><span class="p">:</span>
@@ -663,6 +675,7 @@
                             <span class="n">head</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                             <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
                             <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_send</span><span class="p">,</span>
+                            <span class="n">retries</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_retries</span><span class="p">,</span>
                         <span class="p">)</span>
                     <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_handle_internalnetworkerror</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
@@ -777,6 +790,7 @@
         <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">deployments_disable_reduce</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
@@ -809,6 +823,7 @@
                 <span class="n">filter_condition</span><span class="o">=</span><span class="n">condition</span><span class="p">,</span>
                 <span class="n">reduce</span><span class="o">=</span><span class="n">node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">deployments_disable_reduce</span><span class="p">,</span>
                 <span class="n">timeout_send</span><span class="o">=</span><span class="n">timeout_send</span><span class="p">,</span>
+                <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">outgoing_node_names</span> <span class="ow">in</span> <span class="n">graph_representation</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
