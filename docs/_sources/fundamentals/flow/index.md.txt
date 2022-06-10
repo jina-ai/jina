@@ -145,7 +145,6 @@ Executor and Flow are the two fundamental concepts in Jina.
 create-flow
 add-executors
 topologies
-flow-api
 monitoring-flow
 health-check
 when-things-go-wrong

@@ -55,7 +55,7 @@ In the following sections we will describe how to run standalone Executors via t
 ````{admonition} Advanced deployment options
 :class: seealso
 This tutorial walks through the basics of spawing a standalone (external) Executor. For more advanced options, refer to the
-{ref}`CLI <api/cli>` and {ref}`Executor API section <serve-executor-standalone>`
+[CLI](../cli/index.rst) and {ref}`Executor API section <serve-executor-standalone>`
 ````
 
 ## Using Jina Hub

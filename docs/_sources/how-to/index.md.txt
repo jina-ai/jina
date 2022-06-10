@@ -1,4 +1,4 @@
-# How-To
+# {octicon}`book` How-To
 
 Jina is a very powerful framework that can help you build distributed multi-modal and cross-modal applications, from start to finish.
 

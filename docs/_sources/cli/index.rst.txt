@@ -1,5 +1,5 @@
-Command-Line Interface
-======================
+:octicon:`terminal` Command-Line Interface
+==========================================
 
 .. argparse::
    :noepilog:
