@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.6.2 Documentation" />
   
-<meta property="og:description" content="This page outlines the specification for valid Flow YAML files. Such YAML configurations can be used to generate a Flow object via Flow.load_config('flow.yml'). To generate a YAML configuration from a Flow Python object, run f.save_config(). Example: The following constitutes an example Flow conf..." />
+<meta property="og:description" content="This page outlines the specification for valid Flow YAML files. Such YAML configurations can be used to generate a Flow object via load_config(). To generate a YAML configuration from a Flow Python object, use save_config(). YAML completion in IDE: We provide a JSON Schema for your IDE to enable ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -581,11 +581,37 @@
                     <section class="tex2jax_ignore mathjax_ignore" id="yaml-specification">
 <span id="flow-yaml-spec"></span><h1>YAML specification<a class="headerlink" href="#yaml-specification" title="Permalink to this headline">#</a></h1>
 <p>This page outlines the specification for valid Flow YAML files.</p>
-<p>Such YAML configurations can be used to generate a Flow object via <code class="docutils literal notranslate"><span class="pre">Flow.load_config('flow.yml')</span></code>.</p>
-<p>To generate a YAML configuration from a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> Python object, run <code class="docutils literal notranslate"><span class="pre">f.save_config()</span></code>.</p>
-<section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">#</a></h2>
-<p>The following constitutes an example Flow configuration:</p>
+<p>Such YAML configurations can be used to generate a Flow object via <a class="reference internal" href="../../../api/jina.jaml/#jina.jaml.JAMLCompatible.load_config" title="jina.jaml.JAMLCompatible.load_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_config()</span></code></a>.</p>
+<p>To generate a YAML configuration from a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> Python object, use <a class="reference internal" href="../../../api/jina.jaml/#jina.jaml.JAMLCompatible.save_config" title="jina.jaml.JAMLCompatible.save_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_config()</span></code></a>.</p>
+<section id="yaml-completion-in-ide">
+<h2>YAML completion in IDE<a class="headerlink" href="#yaml-completion-in-ide" title="Permalink to this headline">#</a></h2>
+<p>We provide a <a class="reference external" href="https://json-schema.org/">JSON Schema</a> for your IDE to enable code completion, syntax validation, members listing and displaying help text. Here is a <a class="reference external" href="https://youtu.be/qOD-6mihUzQ">video tutorial</a> to walk you through the setup.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/qOD-6mihUzQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<section id="pycharm-users">
+<h3>PyCharm users<a class="headerlink" href="#pycharm-users" title="Permalink to this headline">#</a></h3>
+<ol class="simple">
+<li><p>Click menu <code class="docutils literal notranslate"><span class="pre">Preferences</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">JSON</span> <span class="pre">Schema</span> <span class="pre">mappings</span></code>;</p></li>
+<li><p>Add a new schema, in the <code class="docutils literal notranslate"><span class="pre">Schema</span> <span class="pre">File</span> <span class="pre">or</span> <span class="pre">URL</span></code> write <code class="docutils literal notranslate"><span class="pre">https://api.jina.ai/schemas/latest.json</span></code>; select <code class="docutils literal notranslate"><span class="pre">JSON</span> <span class="pre">Schema</span> <span class="pre">Version</span> <span class="pre">7</span></code>;</p></li>
+<li><p>Add a file path pattern and link it to <code class="docutils literal notranslate"><span class="pre">*.jaml</span></code> or <code class="docutils literal notranslate"><span class="pre">*.jina.yml</span></code> or any suffix you commonly used for Jina Flow’s YAML.</p></li>
+</ol>
+</section>
+<section id="vscode-users">
+<h3>VSCode users<a class="headerlink" href="#vscode-users" title="Permalink to this headline">#</a></h3>
+<ol class="simple">
+<li><p>Install the extension: <code class="docutils literal notranslate"><span class="pre">YAML</span> <span class="pre">Language</span> <span class="pre">Support</span> <span class="pre">by</span> <span class="pre">Red</span> <span class="pre">Hat</span></code>;</p></li>
+<li><p>In IDE-level <code class="docutils literal notranslate"><span class="pre">settings.json</span></code> add:</p></li>
+</ol>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;yaml.schemas&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;https://api.jina.ai/schemas/latest.json&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/*.jina.yml&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/*.jaml&quot;</span><span class="p">],</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>You can bind Schema to any file suffix you commonly used for Jina Flow’s YAML.</p>
+</section>
+</section>
+<section id="example-yaml">
+<h2>Example YAML<a class="headerlink" href="#example-yaml" title="Permalink to this headline">#</a></h2>
+<p>The following constitutes an example Flow YAML:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1&#39;</span><span class="w"></span>
 <span class="nt">with</span><span class="p">:</span><span class="w"></span>
@@ -1227,7 +1253,12 @@ Note that the only difference between environment variable syntax and relative p
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">YAML specification</a><ul>
-<li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#yaml-completion-in-ide">YAML completion in IDE</a><ul>
+<li><a class="reference internal" href="#pycharm-users">PyCharm users</a></li>
+<li><a class="reference internal" href="#vscode-users">VSCode users</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#example-yaml">Example YAML</a></li>
 <li><a class="reference internal" href="#fields">Fields</a><ul>
 <li><a class="reference internal" href="#jtype"><code class="docutils literal notranslate"><span class="pre">jtype</span></code></a></li>
 <li><a class="reference internal" href="#version"><code class="docutils literal notranslate"><span class="pre">version</span></code></a></li>

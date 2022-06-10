@@ -3,13 +3,40 @@
 
 This page outlines the specification for valid Flow YAML files.
 
-Such YAML configurations can be used to generate a Flow object via `Flow.load_config('flow.yml')`.
+Such YAML configurations can be used to generate a Flow object via {meth}`~jina.jaml.JAMLCompatible.load_config`.
 
-To generate a YAML configuration from a `Flow` Python object, run `f.save_config()`.
+To generate a YAML configuration from a `Flow` Python object, use {meth}`~jina.jaml.JAMLCompatible.save_config`.
 
-## Example
+## YAML completion in IDE
 
-The following constitutes an example Flow configuration:
+We provide a [JSON Schema](https://json-schema.org/) for your IDE to enable code completion, syntax validation, members listing and displaying help text. Here is a [video tutorial](https://youtu.be/qOD-6mihUzQ) to walk you through the setup.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/qOD-6mihUzQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+### PyCharm users
+
+1. Click menu `Preferences` -> `JSON Schema mappings`;
+2. Add a new schema, in the `Schema File or URL` write `https://api.jina.ai/schemas/latest.json`; select `JSON Schema Version 7`;
+3. Add a file path pattern and link it to `*.jaml` or `*.jina.yml` or any suffix you commonly used for Jina Flow's YAML.
+
+### VSCode users
+
+1. Install the extension: `YAML Language Support by Red Hat`;
+2. In IDE-level `settings.json` add:
+
+```json
+"yaml.schemas": {
+    "https://api.jina.ai/schemas/latest.json": ["/*.jina.yml", "/*.jaml"],
+}
+```
+
+You can bind Schema to any file suffix you commonly used for Jina Flow's YAML.
+
+
+## Example YAML
+
+The following constitutes an example Flow YAML:
 
 ```yaml
 jtype: Flow
