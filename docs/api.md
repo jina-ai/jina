@@ -3,8 +3,6 @@
 This section includes the API documentation from the `jina` codebase. These are automatically extracted from the [docstrings](https://peps.python.org/pep-0257/) in the code.
 
 ## Client
-
-
 | Class/Function                                        |                                                |
 |-------------------------------------------------------|------------------------------------------------|
 | {class}`~jina.Client`                                 | Function to generate appropriate client object |
@@ -17,14 +15,12 @@ This section includes the API documentation from the `jina` codebase. These are 
 
 
 ## Flow
-
 | Class/Function                                        |                                     |
 |-------------------------------------------------------|-------------------------------------|
 | {class}`~jina.Flow`                                   | Flow orchestrates Executors         |
 | {class}`~jina.orchestrate.flow.asyncio.AsyncFlow`     | Flow with an asynchronous interface |
 
 ## Executor
-
 | Class/Function          |                                                                 |
 |-------------------------|-----------------------------------------------------------------|
 | {class}`~jina.Executor` | Component that performs operations on DocumentArray             |
@@ -33,7 +29,6 @@ This section includes the API documentation from the `jina` codebase. These are 
 
 
 ## Internals
-
 | Class/Function                                                          |                                               |
 |-------------------------------------------------------------------------|-----------------------------------------------|
 | {class}`~jina.serve.runtimes.asyncio.AsyncNewLoopRuntime`               | Base runtime of all Jina components           |
