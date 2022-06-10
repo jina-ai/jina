@@ -1,4 +1,4 @@
-## Run
+# Run
 
 `Executor` objects can be used directly, just like any regular Python object.
 
@@ -51,7 +51,7 @@ print(docs.embeddings.shape)
 ```
 ````
 
-### Run async Executors
+## Run async Executors
 
 
 ```python

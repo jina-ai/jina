@@ -166,7 +166,7 @@ You can see the ALIVE Flows deployed by you.
 
 You can also filter your Flows by passing a status:
 
-```
+```bash
 jc list --status FAILED
 ```
 
@@ -177,7 +177,7 @@ jc list --status FAILED
 
 Or see all the flows:
 
-```
+```bash
 jc list --status ALL
 ```
 
