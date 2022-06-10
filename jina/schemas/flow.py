@@ -3,7 +3,7 @@ from jina_cli.export import api_to_dict
 
 _schema_flow_with = _cli_to_schema(
     api_to_dict(),
-    'flow',
+    ['flow', 'gateway'],
     allow_addition=False,
     description='The config of Flow, unrecognized config arguments will be applied to all Deployments',
 )['Jina::Flow']
@@ -35,6 +35,6 @@ schema_flow = {
         },
         'type': 'object',
         'additionalProperties': False,
-        'required': ['jtype', 'version', 'deployments'],
+        'required': ['jtype', 'executors'],
     }
 }

@@ -25,12 +25,14 @@ def _cli_to_schema(
     namespace='Jina',
     description='',
 ):
-    deployment_api = None
+    deployment_api = []
+
+    if not isinstance(target, list):
+        target = [target]
 
     for d in api_dict['methods']:
-        if d['name'] == target:
-            deployment_api = d['options']
-            break
+        if d['name'] in target:
+            deployment_api.extend(d['options'])
 
     _schema = {
         'properties': {},
@@ -57,4 +59,4 @@ def _cli_to_schema(
     if required:
         _schema['required'].extend(required)
 
-    return {f'{namespace}::{target.capitalize()}': _schema}
+    return {f'{namespace}::{target[0].capitalize()}': _schema}
