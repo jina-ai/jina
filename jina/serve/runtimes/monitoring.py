@@ -1,3 +1,5 @@
+import errno
+
 from jina import __default_port_monitoring__
 
 
@@ -26,7 +28,7 @@ class MonitoringMixin:
                 )
             except OSError as e:
                 if (
-                    e.args[0] == 98
+                    e.args[0] == errno.ENOSR
                     and self.args.port_monitoring == __default_port_monitoring__
                 ):
                     self.logger.warning(
