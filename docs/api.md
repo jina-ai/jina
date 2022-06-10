@@ -3,22 +3,22 @@
 This section includes the API documentation from the `jina` codebase. These are automatically extracted from the [docstrings](https://peps.python.org/pep-0257/) in the code.
 
 ## Client
-| Class/Function                                        |                                                |
-|-------------------------------------------------------|------------------------------------------------|
-| {class}`~jina.Client`                                 | Function to generate appropriate client object |
-| {class}`~jina.clients.grpc.GRPCClient`                | gRPC client                                    |
-| {class}`~jina.clients.grpc.AsyncGRPCClient`           | Asynchronous gRPC client                       |
-| {class}`~jina.clients.http.HTTPClient`                | HTTP client                                    |
-| {class}`~jina.clients.http.AsyncHTTPClient`           | Asynchronous HTTP client                       |
-| {class}`~jina.clients.websocket.WebSocketClient`      | WebSocket client                               |
-| {class}`~jina.clients.websocket.AsyncWebSocketClient` | Asynchronous WebSocket client                  |
+| Class/Function                                        |                                                             |
+|-------------------------------------------------------|-------------------------------------------------------------|
+| {class}`~jina.Client`                                 | Convenience function to generate appropriate client object  |
+| {class}`~jina.clients.grpc.GRPCClient`                | gRPC client that can connect to Flow gRPC Gateway           |
+| {class}`~jina.clients.grpc.AsyncGRPCClient`           | Asynchronous version of  gRPC client                        |
+| {class}`~jina.clients.http.HTTPClient`                | HTTP client that can connect to Flow HTTP Gateway           |
+| {class}`~jina.clients.http.AsyncHTTPClient`           | Asynchronous version of HTTP client                         |
+| {class}`~jina.clients.websocket.WebSocketClient`      | WebSocket client that can connect to Flow WebSocket Gateway |
+| {class}`~jina.clients.websocket.AsyncWebSocketClient` | Asynchronous version of WebSocket client                    |
 
 
 ## Flow
-| Class/Function                                        |                                     |
-|-------------------------------------------------------|-------------------------------------|
-| {class}`~jina.Flow`                                   | Flow orchestrates Executors         |
-| {class}`~jina.orchestrate.flow.asyncio.AsyncFlow`     | Flow with an asynchronous interface |
+| Class/Function                                        |                                                                                   |
+|-------------------------------------------------------|-----------------------------------------------------------------------------------|
+| {class}`~jina.Flow`                                   | Flow connects Executors in a pipeline and exposes API endpoints through a Gateway |
+| {class}`~jina.orchestrate.flow.asyncio.AsyncFlow`     | Asynchronous version of the Flow                                                  |
 
 ## Executor
 | Class/Function          |                                                                 |
