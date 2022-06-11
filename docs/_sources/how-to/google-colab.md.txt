@@ -5,7 +5,7 @@
 :scale: 0 %
 ```
 
-```{figure} img/jina-on-colab.png
+```{figure} jina-on-colab.png
 :scale: 0 %
 :width: 0 %
 ```
