@@ -48,6 +48,7 @@ can put that into practice you can find {ref}`here <kubernetes>`.
 ```{toctree}
 :hidden:
 
+google-colab
 ../fundamentals/clean-code
 async-executors
 scale-out
