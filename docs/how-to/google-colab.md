@@ -7,4 +7,4 @@ Google Colab provides a easy-to-use Jupyter notebook environment with GPU/TPU su
 :width: 70%
 ```
 
-Open this notebook on Google Colab to learn more. Enjoy the free GPU/TPU to build your awesome Jina applications!
+[Open this notebook on Google Colab to learn more](https://colab.research.google.com/github/jina-ai/jina/blob/master/docs/Using_Jina_on_Colab.ipynb). Enjoy the free GPU/TPU to build your awesome Jina applications!
