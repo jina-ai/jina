@@ -1,5 +1,15 @@
 # Use Jina on Colab with GPU/TPU
 
+```{figure} https://docs.jina.ai/_images/jina-on-colab.png
+:width: 0 %
+:scale: 0 %
+```
+
+```{figure} img/jina-on-colab.png
+:scale: 0 %
+:width: 0 %
+```
+
 Google Colab provides a easy-to-use Jupyter notebook environment with GPU/TPU support. Jina is fully compatible with Google Colab. You can enjoy the following ways of using Jina:
 
 ```{figure} jina-on-colab.svg
