@@ -183,7 +183,7 @@ def fill_implementation_stub(
                 doc_str += '\n'
             doc_str += s
         noqa_str = '\n'.join(
-            f'{indent}{indent}.. # noqa: DAR{j}' for j in ['202', '101', '003']
+            f'{indent}{indent}.. # noqa: DAR{j}' for j in ['102', '202', '101', '003']
         )
         if return_type:
             return_str = f'\n{indent}{indent}:return: {doc_str_return}'
@@ -196,7 +196,7 @@ def fill_implementation_stub(
                 doc_str += '\n'
             doc_str += s
         noqa_str = '\n'.join(
-            f'{indent}.. # noqa: DAR{j}' for j in ['202', '101', '003']
+            f'{indent}.. # noqa: DAR{j}' for j in ['102', '202', '101', '003']
         )
         if return_type:
             return_str = f'\n{indent}:return: {doc_str_return}'
