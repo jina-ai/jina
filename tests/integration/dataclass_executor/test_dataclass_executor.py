@@ -5,9 +5,9 @@ from jina import Executor, Flow, requests
 
 
 def test_executor_dataclass():
-    @dataclasses.dataclass()
+    @dataclasses.dataclass
     class MyDataClassExecutor(Executor):
-        my_field: str = ''
+        my_field: str
 
         @requests(on=['/search'])
         def baz(self, docs, **kwargs):

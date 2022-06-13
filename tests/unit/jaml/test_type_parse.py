@@ -14,7 +14,7 @@ class MyExecutor(BaseExecutor):
     pass
 
 
-@dataclasses.dataclass()
+@dataclasses.dataclass
 class MyDataClassExecutor(BaseExecutor):
     my_field: str = ''
 
@@ -222,12 +222,6 @@ def test_jtype(tmpdir):
 
     assert type(BaseExecutor.load_config(exec_path)) == BaseExecutor
     assert type(Flow.load_config(flow_path)) == Flow
-
-    (
-        'metas',
-        {'name': 'test-name-updated', 'workspace': 'test-work-space-updated'},
-    ),
-    ('requests', {'/foo': 'baz'}),
 
 
 def test_load_dataclass_executor():
