@@ -160,7 +160,7 @@
 <div class="announcement">
     <aside class="announcement-content">
          
-    <a href="Neural">Learn more about the topic When</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/286414805/">Learn more about Jina and Wordlift at our Engineering All Hands on June 14th at 18:00 CET</a>
      
     </aside>
 </div>
@@ -242,7 +242,7 @@
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/monitoring-executor/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-run/">Run</a></li>
@@ -587,7 +587,7 @@
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="monitor">
 <span id="monitoring-flow"></span><h1>Monitor<a class="headerlink" href="#monitor" title="Permalink to this headline">#</a></h1>
-<p>A Jina <a class="reference internal" href="../#flow-cookbook"><span class="std std-ref">Flow</span></a> exposes several core metrics that allow you to have a deeper look
+<p>A Jina <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> exposes several core metrics that allow you to have a deeper look
 at what is happening inside it. Metrics allow you to, for example, monitor the overall performance
 of your Flow, detect bottlenecks, or alert your team when some component of your Flow is down.</p>
 <p>Jina Flows expose metrics in the <a class="reference external" href="https://prometheus.io/docs/instrumenting/exposition_formats/">Prometheus format</a>. This is a plain text format that is understandable by both humans and machines. These metrics are intended to be scraped by
@@ -595,7 +595,7 @@ of your Flow, detect bottlenecks, or alert your team when some component of your
 <p>To visualize your metrics through a dashboard, we recommend <a class="reference external" href="https://grafana.com/">Grafana</a></p>
 <section id="enable-monitoring">
 <h2>Enable monitoring<a class="headerlink" href="#enable-monitoring" title="Permalink to this headline">#</a></h2>
-<p>A <a class="reference internal" href="../#flow-cookbook"><span class="std std-ref">Flow</span></a> is composed of several Pods, namely the Gateway, the Executors, and potentially a Head (see the <a class="reference internal" href="../../architecture-overview/#architecture-overview"><span class="std std-ref">architecture overview</span></a> for more details). Each of these Pods is its own microservice. These services expose their own metrics using the <a class="reference external" href="https://prometheus.io/docs/instrumenting/clientlibs/">Prometheus client</a>.
+<p>A <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is composed of several Pods, namely the <a class="reference internal" href="../../../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime" title="jina.serve.runtimes.gateway.GatewayRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayRuntime</span></code></a>, the <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s, and potentially a <a class="reference internal" href="../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime" title="jina.serve.runtimes.head.HeadRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeadRuntime</span></code></a> (see the <a class="reference internal" href="../../architecture-overview/#architecture-overview"><span class="std std-ref">architecture overview</span></a> for more details). Each of these Pods is its own microservice. These services expose their own metrics using the <a class="reference external" href="https://prometheus.io/docs/instrumenting/clientlibs/">Prometheus client</a>.
 This means that they are as many metrics endpoints as there are Pods in your Flow.</p>
 <p>Let’s give an example to illustrate it :</p>
 <div class="tab-set docutils">
@@ -661,7 +661,7 @@ interested in monitoring a single Executor. Note that by default the monitoring 
 </section>
 <section id="available-metrics">
 <h2>Available metrics<a class="headerlink" href="#available-metrics" title="Permalink to this headline">#</a></h2>
-<p>Flows support different metrics out of the box, in addition to allowing the user to define their own custom metrics.</p>
+<p>A <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> supports different metrics out of the box, in addition to allowing the user to define their own custom metrics.</p>
 <p>Because not all Pods have the same role, they expose different kinds of metrics:</p>
 <section id="gateway-pods">
 <h3>Gateway Pods<a class="headerlink" href="#gateway-pods" title="Permalink to this headline">#</a></h3>

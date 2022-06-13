@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.6.3 Documentation" />
   
-<meta property="og:description" content="Overview: A Jina Flow orchestrates multiple Executors. By default, a Jina Executor runs with a single replica and shard. Some Executor in the Flow might be less performant than others, this could turn into a performance bottleneck in your Jina application. To solve this, Jina Flow allows you to c..." />
+<meta property="og:description" content="Overview: A Jina Flow orchestrates multiple Executor s. By default, a Jina Executor runs with a single replica and shard. Some Executor in the Flow might be less performant than others, this could turn into a performance bottleneck in your Jina application. To solve this, Jina Flow allows you to ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -160,7 +160,7 @@
 <div class="announcement">
     <aside class="announcement-content">
          
-    <a href="Neural">Learn more about the topic When</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/286414805/">Learn more about Jina and Wordlift at our Engineering All Hands on June 14th at 18:00 CET</a>
      
     </aside>
 </div>
@@ -242,7 +242,7 @@
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
@@ -589,14 +589,14 @@
 <span id="scale-out"></span><h1>Scale out your Executor<a class="headerlink" href="#scale-out-your-executor" title="Permalink to this headline">#</a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">#</a></h2>
-<p>A Jina <code class="docutils literal notranslate"><span class="pre">Flow</span></code> orchestrates multiple <code class="docutils literal notranslate"><span class="pre">Executors</span></code>.
-By default, a Jina <code class="docutils literal notranslate"><span class="pre">Executor</span></code> runs with a single <code class="docutils literal notranslate"><span class="pre">replica</span></code> and <code class="docutils literal notranslate"><span class="pre">shard</span></code>.
-Some <code class="docutils literal notranslate"><span class="pre">Executor</span></code> in the Flow might be less performant than others,
+<p>A Jina <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> orchestrates multiple <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s.
+By default, a Jina Executor runs with a single <code class="docutils literal notranslate"><span class="pre">replica</span></code> and <code class="docutils literal notranslate"><span class="pre">shard</span></code>.
+Some Executor in the Flow might be less performant than others,
 this could turn into a performance bottleneck in your Jina application.</p>
-<p>To solve this, Jina <code class="docutils literal notranslate"><span class="pre">Flow</span></code> allows you to config the number of <code class="docutils literal notranslate"><span class="pre">replicas</span></code> and <code class="docutils literal notranslate"><span class="pre">shards</span></code>.
-<code class="docutils literal notranslate"><span class="pre">replica</span></code> is used to increase <code class="docutils literal notranslate"><span class="pre">Executor</span></code> throughput and availability.
+<p>To solve this, Jina Flow allows you to config the number of <code class="docutils literal notranslate"><span class="pre">replicas</span></code> and <code class="docutils literal notranslate"><span class="pre">shards</span></code>.
+<code class="docutils literal notranslate"><span class="pre">replica</span></code> is used to increase Executor throughput and availability.
 <code class="docutils literal notranslate"><span class="pre">shard</span></code> is used for data partitioning.</p>
-<p>In this document, we’ll dive into these two concepts and see how you can make use of <code class="docutils literal notranslate"><span class="pre">replicas</span></code> and <code class="docutils literal notranslate"><span class="pre">shards</span></code> to scale out your <code class="docutils literal notranslate"><span class="pre">Executor</span></code>.</p>
+<p>In this document, we’ll dive into these two concepts and see how you can make use of <code class="docutils literal notranslate"><span class="pre">replicas</span></code> and <code class="docutils literal notranslate"><span class="pre">shards</span></code> to scale out your Executor.</p>
 </section>
 <section id="before-you-start">
 <h2>Before you start<a class="headerlink" href="#before-you-start" title="Permalink to this headline">#</a></h2>
@@ -617,7 +617,7 @@ pip install <span class="nv">pqlite</span><span class="o">==</span><span class="
 <h2>Speed up a slow Executor: Replicas<a class="headerlink" href="#speed-up-a-slow-executor-replicas" title="Permalink to this headline">#</a></h2>
 <section id="context">
 <h3>Context<a class="headerlink" href="#context" title="Permalink to this headline">#</a></h3>
-<p>Imagine you are building a text-based search system and you have an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> to transform text to its <a class="reference external" href="https://en.wikipedia.org/wiki/Tf-idf">tf-idf</a> vector representation.
+<p>Imagine you are building a text-based search system and you have an <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> to transform text to its <a class="reference external" href="https://en.wikipedia.org/wiki/Tf-idf">tf-idf</a> vector representation.
 This could become a performance bottleneck to your search system.
 The Executor looks like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span>
@@ -650,7 +650,7 @@ The Executor looks like this:</p>
         <span class="n">docs</span><span class="o">.</span><span class="n">embeddings</span> <span class="o">=</span> <span class="n">X</span>
 </pre></div>
 </div>
-<p>And we create a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> and make use this <code class="docutils literal notranslate"><span class="pre">Executor</span></code>:</p>
+<p>And we create a Flow and make use this Executor:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;fast_executor&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;slow_executor&#39;</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="n">MyVectorizer</span><span class="p">)</span>
@@ -659,7 +659,7 @@ The Executor looks like this:</p>
 </section>
 <section id="scale-up-an-executor">
 <h3>Scale up an Executor<a class="headerlink" href="#scale-up-an-executor" title="Permalink to this headline">#</a></h3>
-<p>When you start your <code class="docutils literal notranslate"><span class="pre">Flow</span></code>, you might discover to process all the text corpus, this process takes a while:</p>
+<p>When you start your <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>, you might discover to process all the text corpus, this process takes a while:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">news_generator</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
@@ -675,7 +675,7 @@ What if you need to index millions of documents?</p>
 ⠇       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━ <span class="m">0</span>:00:06 <span class="m">18</span>.1 step/s . <span class="m">115</span> steps <span class="k">done</span> <span class="k">in</span> <span class="m">6</span> seconds
 </pre></div>
 </div>
-<p>Jina allows you to scale your <code class="docutils literal notranslate"><span class="pre">Executor</span></code> very easily, with only one parameter change:</p>
+<p>Jina allows you to scale your <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> very easily, with only one parameter change:</p>
 <div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gi">+ f = Flow().add(name=&#39;fast_executor&#39;).add(name=&#39;slow_executor&#39;, uses=MyVectorizer, replicas=2)</span><span class="w"></span>
 <span class="gd">- f = Flow().add(name=&#39;fast_executor&#39;).add(name=&#39;slow_executor&#39;, uses=MyVectorizer)</span><span class="w"></span>
 </pre></div>
@@ -724,7 +724,7 @@ We’ll use Jina’s <a class="reference external" href="https://hub.jina.ai/exe
 </section>
 <section id="partitioning-the-data">
 <h3>Partitioning the data<a class="headerlink" href="#partitioning-the-data" title="Permalink to this headline">#</a></h3>
-<p>Now let’s run the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> to index your data:</p>
+<p>Now let’s run the <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>to index your data:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">news_generator</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>

@@ -160,7 +160,7 @@
 <div class="announcement">
     <aside class="announcement-content">
          
-    <a href="Neural">Learn more about the topic When</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/286414805/">Learn more about Jina and Wordlift at our Engineering All Hands on June 14th at 18:00 CET</a>
      
     </aside>
 </div>
@@ -242,7 +242,7 @@
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Executor</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../executor-api/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../monitoring-executor/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor-run/">Run</a></li>
@@ -587,6 +587,7 @@
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="containerize">
 <span id="dockerize-exec"></span><h1>Containerize<a class="headerlink" href="#containerize" title="Permalink to this headline">#</a></h1>
+<p>Once you have understood what an <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> is and how it can be used inside a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>, you may be interested in wrapping this Executor into a container so that you can isolate its dependencies and make it ready to run in the cloud or in Kubernetes.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>The recommended way of containerizing an Executor is to leverage <a class="reference internal" href="../hub/#jina-hub"><span class="std std-ref">Jina Hub</span></a> to make sure your Executor can run as a container. It handles auto-provisioning, building, version controlling etc.</p>
@@ -600,7 +601,6 @@ jina hub push .
 </div>
 <p>The image building will happen on the cloud, and available immedidately for other to use.</p>
 </div>
-<p>Once you have understood what an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> is and how it can be used inside a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>, you may be interested in wrapping this Executor into a container so that you can isolate its dependencies and make it ready to run in the cloud or in Kubernetes.</p>
 <p>You can also build a Docker image yourself and use it like any other Executor. There are some requirements
 on how this image needs to be built, the main ones being:</p>
 <ul class="simple">

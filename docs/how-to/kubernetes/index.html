@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.6.3 Documentation" />
   
-<meta property="og:description" content="Deploying a Flow in Kubernetes is the recommended way of using Jina in production. Since a Flow is composed of Executors which can run in different runtimes depending on how you want to deploy your Flow, Kubernetes can easily take over the lifetime management of Executors. In general, Jina follow..." />
+<meta property="og:description" content="Deploying a Flow in Kubernetes is the recommended way of using Jina in production. Since a Flow is composed of Executor s which can run in different runtimes depending on how you want to deploy your Flow, Kubernetes can easily take over the lifetime management of Executors. In general, Jina follo..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -160,7 +160,7 @@
 <div class="announcement">
     <aside class="announcement-content">
          
-    <a href="Neural">Learn more about the topic When</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/286414805/">Learn more about Jina and Wordlift at our Engineering All Hands on June 14th at 18:00 CET</a>
      
     </aside>
 </div>
@@ -242,7 +242,7 @@
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
@@ -587,8 +587,8 @@
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="deploy-with-kubernetes">
 <span id="kubernetes"></span><h1>Deploy with Kubernetes<a class="headerlink" href="#deploy-with-kubernetes" title="Permalink to this headline">#</a></h1>
-<p>Deploying a Flow in Kubernetes is the recommended way of using Jina in production.</p>
-<p>Since a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> is composed of <code class="docutils literal notranslate"><span class="pre">Executors</span></code> which can run in different runtimes depending on how you want to deploy
+<p>Deploying a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> in Kubernetes is the recommended way of using Jina in production.</p>
+<p>Since a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is composed of <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s which can run in different runtimes depending on how you want to deploy
 your Flow, Kubernetes can easily take over the lifetime management of Executors.</p>
 <p>In general, Jina follows the following principle when it comes to deploying in Kubernetes:
 You, the user, know your use case and requirements the best.

@@ -2,9 +2,9 @@
 # Basic
 
 
-Flow defines how your Executors are connected together and how your data *flows* through them.
+{class}`~jina.Flow` defines how your Executors are connected together and how your data *flows* through them.
 
-Every Flow can be defined either purely in Python, or be loaded from a YAML file.
+Every {class}`~jina.Flow` can be defined either purely in Python, or be loaded from a YAML file.
 
 ````{admonition} Best practice
 :class: hint
@@ -19,7 +19,7 @@ For production use we recommend YAML files to configure your Flows. This is beca
 
 ## Create
 
-The most trivial Flow is the empty Flow and, like any other Flow, it can be instantiated purely in Python, or from a
+The most trivial {class}`~jina.Flow` is the empty Flow and, like any other Flow, it can be instantiated purely in Python, or from a
 YAML file:
 
 ````{tab} Python
@@ -59,7 +59,7 @@ In addition to loading a Flow from a YAML file, you can also save an existing Fl
 
 ## Start and stop
 
-When a Flow starts, all its {ref}`added Executors <flow-add-executors>` will start as well, making it possible to {ref}`reach the service through its API <access-flow-api>`.
+When a {class}`~jina.Flow` starts, all its {ref}`added Executors <flow-add-executors>` will start as well, making it possible to {ref}`reach the service through its API <access-flow-api>`.
 
 Jina Flows are context managers and can be started and stopped using Pythons `with` notation:
 
@@ -191,7 +191,7 @@ e.set()  # set event and stop (unblock) the Flow
 
 ## Visualize
 
-Flow has a built-in `.plot()` function which can be used to visualize a `Flow`:
+A {class}`~jina.Flow` has a built-in `.plot()` function which can be used to visualize a `Flow`:
 ```python
 from jina import Flow
 
@@ -223,7 +223,7 @@ jina export flowchart flow.yml flow.svg
 
 ## Export
 
-Flow YAML can be exported as a Docker Compose YAML or a Kubernetes YAML bundle. 
+A {class}`~jina.Flow` YAML can be exported as a Docker Compose YAML or a Kubernetes YAML bundle. 
 
 ### Docker Compose
 ```python
@@ -259,8 +259,8 @@ One can also do it in the terminal via:
 jina export kubernetes flow.yml ./my-k8s 
 ```
 
-This will generate the necessary Kubernetes configuration files for all the `Executors` of the `Flow`.
-The generated folder can be used directly with `kubectl` to deploy the `Flow` to an existing Kubernetes cluster.
+This will generate the necessary Kubernetes configuration files for all the {class}`~jina.Executor`s of the Flow.
+The generated folder can be used directly with `kubectl` to deploy the Flow to an existing Kubernetes cluster.
 
 For an advance utilisation of Kubernetes with jina please refer to this {ref}`How to <kubernetes>` 
 

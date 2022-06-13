@@ -160,7 +160,7 @@
 <div class="announcement">
     <aside class="announcement-content">
          
-    <a href="Neural">Learn more about the topic When</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/286414805/">Learn more about Jina and Wordlift at our Engineering All Hands on June 14th at 18:00 CET</a>
      
     </aside>
 </div>
@@ -242,7 +242,7 @@
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../executor/executor-api/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor/monitoring-executor/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor/executor-run/">Run</a></li>
@@ -593,56 +593,47 @@ Documents “flow” through the created pipeline and are processed by Executors
 while the heavy lifting is done by the <a class="reference internal" href="../executor/#executor-cookbook"><span class="std std-ref">services</span></a> themselves.
 In particular, each Flow also launches a <em>Gateway</em> service, which can expose all other services through an API that you define.</p>
 <p>The most important methods of the <code class="docutils literal notranslate"><span class="pre">Flow</span></code> object are the following:</p>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="colwidths-auto docutils align-default">
 <thead>
-<tr>
-<th>Method</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><code>.add()</code></td>
-<td>Add an Executor to the Flow</td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a></p></td>
+<td><p>Add an Executor to the Flow</p></td>
 </tr>
-<tr>
-<td><code>.start()</code></td>
-<td>Starts the Flow. This will start all its Executors and check if they are ready to be used.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../api/jina/#jina.Flow.start" title="jina.Flow.start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start()</span></code></a></p></td>
+<td><p>Starts the Flow. This will start all its Executors and check if they are ready to be used.</p></td>
 </tr>
-<tr>
-<td><code>.close()</code></td>
-<td>Stops and closes the Flow. This will stop and shutdown all its Executors.</td>
+<tr class="row-even"><td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></p></td>
+<td><p>Stops and closes the Flow. This will stop and shutdown all its Executors.</p></td>
 </tr>
-<tr>
-<td><code>with</code> context manager</td>
-<td>Use the Flow as a context manager. It will automatically start and stop your Flow.</td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">with</span></code> context manager</p></td>
+<td><p>Use the Flow as a context manager. It will automatically start and stop your Flow.</p></td>
 </tr>
-<tr>
-<td><code>.plot()</code></td>
-<td>Visualizes the Flow. Helpful for building complex pipelines.</td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../api/jina/#jina.Flow.plot" title="jina.Flow.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a></p></td>
+<td><p>Visualizes the Flow. Helpful for building complex pipelines.</p></td>
 </tr>
-<tr>
-<td><code>.post()</code></td>
-<td>Sends requests to the Flow API.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a></p></td>
+<td><p>Sends requests to the Flow API.</p></td>
 </tr>
-<tr>
-<td><code>.block()</code></td>
-<td>Blocks execution until the program is terminated. This is useful to keep the Flow alive so it can be used from other places (clients, etc).</td>
+<tr class="row-even"><td><p><a class="reference internal" href="../../api/jina/#jina.Flow.block" title="jina.Flow.block"><code class="xref py py-meth docutils literal notranslate"><span class="pre">block()</span></code></a></p></td>
+<td><p>Blocks execution until the program is terminated. This is useful to keep the Flow alive so it can be used from other places (clients, etc).</p></td>
 </tr>
-<tr>
-<td><code>.to_docker_compose_yaml()</code></td>
-<td>Generates a Docker-Compose file listing all its Executors as Services.</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../api/jina/#jina.Flow.to_docker_compose_yaml" title="jina.Flow.to_docker_compose_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code></a></p></td>
+<td><p>Generates a Docker-Compose file listing all its Executors as Services.</p></td>
 </tr>
-<tr>
-<td><code>.to_kubernetes_yaml(&lt;output_directory&gt;)</code></td>
-<td>Generates the Kubernetes configuration files in <code>&lt;output_directory&gt;</code>. Based on your local Jina version, Jina Hub may rebuild the Docker image during the YAML generation process. If you do not wish to rebuild the image, set the environment variable <code>JINA_HUB_NO_IMAGE_REBUILD</code>.</td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.to_kubernetes_yaml(&lt;output_directory&gt;)</span></code></p></td>
+<td><p>Generates the Kubernetes configuration files in <code class="docutils literal notranslate"><span class="pre">&lt;output_directory&gt;</span></code>. Based on your local Jina version, Jina Hub may rebuild the Docker image during the YAML generation process. If you do not wish to rebuild the image, set the environment variable <code class="docutils literal notranslate"><span class="pre">JINA_HUB_NO_IMAGE_REBUILD</span></code>.</p></td>
 </tr>
-<tr>
-<td><code>.dry_run()</code></td>
-<td>Calls the dry run endpoint of the Flow to check if the Flow is ready to process requests. Returns a boolean indicating the readiness</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../api/jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin.dry_run" title="jina.clients.mixin.HealthCheckMixin.dry_run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dry_run()</span></code></a></p></td>
+<td><p>Calls the dry run endpoint of the Flow to check if the Flow is ready to process requests. Returns a boolean indicating the readiness</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <section id="why-should-you-use-a-flow">
 <h2>Why should you use a Flow?<a class="headerlink" href="#why-should-you-use-a-flow" title="Permalink to this headline">#</a></h2>
 <p>Once you have learned DocumentArray and Executor, you are able to split your multi-modal/cross-modal application into different independent modules and services.

@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.6.3 Documentation" />
   
-<meta property="og:description" content="By default, every method which is decorated by the@requests decorator will be monitored, it will create a Prometheus Summary which will keep track of the time of the execution of the method. This section documents the ability to add custom monitoring to the Executor with the Grafana/Prometheus. C..." />
+<meta property="og:description" content="By default, every method which is decorated by the requests decorator will be monitored, it will create a Prometheus Summary which will keep track of the time of the execution of the method. This section documents the ability to add custom monitoring to the Executor with the Grafana/Prometheus. C..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -160,7 +160,7 @@
 <div class="announcement">
     <aside class="announcement-content">
          
-    <a href="Neural">Learn more about the topic When</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/286414805/">Learn more about Jina and Wordlift at our Engineering All Hands on June 14th at 18:00 CET</a>
      
     </aside>
 </div>
@@ -242,7 +242,7 @@
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Executor</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../executor-api/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor-run/">Run</a></li>
@@ -587,13 +587,13 @@
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="monitor">
 <span id="monitoring-executor"></span><h1>Monitor<a class="headerlink" href="#monitor" title="Permalink to this headline">#</a></h1>
-<p>By default, every method which is decorated by the <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> decorator will be monitored, it will create a
+<p>By default, every method which is decorated by the <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> decorator will be monitored, it will create a
 <a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Prometheus Summary</a> which will keep track of the time of
 the execution of the method.</p>
-<p>This section documents the ability to add custom monitoring to the Executor with the Grafana/Prometheus.</p>
+<p>This section documents the ability to add custom monitoring to the <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> with the Grafana/Prometheus.</p>
 <p>Custom metrics are useful when you want to monitor each subpart of your Executors. Jina allows you to leverage
 the full power of the <a class="reference external" href="https://github.com/prometheus/client_python">Prometheus Client</a> to define useful metrics
-for each of your Executors. We provide a convenient wrapper as well, i.e <code class="docutils literal notranslate"><span class="pre">&#64;monitor()</span></code>, which let you easily monitor
+for each of your Executors. We provide a convenient wrapper as well, i.e <a class="reference internal" href="../../../api/jina/#jina.monitor" title="jina.monitor"><code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code></a>, which let you easily monitor
 sub-method of your Executor.</p>
 <p>When the monitoring is enabled each Executor will expose its
 own metrics. This means that in practice each of the Executors will expose a Prometheus endpoint using the <a class="reference external" href="https://github.com/prometheus/client_python">Prometheus Client</a>.</p>
@@ -628,7 +628,7 @@ image embedding. By using custom metrics on these two tasks you can identify pot
 </section>
 <section id="use-monitor-decorator">
 <h3>Use <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> decorator<a class="headerlink" href="#use-monitor-decorator" title="Permalink to this headline">#</a></h3>
-<p>Adding the custom monitoring on a method is as straightforward as decorating the method with <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code>.</p>
+<p>Adding the custom monitoring on a method is as straightforward as decorating the method with <a class="reference internal" href="../../../api/jina/#jina.monitor" title="jina.monitor"><code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">monitor</span>
 
 
@@ -639,8 +639,8 @@ image embedding. By using custom metrics on these two tasks you can identify pot
 </pre></div>
 </div>
 <p>This will create a <a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Prometheus summary</a>
-<code class="docutils literal notranslate"><span class="pre">jina_my_method_inference_seconds</span></code> which will keep track of the time of execution of `my_method</p>
-<p>By default, the name and the documentation of the metric created by <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> are auto-generated based on the name
+<code class="docutils literal notranslate"><span class="pre">jina_my_method_inference_seconds</span></code> which will keep track of the time of execution of <code class="docutils literal notranslate"><span class="pre">my_method</span></code></p>
+<p>By default, the name and the documentation of the metric created by <a class="reference internal" href="../../../api/jina/#jina.monitor" title="jina.monitor"><code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code></a> are auto-generated based on the name
 of the function. However, you can name it by yourself by doing :</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@monitor</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;my_custom_metrics_seconds&#39;</span><span class="p">,</span> <span class="n">documentation</span><span class="o">=</span><span class="s1">&#39;This is my custom documentation&#39;</span>
@@ -652,14 +652,14 @@ of the function. However, you can name it by yourself by doing :</p>
 <div class="caution admonition">
 <p class="admonition-title">respect Prometheus naming</p>
 <p>You should respect Prometheus naming <a class="reference external" href="https://prometheus.io/docs/practices/naming/#metric-names">conventions</a>.
-therefore because <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> creates a <a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a> under the hood
+therefore because <a class="reference internal" href="../../../api/jina/#jina.monitor" title="jina.monitor"><code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code></a> creates a <a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a> under the hood
 your metrics name should finish with <code class="docutils literal notranslate"><span class="pre">seconds</span></code></p>
 </div>
 </section>
 <section id="use-prometheus-client">
 <h3>Use Prometheus client<a class="headerlink" href="#use-prometheus-client" title="Permalink to this headline">#</a></h3>
 <p>Under the hood, the monitoring feature of the Executor is handled by the
-Python <a class="reference external" href="https://github.com/prometheus/client_python">Prometheus-client</a>. The <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> decorator is a convenient tool
+Python <a class="reference external" href="https://github.com/prometheus/client_python">Prometheus-client</a>. The <a class="reference internal" href="../../../api/jina/#jina.monitor" title="jina.monitor"><code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code></a> decorator is a convenient tool
 to monitor sub-methods of an Executor, but you might need more flexibility and that is why you can access the Prometheus
 client directly from the Executor to define every kind of metric supported by Prometheus.</p>
 <p>Let’s see it in an example</p>

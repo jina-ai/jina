@@ -3,16 +3,16 @@
 
 ## Overview
 
-A Jina `Flow` orchestrates multiple `Executors`.
-By default, a Jina `Executor` runs with a single `replica` and `shard`.
-Some `Executor` in the Flow might be less performant than others,
+A Jina {class}`~jina.Flow` orchestrates multiple {class}`~jina.Executor`s.
+By default, a Jina Executor runs with a single `replica` and `shard`.
+Some Executor in the Flow might be less performant than others,
 this could turn into a performance bottleneck in your Jina application.
 
-To solve this, Jina `Flow` allows you to config the number of `replicas` and `shards`.
-`replica` is used to increase `Executor` throughput and availability.
+To solve this, Jina Flow allows you to config the number of `replicas` and `shards`.
+`replica` is used to increase Executor throughput and availability.
 `shard` is used for data partitioning.
 
-In this document, we'll dive into these two concepts and see how you can make use of `replicas` and `shards` to scale out your `Executor`.
+In this document, we'll dive into these two concepts and see how you can make use of `replicas` and `shards` to scale out your Executor.
 
 ## Before you start
 <!-- Delete this section if your readers can go to the steps without requiring any prerequisite knowledge. -->
@@ -33,7 +33,7 @@ pip install pqlite==0.2.3
 
 ### Context
 
-Imagine you are building a text-based search system and you have an `Executor` to transform text to its [tf-idf](https://en.wikipedia.org/wiki/Tf-idf) vector representation.
+Imagine you are building a text-based search system and you have an {class}`~jina.Executor` to transform text to its [tf-idf](https://en.wikipedia.org/wiki/Tf-idf) vector representation.
 This could become a performance bottleneck to your search system.
 The Executor looks like this:
 
@@ -68,7 +68,7 @@ class MyVectorizer(Executor):
         docs.embeddings = X
 ```
 
-And we create a `Flow` and make use this `Executor`:
+And we create a Flow and make use this Executor:
 
 ```python
 from jina import Flow
@@ -78,7 +78,7 @@ f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyVectorizer
 
 ### Scale up an Executor
 
-When you start your `Flow`, you might discover to process all the text corpus, this process takes a while:
+When you start your {class}`~jina.Flow`, you might discover to process all the text corpus, this process takes a while:
 
 ```python
 with f:
@@ -98,7 +98,7 @@ What if you need to index millions of documents?
 ⠇       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━ 0:00:06 18.1 step/s . 115 steps done in 6 seconds
 ```
 
-Jina allows you to scale your `Executor` very easily, with only one parameter change:
+Jina allows you to scale your {class}`~jina.Executor` very easily, with only one parameter change:
 
 ```diff
 + f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyVectorizer, replicas=2)
@@ -152,7 +152,7 @@ f = (
 
 ### Partitioning the data
 
-Now let's run the `Flow` to index your data:
+Now let's run the {class}`~jina.Flow`to index your data:
 ```python
 with f:
     f.post(on='/index', inputs=news_generator, show_progress=True)

@@ -10,19 +10,18 @@ In particular, each Flow also launches a *Gateway* service, which can expose all
 
 
 The most important methods of the `Flow` object are the following:
-
-| Method                             | Description                                                                                                                                  |
-|------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| `.add()`                           | Add an Executor to the Flow                                                                                                                |
-| `.start()`                         | Starts the Flow. This will start all its Executors and check if they are ready to be used.                                                 |
-| `.close()`                         | Stops and closes the Flow. This will stop and shutdown all its Executors.                                                                                          |
-| `with` context manager             | Use the Flow as a context manager. It will automatically start and stop your Flow.                                         |                                                                |
-| `.plot()`                          | Visualizes the Flow. Helpful for building complex pipelines.                                                                                 |
-| `.post()`                          | Sends requests to the Flow API.                                                                                                     |
-| `.block()`                         | Blocks execution until the program is terminated. This is useful to keep the Flow alive so it can be used from other places (clients, etc). |
-| `.to_docker_compose_yaml()`        | Generates a Docker-Compose file listing all its Executors as Services.                                                                       |
+| Method                                    | Description                                                                                                                                  |
+|-------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| {meth}`~jina.Flow.add`                    | Add an Executor to the Flow                                                                                                                |
+| {meth}`~jina.Flow.start()`                                | Starts the Flow. This will start all its Executors and check if they are ready to be used.                                                 |
+| {meth}`~jina.Flow.close()`                                | Stops and closes the Flow. This will stop and shutdown all its Executors.                                                                                          |
+| `with` context manager                    | Use the Flow as a context manager. It will automatically start and stop your Flow.                                         |                                                                |
+| {meth}`~jina.Flow.plot()`                                 | Visualizes the Flow. Helpful for building complex pipelines.                                                                                 |
+| {meth}`~jina.clients.mixin.PostMixin.post()`                                 | Sends requests to the Flow API.                                                                                                     |
+| {meth}`~jina.Flow.block()`                                | Blocks execution until the program is terminated. This is useful to keep the Flow alive so it can be used from other places (clients, etc). |
+| {meth}`~jina.Flow.to_docker_compose_yaml()`               | Generates a Docker-Compose file listing all its Executors as Services.                                                                       |
 | `.to_kubernetes_yaml(<output_directory>)` | Generates the Kubernetes configuration files in `<output_directory>`. Based on your local Jina version, Jina Hub may rebuild the Docker image during the YAML generation process. If you do not wish to rebuild the image, set the environment variable `JINA_HUB_NO_IMAGE_REBUILD`. |
-| `.dry_run()`                       | Calls the dry run endpoint of the Flow to check if the Flow is ready to process requests. Returns a boolean indicating the readiness |
+| {meth}`~jina.clients.mixin.HealthCheckMixin.dry_run()`                             | Calls the dry run endpoint of the Flow to check if the Flow is ready to process requests. Returns a boolean indicating the readiness |
 
 ## Why should you use a Flow?
 

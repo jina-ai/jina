@@ -1,24 +1,24 @@
 (exec-endpoint)=
 # `@requests` methods
 
-Methods of `Executor` can be named and written freely. 
+Methods of {class}`~jina.Executor` can be named and written freely. 
 
 Methods decorated with `@requests` are mapped to network endpoints while serving.
 
 (executor-requests)=
 ## Decorator
 
-Executor methods decorated with `@requests` are bound to specific network requests, and respond to network queries.
+Executor methods decorated with {class}`~jina.requests` are bound to specific network requests, and respond to network queries.
 
-Both `def` or `async def` function can be decorated with `@requests`.
+Both `def` or `async def` function can be decorated with {class}`~jina.requests`.
 
-You can import the `requests` decorator via
+You can import the `@requests` decorator via
 
 ```python
 from jina import requests
 ```
 
-`requests` is a decorator that takes an optional parameter: `on=`. It binds the decorated method of the `Executor` to the specified route. 
+{class}`~jina.requests` is a decorator that takes an optional parameter: `on=`. It binds the decorated method of the Executor to the specified route. 
 
 ```python
 from jina import Executor, requests
@@ -89,7 +89,7 @@ The request will simply pass through without any processing.
 
 ## Arguments
 
-All Executor methods decorated by `@requests` need to follow the signature below in order to be usable as a microservice inside a `Flow`.
+All Executor methods decorated by `@requests` need to follow the signature below in order to be usable as a microservice inside a {class}`~jina.Flow`.
 The `async` definition is optional.
 
 ```python
@@ -113,12 +113,12 @@ class MyExecutor(Executor):
 
 Let's take a look at all these arguments:
 
-- `docs`: A `DocumentArray` that is part of the request. Since the nature of `Executor` is to wrap functionality related to `DocumentArray`, it is usually the main processing unit inside `Executor` methods. It is important to notice that these `docs` can be also changed in place, just like it could happen with 
+- `docs`: A DocumentArray that is part of the request. Since the nature of Executor is to wrap functionality related to `DocumentArray`, it is usually the main processing unit inside Executor methods. It is important to notice that these `docs` can be also changed in place, just like it could happen with 
 any other `list`-like object in a Python function.
 
-- `parameters`: A Dict object that can be used to pass extra parameters to the `Executor` functions.
+- `parameters`: A Dict object that can be used to pass extra parameters to the Executor functions.
 
-- `docs_matrix`:  This is the least common parameter to be used for an `Executor`. This argument is needed when an `Executor` is used inside a `Flow` to merge or reduce the output of more than one other `Executor`.
+- `docs_matrix`:  This is the least common parameter to be used for an Executor. This argument is needed when an Executor is used inside a Flow to merge or reduce the output of more than one other Executor.
 
  
 
@@ -297,7 +297,7 @@ NotImplementedError('no time for it')
 
 ## Example
 
-Let's understand how `Executor`s process `DocumentArray`s inside a Flow, and how the changes are chained and applied, affecting downstream `Executors` in the Flow.
+Let's understand how Executor's process DocumentArray's inside a Flow, and how the changes are chained and applied, affecting downstream Executors in the Flow.
 
 
 ```python

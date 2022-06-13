@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.6.3 Documentation" />
   
-<meta property="og:description" content="This page outlines the specification for valid Executor YAML files. Such YAML configurations can be used in a Flow via Flow().add(uses='exec.yml'), or loaded directly via BaseExecutor.load_config('exec.yml'). Note that Executor YAML configurations always refer back to an Executor defined in a Pyt..." />
+<meta property="og:description" content="This page outlines the specification for valid Executor YAML files. Such YAML configurations can be used in a Flow via Flow().add(uses='exec.yml'), or loaded directly via Executor.load_config('exec.yml'). Note that Executor YAML configurations always refer back to an Executor defined in a Python ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -160,7 +160,7 @@
 <div class="announcement">
     <aside class="announcement-content">
          
-    <a href="Neural">Learn more about the topic When</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/286414805/">Learn more about Jina and Wordlift at our Engineering All Hands on June 14th at 18:00 CET</a>
      
     </aside>
 </div>
@@ -242,7 +242,7 @@
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Executor</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../executor-api/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../monitoring-executor/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor-run/">Run</a></li>
@@ -588,11 +588,11 @@
                     <section class="tex2jax_ignore mathjax_ignore" id="yaml-specification">
 <span id="executor-yaml-spec"></span><h1>YAML specification<a class="headerlink" href="#yaml-specification" title="Permalink to this headline">#</a></h1>
 <p>This page outlines the specification for valid Executor YAML files.</p>
-<p>Such YAML configurations can be used in a Flow via <code class="docutils literal notranslate"><span class="pre">Flow().add(uses='exec.yml')</span></code>, or loaded directly via <code class="docutils literal notranslate"><span class="pre">BaseExecutor.load_config('exec.yml')</span></code>.</p>
+<p>Such YAML configurations can be used in a Flow via <code class="docutils literal notranslate"><span class="pre">Flow().add(uses='exec.yml')</span></code>, or loaded directly via <code class="docutils literal notranslate"><span class="pre">Executor.load_config('exec.yml')</span></code>.</p>
 <p>Note that Executor YAML configurations always refer back to an Executor defined in a Python file.</p>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">#</a></h2>
-<p>The following constitutes an example Executor configuration:</p>
+<p>The following constitutes an example <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> configuration:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
 <span class="nt">with</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">match_args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>

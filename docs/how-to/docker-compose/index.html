@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.6.3 Documentation" />
   
-<meta property="og:description" content="One of the simplest ways of either prototyping or serving in production is to run your Flow with docker-compose. A Flow is composed of Executors which run Python code defined to operate on DocumentArray. These Executors will live in different runtimes depending on how you want to deploy your Flow..." />
+<meta property="og:description" content="One of the simplest ways of either prototyping or serving in production is to run your Flow with docker-compose. A Flow is composed of Executor s which run Python code defined to operate on DocumentArray. These Executors will live in different runtimes depending on how you want to deploy your Flo..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -160,7 +160,7 @@
 <div class="announcement">
     <aside class="announcement-content">
          
-    <a href="Neural">Learn more about the topic When</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/286414805/">Learn more about Jina and Wordlift at our Engineering All Hands on June 14th at 18:00 CET</a>
      
     </aside>
 </div>
@@ -242,7 +242,7 @@
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
@@ -588,8 +588,8 @@
                     <section class="tex2jax_ignore mathjax_ignore" id="deploy-with-docker-compose">
 <span id="docker-compose"></span><h1>Deploy with Docker Compose<a class="headerlink" href="#deploy-with-docker-compose" title="Permalink to this headline">#</a></h1>
 <p>One of the simplest ways of either prototyping or serving in
-production is to run your <code class="docutils literal notranslate"><span class="pre">Flow</span></code> with <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code>.</p>
-<p>A <code class="docutils literal notranslate"><span class="pre">Flow</span></code> is composed of <code class="docutils literal notranslate"><span class="pre">Executors</span></code> which run Python code
+production is to run your <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> with <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code>.</p>
+<p>A <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is composed of <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s which run Python code
 defined to operate on <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>. These <code class="docutils literal notranslate"><span class="pre">Executors</span></code> will live in different runtimes depending on how you want to deploy
 your Flow.</p>
 <p>By default, if you are serving your Flow locally they will live within processes. Nevertheless,
@@ -695,7 +695,7 @@ adapt it to your own needs.</p>
 </div>
 <p>Here you can see that 5 services will be created:</p>
 <ul class="simple">
-<li><p>1 for the <code class="docutils literal notranslate"><span class="pre">gateway</span></code> which is the entrypoint of the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.</p></li>
+<li><p>1 for the <strong>Gateway</strong> which is the entrypoint of the <strong>Flow</strong>.</p></li>
 <li><p>2 associated with the encoder for the two Replicas.</p></li>
 <li><p>3 associated with the indexer, one for the Head and two for the Shards.</p></li>
 </ul>

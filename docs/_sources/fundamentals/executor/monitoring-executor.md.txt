@@ -1,15 +1,15 @@
 (monitoring-executor)=
 # Monitor
 
-By default, every method which is decorated by the `@requests` decorator will be monitored, it will create a
+By default, every method which is decorated by the {class}`~jina.requests` decorator will be monitored, it will create a
 [Prometheus Summary](https://prometheus.io/docs/concepts/metric_types/#summary) which will keep track of the time of 
 the execution of the method.
 
-This section documents the ability to add custom monitoring to the Executor with the Grafana/Prometheus.
+This section documents the ability to add custom monitoring to the {class}`~jina.Executor` with the Grafana/Prometheus.
 
 Custom metrics are useful when you want to monitor each subpart of your Executors. Jina allows you to leverage
 the full power of the [Prometheus Client](https://github.com/prometheus/client_python) to define useful metrics 
-for each of your Executors. We provide a convenient wrapper as well, i.e `@monitor()`, which let you easily monitor
+for each of your Executors. We provide a convenient wrapper as well, i.e {func}`~jina.monitor`, which let you easily monitor
 sub-method of your Executor. 
 
 When the monitoring is enabled each Executor will expose its 
@@ -53,7 +53,7 @@ class MyExecutor(Executor):
 
 ### Use `@monitor` decorator
 
-Adding the custom monitoring on a method is as straightforward as decorating the method with `@monitor`.
+Adding the custom monitoring on a method is as straightforward as decorating the method with {func}`~jina.monitor`.
 
 ```python
 from jina import Executor, monitor
@@ -66,9 +66,9 @@ class MyExecutor(Executor):
 ```
 
 This will create a [Prometheus summary](https://prometheus.io/docs/concepts/metric_types/#summary)
-`jina_my_method_inference_seconds` which will keep track of the time of execution of `my_method
+`jina_my_method_inference_seconds` which will keep track of the time of execution of `my_method`
 
-By default, the name and the documentation of the metric created by `@monitor` are auto-generated based on the name
+By default, the name and the documentation of the metric created by {func}`~jina.monitor` are auto-generated based on the name
 of the function. However, you can name it by yourself by doing :
 
 ```python
@@ -82,14 +82,14 @@ def method(self):
 ````{admonition} respect Prometheus naming
 :class: caution
 You should respect Prometheus naming [conventions](https://prometheus.io/docs/practices/naming/#metric-names). 
-therefore because `@monitor` creates a [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) under the hood
+therefore because {func}`~jina.monitor` creates a [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) under the hood
 your metrics name should finish with `seconds`
 ````
 
 ### Use Prometheus client
 
 Under the hood, the monitoring feature of the Executor is handled by the 
-Python [Prometheus-client](https://github.com/prometheus/client_python). The `@monitor` decorator is a convenient tool
+Python [Prometheus-client](https://github.com/prometheus/client_python). The {func}`~jina.monitor` decorator is a convenient tool
 to monitor sub-methods of an Executor, but you might need more flexibility and that is why you can access the Prometheus
 client directly from the Executor to define every kind of metric supported by Prometheus.
 

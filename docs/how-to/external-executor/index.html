@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.6.3 Documentation" />
   
-<meta property="og:description" content="Normally, we have seen how Flow ties up Executors together, and how an Executor lives in the context of a Flow. However, this is not always the case, and sometimes you may want to launch an Executor on its own, and perhaps have the same Executor be used by different Flows. As the first step in th..." />
+<meta property="og:description" content="Normally, we have seen how Flow ties up Executor s together, and how an Executor lives in the context of a Flow. However, this is not always the case, and sometimes you may want to launch an Executor on its own, and perhaps have the same Executor be used by different Flows. As the first step in t..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -160,7 +160,7 @@
 <div class="announcement">
     <aside class="announcement-content">
          
-    <a href="Neural">Learn more about the topic When</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/286414805/">Learn more about Jina and Wordlift at our Engineering All Hands on June 14th at 18:00 CET</a>
      
     </aside>
 </div>
@@ -242,7 +242,7 @@
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/monitoring-executor/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-run/">Run</a></li>
@@ -587,9 +587,9 @@
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="use-external-executors">
 <span id="external-executor"></span><h1>Use external Executors<a class="headerlink" href="#use-external-executors" title="Permalink to this headline">#</a></h1>
-<p>Normally, we have seen how <code class="docutils literal notranslate"><span class="pre">Flow</span></code> ties up <code class="docutils literal notranslate"><span class="pre">Executors</span></code> together, and how an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> lives in the context of a Flow.</p>
-<p>However, this is not always the case, and sometimes you may want to launch an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> on its own, and perhaps have the same
-<code class="docutils literal notranslate"><span class="pre">Executor</span></code> be used by different <code class="docutils literal notranslate"><span class="pre">Flows</span></code>.</p>
+<p>Normally, we have seen how <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> ties up <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s together, and how an Executor lives in the context of a Flow.</p>
+<p>However, this is not always the case, and sometimes you may want to launch an Executor on its own, and perhaps have the same
+Executor be used by different Flows.</p>
 <div class="hint admonition">
 <p class="admonition-title">Where can external Executors run?</p>
 <p>External Executors can run anywhere from the same environment as the Flow, to a Docker container, or even a remote
@@ -605,7 +605,7 @@ You need:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">host</span></code>, the host address of the Executor</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">port</span></code>, the port on which the Executor receives information</p></li>
 </ul>
-<p>Then, adding the Executor is a simple call to <code class="docutils literal notranslate"><span class="pre">Flow.add()</span></code> with the <code class="docutils literal notranslate"><span class="pre">external</span></code> argument set to True. This tells the Flow that
+<p>Then, adding the Executor is a simple call to <a class="reference internal" href="../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a>  with the <code class="docutils literal notranslate"><span class="pre">external</span></code> argument set to True. This tells the Flow that
 it does not need to start the Executor itself.:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 

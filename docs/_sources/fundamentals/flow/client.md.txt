@@ -1,6 +1,6 @@
 (client)=
 # Client
-Client enables you to send `Documents` to a running Flow in a number of different ways, as shown below.
+{class}`~jina.Client` enables you to send `Documents` to a running {class}`~jina.Flow` in a number of different ways, as shown below.
 
 Clients support three different networking protocols: HTTP, gRPC, WebSocket and GraphQL
 
@@ -112,7 +112,7 @@ c = Client(port=f.port)
 
 ## Send data
 
-After a Client has connected to a Flow, it can send requests to the Flow using its `.post()` method.
+After a {class}`~jina.Client` has connected to a {class}`~jina.Flow`, it can send requests to the Flow using its {meth}`~jina.clients.mixin.PostMixin.post` method.
 This expects as inputs the {ref}`Executor endpoint <exec-endpoint>` that you want to target, as well as a Document or Iterable of Documents:
 
 
@@ -152,7 +152,7 @@ Hence, `flow.post()` is not recommended outside of testing or debugging use case
 
 ## Send parameters
 
-The Client can also send parameters to the Executors as shown below:
+The {class}`~jina.Client` can also send parameters to the {class}`~jina.Executor`s as shown below:
 
 ```{code-block} python
 ---
@@ -192,7 +192,7 @@ This might be useful to control `Executor` objects during their lifetime.
 
 ## Async send
 
-There also exists an async version of the Python Client which works with `.post()` and `.mutate()`.
+There also exists an async version of the Python Client which works with {meth}`~jina.clients.mixin.PostMixin.post` and {meth}`~jina.clients.mixin.MutateMixin.mutate`.
 
 While the standard `Client` is also asynchronous under the hood, its async version exposes this fact to the outside world,
 by allowing *coroutines* as input, and returning an *asynchronous iterator*.
@@ -224,7 +224,7 @@ with Flow() as f:  # Using it as a Context Manager will start the Flow
 
 ## Batch data
 
-Especially during indexing, a Client can send up to thousands or millions of Documents to a `Flow`.
+Especially during indexing, a Client can send up to thousands or millions of Documents to a {class}`~jina.Flow`.
 Those Documents are internally batched into a `Request`, providing a smaller memory footprint and faster response times thanks
 to {ref}`callback functions <callback-functions>`.
 
@@ -241,7 +241,7 @@ with Flow() as f:
 
 ## Bypass Executor
 
-Usually a `Flow` will send each request to all Executors with matching endpoints as configured. But the `Client` also allows you to only target specific Executors in a `Flow` using the `target_executor` keyword. The request will then only be processed by the Executors which match the provided target_executor regex. Its usage is shown in the listing below.
+Usually a {class}`~jina.Flow` will send each request to all {class}`~jina.Executor`s with matching endpoints as configured. But the {class}`~jina.Client` also allows you to only target specific Executors in a Flow using the `target_executor` keyword. The request will then only be processed by the Executors which match the provided target_executor regex. Its usage is shown in the listing below.
 
 ```python
 from jina import Client, Executor, Flow, requests, Document, DocumentArray
@@ -280,9 +280,9 @@ After performing `client.post()`, you may want to further process the obtained r
 
 For this purpose, Jina implements a promise-like interface, letting you specify three kinds of callback functions:
 
-- `on_done` is executed after successful completion of `client.post()`
-- `on_error` is executed whenever an error occurs in `client.post()`
-- `on_always` is always performed, no matter the success or failure of `client.post()`
+- `on_done` is executed after successful completion of {meth}`~jina.clients.mixin.PostMixin.post`
+- `on_error` is executed whenever an error occurs in {meth}`~jina.clients.mixin.PostMixin.post`
+- `on_always` is always performed, no matter the success or failure of {meth}`~jina.clients.mixin.PostMixin.post`
 
 ```{hint} 
 Both `on_done`and `on_always` callback won't be trigger if the failure is due to an error happening outside of 
@@ -292,7 +292,7 @@ none of the callback will be executed.
 
 
 
-Callback functions in Jina expect a `Response` of the type `jina.types.request.data.DataRequest`, which contains resulting Documents,
+Callback functions in Jina expect a `Response` of the type {class}`~jina.types.request.data.DataRequest`, which contains resulting Documents,
 parameters, and other information.
 
 
@@ -452,7 +452,7 @@ with Flow() as f:
 
 ## Enable compression
 
-If the communication to the Gateway is via gRPC, you can pass `compression` parameter to `client.post` to benefit from (gRPC compression)[https://grpc.github.io/grpc/python/grpc.html#compression] methods. 
+If the communication to the Gateway is via gRPC, you can pass `compression` parameter to  {meth}`~jina.clients.mixin.PostMixin.post` to benefit from (gRPC compression)[https://grpc.github.io/grpc/python/grpc.html#compression] methods. 
 
 The supported choices are: None, `NoCompression`, `Gzip` and `Deflate`.
 
@@ -465,7 +465,7 @@ client.post(..., compression='Gzip')
 
 ## Enable TLS
 
-To connect to a Flow that has been {ref}`configured to use TLS <flow-tls>` in combination with gRPC, http, or websocket,
+To connect to a {class}`~jina.Flow` that has been {ref}`configured to use TLS <flow-tls>` in combination with gRPC, http, or websocket,
 set the Client's `tls` parameter to `True`:
 
 ```python
@@ -484,7 +484,7 @@ Client(host='grpcs://my.awesome.flow:1234')
 
 ## Use GraphQL
 
-The Jina Client additionally supports fetching data via GraphQL mutations using `client.mutate()`:
+The Jina {class}`~jina.Client` additionally supports fetching data via GraphQL mutations using {meth}`~jina.clients.mixin.MutateMixin.mutate`:
 
 ```python
 from jina import Client

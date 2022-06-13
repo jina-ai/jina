@@ -1,6 +1,6 @@
 # Run
 
-`Executor` objects can be used directly, just like any regular Python object.
+{class}`~jina.Executor` objects can be used directly, just like any regular Python object.
 
 There are two ways of instantiating an Executor object: From a local Python class, and from the Jina Hub.
 

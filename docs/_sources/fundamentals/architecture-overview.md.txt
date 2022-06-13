@@ -58,30 +58,30 @@ The following concepts will be covered in the user guide:
 
 ```{glossary}
 
-Document
+**Document**
     Document is the fundamental data structure in Jina for representing multi-modal and cross-modal data. It is the essential element of IO in Jina. More information can be found in [DocArray's Docs](https://docarray.jina.ai/fundamentals/document/). 
 
-DocumentArray
+**DocumentArray**
     DocumentArray is a list-like container of multiple Documents. More information can be found in [DocArray's Docs](https://docarray.jina.ai/fundamentals/documentarray/). 
     
-Executor 
+**Executor** 
     Execurtor is a Python class that has a group of functions using {term}`DocumentArray` as IO. Loosely speaking, each Executor is a microservice. 
 
-Flow
+**Flow**
     Flow ties multiple Executors together into a logic pipeline to achieve a task. If Executor is a microservice, then Flow is the end-to-end service. 
 
-Gateway
+**Gateway**
     Gateway is the entrypoint of a {term}`Flow`. It exposes multiple protocols for external communications; it routes all internal traffics.
     
-Client
+**Client**
     Client is for connecting to a {term}`Gateway` and sending/receiving data from it.
 
-Deployment
+**Deployment**
     Deployment is an abstraction around Executor that lets the {term}`Gateway` communicate with an Executor. It encapsulates and abstracts internal replication details.
 
-gRPC, Websocket, HTTP
+**gRPC, Websocket, HTTP**
     They are network protocols for transmitting data. gRPC is always used between {term}`Gateway` and {term}`Deployment` communication.
 
-TLS
-    TLS is a security protocol designed to facilitate privacy and data security for communications over the Internet. The communication between {term}`Client` and {term}`Gateway` i protected by TLS.
+**TLS**
+    TLS is a security protocol designed to facilitate privacy and data security for communications over the Internet. The communication between {term}`Client` and {term}`Gateway` is protected by TLS.
 ```

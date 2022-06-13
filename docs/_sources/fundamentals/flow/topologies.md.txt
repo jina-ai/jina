@@ -1,9 +1,9 @@
 (flow-complex-topologies)=
 # Topology
 
-Flows are not restricted to sequential execution. Internally they are modelled as graphs and as such can represent any complex, non-cyclic topology.
+{class}`~jina.Flow`s are not restricted to sequential execution. Internally they are modelled as graphs and as such can represent any complex, non-cyclic topology.
 A typical use case for such a Flow is a topology with a common pre-processing part, but different indexers separating embeddings and data.
-To define a custom `Flow` topology you can use the `needs` keyword when adding an Executor. By default, a `Flow` assumes that every Executor needs the previously added Executor.
+To define a custom Flow topology you can use the `needs` keyword when adding an {class}`~jina.Executor`. By default, a Flow assumes that every Executor needs the previously added Executor.
 
 ```python
 from jina import Executor, Flow, requests, Document, DocumentArray
@@ -60,7 +60,7 @@ The automated merging can be disabled by setting `disable_reduce=True`. This can
 (replicate-executors)=
 ## Replicate Executors
 
-Replication can be used to create multiple copies of the same Executor. Each request in the Flow is then passed to only one replica (instance) of your Executor. This can be useful for a couple of challenges like performance and availability:
+Replication can be used to create multiple copies of the same {class}`~jina.Executor`s. Each request in the {class}`~jina.Flow` is then passed to only one replica (instance) of your Executor. This can be useful for a couple of challenges like performance and availability:
 * If you have slow Executors (like some Encoders) you may want to scale up the number of instances of this particular Executor so that you can process multiple requests in parallel
 * Executors might need to be taken offline from time to time (updates, failures, etc.), but you may want your Flow to be able to process requests without downtimes. In this case Replicas can be used as well so that any Replica of an Executor can be taken offline as long as there is still one running Replica online. Using this technique it is possible to create a High availability setup for your Flow.
 
@@ -82,8 +82,8 @@ request to exactly one of the three instances. Then the replica will send its re
 
 ## Replicate on multiple GPUs
 
-In certain situations, you may want to replicate your Executor so that each replica uses a different GPU on your machine.
-To achieve this, you need to tell the Flow to leverage multiple GPUs, by passing `CUDA_VISIBLE_DEVICES=RR` as an environment variable.
+In certain situations, you may want to replicate your {class}`~jina.Executor`s so that each replica uses a different GPU on your machine.
+To achieve this, you need to tell the {class}`~jina.Flow` to leverage multiple GPUs, by passing `CUDA_VISIBLE_DEVICES=RR` as an environment variable.
 The Flow will then assign each available GPU to replicas in a round-robin fashion.
 
 ```{caution} 
@@ -161,7 +161,7 @@ This is helpful in two situations:
 Then splitting the load across two or more machines yields better results.
 
 For Shards, you can define which shard (instance) will receive the request from its predecessor. This behaviour is called `polling`. `ANY` means only one shard will receive a request and `ALL` means that all Shards will receive a request.
-Polling can be configured per endpoint (like `/index`) and Executor.
+Polling can be configured per endpoint (like `/index`) and {class}`~jina.Executor`.
 By default the following `polling` is applied:
 - `ANY` for endpoints at `/index`
 - `ALL` for endpoints at `/search`
@@ -181,7 +181,7 @@ from jina import Flow
 flow = Flow().add(name='ExecutorWithShards', shards=3, polling={'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'})
 ```
 
-The example above will result in a Flow having the Executor `ExecutorWithShards` with the following polling options configured
+The example above will result in a {class}`~jina.Flow` having the Executor `ExecutorWithShards` with the following polling options configured
 - `/index` has polling `ANY` (the default value is not changed here)
 - `/search` has polling `ANY` as it is explicitly set (usually that should not be necessary)
 - `/custom` has polling `ALL`
@@ -192,10 +192,10 @@ The example above will result in a Flow having the Executor `ExecutorWithShards`
 ## Filter by condition
 
 To define a filter condition, you can use [DocArrays rich query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions).
-You can set a filter for each individual Executor, and every Document that does not satisfy the filter condition will be
+You can set a filter for each individual {class}`~jina.Executor`, and every Document that does not satisfy the filter condition will be
 removed before reaching that Executor.
 
-To add a filter condition to an Executor, you pass it to the `when` parameter of `flow.add()`.
+To add a filter condition to an Executor, you pass it to the `when` parameter of {meth}`~jina.Flow.add` method of the Flow.
 This then defines *when* a document will be processed by the Executor:
 
 ````{tab} Python

@@ -1,11 +1,11 @@
 (flow-yaml-spec)=
 # YAML specification
 
-This page outlines the specification for valid Flow YAML files.
+This page outlines the specification for valid {class}`~jina.Executor` YAML files.
 
-Such YAML configurations can be used to generate a Flow object via {meth}`~jina.jaml.JAMLCompatible.load_config`.
+Such YAML configurations can be used to generate a {class}`~jina.Executor` object via {meth}`~jina.jaml.JAMLCompatible.load_config`.
 
-To generate a YAML configuration from a `Flow` Python object, use {meth}`~jina.jaml.JAMLCompatible.save_config`.
+To generate a YAML configuration from a {class}`~jina.Flow` Python object, use {meth}`~jina.jaml.JAMLCompatible.save_config`.
 
 ## YAML completion in IDE
 
@@ -86,7 +86,7 @@ Keyword arguments passed to Flow `__init__()` method. You can set Flow-specific 
 Collection of Executors used in the Flow.
 Each item in the collection corresponds to on {meth}`~jina.Flow.add` call and specifies one Executor.
 
-All keyword arguments passed to the Flow `.add()` method can be used here.
+All keyword arguments passed to the Flow {meth}`~jina.Flow.add` method can be used here.
 
 ```{include} executor-args.md
 ```

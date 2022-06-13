@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.6.3 Documentation" />
   
-<meta property="og:description" content="Methods of Executor can be named and written freely. Methods decorated with@requests are mapped to network endpoints while serving. Decorator: Executor methods decorated with@requests are bound to specific network requests, and respond to network queries. Both def or async def function can be dec..." />
+<meta property="og:description" content="Methods of Executor can be named and written freely. Methods decorated with@requests are mapped to network endpoints while serving. Decorator: Executor methods decorated with requests are bound to specific network requests, and respond to network queries. Both def or async def function can be dec..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -35,7 +35,7 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Monitor" href="../monitoring-executor/" /><link rel="prev" title="Basic" href="../executor-api/" />
+    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Monitor" href="../monitoring-executor/" /><link rel="prev" title="Basics" href="../executor-api/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/executor/executor-methods.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
@@ -160,7 +160,7 @@
 <div class="announcement">
     <aside class="announcement-content">
          
-    <a href="Neural">Learn more about the topic When</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/286414805/">Learn more about Jina and Wordlift at our Engineering All Hands on June 14th at 18:00 CET</a>
      
     </aside>
 </div>
@@ -242,7 +242,7 @@
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Executor</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../executor-api/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../executor-api/">Basics</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../monitoring-executor/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor-run/">Run</a></li>
@@ -587,17 +587,17 @@
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="requests-methods">
 <span id="exec-endpoint"></span><h1><code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> methods<a class="headerlink" href="#requests-methods" title="Permalink to this headline">#</a></h1>
-<p>Methods of <code class="docutils literal notranslate"><span class="pre">Executor</span></code> can be named and written freely.</p>
+<p>Methods of <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> can be named and written freely.</p>
 <p>Methods decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> are mapped to network endpoints while serving.</p>
 <section id="decorator">
 <span id="executor-requests"></span><h2>Decorator<a class="headerlink" href="#decorator" title="Permalink to this headline">#</a></h2>
-<p>Executor methods decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> are bound to specific network requests, and respond to network queries.</p>
-<p>Both <code class="docutils literal notranslate"><span class="pre">def</span></code> or <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> function can be decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>.</p>
-<p>You can import the <code class="docutils literal notranslate"><span class="pre">requests</span></code> decorator via</p>
+<p>Executor methods decorated with <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> are bound to specific network requests, and respond to network queries.</p>
+<p>Both <code class="docutils literal notranslate"><span class="pre">def</span></code> or <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> function can be decorated with <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a>.</p>
+<p>You can import the <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> decorator via</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">requests</span></code> is a decorator that takes an optional parameter: <code class="docutils literal notranslate"><span class="pre">on=</span></code>. It binds the decorated method of the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> to the specified route.</p>
+<p><a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> is a decorator that takes an optional parameter: <code class="docutils literal notranslate"><span class="pre">on=</span></code>. It binds the decorated method of the Executor to the specified route.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 
@@ -663,7 +663,7 @@ The request will simply pass through without any processing.</p>
 </section>
 <section id="arguments">
 <h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">#</a></h2>
-<p>All Executor methods decorated by <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> need to follow the signature below in order to be usable as a microservice inside a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.
+<p>All Executor methods decorated by <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> need to follow the signature below in order to be usable as a microservice inside a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>.
 The <code class="docutils literal notranslate"><span class="pre">async</span></code> definition is optional.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span>
@@ -685,10 +685,10 @@ The <code class="docutils literal notranslate"><span class="pre">async</span></c
 </div>
 <p>Let’s take a look at all these arguments:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">docs</span></code>: A <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> that is part of the request. Since the nature of <code class="docutils literal notranslate"><span class="pre">Executor</span></code> is to wrap functionality related to <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>, it is usually the main processing unit inside <code class="docutils literal notranslate"><span class="pre">Executor</span></code> methods. It is important to notice that these <code class="docutils literal notranslate"><span class="pre">docs</span></code> can be also changed in place, just like it could happen with
+<li><p><code class="docutils literal notranslate"><span class="pre">docs</span></code>: A DocumentArray that is part of the request. Since the nature of Executor is to wrap functionality related to <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>, it is usually the main processing unit inside Executor methods. It is important to notice that these <code class="docutils literal notranslate"><span class="pre">docs</span></code> can be also changed in place, just like it could happen with
 any other <code class="docutils literal notranslate"><span class="pre">list</span></code>-like object in a Python function.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">parameters</span></code>: A Dict object that can be used to pass extra parameters to the <code class="docutils literal notranslate"><span class="pre">Executor</span></code> functions.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code>:  This is the least common parameter to be used for an <code class="docutils literal notranslate"><span class="pre">Executor</span></code>. This argument is needed when an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> is used inside a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> to merge or reduce the output of more than one other <code class="docutils literal notranslate"><span class="pre">Executor</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">parameters</span></code>: A Dict object that can be used to pass extra parameters to the Executor functions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code>:  This is the least common parameter to be used for an Executor. This argument is needed when an Executor is used inside a Flow to merge or reduce the output of more than one other Executor.</p></li>
 </ul>
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
@@ -850,7 +850,7 @@ Example usage and output<div class="sd-summary-down docutils">
 </details></section>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">#</a></h2>
-<p>Let’s understand how <code class="docutils literal notranslate"><span class="pre">Executor</span></code>s process <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>s inside a Flow, and how the changes are chained and applied, affecting downstream <code class="docutils literal notranslate"><span class="pre">Executors</span></code> in the Flow.</p>
+<p>Let’s understand how Executor’s process DocumentArray’s inside a Flow, and how the changes are chained and applied, affecting downstream Executors in the Flow.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
 
@@ -928,7 +928,7 @@ Example usage and output<div class="sd-summary-down docutils">
                                 <span>Previous</span>
                             </div>
                             
-                            <div class="title">Basic</div>
+                            <div class="title">Basics</div>
                             
                         </div>
                     </a>

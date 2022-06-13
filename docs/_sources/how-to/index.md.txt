@@ -12,7 +12,7 @@ In order to get you started on your more ambitious projects, we compiled a list 
 
 ## Executor
 
-On top of the {ref}`basics <executor-cookbook>`, `Executor` has a few more tricks up its sleeve.
+On top of the {ref}`basics <executor-cookbook>`, the {class}`~jina.Executor` has a few more tricks up its sleeve.
 
 \
 **Scaling out**: In many scenarios, running a single Executor for a given task is just not enough. Whether you need more

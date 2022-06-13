@@ -1,7 +1,7 @@
 (gpu-executor)=
 # Run Executors on GPU
 
-This document will show you how to use an Executor on a GPU, both locally and in a
+This document will show you how to use an {class}`~jina.Executor` on a GPU, both locally and in a
 Docker container. You will also learn how to use GPU with pre-built Hub executors.
 
 Using a GPU allows you to significantly speed up encoding for most deep learning models,

@@ -160,7 +160,7 @@
 <div class="announcement">
     <aside class="announcement-content">
          
-    <a href="Neural">Learn more about the topic When</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/286414805/">Learn more about Jina and Wordlift at our Engineering All Hands on June 14th at 18:00 CET</a>
      
     </aside>
 </div>
@@ -242,7 +242,7 @@
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/monitoring-executor/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-run/">Run</a></li>
@@ -587,7 +587,7 @@
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="readiness-health-check">
 <h1>Readiness &amp; health check<a class="headerlink" href="#readiness-health-check" title="Permalink to this headline">#</a></h1>
-<p>Every Jina Flow consists of a <a class="reference internal" href="../../architecture-overview/#architecture-overview"><span class="std std-ref">number of microservices</span></a>,
+<p>Every Jina <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> consists of a <a class="reference internal" href="../../architecture-overview/#architecture-overview"><span class="std std-ref">number of microservices</span></a>,
 each of which have to be healthy before the Flow is ready to receive requests.</p>
 <p>Each Flow microservice provides a health check in the form of a <a class="reference external" href="https://github.com/grpc/grpc/blob/master/doc/health-checking.md">standardized gRPC endpoint</a> that exposes this information to the outside world.
 This means that health checks can automatically be performed by Jina itself as well as external tools like Docker Compose, Kubernetes service meshes, or load balancers.</p>
@@ -598,7 +598,7 @@ a readiness check endpoint for the complete Flow.</p>
 <h2>Readiness of complete Flow<a class="headerlink" href="#readiness-of-complete-flow" title="Permalink to this headline">#</a></h2>
 <p>A lot of times, it is useful to know if a Flow, as a complete set of microservices, is ready to receive requests. This is why the Gateway
 exposes an endpoint for each of the supported protocols to know the health and readiness of the entire Flow.</p>
-<p>Jina <code class="docutils literal notranslate"><span class="pre">Flow</span></code> and <code class="docutils literal notranslate"><span class="pre">Client</span></code> offer a convenient API to query these readiness endpoints. You can call <code class="docutils literal notranslate"><span class="pre">flow.dry_run()</span></code> or <code class="docutils literal notranslate"><span class="pre">client.dry_run()</span></code>, which will return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the Flow is healthy and ready, and <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise:</p>
+<p>Jina <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> and <a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> offer a convenient API to query these readiness endpoints. You can call <code class="docutils literal notranslate"><span class="pre">flow.dry_run()</span></code> or <code class="docutils literal notranslate"><span class="pre">client.dry_run()</span></code>, which will return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the Flow is healthy and ready, and <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">via Flow</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -763,7 +763,7 @@ Nevertheless, it is possible to perform these checks as a user.</p>
 </div>
 <section id="health-check-of-an-executor">
 <span id="health-check-executor"></span><h3>Health check of an Executor<a class="headerlink" href="#health-check-of-an-executor" title="Permalink to this headline">#</a></h3>
-<p>Executors run as microservices exposing gRPC endpoints, and they expose one endpoint for a health and readiness check.</p>
+<p><a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s run as microservices exposing gRPC endpoints, and they expose one endpoint for a health and readiness check.</p>
 <p>To see how to use it, you can start a Flow inside a terminal and block it to accept requests:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 

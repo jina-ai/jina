@@ -160,7 +160,7 @@
 <div class="announcement">
     <aside class="announcement-content">
          
-    <a href="Neural">Learn more about the topic When</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/286414805/">Learn more about Jina and Wordlift at our Engineering All Hands on June 14th at 18:00 CET</a>
      
     </aside>
 </div>
@@ -242,7 +242,7 @@
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/monitoring-executor/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-run/">Run</a></li>
@@ -593,7 +593,7 @@ Jina does its best to recover from failures, handle them gracefully, and report 
 <section id="executor-errors">
 <h2>Executor errors<a class="headerlink" href="#executor-errors" title="Permalink to this headline">#</a></h2>
 <p>In general there are two places where an Executor level error can be introduced.</p>
-<p>If an Executor’s <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method raises and Exception, the Flow cannot start.
+<p>If an <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>’s <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method raises and Exception, the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> cannot start.
 In this case this Exception is gets raised by the Executor runtime, and the Flow throws a <code class="docutils literal notranslate"><span class="pre">RuntimeFailToStart</span></code> Exception.</p>
 <p>If one of the Executor’s <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> methods raises and Exception, the offending error message gets added to the response
 and is sent back to the client.
@@ -602,7 +602,7 @@ If the gRPC or WebSocket protocols are used, the networking stream is not interr
 </section>
 <section id="network-errors">
 <h2>Network errors<a class="headerlink" href="#network-errors" title="Permalink to this headline">#</a></h2>
-<p>When an <a class="reference internal" href="../../architecture-overview/#architecture-overview"><span class="std std-ref">Executor or Head</span></a> can’t be reached by the Flow’s gateway, it attempts to re-connect
+<p>When an <a class="reference internal" href="../../architecture-overview/#architecture-overview"><span class="std std-ref">Executor or Head</span></a> can’t be reached by the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>’s gateway, it attempts to re-connect
 to the faulty deployment according to a retry policy.
 The same applies to calls to Executors that time out.
 The specifics of this policy depend on the environment the Flow find itself in, and are outlined below.</p>

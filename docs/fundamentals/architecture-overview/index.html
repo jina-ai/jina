@@ -160,7 +160,7 @@
 <div class="announcement">
     <aside class="announcement-content">
          
-    <a href="Neural">Learn more about the topic When</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/286414805/">Learn more about Jina and Wordlift at our Engineering All Hands on June 14th at 18:00 CET</a>
      
     </aside>
 </div>
@@ -242,7 +242,7 @@
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../executor/executor-api/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor/monitoring-executor/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor/executor-run/">Run</a></li>
@@ -633,23 +633,23 @@
 <img alt="../../_images/arch-overview.svg" src="../../_images/arch-overview.svg" /></figure>
 <p>The following concepts will be covered in the user guide:</p>
 <dl class="glossary simple">
-<dt id="term-Document">Document<a class="headerlink" href="#term-Document" title="Permalink to this term">#</a></dt><dd><p>Document is the fundamental data structure in Jina for representing multi-modal and cross-modal data. It is the essential element of IO in Jina. More information can be found in <a class="reference external" href="https://docarray.jina.ai/fundamentals/document/">DocArray’s Docs</a>.</p>
+<dt id="term-Document"><strong>Document</strong><a class="headerlink" href="#term-Document" title="Permalink to this term">#</a></dt><dd><p>Document is the fundamental data structure in Jina for representing multi-modal and cross-modal data. It is the essential element of IO in Jina. More information can be found in <a class="reference external" href="https://docarray.jina.ai/fundamentals/document/">DocArray’s Docs</a>.</p>
 </dd>
-<dt id="term-DocumentArray">DocumentArray<a class="headerlink" href="#term-DocumentArray" title="Permalink to this term">#</a></dt><dd><p>DocumentArray is a list-like container of multiple Documents. More information can be found in <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/">DocArray’s Docs</a>.</p>
+<dt id="term-DocumentArray"><strong>DocumentArray</strong><a class="headerlink" href="#term-DocumentArray" title="Permalink to this term">#</a></dt><dd><p>DocumentArray is a list-like container of multiple Documents. More information can be found in <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/">DocArray’s Docs</a>.</p>
 </dd>
-<dt id="term-Executor">Executor <a class="headerlink" href="#term-Executor" title="Permalink to this term">#</a></dt><dd><p>Execurtor is a Python class that has a group of functions using <a class="reference internal" href="#term-DocumentArray"><span class="xref std std-term">DocumentArray</span></a> as IO. Loosely speaking, each Executor is a microservice.</p>
+<dt id="term-Executor"><strong>Executor</strong> <a class="headerlink" href="#term-Executor" title="Permalink to this term">#</a></dt><dd><p>Execurtor is a Python class that has a group of functions using <a class="reference internal" href="#term-DocumentArray"><span class="xref std std-term">DocumentArray</span></a> as IO. Loosely speaking, each Executor is a microservice.</p>
 </dd>
-<dt id="term-Flow">Flow<a class="headerlink" href="#term-Flow" title="Permalink to this term">#</a></dt><dd><p>Flow ties multiple Executors together into a logic pipeline to achieve a task. If Executor is a microservice, then Flow is the end-to-end service.</p>
+<dt id="term-Flow"><strong>Flow</strong><a class="headerlink" href="#term-Flow" title="Permalink to this term">#</a></dt><dd><p>Flow ties multiple Executors together into a logic pipeline to achieve a task. If Executor is a microservice, then Flow is the end-to-end service.</p>
 </dd>
-<dt id="term-Gateway">Gateway<a class="headerlink" href="#term-Gateway" title="Permalink to this term">#</a></dt><dd><p>Gateway is the entrypoint of a <a class="reference internal" href="#term-Flow"><span class="xref std std-term">Flow</span></a>. It exposes multiple protocols for external communications; it routes all internal traffics.</p>
+<dt id="term-Gateway"><strong>Gateway</strong><a class="headerlink" href="#term-Gateway" title="Permalink to this term">#</a></dt><dd><p>Gateway is the entrypoint of a <a class="reference internal" href="#term-Flow"><span class="xref std std-term">Flow</span></a>. It exposes multiple protocols for external communications; it routes all internal traffics.</p>
 </dd>
-<dt id="term-Client">Client<a class="headerlink" href="#term-Client" title="Permalink to this term">#</a></dt><dd><p>Client is for connecting to a <a class="reference internal" href="#term-Gateway"><span class="xref std std-term">Gateway</span></a> and sending/receiving data from it.</p>
+<dt id="term-Client"><strong>Client</strong><a class="headerlink" href="#term-Client" title="Permalink to this term">#</a></dt><dd><p>Client is for connecting to a <a class="reference internal" href="#term-Gateway"><span class="xref std std-term">Gateway</span></a> and sending/receiving data from it.</p>
 </dd>
-<dt id="term-Deployment">Deployment<a class="headerlink" href="#term-Deployment" title="Permalink to this term">#</a></dt><dd><p>Deployment is an abstraction around Executor that lets the <a class="reference internal" href="#term-Gateway"><span class="xref std std-term">Gateway</span></a> communicate with an Executor. It encapsulates and abstracts internal replication details.</p>
+<dt id="term-Deployment"><strong>Deployment</strong><a class="headerlink" href="#term-Deployment" title="Permalink to this term">#</a></dt><dd><p>Deployment is an abstraction around Executor that lets the <a class="reference internal" href="#term-Gateway"><span class="xref std std-term">Gateway</span></a> communicate with an Executor. It encapsulates and abstracts internal replication details.</p>
 </dd>
-<dt id="term-gRPC-Websocket-HTTP">gRPC, Websocket, HTTP<a class="headerlink" href="#term-gRPC-Websocket-HTTP" title="Permalink to this term">#</a></dt><dd><p>They are network protocols for transmitting data. gRPC is always used between <a class="reference internal" href="#term-Gateway"><span class="xref std std-term">Gateway</span></a> and <a class="reference internal" href="#term-Deployment"><span class="xref std std-term">Deployment</span></a> communication.</p>
+<dt id="term-gRPC-Websocket-HTTP"><strong>gRPC, Websocket, HTTP</strong><a class="headerlink" href="#term-gRPC-Websocket-HTTP" title="Permalink to this term">#</a></dt><dd><p>They are network protocols for transmitting data. gRPC is always used between <a class="reference internal" href="#term-Gateway"><span class="xref std std-term">Gateway</span></a> and <a class="reference internal" href="#term-Deployment"><span class="xref std std-term">Deployment</span></a> communication.</p>
 </dd>
-<dt id="term-TLS">TLS<a class="headerlink" href="#term-TLS" title="Permalink to this term">#</a></dt><dd><p>TLS is a security protocol designed to facilitate privacy and data security for communications over the Internet. The communication between <a class="reference internal" href="#term-Client"><span class="xref std std-term">Client</span></a> and <a class="reference internal" href="#term-Gateway"><span class="xref std std-term">Gateway</span></a> i protected by TLS.</p>
+<dt id="term-TLS"><strong>TLS</strong><a class="headerlink" href="#term-TLS" title="Permalink to this term">#</a></dt><dd><p>TLS is a security protocol designed to facilitate privacy and data security for communications over the Internet. The communication between <a class="reference internal" href="#term-Client"><span class="xref std std-term">Client</span></a> and <a class="reference internal" href="#term-Gateway"><span class="xref std std-term">Gateway</span></a> is protected by TLS.</p>
 </dd>
 </dl>
 </section>

@@ -2,9 +2,9 @@
 # Deploy with Docker Compose
 
 One of the simplest ways of either prototyping or serving in
-production is to run your `Flow` with `docker-compose`.
+production is to run your {class}`~jina.Flow` with `docker-compose`.
 
-A `Flow` is composed of `Executors` which run Python code
+A {class}`~jina.Flow` is composed of {class}`~jina.Executor`s which run Python code
 defined to operate on `DocumentArray`. These `Executors` will live in different runtimes depending on how you want to deploy
 your Flow. 
 
@@ -125,7 +125,7 @@ adapt it to your own needs.
 
 Here you can see that 5 services will be created:
 
-- 1 for the `gateway` which is the entrypoint of the `Flow`.
+- 1 for the **Gateway** which is the entrypoint of the **Flow**.
 - 2 associated with the encoder for the two Replicas.
 - 3 associated with the indexer, one for the Head and two for the Shards.
 

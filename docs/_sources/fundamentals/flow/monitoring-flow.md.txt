@@ -1,7 +1,7 @@
 (monitoring-flow)=
 # Monitor
  
-A Jina {ref}`Flow <flow-cookbook>` exposes several core metrics that allow you to have a deeper look
+A Jina {class}`~jina.Flow` exposes several core metrics that allow you to have a deeper look
 at what is happening inside it. Metrics allow you to, for example, monitor the overall performance 
 of your Flow, detect bottlenecks, or alert your team when some component of your Flow is down.
 
@@ -13,7 +13,7 @@ To visualize your metrics through a dashboard, we recommend [Grafana](https://gr
 
 ## Enable monitoring
 
-A {ref}`Flow <flow-cookbook>` is composed of several Pods, namely the Gateway, the Executors, and potentially a Head (see the {ref}`architecture overview <architecture-overview>` for more details). Each of these Pods is its own microservice. These services expose their own metrics using the [Prometheus client](https://prometheus.io/docs/instrumenting/clientlibs/).
+A {class}`~jina.Flow` is composed of several Pods, namely the {class}`~jina.serve.runtimes.gateway.GatewayRuntime`, the {class}`~jina.Executor`s, and potentially a {class}`~jina.serve.runtimes.head.HeadRuntime` (see the {ref}`architecture overview <architecture-overview>` for more details). Each of these Pods is its own microservice. These services expose their own metrics using the [Prometheus client](https://prometheus.io/docs/instrumenting/clientlibs/).
 This means that they are as many metrics endpoints as there are Pods in your Flow. 
 
 Let's give an example to illustrate it :
@@ -92,7 +92,7 @@ Flow().add(...).add(uses=MyExecutor, monitoring=True)
 
 ## Available metrics
 
-Flows support different metrics out of the box, in addition to allowing the user to define their own custom metrics.
+A {class}`~jina.Flow` supports different metrics out of the box, in addition to allowing the user to define their own custom metrics.
 
 Because not all Pods have the same role, they expose different kinds of metrics:
 

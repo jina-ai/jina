@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.6.3 Documentation" />
   
-<meta property="og:description" content="This page outlines the specification for valid Flow YAML files. Such YAML configurations can be used to generate a Flow object via load_config(). To generate a YAML configuration from a Flow Python object, use save_config(). YAML completion in IDE: We provide a JSON Schema for your IDE to enable ..." />
+<meta property="og:description" content="This page outlines the specification for valid Executor YAML files. Such YAML configurations can be used to generate a Executor object via load_config(). To generate a YAML configuration from a Flow Python object, use save_config(). YAML completion in IDE: We provide a JSON Schema for your IDE to..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -160,7 +160,7 @@
 <div class="announcement">
     <aside class="announcement-content">
          
-    <a href="Neural">Learn more about the topic When</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/286414805/">Learn more about Jina and Wordlift at our Engineering All Hands on June 14th at 18:00 CET</a>
      
     </aside>
 </div>
@@ -242,7 +242,7 @@
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/monitoring-executor/">Monitor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-run/">Run</a></li>
@@ -587,9 +587,9 @@
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="yaml-specification">
 <span id="flow-yaml-spec"></span><h1>YAML specification<a class="headerlink" href="#yaml-specification" title="Permalink to this headline">#</a></h1>
-<p>This page outlines the specification for valid Flow YAML files.</p>
-<p>Such YAML configurations can be used to generate a Flow object via <a class="reference internal" href="../../../api/jina.jaml/#jina.jaml.JAMLCompatible.load_config" title="jina.jaml.JAMLCompatible.load_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_config()</span></code></a>.</p>
-<p>To generate a YAML configuration from a <code class="docutils literal notranslate"><span class="pre">Flow</span></code> Python object, use <a class="reference internal" href="../../../api/jina.jaml/#jina.jaml.JAMLCompatible.save_config" title="jina.jaml.JAMLCompatible.save_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_config()</span></code></a>.</p>
+<p>This page outlines the specification for valid <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> YAML files.</p>
+<p>Such YAML configurations can be used to generate a <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> object via <a class="reference internal" href="../../../api/jina.jaml/#jina.jaml.JAMLCompatible.load_config" title="jina.jaml.JAMLCompatible.load_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_config()</span></code></a>.</p>
+<p>To generate a YAML configuration from a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> Python object, use <a class="reference internal" href="../../../api/jina.jaml/#jina.jaml.JAMLCompatible.save_config" title="jina.jaml.JAMLCompatible.save_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_config()</span></code></a>.</p>
 <section id="yaml-completion-in-ide">
 <h2>YAML completion in IDE<a class="headerlink" href="#yaml-completion-in-ide" title="Permalink to this headline">#</a></h2>
 <p>We provide a <a class="reference external" href="https://json-schema.org/">JSON Schema</a> for your IDE to enable code completion, syntax validation, members listing and displaying help text. Here is a <a class="reference external" href="https://youtu.be/qOD-6mihUzQ">video tutorial</a> to walk you through the setup.</p>
@@ -955,7 +955,7 @@
 <h3><code class="docutils literal notranslate"><span class="pre">executors</span></code><a class="headerlink" href="#executors" title="Permalink to this headline">#</a></h3>
 <p>Collection of Executors used in the Flow.
 Each item in the collection corresponds to on <a class="reference internal" href="../../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> call and specifies one Executor.</p>
-<p>All keyword arguments passed to the Flow <code class="docutils literal notranslate"><span class="pre">.add()</span></code> method can be used here.</p>
+<p>All keyword arguments passed to the Flow <a class="reference internal" href="../../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> method can be used here.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="colwidths-auto docutils align-default">
 <thead>
