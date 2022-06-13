@@ -8,8 +8,10 @@ for s in ('flow', 'gateway', 'executor'):
 
     for k, v in a[f'Jina::{s.capitalize()}']['properties'].items():
         desc = v["description"].replace("\n", "<br>")
-        if k == 'port':
-            v['default'] = None  # avoid random numbers cause devbot forever committing
+        if k in ('port', 'port_monitoring'):
+            v[
+                'default'
+            ] = 'random in [49152, 65535]'  # avoid random numbers cause devbot forever committing
         table.append(f'| `{k}` | {desc} | `{v["type"]}` | `{v["default"]}` |')
 
     with open(f'../docs/fundamentals/flow/{s}-args.md', 'w') as fp:

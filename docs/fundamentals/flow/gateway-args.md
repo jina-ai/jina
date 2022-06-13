@@ -12,7 +12,7 @@
 | `uses_metas` | Dictionary of keyword arguments that will override the `metas` configuration in `uses` | `object` | `None` |
 | `uses_requests` | Dictionary of keyword arguments that will override the `requests` configuration in `uses` | `object` | `None` |
 | `py_modules` | The customized python modules need to be imported before loading the executor<br><br>Note that the recommended way is to only import a single module - a simple python file, if your<br>executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,<br>which should be structured as a python package. For more details, please see the<br>`Executor cookbook <https://docs.jina.ai/fundamentals/executor/repository-structure/>`__ | `array` | `None` |
-| `port` | The port for input data to bind to, default is a random port between [49152, 65535] | `number` | `None` |
+| `port` | The port for input data to bind to, default is a random port between [49152, 65535] | `number` | `random in [49152, 65535]` |
 | `host_in` | The host address for binding to, by default it is 0.0.0.0 | `string` | `0.0.0.0` |
 | `native` | If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime. | `boolean` | `False` |
 | `output_array_type` | The type of array `tensor` and `embedding` will be serialized to.<br><br>Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found <br>`here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.<br>Defaults to retaining whatever type is returned by the Executor. | `string` | `None` |
@@ -43,5 +43,5 @@
 | `shards` | The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies | `number` | `1` |
 | `replicas` | The number of replicas in the deployment | `number` | `1` |
 | `monitoring` | If set, spawn an http server with a prometheus endpoint to expose metrics | `boolean` | `False` |
-| `port_monitoring` | The port on which the prometheus server is exposed, default port is 9090 | `number` | `9090` |
+| `port_monitoring` | The port on which the prometheus server is exposed, default is a random port between [49152, 65535] | `number` | `random in [49152, 65535]` |
 | `retries` | Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas) | `number` | `-1` |
