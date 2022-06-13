@@ -1,3 +1,4 @@
+import dataclasses
 import os
 
 import pytest
@@ -11,6 +12,15 @@ from jina.serve.executors import BaseExecutor
 
 class MyExecutor(BaseExecutor):
     pass
+
+
+@dataclasses.dataclass
+class MyDataClassExecutor(BaseExecutor):
+    my_field: str = ''
+
+    @requests
+    def baz(self, **kwargs):
+        pass
 
 
 def test_non_empty_reg_tags():
@@ -175,7 +185,6 @@ def test_parsing_brackets_in_envvar():
             'VAR1': '{"1": "2"}',
         }
     ):
-
         b = JAML.load(flow_yaml, substitute=True)
         assert b['executors'][0]['env']['var1'] == '{"1": "2"}'
         assert b['executors'][0]['env']['var2'] == 'a'
@@ -213,3 +222,22 @@ def test_jtype(tmpdir):
 
     assert type(BaseExecutor.load_config(exec_path)) == BaseExecutor
     assert type(Flow.load_config(flow_path)) == Flow
+
+
+def test_load_dataclass_executor():
+    executor_yaml = '''
+        jtype: MyDataClassExecutor
+        with:
+            my_field: this is my field
+        metas:
+            name: test-name-updated
+            workspace: test-work-space-updated
+        requests:
+            /foo: baz
+        '''
+
+    exec = BaseExecutor.load_config(executor_yaml)
+    assert exec.my_field == 'this is my field'
+    assert exec.requests['/foo'] == MyDataClassExecutor.baz
+    assert exec.metas.name == 'test-name-updated'
+    assert exec.metas.workspace == 'test-work-space-updated'

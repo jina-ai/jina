@@ -1,3 +1,4 @@
+import dataclasses
 import inspect
 from functools import reduce
 from typing import Any, Dict, Optional, Set, Type
@@ -72,12 +73,24 @@ class LegacyParser(VersionedYAMLParser):
 
         cls._init_from_yaml = True
         # tmp_p = {kk: expand_env_var(vv) for kk, vv in data.get('with', {}).items()}
-        obj = cls(
-            **data.get('with', {}),
-            metas=data.get('metas', {}),
-            requests=data.get('requests', {}),
-            runtime_args=runtime_args,
-        )
+        if dataclasses.is_dataclass(cls):
+            obj = cls(
+                **data.get('with', {}),
+            )
+            cls.__bases__[0].__init__(
+                obj,
+                **data.get('with', {}),
+                metas=data.get('metas', {}),
+                requests=data.get('requests', {}),
+                runtime_args=runtime_args,
+            )
+        else:
+            obj = cls(
+                **data.get('with', {}),
+                metas=data.get('metas', {}),
+                requests=data.get('requests', {}),
+                runtime_args=runtime_args,
+            )
         cls._init_from_yaml = False
 
         # check if the yaml file used to instanciate 'cls' has arguments that are not in 'cls'
