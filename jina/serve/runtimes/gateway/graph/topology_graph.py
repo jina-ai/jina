@@ -96,8 +96,8 @@ class TopologyGraph:
             # Check my condition and send request with the condition
             metadata = {}
             if previous_task is not None:
-                result = await previous_task
-                request, metadata = result[0], result[1]
+                request, metadata = await previous_task
+
             if metadata and 'is-error' in metadata:
                 return request, metadata
             elif request is not None:
@@ -126,6 +126,24 @@ class TopologyGraph:
                     ):
                         return request, metadata
                     # otherwise, send to executor and get response
+
+                    # here we need to handle potential case of parameters per executors.
+                    original_parameters = [
+                        part.parameters for part in self.parts_to_send
+                    ]
+                    parameters_per_executor = False
+
+                    if original_parameters[0].get(
+                        '__jina_parameters_per_executor__', False
+                    ):
+                        parameters_per_executor = True
+                        parameters_of_executor = [
+                            p[self.name] for p in original_parameters
+                        ]
+                        for part, par in zip(
+                            self.parts_to_send, parameters_of_executor
+                        ):
+                            part.parameters = par
                     try:
                         resp, metadata = await connection_pool.send_requests_once(
                             requests=self.parts_to_send,
@@ -135,6 +153,13 @@ class TopologyGraph:
                             timeout=self._timeout_send,
                             retries=self._retries,
                         )
+                        # set back original parameters to resp
+                        if parameters_per_executor:
+                            param_results = resp.parameters.get('__results__', None)
+                            resp.parameters = original_parameters[0]
+                            if param_results:
+                                resp.parameters['__results__'] = param_results
+
                     except InternalNetworkError as err:
                         self._handle_internalnetworkerror(err)
 

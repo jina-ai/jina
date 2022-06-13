@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Dict, List, Optional
 
 from docarray import DocumentArray
-
 from jina import __default_endpoint__
 from jina.excepts import BadConfigSource
 from jina.importer import ImportExtensions
@@ -328,12 +327,15 @@ class DataRequestHandler:
     @staticmethod
     def reduce_requests(requests: List['DataRequest']) -> 'DataRequest':
         """
-        Reduces a list of requests containing DocumentArrays inton one request object. Changes are applied to the first
+        Reduces a list of requests containing DocumentArrays into one request object. Changes are applied to the first
         request object in-place.
 
         Reduction consists in reducing every DocumentArray in `requests` sequentially using
         :class:`DocumentArray`.:method:`reduce`.
         The resulting DataRequest object contains Documents of all DocumentArrays inside requests.
+
+        The parameters of the Requests are also merged into a single Dictionary.
+        We only merge the results and make the assumption that the others params does not change during execution
 
         :param requests: List of DataRequest objects
         :return: the resulting DataRequest
