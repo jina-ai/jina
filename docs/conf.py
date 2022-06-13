@@ -67,6 +67,10 @@ html_theme_options = {
 
     # start-announce
 
+    "announcement": '''
+    <a href="Neural">Learn more about the topic When</a>
+    ''',
+        
     # end-announce
 }
 
