@@ -132,18 +132,28 @@ class TopologyGraph:
                         part.parameters for part in self.parts_to_send
                     ]
                     parameters_per_executor = False
+                    print(
+                        f' original_parameters for {self.name} => {original_parameters}'
+                    )
 
                     if original_parameters[0].get(
                         '__jina_parameters_per_executor__', False
                     ):
+                        print(f' UPDATE PARAMETERS for {self.name}')
                         parameters_per_executor = True
                         parameters_of_executor = [
-                            p[self.name] for p in original_parameters
+                            p.get(self.name, {}) for p in original_parameters
                         ]
                         for part, par in zip(
                             self.parts_to_send, parameters_of_executor
                         ):
+                            par[
+                                '__jina_parameters_per_executor__'
+                            ] = True  # need to keep it for concurrent executors to still see it
                             part.parameters = par
+                    print(
+                        f' for self.name {self.name}, I WILL SEND => {[p.parameters for p in self.parts_to_send]}'
+                    )
                     try:
                         resp, metadata = await connection_pool.send_requests_once(
                             requests=self.parts_to_send,
@@ -154,11 +164,20 @@ class TopologyGraph:
                             retries=self._retries,
                         )
                         # set back original parameters to resp
+                        print(
+                            f' In {self.name}, Response parameters BEFORE UPDATE {resp.parameters}'
+                        )
                         if parameters_per_executor:
                             param_results = resp.parameters.get('__results__', None)
                             resp.parameters = original_parameters[0]
-                            if param_results:
-                                resp.parameters['__results__'] = param_results
+                            if param_results is not None:
+                                print(f' HEY SET {param_results}')
+                                resp_params = resp.parameters
+                                resp_params['__results__'] = param_results
+                                resp.parameters = resp_params
+                                print(f' HEY SET after {resp.parameters}')
+
+                        print(f' In {self.name}, Response parameters {resp.parameters}')
 
                     except InternalNetworkError as err:
                         self._handle_internalnetworkerror(err)
