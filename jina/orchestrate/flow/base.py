@@ -609,6 +609,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
             **kwargs,
         )
 
+    @allowed_levels([FlowBuildLevel.EMPTY])
     def needs_all(self, name: str = 'joiner', *args, **kwargs) -> 'Flow':
         """
         Collect all hanging Deployments so far and add a blocker to the Flow; wait until all handing pods completed.
@@ -1155,6 +1156,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         self.logger.debug('flow is closed!')
         self.logger.close()
 
+    @allowed_levels([FlowBuildLevel.EMPTY, FlowBuildLevel.GRAPH])
     def start(self):
         """Start to run all Deployments in this Flow.
 
@@ -1720,6 +1722,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
         return address_table
 
+    @allowed_levels([FlowBuildLevel.RUNNING])
     def block(
         self, stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None
     ):
@@ -1901,6 +1904,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         """
         ...
 
+    @allowed_levels([FlowBuildLevel.EMPTY])
     def expose_endpoint(self, exec_endpoint: str, **kwargs):
         """Expose an Executor's endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.
 
