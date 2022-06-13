@@ -66,7 +66,7 @@ class MyExecutor(Executor):
 ```
 
 This will create a [Prometheus summary](https://prometheus.io/docs/concepts/metric_types/#summary)
-`jina_my_method_inference_seconds` which will keep track of the time of execution of `my_method
+`jina_my_method_inference_seconds` which will keep track of the time of execution of `my_method`
 
 By default, the name and the documentation of the metric created by {func}`~jina.monitor` are auto-generated based on the name
 of the function. However, you can name it by yourself by doing :
