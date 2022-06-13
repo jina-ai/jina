@@ -113,12 +113,12 @@ class MyExecutor(Executor):
 
 Let's take a look at all these arguments:
 
-- `docs`: A `DocumentArray` that is part of the request. Since the nature of `Executor` is to wrap functionality related to `DocumentArray`, it is usually the main processing unit inside `Executor` methods. It is important to notice that these `docs` can be also changed in place, just like it could happen with 
+- `docs`: A DocumentArray that is part of the request. Since the nature of Executor is to wrap functionality related to `DocumentArray`, it is usually the main processing unit inside Executor methods. It is important to notice that these `docs` can be also changed in place, just like it could happen with 
 any other `list`-like object in a Python function.
 
-- `parameters`: A Dict object that can be used to pass extra parameters to the `Executor` functions.
+- `parameters`: A Dict object that can be used to pass extra parameters to the Executor functions.
 
-- `docs_matrix`:  This is the least common parameter to be used for an `Executor`. This argument is needed when an `Executor` is used inside a `Flow` to merge or reduce the output of more than one other `Executor`.
+- `docs_matrix`:  This is the least common parameter to be used for an Executor. This argument is needed when an Executor is used inside a Flow to merge or reduce the output of more than one other Executor.
 
  
 
@@ -297,7 +297,7 @@ NotImplementedError('no time for it')
 
 ## Example
 
-Let's understand how `Executor`s process `DocumentArray`s inside a Flow, and how the changes are chained and applied, affecting downstream `Executors` in the Flow.
+Let's understand how Executor's process DocumentArray's inside a Flow, and how the changes are chained and applied, affecting downstream Executors in the Flow.
 
 
 ```python
