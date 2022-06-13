@@ -36,7 +36,7 @@ from rich.progress import (
 )
 from rich.table import Table
 
-from jina import __default_host__, __default_port_monitoring__, __docker_host__, helper
+from jina import __default_host__, __docker_host__, helper
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin
 from jina.enums import (
@@ -1583,16 +1583,14 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
             return False
 
     @property
-    def port_monitoring(self) -> int:
+    def port_monitoring(self) -> Optional[int]:
         """Return if the monitoring is enabled
         .. # noqa: DAR201
         """
         if GATEWAY_NAME in self._deployment_nodes:
             return self[GATEWAY_NAME].args.port_monitoring
         else:
-            return self._common_kwargs.get(
-                'port_monitoring', __default_port_monitoring__
-            )
+            return self._common_kwargs.get('port_monitoring', None)
 
     @property
     def address_private(self) -> str:
@@ -1719,12 +1717,6 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                         f'Monitor [b]{name}:{deployment.args.port_monitoring}[/]',
                         '·'.join(_address),
                     )
-
-            return self[GATEWAY_NAME].args.port_monitoring
-        else:
-            return self._common_kwargs.get(
-                'port_monitoring', __default_port_monitoring__
-            )
 
         return address_table
 
