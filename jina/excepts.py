@@ -1,18 +1,11 @@
 """This modules defines all kinds of exceptions raised in Jina."""
-from jina.helper import deprecated_method
+from typing import Set, Union
+
+import grpc.aio
 
 
 class BaseJinaException(BaseException):
     """A base class for all exceptions raised by Jina"""
-
-
-@deprecated_method('BaseJinaException')
-class BaseJinaExeception(BaseException):
-    """A base class for all exceptions raised by Jina"""
-
-
-class ExecutorFailToLoad(SystemError, BaseJinaException):
-    """When the executor can not be loaded in pod/deployment."""
 
 
 class RuntimeFailToStart(SystemError, BaseJinaException):
@@ -55,10 +48,6 @@ class BadRequestType(TypeError, BaseJinaException):
     """Exception when can not construct a request object from given data."""
 
 
-class BadClientResponse(Exception, BaseJinaException):
-    """Exception when can not construct a request object from given data."""
-
-
 class BadImageNameError(Exception, BaseJinaException):
     """Exception when an image name can not be found either local & remote"""
 
@@ -85,3 +74,53 @@ class NoContainerizedError(Exception, BaseJinaException):
 
 class PortAlreadyUsed(RuntimeError, BaseJinaException):
     """Raised when to use a port which is already used"""
+
+
+class InternalNetworkError(grpc.aio.AioRpcError, BaseJinaException):
+    """
+    Raised when communication between microservices fails.
+    Needed to propagate information about the root cause event, such as request_id and dest_addr.
+    """
+
+    def __init__(
+        self,
+        og_exception: grpc.aio.AioRpcError,
+        request_id: str = '',
+        dest_addr: Union[str, Set[str]] = {''},
+        details: str = '',
+    ):
+        """
+        :param og_exception: the original exception that caused the network error
+        :param request_id: id of the request that caused the error
+        :param dest_addr: destination (microservice) address(es) of the problematic network call(s)
+        :param details: details of the error
+        """
+        self.og_exception = og_exception
+        self.request_id = request_id
+        self.dest_addr = dest_addr
+        self._details = details
+        super().__init__(
+            og_exception.code(),
+            og_exception.initial_metadata(),
+            og_exception.trailing_metadata(),
+            self.details(),
+            og_exception.debug_error_string(),
+        )
+
+    def __str__(self):
+        return self.details()
+
+    def __repr__(self):
+        return self.__str__()
+
+    def code(self):
+        """
+        :return: error code of this exception
+        """
+        return self.og_exception.code()
+
+    def details(self):
+        """
+        :return: details of this exception
+        """
+        return self._details if self._details else self.og_exception.details()

@@ -5,20 +5,7 @@ from threading import Thread
 import numpy as np
 import pytest
 
-from jina import Document, Client, Flow
-from jina.enums import CompressAlgo
-from tests import random_docs
-
-
-@pytest.mark.slow
-@pytest.mark.parametrize('compress_algo', list(CompressAlgo))
-def test_compression(compress_algo):
-    f = Flow(compress=str(compress_algo)).add().add(name='DummyEncoder', shards=2).add()
-
-    with f:
-        results = f.index(random_docs(10))
-
-    assert len(results) > 0
+from jina import Client, Document, Flow
 
 
 @pytest.mark.slow

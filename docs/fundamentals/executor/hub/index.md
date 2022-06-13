@@ -1,5 +1,15 @@
 (jina-hub)=
-# Share Executors via Jina Hub
+# Hub
+
+```{figure} https://docs.jina.ai/_images/hub-banner.png
+:width: 0 %
+:scale: 0 %
+```
+
+```{figure} img/hub-banner.png
+:scale: 0 %
+:width: 0 %
+```
 
 Now that you understand that Executor is a building block in Jina, the following questions may arise:
 
@@ -42,7 +52,7 @@ A list of environment variables which takes effects during Jina Hub operations. 
 
 ### `JINA_HUB_ROOT`
 
-**Define the place where the Executor package cache lives.** Default value is `Path.home().joinpath('.jina', 'hub-packages')`
+**Define the place where the Executor package cache lives.** Default value is `~/.jina/hub-packages`
 
 ````{admonition} Hint
 :class: hint
@@ -51,7 +61,7 @@ You don't have permissions to create a directory in the home folder sometime. Th
 
 ### `JINA_HUB_CACHE_DIR`
 
-**Define the place where the cache is stored during the downloading.** The cache will be deleted after finishing the download. Default value is `Path(os.environ.get('JINA_HUB_ROOT')).joinpath('.cache')`. By default, it will be a subfolder of `JINA_HUB_ROOT`. You can specify its value separately if you want.
+**Define the place where the cache is stored during the downloading.** The cache will be deleted after downloading. Default value is `${JINA_HUB_ROOT}/.cache`.
 
 
 ```{toctree}
@@ -62,5 +72,6 @@ create-hub-executor
 push-executor
 use-hub-executor
 ../../../how-to/sandbox
+../../../how-to/debug-executor
 executor-best-practices
 ```

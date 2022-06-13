@@ -1,29 +1,33 @@
+import contextlib
 import inspect
 import multiprocessing
 import os
 import threading
-import uuid
 import warnings
-from concurrent.futures import ThreadPoolExecutor
 from types import SimpleNamespace
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union
 
 from jina import __args_executor_init__, __default_endpoint__
-from jina.helper import (
-    ArgNamespace,
-    T,
-    iscoroutinefunction,
-    run_in_threadpool,
-    typename,
-)
+from jina.enums import BetterEnum
+from jina.helper import ArgNamespace, T, iscoroutinefunction, typename
+from jina.importer import ImportExtensions
 from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
-from jina.serve.executors.decorators import requests, store_init_kwargs, wrap_func
+from jina.logging.logger import JinaLogger
+from jina.serve.executors.decorators import (
+    avoid_concurrent_lock_cls,
+    requests,
+    store_init_kwargs,
+    wrap_func,
+)
 
 if TYPE_CHECKING:
-    from jina import DocumentArray
+    from prometheus_client import Summary
 
+    from docarray import DocumentArray
 
-__all__ = ['BaseExecutor', 'ReducerExecutor']
+__dry_run_endpoint__ = '_jina_dry_run_'
+
+__all__ = ['BaseExecutor', __dry_run_endpoint__]
 
 
 class ExecutorType(type(JAMLCompatible), type):
@@ -62,6 +66,7 @@ class ExecutorType(type(JAMLCompatible), type):
                     f'please add `**kwargs` to your __init__ function'
                 )
             wrap_func(cls, ['__init__'], store_init_kwargs)
+            wrap_func(cls, ['__init__'], avoid_concurrent_lock_cls(cls))
 
             reg_cls_set.add(cls_id)
             setattr(cls, '_registered_class', reg_cls_set)
@@ -108,16 +113,51 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime
         :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected
         """
-        self._thread_pool = ThreadPoolExecutor(max_workers=1)
         self._add_metas(metas)
         self._add_requests(requests)
         self._add_runtime_args(runtime_args)
+        self._init_monitoring()
+        self.logger = JinaLogger(self.__class__.__name__)
+        if __dry_run_endpoint__ not in self.requests:
+            self.requests[__dry_run_endpoint__] = self._dry_run_func
+        else:
+            self.logger.warning(
+                f' Endpoint {__dry_run_endpoint__} is defined by the Executor. Be aware that this endpoint is usually reserved to enable health checks from the Client through the gateway.'
+                f' So it is recommended not to expose this endpoint. '
+            )
+
+    def _dry_run_func(self, *args, **kwargs):
+        pass
 
     def _add_runtime_args(self, _runtime_args: Optional[Dict]):
         if _runtime_args:
             self.runtime_args = SimpleNamespace(**_runtime_args)
         else:
             self.runtime_args = SimpleNamespace()
+
+    def _init_monitoring(self):
+        if (
+            hasattr(self.runtime_args, 'metrics_registry')
+            and self.runtime_args.metrics_registry
+        ):
+            with ImportExtensions(
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+            ):
+                from prometheus_client import Summary
+
+            self._summary_method = Summary(
+                'process_request_seconds',
+                'Time spent when calling the executor request method',
+                registry=self.runtime_args.metrics_registry,
+                namespace='jina',
+                labelnames=('executor', 'executor_endpoint', 'runtime_name'),
+            )
+            self._metrics_buffer = {'process_request_seconds': self._summary_method}
+
+        else:
+            self._summary_method = None
+            self._metrics_buffer = None
 
     def _add_requests(self, _requests: Optional[Dict]):
         if not hasattr(self, 'requests'):
@@ -235,10 +275,24 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     async def __acall_endpoint__(self, req_endpoint, **kwargs):
         func = self.requests[req_endpoint]
-        if iscoroutinefunction(func):
-            return await func(self, **kwargs)
-        else:
-            return await run_in_threadpool(func, self._thread_pool, self, **kwargs)
+
+        runtime_name = (
+            self.runtime_args.name if hasattr(self.runtime_args, 'name') else None
+        )
+
+        _summary = (
+            self._summary_method.labels(
+                self.__class__.__name__, req_endpoint, runtime_name
+            ).time()
+            if self._summary_method
+            else contextlib.nullcontext()
+        )
+
+        with _summary:
+            if iscoroutinefunction(func):
+                return await func(self, **kwargs)
+            else:
+                return func(self, **kwargs)
 
     @property
     def workspace(self) -> Optional[str]:
@@ -248,8 +302,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :return: returns the workspace of the current shard of this Executor.
         """
         workspace = (
-            getattr(self.metas, 'workspace')
-            or getattr(self.runtime_args, 'workspace', None)
+            getattr(self.runtime_args, 'workspace', None)
+            or getattr(self.metas, 'workspace')
             or os.environ.get('JINA_DEFAULT_WORKSPACE_BASE')
         )
         if workspace:
@@ -359,24 +413,119 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         with f:
             f.block(stop_event)
 
-
-class ReducerExecutor(BaseExecutor):
-    """
-    ReducerExecutor is an Executor that performs a reduce operation on a matrix of DocumentArrays coming from shards.
-    ReducerExecutor relies on DocumentArray.reduce_all to merge all DocumentArray into one DocumentArray which will be
-    sent to the next deployment.
-
-    This Executor only adds a reduce endpoint to the BaseExecutor.
-    """
-
-    @requests
-    def reduce(self, docs_matrix: List['DocumentArray'] = [], **kwargs):
-        """Reduce docs_matrix into one `DocumentArray` using `DocumentArray.reduce_all`
-        :param docs_matrix: a List of DocumentArrays to be reduced
-        :param kwargs: extra keyword arguments
-        :return: the reduced DocumentArray
+    class StandaloneExecutorType(BetterEnum):
         """
-        if docs_matrix:
-            da = docs_matrix[0]
-            da.reduce_all(docs_matrix[1:])
-            return da
+        Type of standalone Executors
+        """
+
+        EXTERNAL = 0  # served by a gateway
+        SHARED = 1  # not served by a gateway, served by head/worker
+
+    @staticmethod
+    def to_kubernetes_yaml(
+        uses: str,
+        output_base_path: str,
+        k8s_namespace: Optional[str] = None,
+        executor_type: Optional[
+            StandaloneExecutorType
+        ] = StandaloneExecutorType.EXTERNAL,
+        uses_with: Optional[Dict] = None,
+        uses_metas: Optional[Dict] = None,
+        uses_requests: Optional[Dict] = None,
+        **kwargs,
+    ):
+        """
+        Converts the Executor into a set of yaml deployments to deploy in Kubernetes.
+
+        If you don't want to rebuild image on Jina Hub,
+        you can set `JINA_HUB_NO_IMAGE_REBUILD` environment variable.
+
+        :param uses: the Executor to use. Has to be containerized and accessible from K8s
+        :param output_base_path: The base path where to dump all the yaml files
+        :param k8s_namespace: The name of the k8s namespace to set for the configurations. If None, the name of the Flow will be used.
+        :param executor_type: The type of Executor. Can be external or shared. External Executors include the Gateway. Shared Executors don't. Defaults to External
+        :param uses_with: dictionary of parameters to overwrite from the default config's with field
+        :param uses_metas: dictionary of parameters to overwrite from the default config's metas field
+        :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
+        :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
+        """
+        from jina import Flow
+
+        Flow(**kwargs).add(
+            uses=uses,
+            uses_with=uses_with,
+            uses_metas=uses_metas,
+            uses_requests=uses_requests,
+        ).to_kubernetes_yaml(
+            output_base_path=output_base_path,
+            k8s_namespace=k8s_namespace,
+            include_gateway=executor_type
+            == BaseExecutor.StandaloneExecutorType.EXTERNAL,
+        )
+
+    to_k8s_yaml = to_kubernetes_yaml
+
+    @staticmethod
+    def to_docker_compose_yaml(
+        uses: str,
+        output_path: Optional[str] = None,
+        network_name: Optional[str] = None,
+        executor_type: Optional[
+            StandaloneExecutorType
+        ] = StandaloneExecutorType.EXTERNAL,
+        uses_with: Optional[Dict] = None,
+        uses_metas: Optional[Dict] = None,
+        uses_requests: Optional[Dict] = None,
+        **kwargs,
+    ):
+        """
+        Converts the Executor into a yaml file to run with `docker-compose up`
+        :param uses: the Executor to use. Has to be containerized
+        :param output_path: The output path for the yaml file
+        :param network_name: The name of the network that will be used by the deployment name
+        :param executor_type: The type of Executor. Can be external or shared. External Executors include the Gateway. Shared Executors don't. Defaults to External
+        :param uses_with: dictionary of parameters to overwrite from the default config's with field
+        :param uses_metas: dictionary of parameters to overwrite from the default config's metas field
+        :param uses_requests: dictionary of parameters to overwrite from the default config's requests field
+        :param kwargs: other kwargs accepted by the Flow, full list can be found `here <https://docs.jina.ai/api/jina.orchestrate.flow.base/>`
+        """
+        from jina import Flow
+
+        f = Flow(**kwargs).add(
+            uses=uses,
+            uses_with=uses_with,
+            uses_metas=uses_metas,
+            uses_requests=uses_requests,
+        )
+        f.to_docker_compose_yaml(
+            output_path=output_path,
+            network_name=network_name,
+            include_gateway=executor_type
+            == BaseExecutor.StandaloneExecutorType.EXTERNAL,
+        )
+
+    def monitor(
+        self, name: Optional[str] = None, documentation: Optional[str] = None
+    ) -> Optional['Summary']:
+        """
+        Get a given prometheus metric, if it does not exist yet, it will create it and store it in a buffer.
+        :param name: the name of the metrics
+        :param documentation:  the description of the metrics
+
+        :return: the given prometheus metrics or None if monitoring is not enable.
+        """
+
+        if self._metrics_buffer:
+            if name not in self._metrics_buffer:
+                from prometheus_client import Summary
+
+                self._metrics_buffer[name] = Summary(
+                    name,
+                    documentation,
+                    registry=self.runtime_args.metrics_registry,
+                    namespace='jina',
+                    labelnames=('runtime_name',),
+                ).labels(self.runtime_args.name)
+            return self._metrics_buffer[name].time()
+        else:
+            return contextlib.nullcontext()

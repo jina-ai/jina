@@ -1,5 +1,5 @@
 (hub-executor-best-practices)=
-# Best Practices
+# Best practices
 
 ## Developing Hub Executors
 

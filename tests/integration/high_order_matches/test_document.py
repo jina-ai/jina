@@ -1,5 +1,4 @@
-from jina import Flow
-from jina import Document, Executor, Client, requests
+from jina import Client, Document, Executor, Flow, requests
 
 exposed_port = 12345
 
@@ -33,9 +32,8 @@ def test_single_executor():
     )
 
     with f:
-        results = Client(port=exposed_port, return_responses=True).post(
-            on='index',
-            inputs=Document(),
+        results = Client(port=exposed_port).post(
+            on='index', inputs=Document(), return_responses=True
         )
     validate_results(results)
 
@@ -49,8 +47,7 @@ def test_multi_executor():
     )
 
     with f:
-        results = Client(port=exposed_port, return_responses=True).post(
-            on='index',
-            inputs=Document(),
+        results = Client(port=exposed_port).post(
+            on='index', inputs=Document(), return_responses=True
         )
     validate_results(results)

@@ -1,15 +1,17 @@
 """A module for the websockets-based Client for Jina."""
 import asyncio
-from contextlib import AsyncExitStack, nullcontext
+from contextlib import AsyncExitStack
 from typing import TYPE_CHECKING, Dict, Optional
+
+from starlette import status
 
 from jina.clients.base import BaseClient
 from jina.clients.base.helper import WebsocketClientlet
 from jina.clients.helper import callback_exec, callback_exec_on_error
-from jina.excepts import BadClient
 from jina.helper import get_or_reuse_loop
 from jina.importer import ImportExtensions
 from jina.logging.profile import ProgressBar
+from jina.proto import jina_pb2
 from jina.serve.stream import RequestStreamer
 
 if TYPE_CHECKING:
@@ -19,6 +21,55 @@ if TYPE_CHECKING:
 
 class WebSocketBaseClient(BaseClient):
     """A Websocket Client."""
+
+    async def _dry_run(self, **kwargs) -> bool:
+        """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
+
+        :param kwargs: potential kwargs received passed from the public interface
+        :return: boolean indicating the readiness of the Flow
+        """
+        async with AsyncExitStack() as stack:
+            try:
+                proto = 'wss' if self.args.tls else 'ws'
+                url = f'{proto}://{self.args.host}:{self.args.port}/dry_run'
+                iolet = await stack.enter_async_context(
+                    WebsocketClientlet(url=url, logger=self.logger)
+                )
+
+                async def _receive():
+                    try:
+                        async for response in iolet.recv_dry_run():
+                            return response
+                    except Exception as exc:
+                        self.logger.error(
+                            f'Error while fetching response from Websocket server {exc!r}'
+                        )
+                        raise
+
+                async def _send():
+                    return await iolet.send_dry_run()
+
+                receive_task = asyncio.create_task(_receive())
+
+                if receive_task.done():
+                    raise RuntimeError(
+                        'receive task not running, can not send messages'
+                    )
+                try:
+                    send_task = asyncio.create_task(_send())
+                    _, response_result = await asyncio.gather(send_task, receive_task)
+                    if response_result.proto.code == jina_pb2.StatusProto.SUCCESS:
+                        return True
+                finally:
+                    if iolet.close_code == status.WS_1011_INTERNAL_ERROR:
+                        raise ConnectionError(iolet.close_message)
+                    await receive_task
+
+            except Exception as e:
+                self.logger.error(
+                    f'Error while getting response from websocket server {e!r}'
+                )
+            return False
 
     async def _get_results(
         self,
@@ -55,7 +106,9 @@ class WebSocketBaseClient(BaseClient):
                     WebsocketClientlet(url=url, logger=self.logger)
                 )
 
-                request_buffer: Dict[str, asyncio.Future] = dict()
+                request_buffer: Dict[
+                    str, asyncio.Future
+                ] = dict()  # maps request_ids to futures (tasks)
 
                 def _result_handler(result):
                     return result
@@ -109,26 +162,31 @@ class WebSocketBaseClient(BaseClient):
                     end_of_iter_handler=_handle_end_of_iter,
                 )
 
-                receive_task = get_or_reuse_loop().create_task(_receive())
+                receive_task = asyncio.create_task(_receive())
 
                 if receive_task.done():
                     raise RuntimeError(
                         'receive task not running, can not send messages'
                     )
-                async for response in streamer.stream(request_iterator):
-                    callback_exec(
-                        response=response,
-                        on_error=on_error,
-                        on_done=on_done,
-                        on_always=on_always,
-                        continue_on_error=self.continue_on_error,
-                        logger=self.logger,
-                    )
-                    if self.show_progress:
-                        p_bar.update()
-                    yield response
+                try:
+                    async for response in streamer.stream(request_iterator):
+                        callback_exec(
+                            response=response,
+                            on_error=on_error,
+                            on_done=on_done,
+                            on_always=on_always,
+                            continue_on_error=self.continue_on_error,
+                            logger=self.logger,
+                        )
+                        if self.show_progress:
+                            p_bar.update()
+                        yield response
+                finally:
+                    if iolet.close_code == status.WS_1011_INTERNAL_ERROR:
+                        raise ConnectionError(iolet.close_message)
+                    await receive_task
 
-            except aiohttp.ClientError as e:
+            except (aiohttp.ClientError, ConnectionError) as e:
                 self.logger.error(
                     f'Error while streaming response from websocket server {e!r}'
                 )

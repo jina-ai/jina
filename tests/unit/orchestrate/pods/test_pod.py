@@ -4,10 +4,10 @@ import time
 import pytest
 
 from jina.excepts import RuntimeFailToStart
-from jina.serve.executors import BaseExecutor
-from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.orchestrate.pods import Pod
+from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve import runtimes
+from jina.serve.executors import BaseExecutor
 
 
 @pytest.fixture()
@@ -27,7 +27,7 @@ class EnvChecker1(BaseExecutor):
         assert os.environ['key_parent'] == 'value3'
 
 
-def test_pod_runtime_env_setting_in_process(fake_env):
+def test_pod_runtime_env_setting(fake_env):
     with Pod(
         set_pod_parser().parse_args(
             [
@@ -37,8 +37,6 @@ def test_pod_runtime_env_setting_in_process(fake_env):
                 'key1=value1',
                 '--env',
                 'key2=value2',
-                '--runtime-backend',
-                'process',
             ]
         )
     ):
@@ -48,43 +46,6 @@ def test_pod_runtime_env_setting_in_process(fake_env):
     assert 'key1' not in os.environ
     assert 'key2' not in os.environ
     assert 'key_parent' in os.environ
-
-
-class EnvChecker2(BaseExecutor):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # pod/pod-specific
-        assert 'key1' not in os.environ
-        assert 'key2' not in os.environ
-        # inherit from parent process
-        assert os.environ['key_parent'] == 'value3'
-
-
-@pytest.mark.skip('grpc in threads messes up and produces handing servers')
-def test_pod_runtime_env_setting_in_thread(fake_env):
-    os.environ['key_parent'] = 'value3'
-
-    with Pod(
-        set_pod_parser().parse_args(
-            [
-                '--uses',
-                'EnvChecker2',
-                '--env',
-                'key1=value1',
-                '--env',
-                'key2=value2',
-                '--runtime-backend',
-                'thread',
-            ]
-        )
-    ):
-        pass
-
-    # should not affect the main process
-    assert 'key1' not in os.environ
-    assert 'key2' not in os.environ
-    assert 'key_parent' in os.environ
-    os.environ.pop('key_parent')
 
 
 @pytest.mark.parametrize(

@@ -1,5 +1,5 @@
-from jina.orchestrate.flow.base import Flow
 from jina.clients.mixin import AsyncPostMixin
+from jina.orchestrate.flow.base import Flow
 
 
 class AsyncFlow(AsyncPostMixin, Flow):

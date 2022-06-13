@@ -14,4 +14,8 @@ for changed_file in $CHANGED_FILES; do
     arrVar+=(${changed_file})
   fi
 done
-black -S --check "${arrVar[@]}"
+if (( ${#arrVar[@]} )); then
+  black -S --check "${arrVar[@]}"
+fi
+echo "no files left to check"
+exit 0

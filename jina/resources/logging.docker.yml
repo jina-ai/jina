@@ -1,5 +1,5 @@
 handlers:
-  - StreamHandler
+  - RichHandler
   - SysLogHandler
 level: INFO
 configs:
@@ -8,10 +8,16 @@ configs:
     output: 'jina-%(uptime)s.log'
     formatter: JsonFormatter
   StreamHandler:
-    format: '🐳 %(message)s'
-    formatter: ColorFormatter
+    format: '🐳 %(asctime)s: %(message)s'
+    formatter: PlainFormatter
   SysLogHandler:
     format: '{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
     host: # when not given then record it locally
     port: # when not given then record it locally
     formatter: PlainFormatter
+  RichHandler:
+    format: '🐳 %(message)s'
+    markup: true
+    show_path: false
+    show_level: false
+    show_time: false

@@ -22,8 +22,6 @@ area/helper:
 area/entrypoint:
   - jina/__init__.py
 
-area/helloworld:
-  - jina/helloworld/*
 
 area/network:
   - jina/peapods/**/*
@@ -41,7 +39,7 @@ area/docker:
   - ./.dockerignore
 
 area/cli:
-  - cli/**/*
+  - jina_cli/**/*
 
 area/docarray:
   - docarray/**/*

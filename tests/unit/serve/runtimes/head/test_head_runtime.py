@@ -7,27 +7,25 @@ from typing import List
 
 import grpc
 import pytest
-from grpc import RpcError
 
-from jina import DocumentArray, Document
+from jina import Document, DocumentArray
 from jina.clients.request import request_generator
 from jina.enums import PollingType
 from jina.parsers import set_pod_parser
+from jina.proto import jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.head import HeadRuntime
-from jina.proto import jina_pb2_grpc
 from jina.types.request import Request
-from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
 
 
 def test_regular_data_case():
     args = set_pod_parser().parse_args([])
     args.polling = PollingType.ANY
+    connection_list_dict = {0: [f'fake_ip:8080']}
+    args.connection_list = json.dumps(connection_list_dict)
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
-
-    _add_worker(args)
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port}',
@@ -44,33 +42,6 @@ def test_regular_data_case():
     _destroy_runtime(args, cancel_event, runtime_thread)
 
 
-def test_control_message_processing():
-    args = set_pod_parser().parse_args([])
-    cancel_event, handle_queue, runtime_thread = _create_runtime(args)
-
-    # no connection registered yet
-    with pytest.raises(RpcError):
-        GrpcConnectionPool.send_request_sync(
-            _create_test_data_message(), f'{args.host}:{args.port}'
-        )
-
-    _add_worker(args, 'ip1')
-    # after adding a connection, sending should work
-    result = GrpcConnectionPool.send_request_sync(
-        _create_test_data_message(), f'{args.host}:{args.port}'
-    )
-    assert result
-
-    _remove_worker(args, 'ip1')
-    # after removing the connection again, sending does not work anymore
-    with pytest.raises(RpcError):
-        GrpcConnectionPool.send_request_sync(
-            _create_test_data_message(), f'{args.host}:{args.port}'
-        )
-
-    _destroy_runtime(args, cancel_event, runtime_thread)
-
-
 @pytest.mark.parametrize('disable_reduce', [False, True])
 def test_message_merging(disable_reduce):
     if not disable_reduce:
@@ -78,12 +49,10 @@ def test_message_merging(disable_reduce):
     else:
         args = set_pod_parser().parse_args(['--disable-reduce'])
     args.polling = PollingType.ALL
+    connection_list_dict = {0: [f'ip1:8080'], 1: [f'ip2:8080'], 2: [f'ip3:8080']}
+    args.connection_list = json.dumps(connection_list_dict)
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
-    assert handle_queue.empty()
-    _add_worker(args, 'ip1', shard_id=0)
-    _add_worker(args, 'ip2', shard_id=1)
-    _add_worker(args, 'ip3', shard_id=2)
     assert handle_queue.empty()
 
     data_request = _create_test_data_message()
@@ -102,12 +71,10 @@ def test_uses_before_uses_after():
     args.polling = PollingType.ALL
     args.uses_before_address = 'fake_address'
     args.uses_after_address = 'fake_address'
+    connection_list_dict = {0: [f'ip1:8080'], 1: [f'ip2:8080'], 2: [f'ip3:8080']}
+    args.connection_list = json.dumps(connection_list_dict)
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
-    assert handle_queue.empty()
-    _add_worker(args, 'ip1', shard_id=0)
-    _add_worker(args, 'ip2', shard_id=1)
-    _add_worker(args, 'ip3', shard_id=2)
     assert handle_queue.empty()
 
     result = GrpcConnectionPool.send_request_sync(
@@ -139,9 +106,9 @@ def test_decompress(monkeypatch):
 
     args = set_pod_parser().parse_args([])
     args.polling = PollingType.ANY
+    connection_list_dict = {0: [f'fake_ip:8080']}
+    args.connection_list = json.dumps(connection_list_dict)
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
-
-    _add_worker(args)
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port}',
@@ -172,10 +139,11 @@ def test_dynamic_polling(polling):
             str(2),
         ]
     )
-    cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
-    _add_worker(args, shard_id=0)
-    _add_worker(args, shard_id=1)
+    connection_list_dict = {0: [f'fake_ip:8080'], 1: [f'fake_ip:8080']}
+    args.connection_list = json.dumps(connection_list_dict)
+
+    cancel_event, handle_queue, runtime_thread = _create_runtime(args)
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port}',
@@ -214,10 +182,9 @@ def test_base_polling(polling):
             str(2),
         ]
     )
+    connection_list_dict = {0: [f'fake_ip:8080'], 1: [f'fake_ip:8080']}
+    args.connection_list = json.dumps(connection_list_dict)
     cancel_event, handle_queue, runtime_thread = _create_runtime(args)
-
-    _add_worker(args, shard_id=0)
-    _add_worker(args, shard_id=1)
 
     with grpc.insecure_channel(
         f'{args.host}:{args.port}',
@@ -246,6 +213,53 @@ def test_base_polling(polling):
     _destroy_runtime(args, cancel_event, runtime_thread)
 
 
+@pytest.mark.asyncio
+async def test_head_runtime_reflection():
+    args = set_pod_parser().parse_args([])
+    cancel_event, handle_queue, runtime_thread = _create_runtime(args)
+
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=3.0,
+        ctrl_address=f'{args.host}:{args.port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    async with grpc.aio.insecure_channel(f'{args.host}:{args.port}') as channel:
+        service_names = await GrpcConnectionPool.get_available_services(channel)
+
+    assert all(
+        service_name in service_names
+        for service_name in [
+            'jina.JinaDataRequestRPC',
+            'jina.JinaSingleDataRequestRPC',
+        ]
+    )
+
+    _destroy_runtime(args, cancel_event, runtime_thread)
+
+
+def test_timeout_behaviour():
+    args = set_pod_parser().parse_args(['--timeout-send', '100'])
+    args.polling = PollingType.ANY
+    connection_list_dict = {0: [f'fake_ip:8080']}
+    args.connection_list = json.dumps(connection_list_dict)
+    cancel_event, handle_queue, runtime_thread = _create_runtime(args)
+
+    with grpc.insecure_channel(
+        f'{args.host}:{args.port}',
+        options=GrpcConnectionPool.get_default_grpc_options(),
+    ) as channel:
+        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+        response, call = stub.process_single_data.with_call(_create_test_data_message())
+
+    assert response
+    assert 'is-error' in dict(call.trailing_metadata())
+    assert len(response.docs) == 1
+    assert not handle_queue.empty()
+
+    _destroy_runtime(args, cancel_event, runtime_thread)
+
+
 def _create_test_data_message(counter=0, endpoint='/'):
     return list(
         request_generator(endpoint, DocumentArray([Document(text=str(counter))]))
@@ -256,12 +270,19 @@ def _create_runtime(args):
     handle_queue = multiprocessing.Queue()
     cancel_event = multiprocessing.Event()
 
-    def start_runtime(args, handle_queue, cancel_event):
+    def start_runtime(runtime_args, handle_queue, cancel_event):
         def _send_requests_mock(
-            request: List[Request], connection, endpoint
+            request: List[Request],
+            connection,
+            endpoint,
+            timeout=1.0,
+            retries=-1,
         ) -> asyncio.Task:
             async def mock_task_wrapper(new_requests, *args, **kwargs):
                 handle_queue.put('mock_called')
+                assert timeout == (
+                    runtime_args.timeout_send / 1000 if timeout else None
+                )
                 await asyncio.sleep(0.1)
                 return new_requests[0], grpc.aio.Metadata.from_tuple(
                     (('is-error', 'true'),)
@@ -269,9 +290,9 @@ def _create_runtime(args):
 
             return asyncio.create_task(mock_task_wrapper(request, connection))
 
-        if not hasattr(args, 'name') or not args.name:
-            args.name = 'testHead'
-        with HeadRuntime(args, cancel_event) as runtime:
+        if not hasattr(runtime_args, 'name') or not runtime_args.name:
+            runtime_args.name = 'testHead'
+        with HeadRuntime(runtime_args, cancel_event=cancel_event) as runtime:
             runtime.connection_pool._send_requests = _send_requests_mock
             runtime.run_forever()
 
@@ -287,22 +308,6 @@ def _create_runtime(args):
         ready_or_shutdown_event=multiprocessing.Event(),
     )
     return cancel_event, handle_queue, runtime_thread
-
-
-def _add_worker(args, ip='fake_ip', shard_id=None):
-    activate_msg = ControlRequest(command='ACTIVATE')
-    activate_msg.add_related_entity('worker', ip, 8080, shard_id)
-    assert GrpcConnectionPool.send_request_sync(
-        activate_msg, f'{args.host}:{args.port}'
-    )
-
-
-def _remove_worker(args, ip='fake_ip', shard_id=None):
-    activate_msg = ControlRequest(command='DEACTIVATE')
-    activate_msg.add_related_entity('worker', ip, 8080, shard_id)
-    assert GrpcConnectionPool.send_request_sync(
-        activate_msg, f'{args.host}:{args.port}'
-    )
 
 
 def _destroy_runtime(args, cancel_event, runtime_thread):

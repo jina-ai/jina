@@ -1,14 +1,26 @@
+import dataclasses
 import os
 
 import pytest
+import yaml
 
-from jina.serve.executors import BaseExecutor
+from jina import Flow, __default_executor__, requests
+from jina.excepts import BadConfigSource
 from jina.jaml import JAML, JAMLCompatible
-from jina import __default_executor__, requests, Flow
+from jina.serve.executors import BaseExecutor
 
 
 class MyExecutor(BaseExecutor):
     pass
+
+
+@dataclasses.dataclass
+class MyDataClassExecutor(BaseExecutor):
+    my_field: str = ''
+
+    @requests
+    def baz(self, **kwargs):
+        pass
 
 
 def test_non_empty_reg_tags():
@@ -173,9 +185,59 @@ def test_parsing_brackets_in_envvar():
             'VAR1': '{"1": "2"}',
         }
     ):
-
         b = JAML.load(flow_yaml, substitute=True)
         assert b['executors'][0]['env']['var1'] == '{"1": "2"}'
         assert b['executors'][0]['env']['var2'] == 'a'
         assert b['executors'][0]['env']['var3'] == '{"1": "2"}-a'
         assert b['executors'][0]['env']['var4'] == '-{"1": "2"}'
+
+
+def test_exception_invalid_yaml():
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+    yaml = os.path.join(cur_dir, 'invalid.yml')
+    with pytest.raises(BadConfigSource):
+        BaseExecutor.load_config(yaml)
+
+    with pytest.raises(BadConfigSource):
+        Flow.load_config(yaml)
+
+
+def test_jtype(tmpdir):
+    flow_path = os.path.join(tmpdir, 'flow.yml')
+    exec_path = os.path.join(tmpdir, 'exec.yml')
+
+    f = Flow()
+    f.save_config(flow_path)
+    with open(flow_path, 'r') as file:
+        conf = yaml.safe_load(file)
+        assert 'jtype' in conf
+        assert conf['jtype'] == 'Flow'
+
+    e = BaseExecutor()
+    e.save_config(exec_path)
+    with open(exec_path, 'r') as file:
+        conf = yaml.safe_load(file)
+        assert 'jtype' in conf
+        assert conf['jtype'] == 'BaseExecutor'
+
+    assert type(BaseExecutor.load_config(exec_path)) == BaseExecutor
+    assert type(Flow.load_config(flow_path)) == Flow
+
+
+def test_load_dataclass_executor():
+    executor_yaml = '''
+        jtype: MyDataClassExecutor
+        with:
+            my_field: this is my field
+        metas:
+            name: test-name-updated
+            workspace: test-work-space-updated
+        requests:
+            /foo: baz
+        '''
+
+    exec = BaseExecutor.load_config(executor_yaml)
+    assert exec.my_field == 'this is my field'
+    assert exec.requests['/foo'] == MyDataClassExecutor.baz
+    assert exec.metas.name == 'test-name-updated'
+    assert exec.metas.workspace == 'test-work-space-updated'

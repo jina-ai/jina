@@ -1,11 +1,10 @@
 import urllib
+from pathlib import Path
 
 import pytest
 
-from pathlib import Path
 from jina.hubble import helper
 from jina.hubble.helper import disk_cache_offline
-from jina.parsers.hubble import set_hub_pull_parser
 
 
 @pytest.fixture
@@ -42,6 +41,19 @@ def test_parse_wrong_hub_uri(uri_path):
         helper.parse_hub_uri(uri_path)
 
     assert f'{uri_path} is not a valid Hub URI.' == str(info.value)
+
+
+def test_replace_secret_of_hub_uri():
+    result = helper.replace_secret_of_hub_uri('jinahub://hello', '_secret_')
+    assert result == 'jinahub://hello'
+
+    result = helper.replace_secret_of_hub_uri(
+        'jinahub://hello:dummy@secret/path', '*secret*'
+    )
+    assert result == 'jinahub://hello:*secret*/path'
+
+    result = helper.replace_secret_of_hub_uri('hello:magic/world')
+    assert result == 'hello:magic/world'
 
 
 def test_md5file(dummy_zip_file):
@@ -81,6 +93,33 @@ def test_install_requirements():
     helper.install_requirements(
         Path(__file__).parent / 'dummy_executor' / 'requirements.txt'
     )
+
+
+@pytest.mark.parametrize(
+    'requirement, name, specs, extras',
+    [
+        ('docarray', 'docarray', [], []),
+        ('jina[dev]', 'jina', [], ['dev']),
+        ('clip-server==0.3.0', 'clip-server', [('==', '0.3.0')], []),
+        ('git+https://github.com/jina-ai/jina.git', 'jina', [], []),
+        ('git+https://github.com/jina-ai/jina.git@v0.1', 'jina', [], []),
+        (
+            'git+https://github.com/jina-ai/jina.git@0.1#egg=jina[dev]',
+            'jina',
+            [],
+            ['dev'],
+        ),
+        ('http://pypi.python.org/packages/source/p/jina/jina.tar.gz', 'jina', [], []),
+    ],
+)
+def test_parse_requirements(requirement, name, specs, extras):
+    from jina.hubble.requirements import parse_requirement
+
+    req_spec = parse_requirement(requirement)
+
+    assert req_spec.project_name == name
+    assert list(req_spec.extras) == extras
+    assert req_spec.specs == specs
 
 
 def test_is_requirement_installed(tmpfile):

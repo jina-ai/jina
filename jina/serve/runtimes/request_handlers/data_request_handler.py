@@ -3,12 +3,15 @@ from typing import TYPE_CHECKING, Dict, List, Optional
 from docarray import DocumentArray
 
 from jina import __default_endpoint__
-from jina.excepts import BadConfigSource, ExecutorFailToLoad
+from jina.excepts import BadConfigSource
+from jina.importer import ImportExtensions
 from jina.serve.executors import BaseExecutor
 from jina.types.request.data import DataRequest
 
 if TYPE_CHECKING:
     import argparse
+
+    from prometheus_client import CollectorRegistry
 
     from jina.logging.logger import JinaLogger
 
@@ -16,11 +19,18 @@ if TYPE_CHECKING:
 class DataRequestHandler:
     """Object to encapsulate the code related to handle the data requests passing to executor and its returned values"""
 
-    def __init__(self, args: 'argparse.Namespace', logger: 'JinaLogger', **kwargs):
+    def __init__(
+        self,
+        args: 'argparse.Namespace',
+        logger: 'JinaLogger',
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        **kwargs,
+    ):
         """Initialize private parameters and execute private loading functions.
 
         :param args: args from CLI
         :param logger: the logger provided by the user
+        :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor of from the data request handler
         :param kwargs: extra keyword arguments
         """
         super().__init__()
@@ -28,38 +38,74 @@ class DataRequestHandler:
         self.args.parallel = self.args.shards
         self.logger = logger
         self._is_closed = False
-        self._load_executor()
+        self._load_executor(metrics_registry)
+        self._init_monitoring(metrics_registry)
 
-    def _load_executor(self):
-        """Load the executor to this runtime, specified by ``uses`` CLI argument."""
+    def _init_monitoring(self, metrics_registry: Optional['CollectorRegistry'] = None):
+
+        if metrics_registry:
+
+            with ImportExtensions(
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+            ):
+                from prometheus_client import Counter, Summary
+
+                self._counter = Counter(
+                    'document_processed',
+                    'Number of Documents that have been processed by the executor',
+                    namespace='jina',
+                    labelnames=('executor_endpoint', 'executor', 'runtime_name'),
+                    registry=metrics_registry,
+                )
+
+                self._request_size_metrics = Summary(
+                    'request_size_bytes',
+                    'The request size in Bytes',
+                    namespace='jina',
+                    labelnames=('executor_endpoint', 'executor', 'runtime_name'),
+                    registry=metrics_registry,
+                )
+        else:
+            self._counter = None
+            self._request_size_metrics = None
+
+    def _load_executor(self, metrics_registry: Optional['CollectorRegistry'] = None):
+        """
+        Load the executor to this runtime, specified by ``uses`` CLI argument.
+        :param metrics_registry: Optional prometheus metrics registry that will be passed to the executor so that it can expose metrics
+        """
         try:
             self._executor: BaseExecutor = BaseExecutor.load_config(
                 self.args.uses,
                 uses_with=self.args.uses_with,
                 uses_metas=self.args.uses_metas,
                 uses_requests=self.args.uses_requests,
-                runtime_args={
+                runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
                     'workspace': self.args.workspace,
                     'shard_id': self.args.shard_id,
                     'shards': self.args.shards,
                     'replicas': self.args.replicas,
                     'name': self.args.name,
-                    'py_modules': self.args.py_modules,
+                    'metrics_registry': metrics_registry,
                 },
+                py_modules=self.args.py_modules,
                 extra_search_paths=self.args.extra_search_paths,
             )
-        except BadConfigSource as ex:
+            self.logger.debug(f'{self._executor} is successfully loaded!')
+
+        except BadConfigSource:
             self.logger.error(
                 f'fail to load config from {self.args.uses}, if you are using docker image for --uses, '
-                f'please use "docker://YOUR_IMAGE_NAME"'
+                f'please use `docker://YOUR_IMAGE_NAME`'
             )
-            raise ExecutorFailToLoad from ex
-        except FileNotFoundError as ex:
+            raise
+        except FileNotFoundError:
             self.logger.error(f'fail to load file dependency')
-            raise ExecutorFailToLoad from ex
-        except Exception as ex:
+            raise
+        except Exception:
             self.logger.critical(f'can not load the executor from {self.args.uses}')
-            raise ExecutorFailToLoad from ex
+            raise
 
     @staticmethod
     def _parse_params(parameters: Dict, executor_name: str):
@@ -84,6 +130,15 @@ class DataRequestHandler:
                 f'skip executor: mismatch request, exec_endpoint: {requests[0].header.exec_endpoint}, requests: {self._executor.requests}'
             )
             return requests[0]
+
+        if self._request_size_metrics:
+
+            for req in requests:
+                self._request_size_metrics.labels(
+                    requests[0].header.exec_endpoint,
+                    self._executor.__class__.__name__,
+                    self.args.name,
+                ).observe(req.nbytes)
 
         params = self._parse_params(requests[0].parameters, self._executor.metas.name)
         docs = DataRequestHandler.get_docs_from_request(
@@ -120,6 +175,13 @@ class DataRequestHandler:
                     f'The return type must be DocumentArray / Dict / `None`, '
                     f'but getting {return_data!r}'
                 )
+
+        if self._counter:
+            self._counter.labels(
+                requests[0].header.exec_endpoint,
+                self._executor.__class__.__name__,
+                self.args.name,
+            ).inc(len(docs))
 
         DataRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
 

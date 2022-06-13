@@ -6,12 +6,14 @@ from multiprocessing import Process
 
 import grpc
 import pytest
+from grpc.aio import AioRpcError
+from grpc_reflection.v1alpha import reflection
 
 from jina import Document, DocumentArray
 from jina.clients.request import request_generator
 from jina.enums import PollingType
 from jina.helper import random_port
-from jina.proto import jina_pb2_grpc
+from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool, ReplicaList
 from jina.types.request.control import ControlRequest
 
@@ -219,9 +221,7 @@ async def _mock_grpc(mocker, monkeypatch):
     create_mock = mocker.Mock()
     close_mock_object = mocker.Mock()
     channel_mock = mocker.Mock()
-    data_stub_mock = mocker.Mock()
-    single_data_stub_mock = mocker.Mock()
-    control_stub_mock = mocker.Mock()
+    stubs_mock = mocker.Mock()
 
     async def close_mock(*args):
         close_mock_object()
@@ -229,7 +229,7 @@ async def _mock_grpc(mocker, monkeypatch):
     def create_async_channel_mock(*args, **kwargs):
         create_mock()
         channel_mock.close = close_mock
-        return single_data_stub_mock, data_stub_mock, control_stub_mock, channel_mock
+        return stubs_mock, channel_mock
 
     monkeypatch.setattr(
         GrpcConnectionPool, 'create_async_channel_stub', create_async_channel_mock
@@ -261,6 +261,11 @@ async def test_grpc_connection_pool_real_sending():
             jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
                 DummyServer(), grpc_server
             )
+            service_names = (
+                jina_pb2.DESCRIPTOR.services_by_name['JinaControlRequestRPC'].full_name,
+                reflection.SERVICE_NAME,
+            )
+            reflection.enable_server_reflection(service_names, grpc_server)
             grpc_server.add_insecure_port(f'localhost:{port}')
 
             await grpc_server.start()
@@ -345,6 +350,11 @@ async def test_secure_send_request(private_key_cert_chain):
             jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
                 DummyServer(), grpc_server
             )
+            service_names = (
+                jina_pb2.DESCRIPTOR.services_by_name['JinaControlRequestRPC'].full_name,
+                reflection.SERVICE_NAME,
+            )
+            reflection.enable_server_reflection(service_names, grpc_server)
             grpc_server.add_secure_port(
                 f'localhost:{port}',
                 grpc.ssl_server_credentials((private_key_cert_chain,)),
@@ -382,6 +392,81 @@ async def test_secure_send_request(private_key_cert_chain):
 
     assert result.command == 'DEACTIVATE'
 
+    server_process1.kill()
+    server_process1.join()
+
+
+@pytest.mark.asyncio
+@pytest.mark.slow
+@pytest.mark.timeout(5)
+async def test_grpc_connection_pool_real_sending_timeout():
+    server1_ready_event = multiprocessing.Event()
+
+    def listen(port, event: multiprocessing.Event):
+        class DummyServer:
+            async def process_control(self, request, *args):
+                returned_msg = ControlRequest(command='DEACTIVATE')
+                await asyncio.sleep(0.1)
+                return returned_msg
+
+        async def start_grpc_server():
+            grpc_server = grpc.aio.server(
+                options=[
+                    ('grpc.max_send_request_length', -1),
+                    ('grpc.max_receive_message_length', -1),
+                ]
+            )
+
+            jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
+                DummyServer(), grpc_server
+            )
+            service_names = (
+                jina_pb2.DESCRIPTOR.services_by_name['JinaControlRequestRPC'].full_name,
+                reflection.SERVICE_NAME,
+            )
+            reflection.enable_server_reflection(service_names, grpc_server)
+            grpc_server.add_insecure_port(f'localhost:{port}')
+
+            await grpc_server.start()
+            event.set()
+            await grpc_server.wait_for_termination()
+
+        asyncio.run(start_grpc_server())
+
+    port1 = random_port()
+    server_process1 = Process(
+        target=listen,
+        args=(
+            port1,
+            server1_ready_event,
+        ),
+    )
+    server_process1.start()
+
+    time.sleep(0.1)
+    server1_ready_event.wait()
+
+    pool = GrpcConnectionPool()
+
+    pool.add_connection(deployment='encoder', head=False, address=f'localhost:{port1}')
+    sent_msg = ControlRequest(command='STATUS')
+
+    results_call_1 = pool.send_request(
+        request=sent_msg, deployment='encoder', head=False, timeout=1.0
+    )
+
+    assert len(results_call_1) == 1
+    response1, meta = await results_call_1[0]
+    assert response1.command == 'DEACTIVATE'
+
+    results_call_2 = pool.send_request(
+        request=sent_msg, deployment='encoder', head=False, timeout=0.05
+    )
+    assert len(results_call_2) == 1
+    with pytest.raises(AioRpcError):
+        await results_call_2[0]
+
+    await pool.close()
     server_process1.kill()
     server_process1.join()
 

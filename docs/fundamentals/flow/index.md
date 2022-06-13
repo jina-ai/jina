@@ -1,7 +1,7 @@
 (flow-cookbook)=
 # Flow
 
-A {class}`~jina.Flow` orchestrates Executors into a processing pipeline to build a neural search application.
+A {class}`~jina.Flow` orchestrates Executors into a processing pipeline to build a multi-modal/cross-modal application.
 Documents "flow" through the created pipeline and are processed by Executors.
 
 You can think of Flow as an interface to configure and launch your {ref}`microservice architecture <architecture-overview>`,
@@ -21,11 +21,12 @@ The most important methods of the `Flow` object are the following:
 | `.post()`                          | Sends requests to the Flow API.                                                                                                     |
 | `.block()`                         | Blocks execution until the program is terminated. This is useful to keep the Flow alive so it can be used from other places (clients, etc). |
 | `.to_docker_compose_yaml()`        | Generates a Docker-Compose file listing all its Executors as Services.                                                                       |
-| `.to_k8s_yaml(<output_directory>)` | Generates the Kubernetes configuration files in `<output_directory>`. Based on your local Jina version, Jina Hub may rebuild the Docker image during the YAML generation process. If you do not wish to rebuild the image, set the environment variable `JINA_HUB_NO_IMAGE_REBUILD`. |
+| `.to_kubernetes_yaml(<output_directory>)` | Generates the Kubernetes configuration files in `<output_directory>`. Based on your local Jina version, Jina Hub may rebuild the Docker image during the YAML generation process. If you do not wish to rebuild the image, set the environment variable `JINA_HUB_NO_IMAGE_REBUILD`. |
+| `.dry_run()`                       | Calls the dry run endpoint of the Flow to check if the Flow is ready to process requests. Returns a boolean indicating the readiness |
 
 ## Why should you use a Flow?
 
-Once you have learned DocumentArray and Executor, you are able to split your neural search application into different independent modules and services.
+Once you have learned DocumentArray and Executor, you are able to split your multi-modal/cross-modal application into different independent modules and services.
 But you need to chain them together in order to bring real value and to build and serve an application. That's exactly what Flows enable you to do.
 
 - Flows connect microservices (Executors) to build a service with proper client/server style interface over HTTP, gRPC, or Websocket
@@ -142,9 +143,10 @@ Executor and Flow are the two fundamental concepts in Jina.
 :hidden:
 
 create-flow
-flow-yaml
-flow-api
-access-flow-api
-client
-remarks
+add-executors
+topologies
+monitoring-flow
+health-check
+when-things-go-wrong
+yaml-spec
 ```

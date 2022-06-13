@@ -48,7 +48,8 @@ def test_func_failure():
             inputs=[(Document(), Document()) for _ in range(3)],
             return_responses=True,
         )
-        assert results[0].header.status.code == 3
+
+    assert results[0].header.status.code == 1
 
 
 def test_func_default_routing():
@@ -194,11 +195,10 @@ def test_target_executor_with_overlaped_name(mocker):
     )
 
     with f:
-        # both deployments are called, create no error
         mock = mocker.Mock()
         Client(port=1234).post(
             on='/foo',
-            target_executor='foo',
+            target_executor='^foo$',
             inputs=Document(),
             on_done=mock,
             return_responses=True,

@@ -1,22 +1,22 @@
-import time
-import os
 import asyncio
 import copy
 import multiprocessing
-import pytest
-
-from typing import Dict
+import os
+import time
 from datetime import datetime
 from functools import partial
+from typing import Dict
 
-from jina.parsers import set_gateway_parser
+import pytest
+
 from jina import Document, DocumentArray
+from jina.clients import Client
+from jina.helper import random_port
+from jina.parsers import set_gateway_parser
+from jina.serve import networking
 from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
 from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
 from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
-from jina.serve import networking
-from jina.helper import random_port
-from jina.clients import Client
 
 INPUT_LEN = 4
 INPUT_GEN_SLEEP_TIME = 1
@@ -49,7 +49,13 @@ def simple_graph_dict_indexer():
 
 class DummyMockConnectionPool:
     def send_requests_once(
-        self, requests, deployment: str, head: bool, endpoint: str = None
+        self,
+        requests,
+        deployment: str,
+        head: bool,
+        endpoint: str = None,
+        timeout: float = 1.0,
+        retries: int = -1,
     ) -> asyncio.Task:
         assert head
         request = requests[0]
@@ -324,9 +330,9 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
         for i in range(1000, 1000 + MALICIOUS_CLIENT_NUM_DOCS):
             yield get_document(i)
 
-    def client(gen, port, protocol):
-        Client(protocol=protocol, port=port, return_responses=True).post(
-            on='/index', inputs=gen, request_size=1
+    def client(gen, port):
+        Client(protocol=protocol, port=port).post(
+            on='/index', inputs=gen, request_size=1, return_responses=True
         )
 
     monkeypatch.setattr(
@@ -352,7 +358,7 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
     # Each client sends `GOOD_CLIENT_NUM_DOCS` (20) requests and sleeps after each request.
     for i in range(GOOD_CLIENTS):
         cp = multiprocessing.Process(
-            target=partial(client, good_client_gen, port, protocol),
+            target=partial(client, good_client_gen, port),
             name=f'goodguy_{i}',
         )
         cp.start()
@@ -360,7 +366,7 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
 
     # and 1 malicious client, sending lot of requests (trying to block others)
     cp = multiprocessing.Process(
-        target=partial(client, malicious_client_gen, port, protocol),
+        target=partial(client, malicious_client_gen, port),
         name='badguy',
     )
     cp.start()

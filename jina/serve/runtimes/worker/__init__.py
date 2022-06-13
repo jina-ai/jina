@@ -1,16 +1,17 @@
 import argparse
-import asyncio
-import multiprocessing
-import threading
+import contextlib
 from abc import ABC
-from typing import List, Optional, Union
+from typing import List
 
 import grpc
+from grpc_health.v1 import health, health_pb2, health_pb2_grpc
+from grpc_reflection.v1alpha import reflection
 
-from jina.proto import jina_pb2_grpc
+from jina.helper import get_full_version
+from jina.importer import ImportExtensions
+from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
-from jina.types.request.control import ControlRequest
 from jina.types.request.data import DataRequest
 
 
@@ -20,19 +21,43 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
     def __init__(
         self,
         args: argparse.Namespace,
-        cancel_event: Optional[
-            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-        ] = None,
         **kwargs,
     ):
         """Initialize grpc and data request handling.
         :param args: args from CLI
-        :param cancel_event: the cancel event used to wait for canceling
         :param kwargs: keyword args
         """
-        super().__init__(args, cancel_event, **kwargs)
+        self._health_servicer = health.HealthServicer(experimental_non_blocking=True)
+        super().__init__(args, **kwargs)
 
     async def async_setup(self):
+        """
+        Start the DataRequestHandler and wait for the GRPC and Monitoring servers to start
+        """
+        if self.metrics_registry:
+            with ImportExtensions(
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+            ):
+                from prometheus_client import Summary
+
+            self._summary_time = (
+                Summary(
+                    'receiving_request_seconds',
+                    'Time spent processing request',
+                    registry=self.metrics_registry,
+                    namespace='jina',
+                    labelnames=('runtime_name',),
+                )
+                .labels(self.args.name)
+                .time()
+            )
+        else:
+            self._summary_time = contextlib.nullcontext()
+
+        await self._async_setup_grpc_server()
+
+    async def _async_setup_grpc_server(self):
         """
         Start the DataRequestHandler and wait for the GRPC server to start
         """
@@ -40,7 +65,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         # Keep this initialization order
         # otherwise readiness check is not valid
         # The DataRequestHandler needs to be started BEFORE the grpc server
-        self._data_request_handler = DataRequestHandler(self.args, self.logger)
+        self._data_request_handler = DataRequestHandler(
+            self.args, self.logger, self.metrics_registry
+        )
 
         self._grpc_server = grpc.aio.server(
             options=[
@@ -53,11 +80,28 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             self, self._grpc_server
         )
         jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(self, self._grpc_server)
-        jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
+
+        jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server(
             self, self._grpc_server
         )
+        jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self._grpc_server)
+        service_names = (
+            jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaDiscoverEndpointsRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaInfoRPC'].full_name,
+            reflection.SERVICE_NAME,
+        )
+        # Mark all services as healthy.
+        health_pb2_grpc.add_HealthServicer_to_server(
+            self._health_servicer, self._grpc_server
+        )
+
+        for service in service_names:
+            self._health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
+        reflection.enable_server_reflection(service_names, self._grpc_server)
         bind_addr = f'0.0.0.0:{self.args.port}'
-        self.logger.debug(f'Start listening on {bind_addr}')
+        self.logger.debug(f'start listening on {bind_addr}')
         self._grpc_server.add_insecure_port(bind_addr)
         await self._grpc_server.start()
 
@@ -67,15 +111,16 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_cancel(self):
         """Stop the GRPC server"""
-        self.logger.debug('Cancel WorkerRuntime')
+        self.logger.debug('cancel WorkerRuntime')
 
         # 0.5 gives the runtime some time to complete outstanding responses
-        # this should be handled better, 0.5 is a rather random number
-        await self._grpc_server.stop(0.5)
-        self.logger.debug('Stopped GRPC Server')
+        # this should be handled better, 1.0 is a rather random number
+        await self._grpc_server.stop(1.0)
+        self.logger.debug('stopped GRPC Server')
 
     async def async_teardown(self):
         """Close the data request handler"""
+        self._health_servicer.enter_graceful_shutdown()
         await self.async_cancel()
         self._data_request_handler.close()
 
@@ -89,6 +134,20 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         return await self.process_data([request], context)
 
+    async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
+        """
+        Process the the call requested and return the list of Endpoints exposed by the Executor wrapped inside this Runtime
+
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
+        """
+        endpointsProto = jina_pb2.EndpointsProto()
+        endpointsProto.endpoints.extend(
+            list(self._data_request_handler._executor.requests.keys())
+        )
+        return endpointsProto
+
     async def process_data(self, requests: List[DataRequest], context) -> DataRequest:
         """
         Process the received requests and return the result as a new request
@@ -97,48 +156,38 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param context: grpc context
         :returns: the response request
         """
-        try:
-            if self.logger.debug_enabled:
-                self._log_data_request(requests[0])
 
-            return await self._data_request_handler.handle(requests=requests)
-        except (RuntimeError, Exception) as ex:
-            self.logger.error(
-                f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
-                if not self.args.quiet_error
-                else '',
-                exc_info=not self.args.quiet_error,
-            )
+        with self._summary_time:
+            try:
+                if self.logger.debug_enabled:
+                    self._log_data_request(requests[0])
 
-            requests[0].add_exception(ex, self._data_request_handler._executor)
-            context.set_trailing_metadata((('is-error', 'true'),))
-            return requests[0]
-
-    async def process_control(self, request: ControlRequest, *args) -> ControlRequest:
-        """
-        Process the received control request and return the same request
-
-        :param request: the control request to process
-        :param args: additional arguments in the grpc call, ignored
-        :returns: the input request
-        """
-        try:
-            if self.logger.debug_enabled:
-                self._log_control_request(request)
-
-            if request.command == 'STATUS':
-                pass
-            else:
-                raise RuntimeError(
-                    f'WorkerRuntime received unsupported ControlRequest command {request.command}'
+                return await self._data_request_handler.handle(requests=requests)
+            except (RuntimeError, Exception) as ex:
+                self.logger.error(
+                    f'{ex!r}'
+                    + f'\n add "--quiet-error" to suppress the exception details'
+                    if not self.args.quiet_error
+                    else '',
+                    exc_info=not self.args.quiet_error,
                 )
-        except (RuntimeError, Exception) as ex:
-            self.logger.error(
-                f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
-                if not self.args.quiet_error
-                else '',
-                exc_info=not self.args.quiet_error,
-            )
 
-            request.add_exception(ex, self._data_request_handler._executor)
-        return request
+                requests[0].add_exception(ex, self._data_request_handler._executor)
+                context.set_trailing_metadata((('is-error', 'true'),))
+                return requests[0]
+
+    async def _status(self, empty, context) -> jina_pb2.JinaInfoProto:
+        """
+        Process the the call requested and return the JinaInfo of the Runtime
+
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
+        """
+        infoProto = jina_pb2.JinaInfoProto()
+        version, env_info = get_full_version()
+        for k, v in version.items():
+            infoProto.jina[k] = str(v)
+        for k, v in env_info.items():
+            infoProto.envs[k] = str(v)
+        return infoProto

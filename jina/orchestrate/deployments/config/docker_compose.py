@@ -14,6 +14,7 @@ from jina.orchestrate.deployments.config.helper import (
     to_compatible_name,
     validate_uses,
 )
+from jina.orchestrate.helper import generate_default_volume_and_workspace
 
 port = 8081
 
@@ -56,7 +57,6 @@ class DockerComposeConfig:
             )
             cargs = copy.copy(self.service_args)
             cargs.deployments_addresses = self.deployments_addresses
-            cargs.env = None
             from jina.helper import ArgNamespace
             from jina.parsers import set_gateway_parser
 
@@ -70,6 +70,7 @@ class DockerComposeConfig:
                 'workspace_id',
                 'upload_files',
                 'noblock_on_start',
+                'env',
             }
 
             non_defaults = ArgNamespace.get_non_defaults_args(
@@ -80,23 +81,25 @@ class DockerComposeConfig:
 
             protocol = str(non_defaults.get('protocol', 'grpc')).lower()
 
+            ports = [f'{cargs.port}'] + (
+                [f'{cargs.port_monitoring}'] if cargs.monitoring else []
+            )
+
+            envs = [f'JINA_LOG_LEVEL={os.getenv("JINA_LOG_LEVEL", "INFO")}']
+            if cargs.env:
+                for k, v in cargs.env.items():
+                    envs.append(f'{k}={v}')
             return {
                 'image': image_name,
                 'entrypoint': ['jina'],
                 'command': container_args,
-                'expose': [
-                    f'{cargs.port}',
-                ],
-                'ports': [
-                    f'{cargs.port}:{cargs.port}',
-                ],
+                'expose': ports,
+                'ports': [f'{_port}:{_port}' for _port in ports],
                 'healthcheck': {
                     'test': f'python -m jina.resources.health_check.gateway localhost:{cargs.port} {protocol}',
                     'interval': '2s',
                 },
-                'environment': [
-                    f'JINA_LOG_LEVEL={os.getenv("JINA_LOG_LEVEL", "INFO")}'
-                ],
+                'environment': envs,
             }
 
         def _get_image_name(self, uses: Optional[str]):
@@ -120,9 +123,30 @@ class DockerComposeConfig:
                 cargs, uses_metas, uses_with, self.pod_type
             )
 
-        def get_runtime_config(
-            self,
-        ) -> List[Dict]:
+        def _update_config_with_volumes(self, config, auto_volume=True):
+            if self.service_args.volumes:  # respect custom volume definition
+                config['volumes'] = self.service_args.volumes
+                return config
+
+            if not auto_volume:
+                return config
+
+            # if no volume is given, create default volume
+            (
+                generated_volumes,
+                workspace_in_container,
+            ) = generate_default_volume_and_workspace(
+                workspace_id=self.service_args.workspace_id
+            )
+            config['volumes'] = generated_volumes
+            if (
+                '--workspace' not in config['command']
+            ):  # set workspace only of not already given
+                config['command'].append('--workspace')
+                config['command'].append(workspace_in_container)
+            return config
+
+        def get_runtime_config(self) -> List[Dict]:
             # One Dict for replica
             replica_configs = []
             for i_rep in range(self.service_args.replicas):
@@ -148,8 +172,41 @@ class DockerComposeConfig:
                         f'JINA_LOG_LEVEL={os.getenv("JINA_LOG_LEVEL", "INFO")}'
                     ],
                 }
+
+                if cargs.gpus:
+                    try:
+                        count = int(cargs.gpus)
+                    except ValueError:
+                        count = cargs.gpus
+
+                    config['deploy'] = {
+                        'resources': {
+                            'reservations': {
+                                'devices': [
+                                    {
+                                        'driver': 'nvidia',
+                                        'count': count,
+                                        'capabilities': ['gpu'],
+                                    }
+                                ]
+                            }
+                        }
+                    }
+
+                if cargs.monitoring:
+                    config['expose'] = [cargs.port_monitoring]
+                    config['ports'] = [
+                        f'{cargs.port_monitoring}:{cargs.port_monitoring}'
+                    ]
+
                 if env is not None:
                     config['environment'] = [f'{k}={v}' for k, v in env.items()]
+
+                if self.service_args.pod_role == PodRoleType.WORKER:
+                    config = self._update_config_with_volumes(
+                        config, auto_volume=not self.common_args.disable_auto_volume
+                    )
+
                 replica_configs.append(config)
             return replica_configs
 
@@ -249,7 +306,6 @@ class DockerComposeConfig:
             parsed_args['head_service'].uses_with = None
             parsed_args['head_service'].uses_before = None
             parsed_args['head_service'].uses_after = None
-            parsed_args['head_service'].env = None
 
             # if the k8s connection pool is disabled, the connection pool is managed manually
             import json

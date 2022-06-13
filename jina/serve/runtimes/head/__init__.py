@@ -1,22 +1,25 @@
 import argparse
 import asyncio
+import contextlib
 import json
-import multiprocessing
 import os
-import threading
 from abc import ABC
 from collections import defaultdict
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple
 
 import grpc
+from grpc_health.v1 import health, health_pb2, health_pb2_grpc
+from grpc_reflection.v1alpha import reflection
 
 from jina.enums import PollingType
-from jina.proto import jina_pb2_grpc
+from jina.excepts import InternalNetworkError
+from jina.helper import get_full_version
+from jina.importer import ImportExtensions
+from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
-from jina.types.request.control import ControlRequest
-from jina.types.request.data import DataRequest
+from jina.types.request.data import DataRequest, Response
 
 
 class HeadRuntime(AsyncNewLoopRuntime, ABC):
@@ -29,25 +32,47 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
     def __init__(
         self,
         args: argparse.Namespace,
-        cancel_event: Optional[
-            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-        ] = None,
         **kwargs,
     ):
         """Initialize grpc server for the head runtime.
         :param args: args from CLI
-        :param cancel_event: the cancel event used to wait for canceling
         :param kwargs: keyword args
         """
-        super().__init__(args, cancel_event, **kwargs)
+        self._health_servicer = health.HealthServicer(experimental_non_blocking=True)
 
+        super().__init__(args, **kwargs)
         if args.name is None:
             args.name = ''
         self.name = args.name
         self._deployment_name = os.getenv('JINA_DEPLOYMENT_NAME', 'worker')
         self.connection_pool = GrpcConnectionPool(
-            logger=self.logger, compression=args.compression
+            logger=self.logger,
+            compression=args.compression,
+            metrics_registry=self.metrics_registry,
         )
+        self._retries = self.args.retries
+
+        if self.metrics_registry:
+            with ImportExtensions(
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+            ):
+                from prometheus_client import Summary
+
+            self._summary = (
+                Summary(
+                    'receiving_request_seconds',
+                    'Time spent processing request',
+                    registry=self.metrics_registry,
+                    namespace='jina',
+                    labelnames=('runtime_name',),
+                )
+                .labels(self.args.name)
+                .time()
+            )
+        else:
+            self._summary = contextlib.nullcontext()
+
         polling = getattr(args, 'polling', self.DEFAULT_POLLING.name)
         try:
             # try loading the polling args as json
@@ -93,6 +118,9 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                         )
 
         self.uses_before_address = args.uses_before_address
+        self.timeout_send = args.timeout_send
+        if self.timeout_send:
+            self.timeout_send /= 1e3  # convert ms to seconds
 
         if self.uses_before_address:
             self.connection_pool.add_connection(
@@ -124,12 +152,29 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             self, self._grpc_server
         )
         jina_pb2_grpc.add_JinaDataRequestRPCServicer_to_server(self, self._grpc_server)
-        jina_pb2_grpc.add_JinaControlRequestRPCServicer_to_server(
+        jina_pb2_grpc.add_JinaDiscoverEndpointsRPCServicer_to_server(
             self, self._grpc_server
         )
+        jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self._grpc_server)
+        service_names = (
+            jina_pb2.DESCRIPTOR.services_by_name['JinaSingleDataRequestRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaDataRequestRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaDiscoverEndpointsRPC'].full_name,
+            jina_pb2.DESCRIPTOR.services_by_name['JinaInfoRPC'].full_name,
+            reflection.SERVICE_NAME,
+        )
+        # Mark all services as healthy.
+        health_pb2_grpc.add_HealthServicer_to_server(
+            self._health_servicer, self._grpc_server
+        )
+
+        for service in service_names:
+            self._health_servicer.set(service, health_pb2.HealthCheckResponse.SERVING)
+        reflection.enable_server_reflection(service_names, self._grpc_server)
+
         bind_addr = f'0.0.0.0:{self.args.port}'
         self._grpc_server.add_insecure_port(bind_addr)
-        self.logger.debug(f'Start listening on {bind_addr}')
+        self.logger.debug(f'start listening on {bind_addr}')
         await self._grpc_server.start()
 
     async def async_run_forever(self):
@@ -139,12 +184,13 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_cancel(self):
         """Stop the GRPC server"""
-        self.logger.debug('Cancel HeadRuntime')
+        self.logger.debug('cancel HeadRuntime')
 
         await self._grpc_server.stop(0)
 
     async def async_teardown(self):
         """Close the connection pool"""
+        self._health_servicer.enter_graceful_shutdown()
         await self.async_cancel()
         await self.connection_pool.close()
 
@@ -158,6 +204,22 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         """
         return await self.process_data([request], context)
 
+    def _handle_internalnetworkerror(self, err, context, response):
+        err_code = err.code()
+        if err_code == grpc.StatusCode.UNAVAILABLE:
+            context.set_details(
+                f'|Head: Failed to connect to worker (Executor) pod at address {err.dest_addr}. It may be down.'
+            )
+        elif err_code == grpc.StatusCode.DEADLINE_EXCEEDED:
+            context.set_details(
+                f'|Head: Connection to worker (Executor) pod at address {err.dest_addr} could be established, but timed out.'
+            )
+        context.set_code(err.code())
+        self.logger.error(f'Error while getting responses from Pods: {err.details()}')
+        if err.request_id:
+            response.header.request_id = err.request_id
+        return response
+
     async def process_data(self, requests: List[DataRequest], context) -> DataRequest:
         """
         Process the received data request and return the result as a new request
@@ -167,60 +229,66 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response request
         """
         try:
-            endpoint = dict(context.invocation_metadata()).get('endpoint')
-            response, metadata = await self._handle_data_request(requests, endpoint)
-            context.set_trailing_metadata(metadata.items())
-            return response
-        except (RuntimeError, Exception) as ex:
+            with self._summary:
+                endpoint = dict(context.invocation_metadata()).get('endpoint')
+                response, metadata = await self._handle_data_request(requests, endpoint)
+                context.set_trailing_metadata(metadata.items())
+                return response
+        except InternalNetworkError as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
+            return self._handle_internalnetworkerror(
+                err=err, context=context, response=Response()
+            )
+        except (
+            RuntimeError,
+            Exception,
+        ) as ex:  # some other error, keep streaming going just add error info
             self.logger.error(
                 f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
                 if not self.args.quiet_error
                 else '',
                 exc_info=not self.args.quiet_error,
             )
-            raise
+            requests[0].add_exception(ex, executor=None)
+            context.set_trailing_metadata((('is-error', 'true'),))
+            return requests[0]
 
-    async def process_control(self, request: ControlRequest, *args) -> ControlRequest:
+    async def endpoint_discovery(self, empty, context) -> jina_pb2.EndpointsProto:
         """
-        Process the received control request and return the input request
+        Uses the connection pool to send a discover endpoint call to the workers
 
-        :param request: the data request to process
-        :param args: additional arguments in the grpc call, ignored
-        :returns: the input request
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
         """
+        response = jina_pb2.EndpointsProto()
         try:
-            if self.logger.debug_enabled:
-                self._log_control_request(request)
+            if self.uses_before_address:
+                (
+                    uses_before_response,
+                    _,
+                ) = await self.connection_pool.send_discover_endpoint(
+                    deployment='uses_before', head=False
+                )
+                response.endpoints.extend(uses_before_response.endpoints)
+            if self.uses_after_address:
+                (
+                    uses_after_response,
+                    _,
+                ) = await self.connection_pool.send_discover_endpoint(
+                    deployment='uses_after', head=False
+                )
+                response.endpoints.extend(uses_after_response.endpoints)
 
-            if request.command == 'ACTIVATE':
-
-                for relatedEntity in request.relatedEntities:
-                    connection_string = f'{relatedEntity.address}:{relatedEntity.port}'
-
-                    self.connection_pool.add_connection(
-                        deployment=self._deployment_name,
-                        address=connection_string,
-                        shard_id=relatedEntity.shard_id
-                        if relatedEntity.HasField('shard_id')
-                        else None,
-                    )
-            elif request.command == 'DEACTIVATE':
-                for relatedEntity in request.relatedEntities:
-                    connection_string = f'{relatedEntity.address}:{relatedEntity.port}'
-                    await self.connection_pool.remove_connection(
-                        deployment=self._deployment_name,
-                        address=connection_string,
-                        shard_id=relatedEntity.shard_id,
-                    )
-            return request
-        except (RuntimeError, Exception) as ex:
-            self.logger.error(
-                f'{ex!r}' + f'\n add "--quiet-error" to suppress the exception details'
-                if not self.args.quiet_error
-                else '',
-                exc_info=not self.args.quiet_error,
+            worker_response, _ = await self.connection_pool.send_discover_endpoint(
+                deployment=self._deployment_name, head=False
             )
-            raise
+            response.endpoints.extend(worker_response.endpoints)
+        except InternalNetworkError as err:  # can't connect, Flow broken, interrupt the streaming through gRPC error mechanism
+            return self._handle_internalnetworkerror(
+                err=err, context=context, response=response
+            )
+
+        return response
 
     async def _handle_data_request(
         self, requests: List[DataRequest], endpoint: Optional[str]
@@ -235,7 +303,10 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 response,
                 uses_before_metadata,
             ) = await self.connection_pool.send_requests_once(
-                requests, deployment='uses_before'
+                requests,
+                deployment='uses_before',
+                timeout=self.timeout_send,
+                retries=self._retries,
             )
             requests = [response]
 
@@ -243,6 +314,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             requests=requests,
             deployment=self._deployment_name,
             polling_type=self._polling[endpoint],
+            timeout=self.timeout_send,
+            retries=self._retries,
         )
 
         worker_results = await asyncio.gather(*worker_send_tasks)
@@ -261,7 +334,10 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
                 response_request,
                 uses_after_metadata,
             ) = await self.connection_pool.send_requests_once(
-                worker_results, deployment='uses_after'
+                worker_results,
+                deployment='uses_after',
+                timeout=self.timeout_send,
+                retries=self._retries,
             )
         elif len(worker_results) > 1 and self._reduce:
             DataRequestHandler.reduce_requests(worker_results)
@@ -290,3 +366,19 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             for key, value in uses_after_metadata:
                 merged_metadata[key] = value
         return merged_metadata
+
+    async def _status(self, empty, context) -> jina_pb2.JinaInfoProto:
+        """
+        Process the the call requested and return the JinaInfo of the Runtime
+
+        :param empty: The service expects an empty protobuf message
+        :param context: grpc context
+        :returns: the response request
+        """
+        infoProto = jina_pb2.JinaInfoProto()
+        version, env_info = get_full_version()
+        for k, v in version.items():
+            infoProto.jina[k] = str(v)
+        for k, v in env_info.items():
+            infoProto.envs[k] = str(v)
+        return infoProto

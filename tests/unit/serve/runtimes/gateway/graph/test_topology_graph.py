@@ -537,7 +537,13 @@ class DummyMockConnectionPool:
         self.deployments_called = []
 
     def send_requests_once(
-        self, requests: List[Request], deployment: str, head: bool, endpoint: str = None
+        self,
+        requests: List[Request],
+        deployment: str,
+        head: bool,
+        endpoint: str = None,
+        timeout: float = 1.0,
+        retries: int = -1,
     ) -> asyncio.Task:
         assert head
         self.deployments_called.append(deployment)

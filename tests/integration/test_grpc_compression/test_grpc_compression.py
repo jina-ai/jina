@@ -1,11 +1,15 @@
 import pytest
-
 from docarray import Document, DocumentArray
+
 from jina import Flow
 
 
-@pytest.mark.parametrize('compression_client', ['NoCompression', 'Gzip', 'Deflate'])
-@pytest.mark.parametrize('compression_gateway', ['NoCompression', 'Gzip', 'Deflate'])
+@pytest.mark.parametrize(
+    'compression_client', [None, 'NoCompression', 'Gzip', 'Deflate']
+)
+@pytest.mark.parametrize(
+    'compression_gateway', [None, 'NoCompression', 'Gzip', 'Deflate']
+)
 def test_grpc_compression(compression_client, compression_gateway):
     with Flow(grpc_compression=compression_gateway).add().add() as f:
         ret = f.post(

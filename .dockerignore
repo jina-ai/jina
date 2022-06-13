@@ -8,7 +8,7 @@
 !*requirements.txt
 !README.md
 !MANIFEST.in
-!cli/**
+!jina_cli/**
 !daemon/**
 !docarray/**
 !fastentrypoints.py

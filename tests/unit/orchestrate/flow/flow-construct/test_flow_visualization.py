@@ -1,11 +1,10 @@
+import imghdr
 import os
 import struct
-import imghdr
 
 import pytest
 
-from jina import Flow
-from jina import Executor
+from jina import Executor, Flow
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -37,7 +36,7 @@ def test_visualization_plot_twice(tmpdir):
         .add(name='pod_a')
         .plot(output=os.path.join(tmpdir, 'flow1.svg'))
         .add(name='pod_b', needs='gateway')
-        .join(needs=['pod_a', 'pod_b'])
+        .needs(['pod_a', 'pod_b'])
         .plot(output=os.path.join(tmpdir, 'flow2.svg'))
     )
 
@@ -51,7 +50,7 @@ def test_visualization_plot_in_middle(tmpdir):
         .add(name='pod_a')
         .plot(output=os.path.join(tmpdir, 'flow3.svg'))
         .add(name='pod_b', needs='gateway')
-        .join(needs=['pod_a', 'pod_b'])
+        .needs(['pod_a', 'pod_b'])
     )
 
     assert os.path.exists(os.path.join(tmpdir, 'flow3.svg'))
@@ -115,3 +114,11 @@ def test_flow_vertical(tmpdir, vertical_layout):
     assert w_h is not None
     w, h = w_h
     assert (w < h) == vertical_layout
+
+
+def test_flow_plot_after_build():
+    f = Flow().add().add()
+    with f:
+        f.plot()
+
+    f.plot()

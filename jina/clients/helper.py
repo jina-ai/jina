@@ -1,15 +1,13 @@
 """Helper functions for clients in Jina."""
 
 from functools import wraps
-from inspect import signature
 from typing import Callable, Optional
-import warnings
 
 from jina.excepts import BadClientCallback
+from jina.helper import get_rich_console
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2
 from jina.types.request.data import Response
-from jina.helper import get_rich_console
 
 
 def pprint_routes(resp: 'Response', stack_limit: int = 3):
@@ -20,8 +18,8 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
     """
     routes = resp.routes
 
-    from rich.table import Table
     from rich import box
+    from rich.table import Table
 
     table = Table(box=box.SIMPLE)
     for v in ('Executor', 'Time', 'Exception'):
@@ -31,8 +29,6 @@ def pprint_routes(resp: 'Response', stack_limit: int = 3):
         status_icon = '🟢'
         if route.status.code == jina_pb2.StatusProto.ERROR:
             status_icon = '🔴'
-        elif route.status.code == jina_pb2.StatusProto.ERROR_CHAINED:
-            status_icon = '⚪'
 
         table.add_row(
             f'{status_icon} {route.executor}',

@@ -23,7 +23,7 @@ Building wheels for collected packages: numpy
 
 It could simply be that your local `pip` is too old. Updating it should solve the problem:
 
-```python
+```bash
 pip install -U pip
 ```
 
@@ -32,6 +32,8 @@ pip install -U pip
 Then you are likely installing Jina on a less-supported system/architecture. For example, on native Mac M1, Alpine Linux, or Raspberry Pi 2/3 (armv6/7).
 
 ## On Mac M1
+
+It is generally recommended using a conda environment on a Mac M1 and installing in particular `grpcio`, `protobuf` and `torch`  using `conda install`. See for more [Issue 4422](https://github.com/jina-ai/jina/issues/4422#issuecomment-1057663345).
 
 Some users may have difficulty to install Protobuf on MacOS from `pip`, you may try `brew install protobuf`.
 
@@ -56,11 +58,14 @@ Unfortunately, `conda install` is not supported on Windows. You can either do `p
 
 ## Upgrading from Jina 2.x to 3.x
 If you upgraded an existing Jina installation from 2.x to 3.x you may see the following error message:
-```commandline
+
+```text
 OSError: `docarray` dependency is not installed correctly, please reinstall with `pip install -U --force-reinstall docarray`
 ```
+
 This can be fixed by reinstalling the `docarray` package manually:
-```commandline
+
+```bash
 pip install -U --force-reinstall docarray
 ```
 

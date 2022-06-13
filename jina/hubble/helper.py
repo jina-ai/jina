@@ -11,14 +11,15 @@ import tarfile
 import urllib
 import warnings
 import zipfile
+from contextlib import nullcontext
 from functools import lru_cache, wraps
 from pathlib import Path
-from typing import Tuple, Optional, Dict
-from urllib.parse import urlparse, urljoin
-from urllib.request import Request, urlopen
-from contextlib import nullcontext
+from typing import Dict, Optional, Tuple
+from urllib.parse import urljoin, urlparse
 
 from jina import __resources_path__
+from jina.enums import BetterEnum
+from jina.helper import get_request_header as _get_request_header_main
 from jina.importer import ImportExtensions
 from jina.logging.predefined import default_logger
 
@@ -31,6 +32,16 @@ def _get_hub_root() -> Path:
         hub_root.mkdir(parents=True, exist_ok=True)
 
     return hub_root
+
+
+@lru_cache()
+def _get_hub_config() -> Optional[Dict]:
+    hub_root = _get_hub_root()
+
+    config_file = hub_root.joinpath('config.json')
+    if config_file.exists():
+        with open(config_file) as f:
+            return json.load(f)
 
 
 @lru_cache()
@@ -82,27 +93,42 @@ def get_download_cache_dir() -> Path:
 
 @lru_cache()
 def _get_hubble_base_url() -> str:
-    """Get base Hubble Url from api.jina.ai or os.environ
+    """Get base Hubble Url from os.environ or constants
 
     :return: base Hubble Url
     """
-    if 'JINA_HUBBLE_REGISTRY' in os.environ:
-        u = os.environ['JINA_HUBBLE_REGISTRY']
-    else:
-        try:
-            req = Request(
-                'https://api.jina.ai/hub/hubble.json',
-                headers={'User-Agent': 'Mozilla/5.0'},
-            )
-            with urlopen(req) as resp:
-                u = json.load(resp)['url']
-        except:
-            default_logger.critical(
-                'Can not fetch the Url of Hubble from `api.jina.ai`'
-            )
-            raise
+    return os.environ.get('JINA_HUBBLE_REGISTRY', 'https://api.hubble.jina.ai')
 
-    return u
+
+@lru_cache()
+def _get_auth_token() -> Optional[str]:
+    """Get user auth token.
+    .. note:: We first check `JINA_AUTH_TOKEN` environment variable.
+        if token is not None, use env token. Otherwise, we get token from config.
+
+    :return: user auth token
+    """
+    token_from_env = os.environ.get('JINA_AUTH_TOKEN')
+    if token_from_env:
+        return token_from_env
+
+    config = _get_hub_config()
+    if config:
+        return config.get('auth_token')
+
+
+def get_request_header() -> Dict:
+    """Return the header of request with an authorization token.
+
+    :return: request header
+    """
+    headers = _get_request_header_main()
+
+    auth_token = _get_auth_token()
+    if auth_token:
+        headers['Authorization'] = f'token {auth_token}'
+
+    return headers
 
 
 def get_hubble_url_v1() -> str:
@@ -144,6 +170,23 @@ def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
     tag = parser.path.strip('/') if parser.path else None
 
     return scheme, name, tag, secret
+
+
+def replace_secret_of_hub_uri(uri_path: str, txt: str = '<secret>') -> str:
+    """Replace the secret of the Jina Hub URI.
+
+    :param uri_path: the uri of Jina Hub URI
+    :param txt: text to replace
+    :return: the new URI
+    """
+
+    try:
+        secret = parse_hub_uri(uri_path)[-1]
+        if secret:
+            return uri_path.replace(secret, txt)
+    except ValueError:
+        pass  # ignore if the URI is not a valid Jina Hub URI
+    return uri_path
 
 
 def is_valid_huburi(uri: str) -> bool:
@@ -421,12 +464,12 @@ def is_requirements_installed(
     :param show_warning: if to show a warning when a dependency is not satisfied
     :return: True or False if not satisfied
     """
+    import pkg_resources
     from pkg_resources import (
         DistributionNotFound,
-        VersionConflict,
         RequirementParseError,
+        VersionConflict,
     )
-    import pkg_resources
 
     install_reqs, install_options = _get_install_options(requirements_file)
 
@@ -443,7 +486,7 @@ def is_requirements_installed(
 
 
 def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jina',)):
-    import pkg_resources
+    from .requirements import parse_requirement
 
     with requirements_file.open() as requirements:
         install_options = []
@@ -455,12 +498,10 @@ def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jin
             elif req.startswith('-'):
                 install_options.extend(req.split(' '))
             else:
-                for req_spec in pkg_resources.parse_requirements(req):
-                    if (
-                        req_spec.project_name not in excludes
-                        or len(req_spec.extras) > 0
-                    ):
-                        install_reqs.append(req)
+                req_spec = parse_requirement(req)
+
+                if req_spec.project_name not in excludes or len(req_spec.extras) > 0:
+                    install_reqs.append(req)
 
     return install_reqs, install_options
 
@@ -488,3 +529,103 @@ def install_requirements(requirements_file: 'Path', timeout: int = 1000):
         + install_reqs
         + install_options
     )
+
+
+class HubbleReturnStatus(BetterEnum):
+    """
+    Type of hubble return status enum
+    """
+
+    UNKNOWN_ERROR = -1
+    OK = 20000
+    PARAM_VALIDATION_ERROR = 40001
+    SQL_CREATION_ERROR = 40002
+    DATA_STREAM_BROKEN_ERROR = 40003
+    UNEXPECTED_MIME_TYPE_ERROR = 40004
+    SSO_LOGIN_REQUIRED = 40101
+    AUTHENTICATION_FAILED = 40102
+    AUTHENTICATION_REQUIRED = 40103
+    OPERATION_NOT_ALLOWED = 40301
+    INTERNAL_RESOURCE_NOT_FOUND = 40401
+    RPC_METHOD_NOT_FOUND = 40402
+    REQUESTED_ENTITY_NOT_FOUND = 40403
+    INTERNAL_RESOURCE_METHOD_NOT_ALLOWED = 40501
+    INCOMPATIBLE_METHOD_ERROR = 40502
+    INTERNAL_RESOURCE_ID_CONFLICT = 40901
+    RESOURCE_POLICY_DENY = 40902
+    TOO_LARGE_FILE = 41301
+    INTERNAL_DATA_CORRUPTION = 42201
+    IDENTIFIER_NAMESPACE_OCCUPIED = 42202
+    SUBMITTED_DATA_MALFORMED = 42203
+    EXTERNAL_SERVICE_FAILURE = 42204
+    DOWNSTREAM_SERVICE_FAILURE = 42205
+    SERVER_INTERNAL_ERROR = 50001
+    DOWNSTREAM_SERVICE_ERROR = 50002
+    SERVER_SUBPROCESS_ERROR = 50003
+    SANDBOX_BUILD_NOT_FOUND = 50004
+    NOT_IMPLEMENTED_ERROR = 50005
+    RESPONSE_STREAM_CLOSED = 50006
+
+
+class NormalizerErrorCode(BetterEnum):
+    """
+    Type of executor-normalizer error code enum
+    """
+
+    ExecutorNotFound = 4000
+    ExecutorExists = 4001
+    IllegalExecutor = 4002
+    BrokenDependency = 4003
+
+    Others = 5000
+
+
+def get_hubble_error_message(hubble_structured_error: dict) -> Tuple[str, str]:
+    """Override some of the hubble error messages to provide better user experience
+    :param hubble_structured_error: the hubble structured error response
+    :returns: Tuple of overridden_msg and original_msg
+    """
+    msg = hubble_structured_error.get(
+        'readableMessage', ''
+    ) or hubble_structured_error.get('message', '')
+    status = hubble_structured_error.get('status', None)
+    original_msg = msg
+
+    if not status:
+        return (msg, msg)
+
+    if (
+        status == HubbleReturnStatus.SERVER_SUBPROCESS_ERROR
+        and hubble_structured_error.get('cmd', '') == 'docker'
+    ):
+
+        msg = '''
+Failed on building Docker image. Potential solutions:
+  - If you haven't provide a Dockerfile in the executor bundle, you may want to provide one,
+    as the auto-generated one on the cloud did not work.
+  - If you have provided a Dockerfile, you may want to check the validity of this Dockerfile.
+'''
+    elif (
+        status == HubbleReturnStatus.DOWNSTREAM_SERVICE_FAILURE
+        and hubble_structured_error.get('service', '') == 'normalizer'
+    ):
+
+        normalizer_error = hubble_structured_error.get('err', '')
+        if (
+            isinstance(normalizer_error, dict)
+            and normalizer_error.get('code', None)
+            == NormalizerErrorCode.ExecutorNotFound
+        ):
+            msg = '''
+We can not discover any Executor in your uploaded bundle. This is often due to one of the following errors:
+  - The bundle did not contain any valid executor.
+  - The config.yml's `jtype` is mismatched with the actual Executor class name.
+    For more information about the expected bundle structure, please refer to the documentation.
+    https://docs.jina.ai/fundamentals/executor/repository-structure/
+'''
+        msg += '''
+For more detailed information, you can try the `executor-normalizer` locally to see the root cause.
+    https://github.com/jina-ai/executor-normalizer
+'''
+
+    return (msg, original_msg)

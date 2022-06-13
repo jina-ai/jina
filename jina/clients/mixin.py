@@ -57,6 +57,11 @@ class MutateMixin:
             res = endpoint(
                 mutation, variables=variables, timeout=timeout, extra_headers=headers
             )
+            if 'errors' in res and res['errors']:
+                msg = 'GraphQL mutation returned the following errors: '
+                for err in res['errors']:
+                    msg += err['message'] + '. '
+                raise ConnectionError(msg)
             return res
 
 
@@ -81,6 +86,18 @@ class AsyncMutateMixin(MutateMixin):
         return await get_or_reuse_loop().run_in_executor(
             None, super().mutate, mutation, variables, timeout, headers
         )
+
+
+class HealthCheckMixin:
+    """The Health check Mixin for Client and Flow to expose `dry_run` API"""
+
+    def dry_run(self, **kwargs) -> bool:
+        """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
+
+        :param kwargs: potential kwargs received passed from the public interface
+        :return: boolean indicating the health/readiness of the Flow
+        """
+        return run_async(self.client._dry_run, **kwargs)
 
 
 class PostMixin:

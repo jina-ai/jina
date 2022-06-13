@@ -1,9 +1,14 @@
 import asyncio
 import copy
+import re
 from collections import defaultdict
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
+import grpc.aio
+
+from jina import __default_endpoint__
+from jina.excepts import InternalNetworkError
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest
@@ -30,6 +35,8 @@ class TopologyGraph:
             hanging: bool = False,
             filter_condition: dict = None,
             reduce: bool = True,
+            timeout_send: Optional[float] = None,
+            retries: Optional[int] = -1,
         ):
             self.name = name
             self.outgoing_nodes = []
@@ -41,6 +48,8 @@ class TopologyGraph:
             self.status = None
             self._filter_condition = filter_condition
             self._reduce = reduce
+            self._timeout_send = timeout_send
+            self._retries = retries
 
         @property
         def leaf(self):
@@ -53,19 +62,43 @@ class TopologyGraph:
                 copy_req.data.docs = filtered_docs
                 self.parts_to_send[i] = copy_req
 
+        def _handle_internalnetworkerror(self, err):
+            err_code = err.code()
+            if err_code == grpc.StatusCode.UNAVAILABLE:
+                err._details = (
+                    err.details()
+                    + f' |Gateway: Communication error with deployment {self.name} at address(es) {err.dest_addr}. '
+                    f'Head or worker(s) may be down.'
+                )
+                raise err
+            elif err_code == grpc.StatusCode.DEADLINE_EXCEEDED:
+                err._details = (
+                    err.details()
+                    + f'|Gateway: Connection with deployment {self.name} at address(es) {err.dest_addr} could be established, but timed out.'
+                    f' You can increase the allowed time by setting `timeout_send` in your Flow YAML `with` block or Flow `__init__()` method.'
+                )
+                raise err
+            else:
+                raise
+
+        def get_endpoints(self, connection_pool: GrpcConnectionPool) -> asyncio.Task:
+            return connection_pool.send_discover_endpoint(self.name)
+
         async def _wait_previous_and_send(
             self,
             request: DataRequest,
             previous_task: Optional[asyncio.Task],
             connection_pool: GrpcConnectionPool,
             endpoint: Optional[str],
+            executor_endpoint_mapping: Optional[Dict] = None,
+            target_executor_pattern: Optional[str] = None,
         ):
             # Check my condition and send request with the condition
             metadata = {}
             if previous_task is not None:
                 result = await previous_task
                 request, metadata = result[0], result[1]
-            if 'is-error' in metadata:
+            if metadata and 'is-error' in metadata:
                 return request, metadata
             elif request is not None:
                 self.parts_to_send.append(request)
@@ -79,14 +112,34 @@ class TopologyGraph:
                             DataRequestHandler.reduce_requests(self.parts_to_send)
                         ]
 
-                    resp, metadata = await connection_pool.send_requests_once(
-                        requests=self.parts_to_send,
-                        deployment=self.name,
-                        head=True,
-                        endpoint=endpoint,
-                    )
+                    # avoid sending to executor which does not bind to this endpoint
+                    if endpoint is not None and executor_endpoint_mapping is not None:
+                        if (
+                            endpoint not in executor_endpoint_mapping[self.name]
+                            and __default_endpoint__
+                            not in executor_endpoint_mapping[self.name]
+                        ):
+                            return request, metadata
+
+                    if target_executor_pattern is not None and not re.match(
+                        target_executor_pattern, self.name
+                    ):
+                        return request, metadata
+                    # otherwise, send to executor and get response
+                    try:
+                        resp, metadata = await connection_pool.send_requests_once(
+                            requests=self.parts_to_send,
+                            deployment=self.name,
+                            head=True,
+                            endpoint=endpoint,
+                            timeout=self._timeout_send,
+                            retries=self._retries,
+                        )
+                    except InternalNetworkError as err:
+                        self._handle_internalnetworkerror(err)
+
                     self.end_time = datetime.utcnow()
-                    if 'is-error' in metadata:
+                    if metadata and 'is-error' in metadata:
                         self.status = resp.header.status
                     return resp, metadata
 
@@ -98,6 +151,8 @@ class TopologyGraph:
             request_to_send: Optional[DataRequest],
             previous_task: Optional[asyncio.Task],
             endpoint: Optional[str] = None,
+            executor_endpoint_mapping: Optional[Dict] = None,
+            target_executor_pattern: Optional[str] = None,
         ) -> List[Tuple[bool, asyncio.Task]]:
             """
             Gets all the tasks corresponding from all the subgraphs born from this node
@@ -106,6 +161,8 @@ class TopologyGraph:
             :param request_to_send: Optional request to be sent when the node is an origin of a graph
             :param previous_task: Optional task coming from the predecessor of the Node
             :param endpoint: Optional string defining the endpoint of this request
+            :param executor_endpoint_mapping: Optional map that maps the name of a Deployment with the endpoints that it binds to so that they can be skipped if needed
+            :param target_executor_pattern: Optional regex pattern for the target executor to decide whether or not the Executor should receive the request
 
             .. note:
                 deployment1 -> outgoing_nodes: deployment2
@@ -131,7 +188,12 @@ class TopologyGraph:
             """
             wait_previous_and_send_task = asyncio.create_task(
                 self._wait_previous_and_send(
-                    request_to_send, previous_task, connection_pool, endpoint=endpoint
+                    request_to_send,
+                    previous_task,
+                    connection_pool,
+                    endpoint=endpoint,
+                    executor_endpoint_mapping=executor_endpoint_mapping,
+                    target_executor_pattern=target_executor_pattern,
                 )
             )
             if self.leaf:  # I am like a leaf
@@ -145,6 +207,8 @@ class TopologyGraph:
                     None,
                     wait_previous_and_send_task,
                     endpoint=endpoint,
+                    executor_endpoint_mapping=executor_endpoint_mapping,
+                    target_executor_pattern=target_executor_pattern,
                 )
                 # We are interested in the last one, that will be the task that awaits all the previous
                 hanging_tasks_tuples.extend(t)
@@ -183,8 +247,10 @@ class TopologyGraph:
         graph_representation: Dict,
         graph_conditions: Dict = {},
         deployments_disable_reduce: List[str] = [],
+        timeout_send: Optional[float] = 1.0,
+        retries: Optional[int] = -1,
         *args,
-        **kwargs
+        **kwargs,
     ):
         num_parts_per_node = defaultdict(int)
         if 'start-gateway' in graph_representation:
@@ -214,6 +280,8 @@ class TopologyGraph:
                 hanging=node_name in hanging_deployment_names,
                 filter_condition=condition,
                 reduce=node_name not in deployments_disable_reduce,
+                timeout_send=timeout_send,
+                retries=retries,
             )
 
         for node_name, outgoing_node_names in graph_representation.items():
@@ -245,3 +313,29 @@ class TopologyGraph:
         :return: A list of nodes
         """
         return self._origin_nodes
+
+    @property
+    def all_nodes(self):
+        """
+        The set of all the nodes inside this Graph
+
+        :return: A list of nodes
+        """
+
+        def _get_all_nodes(node, accum, accum_names):
+            if node.name not in accum_names:
+                accum.append(node)
+                accum_names.append(node.name)
+            for n in node.outgoing_nodes:
+                _get_all_nodes(n, accum, accum_names)
+            return accum, accum_names
+
+        nodes = []
+        node_names = []
+        for origin_node in self.origin_nodes:
+            subtree_nodes, subtree_node_names = _get_all_nodes(origin_node, [], [])
+            for st_node, st_node_name in zip(subtree_nodes, subtree_node_names):
+                if st_node_name not in node_names:
+                    nodes.append(st_node)
+                    node_names.append(st_node_name)
+        return nodes

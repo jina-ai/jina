@@ -87,7 +87,6 @@ def set_gateway_parser(parser=None):
     mixin_comm_protocol_parser(parser)
     mixin_gateway_parser(parser)
     mixin_pod_parser(parser)
-    mixin_head_parser(parser)
 
     from jina.enums import DeploymentRoleType
 
@@ -151,9 +150,8 @@ def get_main_parser():
     """
     from jina.parsers.base import set_base_parser
     from jina.parsers.create import set_new_project_parser
-    from jina.parsers.export_api import set_export_api_parser
+    from jina.parsers.export import set_export_parser
     from jina.parsers.flow import set_flow_parser
-    from jina.parsers.helloworld import set_hello_parser
     from jina.parsers.helper import _SHOW_ALL_ARGS, _chf
     from jina.parsers.hubble import set_hub_parser
     from jina.parsers.ping import set_ping_parser
@@ -163,21 +161,7 @@ def get_main_parser():
 
     sp = parser.add_subparsers(
         dest='cli',
-        description='''
-        Use `%(prog)-8s [sub-command] --help` to get detailed information about each sub-command.
-
-        To show all commands, run `JINA_FULL_CLI=1 jina --help`.
-        ''',
         required=True,
-    )
-
-    set_hello_parser(
-        sp.add_parser(
-            'hello',
-            help='👋 Hello Jina!',
-            description='Start hello world demos.',
-            formatter_class=_chf,
-        )
     )
 
     set_pod_parser(
@@ -203,6 +187,15 @@ def get_main_parser():
             'ping',
             help='Ping an Executor',
             description='Ping a Deployment and check its network connectivity.',
+            formatter_class=_chf,
+        )
+    )
+
+    set_export_parser(
+        sp.add_parser(
+            'export',
+            help='Export Jina API/Flow',
+            description='Export Jina API and Flow to JSONSchema, Kubernetes YAML, or SVG flowchart.',
             formatter_class=_chf,
         )
     )
@@ -269,18 +262,9 @@ def get_main_parser():
     set_client_cli_parser(
         sp.add_parser(
             'client',
-            description='Start a Python client that connects to a remote Jina gateway',
+            description='Start a Python client that connects to a Jina gateway',
             formatter_class=_chf,
             **(dict(help='Start a Client')) if _SHOW_ALL_ARGS else {},
-        )
-    )
-
-    set_export_api_parser(
-        sp.add_parser(
-            'export-api',
-            description='Export Jina API to JSON/YAML file for 3rd party applications',
-            formatter_class=_chf,
-            **(dict(help='Export Jina API to file')) if _SHOW_ALL_ARGS else {},
         )
     )
 

@@ -1,12 +1,14 @@
 # kind version has to be bumped to v0.11.1 since pytest-kind is just using v0.10.0 which does not work on ubuntu in ci
+# You need to install linkerd cli on your local machine if you want to run the k8s tests https://linkerd.io/2.11/getting-started/#step-1-install-the-cli
 import asyncio
 import os
 
 import pytest
+import requests as req
 import yaml
-from docarray import DocumentArray
 from pytest_kind import cluster
 
+from docarray import DocumentArray
 from jina import Document, Executor, Flow, requests
 from jina.orchestrate.deployments import Deployment
 from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
@@ -93,7 +95,12 @@ async def create_all_flow_deployments_and_wait_ready(
                 api_response.status.ready_replicas is not None
                 and api_response.status.ready_replicas == expected_num_replicas
             ):
+                logger.info(f'Deploymnt {deployment_name} is now ready')
                 deployments_ready.append(deployment_name)
+            else:
+                logger.info(
+                    f'Deploymnt {deployment_name} is not ready yet: ready_replicas is {api_response.status.ready_replicas} not equal to {expected_num_replicas}'
+                )
 
         for deployment_name in deployments_ready:
             deployment_names.remove(deployment_name)
@@ -234,10 +241,72 @@ def k8s_flow_with_needs(docker_images):
     [['test-executor', 'executor-merger', 'jinaai/jina']],
     indirect=True,
 )
+async def test_flow_with_monitoring(logger, tmpdir, docker_images, port_generator):
+    dump_path = os.path.join(str(tmpdir), 'test-flow-with-monitoring')
+    namespace = f'test-flow-monitoring'.lower()
+
+    port1 = port_generator()
+    port2 = port_generator()
+    flow = Flow(
+        name='test-flow-monitoring', monitoring=True, port_monitoring=port1
+    ).add(
+        name='segmenter',
+        uses=f'docker://{docker_images[0]}',
+        monitoring=True,
+        port_monitoring=port2,
+    )
+
+    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    await create_all_flow_deployments_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'segmenter': 1,
+        },
+        logger=logger,
+    )
+    import portforward
+
+    config_path = os.environ['KUBECONFIG']
+    gateway_pod_name = (
+        core_client.list_namespaced_pod(
+            namespace=namespace, label_selector='app=gateway'
+        )
+        .items[0]
+        .metadata.name
+    )
+
+    pod_port_ref = [(gateway_pod_name, port1)]
+
+    for (pod_name, port) in pod_port_ref:
+        with portforward.forward(namespace, pod_name, port, port, config_path):
+            resp = req.get(f'http://localhost:{port}/')
+            assert resp.status_code == 200
+
+    core_client.delete_namespace(namespace)
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['test-executor', 'executor-merger', 'jinaai/jina']],
+    indirect=True,
+)
 async def test_flow_with_needs(logger, k8s_flow_with_needs, tmpdir):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-needs')
     namespace = f'test-flow-with-needs'.lower()
-    k8s_flow_with_needs.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+    k8s_flow_with_needs.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
     from kubernetes import client
 
@@ -289,7 +358,7 @@ async def test_flow_with_needs(logger, k8s_flow_with_needs, tmpdir):
 async def test_flow_with_sharding(k8s_flow_with_sharding, polling, tmpdir, logger):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-sharding')
     namespace = f'test-flow-with-sharding-{polling}'.lower()
-    k8s_flow_with_sharding.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+    k8s_flow_with_sharding.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
     from kubernetes import client
 
@@ -348,7 +417,7 @@ async def test_flow_with_sharding(k8s_flow_with_sharding, polling, tmpdir, logge
 async def test_flow_with_configmap(k8s_flow_configmap, docker_images, tmpdir, logger):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-configmap')
     namespace = f'test-flow-with-configmap'.lower()
-    k8s_flow_configmap.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+    k8s_flow_configmap.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
     from kubernetes import client
 
@@ -393,7 +462,7 @@ async def test_flow_with_configmap(k8s_flow_configmap, docker_images, tmpdir, lo
 async def test_flow_with_gpu(k8s_flow_gpu, docker_images, tmpdir, logger):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-gpu')
     namespace = f'test-flow-with-gpu'
-    k8s_flow_gpu.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+    k8s_flow_gpu.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
     from kubernetes import client
 
@@ -441,7 +510,7 @@ async def test_flow_with_workspace(logger, docker_images, tmpdir):
 
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-workspace')
     namespace = f'test-flow-with-workspace'.lower()
-    flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
     from kubernetes import client
 
@@ -500,7 +569,7 @@ async def test_flow_with_external_native_deployment(logger, docker_images, tmpdi
 
         namespace = 'test-flow-with-external-deployment'
         dump_path = os.path.join(str(tmpdir), namespace)
-        flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+        flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
         from kubernetes import client
 
@@ -556,7 +625,7 @@ async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
     )
 
     dump_path = os.path.join(str(tmpdir), namespace)
-    flow.to_k8s_yaml(dump_path, k8s_namespace=namespace)
+    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
     await create_all_flow_deployments_and_wait_ready(
         dump_path,
@@ -587,7 +656,7 @@ async def _create_external_deployment(api_client, app_client, docker_images, tmp
         ['--uses', f'docker://{docker_images[0]}', '--name', 'external-deployment']
     )
     external_deployment_config = K8sDeploymentConfig(args=args, k8s_namespace=namespace)
-    configs = external_deployment_config.to_k8s_yaml()
+    configs = external_deployment_config.to_kubernetes_yaml()
     deployment_base = os.path.join(tmpdir, 'external-deployment')
     filenames = []
     for name, k8s_objects in configs:

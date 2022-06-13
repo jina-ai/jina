@@ -52,3 +52,10 @@ def mixin_base_deployment_parser(parser):
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
     )
+
+    gp.add_argument(
+        '--tls',
+        action='store_true',
+        default=False,
+        help='If set, connect to deployment using tls encryption',
+    )

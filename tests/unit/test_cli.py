@@ -4,14 +4,14 @@ import subprocess
 
 import pytest
 
-from cli.autocomplete import ac_table
-from cli.export import api_to_dict
-from cli.lookup import _build_lookup_table, lookup_and_print
 from jina.checker import NetworkChecker
 from jina.jaml import JAML
+from jina.orchestrate.pods.factory import PodFactory
 from jina.parsers import set_deployment_parser, set_pod_parser
 from jina.parsers.ping import set_ping_parser
-from jina.orchestrate.pods.factory import PodFactory
+from jina_cli.autocomplete import ac_table
+from jina_cli.export import api_to_dict
+from jina_cli.lookup import _build_lookup_table, lookup_and_print
 
 
 def test_export_api(tmpdir):
@@ -90,14 +90,3 @@ def test_ping():
             NetworkChecker(a3)
 
     assert cm.value.code == 1
-
-
-@pytest.mark.parametrize('project', ['fashion', 'chatbot', 'multimodal'])
-def test_fork(tmpdir, project):
-    subprocess.check_call(['jina', 'hello', 'fork', project, f'{tmpdir}/tmp'])
-
-    assert os.path.exists(f'{tmpdir}/tmp/app.py')
-    assert os.path.exists(f'{tmpdir}/tmp/my_executors.py')
-    if project == 'multimodal':
-        assert os.path.exists(f'{tmpdir}/tmp/flow-index.yml')
-        assert os.path.exists(f'{tmpdir}/tmp/flow-search.yml')

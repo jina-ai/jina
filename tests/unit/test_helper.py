@@ -2,6 +2,7 @@ import os
 from types import SimpleNamespace
 
 import numpy as np
+import psutil
 import pytest
 
 from jina import Executor, Flow, __default_endpoint__
@@ -19,6 +20,7 @@ from jina.helper import (
     random_port,
     reset_ports,
     retry,
+    run_async,
 )
 from jina.hubble.helper import _get_hubble_base_url
 from jina.jaml.helper import complete_path
@@ -110,17 +112,12 @@ def test_pprint_routes(capfd):
     r.status.exception.stacks.extend(['r1\nline1', 'r2\nline2'])
     result.append(r)
     r = jina_pb2.RouteProto()
-    r.status.code = jina_pb2.StatusProto.ERROR_CHAINED
-    r.status.exception.stacks.extend(['line1', 'line2'])
-    result.append(r)
-    r = jina_pb2.RouteProto()
     r.status.code = jina_pb2.StatusProto.SUCCESS
     result.append(r)
     rr = DataRequest()
     rr.routes.extend(result)
     pprint_routes(rr)
     out, err = capfd.readouterr()
-    assert '⚪' in out
     assert '🟢' in out
     assert 'Executor' in out
     assert 'Time' in out
@@ -128,7 +125,6 @@ def test_pprint_routes(capfd):
     assert 'r1' in out
     assert 'line1r2' in out
     assert 'line2' in out
-    assert 'line1line2' in out
 
 
 def test_convert_tuple_to_list():
@@ -352,3 +348,19 @@ def test_port_free(port_generator):
     port = port_generator()
     is_free = is_port_free('localhost', port)
     assert is_free
+
+
+def test_run_async():
+    async def dummy():
+        pass
+
+    p = psutil.Process()
+
+    run_async(dummy)
+    first_fd_count = p.num_fds()
+
+    for i in range(10):
+        run_async(dummy)
+
+    end_fd_count = p.num_fds()
+    assert first_fd_count == end_fd_count

@@ -2,31 +2,30 @@
 import argparse
 import os
 
-from jina.parsers.helper import add_arg_group, _SHOW_ALL_ARGS
 from jina.enums import PollingType
 from jina.helper import random_identity
+from jina.parsers.helper import _SHOW_ALL_ARGS, add_arg_group
 
 
-def mixin_base_ppr_parser(parser):
-    """Mixing in arguments required by pod/deployment/runtime module into the given parser.
+def mixin_essential_parser(parser):
+    """Mixing in arguments required by every module into the given parser.
     :param parser: the parser instance to which we add arguments
     """
-
     gp = add_arg_group(parser, title='Essential')
     gp.add_argument(
         '--name',
         type=str,
         help='''
-The name of this object.
+    The name of this object.
 
-This will be used in the following places:
-- how you refer to this object in Python/YAML/CLI
-- visualization
-- log message header
-- ...
+    This will be used in the following places:
+    - how you refer to this object in Python/YAML/CLI
+    - visualization
+    - log message header
+    - ...
 
-When not given, then the default naming strategy will apply.
-                    ''',
+    When not given, then the default naming strategy will apply.
+                        ''',
     )
 
     gp.add_argument(
@@ -37,12 +36,10 @@ When not given, then the default naming strategy will apply.
         'If not set, then derive from its parent `workspace`.',
     )
 
-    from jina import __resources_path__
-
     gp.add_argument(
         '--log-config',
         type=str,
-        default=os.path.join(__resources_path__, 'logging.default.yml'),
+        default='default',
         help='The YAML config of the logger used in this object.',
     )
 
@@ -71,7 +68,17 @@ When not given, then the default naming strategy will apply.
         else argparse.SUPPRESS,
     )
 
-    parser.add_argument(
+
+def mixin_base_ppr_parser(parser):
+    """Mixing in arguments required by pod/deployment/runtime module into the given parser.
+    :param parser: the parser instance to which we add arguments
+    """
+
+    mixin_essential_parser(parser)
+
+    gp = add_arg_group(parser, title='Base Deployment')
+
+    gp.add_argument(
         '--extra-search-paths',
         type=str,
         default=[],

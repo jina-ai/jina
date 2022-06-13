@@ -82,7 +82,13 @@ def complete_graph_dict():
 
 class DummyNoDocAccessMockConnectionPool:
     def send_requests_once(
-        self, requests, deployment: str, head: bool, endpoint: str = None
+        self,
+        requests,
+        deployment: str,
+        head: bool,
+        endpoint: str = None,
+        timeout: float = 1.0,
+        retries: int = -1,
     ) -> asyncio.Task:
         async def task_wrapper():
             import random
@@ -101,7 +107,13 @@ class DummyNoDocAccessMockConnectionPool:
 
 class DummyMockConnectionPool:
     def send_requests_once(
-        self, requests, deployment: str, head: bool, endpoint: str = None
+        self,
+        requests,
+        deployment: str,
+        head: bool,
+        endpoint: str = None,
+        timeout: float = 1.0,
+        retries: int = -1,
     ) -> asyncio.Task:
         assert head
         request = requests[0]

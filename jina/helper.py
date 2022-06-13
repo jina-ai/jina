@@ -33,10 +33,9 @@ from typing import (
     Union,
 )
 
-from packaging import version as pckg_version
 from rich.console import Console
 
-from jina import __docarray_version__, __windows__
+from jina import __windows__
 
 __all__ = [
     'batch_iterator',
@@ -63,11 +62,7 @@ __all__ = [
     'get_or_reuse_loop',
     'T',
     'get_rich_console',
-    'docarray_graphql_compatible',
 ]
-
-if TYPE_CHECKING:
-    from docarray import DocumentArray
 
 T = TypeVar('T')
 
@@ -767,7 +762,7 @@ def warn_unknown_args(unknown_args: List[str]):
     :param unknown_args: arguments that are possibly unknown to Jina
     """
 
-    from cli.lookup import _build_lookup_table
+    from jina_cli.lookup import _build_lookup_table
 
     all_args = _build_lookup_table()[0]
     has_migration_tip = False
@@ -843,6 +838,8 @@ class ArgNamespace:
             args += positional_args
         p_args, unknown_args = parser.parse_known_args(args)
         unknown_args = list(filter(lambda x: x.startswith('--'), unknown_args))
+        if '--jcloud' in unknown_args:
+            unknown_args.remove('--jcloud')
         if warn_unknown and unknown_args:
             _leftovers = set(unknown_args)
             if fallback_parsers:
@@ -949,7 +946,6 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'jina': __version__,
             'docarray': __docarray_version__,
             'jina-proto': __proto_version__,
-            'jina-vcs-tag': os.environ.get('JINA_VCS_VERSION', __unset_msg__),
             'protobuf': google.protobuf.__version__,
             'proto-backend': api_implementation._default_implementation_type,
             'grpcio': getattr(grpc, '__version__', _grpcio_metadata.__version__),
@@ -998,7 +994,8 @@ def _update_policy():
         try:
             import uvloop
 
-            asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+            if not isinstance(asyncio.get_event_loop_policy(), uvloop.EventLoopPolicy):
+                asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
         except ModuleNotFoundError:
             warnings.warn(
                 'Install `uvloop` via `pip install "jina[uvloop]"` for better performance.'
@@ -1011,13 +1008,13 @@ def get_or_reuse_loop():
 
     :return: A new eventloop or reuse the current opened eventloop.
     """
+    _update_policy()
     try:
-        loop = asyncio.get_running_loop()
+        loop = asyncio.get_event_loop()
         if loop.is_closed():
             raise RuntimeError
     except RuntimeError:
-        _update_policy()
-        # no running event loop
+        # no event loop
         # create a new loop
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -1271,31 +1268,21 @@ def iscoroutinefunction(func: Callable):
     return inspect.iscoroutinefunction(func)
 
 
-async def run_in_threadpool(func: Callable, executor=None, *args, **kwargs):
-    return await get_or_reuse_loop().run_in_executor(
-        executor, functools.partial(func, *args, **kwargs)
-    )
-
-
 def run_async(func, *args, **kwargs):
     """Generalized asyncio.run for jupyter notebook.
 
-    When running inside jupyter, an eventloop is already exist, can't be stopped, can't be killed.
+    When running inside jupyter, an eventloop already exists, can't be stopped, can't be killed.
     Directly calling asyncio.run will fail, as This function cannot be called when another asyncio event loop
     is running in the same thread.
 
     .. see_also:
         https://stackoverflow.com/questions/55409641/asyncio-run-cannot-be-called-from-a-running-event-loop
 
-    call `run_async(my_function, any_event_loop=True, *args, **kwargs)` to enable run with any eventloop
-
     :param func: function to run
     :param args: parameters
     :param kwargs: key-value parameters
     :return: asyncio.run(func)
     """
-
-    any_event_loop = kwargs.pop('any_event_loop', False)
 
     class _RunThread(threading.Thread):
         """Create a running thread when in Jupyter notebook."""
@@ -1312,7 +1299,7 @@ def run_async(func, *args, **kwargs):
     if loop and loop.is_running():
         # eventloop already exist
         # running inside Jupyter
-        if any_event_loop or is_jupyter():
+        if is_jupyter():
             thread = _RunThread()
             thread.start()
             thread.join()
@@ -1333,7 +1320,7 @@ def run_async(func, *args, **kwargs):
                 'please report this issue here: https://github.com/jina-ai/jina'
             )
     else:
-        return get_or_reuse_loop().run_until_complete(func(*args, **kwargs))
+        return asyncio.run(func(*args, **kwargs))
 
 
 def slugify(value):
@@ -1534,36 +1521,39 @@ def get_rich_console():
     :return: rich console
     """
     return Console(
-        force_terminal=True, force_interactive=True
-    )  # It forces render in any terminal, especily in PyCharm
-
-
-GRAPHQL_MIN_DOCARRAY_VERSION = '0.8.8'  # graphql requires this or higher
-
-
-def docarray_graphql_compatible():
-    """Check if installed docarray version is compatible with GraphQL features.
-
-    :return: True if compatible, False if not
-    """
-    installed_version = pckg_version.parse(__docarray_version__)
-    min_version = pckg_version.parse(GRAPHQL_MIN_DOCARRAY_VERSION)
-    return installed_version >= min_version
-
-
-from jina.helper import ArgNamespace
-from jina.parsers import set_client_cli_parser
-
-
-def parse_client(kwargs):
-    kwargs = _parse_kwargs(kwargs)
-    return ArgNamespace.kwargs2namespace(
-        kwargs, set_client_cli_parser(), warn_unknown=True
+        force_terminal=True if 'PYCHARM_HOSTED' in os.environ else None,
+        color_system=None if 'JINA_LOG_NO_COLOR' in os.environ else 'auto',
     )
 
 
-def _parse_kwargs(kwargs: Dict[str, Any]) -> Dict[str, Any]:
+from jina.parsers import set_client_cli_parser
 
+__default_port_client__ = 80
+__default_port_tls_client__ = 443
+
+
+def parse_client(kwargs) -> Namespace:
+    """
+    Parse the kwargs for the Client
+
+    :param kwargs: kwargs to be parsed
+
+    :return: parsed argument.
+    """
+    kwargs = _parse_kwargs(kwargs)
+    args = ArgNamespace.kwargs2namespace(
+        kwargs, set_client_cli_parser(), warn_unknown=True
+    )
+
+    if not args.port:
+        args.port = (
+            __default_port_client__ if not args.tls else __default_port_tls_client__
+        )
+
+    return args
+
+
+def _parse_kwargs(kwargs: Dict[str, Any]) -> Dict[str, Any]:
     if 'host' in kwargs.keys():
         return_scheme = dict()
         (
@@ -1582,15 +1572,8 @@ def _parse_kwargs(kwargs: Dict[str, Any]) -> Dict[str, Any]:
                 elif value:
                     kwargs[key] = value
 
-    kwargs = _add_default_port_tls(kwargs)
     kwargs = _delete_host_slash(kwargs)
 
-    return kwargs
-
-
-def _add_default_port_tls(kwargs: Dict[str, Any]) -> Dict[str, Any]:
-    if ('tls' in kwargs) and ('port' not in kwargs):
-        kwargs['port'] = 443
     return kwargs
 
 

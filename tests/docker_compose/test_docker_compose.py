@@ -6,6 +6,7 @@ from typing import Dict, List
 
 import docker
 import pytest
+import requests as req
 
 from jina import Document, Flow
 
@@ -78,7 +79,6 @@ async def run_test(flow, endpoint, num_docs=10, request_size=10):
     client_kwargs = dict(
         host='localhost',
         port=flow.port,
-        return_responses=True,
         asyncio=True,
     )
     client_kwargs.update(flow._common_kwargs)
@@ -90,6 +90,7 @@ async def run_test(flow, endpoint, num_docs=10, request_size=10):
         endpoint,
         inputs=[Document() for _ in range(num_docs)],
         request_size=request_size,
+        return_responses=True,
     ):
         responses.append(resp)
 
@@ -130,6 +131,7 @@ def flow_with_needs(docker_images):
         .add(
             name='segmenter',
             uses=f'docker://{docker_images[0]}',
+            replicas=2,
         )
         .add(
             name='textencoder',
@@ -166,8 +168,13 @@ async def test_flow_with_needs(logger, flow_with_needs, tmpdir, docker_images):
             flow=flow_with_needs,
             endpoint='/debug',
         )
-        expected_traversed_executors = {
-            'segmenter',
+        expected_traversed_executors_0 = {
+            'segmenter/rep-0',
+            'imageencoder',
+            'textencoder',
+        }
+        expected_traversed_executors_1 = {
+            'segmenter/rep-1',
             'imageencoder',
             'textencoder',
         }
@@ -175,7 +182,40 @@ async def test_flow_with_needs(logger, flow_with_needs, tmpdir, docker_images):
         docs = resp[0].docs
         assert len(docs) == 10
         for doc in docs:
-            assert set(doc.tags['traversed-executors']) == expected_traversed_executors
+            path_1 = (
+                set(doc.tags['traversed-executors']) == expected_traversed_executors_0
+            )
+            path_2 = (
+                set(doc.tags['traversed-executors']) == expected_traversed_executors_1
+            )
+            assert path_1 or path_2
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['test-executor', 'executor-merger', 'jinaai/jina']],
+    indirect=True,
+)
+async def test_flow_monitoring(logger, tmpdir, docker_images, port_generator):
+    dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-monitoring.yml')
+    port1 = port_generator()
+    port2 = port_generator()
+
+    flow = Flow(
+        name='test-flow-monitoring', monitoring=True, port_monitoring=port1
+    ).add(
+        name='segmenter',
+        uses=f'docker://{docker_images[0]}',
+        monitoring=True,
+        port_monitoring=port2,
+    )
+    flow.to_docker_compose_yaml(dump_path, 'default')
+    with DockerComposeFlow(dump_path):
+        for port in [port1, port2]:
+            resp = req.get(f'http://localhost:{port}/')
+            assert resp.status_code == 200
 
 
 @pytest.mark.timeout(3600)

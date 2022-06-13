@@ -1,12 +1,13 @@
 import os
+import time
 
 import numpy as np
 import pytest
+from docarray.document.generators import from_ndarray
 
-from jina import Flow, Executor, requests, Document
+from jina import Document, Executor, Flow, requests
 from jina.excepts import RuntimeFailToStart
 from jina.proto import jina_pb2
-from docarray.document.generators import from_ndarray
 from tests import validate_callback
 
 
@@ -253,6 +254,31 @@ def test_flow_startup_exception_not_hanging2(protocol):
             pass
 
 
+@pytest.mark.timeout(10)
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow_startup_exception_not_hanging_filenotfound(protocol):
+    f = Flow(protocol=protocol).add(uses='doesntexist.yml')
+    from jina.excepts import RuntimeFailToStart
+
+    with pytest.raises(RuntimeFailToStart):
+        with f:
+            pass
+
+
+@pytest.mark.timeout(10)
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+def test_flow_startup_exception_not_hanging_invalid_config(protocol):
+    this_file = os.path.dirname(os.path.abspath(__file__))
+    f = Flow(protocol=protocol).add(
+        name='importErrorExecutor',
+        uses=this_file,
+    )
+
+    with pytest.raises(RuntimeFailToStart):
+        with f:
+            pass
+
+
 def test_flow_does_not_import_exec_depencies():
     cur_dir = os.path.dirname(os.path.abspath(__file__))
     f = Flow().add(
@@ -263,3 +289,48 @@ def test_flow_does_not_import_exec_depencies():
     with pytest.raises(RuntimeFailToStart):
         with f:
             pass
+
+
+def test_flow_head_runtime_failure(monkeypatch, capfd):
+    from jina.serve.runtimes.request_handlers.data_request_handler import (
+        DataRequestHandler,
+    )
+
+    def fail(*args, **kwargs):
+        raise NotImplementedError('Intentional error')
+
+    monkeypatch.setattr(DataRequestHandler, 'merge_routes', fail)
+
+    with Flow().add(shards=2) as f:
+        f.index(
+            [Document(text='abbcs')],
+        )
+
+    out, err = capfd.readouterr()
+    assert 'NotImplementedError' in out
+    assert 'Intentional' in out and 'error' in out
+
+
+class TimeoutSlowExecutor(Executor):
+    @requests(on='/index')
+    def foo(self, *args, **kwargs):
+        time.sleep(1.5)
+
+
+@pytest.mark.timeout(50)
+def test_flow_timeout_send():
+    f = Flow().add(uses=TimeoutSlowExecutor)
+
+    with f:
+        f.index([Document()])
+
+    f = Flow(timeout_send=3000).add(uses=TimeoutSlowExecutor)
+
+    with f:
+        f.index([Document()])
+
+    f = Flow(timeout_send=100).add(uses=TimeoutSlowExecutor)
+
+    with f:
+        with pytest.raises(Exception):
+            f.index([Document()])

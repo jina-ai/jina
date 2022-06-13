@@ -1,5 +1,5 @@
 (scale-out)=
-# How to Scale Out Your Executor
+# Scale out your Executor
 
 ## Overview
 
@@ -24,7 +24,7 @@ Before you begin, make sure you meet these prerequisites:
 
 
 ```shell
-pip install jina==3.0.0
+pip install jina
 pip install sklearn==1.0.2
 pip install pqlite==0.2.3
 ```
@@ -38,8 +38,7 @@ This could become a performance bottleneck to your search system.
 The Executor looks like this:
 
 ```python
-from jina import Executor, requests
-from docarray import Document
+from jina import Executor, requests, Document
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.datasets import fetch_20newsgroups

@@ -1,14 +1,23 @@
+import asyncio
+import multiprocessing
 import os
+import time
 from copy import deepcopy
-from pathlib import Path
+from multiprocessing import Process
+from threading import Event
 from unittest import mock
 
 import pytest
-from docarray import Document, DocumentArray
+import yaml
 
+from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
-from jina.serve.executors import ReducerExecutor
+from jina.clients.request import request_generator
+from jina.parsers import set_pod_parser
 from jina.serve.executors.metas import get_default_metas
+from jina.serve.networking import GrpcConnectionPool
+from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.worker import WorkerRuntime
 
 PORT = 12350
 
@@ -124,6 +133,7 @@ def test_executor_workspace_simple(test_metas_workspace_simple):
 
 
 def test_executor_workspace_simple_workspace(tmpdir):
+    runtime_workspace = os.path.join(tmpdir, 'test2')
     workspace = os.path.join(tmpdir, 'some_folder')
     name = 'test_meta'
 
@@ -133,12 +143,12 @@ def test_executor_workspace_simple_workspace(tmpdir):
     executor = Executor(metas={'name': name}, runtime_args={'workspace': workspace})
     assert executor.workspace == os.path.abspath(os.path.join(workspace, name))
 
-    # metas before runtime_args
+    # metas after runtime_args
     executor = Executor(
         metas={'name': name, 'workspace': workspace},
-        runtime_args={'workspace': 'test2'},
+        runtime_args={'workspace': runtime_workspace},
     )
-    assert executor.workspace == os.path.abspath(os.path.join(workspace, name))
+    assert executor.workspace == os.path.abspath(os.path.join(runtime_workspace, name))
 
     executor = Executor(
         metas={'name': name, 'workspace': workspace},
@@ -243,6 +253,10 @@ def test_workspace_not_exists(tmpdir):
     ],
 )
 def test_override_requests(uses_requests, expected):
+    from jina.serve.executors import __dry_run_endpoint__
+
+    expected.add(__dry_run_endpoint__)
+
     class OverrideExec(Executor):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
@@ -279,24 +293,6 @@ def test_map_nested():
     exec = NestedExecutor()
     da1 = exec.foo(da)
     assert da1.texts == ['hello'] * N
-
-
-@pytest.mark.parametrize('n_shards', [3, 5])
-@pytest.mark.parametrize('n_matches', [10, 11])
-@pytest.mark.parametrize('n_chunks', [10, 11])
-def test_reducer_executor(n_shards, n_matches, n_chunks):
-    reducer_executor = ReducerExecutor()
-    query = DocumentArray([Document() for _ in range(5)])
-    docs_matrix = [deepcopy(query) for _ in range(n_shards)]
-    for da in docs_matrix:
-        for doc in da:
-            doc.matches.extend([Document() for _ in range(n_matches)])
-            doc.chunks.extend([Document() for _ in range(n_chunks)])
-
-    reduced_da = reducer_executor.reduce(docs_matrix=docs_matrix)
-    for doc in reduced_da:
-        assert len(doc.matches) == n_shards * n_matches
-        assert len(doc.chunks) == n_shards * n_chunks
 
 
 @pytest.mark.asyncio
@@ -365,3 +361,132 @@ def test_default_workspace(tmpdir):
         assert result_workspace == os.path.join(
             os.environ['JINA_DEFAULT_WORKSPACE_BASE'], 'WorkspaceExec', '0'
         )
+
+
+@pytest.mark.parametrize(
+    'exec_type',
+    [Executor.StandaloneExecutorType.EXTERNAL, Executor.StandaloneExecutorType.SHARED],
+)
+def test_to_k8s_yaml(tmpdir, exec_type):
+    Executor.to_kubernetes_yaml(
+        output_base_path=tmpdir,
+        port_expose=2020,
+        uses='jinahub+docker://DummyHubExecutor',
+        executor_type=exec_type,
+    )
+
+    with open(os.path.join(tmpdir, 'executor0', 'executor0.yml')) as f:
+        exec_yaml = list(yaml.safe_load_all(f))[-1]
+        assert exec_yaml['spec']['template']['spec']['containers'][0][
+            'image'
+        ].startswith('jinahub/')
+
+    if exec_type == Executor.StandaloneExecutorType.SHARED:
+        assert set(os.listdir(tmpdir)) == {
+            'executor0',
+        }
+    else:
+        assert set(os.listdir(tmpdir)) == {
+            'executor0',
+            'gateway',
+        }
+
+        with open(os.path.join(tmpdir, 'gateway', 'gateway.yml')) as f:
+            gatewayyaml = list(yaml.safe_load_all(f))[-1]
+            assert (
+                gatewayyaml['spec']['template']['spec']['containers'][0]['ports'][0][
+                    'containerPort'
+                ]
+                == 2020
+            )
+            gateway_args = gatewayyaml['spec']['template']['spec']['containers'][0][
+                'args'
+            ]
+            assert gateway_args[gateway_args.index('--port') + 1] == '2020'
+
+
+@pytest.mark.parametrize(
+    'exec_type',
+    [Executor.StandaloneExecutorType.EXTERNAL, Executor.StandaloneExecutorType.SHARED],
+)
+def test_to_docker_compose_yaml(tmpdir, exec_type):
+    compose_file = os.path.join(tmpdir, 'compose.yml')
+    Executor.to_docker_compose_yaml(
+        output_path=compose_file,
+        port_expose=2020,
+        uses='jinahub+docker://DummyHubExecutor',
+        executor_type=exec_type,
+    )
+
+    with open(compose_file) as f:
+        services = list(yaml.safe_load_all(f))[0]['services']
+        assert services['executor0']['image'].startswith('jinahub/')
+
+        if exec_type == Executor.StandaloneExecutorType.SHARED:
+            assert len(services) == 1
+        else:
+            assert len(services) == 2
+            assert services['gateway']['ports'][0] == '2020:2020'
+            gateway_args = services['gateway']['command']
+            assert gateway_args[gateway_args.index('--port') + 1] == '2020'
+
+
+def _create_test_data_message(counter=0):
+    return list(request_generator('/', DocumentArray([Document(text=str(counter))])))[0]
+
+
+@pytest.mark.asyncio
+async def test_blocking_sync_exec():
+    SLEEP_TIME = 0.01
+    REQUEST_COUNT = 100
+
+    class BlockingExecutor(Executor):
+        @requests
+        def foo(self, docs: DocumentArray, **kwargs):
+            time.sleep(SLEEP_TIME)
+            for doc in docs:
+                doc.text = 'BlockingExecutor'
+            return docs
+
+    args = set_pod_parser().parse_args(['--uses', 'BlockingExecutor'])
+
+    cancel_event = multiprocessing.Event()
+
+    def start_runtime(args, cancel_event):
+        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
+            runtime.run_forever()
+
+    runtime_thread = Process(
+        target=start_runtime,
+        args=(args, cancel_event),
+        daemon=True,
+    )
+    runtime_thread.start()
+
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'{args.host}:{args.port}',
+        ready_or_shutdown_event=Event(),
+    )
+
+    send_tasks = []
+    start_time = time.time()
+    for i in range(REQUEST_COUNT):
+        send_tasks.append(
+            asyncio.create_task(
+                GrpcConnectionPool.send_request_async(
+                    _create_test_data_message(),
+                    target=f'{args.host}:{args.port}',
+                    timeout=3.0,
+                )
+            )
+        )
+
+    results = await asyncio.gather(*send_tasks)
+    end_time = time.time()
+
+    assert all(result.docs.texts == ['BlockingExecutor'] for result in results)
+    assert end_time - start_time < (REQUEST_COUNT * SLEEP_TIME) * 2.0
+
+    cancel_event.set()
+    runtime_thread.join()

@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 
 from jina import __default_host__
@@ -47,6 +48,16 @@ class HTTPGatewayRuntime(GatewayRuntime):
                 """
                 await self.main_loop()
 
+        if 'JINA_DISABLE_HEALTHCHECK_LOGS' in os.environ:
+
+            class _EndpointFilter(logging.Filter):
+                def filter(self, record: logging.LogRecord) -> bool:
+                    # NOTE: space is important after `GET /`, else all logs will be disabled.
+                    return record.getMessage().find("GET / ") == -1
+
+            # Filter out healthcheck endpoint `GET /`
+            logging.getLogger("uvicorn.access").addFilter(_EndpointFilter())
+
         from jina.helper import extend_rest_interface
 
         uvicorn_kwargs = self.args.uvicorn_kwargs or {}
@@ -66,6 +77,7 @@ class HTTPGatewayRuntime(GatewayRuntime):
                         topology_graph=self._topology_graph,
                         connection_pool=self._connection_pool,
                         logger=self.logger,
+                        metrics_registry=self.metrics_registry,
                     )
                 ),
                 host=__default_host__,

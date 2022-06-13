@@ -1,18 +1,25 @@
 import copy
+import json
 import os
+import re
+import subprocess
 from abc import abstractmethod
 from argparse import Namespace
+from collections import defaultdict
 from contextlib import ExitStack
+from itertools import cycle
 from typing import Dict, List, Optional, Set, Union
 
 from jina import __default_executor__, __default_host__, __docker_host__, helper
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.helper import CatchAllCleanupContextManager
+from jina.hubble.helper import replace_secret_of_hub_uri
 from jina.hubble.hubio import HubIO
 from jina.jaml.helper import complete_path
-from jina.orchestrate.pods.container import ContainerPod
 from jina.orchestrate.pods.factory import PodFactory
-from jina.serve.networking import GrpcConnectionPool, host_is_local, in_docker
+from jina.serve.networking import host_is_local, in_docker
+
+WRAPPED_SLICE_BASE = r'\[[-\d:]+\]'
 
 
 class BaseDeployment(ExitStack):
@@ -242,6 +249,7 @@ class Deployment(BaseDeployment):
         self.head_pod = None
         self.shards = {}
         self.update_pod_args()
+        self._sandbox_deployed = False
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
@@ -255,8 +263,11 @@ class Deployment(BaseDeployment):
         else:
             self.pod_args = self._parse_args(self.args)
 
+    def update_sandbox_args(self):
+        """Update args of all its pods based on the host and port returned by Hubble"""
         if self.is_sandbox:
             host, port = HubIO.deploy_public_sandbox(self.args)
+            self._sandbox_deployed = True
             self.first_pod_args.host = host
             self.first_pod_args.port = port
             if self.head_args:
@@ -279,6 +290,17 @@ class Deployment(BaseDeployment):
         return is_sandbox
 
     @property
+    def _is_docker(self) -> bool:
+        """
+        Check if this deployment is to be run in docker.
+
+        :return: True if this deployment is to be run in docker
+        """
+        uses = getattr(self.args, 'uses', '')
+        is_docker = uses.startswith('jinahub+docker://') or uses.startswith('docker://')
+        return is_docker
+
+    @property
     def tls_enabled(self):
         """
         Checks whether secure connection via tls is enabled for this Deployment.
@@ -287,7 +309,8 @@ class Deployment(BaseDeployment):
         """
         has_cert = getattr(self.args, 'ssl_certfile', None) is not None
         has_key = getattr(self.args, 'ssl_keyfile', None) is not None
-        return self.is_sandbox or (has_cert and has_key)
+        tls = getattr(self.args, 'tls', False)
+        return tls or self.is_sandbox or (has_cert and has_key)
 
     @property
     def external(self) -> bool:
@@ -453,51 +476,26 @@ class Deployment(BaseDeployment):
     def __eq__(self, other: 'BaseDeployment'):
         return self.num_pods == other.num_pods and self.name == other.name
 
-    def activate(self):
-        """
-        Activate all worker pods in this deployment by registering them with the head
-        """
-        if self.head_pod is not None:
-            for shard_id in self.pod_args['pods']:
-                for pod_idx, pod_args in enumerate(self.pod_args['pods'][shard_id]):
-                    worker_host = self.get_worker_host(
-                        pod_args, self.shards[shard_id]._pods[pod_idx], self.head_pod
-                    )
-                    GrpcConnectionPool.activate_worker_sync(
-                        worker_host,
-                        int(pod_args.port),
-                        self.head_pod.runtime_ctrl_address,
-                        shard_id,
-                    )
-
     @staticmethod
-    def get_worker_host(pod_args, pod, head_pod):
+    def get_worker_host(pod_args, pod_is_container, head_is_container):
         """
         Check if the current pod and head are both containerized on the same host
         If so __docker_host__ needs to be advertised as the worker's address to the head
 
         :param pod_args: arguments of the worker pod
-        :param pod: the worker pod
-        :param head_pod: head pod communicating with the worker pod
-        :return: host to use in activate messages
+        :param pod_is_container: boolean specifying if pod is to be run in container
+        :param head_is_container: boolean specifying if head pod is to be run in container
+        :return: host to pass in connection list of the head
         """
         # Check if the current pod and head are both containerized on the same host
         # If so __docker_host__ needs to be advertised as the worker's address to the head
         worker_host = (
             __docker_host__
-            if Deployment._is_container_to_container(pod, head_pod)
+            if (pod_is_container and (head_is_container or in_docker()))
             and host_is_local(pod_args.host)
             else pod_args.host
         )
         return worker_host
-
-    @staticmethod
-    def _is_container_to_container(pod, head_pod):
-        # Check if both shard_id/pod_idx and the head are containerized
-        # if the head is not containerized, it still could mean that the deployment itself is containerized
-        return type(pod) == ContainerPod and (
-            type(head_pod) == ContainerPod or in_docker()
-        )
 
     def start(self) -> 'Deployment':
         """
@@ -509,6 +507,9 @@ class Deployment(BaseDeployment):
             If one of the :class:`Pod` fails to start, make sure that all of them
             are properly closed.
         """
+        if self.is_sandbox and not self._sandbox_deployed:
+            self.update_sandbox_args()
+
         if self.pod_args['uses_before'] is not None:
             _args = self.pod_args['uses_before']
             if getattr(self.args, 'noblock_on_start', False):
@@ -535,8 +536,6 @@ class Deployment(BaseDeployment):
             )
             self.enter_context(self.shards[shard_id])
 
-        if not getattr(self.args, 'noblock_on_start', False):
-            self.activate()
         return self
 
     def wait_start_success(self) -> None:
@@ -557,7 +556,6 @@ class Deployment(BaseDeployment):
                 self.head_pod.wait_start_success()
             for shard_id in self.shards:
                 self.shards[shard_id].wait_start_success()
-            self.activate()
         except:
             self.close()
             raise
@@ -605,15 +603,76 @@ class Deployment(BaseDeployment):
         return is_ready
 
     @staticmethod
+    def _parse_slice(value: str):
+        """Parses a `slice()` from string, like `start:stop:step`.
+
+        :param value: a string like
+        :return: slice
+        """
+        if re.match(WRAPPED_SLICE_BASE, value):
+            value = value[1:-1]
+
+        if value:
+            parts = value.split(':')
+            if len(parts) == 1:
+                # slice(stop)
+                parts = [parts[0], str(int(parts[0]) + 1)]
+            # else: slice(start, stop[, step])
+        else:
+            # slice()
+            parts = []
+        return slice(*[int(p) if p else None for p in parts])
+
+    @staticmethod
+    def _roundrobin_cuda_device(device_str: str, replicas: int):
+        """Parse cuda device string with RR prefix
+
+        :param device_str: `RRm:n`, where `RR` is the prefix, m:n is python slice format
+        :param replicas: the number of replicas
+        :return: a map from replica id to device id
+        """
+        if (
+            device_str
+            and isinstance(device_str, str)
+            and device_str.startswith('RR')
+            and replicas >= 1
+        ):
+            try:
+                num_devices = str(subprocess.check_output(['nvidia-smi', '-L'])).count(
+                    'UUID'
+                )
+            except:
+                num_devices = int(os.environ.get('CUDA_TOTAL_DEVICES', 0))
+                if num_devices == 0:
+                    return
+
+            all_devices = list(range(num_devices))
+            if device_str[2:]:
+                all_devices = all_devices[Deployment._parse_slice(device_str[2:])]
+
+            _c = cycle(all_devices)
+            return {j: next(_c) for j in range(replicas)}
+
+    @staticmethod
     def _set_pod_args(args: Namespace) -> Dict[int, List[Namespace]]:
         result = {}
         sharding_enabled = args.shards and args.shards > 1
+
+        cuda_device_map = None
+        if args.env:
+            cuda_device_map = Deployment._roundrobin_cuda_device(
+                args.env.get('CUDA_VISIBLE_DEVICES'), args.replicas
+            )
+
         for shard_id in range(args.shards):
             replica_args = []
             for replica_id in range(args.replicas):
                 _args = copy.deepcopy(args)
                 _args.shard_id = shard_id
                 _args.pod_role = PodRoleType.WORKER
+
+                if cuda_device_map:
+                    _args.env['CUDA_VISIBLE_DEVICES'] = str(cuda_device_map[replica_id])
 
                 _args.host = args.host
                 if _args.name:
@@ -634,6 +693,7 @@ class Deployment(BaseDeployment):
                     args.port = args.port
                 else:
                     _args.port = helper.random_port()
+                    _args.port_monitoring = helper.random_port()
 
                 # pod workspace if not set then derive from workspace
                 if not _args.workspace:
@@ -706,7 +766,17 @@ class Deployment(BaseDeployment):
                 )
 
             parsed_args['head'] = BaseDeployment._copy_to_head_args(args)
+
         parsed_args['pods'] = self._set_pod_args(args)
+
+        if parsed_args['head'] is not None:
+            connection_list = defaultdict(list)
+
+            for shard_id in parsed_args['pods']:
+                for pod_idx, pod_args in enumerate(parsed_args['pods'][shard_id]):
+                    worker_host = self.get_worker_host(pod_args, self._is_docker, False)
+                    connection_list[shard_id].append(f'{worker_host}:{pod_args.port}')
+            parsed_args['head'].connection_list = json.dumps(connection_list)
 
         return parsed_args
 
@@ -719,6 +789,7 @@ class Deployment(BaseDeployment):
         .. # noqa: DAR201
         """
         mermaid_graph = []
+        secret = '&ltsecret&gt'
         if self.role != DeploymentRoleType.GATEWAY and not self.external:
             mermaid_graph = [f'subgraph {self.name};', f'\ndirection LR;\n']
 
@@ -728,7 +799,7 @@ class Deployment(BaseDeployment):
                 else None
             )
             uses_before_uses = (
-                self.uses_before_args.uses
+                replace_secret_of_hub_uri(self.uses_before_args.uses, secret)
                 if self.uses_before_args is not None
                 else None
             )
@@ -736,7 +807,9 @@ class Deployment(BaseDeployment):
                 self.uses_after_args.name if self.uses_after_args is not None else None
             )
             uses_after_uses = (
-                self.uses_after_args.uses if self.uses_after_args is not None else None
+                replace_secret_of_hub_uri(self.uses_after_args.uses, secret)
+                if self.uses_after_args is not None
+                else None
             )
             shard_names = []
             if len(self.pod_args['pods']) > 1:
@@ -756,7 +829,8 @@ class Deployment(BaseDeployment):
                     ]  # all the uses should be the same but let's keep it this
                     # way
                     for rep_i, (name, use) in enumerate(zip(names, uses)):
-                        shard_mermaid_graph.append(f'{name}[{use}]:::pod;')
+                        escaped_uses = f'"{replace_secret_of_hub_uri(use, secret)}"'
+                        shard_mermaid_graph.append(f'{name}[{escaped_uses}]:::pod;')
                     shard_mermaid_graph.append('end;')
                     shard_mermaid_graph = [
                         node.replace(';', '\n') for node in shard_mermaid_graph
@@ -765,25 +839,31 @@ class Deployment(BaseDeployment):
                     mermaid_graph.append('\n')
                 if uses_before_name is not None:
                     for shard_name in shard_names:
+                        escaped_uses_before_uses = (
+                            f'"{replace_secret_of_hub_uri(uses_before_uses, secret)}"'
+                        )
                         mermaid_graph.append(
-                            f'{self.args.name}-head[{uses_before_uses}]:::HEADTAIL --> {shard_name};'
+                            f'{self.args.name}-head[{escaped_uses_before_uses}]:::HEADTAIL --> {shard_name};'
                         )
                 if uses_after_name is not None:
                     for shard_name in shard_names:
+                        escaped_uses_after_uses = f'"{uses_after_uses}"'
                         mermaid_graph.append(
-                            f'{shard_name} --> {self.args.name}-tail[{uses_after_uses}]:::HEADTAIL;'
+                            f'{shard_name} --> {self.args.name}-tail[{escaped_uses_after_uses}]:::HEADTAIL;'
                         )
             else:
                 # single shard case, no uses_before or uses_after_considered
-                name = list(self.pod_args['pods'].values())[0][0].name
-                uses = list(self.pod_args['pods'].values())[0][0].uses
-                num_replicas = list(self.pod_args['pods'].values())[0][0].replicas
+                pod_args = list(self.pod_args['pods'].values())[0][0]
+                uses = f'"{replace_secret_of_hub_uri(pod_args.uses, secret)}"'
 
                 # just put the replicas in parallel
-                if num_replicas > 1:
-                    for rep_i in range(num_replicas):
-                        mermaid_graph.append(f'{name}/rep-{rep_i}[{uses}]:::pod;')
+                if pod_args.replicas > 1:
+                    for rep_i in range(pod_args.replicas):
+                        mermaid_graph.append(
+                            f'{pod_args.name}/rep-{rep_i}["{uses}"]:::pod;'
+                        )
                 else:
-                    mermaid_graph.append(f'{name}[{uses}]:::pod;')
+                    mermaid_graph.append(f'{pod_args.name}["{uses}"]:::pod;')
+
             mermaid_graph.append('end;')
         return mermaid_graph

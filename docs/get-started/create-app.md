@@ -1,4 +1,4 @@
-# Create a New Project
+# Create Project
 
 Let’s write a small application with our new Jina development environment. To start, we'll use Jina CLI to make a new project for us. In your terminal of choice run:
 
@@ -40,7 +40,7 @@ You should see this in your terminal:
 
 ## Adding dependencies
 
-You can use any third-party Python library in Executor. Let's create `executor1/requirements.txt` and `pytorch` to it.
+You can use any third-party Python library in Executor. Let's create `executor1/requirements.txt` and add `pytorch` to it.
 
 Then in `executor.py`, let's add another endpoint `/get-tensor` as follows:
 
@@ -58,19 +58,20 @@ class MyExecutor(Executor):
             doc.tensor = torch.tensor(np.random.random([10, 2]))
 ```
 
-## A small Jina application
+## A dummy Jina application
 
 
-Now let's write a small application with our new dependency. In our `app.py`, add the following code:
+Now let's write a dummy application with our new dependency. In our `app.py`, add the following code:
 
 ```python
 from jina import Flow, Document
 
 f = Flow().add(uses='executor1/config.yml')
 
-with f:
-    da = f.post('/get-tensor', [Document(), Document()])
-    print(da.tensors)
+if __name__ == '__main__':
+    with f:
+        da = f.post('/get-tensor', [Document(), Document()])
+        print(da.tensors)
 ```
 
 Once we save that, we can run our application by typing:

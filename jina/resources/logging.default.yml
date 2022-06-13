@@ -1,5 +1,5 @@
 handlers:  # enabled handlers, order does not matter
-  - StreamHandler
+  - RichHandler
 level: INFO  # set verbose level
 configs:
   FileHandler:
@@ -8,7 +8,7 @@ configs:
     formatter: JsonFormatter
   StreamHandler:
     format: '{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
-    formatter: ColorFormatter
+    formatter: PlainFormatter
   SysLogHandler:
     ident: # this will be prepend to all messages
     format: '{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
@@ -16,8 +16,8 @@ configs:
     port: # when not given then record it locally,  /dev/log on linux /var/run/syslog on mac
     formatter: PlainFormatter
   RichHandler:
-    format: '{name:>15}@%(process)2d[%(levelname).1s]:%(message)s'
-    show_time: false
-    show_level: false
-    show_path: false
+    format: '[dim]{name}@%(process)2d[/dim] %(message)s'
     markup: true
+    rich_tracebacks: true
+    show_path: false
+    log_time_format: '[%x %X]'

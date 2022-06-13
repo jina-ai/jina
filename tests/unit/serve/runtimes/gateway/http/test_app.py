@@ -18,21 +18,6 @@ from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime, get_fastapi_app
 from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
 
 
-@pytest.mark.parametrize('p', [['--default-swagger-ui'], []])
-def test_custom_swagger(p):
-    args = set_gateway_parser().parse_args(p)
-    logger = JinaLogger('')
-    app = get_fastapi_app(
-        args, TopologyGraph({}), GrpcConnectionPool(logger=logger), logger
-    )
-    # The TestClient is needed here as a context manager to generate the shutdown event correctly
-    # otherwise the app can hang as it is not cleaned up correctly
-    # see https://fastapi.tiangolo.com/advanced/testing-events/
-    with TestClient(app) as client:
-        assert any('/docs' in r.path for r in app.routes)
-        assert any('/openapi.json' in r.path for r in app.routes)
-
-
 class TestExecutor(Executor):
     @requests
     def empty(self, docs: 'DocumentArray', **kwargs):
@@ -273,3 +258,63 @@ def test_app_models_acceptance(docs_input):
         r = req.post(f'http://localhost:{f.port}/index', json=docs_input)
 
     assert DocumentArray.from_dict(r.json()['data'])[0].text == 'text_input'
+
+
+@pytest.fixture
+def health_check_env():
+    _prev_loglevel = os.environ.get('JINA_LOG_LEVEL', None)
+    os.environ['JINA_LOG_LEVEL'] = 'INFO'
+    os.environ['JINA_DISABLE_HEALTHCHECK_LOGS'] = '1'
+    yield
+    os.environ['JINA_LOG_LEVEL'] = _prev_loglevel
+    os.environ.pop('JINA_DISABLE_HEALTHCHECK_LOGS')
+
+
+@pytest.fixture
+def no_health_check_env():
+    _prev_loglevel = os.environ.get('JINA_LOG_LEVEL', None)
+    os.environ['JINA_LOG_LEVEL'] = 'INFO'
+    yield
+    os.environ['JINA_LOG_LEVEL'] = _prev_loglevel
+
+
+def test_healthcheck_logs_http(capfd, no_health_check_env):
+    f = Flow(protocol='http', port=12345).add()
+    with f:
+        req.get('http://localhost:12345/')
+        req.get('http://localhost:12345/docs')
+
+    out, _ = capfd.readouterr()
+    assert '"GET / HTTP/1.1" 200 OK' in out
+    assert '"GET /docs HTTP/1.1" 200 OK' in out
+
+
+def test_no_healthcheck_logs_http_with_env(capfd, health_check_env):
+    f = Flow(protocol='http', port=12345).add()
+    with f:
+        req.get('http://localhost:12345/')
+        req.get('http://localhost:12345/docs')
+
+    out, _ = capfd.readouterr()
+    assert '"GET / HTTP/1.1" 200 OK' not in out
+    assert '"GET /docs HTTP/1.1" 200 OK' in out
+
+
+def test_healthcheck_logs_websocket(capfd, no_health_check_env):
+    f = Flow(protocol='websocket', port=12345).add()
+    with f:
+        req.get('http://localhost:12345/')
+        f.post('/', inputs=DocumentArray.empty())
+
+    out, _ = capfd.readouterr()
+    assert '"GET / HTTP/1.1" 200 OK' in out
+
+
+def test_healthcheck_logs_websocket_with_env(capfd, health_check_env):
+    f = Flow(protocol='websocket', port=12345).add()
+    with f:
+        f.post('/', inputs=DocumentArray.empty())
+        req.get('http://localhost:12345/')
+
+    out, _ = capfd.readouterr()
+    assert '"GET / HTTP/1.1" 200 OK' not in out

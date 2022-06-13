@@ -2,10 +2,13 @@ import asyncio
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
+from aiohttp import WSMsgType
+
 from jina.enums import WebsocketSubProtocols
 from jina.importer import ImportExtensions
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
+from jina.types.request.status import StatusMessage
 
 if TYPE_CHECKING:
     from jina.logging.logger import JinaLogger
@@ -32,9 +35,18 @@ class AioHttpClientlet(ABC):
         ...
 
     @abstractmethod
+    async def send_dry_run(self):
+        """Query the dry_run endpoint from Gateway"""
+        ...
+
+    @abstractmethod
     async def recv_message(self):
         """Receive message from Gateway"""
         ...
+
+    async def recv_dry_run(self):
+        """Receive dry run response from Gateway"""
+        pass
 
     async def __aenter__(self):
         """enter async context
@@ -77,8 +89,15 @@ class HTTPClientlet(AioHttpClientlet):
         """
         req_dict = request.to_dict()
         req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
-
+        if 'target_executor' in req_dict['header']:
+            req_dict['target_executor'] = req_dict['header']['target_executor']
         return await self.session.post(url=self.url, json=req_dict).__aenter__()
+
+    async def send_dry_run(self):
+        """Query the dry_run endpoint from Gateway
+        :return: send get message
+        """
+        return await self.session.get(url=self.url).__aenter__()
 
     async def recv_message(self):
         """Receive message for HTTP (sleep)
@@ -87,6 +106,34 @@ class HTTPClientlet(AioHttpClientlet):
         """
         return await asyncio.sleep(1e10)
 
+    async def recv_dry_run(self):
+        """Receive dry run response for HTTP (sleep)
+
+        :return: await sleep
+        """
+        return await asyncio.sleep(1e10)
+
+
+class WsResponseIter:
+    """
+    Iterates over all the responses that come in over the websocket connection.
+    In contrast to the iterator built into AioHTTP, this also records the message that was sent at closing-time.
+    """
+
+    def __init__(self, websocket):
+        self.websocket = websocket
+        self.close_message = None
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        msg = await self.websocket.receive()
+        if msg.type in (WSMsgType.CLOSE, WSMsgType.CLOSING, WSMsgType.CLOSED):
+            self.close_message = msg
+            raise StopAsyncIteration
+        return msg
+
 
 class WebsocketClientlet(AioHttpClientlet):
     """Websocket Client to be used with the streamer"""
@@ -94,6 +141,7 @@ class WebsocketClientlet(AioHttpClientlet):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.websocket = None
+        self.response_iter = None
 
     async def send_message(self, request: 'Request'):
         """Send request in bytes to the server.
@@ -103,6 +151,17 @@ class WebsocketClientlet(AioHttpClientlet):
         """
         try:
             return await self.websocket.send_bytes(request.SerializeToString())
+        except ConnectionResetError:
+            self.logger.critical(f'server connection closed already!')
+
+    async def send_dry_run(self):
+        """Query the dry_run endpoint from Gateway
+
+        :return: send dry_run as bytes awaitable
+        """
+
+        try:
+            return await self.websocket.send_bytes(b'')
         except ConnectionResetError:
             self.logger.critical(f'server connection closed already!')
 
@@ -127,8 +186,20 @@ class WebsocketClientlet(AioHttpClientlet):
 
         :yield: response objects received from server
         """
-        async for response in self.websocket:
+        async for response in self.response_iter:
             yield DataRequest(response.data)
+
+    async def recv_dry_run(self):
+        """Receive dry run response in bytes from server
+
+        ..note::
+            aiohttp allows only one task which can `receive` concurrently.
+            we need to make sure we don't create multiple tasks with `recv_message`
+
+        :yield: response objects received from server
+        """
+        async for response in self.response_iter:
+            yield StatusMessage(response.data)
 
     async def __aenter__(self):
         await super().__aenter__()
@@ -136,4 +207,15 @@ class WebsocketClientlet(AioHttpClientlet):
             url=self.url,
             protocols=(WebsocketSubProtocols.BYTES.value,),
         ).__aenter__()
+        self.response_iter = WsResponseIter(self.websocket)
         return self
+
+    @property
+    def close_message(self):
+        """:return: the close message (reason) of the ws closing response"""
+        return self.response_iter.close_message.extra if self.response_iter else None
+
+    @property
+    def close_code(self):
+        """:return: the close code of the ws closing response"""
+        return self.websocket.close_code if self.websocket else None

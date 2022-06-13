@@ -36,7 +36,7 @@ jobs:
           pip install . --no-cache-dir
           cd schema
           mkdir -p schemas
-          jina export-api --schema-path schemas/"$JINA_VERSION.json" schemas/latest.json schemas/latest --yaml-path "$JINA_VERSION.yml" latest.yml --json-path "$JINA_VERSION.json" latest.json latest
+          jina export schema --schema-path schemas/"$JINA_VERSION.json" schemas/latest.json schemas/latest --yaml-path "$JINA_VERSION.yml" latest.yml --json-path "$JINA_VERSION.json" latest.json latest
           python ../scripts/get-openapi-schemas.py
           npm install --prefix ~ snippet-enricher-cli
           ~/node_modules/.bin/snippet-enricher-cli --input=gateway.json --targets=shell_curl > gateway-with-code.json

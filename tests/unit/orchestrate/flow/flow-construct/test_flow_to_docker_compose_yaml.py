@@ -1,4 +1,7 @@
+import json
 import os
+from pathlib import Path
+from unittest import mock
 
 import pytest
 import yaml
@@ -306,3 +309,139 @@ def test_raise_exception_invalid_executor():
     with pytest.raises(NoContainerizedError):
         f = Flow().add(uses='A')
         f.to_docker_compose_yaml()
+
+
+def test_docker_compose_set_volume(tmpdir):
+    default_workspace = os.path.join(Path.home(), 'mock-workspace')
+    with mock.patch.dict(
+        os.environ,
+        {'JINA_DEFAULT_WORKSPACE_BASE': str(os.path.join(tmpdir, default_workspace))},
+    ):
+        custom_workspace = '/my/worki'
+        custom_volume = 'my/cool:custom/volume'
+        flow = (
+            Flow(name='test-flow', port=9090)
+            .add(uses='docker://image', name='executor0')
+            .add(uses='docker://image', name='executor1', workspace=custom_workspace)
+            .add(uses='docker://image', name='executor2', volumes=custom_volume)
+        )
+
+        dump_path = os.path.join(str(tmpdir), 'test_flow_docker_compose_volume.yml')
+
+        flow.to_docker_compose_yaml(
+            output_path=dump_path,
+        )
+
+        configuration = None
+        with open(dump_path) as f:
+            configuration = yaml.safe_load(f)
+
+        assert set(configuration.keys()) == {'version', 'services', 'networks'}
+        assert configuration['version'] == '3.3'
+        assert configuration['networks'] == {'jina-network': {'driver': 'bridge'}}
+        services = configuration['services']
+        assert (
+            len(services) == 4
+        )  # gateway, executor0-head, executor0, executor1-head, executor1, executor2-head, executor2
+        assert set(services.keys()) == {
+            'gateway',
+            'executor0',
+            'executor1',
+            'executor2',
+        }
+        default_workspace_abspath = os.path.abspath(default_workspace)
+        # check default volume and workspace
+        assert services['executor0']['volumes'][0].startswith(default_workspace_abspath)
+        assert services['executor0']['volumes'][0].endswith(':/app')
+        assert '--workspace' in services['executor0']['command']
+        wsp_index = services['executor0']['command'].index('--workspace') + 1
+        assert services['executor0']['command'][wsp_index] == '/app/' + os.path.relpath(
+            path=default_workspace, start=Path.home()
+        )
+
+        # check default volume, but respect custom workspace
+        assert services['executor1']['volumes'][0].startswith(default_workspace_abspath)
+        assert services['executor1']['volumes'][0].endswith(':/app')
+        assert '--workspace' in services['executor1']['command']
+        wsp_index = services['executor1']['command'].index('--workspace') + 1
+        assert services['executor1']['command'][wsp_index] == custom_workspace
+
+        # check custom value respected, no workspace added
+        assert services['executor2']['volumes'] == [custom_volume]
+        assert 'workspace' not in services['executor2']['command']
+
+
+def test_disable_auto_volume(tmpdir):
+    flow = Flow(name='test-flow', port=9090).add(
+        uses='docker://image', name='executor0', disable_auto_volume=True
+    )
+
+    dump_path = os.path.join(str(tmpdir), 'test_flow_docker_compose_volume.yml')
+
+    flow.to_docker_compose_yaml(output_path=dump_path)
+
+    configuration = None
+    with open(dump_path) as f:
+        configuration = yaml.safe_load(f)
+
+    assert set(configuration.keys()) == {'version', 'services', 'networks'}
+    assert configuration['version'] == '3.3'
+    assert configuration['networks'] == {'jina-network': {'driver': 'bridge'}}
+    services = configuration['services']
+    assert len(services) == 2  # gateway, executor0-head, executor0
+    assert set(services.keys()) == {
+        'gateway',
+        'executor0',
+    }
+    assert 'volumes' not in services['executor0']
+
+
+def test_flow_to_docker_compose_sandbox(tmpdir):
+    flow = Flow(name='test-flow', port=8080).add(
+        uses=f'jinahub+sandbox://DummyHubExecutor'
+    )
+
+    dump_path = os.path.join(str(tmpdir), 'test_flow_docker_compose.yml')
+
+    flow.to_docker_compose_yaml(
+        output_path=dump_path,
+    )
+
+    configuration = None
+    with open(dump_path) as f:
+        configuration = yaml.safe_load(f)
+
+    services = configuration['services']
+    gateway_service = services['gateway']
+    gateway_args = gateway_service['command']
+
+    deployment_addresses = json.loads(
+        gateway_args[gateway_args.index('--deployments-addresses') + 1]
+    )
+    assert deployment_addresses['executor0'][0].startswith('grpcs://')
+
+
+@pytest.mark.parametrize('count', [1, 'all'])
+def test_flow_to_docker_compose_gpus(tmpdir, count):
+    flow = Flow().add(name='encoder', gpus=count)
+    dump_path = os.path.join(str(tmpdir), 'test_flow_docker_compose_gpus.yml')
+
+    flow.to_docker_compose_yaml(
+        output_path=dump_path,
+    )
+
+    configuration = None
+    with open(dump_path) as f:
+        configuration = yaml.safe_load(f)
+
+    services = configuration['services']
+    encoder_service = services['encoder']
+    assert encoder_service['deploy'] == {
+        'resources': {
+            'reservations': {
+                'devices': [
+                    {'driver': 'nvidia', 'count': count, 'capabilities': ['gpu']}
+                ]
+            }
+        }
+    }

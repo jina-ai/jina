@@ -50,6 +50,12 @@ One can later fetch a tagged Executor via `jinahub[+docker]://MyExecutor/gpu`
     )
 
     gp.add_argument(
+        '--protected-tag',
+        action='append',
+        help='A list of protected tags. Like tag but protected against updates after first push.',
+    )
+
+    gp.add_argument(
         '--force-update',
         '--force',
         type=str,
@@ -59,6 +65,13 @@ One can later fetch a tagged Executor via `jinahub[+docker]://MyExecutor/gpu`
         '--secret',
         type=str,
         help='The secret for overwrite a Hub executor',
+    )
+
+    gp.add_argument(
+        '--no-cache',
+        action='store_true',
+        default=False,
+        help='If set, "--no-cache" option will be added to the Docker build.',
     )
 
     gp = add_arg_group(parser, title='Visibility')

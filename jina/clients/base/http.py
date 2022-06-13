@@ -1,6 +1,8 @@
 import asyncio
-from contextlib import AsyncExitStack, nullcontext
+from contextlib import AsyncExitStack
 from typing import TYPE_CHECKING, Optional
+
+from starlette import status
 
 from jina.clients.base import BaseClient
 from jina.clients.base.helper import HTTPClientlet
@@ -18,6 +20,55 @@ if TYPE_CHECKING:
 
 class HTTPBaseClient(BaseClient):
     """A MixIn for HTTP Client."""
+
+    def _handle_response_status(self, r_status, r_str, url):
+        if r_status == status.HTTP_404_NOT_FOUND:
+            raise BadClient(f'no such endpoint {url}')
+        elif (
+            r_status == status.HTTP_503_SERVICE_UNAVAILABLE
+            or r_status == status.HTTP_504_GATEWAY_TIMEOUT
+        ):
+            if (
+                'header' in r_str
+                and 'status' in r_str['header']
+                and 'description' in r_str['header']['status']
+            ):
+                raise ConnectionError(r_str['header']['status']['description'])
+            else:
+                raise ValueError(r_str)
+        elif (
+            r_status < status.HTTP_200_OK or r_status > status.HTTP_300_MULTIPLE_CHOICES
+        ):  # failure codes
+            raise ValueError(r_str)
+
+    async def _dry_run(self, **kwargs) -> bool:
+        """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
+
+        :param kwargs: potential kwargs received passed from the public interface
+        :return: boolean indicating the health/readiness of the Flow
+        """
+        from jina.proto import jina_pb2
+
+        async with AsyncExitStack() as stack:
+            try:
+                proto = 'https' if self.args.tls else 'http'
+                url = f'{proto}://{self.args.host}:{self.args.port}/dry_run'
+                iolet = await stack.enter_async_context(
+                    HTTPClientlet(url=url, logger=self.logger)
+                )
+
+                response = await iolet.send_dry_run()
+                r_status = response.status
+
+                r_str = await response.json()
+                self._handle_response_status(r_status, r_str, url)
+                if r_str['code'] == jina_pb2.StatusProto.SUCCESS:
+                    return True
+            except Exception as e:
+                self.logger.error(
+                    f'Error while fetching response from HTTP server {e!r}'
+                )
+        return False
 
     async def _get_results(
         self,
@@ -75,10 +126,7 @@ class HTTPBaseClient(BaseClient):
                     r_status = response.status
 
                     r_str = await response.json()
-                    if r_status == 404:
-                        raise BadClient(f'no such endpoint {url}')
-                    elif r_status < 200 or r_status > 300:
-                        raise ValueError(r_str)
+                    self._handle_response_status(r_status, r_str, url)
 
                     da = None
                     if 'data' in r_str and r_str['data'] is not None:
@@ -103,7 +151,7 @@ class HTTPBaseClient(BaseClient):
                         p_bar.update()
                     yield resp
 
-            except aiohttp.ClientError as e:
+            except (aiohttp.ClientError, ValueError, ConnectionError) as e:
                 self.logger.error(
                     f'Error while fetching response from HTTP server {e!r}'
                 )
