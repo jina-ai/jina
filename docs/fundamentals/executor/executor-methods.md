@@ -1,24 +1,24 @@
 (exec-endpoint)=
 # `@requests` methods
 
-Methods of `Executor` can be named and written freely. 
+Methods of {class}`~jina.Executor` can be named and written freely. 
 
 Methods decorated with `@requests` are mapped to network endpoints while serving.
 
 (executor-requests)=
 ## Decorator
 
-Executor methods decorated with `@requests` are bound to specific network requests, and respond to network queries.
+Executor methods decorated with {class}`~jina.requests` are bound to specific network requests, and respond to network queries.
 
-Both `def` or `async def` function can be decorated with `@requests`.
+Both `def` or `async def` function can be decorated with {class}`~jina.requests`.
 
-You can import the `requests` decorator via
+You can import the `@requests` decorator via
 
 ```python
 from jina import requests
 ```
 
-`requests` is a decorator that takes an optional parameter: `on=`. It binds the decorated method of the `Executor` to the specified route. 
+{class}`~jina.requests` is a decorator that takes an optional parameter: `on=`. It binds the decorated method of the Executor to the specified route. 
 
 ```python
 from jina import Executor, requests
@@ -89,7 +89,7 @@ The request will simply pass through without any processing.
 
 ## Arguments
 
-All Executor methods decorated by `@requests` need to follow the signature below in order to be usable as a microservice inside a `Flow`.
+All Executor methods decorated by `@requests` need to follow the signature below in order to be usable as a microservice inside a {class}`~jina.Flow`.
 The `async` definition is optional.
 
 ```python
