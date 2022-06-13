@@ -787,7 +787,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         """
 
     # overload_inject_end_deployment
-    @allowed_levels([FlowBuildLevel.EMPTY])
+    @overload
     def add(
         self,
         *,
@@ -795,7 +795,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         copy_flow: bool = True,
         deployment_role: 'DeploymentRoleType' = DeploymentRoleType.DEPLOYMENT,
         **kwargs,
-    ) -> 'Flow':
+    ) -> Union['Flow', 'AsyncFlow']:
         """
         Add a Deployment to the current Flow object and return the new modified Flow object.
         The attribute of the Deployment can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
@@ -807,7 +807,29 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         :param copy_flow: when set to true, then always copy the current Flow and do the modification on top of it then return, otherwise, do in-line modification
         :param kwargs: other keyword-value arguments that the Deployment CLI supports
         :return: a (new) Flow object with modification
+
+        .. # noqa: DAR202
+        .. # noqa: DAR101
+        .. # noqa: DAR003
         """
+
+    @allowed_levels([FlowBuildLevel.EMPTY])
+    def add(
+        self,
+        **kwargs,
+    ) -> Union['Flow', 'AsyncFlow']:
+        """
+        Add a Deployment to the current Flow object and return the new modified Flow object.
+        The attribute of the Deployment can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
+
+        .. # noqa: DAR401
+        :param kwargs: other keyword-value arguments that the Deployment CLI supports
+        :return: a (new) Flow object with modification
+        """
+        needs = kwargs.get('needs', None)
+        copy_flow = kwargs.get('copy_flow', True)
+        deployment_role = kwargs.get('deployment_role', DeploymentRoleType.DEPLOYMENT)
+
         op_flow = copy.deepcopy(self) if copy_flow else self
 
         # deployment naming logic
