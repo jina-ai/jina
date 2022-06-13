@@ -591,7 +591,7 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__default_port_monitoring__</span><span class="p">,</span> <span class="n">__docker_host__</span><span class="p">,</span> <span class="n">helper</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span><span class="p">,</span> <span class="n">helper</span>
 <span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">jina.clients.mixin</span> <span class="kn">import</span> <span class="n">AsyncPostMixin</span><span class="p">,</span> <span class="n">HealthCheckMixin</span><span class="p">,</span> <span class="n">PostMixin</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="p">(</span>
@@ -713,7 +713,7 @@
         <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span>
         <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">9090</span><span class="p">,</span>
+        <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GRPC&#39;</span><span class="p">,</span>
         <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -783,7 +783,7 @@
 <span class="sd">              JSON dict, {endpoint: PollingType}</span>
 <span class="sd">              {&#39;/custom&#39;: &#39;ALL&#39;, &#39;/search&#39;: &#39;ANY&#39;, &#39;*&#39;: &#39;ANY&#39;}</span>
 <span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]</span>
-<span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default port is 9090</span>
+<span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.</span>
 
 <span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)</span>
@@ -1164,7 +1164,8 @@
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Flow.needs_all"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.needs_all">[docs]</a>    <span class="k">def</span> <span class="nf">needs_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;joiner&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Flow&#39;</span><span class="p">:</span>
+<div class="viewcode-block" id="Flow.needs_all"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.needs_all">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">needs_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;joiner&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Flow&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Collect all hanging Deployments so far and add a blocker to the Flow; wait until all handing pods completed.</span>
 
@@ -1204,7 +1205,7 @@
         <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span>
         <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">9090</span><span class="p">,</span>
+        <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1282,7 +1283,7 @@
 <span class="sd">              JSON dict, {endpoint: PollingType}</span>
 <span class="sd">              {&#39;/custom&#39;: &#39;ALL&#39;, &#39;/search&#39;: &#39;ANY&#39;, &#39;*&#39;: &#39;ANY&#39;}</span>
 <span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]</span>
-<span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default port is 9090</span>
+<span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
 
 <span class="sd">          Note that the recommended way is to only import a single module - a simple python file, if your</span>
@@ -1710,7 +1711,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;flow is closed!&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Flow.start"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Flow.start"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.start">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">,</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">GRAPH</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Start to run all Deployments in this Flow.</span>
 
 <span class="sd">        Remember to close the Flow with :meth:`close`.</span>
@@ -2138,16 +2140,14 @@
             <span class="k">return</span> <span class="kc">False</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">port_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">port_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Return if the monitoring is enabled</span>
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">GATEWAY_NAME</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="s1">&#39;port_monitoring&#39;</span><span class="p">,</span> <span class="n">__default_port_monitoring__</span>
-            <span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;port_monitoring&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">address_private</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -2275,15 +2275,10 @@
                         <span class="s1">&#39;·&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_address</span><span class="p">),</span>
                     <span class="p">)</span>
 
-            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">GATEWAY_NAME</span><span class="p">]</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                <span class="s1">&#39;port_monitoring&#39;</span><span class="p">,</span> <span class="n">__default_port_monitoring__</span>
-            <span class="p">)</span>
-
         <span class="k">return</span> <span class="n">address_table</span>
 
-<div class="viewcode-block" id="Flow.block"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span>
+<div class="viewcode-block" id="Flow.block"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.block">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">stop_event</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">,</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Event</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Block the Flow until `stop_event` is set or user hits KeyboardInterrupt</span>
@@ -2464,7 +2459,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span>
 
-<div class="viewcode-block" id="Flow.expose_endpoint"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.expose_endpoint">[docs]</a>    <span class="k">def</span> <span class="nf">expose_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Flow.expose_endpoint"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.expose_endpoint">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">expose_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exec_endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Expose an Executor&#39;s endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.</span>
 
 <span class="sd">        After expose, you can send data request directly to `http://hostname:port/endpoint`.</span>

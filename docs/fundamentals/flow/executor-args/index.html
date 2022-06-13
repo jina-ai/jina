@@ -669,7 +669,7 @@
 <td><code>port</code></td>
 <td>The port for input data to bind to, default is a random port between [49152, 65535]</td>
 <td><code>number</code></td>
-<td><code>None</code></td>
+<td><code>random in [49152, 65535]</code></td>
 </tr>
 <tr>
 <td><code>host_in</code></td>
@@ -775,9 +775,9 @@
 </tr>
 <tr>
 <td><code>port_monitoring</code></td>
-<td>The port on which the prometheus server is exposed, default port is 9090</td>
+<td>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</td>
 <td><code>number</code></td>
-<td><code>9090</code></td>
+<td><code>random in [49152, 65535]</code></td>
 </tr>
 <tr>
 <td><code>retries</code></td>

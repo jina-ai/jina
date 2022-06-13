@@ -784,7 +784,7 @@
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">port</span></code></p></td>
 <td><p>The port for input data to bind to, default is a random port between [49152, 65535]</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">random</span> <span class="pre">in</span> <span class="pre">[49152,</span> <span class="pre">65535]</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">host_in</span></code></p></td>
 <td><p>The host address for binding to, by default it is 0.0.0.0</p></td>
@@ -937,9 +937,9 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code></p></td>
-<td><p>The port on which the prometheus server is exposed, default port is 9090</p></td>
+<td><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">9090</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">random</span> <span class="pre">in</span> <span class="pre">[49152,</span> <span class="pre">65535]</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">retries</span></code></p></td>
 <td><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p></td>
@@ -1029,7 +1029,7 @@ Each item in the collection corresponds to on <a class="reference internal" href
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">port</span></code></p></td>
 <td><p>The port for input data to bind to, default is a random port between [49152, 65535]</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">random</span> <span class="pre">in</span> <span class="pre">[49152,</span> <span class="pre">65535]</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">host_in</span></code></p></td>
 <td><p>The host address for binding to, by default it is 0.0.0.0</p></td>
@@ -1117,9 +1117,9 @@ Each item in the collection corresponds to on <a class="reference internal" href
 <td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code></p></td>
-<td><p>The port on which the prometheus server is exposed, default port is 9090</p></td>
+<td><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">9090</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">random</span> <span class="pre">in</span> <span class="pre">[49152,</span> <span class="pre">65535]</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">retries</span></code></p></td>
 <td><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p></td>

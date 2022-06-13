@@ -556,7 +556,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;Argparser module for Pod runtimes&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
 
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_port_monitoring__</span><span class="p">,</span> <span class="n">helper</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">helper</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PodRoleType</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_SHOW_ALL_ARGS</span><span class="p">,</span> <span class="n">KVAppendAction</span><span class="p">,</span> <span class="n">add_arg_group</span>
 
@@ -654,9 +654,9 @@
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--port-monitoring&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">__default_port_monitoring__</span><span class="p">,</span>  <span class="c1"># default prometheus server port</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">(),</span>  <span class="c1"># default prometheus server port</span>
         <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;port_monitoring&#39;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;The port on which the prometheus server is exposed, default port is </span><span class="si">{</span><span class="n">__default_port_monitoring__</span><span class="si">}</span><span class="s1"> &#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;The port on which the prometheus server is exposed, default is a random port between [49152, 65535]&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>

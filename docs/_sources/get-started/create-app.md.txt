@@ -17,10 +17,10 @@ hello-jina
 ```
 
 - `app.py` is the entrypoint of your Jina project. You can run it via `python app.py`. 
-- `executor1/` is where we'll write our Executor code.
-- `config.yml` is the config file for the Executor. It’s where you keep metadata for your Executor, as well as dependencies.
+- `executor1/` is where we'll write our {class}`~jina.Executor` code.
+- `config.yml` is the config file for the {class}`~jina.Executor`. It’s where you keep metadata for your Executor, as well as dependencies.
 
-There may be some other files like `README.md`, `manifest.yml`  `requirements.txt` to provide extra metadata about that Executor. More information {ref}`can be found here<create-executor>`.
+There may be some other files like `README.md`, `manifest.yml`  `requirements.txt` to provide extra metadata about that {class}`~jina.Executor`. More information {ref}`can be found here<create-executor>`.
 
 ```bash
 cd hello-jina
@@ -40,7 +40,7 @@ You should see this in your terminal:
 
 ## Adding dependencies
 
-You can use any third-party Python library in Executor. Let's create `executor1/requirements.txt` and add `pytorch` to it.
+You can use any third-party Python library in {class}`~jina.Executor`. Let's create `executor1/requirements.txt` and add `pytorch` to it.
 
 Then in `executor.py`, let's add another endpoint `/get-tensor` as follows:
 
