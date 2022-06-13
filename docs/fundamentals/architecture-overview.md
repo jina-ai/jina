@@ -65,19 +65,19 @@ The following concepts will be covered in the user guide:
     DocumentArray is a list-like container of multiple Documents. More information can be found in [DocArray's Docs](https://docarray.jina.ai/fundamentals/documentarray/). 
     
 **Executor** 
-    Execurtor is a Python class that has a group of functions using {term}`DocumentArray` as IO. Loosely speaking, each Executor is a microservice. 
+    {class}`~jina.Executor` is a Python class that has a group of functions using {term}`DocumentArray` as IO. Loosely speaking, each Executor is a microservice. 
 
 **Flow**
-    Flow ties multiple Executors together into a logic pipeline to achieve a task. If Executor is a microservice, then Flow is the end-to-end service. 
+    {class}`~jina.Flow` ties multiple {class}`~jina.Executor`s together into a logic pipeline to achieve a task. If Executor is a microservice, then Flow is the end-to-end service. 
 
 **Gateway**
     Gateway is the entrypoint of a {term}`Flow`. It exposes multiple protocols for external communications; it routes all internal traffics.
     
 **Client**
-    Client is for connecting to a {term}`Gateway` and sending/receiving data from it.
+    {class}`~jina.Client` is for connecting to a {term}`Gateway` and sending/receiving data from it.
 
 **Deployment**
-    Deployment is an abstraction around Executor that lets the {term}`Gateway` communicate with an Executor. It encapsulates and abstracts internal replication details.
+    Deployment is an abstraction around {class}`~jina.Executor` that lets the {term}`Gateway` communicate with an Executor. It encapsulates and abstracts internal replication details.
 
 **gRPC, Websocket, HTTP**
     They are network protocols for transmitting data. gRPC is always used between {term}`Gateway` and {term}`Deployment` communication.
