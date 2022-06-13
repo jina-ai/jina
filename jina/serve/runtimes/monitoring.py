@@ -33,7 +33,7 @@ class MonitoringMixin:
                 ):
                     self.logger.warning(
                         f'The port monitoring {self.args.port_monitoring} is already in use. If you are running Jina '
-                        f'Flow natively, you may have not set different ports for each Executor'
+                        f'Flow locally, you may have not set different port_monitoring for each Executor'
                     )
                     raise
                 else:
