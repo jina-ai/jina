@@ -10,7 +10,7 @@ The following outlines a number of (more or less) common failure cases, and expl
 
 In general there are two places where an Executor level error can be introduced.
 
-If an Executor's `__init__` method raises and Exception, the Flow cannot start.
+If an {class}`~jina.Executor`'s `__init__` method raises and Exception, the {class}`~jina.Flow` cannot start.
 In this case this Exception is gets raised by the Executor runtime, and the Flow throws a `RuntimeFailToStart` Exception.
 
 If one of the Executor's `@requests` methods raises and Exception, the offending error message gets added to the response
@@ -21,7 +21,7 @@ In all cases, the {ref}`Jina Client <client>` will raise an Exception.
 
 ## Network errors
 
-When an {ref}`Executor or Head <architecture-overview>` can't be reached by the Flow's gateway, it attempts to re-connect
+When an {ref}`Executor or Head <architecture-overview>` can't be reached by the {class}`~jina.Flow`'s gateway, it attempts to re-connect
 to the faulty deployment according to a retry policy.
 The same applies to calls to Executors that time out.
 The specifics of this policy depend on the environment the Flow find itself in, and are outlined below.
