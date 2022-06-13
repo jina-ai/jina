@@ -1,7 +1,7 @@
 (push-executor)=
 # Publish
 
-If you want to share your Executor, you can push it to Jina Hub.
+If you want to share your {class}`~jina.Executor`s, you can push it to Jina Hub.
 
 There are two types of sharing:
 - **Public** (default): Anyone can use public Executors without any restrictions.

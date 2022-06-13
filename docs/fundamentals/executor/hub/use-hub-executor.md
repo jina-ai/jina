@@ -2,7 +2,7 @@
 # Use
 
 
-We provide three ways of using Hub Executors in your project. Each has its own use case and benefits.
+We provide three ways of using Hub {class}`~jina.Executor`s in your project. Each has its own use case and benefits.
 
 ## Use as-is
 

@@ -3,7 +3,7 @@
 
 ## Developing Hub Executors
 
-When developing Hub Executors, make sure to follow these tips:
+When developing Hub {class}`~jina.Executor`s, make sure to follow these tips:
 
 * Use `jina hub new` CLI to create an Executor
 
