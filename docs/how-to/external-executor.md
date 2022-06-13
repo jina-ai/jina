@@ -1,10 +1,10 @@
 (external-executor)=
 # Use external Executors
 
-Normally, we have seen how `Flow` ties up `Executors` together, and how an `Executor` lives in the context of a Flow.
+Normally, we have seen how {class}`~jina.Flow` ties up {class}`~jina.Executor`s together, and how an Executor lives in the context of a Flow.
 
-However, this is not always the case, and sometimes you may want to launch an `Executor` on its own, and perhaps have the same
-`Executor` be used by different `Flows`.
+However, this is not always the case, and sometimes you may want to launch an Executor on its own, and perhaps have the same
+Executor be used by different Flows.
 
 
 ````{admonition} Where can external Executors run?
@@ -24,7 +24,7 @@ You need:
 - `host`, the host address of the Executor
 - `port`, the port on which the Executor receives information
 
-Then, adding the Executor is a simple call to `Flow.add()` with the `external` argument set to True. This tells the Flow that
+Then, adding the Executor is a simple call to {meth}`~jina.Flow.add`  with the `external` argument set to True. This tells the Flow that
 it does not need to start the Executor itself.:
 
 ```python

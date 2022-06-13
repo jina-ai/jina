@@ -1,9 +1,9 @@
 (kubernetes)=
 # Deploy with Kubernetes
 
-Deploying a Flow in Kubernetes is the recommended way of using Jina in production.
+Deploying a {class}`~jina.Flow` in Kubernetes is the recommended way of using Jina in production.
 
-Since a `Flow` is composed of `Executors` which can run in different runtimes depending on how you want to deploy
+Since a {class}`~jina.Flow` is composed of {class}`~jina.Executor`s which can run in different runtimes depending on how you want to deploy
 your Flow, Kubernetes can easily take over the lifetime management of Executors. 
 
 In general, Jina follows the following principle when it comes to deploying in Kubernetes:
