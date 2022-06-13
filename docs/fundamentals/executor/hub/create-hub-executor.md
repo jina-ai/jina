@@ -1,7 +1,7 @@
 (create-executor)=
 # Create
 
-To create your Hub Executor, you just need to run:
+To create your Hub {class}`~jina.Executor`, you just need to run:
 
 ```bash
 jina hub new

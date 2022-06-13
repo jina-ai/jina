@@ -2,9 +2,9 @@
 
 # Gateway
 
-Every `Flow` provides an API Gateway to receive requests over the network. Supported protocols are gRPC, HTTP and WebSocket with TLS.
+Every {class}`~jina.Flow` provides an API Gateway to receive requests over the network. Supported protocols are gRPC, HTTP and WebSocket with TLS.
 
-There are two ways of defining a gateway, either directly from the Python API or using yaml files. For each section we will show you both possibles way of configuring your gateway.
+There are two ways of defining a Gateway, either directly from the Python API or using yaml files. For each section we will show you both possibles way of configuring your Gateway.
 
 ```{admonition} Jina Client
 :class: caution
@@ -146,7 +146,7 @@ with:
 (custom-http)=
 ## Customize HTTP interface
 
-Not every Executor endpoint will automatically be exposed through the external HTTP interface.
+Not every {class}`~jina.Executor` endpoint will automatically be exposed through the external HTTP interface.
 By default, any Flow exposes the following CRUD and debug HTTP endpoints: `/status`, `/post`, `/index`, `/search`, `/update`, and `/delete`.
 
 Executors that provide additional endpoints (e.g. `/foo`) will be exposed only after manual configuration.
@@ -380,7 +380,7 @@ curl http://localhost:12345/status
 
 ## Add gRPC compression
 
-Communication between `Executors` inside a `Flow` is done via `grpc`. To optimize the performance and the bandwith of this connections,
+Communication between {class}`~jina.Executor`s inside a {class}`~jina.Flow` is done via `grpc`. To optimize the performance and the bandwidth of these connections,
 Jina allows the users to specify their (`compression`)[https://grpc.github.io/grpc/python/grpc.html#compression] by passing this `compression` argument to the Flow.
 
 The supported methods are: `NoCompression`, `Gzip` and `Deflate`.
@@ -421,7 +421,7 @@ If both of these are provided, the Flow will automatically configure itself to u
 (prefetch)=
 ## Limit outstanding requests
 
-By default, Jina’s Client sends requests to the Flow as fast as possible without any delay. If a client sends their request faster than the Flow can process them, this can put a high load on the Flow. Typically, this is most likely to happen for Flows with expensive indexing.
+By default, Jina’s {class}`~jina.Client` sends requests to the Flow as fast as possible without any delay. If a client sends their request faster than the {class}`~jina.Flow` can process them, this can put a high load on the Flow. Typically, this is most likely to happen for Flows with expensive indexing.
 
 You can control the number of in flight requests per Client with the `prefetch` argument. E.g. setting `prefetch=2` lets the API accept only 2 requests per client in parallel, hence limiting the load. By default, prefetch is disabled (set to 0).
 
@@ -469,7 +469,7 @@ with:
 
 ## Set timeouts
 
-You can set timeouts for sending requests to the Executors within a Flow by passing the `timeout_send` parameter. The timeout is specified in milliseconds. By default, it is `None` and the timeout is disabled.
+You can set timeouts for sending requests to the {class}`~jina.Executor`s within a {class}`~jina.Flow` by passing the `timeout_send` parameter. The timeout is specified in milliseconds. By default, it is `None` and the timeout is disabled.
 
 If you use timeouts, you may also need to set the {ref}`prefetch <prefetch>` option in the Flow. Otherwise, requests may queue up at an Executor and eventually time out.
 
@@ -492,7 +492,7 @@ Unfortunately, these dependencies are **not available through Conda**. You will 
 feature.
 ````
 
-A Flow can optionally expose a [GraphQL](https://graphql.org/) endpoint, located at `/graphql`.
+A {class}`~jina.Flow` can optionally expose a [GraphQL](https://graphql.org/) endpoint, located at `/graphql`.
 To enable this endpoint, all you need to do is set `expose_graphql_endpoint=True` on your HTTP Flow:
 
 

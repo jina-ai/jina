@@ -1,6 +1,6 @@
 # Portal
 
-Jina Hub is a marketplace for Executors. Here you can upload the Executors you have created or use the ones already developed by the community. If it's the first time you're developing your Executor you can start by checking our {ref}`tutorials <create-hub-executor>` that will guide you through the process.
+Jina Hub is a marketplace for {class}`~jina.Executor`s. Here you can upload the Executors you have created or use the ones already developed by the community. If it's the first time you're developing your Executor you can start by checking our {ref}`tutorials <create-hub-executor>` that will guide you through the process.
  
 Let's see the [Hub portal](https://hub.jina.ai) in detail.
 

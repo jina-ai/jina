@@ -17,7 +17,7 @@ We will show you in this guide how to easily deploy the Prometheus/Grafana stack
 ### Deploying on Kubernetes
 
 
-One of the challenges of monitoring a Flow is communicating its different metrics endpoints to Prometheus.
+One of the challenges of monitoring a {class}`~jina.Flow` is communicating its different metrics endpoints to Prometheus.
 Fortunately, the [Prometheus operator for Kubernetes](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/getting-started.md) makes the process fairly easy, because it can automatically discover new metrics endpoints to scrape.
 
 Deploying your Jina Flow on Kubernetes is the recommended way to leverage the full potential of the monitoring feature because:

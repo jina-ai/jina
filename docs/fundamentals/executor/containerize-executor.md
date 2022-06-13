@@ -1,6 +1,7 @@
 (dockerize-exec)=
 # Containerize
 
+Once you have understood what an {class}`~jina.Executor` is and how it can be used inside a {class}`~jina.Flow`, you may be interested in wrapping this Executor into a container so that you can isolate its dependencies and make it ready to run in the cloud or in Kubernetes.
 
 ````{tip}
 The recommended way of containerizing an Executor is to leverage {ref}`Jina Hub <jina-hub>` to make sure your Executor can run as a container. It handles auto-provisioning, building, version controlling etc. 
@@ -17,7 +18,6 @@ jina hub push .
 The image building will happen on the cloud, and available immedidately for other to use.
 ````
 
-Once you have understood what an `Executor` is and how it can be used inside a `Flow`, you may be interested in wrapping this Executor into a container so that you can isolate its dependencies and make it ready to run in the cloud or in Kubernetes.
 
 
 You can also build a Docker image yourself and use it like any other Executor. There are some requirements

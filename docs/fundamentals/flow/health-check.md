@@ -1,5 +1,5 @@
 # Readiness & health check
-Every Jina Flow consists of a {ref}`number of microservices <architecture-overview>`,
+Every Jina {class}`~jina.Flow` consists of a {ref}`number of microservices <architecture-overview>`,
 each of which have to be healthy before the Flow is ready to receive requests.
 
 Each Flow microservice provides a health check in the form of a [standardized gRPC endpoint](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) that exposes this information to the outside world.
@@ -14,7 +14,7 @@ a readiness check endpoint for the complete Flow.
 A lot of times, it is useful to know if a Flow, as a complete set of microservices, is ready to receive requests. This is why the Gateway 
 exposes an endpoint for each of the supported protocols to know the health and readiness of the entire Flow. 
 
-Jina `Flow` and `Client` offer a convenient API to query these readiness endpoints. You can call `flow.dry_run()` or `client.dry_run()`, which will return `True` if the Flow is healthy and ready, and `False` otherwise:
+Jina {class}`~jina.Flow` and {class}`~jina.Client` offer a convenient API to query these readiness endpoints. You can call `flow.dry_run()` or `client.dry_run()`, which will return `True` if the Flow is healthy and ready, and `False` otherwise:
 
 ````{tab} via Flow
 ```python
@@ -192,7 +192,7 @@ To learn more about these status codes, and how health checks are performed with
 (health-check-executor)=
 ### Health check of an Executor
 
-Executors run as microservices exposing gRPC endpoints, and they expose one endpoint for a health and readiness check.
+{class}`~jina.Executor`s run as microservices exposing gRPC endpoints, and they expose one endpoint for a health and readiness check.
 
 To see how to use it, you can start a Flow inside a terminal and block it to accept requests:
 

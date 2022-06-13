@@ -1,15 +1,15 @@
 (serve-executor-standalone)=
 # Serve
 
-Executors can be served - and remotely accessed - directly, without the need to instantiate a Flow manually.
+{class}`~jina.Executor`s can be served - and remotely accessed - directly, without the need to instantiate a Flow manually.
 This is especially useful when debugging an Executor in a remote setting. It can also be used to run external/shared Executors to be used in multiple Flows.
 There are different options how you can deploy and run a stand-alone Executor:
 * Run the Executor directly from Python with the `.serve()` class method
-* Run the static `Executor.to_kubernetes_yaml()` method to generate K8s deployment configuration files
-* Run the static `Executor.to_docker_compose_yaml()` method to generate a docker-compose service file
+* Run the static {meth}`~jina.serve.executors.BaseExecutor.to_kubernetes_yaml()` method to generate K8s deployment configuration files
+* Run the static {meth}`~jina.serve.executors.BaseExecutor.to_docker_compose_yaml()` method to generate a docker-compose service file
 
 ## Serve directly
-An Executor can be served using the `.serve()` class method:
+An {class}`~jina.Executor` can be served using the {meth}`~jina.serve.executors.BaseExecutor.serve` method:
 
 ````{tab} Serve Executor
 
@@ -43,14 +43,14 @@ print(Client(port=12345).post(inputs=DocumentArray.empty(1), on='/foo').texts)
 
 ````
 
-Internally, the `.serve()` method creates a Flow and starts it. Therefore, it can take all associated parameters:
-`uses_with`, `uses_metas`, `uses_requests` are passed to the internal `flow.add()` call, `stop_event` is an Event that stops
-the Executor, and `**kwargs` is passed to the internal `Flow()` initialisation call.
+Internally, the {meth}`~jina.serve.executors.BaseExecutor.serve` method creates a {class}`~jina.Flow` and starts it. Therefore, it can take all associated parameters:
+`uses_with`, `uses_metas`, `uses_requests` are passed to the internal {meth}`~jina.serve.executors.BaseExecutor.add` call, `stop_event` is an Event that stops
+the Executor, and `**kwargs` is passed to the internal {meth}`~jina.Flow` initialisation call.
 
 ````{admonition} See Also
 :class: seealso
 
-For more details on these arguments and the workings of `Flow`, see the {ref}`Flow section <flow-cookbook>`.
+For more details on these arguments and the workings of Flow, see the {ref}`Flow section <flow-cookbook>`.
 ````
 
 ## Serve via Kubernetes
@@ -84,7 +84,7 @@ A shared Executor has no Gateway. Both types of Executor {ref}`can be used direc
 Having a Gateway may be useful if you want to be able to access your Executor with the {ref}`Client <client>` without an additional Flow. If the Executor will only be used inside other Flows, you should define a shared Executor to save the costs of running the Gateway Pod in Kubernetes.
 
 ## Serve via Docker Compose
-You can generate a Docker Compose service file for your containerized Executor by using the static `Executor.to_docker_compose_yaml()` method. This works very similar to {ref}`running a Flow with Docker Compose <docker-compose>`, because your Executor is wrapped automatically in a Flow and using the very same deployment techniques.
+You can generate a Docker Compose service file for your containerized Executor by using the static {meth}`~jina.serve.executors.BaseExecutor.to_docker_compose_yaml` method. This works very similar to {ref}`running a Flow with Docker Compose <docker-compose>`, because your Executor is wrapped automatically in a Flow and using the very same deployment techniques.
 
 ```python
 from jina import Executor

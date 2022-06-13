@@ -11,7 +11,7 @@
 :width: 0 %
 ```
 
-Now that you understand that Executor is a building block in Jina, the following questions may arise:
+Now that you understand that {class}`~jina.Executor` is a building block in Jina, the following questions may arise:
 
 - Can I reuse my Executor in another project?
 - Can I share my Executor with my colleagues?
