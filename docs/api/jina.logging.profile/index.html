@@ -655,7 +655,7 @@ it you should probably just use a rich <cite>Progress</cite> and add your custom
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>description</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – description of your task ex : ‘Working…’</p></li>
 <li><p><strong>total_length</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – the number of steps</p></li>
-<li><p><strong>message_on_done</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[…, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – The message that you want to print at the end of your task. It can either be a string to</p></li>
+<li><p><strong>message_on_done</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – The message that you want to print at the end of your task. It can either be a string to</p></li>
 </ul>
 </dd>
 </dl>
@@ -671,7 +671,7 @@ rich Progress object than overwriting these columns parameters.
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>task_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-func docutils literal notranslate"><span class="pre">NewType()</span></code>(<code class="xref py py-data docutils literal notranslate"><span class="pre">TaskID</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>)]) – the task to update</p></li>
+<li><p><strong>task_id</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-func docutils literal notranslate"><span class="pre">NewType()</span></code>(<code class="docutils literal notranslate"><span class="pre">TaskID</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>)]) – the task to update</p></li>
 <li><p><strong>advance</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Add a value to main task.completed</p></li>
 </ul>
 </dd>
@@ -690,7 +690,7 @@ rich Progress object than overwriting these columns parameters.
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The context/message.</p></li>
-<li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><em>JinaLogger</em></a>) – Use existing logger or use naive <code class="xref py py-func docutils literal notranslate"><span class="pre">print()</span></code>.</p></li>
+<li><p><strong>logger</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaLogger</span></code></a>]) – Use existing logger or use naive <code class="xref py py-func docutils literal notranslate"><span class="pre">print()</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -761,7 +761,7 @@ rich Progress object than overwriting these columns parameters.
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 11, 2022</div>
+                            Last updated on Jun 13, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

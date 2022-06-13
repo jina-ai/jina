@@ -588,9 +588,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> (<em>argparse.Namespace</em>) – args from CLI</p></li>
-<li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><em>JinaLogger</em></a>) – the logger provided by the user</p></li>
-<li><p><strong>metrics_registry</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – optional metrics registry for prometheus used if we need to expose metrics from the executor of from the data request handler</p></li>
+<li><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – args from CLI</p></li>
+<li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaLogger</span></code></a>) – the logger provided by the user</p></li>
+<li><p><strong>metrics_registry</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">CollectorRegistry</span></code>]) – optional metrics registry for prometheus used if we need to expose metrics from the executor of from the data request handler</p></li>
 <li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
 </ul>
 </dd>
@@ -806,7 +806,7 @@ The resulting DataRequest object contains Documents of all DocumentArrays inside
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 11, 2022</div>
+                            Last updated on Jun 13, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

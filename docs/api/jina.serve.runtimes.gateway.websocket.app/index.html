@@ -586,11 +586,11 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>args</strong> (<em>argparse.Namespace</em>) – passed arguments.</p></li>
-<li><p><strong>topology_graph</strong> (<a class="reference internal" href="../jina.serve.runtimes.gateway.graph.topology_graph/#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph" title="jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph"><em>TopologyGraph</em></a>) – topology graph that manages the logic of sending to the proper executors.</p></li>
-<li><p><strong>connection_pool</strong> (<a class="reference internal" href="../jina.serve.networking/#jina.serve.networking.GrpcConnectionPool" title="jina.serve.networking.GrpcConnectionPool"><em>GrpcConnectionPool</em></a>) – Connection Pool to handle multiple replicas and sending to different of them</p></li>
-<li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><em>JinaLogger</em></a>) – Jina logger.</p></li>
-<li><p><strong>metrics_registry</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ForwardRef</span></code>]) – optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler</p></li>
+<li><p><strong>args</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>) – passed arguments.</p></li>
+<li><p><strong>topology_graph</strong> (<a class="reference internal" href="../jina.serve.runtimes.gateway.graph.topology_graph/#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph" title="jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopologyGraph</span></code></a>) – topology graph that manages the logic of sending to the proper executors.</p></li>
+<li><p><strong>connection_pool</strong> (<a class="reference internal" href="../jina.serve.networking/#jina.serve.networking.GrpcConnectionPool" title="jina.serve.networking.GrpcConnectionPool"><code class="xref py py-class docutils literal notranslate"><span class="pre">GrpcConnectionPool</span></code></a>) – Connection Pool to handle multiple replicas and sending to different of them</p></li>
+<li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaLogger</span></code></a>) – Jina logger.</p></li>
+<li><p><strong>metrics_registry</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">CollectorRegistry</span></code>]) – optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -636,7 +636,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 11, 2022</div>
+                            Last updated on Jun 13, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

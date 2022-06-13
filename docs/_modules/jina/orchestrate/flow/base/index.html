@@ -1336,7 +1336,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="c1"># overload_inject_end_deployment</span>
-<div class="viewcode-block" id="Flow.add"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.add">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
+    <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -1344,7 +1344,7 @@
         <span class="n">copy_flow</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">deployment_role</span><span class="p">:</span> <span class="s1">&#39;DeploymentRoleType&#39;</span> <span class="o">=</span> <span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">DEPLOYMENT</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Flow&#39;</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">,</span> <span class="s1">&#39;AsyncFlow&#39;</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a Deployment to the current Flow object and return the new modified Flow object.</span>
 <span class="sd">        The attribute of the Deployment can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`</span>
@@ -1356,7 +1356,29 @@
 <span class="sd">        :param copy_flow: when set to true, then always copy the current Flow and do the modification on top of it then return, otherwise, do in-line modification</span>
 <span class="sd">        :param kwargs: other keyword-value arguments that the Deployment CLI supports</span>
 <span class="sd">        :return: a (new) Flow object with modification</span>
+
+<span class="sd">        .. # noqa: DAR202</span>
+<span class="sd">        .. # noqa: DAR101</span>
+<span class="sd">        .. # noqa: DAR003</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Flow.add"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.add">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;Flow&#39;</span><span class="p">,</span> <span class="s1">&#39;AsyncFlow&#39;</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a Deployment to the current Flow object and return the new modified Flow object.</span>
+<span class="sd">        The attribute of the Deployment can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`</span>
+
+<span class="sd">        .. # noqa: DAR401</span>
+<span class="sd">        :param kwargs: other keyword-value arguments that the Deployment CLI supports</span>
+<span class="sd">        :return: a (new) Flow object with modification</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">needs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;needs&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">copy_flow</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;copy_flow&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">deployment_role</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;deployment_role&#39;</span><span class="p">,</span> <span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">DEPLOYMENT</span><span class="p">)</span>
+
         <span class="n">op_flow</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">if</span> <span class="n">copy_flow</span> <span class="k">else</span> <span class="bp">self</span>
 
         <span class="c1"># deployment naming logic</span>
@@ -2619,7 +2641,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 11, 2022</div>
+                            Last updated on Jun 13, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

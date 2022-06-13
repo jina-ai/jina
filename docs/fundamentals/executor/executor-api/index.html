@@ -588,7 +588,7 @@
 <p><a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> is a self-contained component and performs a group of tasks on a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.
 It encapsulates functions that process <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>s. Inside the Executor, these functions are decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>. To create an Executor, you only need to follow three principles:</p>
 <ol class="simple">
-<li><p>An <code class="docutils literal notranslate"><span class="pre">Executor</span></code> should subclass directly from the <code class="docutils literal notranslate"><span class="pre">jina.Executor</span></code> class.</p></li>
+<li><p>An <code class="docutils literal notranslate"><span class="pre">Executor</span></code> should subclass directly from the <code class="docutils literal notranslate"><span class="pre">jina.Executor</span></code> class. <code class="docutils literal notranslate"><span class="pre">Executor</span></code> can also be a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code></p></li>
 <li><p>An <code class="docutils literal notranslate"><span class="pre">Executor</span></code> class is a bag of functions with shared state or configuration (via <code class="docutils literal notranslate"><span class="pre">self</span></code>); it can contain an arbitrary number of
 functions with arbitrary names.</p></li>
 <li><p>Functions decorated by <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> will be invoked according to their <code class="docutils literal notranslate"><span class="pre">on=</span></code> endpoint. These functions can be coroutines (<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code>) or regular functions.</p></li>
@@ -602,9 +602,11 @@ functions with arbitrary names.</p></li>
 </section>
 <section id="init">
 <h3><code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#init" title="Permalink to this headline">#</a></h3>
-<p>No need to implement <code class="docutils literal notranslate"><span class="pre">__init__</span></code> if your <code class="docutils literal notranslate"><span class="pre">Executor</span></code> does not contain initial states.</p>
+<p>No need to implement <code class="docutils literal notranslate"><span class="pre">__init__</span></code> if your <code class="docutils literal notranslate"><span class="pre">Executor</span></code> does not contain initial states or if it is a <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html">dataclass</a></p>
 <p>If your executor has <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, it needs to carry <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in the signature and call <code class="docutils literal notranslate"><span class="pre">super().__init__(**kwargs)</span></code>
 in the body:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Executor</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
 
 
@@ -615,9 +617,23 @@ in the body:</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="n">foo</span>
 </pre></div>
 </div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Executor as dataclass</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="n">bar</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">foo</span><span class="p">:</span> <span class="nb">str</span>
+</pre></div>
+</div>
+</div>
+</div>
 <div class="hint admonition">
 <p class="admonition-title">What is inside kwargs? </p>
-<p>Here, <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are reserved for Jina to inject <code class="docutils literal notranslate"><span class="pre">metas</span></code> and <code class="docutils literal notranslate"><span class="pre">requests</span></code> (representing the request-to-function mapping) values when the Executor is used inside a Flow.</p>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are reserved for Jina to inject <code class="docutils literal notranslate"><span class="pre">metas</span></code> and <code class="docutils literal notranslate"><span class="pre">requests</span></code> (representing the request-to-function mapping) values when the Executor is used inside a Flow. Also when <code class="docutils literal notranslate"><span class="pre">Executor</span></code> is a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code> these parameters are injected by Jina as in the regular case when calling <code class="docutils literal notranslate"><span class="pre">super().__init__</span></code></p>
 <p>You can access the values of these arguments in the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> body via <code class="docutils literal notranslate"><span class="pre">self.metas</span></code>/<code class="docutils literal notranslate"><span class="pre">self.requests</span></code>/<code class="docutils literal notranslate"><span class="pre">self.runtime_args</span></code>,
 or modify their values before passing them to <code class="docutils literal notranslate"><span class="pre">super().__init__()</span></code>.</p>
 </div>
@@ -655,6 +671,18 @@ To do so, you can overwrite the <code class="docutils literal notranslate"><span
 <p>This is important because when an <code class="docutils literal notranslate"><span class="pre">Executor</span></code> is instantiated in the context of a Flow, Jina is adding extra arguments.
 Some of these <code class="docutils literal notranslate"><span class="pre">arguments</span></code> can be used when developing the internal logic of the Executor.</p>
 <p>These <code class="docutils literal notranslate"><span class="pre">special</span></code> arguments are <code class="docutils literal notranslate"><span class="pre">workspace</span></code>, <code class="docutils literal notranslate"><span class="pre">requests</span></code>, <code class="docutils literal notranslate"><span class="pre">metas</span></code>, <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code>.</p>
+<p>Another alternative, is to declare your <code class="docutils literal notranslate"><span class="pre">Executor</span></code> as a <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html">dataclass</a>. In this case, user does not provide an specific constructor.
+Then, Jina will inject all these <code class="docutils literal notranslate"><span class="pre">special</span></code> arguments without the need of the user to call any specific method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="n">bar</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">foo</span><span class="p">:</span> <span class="nb">str</span>
+</pre></div>
+</div>
 <section id="workspace">
 <span id="executor-workspace"></span><h3><code class="docutils literal notranslate"><span class="pre">workspace</span></code><a class="headerlink" href="#workspace" title="Permalink to this headline">#</a></h3>
 <p>Each <code class="docutils literal notranslate"><span class="pre">Executor</span></code> has a special <em>workspace</em> that is reserved for that specific Executor instance.
@@ -760,7 +788,7 @@ As the name suggests, <code class="docutils literal notranslate"><span class="pr
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 11, 2022</div>
+                            Last updated on Jun 13, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

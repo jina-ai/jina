@@ -547,7 +547,8 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.jaml.parsers.executor.legacy</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">inspect</span>
+<span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Type</span>
 
@@ -621,12 +622,24 @@
 
         <span class="bp">cls</span><span class="o">.</span><span class="n">_init_from_yaml</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># tmp_p = {kk: expand_env_var(vv) for kk, vv in data.get(&#39;with&#39;, {}).items()}</span>
-        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
-            <span class="o">**</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;with&#39;</span><span class="p">,</span> <span class="p">{}),</span>
-            <span class="n">metas</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;metas&#39;</span><span class="p">,</span> <span class="p">{}),</span>
-            <span class="n">requests</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;requests&#39;</span><span class="p">,</span> <span class="p">{}),</span>
-            <span class="n">runtime_args</span><span class="o">=</span><span class="n">runtime_args</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">is_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
+                <span class="o">**</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;with&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+            <span class="p">)</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="vm">__bases__</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+                <span class="n">obj</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;with&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+                <span class="n">metas</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;metas&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+                <span class="n">requests</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;requests&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+                <span class="n">runtime_args</span><span class="o">=</span><span class="n">runtime_args</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
+                <span class="o">**</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;with&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+                <span class="n">metas</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;metas&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+                <span class="n">requests</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;requests&#39;</span><span class="p">,</span> <span class="p">{}),</span>
+                <span class="n">runtime_args</span><span class="o">=</span><span class="n">runtime_args</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_init_from_yaml</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># check if the yaml file used to instanciate &#39;cls&#39; has arguments that are not in &#39;cls&#39;</span>
@@ -709,7 +722,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 11, 2022</div>
+                            Last updated on Jun 13, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
