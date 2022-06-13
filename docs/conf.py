@@ -48,7 +48,7 @@ html_baseurl = 'https://docs.jina.ai'
 sitemap_url_scheme = '{link}'
 sitemap_locales = [None]
 sitemap_filename = "sitemap.xml"
-autodoc_default_options = {"members": True, "inherited-members": True}
+autodoc_default_options = {"members": True, "inherited-members": True, 'class-doc-from': '__init__',}
 
 html_theme_options = {
     'light_logo': 'logo-light.svg',
