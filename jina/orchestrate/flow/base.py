@@ -158,7 +158,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
-        port_monitoring: Optional[int] = 9090,
+        port_monitoring: Optional[int] = None,
         prefetch: Optional[int] = 0,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
@@ -228,7 +228,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]
-        :param port_monitoring: The port on which the prometheus server is exposed, default port is 9090
+        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)
@@ -649,7 +649,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
-        port_monitoring: Optional[int] = 9090,
+        port_monitoring: Optional[int] = None,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
@@ -727,7 +727,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]
-        :param port_monitoring: The port on which the prometheus server is exposed, default port is 9090
+        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your

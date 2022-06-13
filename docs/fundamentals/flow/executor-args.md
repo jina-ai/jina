@@ -30,7 +30,7 @@
 | `shards` | The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies | `number` | `1` |
 | `replicas` | The number of replicas in the deployment | `number` | `1` |
 | `monitoring` | If set, spawn an http server with a prometheus endpoint to expose metrics | `boolean` | `False` |
-| `port_monitoring` | The port on which the prometheus server is exposed, default port is 9090 | `number` | `9090` |
+| `port_monitoring` | The port on which the prometheus server is exposed, default is a random port between [49152, 65535] | `number` | `64099` |
 | `retries` | Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas) | `number` | `-1` |
 | `install_requirements` | If set, install `requirements.txt` in the Hub Executor bundle to local | `boolean` | `False` |
 | `force_update` | If set, always pull the latest Hub Executor bundle even it exists on local | `boolean` | `False` |
