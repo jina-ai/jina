@@ -289,7 +289,7 @@ implementation_stub_entries = [
         overload_fn='add',
         class_method=True,  # if it is a method inside class.
         overload_tags=['deployment'],
-        additional_params=[  # param docstrings which do not come from overloads need to be defined here!
+        additional_params=[  # param docstrings which do not come from overloads (or from overlaods that are not parser-generated) need to be defined here!
             ':param needs: the name of the Deployment(s) that this Deployment receives data from. One can also use "gateway" to indicate the connection with the gateway.',
             ':param deployment_role: the role of the Deployment, used for visualization and route planning',
             ':param copy_flow: when set to true, then always copy the current Flow and do the modification on top of it then return, otherwise, do in-line modification',
