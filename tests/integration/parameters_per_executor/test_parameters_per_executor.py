@@ -40,6 +40,11 @@ def test_parameters_per_executor():
 
     docs = response.docs
     par = response.parameters
-    print(f' par {par}')
+    assert par == {
+        'read0': {'name': 'read0'},
+        '__results__': {'return1/rep-0': {'a': 'b'}, 'return23/rep-0': {'a': 'b'}},
+        '__jina_parameters_per_executor__': True,
+        'read21': {'name': 'read21'},
+    }
     for doc in docs:
         assert doc.tags['name_in_param'] == 'read0'

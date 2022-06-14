@@ -43,6 +43,7 @@ class TopologyGraph:
             self.number_of_parts = number_of_parts
             self.hanging = hanging
             self.parts_to_send = []
+            self.results_parameters_to_return = {}
             self.start_time = None
             self.end_time = None
             self.status = None
@@ -103,6 +104,10 @@ class TopologyGraph:
             if metadata and 'is-error' in metadata:
                 return request, metadata
             elif request is not None:
+                request_parameters = request.parameters
+                request_parameters_results = request_parameters.get('__results__', {})
+                for k, v in request_parameters_results.items():
+                    self.results_parameters_to_return[k] = v
                 self.parts_to_send.append(request)
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
@@ -154,11 +159,15 @@ class TopologyGraph:
                         )
                         # set back original parameters to resp
                         if parameters_per_executor:
-                            param_results = resp.parameters.get('__results__', None)
+                            param_results = resp.parameters.get('__results__', {})
                             resp.parameters = original_parameters
-                            if param_results is not None:
+                            for k, v in param_results.items():
+                                self.results_parameters_to_return[k] = v
+                            if len(self.results_parameters_to_return) > 0:
                                 resp_params = resp.parameters
-                                resp_params['__results__'] = param_results
+                                resp_params[
+                                    '__results__'
+                                ] = self.results_parameters_to_return
                                 resp.parameters = resp_params
 
                     except InternalNetworkError as err:
