@@ -9,6 +9,7 @@ import grpc.aio
 
 from jina import __default_endpoint__
 from jina.excepts import InternalNetworkError
+from jina.helper import __key_results_parameter__
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest
@@ -90,7 +91,7 @@ class TopologyGraph:
             request: DataRequest,
             previous_task: Optional[asyncio.Task],
             connection_pool: GrpcConnectionPool,
-            original_parameters: Optional[Dict],
+            original_parameters: Dict,
             endpoint: Optional[str],
             executor_endpoint_mapping: Optional[Dict] = None,
             target_executor_pattern: Optional[str] = None,
@@ -105,7 +106,9 @@ class TopologyGraph:
                 return request, metadata
             elif request is not None:
                 request_parameters = request.parameters
-                request_parameters_results = request_parameters.get('__results__', {})
+                request_parameters_results = request_parameters.get(
+                    __key_results_parameter__, {}
+                )
                 for k, v in request_parameters_results.items():
                     self.results_parameters_to_return[k] = v
                 self.parts_to_send.append(request)
@@ -159,14 +162,16 @@ class TopologyGraph:
                         )
                         # set back original parameters to resp
                         if parameters_per_executor:
-                            param_results = resp.parameters.get('__results__', {})
+                            param_results = resp.parameters.get(
+                                __key_results_parameter__, {}
+                            )
                             resp.parameters = original_parameters
                             for k, v in param_results.items():
                                 self.results_parameters_to_return[k] = v
                             if len(self.results_parameters_to_return) > 0:
                                 resp_params = resp.parameters
                                 resp_params[
-                                    '__results__'
+                                    __key_results_parameter__
                                 ] = self.results_parameters_to_return
                                 resp.parameters = resp_params
 
@@ -185,7 +190,7 @@ class TopologyGraph:
             connection_pool: GrpcConnectionPool,
             request_to_send: Optional[DataRequest],
             previous_task: Optional[asyncio.Task],
-            original_parameters: Optional[Dict] = None,
+            original_parameters: Dict = {},
             endpoint: Optional[str] = None,
             executor_endpoint_mapping: Optional[Dict] = None,
             target_executor_pattern: Optional[str] = None,

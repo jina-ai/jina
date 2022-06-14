@@ -10,6 +10,7 @@ def test_parameters_per_executor():
                 name_in_tags = doc.tags.get('name_in_param', '')
                 name_in_param = parameters.get('name', '')
                 if name_in_param != '':
+                    assert len(parameters.keys()) == 1
                     assert name_in_param in self.runtime_args.name
                 doc.tags['name_in_param'] = name_in_tags + name_in_param
 

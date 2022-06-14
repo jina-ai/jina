@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Dict, List, Optional
 from docarray import DocumentArray
 from jina import __default_endpoint__
 from jina.excepts import BadConfigSource
+from jina.helper import __key_results_parameter__
 from jina.importer import ImportExtensions
 from jina.serve.executors import BaseExecutor
 from jina.types.request.data import DataRequest
@@ -161,12 +162,11 @@ class DataRequestHandler:
                 docs = return_data
             elif isinstance(return_data, dict):
                 params = requests[0].parameters
-                results_key = '__results__'
 
-                if not results_key in params.keys():
-                    params[results_key] = dict()
+                if not __key_results_parameter__ in params.keys():
+                    params[__key_results_parameter__] = dict()
 
-                params[results_key].update({self.args.name: return_data})
+                params[__key_results_parameter__].update({self.args.name: return_data})
                 requests[0].parameters = params
 
             else:

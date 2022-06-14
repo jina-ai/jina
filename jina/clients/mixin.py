@@ -3,7 +3,7 @@ from functools import partialmethod, wraps
 from inspect import signature
 from typing import TYPE_CHECKING, AsyncGenerator, Dict, List, Optional, Union
 
-from jina.helper import get_or_reuse_loop, run_async
+from jina.helper import __key_results_parameter__, get_or_reuse_loop, run_async
 from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:
@@ -13,19 +13,17 @@ if TYPE_CHECKING:
 
 
 def _include_results_field_in_param(parameters: Optional['Dict']) -> 'Dict':
-    key_result = '__results__'
-
     if parameters:
 
-        if key_result in parameters:
-            if not isinstance(parameters[key_result], dict):
+        if __key_results_parameter__ in parameters:
+            if not isinstance(parameters[__key_results_parameter__], dict):
                 warnings.warn(
-                    f'It looks like you passed a dictionary with the key `{key_result}` to `parameters`.'
+                    f'It looks like you passed a dictionary with the key `{__key_results_parameter__}` to `parameters`.'
                     'This key is reserved, so the associated value will be deleted.'
                 )
-                parameters.update({key_result: dict()})
+                parameters.update({__key_results_parameter__: dict()})
     else:
-        parameters = {key_result: dict()}
+        parameters = {__key_results_parameter__: dict()}
 
     return parameters
 

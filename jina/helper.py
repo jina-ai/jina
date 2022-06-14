@@ -62,9 +62,12 @@ __all__ = [
     'get_or_reuse_loop',
     'T',
     'get_rich_console',
+    '__key_results_parameter__',
 ]
 
 T = TypeVar('T')
+
+__key_results_parameter__ = '__results__'
 
 
 def deprecated_alias(**aliases):
