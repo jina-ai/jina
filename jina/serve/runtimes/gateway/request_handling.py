@@ -118,6 +118,7 @@ class RequestHandler:
                     connection_pool,
                     request,
                     None,
+                    original_parameters=request.parameters,
                     endpoint=endpoint,
                     executor_endpoint_mapping=self._executor_endpoint_mapping,
                     target_executor_pattern=request.header.target_executor,

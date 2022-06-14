@@ -89,12 +89,14 @@ class TopologyGraph:
             request: DataRequest,
             previous_task: Optional[asyncio.Task],
             connection_pool: GrpcConnectionPool,
+            original_parameters: Optional[Dict],
             endpoint: Optional[str],
             executor_endpoint_mapping: Optional[Dict] = None,
             target_executor_pattern: Optional[str] = None,
         ):
             # Check my condition and send request with the condition
             metadata = {}
+            # wait for previous tasks deeper in the chain
             if previous_task is not None:
                 request, metadata = await previous_task
 
@@ -128,32 +130,19 @@ class TopologyGraph:
                     # otherwise, send to executor and get response
 
                     # here we need to handle potential case of parameters per executors.
-                    original_parameters = [
-                        part.parameters for part in self.parts_to_send
-                    ]
                     parameters_per_executor = False
-                    print(
-                        f' original_parameters for {self.name} => {original_parameters}'
-                    )
-
-                    if original_parameters[0].get(
+                    if original_parameters.get(
                         '__jina_parameters_per_executor__', False
                     ):
-                        print(f' UPDATE PARAMETERS for {self.name}')
                         parameters_per_executor = True
                         parameters_of_executor = [
-                            p.get(self.name, {}) for p in original_parameters
+                            original_parameters.get(self.name, {})
+                            for _ in range(len(self.parts_to_send))
                         ]
                         for part, par in zip(
                             self.parts_to_send, parameters_of_executor
                         ):
-                            par[
-                                '__jina_parameters_per_executor__'
-                            ] = True  # need to keep it for concurrent executors to still see it
                             part.parameters = par
-                    print(
-                        f' for self.name {self.name}, I WILL SEND => {[p.parameters for p in self.parts_to_send]}'
-                    )
                     try:
                         resp, metadata = await connection_pool.send_requests_once(
                             requests=self.parts_to_send,
@@ -164,20 +153,13 @@ class TopologyGraph:
                             retries=self._retries,
                         )
                         # set back original parameters to resp
-                        print(
-                            f' In {self.name}, Response parameters BEFORE UPDATE {resp.parameters}'
-                        )
                         if parameters_per_executor:
                             param_results = resp.parameters.get('__results__', None)
-                            resp.parameters = original_parameters[0]
+                            resp.parameters = original_parameters
                             if param_results is not None:
-                                print(f' HEY SET {param_results}')
                                 resp_params = resp.parameters
                                 resp_params['__results__'] = param_results
                                 resp.parameters = resp_params
-                                print(f' HEY SET after {resp.parameters}')
-
-                        print(f' In {self.name}, Response parameters {resp.parameters}')
 
                     except InternalNetworkError as err:
                         self._handle_internalnetworkerror(err)
@@ -194,6 +176,7 @@ class TopologyGraph:
             connection_pool: GrpcConnectionPool,
             request_to_send: Optional[DataRequest],
             previous_task: Optional[asyncio.Task],
+            original_parameters: Optional[Dict] = None,
             endpoint: Optional[str] = None,
             executor_endpoint_mapping: Optional[Dict] = None,
             target_executor_pattern: Optional[str] = None,
@@ -204,6 +187,7 @@ class TopologyGraph:
             :param connection_pool: The connection_pool need to actually send the requests
             :param request_to_send: Optional request to be sent when the node is an origin of a graph
             :param previous_task: Optional task coming from the predecessor of the Node
+            :param original_parameters: Original parameters of the request. Needed because parameters may evolve dynamically to enable passing different parameters to Executors
             :param endpoint: Optional string defining the endpoint of this request
             :param executor_endpoint_mapping: Optional map that maps the name of a Deployment with the endpoints that it binds to so that they can be skipped if needed
             :param target_executor_pattern: Optional regex pattern for the target executor to decide whether or not the Executor should receive the request
@@ -235,6 +219,7 @@ class TopologyGraph:
                     request_to_send,
                     previous_task,
                     connection_pool,
+                    original_parameters=original_parameters,
                     endpoint=endpoint,
                     executor_endpoint_mapping=executor_endpoint_mapping,
                     target_executor_pattern=target_executor_pattern,
@@ -250,6 +235,7 @@ class TopologyGraph:
                     connection_pool,
                     None,
                     wait_previous_and_send_task,
+                    original_parameters=original_parameters,
                     endpoint=endpoint,
                     executor_endpoint_mapping=executor_endpoint_mapping,
                     target_executor_pattern=target_executor_pattern,
