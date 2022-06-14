@@ -325,6 +325,14 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         args: Optional['argparse.Namespace'] = None,
         **kwargs,
     ):
+        # implementation_stub_inject_start_flow
+        """
+        Create a Flow. Flow is how Jina streamlines and scales Executors.
+
+        :param args: arguments
+        :param kwargs: keyword arguments
+        """
+        # implementation_stub_inject_end_flow
         super().__init__()
         self._version = '1'  #: YAML version number, this will be later overridden if YAML config says the other way
         self._deployment_nodes = OrderedDict()  # type: Dict[str, Deployment]
@@ -825,9 +833,10 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         Add a Deployment to the current Flow object and return the new modified Flow object.
         The attribute of the Deployment can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
 
-        .. # noqa: DAR401
         :param kwargs: other keyword-value arguments that the Deployment CLI supports
         :return: a (new) Flow object with modification
+
+        .. # noqa: DAR401
         """
         needs = kwargs.get('needs', None)
         copy_flow = kwargs.get('copy_flow', True)
