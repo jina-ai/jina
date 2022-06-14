@@ -195,6 +195,8 @@
 
 
 
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -518,6 +520,8 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.5.0`)](#release-note-350)
 - [Release Note (`3.6.0`)](#release-note-360)
 - [Release Note (`3.6.1`)](#release-note-361)
+- [Release Note (`3.6.2`)](#release-note-362)
+- [Release Note (`3.6.3`)](#release-note-363)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -13991,4 +13995,66 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```efac46a2```](https://github.com/jina-ai/jina/commit/efac46a2ba5641c782eb5aeb62842ab592a18d94)] __-__ fix readme (*Han Xiao*)
  - [[```ba243383```](https://github.com/jina-ai/jina/commit/ba2433836a2dcf9c8df78b0ec6ee9038d8aae7bc)] __-__ remove pages from .github folder (#4898) (*Joan Fontanals*)
  - [[```c7a06cbd```](https://github.com/jina-ai/jina/commit/c7a06cbdf4453a2af018fb6cc03cea6277e21aef)] __-__ __version__: the next version will be 3.6.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-6-2></a>
+## Release Note (`3.6.2`)
+
+> Release time: 2022-06-10 16:54:41
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Leon Wolf,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```0338dcd3```](https://github.com/jina-ai/jina/commit/0338dcd3567419d575115e12e5493ac480c27332)] __-__ json schema generation (#4916) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```1ecb95af```](https://github.com/jina-ai/jina/commit/1ecb95af1c74c4824254f5ce52e29575ba839912)] __-__ add arg list to flow yaml  (#4909) (*Han Xiao*)
+ - [[```26629b2a```](https://github.com/jina-ai/jina/commit/26629b2a818a56fc8f2e801f2ccff904fc23e7e6)] __-__ adding jcloude (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```b90f7534```](https://github.com/jina-ai/jina/commit/b90f75341db976c813b01be48fc701f110826b41)] __-__ __docs__: add banner to the docs (*Han Xiao*)
+ - [[```ca682192```](https://github.com/jina-ai/jina/commit/ca682192998bfb060dab129e70dee49cf5b3b3d1)] __-__ correct template link to github (#4911) (*Leon Wolf*)
+ - [[```a65110cd```](https://github.com/jina-ai/jina/commit/a65110cd29c99122925dd746f991d55775eafa50)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```58239747```](https://github.com/jina-ai/jina/commit/5823974704c6bfb9dd7fcc35472877beb2f897d9)] __-__ __docs__: fix gateway status (*Han Xiao*)
+ - [[```31c98680```](https://github.com/jina-ai/jina/commit/31c98680b16855d271fb299052000aa51cdf9494)] __-__ __docs__: adding jcloud (*Han Xiao*)
+ - [[```24306049```](https://github.com/jina-ai/jina/commit/24306049eba9eb296642e14568e6ab15973bc2ab)] __-__ __version__: the next version will be 3.6.2 (*Jina Dev Bot*)
+
+<a name=release-note-3-6-3></a>
+## Release Note (`3.6.3`)
+
+> Release time: 2022-06-13 18:39:38
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  samsja,  Jina Dev Bot,  Joan Fontanals,  Johannes Messner,  🙇
+
+
+### 🆕 New Features
+
+ - [[```6f3a1f91```](https://github.com/jina-ai/jina/commit/6f3a1f9126ad358831a3bc6ac2050918039ad4c0)] __-__ allow Executors as dataclass (#4918) (*Joan Fontanals*)
+
+### 🐞 Bug fixes
+
+ - [[```abd6c278```](https://github.com/jina-ai/jina/commit/abd6c2785cf67b7324b653a1225fa7ac7eb3d79c)] __-__ use random port (#4927) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```91c91166```](https://github.com/jina-ai/jina/commit/91c91166494696bc6629c90adb3cebf65ffd5780)] __-__ minor documenation updates on the get started section (#4922) (*samsja*)
+ - [[```07f0ef9a```](https://github.com/jina-ai/jina/commit/07f0ef9a8dd52ff64df7b1becfea613f85853193)] __-__ documentation enhancement (#4907) (*samsja*)
+
+### 🍹 Other Improvements
+
+ - [[```55ed566b```](https://github.com/jina-ai/jina/commit/55ed566bb501bc3261370660b7d94ba9a20c83ee)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```f76126ab```](https://github.com/jina-ai/jina/commit/f76126ab0cd88f5c060fa1b53fe59dac120666f7)] __-__ add jina on colab (*Han Xiao*)
+ - [[```fbb57b2e```](https://github.com/jina-ai/jina/commit/fbb57b2ec58494f6f86f1c17c7ac3263504f261a)] __-__ overload flow add (#4578) (*Joan Fontanals*)
+ - [[```8a35b997```](https://github.com/jina-ai/jina/commit/8a35b997580d84f0412531c7ff01ec85ae4e3f79)] __-__ update requirement to successfully build docs on local (#4910) (*Johannes Messner*)
+ - [[```8e19bfdc```](https://github.com/jina-ai/jina/commit/8e19bfdc8f95c209320ab1a2a67216234c44efef)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```3e168dd9```](https://github.com/jina-ai/jina/commit/3e168dd9208365490031345aa0475fbdb4a9a9ce)] __-__ __version__: the next version will be 3.6.3 (*Jina Dev Bot*)
 

@@ -6,9 +6,9 @@
 To follow along with this How-To, you need Jina 3.2.2 or higher.
 ````
 
-In this tutorial you will gain a deeper insight into the Flow's {ref}`filter condition feature<flow-filter>`.
+In this tutorial you will gain a deeper insight into the {class}`~jina.Flow` 's {ref}`filter condition feature<flow-filter>`.
 
-In a nutshell, this feature allows every Executor in a Flow do define a filter that can only be passed by Documents that
+In a nutshell, this feature allows every {class}`~jina.Executor` in a Flow do define a filter that can only be passed by Documents that
 fulfill a specified `condition`.
 
 ````{admonition} See Also

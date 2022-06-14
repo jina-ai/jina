@@ -2,7 +2,7 @@
 # Use async coroutines in Executors
 
 
-You can naturally call async coroutines within `Executor`'s, allowing you to leverage the power of asynchronous
+You can naturally call async coroutines within {class}`~jina.Executor`'s, allowing you to leverage the power of asynchronous
 Python to write concurrent code. 
 
 
@@ -25,7 +25,7 @@ class MyExecutor(Executor):
 ## Examples
 
 In this example we have a heavy lifting API for which we want to call several times, and we want to leverage the
-async Python features to speed up the `Executor`'s call by calling the API multiples times concurrently.
+async Python features to speed up the {class}`~jina.Executor`'s call by calling the API multiples times concurrently.
 
 ### With async
 

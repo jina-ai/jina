@@ -36,7 +36,7 @@ from rich.progress import (
 )
 from rich.table import Table
 
-from jina import __default_host__, __default_port_monitoring__, __docker_host__, helper
+from jina import __default_host__, __docker_host__, helper
 from jina.clients import Client
 from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin
 from jina.enums import (
@@ -158,7 +158,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
-        port_monitoring: Optional[int] = 9090,
+        port_monitoring: Optional[int] = None,
         prefetch: Optional[int] = 0,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
@@ -228,7 +228,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]
-        :param port_monitoring: The port on which the prometheus server is exposed, default port is 9090
+        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)
@@ -611,6 +611,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
             **kwargs,
         )
 
+    @allowed_levels([FlowBuildLevel.EMPTY])
     def needs_all(self, name: str = 'joiner', *args, **kwargs) -> 'Flow':
         """
         Collect all hanging Deployments so far and add a blocker to the Flow; wait until all handing pods completed.
@@ -651,7 +652,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
-        port_monitoring: Optional[int] = 9090,
+        port_monitoring: Optional[int] = None,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
@@ -729,7 +730,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
         :param port: The port for input data to bind to, default is a random port between [49152, 65535]
-        :param port_monitoring: The port on which the prometheus server is exposed, default port is 9090
+        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param py_modules: The customized python modules need to be imported before loading the executor
 
           Note that the recommended way is to only import a single module - a simple python file, if your
@@ -789,7 +790,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         """
 
     # overload_inject_end_deployment
-    @allowed_levels([FlowBuildLevel.EMPTY])
+    @overload
     def add(
         self,
         *,
@@ -797,21 +798,44 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         copy_flow: bool = True,
         deployment_role: 'DeploymentRoleType' = DeploymentRoleType.DEPLOYMENT,
         **kwargs,
-    ) -> 'Flow':
-        # implementation_stub_inject_start_add
+    ) -> Union['Flow', 'AsyncFlow']:
         """
         Add a Deployment to the current Flow object and return the new modified Flow object.
         The attribute of the Deployment can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
 
-        .. # noqa: DAR401
         :param needs: the name of the Deployment(s) that this Deployment receives data from.
                            One can also use 'gateway' to indicate the connection with the gateway.
         :param deployment_role: the role of the Deployment, used for visualization and route planning
         :param copy_flow: when set to true, then always copy the current Flow and do the modification on top of it then return, otherwise, do in-line modification
         :param kwargs: other keyword-value arguments that the Deployment CLI supports
         :return: a (new) Flow object with modification
+
+        .. # noqa: DAR202
+        .. # noqa: DAR101
+        .. # noqa: DAR003
+        .. # noqa: DAR401
+        """
+
+    @allowed_levels([FlowBuildLevel.EMPTY])
+    def add(
+        self,
+        **kwargs,
+    ) -> Union['Flow', 'AsyncFlow']:
+        # implementation_stub_inject_start_add
+        """
+        Add a Deployment to the current Flow object and return the new modified Flow object.
+        The attribute of the Deployment can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
+
+        .. # noqa: DAR401
+        :param kwargs: other keyword-value arguments that the Deployment CLI supports
+        :return: a (new) Flow object with modification
         """
         # implementation_stub_inject_end_add
+
+        needs = kwargs.get('needs', None)
+        copy_flow = kwargs.get('copy_flow', True)
+        deployment_role = kwargs.get('deployment_role', DeploymentRoleType.DEPLOYMENT)
+
         op_flow = copy.deepcopy(self) if copy_flow else self
 
         # deployment naming logic
@@ -1137,6 +1161,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         self.logger.debug('flow is closed!')
         self.logger.close()
 
+    @allowed_levels([FlowBuildLevel.EMPTY, FlowBuildLevel.GRAPH])
     def start(self):
         """Start to run all Deployments in this Flow.
 
@@ -1565,16 +1590,14 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
             return False
 
     @property
-    def port_monitoring(self) -> int:
+    def port_monitoring(self) -> Optional[int]:
         """Return if the monitoring is enabled
         .. # noqa: DAR201
         """
         if GATEWAY_NAME in self._deployment_nodes:
             return self[GATEWAY_NAME].args.port_monitoring
         else:
-            return self._common_kwargs.get(
-                'port_monitoring', __default_port_monitoring__
-            )
+            return self._common_kwargs.get('port_monitoring', None)
 
     @property
     def address_private(self) -> str:
@@ -1702,14 +1725,9 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                         '·'.join(_address),
                     )
 
-            return self[GATEWAY_NAME].args.port_monitoring
-        else:
-            return self._common_kwargs.get(
-                'port_monitoring', __default_port_monitoring__
-            )
-
         return address_table
 
+    @allowed_levels([FlowBuildLevel.RUNNING])
     def block(
         self, stop_event: Optional[Union[threading.Event, multiprocessing.Event]] = None
     ):
@@ -1891,6 +1909,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         """
         ...
 
+    @allowed_levels([FlowBuildLevel.EMPTY])
     def expose_endpoint(self, exec_endpoint: str, **kwargs):
         """Expose an Executor's endpoint (defined by `@requests(on=...)`) to HTTP endpoint for easier access.
 

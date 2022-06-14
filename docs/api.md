@@ -1,4 +1,4 @@
-# Python API
+# {fab}`python` Python API
 
 This section includes the API documentation from the `jina` codebase, as extracted from the [docstrings](https://peps.python.org/pep-0257/) in the code.
 
