@@ -59,6 +59,11 @@ def get_deployment_yamls(
     if not port:
         port = GrpcConnectionPool.K8S_PORT
 
+    if not port_monitoring:
+        port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
+
+    print(port_monitoring)
+
     deployment_params = {
         'name': name,
         'namespace': namespace,
