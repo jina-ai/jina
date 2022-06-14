@@ -63,11 +63,22 @@ def Client(
     'AsyncHTTPClient',
 ]:
     # implementation_stub_inject_start_client
+
     """Jina Python client.
 
-    :param args: Namespace args.
-    :param kwargs: Additional arguments.
-    :return: An instance of :class:`GRPCClient` or :class:`WebSocketClient`.
+    :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
+    :param host: The host address of the runtime, by default it is 0.0.0.0.
+    :param port: The port of the Gateway, which the client should connect to.
+    :param protocol: Communication protocol between server and client.
+    :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
+    :param return_responses: If set, return results as List of Requests instead of a reduced DocArray.
+    :param tls: If set, connect to gateway using tls encryption
+    :return: the new Client object
+
+    .. # noqa: DAR102
+    .. # noqa: DAR202
+    .. # noqa: DAR101
+    .. # noqa: DAR003
     """
     # implementation_stub_inject_end_client
     if not (
