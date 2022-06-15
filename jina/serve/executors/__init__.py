@@ -21,9 +21,8 @@ from jina.serve.executors.decorators import (
 )
 
 if TYPE_CHECKING:
-    from prometheus_client import Summary
-
     from docarray import DocumentArray
+    from prometheus_client import Summary
 
 __dry_run_endpoint__ = '_jina_dry_run_'
 
@@ -75,7 +74,7 @@ class ExecutorType(type(JAMLCompatible), type):
 
 class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     """
-    The base class of the executor, can be used to build encoder, indexer, etc.
+    The base class of all Executors, can be used to build encoder, indexer, etc.
 
     Any executor inherited from :class:`BaseExecutor` always has the **meta** defined in :mod:`jina.executors.metas.defaults`.
 

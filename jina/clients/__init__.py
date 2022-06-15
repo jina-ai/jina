@@ -64,7 +64,7 @@ def Client(
 ]:
     # implementation_stub_inject_start_client
 
-    """Jina Python client.
+    """Convenience function that returns client instance for given protocol.
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
     :param host: The host address of the runtime, by default it is 0.0.0.0.

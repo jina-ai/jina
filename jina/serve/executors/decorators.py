@@ -139,9 +139,9 @@ def requests(
     on: Optional[Union[str, Sequence[str]]] = None,
 ):
     """
-    `@requests` defines when a function will be invoked. It has a keyword `on=` to define the endpoint.
+    `@requests` defines the endpoints of an Executor. It has a keyword `on=` to define the endpoint.
 
-    A class method decorated with plan `@requests` (without `on=`) is the default handler for all endpoints.
+    A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints.
     That means, it is the fallback handler for endpoints that are not found.
 
     :param func: the method to decorate
@@ -206,7 +206,7 @@ def monitor(
     documentation: Optional[str] = None,
 ):
     """
-    `@monitor()` allow to monitor internal method of your executor. You can access these metrics by enabling the
+    Decorator and context manager that allows monitoring of an Executor. You can access these metrics by enabling the
     monitoring on your Executor. It will track the time spend calling the function and the number of times it has been
     called. Under the hood it will create a prometheus Summary : https://prometheus.io/docs/practices/histograms/.
 
