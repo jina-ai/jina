@@ -63,7 +63,7 @@ how-to/index
 :maxdepth: 1
 
 
-api
+api-rst
 cli/index
 proto/docs
 envs/index

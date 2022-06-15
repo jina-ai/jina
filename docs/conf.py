@@ -97,6 +97,7 @@ epub_exclude_files = ['search.html']
 
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx_autodoc_typehints',
     'sphinx.ext.viewcode',
     'sphinx.ext.coverage',
@@ -114,6 +115,7 @@ extensions = [
 ]
 
 myst_enable_extensions = ['colon_fence']
+autosummary_generate = True
 
 # -- Custom 404 page
 
