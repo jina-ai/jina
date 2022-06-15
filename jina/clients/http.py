@@ -10,7 +10,7 @@ from jina.clients.mixin import (
 
 class HTTPClient(HTTPBaseClient, PostMixin, MutateMixin, HealthCheckMixin):
     """
-    A client communicates the server with HTTP protocol.
+    A client connecting to a Gateway using HTTP protocol.
     """
 
 
@@ -18,7 +18,7 @@ class AsyncHTTPClient(
     HTTPBaseClient, AsyncPostMixin, AsyncMutateMixin, HealthCheckMixin
 ):
     """
-    A client communicates the server with HTTP protocol.
+    Asynchronous client connecting to a Gateway using HTTP protocol.
 
     Unlike :class:`HTTPClient`, here :meth:`post` is a coroutine (i.e. declared with the async/await syntax),
     simply calling them will not schedule them to be executed.

@@ -3,12 +3,12 @@ from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin
 
 
 class GRPCClient(GRPCBaseClient, PostMixin, HealthCheckMixin):
-    """A client communicates the server with GRPC protocol."""
+    """A client connecting to a Gateway using gRPC protocol."""
 
 
 class AsyncGRPCClient(GRPCBaseClient, AsyncPostMixin, HealthCheckMixin):
     """
-    A client communicates the server with GRPC protocol.
+    Asynchronous client connecting to a Gateway using gRPC protocol.
 
     Unlike :class:`GRPCClient`, here :meth:`post` is a coroutine (i.e. declared with the async/await syntax),
     simply calling them will not schedule them to be executed.
