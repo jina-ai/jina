@@ -786,6 +786,8 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         when: Optional[dict] = None, 
         workspace: Optional[str] = None, 
         **kwargs) -> Union['Flow', 'AsyncFlow']:
+        
+        # implementation_stub_inject_start_add
         """Add an Executor to the current Flow object.
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
