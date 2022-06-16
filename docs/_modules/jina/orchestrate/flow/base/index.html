@@ -696,6 +696,30 @@
 
         <span class="sd">&quot;&quot;&quot;Create a Flow. Flow is how Jina streamlines and scales Executors.</span>
 
+<span class="sd">        EXAMPLE USAGE</span>
+
+<span class="sd">            Python API</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                from jina import Flow</span>
+
+<span class="sd">                f = Flow().add(uses=&#39;jinahub+docker://SimpleIndexer&#39;)  # create Flow and add Executor</span>
+<span class="sd">                with f:</span>
+<span class="sd">                    f.bock()  # serve Flow</span>
+
+<span class="sd">            To and from YAML configuration</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                from jina import Flow</span>
+
+<span class="sd">                f = Flow().add(uses=&#39;jinahub+docker://SimpleIndexer&#39;)  # create Flow and add Executor</span>
+<span class="sd">                f.save_config(&#39;flow.yml&#39;)  # save YAML config file</span>
+<span class="sd">                f = Flow.load_config(&#39;flow.yml&#39;)  # load Flow from YAML config</span>
+<span class="sd">                with f:</span>
+<span class="sd">                    f.bock()  # serve Flow</span>
+
 <span class="sd">        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
 <span class="sd">        :param port: The port of the Gateway, which the client should connect to.</span>

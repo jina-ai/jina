@@ -372,14 +372,31 @@
 
 
 <div class="viewcode-block" id="WebSocketClient"><a class="viewcode-back" href="../../../../api/jina.clients.websocket/#jina.clients.websocket.WebSocketClient">[docs]</a><span class="k">class</span> <span class="nc">WebSocketClient</span><span class="p">(</span><span class="n">WebSocketBaseClient</span><span class="p">,</span> <span class="n">PostMixin</span><span class="p">,</span> <span class="n">HealthCheckMixin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A client connecting to a Gateway using WebSocket protocol.</span>
+    <span class="sd">&quot;&quot;&quot;A client connecting to a Gateway using WebSocket protocol.</span>
+
+<span class="sd">    Instantiate this class through the :meth:`jina.Client` convenience method.</span>
+
+<span class="sd">    EXAMPLE USAGE</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from jina import Client</span>
+<span class="sd">        from docarray import Document</span>
+
+<span class="sd">        # select host address to connect to</span>
+<span class="sd">        c = Client(</span>
+<span class="sd">            protocol=&#39;websocket&#39;, asyncio=False, host=&#39;ws://my.awesome.flow:1234&#39;</span>
+<span class="sd">        )  # returns WebSocketClient instance</span>
+<span class="sd">        c.post(on=&#39;/index&#39;, inputs=Document(text=&#39;hello!&#39;))</span>
+
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="AsyncWebSocketClient"><a class="viewcode-back" href="../../../../api/jina.clients.websocket/#jina.clients.websocket.AsyncWebSocketClient">[docs]</a><span class="k">class</span> <span class="nc">AsyncWebSocketClient</span><span class="p">(</span><span class="n">WebSocketBaseClient</span><span class="p">,</span> <span class="n">AsyncPostMixin</span><span class="p">,</span> <span class="n">HealthCheckMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Asynchronous client connecting to a Gateway using WebSocket protocol.</span>
+
+<span class="sd">    Instantiate this class through the :meth:`jina.Client` convenience method.</span>
 
 <span class="sd">    Unlike :class:`WebSocketClient`, here :meth:`post` is a coroutine (i.e. declared with the async/await syntax),</span>
 <span class="sd">    simply calling them will not schedule them to be executed.</span>
@@ -391,6 +408,28 @@
 <span class="sd">    the integration settings, where Jina/Flow/Client is NOT the main logic, but rather served as a part of other program.</span>
 <span class="sd">    In this case, users often do not want to let Jina control the ``asyncio.eventloop``. On contrary, :class:`Client`</span>
 <span class="sd">    is controlling and wrapping the event loop internally, making the Client looks synchronous from outside.</span>
+
+<span class="sd">    EXAMPLE USAGE</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from jina import Client</span>
+<span class="sd">        from docarray import Document</span>
+
+<span class="sd">        # async inputs for the client</span>
+<span class="sd">        async def async_inputs():</span>
+<span class="sd">            for _ in range(10):</span>
+<span class="sd">                yield Document()</span>
+<span class="sd">                await asyncio.sleep(0.1)</span>
+
+
+<span class="sd">        # select host address to connect to</span>
+<span class="sd">        c = Client(</span>
+<span class="sd">            protocol=&#39;websocket&#39;, asyncio=True, host=&#39;http://ws.awesome.flow:1234&#39;</span>
+<span class="sd">        )  # returns AsyncWebSocketClient instance</span>
+
+<span class="sd">        async for resp in client.post(on=&#39;/index&#39;, async_inputs, request_size=1):</span>
+<span class="sd">            print(resp)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span></div>
 </pre></div>

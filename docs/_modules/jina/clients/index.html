@@ -435,6 +435,21 @@
 
     <span class="sd">&quot;&quot;&quot;Convenience function that returns client instance for given protocol.</span>
 
+<span class="sd">    EXAMPLE USAGE</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from jina import Client</span>
+<span class="sd">        from docarray import Document</span>
+
+<span class="sd">        # select protocol from &#39;grpc&#39;, &#39;http&#39;, or &#39;websocket&#39;; default is &#39;grpc&#39;</span>
+<span class="sd">        # select asyncio True of False; default is False</span>
+<span class="sd">        # select host address to connect to</span>
+<span class="sd">        c = Client(</span>
+<span class="sd">            protocol=&#39;grpc&#39;, asyncio=False, host=&#39;grpc://my.awesome.flow:1234&#39;</span>
+<span class="sd">        )  # returns GRPCClient instance</span>
+<span class="sd">        c.post(on=&#39;/index&#39;, inputs=Document(text=&#39;hello!&#39;))</span>
+
 <span class="sd">    :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
 <span class="sd">    :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
 <span class="sd">    :param port: The port of the Gateway, which the client should connect to.</span>

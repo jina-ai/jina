@@ -513,6 +513,42 @@
 <span class="sd">    A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints.</span>
 <span class="sd">    That means, it is the fallback handler for endpoints that are not found.</span>
 
+<span class="sd">    EXAMPLE USAGE</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from jina import Executor, requests, Flow</span>
+<span class="sd">        from docarray import Document</span>
+
+
+<span class="sd">        # define Executor with custom `@requests` endpoints</span>
+<span class="sd">        class MyExecutor(Executor):</span>
+<span class="sd">            @requests(on=&#39;/index&#39;)</span>
+<span class="sd">            def index(self, docs, **kwargs):</span>
+<span class="sd">                print(docs)  # index docs here</span>
+
+<span class="sd">            @requests(on=[&#39;/search&#39;, &#39;/query&#39;])</span>
+<span class="sd">            def search(self, docs, **kwargs):</span>
+<span class="sd">                print(docs)  # perform search here</span>
+
+<span class="sd">            @requests  # default/fallback endpoint</span>
+<span class="sd">            def foo(self, docs, **kwargs):</span>
+<span class="sd">                print(docs)  # process docs here</span>
+
+
+<span class="sd">        f = Flow().add(uses=MyExecutor)  # add your Executor to a Flow</span>
+<span class="sd">        with f:</span>
+<span class="sd">            f.post(</span>
+<span class="sd">                on=&#39;/index&#39;, inputs=Document(text=&#39;I am here!&#39;)</span>
+<span class="sd">            )  # send doc to `index` method</span>
+<span class="sd">            f.post(</span>
+<span class="sd">                on=&#39;/search&#39;, inputs=Document(text=&#39;Who is there?&#39;)</span>
+<span class="sd">            )  # send doc to `search` method</span>
+<span class="sd">            f.post(</span>
+<span class="sd">                on=&#39;/query&#39;, inputs=Document(text=&#39;Who is there?&#39;)</span>
+<span class="sd">            )  # send doc to `search` method</span>
+<span class="sd">            f.post(on=&#39;/bar&#39;, inputs=Document(text=&#39;Who is there?&#39;))  # send doc to `foo` method</span>
+
 <span class="sd">    :param func: the method to decorate</span>
 <span class="sd">    :param on: the endpoint string, by convention starts with `/`</span>
 <span class="sd">    :return: decorated function</span>
@@ -575,11 +611,61 @@
     <span class="n">documentation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Decorator and context manager that allows monitoring of an Executor. You can access these metrics by enabling the</span>
-<span class="sd">    monitoring on your Executor. It will track the time spend calling the function and the number of times it has been</span>
+<span class="sd">    Decorator and context manager that allows monitoring of an Executor.</span>
+
+<span class="sd">    You can access these metrics by enabling</span>
+<span class="sd">    monitoring on your Executor. It will track the time spent calling the function and the number of times it has been</span>
 <span class="sd">    called. Under the hood it will create a prometheus Summary : https://prometheus.io/docs/practices/histograms/.</span>
 
-<span class="sd">    :warning: Don&#39;t use this decorator with the @request decorator as it already handle monitoring under the hood</span>
+<span class="sd">    EXAMPLE USAGE</span>
+
+<span class="sd">        As decorator</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from jina import Executor, monitor</span>
+
+
+<span class="sd">            class MyExecutor(Executor):</span>
+<span class="sd">                @requests  # `@requests` are monitored automatically</span>
+<span class="sd">                def foo(self, docs, *args, **kwargs):</span>
+<span class="sd">                    ...</span>
+<span class="sd">                    self.my_method()</span>
+<span class="sd">                    ...</span>
+
+<span class="sd">                # custom metric for `my_method`</span>
+<span class="sd">                @monitor(name=&#39;metric_name&#39;, documentation=&#39;useful information goes here&#39;)</span>
+<span class="sd">                def my_method(self):</span>
+<span class="sd">                    ...</span>
+
+<span class="sd">        As context manager</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from jina import Executor, requests</span>
+
+
+<span class="sd">            class MyExecutor(Executor):</span>
+<span class="sd">                @requests  # `@requests` are monitored automatically</span>
+<span class="sd">                def foo(self, docs, *args, **kwargs):</span>
+<span class="sd">                    ...</span>
+<span class="sd">                    # custom metric for code block</span>
+<span class="sd">                    with self.monitor(&#39;metric_name&#39;, &#39;useful information goes here&#39;):</span>
+<span class="sd">                        docs = process(docs)</span>
+
+<span class="sd">        To enable the defined :meth:`monitor` blocks, enable monitoring on the Flow level</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from jina import Flow</span>
+
+<span class="sd">            f = Flow(monitoring=True, port_monitoring=9090).add(</span>
+<span class="sd">                uses=MyExecutor, port_monitoring=9091</span>
+<span class="sd">            )</span>
+<span class="sd">            with f:</span>
+<span class="sd">                ...</span>
+
+<span class="sd">    :warning: Don&#39;t use this decorator in combination with the @request decorator. @request&#39;s are already monitored.</span>
 
 <span class="sd">    :param name: the name of the metrics, by default it is based on the name of the method it decorates</span>
 <span class="sd">    :param documentation:  the description of the metrics, by default it is based on the name of the method it decorates</span>
