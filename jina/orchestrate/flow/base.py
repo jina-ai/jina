@@ -327,6 +327,30 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
         """Create a Flow. Flow is how Jina streamlines and scales Executors.
 
+        EXAMPLE USAGE
+
+            Python interface:
+
+            .. code-block:: python
+
+                from jina import Flow
+
+                f = Flow().add(uses=MyExecutor)  # create Flow and add Executor
+                with f:
+                    f.block()  # serve Flow
+
+            To and from YAML:
+
+            .. code-block:: python
+
+                from jina import Flow
+
+                f = Flow().add(uses=MyExecutor)  # create Flow and add Executor
+                f.save_config('flow.yaml')  # save YAML configuration
+                f = Flow.load_config('flow.yaml')  # load YAML configuration
+                with f:
+                    f.block()  # serve Flow
+
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param port: The port of the Gateway, which the client should connect to.
