@@ -48,6 +48,7 @@ html_baseurl = 'https://docs.jina.ai'
 sitemap_url_scheme = '{link}'
 sitemap_locales = [None]
 sitemap_filename = "sitemap.xml"
+autodoc_default_options = {"members": True, "inherited-members": True, 'class-doc-from': '__init__',}
 
 html_theme_options = {
     'light_logo': 'logo-light.svg',
@@ -96,6 +97,7 @@ epub_exclude_files = ['search.html']
 
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx_autodoc_typehints',
     'sphinx.ext.viewcode',
     'sphinx.ext.coverage',
@@ -113,6 +115,7 @@ extensions = [
 ]
 
 myst_enable_extensions = ['colon_fence']
+autosummary_generate = True
 
 # -- Custom 404 page
 
