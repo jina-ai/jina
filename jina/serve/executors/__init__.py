@@ -76,6 +76,23 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     """
     The base class of all Executors, can be used to build encoder, indexer, etc.
 
+    :class:`jina.Executor` as an alias for this class.
+
+    EXAMPLE USAGE
+
+    .. code-block:: python
+
+        from jina import Executor, requests, Flow
+
+
+        class MyExecutor(Executor):
+            @requests
+            def foo(self, docs, **kwargs):
+                print(docs)  # process docs here
+
+
+        f = Flow().add(uses=Executor)  # you can add your Executor to a Flow
+
     Any executor inherited from :class:`BaseExecutor` always has the **meta** defined in :mod:`jina.executors.metas.defaults`.
 
     All arguments in the :func:`__init__` can be specified with a ``with`` map in the YAML config. Example:
@@ -83,7 +100,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     .. highlight:: python
     .. code-block:: python
 
-        class MyAwesomeExecutor:
+        class MyAwesomeExecutor(Executor):
             def __init__(awesomeness=5):
                 pass
 
