@@ -144,6 +144,42 @@ def requests(
     A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints.
     That means, it is the fallback handler for endpoints that are not found.
 
+    EXAMPLE USAGE
+
+    .. code-block:: python
+
+        from jina import Executor, requests, Flow
+        from docarray import Document
+
+
+        # define Executor with custom `@requests` endpoints
+        class MyExecutor(Executor):
+            @requests(on='/index')
+            def index(self, docs, **kwargs):
+                print(docs)  # index docs here
+
+            @requests(on=['/search', '/query'])
+            def search(self, docs, **kwargs):
+                print(docs)  # perform search here
+
+            @requests  # default/fallback endpoint
+            def foo(self, docs, **kwargs):
+                print(docs)  # process docs here
+
+
+        f = Flow().add(uses=Executor)  # add your Executor to a Flow
+        with f:
+            f.post(
+                on='/index', inputs=Document(text='I am here!')
+            )  # send doc to `index` method
+            f.post(
+                on='/search', inputs=Document(text='Who is there?')
+            )  # send doc to `search` method
+            f.post(
+                on='/query', inputs=Document(text='Who is there?')
+            )  # send doc to `search` method
+            f.post(on='/bar', inputs=Document(text='Who is there?'))  # send doc to `foo` method
+
     :param func: the method to decorate
     :param on: the endpoint string, by convention starts with `/`
     :return: decorated function
