@@ -335,7 +335,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
                 from jina import Flow
 
-                f = Flow().add(uses=MyExecutor)  # create Flow and add Executor
+                f = Flow().add(uses='jinahub+docker://SimpleIndexer')  # create Flow and add Executor
                 with f:
                     f.bock()  # serve Flow
 
@@ -345,7 +345,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
                 from jina import Flow
 
-                f = Flow().add(uses=MyExecutor)  # create Flow and add Executor
+                f = Flow().add(uses='jinahub+docker://SimpleIndexer')  # create Flow and add Executor
                 f.save_config('flow.yml')  # save YAML config file
                 f = Flow.load_config('flow.yml')  # load Flow from YAML config
                 with f:

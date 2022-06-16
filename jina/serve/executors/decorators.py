@@ -167,7 +167,7 @@ def requests(
                 print(docs)  # process docs here
 
 
-        f = Flow().add(uses=Executor)  # add your Executor to a Flow
+        f = Flow().add(uses=MyExecutor)  # add your Executor to a Flow
         with f:
             f.post(
                 on='/index', inputs=Document(text='I am here!')
