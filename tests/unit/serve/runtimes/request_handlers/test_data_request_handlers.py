@@ -1,13 +1,11 @@
 import pytest
-
 from docarray import Document, DocumentArray
+
 from jina import Executor, requests
+from jina.clients.request import request_generator
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_pod_parser
-from jina.serve.runtimes.request_handlers.data_request_handler import (
-    DataRequestHandler,
-)
-from jina.clients.request import request_generator
+from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 
 
 class NewDocsExecutor(Executor):
@@ -134,3 +132,57 @@ async def test_data_request_handler_clear_docs(logger):
     response = await handler.handle(requests=[req])
 
     assert len(response.docs) == 0
+
+
+@pytest.mark.parametrize(
+    'key_name,is_specific',
+    [
+        ('key', False),
+        ('key_1', False),
+        ('key__executor', True),
+        ('key_2__exec2', True),
+        ('__results__', False),
+    ],
+)
+def test_is_specific_executor(key_name, is_specific):
+    assert DataRequestHandler._is_param_for_specific_executor(key_name) == is_specific
+
+
+@pytest.mark.parametrize(
+    'full_key,key , executor',
+    [
+        ('key__executor', 'key', 'executor'),
+        ('key_1__executor', 'key_1', 'executor'),
+        ('key__executor_1', 'key', 'executor_1'),
+    ],
+)
+def test_split_key_executor_name(full_key, key, executor):
+    assert DataRequestHandler._spit_key_and_executor_name(full_key) == (key, executor)
+
+
+@pytest.mark.parametrize(
+    'param, parsed_param, executor_name',
+    [
+        (
+            {'key': 1, 'key__executor': 2, 'key__wrong_executor': 3},
+            {'key': 2},
+            'executor',
+        ),
+        ({'key__executor': 2, 'key__wrong_executor': 3}, {'key': 2}, 'executor'),
+        (
+            {'a': 1, 'key__executor': 2, 'key__wrong_executor': 3},
+            {'key': 2, 'a': 1},
+            'executor',
+        ),
+        ({'key_1': 0, 'key_2__exec2': 1}, {'key_1': 0}, 'executor'),
+    ],
+)
+def test_parse_param(param, parsed_param, executor_name):
+    assert DataRequestHandler._parse_params(param, executor_name) == parsed_param
+
+
+@pytest.mark.parametrize(
+    'name_w_replicas,name', [('exec1/rep-0', 'exec1'), ('exec1', 'exec1')]
+)
+def test_get_name_from_replicas(name_w_replicas, name):
+    assert DataRequestHandler._get_name_from_replicas_name(name_w_replicas) == name
