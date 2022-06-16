@@ -242,11 +242,61 @@ def monitor(
     documentation: Optional[str] = None,
 ):
     """
-    Decorator and context manager that allows monitoring of an Executor. You can access these metrics by enabling the
-    monitoring on your Executor. It will track the time spend calling the function and the number of times it has been
+    Decorator and context manager that allows monitoring of an Executor.
+
+    You can access these metrics by enabling
+    monitoring on your Executor. It will track the time spent calling the function and the number of times it has been
     called. Under the hood it will create a prometheus Summary : https://prometheus.io/docs/practices/histograms/.
 
-    :warning: Don't use this decorator with the @request decorator as it already handle monitoring under the hood
+    EXAMPLE USAGE
+
+        As decorator
+
+        .. code-block:: python
+
+            from jina import Executor, monitor
+
+
+            class MyExecutor(Executor):
+                @requests  # `@requests` are monitored automatically
+                def foo(self, docs, *args, **kwargs):
+                    ...
+                    self.my_method()
+                    ...
+
+                # custom metric for `my_method`
+                @monitor(name='metric_name', documentation='useful information goes here')
+                def my_method(self):
+                    ...
+
+        As context manager
+
+        .. code-block:: python
+
+            from jina import Executor, requests
+
+
+            class MyExecutor(Executor):
+                @requests  # `@requests` are monitored automatically
+                def foo(self, docs, *args, **kwargs):
+                    ...
+                    # custom metric for code block
+                    with self.monitor('metric_name', 'useful information goes here'):
+                        docs = process(docs)
+
+        To enable the defined :meth:`monitor` blocks, enable monitoring on the Flow level
+
+        .. code-block:: python
+
+            from jina import Flow
+
+            f = Flow(monitoring=True, port_monitoring=9090).add(
+                uses=MyExecutor, port_monitoring=9091
+            )
+            with f:
+                ...
+
+    :warning: Don't use this decorator in combination with the @request decorator. @request's are already monitored.
 
     :param name: the name of the metrics, by default it is based on the name of the method it decorates
     :param documentation:  the description of the metrics, by default it is based on the name of the method it decorates
