@@ -940,8 +940,8 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         **kwargs,
     ) -> Union['Flow', 'AsyncFlow']:
         # implementation_stub_inject_start_add
-        """
-        Add a Deployment to the current Flow object and return the new modified Flow object.
+
+        """Add a Deployment to the current Flow object and return the new modified Flow object.
         The attribute of the Deployment can be later changed with :py:meth:`set` or deleted with :py:meth:`remove`
 
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
