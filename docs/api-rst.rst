@@ -14,7 +14,6 @@ For further details, please refer to the full :ref:`user guide <executor-cookboo
 
 .. autosummary::
    :nosignatures:
-   :toctree: stubs/flow
    :template: class.rst
 
    base.Flow
@@ -28,7 +27,6 @@ For further details, please refer to the full :ref:`user guide <executor-cookboo
 
 .. autosummary::
    :nosignatures:
-   :toctree: stubs/executor
    :template: class.rst
 
    Executor
@@ -44,7 +42,6 @@ For further details, please refer to the full :ref:`user guide <executor-cookboo
 
 .. autosummary::
    :nosignatures:
-   :toctree: stubs/clients
    :template: class.rst
 
    Client
@@ -64,7 +61,6 @@ For further details, please refer to the full :ref:`user guide <executor-cookboo
 
 .. autosummary::
    :nosignatures:
-   :toctree: stubs/internals
    :template: class.rst
 
    asyncio.AsyncNewLoopRuntime
