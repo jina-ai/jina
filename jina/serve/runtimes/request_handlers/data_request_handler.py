@@ -112,6 +112,15 @@ class DataRequestHandler:
             raise
 
     @staticmethod
+    def _parse_params(parameters: Dict, executor_name: str):
+        parsed_params = parameters
+        specific_parameters = parameters.get(executor_name, None)
+        if specific_parameters:
+            parsed_params.update(**specific_parameters)
+
+        return parsed_params
+
+    @staticmethod
     def _parse_specific_params(parameters: Dict, executor_name: str):
         """Parse the parameters dictionary to filter executor specific parameters
 
@@ -164,8 +173,9 @@ class DataRequestHandler:
                     self.args.name,
                 ).observe(req.nbytes)
 
+        params = self._parse_params(requests[0].parameters, self._executor.metas.name)
         params = self._parse_specific_params(
-            requests[0].parameters, self._get_name_from_replicas_name(self.args.name)
+            params, self._get_name_from_replicas_name(self.args.name)
         )
 
         docs = DataRequestHandler.get_docs_from_request(
