@@ -526,7 +526,7 @@ Instead, you can configure a common search path for all Executors:</p>
 </div>
 </div>
 <section id="external-executors">
-<h3>External Executors<a class="headerlink" href="#external-executors" title="Permalink to this headline">#</a></h3>
+<span id="id1"></span><h3>External Executors<a class="headerlink" href="#external-executors" title="Permalink to this headline">#</a></h3>
 <p>Usually a Flow will manage all of its Executors. External Executors are not managed by the current Flow object but by others. For example, one may want to share expensive Executors between Flows. Often these Executors are stateless, GPU based Encoders.</p>
 <p>Those Executors are marked with the <code class="docutils literal notranslate"><span class="pre">external</span></code> keyword when added to a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -535,6 +535,17 @@ Instead, you can configure a common search path for all Executors:</p>
 </pre></div>
 </div>
 <p>This is adding an external Executor to the Flow. The Flow will not start or stop this Executor and assumes that is externally managed and available at <code class="docutils literal notranslate"><span class="pre">123.45.67.89:12345</span></code></p>
+<p>You can also use external Executors with <code class="docutils literal notranslate"><span class="pre">tls</span></code> enabled.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;123.45.67.89&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">443</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Using <code class="docutils literal notranslate"><span class="pre">tls</span></code> to connect to the External Executor is especially needed if you want to use an external Executor deployed with JCloud. See the JCloud <a class="reference internal" href="../../jcloud/advanced/#jcloud-external-executors"><span class="std std-ref">documentation</span></a>
+for further details</p>
+</div>
 </section>
 </section>
 <section id="set-configs">
