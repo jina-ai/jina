@@ -43,10 +43,10 @@ executors:
     jcloud:
       capacity: on-demand
 ```
-
+(jcloud-external-executors)=
 ## Deploy external executors
 
-You can also expose the Executors only by setting `expose_gateway` to `false`. Read more about [External Executors.](https://docs.jina.ai/how-to/external-executor/)
+You can also expose the Executors only by setting `expose_gateway` to `false`. Read more about {ref}`External Executors <external-executors>`
 
 ```yaml
 jtype: Flow
