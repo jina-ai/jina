@@ -57,10 +57,11 @@ metrics endpoints:
 * `http://localhost:9090` for the gateway
 * `http://localhost:9091` for the SimpleIndexer
 
-````{admonition} Default Monitoring port
-:class: hint
-The default monitoring port is `9090`, if you want to enable the monitoring on both the Gateway and the Executors you need to specify
-the `prometheus_port` for the Executors. 
+````{admonition} Change the default monitoring port
+:class: caution
+When Jina is used locally, all of the `port_monitoring` will be random by default (within the range [49152, 65535]). However we 
+strongly encourage you to precise these ports for the Gateway and for all of the Executors. Otherwise it will change at 
+restart and you will have to change your Prometheus configuration file.
 ````
 
 

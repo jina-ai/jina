@@ -2560,6 +2560,12 @@
 
                 <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span>
                 <span class="n">v</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span>
+
+                <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_MONITORING</span>
+                <span class="n">v</span><span class="o">.</span><span class="n">first_pod_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_MONITORING</span>
+                <span class="p">)</span>
+
                 <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">default_port</span> <span class="o">=</span> <span class="kc">False</span>
 
             <span class="n">deployment_base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_base_path</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
@@ -2698,7 +2704,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 19, 2022</div>
+                            Last updated on Jun 20, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

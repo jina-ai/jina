@@ -432,10 +432,11 @@ metrics endpoints:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">http://localhost:9090</span></code> for the gateway</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">http://localhost:9091</span></code> for the SimpleIndexer</p></li>
 </ul>
-<div class="hint admonition">
-<p class="admonition-title">Default Monitoring port</p>
-<p>The default monitoring port is <code class="docutils literal notranslate"><span class="pre">9090</span></code>, if you want to enable the monitoring on both the Gateway and the Executors you need to specify
-the <code class="docutils literal notranslate"><span class="pre">prometheus_port</span></code> for the Executors.</p>
+<div class="caution admonition">
+<p class="admonition-title">Change the default monitoring port</p>
+<p>When Jina is used locally, all of the <code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code> will be random by default (within the range [49152, 65535]). However we
+strongly encourage you to precise these ports for the Gateway and for all of the Executors. Otherwise it will change at
+restart and you will have to change your Prometheus configuration file.</p>
 </div>
 <p>Because each Pod in a Flow exposes its own metrics, the monitoring feature can be used independently on each Pod.
 This means that you are not forced to always monitor every Pod of your Flow. For example, you could be only interested in
@@ -608,7 +609,7 @@ Executor.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 19, 2022</div>
+                            Last updated on Jun 20, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

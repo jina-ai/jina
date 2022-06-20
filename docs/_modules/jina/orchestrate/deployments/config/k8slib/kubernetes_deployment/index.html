@@ -413,6 +413,10 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">port</span><span class="p">:</span>
         <span class="n">port</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT</span>
 
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">port_monitoring</span><span class="p">:</span>
+        <span class="n">port_monitoring</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">K8S_PORT_MONITORING</span>
+
+
     <span class="n">deployment_params</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
         <span class="s1">&#39;namespace&#39;</span><span class="p">:</span> <span class="n">namespace</span><span class="p">,</span>
@@ -567,7 +571,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 19, 2022</div>
+                            Last updated on Jun 20, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
