@@ -210,7 +210,6 @@ async def test_runtimes_reconnect(port_generator, protocol, fail_first):
         p.start()
         p.join()
         assert p.exitcode != 0
-        time.sleep(1)
 
         worker_process = _create_worker(worker_port)
 
