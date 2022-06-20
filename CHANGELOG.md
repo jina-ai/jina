@@ -197,6 +197,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14057,4 +14058,34 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```8a35b997```](https://github.com/jina-ai/jina/commit/8a35b997580d84f0412531c7ff01ec85ae4e3f79)] __-__ update requirement to successfully build docs on local (#4910) (*Johannes Messner*)
  - [[```8e19bfdc```](https://github.com/jina-ai/jina/commit/8e19bfdc8f95c209320ab1a2a67216234c44efef)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```3e168dd9```](https://github.com/jina-ai/jina/commit/3e168dd9208365490031345aa0475fbdb4a9a9ce)] __-__ __version__: the next version will be 3.6.3 (*Jina Dev Bot*)
+
+<a name=release-note-3-6-4></a>
+## Release Note (`3.6.4`)
+
+> Release time: 2022-06-20 11:22:38
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ samsja,  Han Xiao,  Jina Dev Bot,  Johannes Messner,  Zac Li,  Sha Zhou,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```84eafa80```](https://github.com/jina-ai/jina/commit/84eafa80a2a6abb0346bff70cfe9008a93db8850)] __-__ fix port monitoring (#4931) (*samsja*)
+ - [[```245891f5```](https://github.com/jina-ai/jina/commit/245891f564dcd9e977817d9c21767bc8d7d74c2d)] __-__ __doc__: update the description and default questions for qabot (#4928) (*Sha Zhou*)
+
+### 📗 Documentation
+
+ - [[```70ce851f```](https://github.com/jina-ai/jina/commit/70ce851f244ea071ed95e048d789141a708d4c1f)] __-__ remove broken api sidebar (#4936) (*Johannes Messner*)
+ - [[```74269235```](https://github.com/jina-ai/jina/commit/7426923589e7a19442daaae6e6b438b58f851fc4)] __-__ examples in docstrings (#4933) (*Johannes Messner*)
+ - [[```3b6b6dda```](https://github.com/jina-ai/jina/commit/3b6b6ddab1370ca4bd398d2213a8318a402844ff)] __-__ create api reference (#4913) (*Johannes Messner*)
+ - [[```1cd8645d```](https://github.com/jina-ai/jina/commit/1cd8645dcf9cfe1afd0d6b8ef285aed182c7e5b0)] __-__ add jcloud version doc (#4929) (*Zac Li*)
+
+### 🍹 Other Improvements
+
+ - [[```07921b52```](https://github.com/jina-ai/jina/commit/07921b5212cfd98b48c8f822cb64277d633483bd)] __-__ fix readme (*Han Xiao*)
+ - [[```944f8e56```](https://github.com/jina-ai/jina/commit/944f8e56321eb5d152d3bb1337c298fd86bc7af6)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```873c5a30```](https://github.com/jina-ai/jina/commit/873c5a30fc3c7d67b858f8c54491492ba9fa2929)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```68af1d07```](https://github.com/jina-ai/jina/commit/68af1d075374028c4dadc9c76d58d5311a3cc921)] __-__ __version__: the next version will be 3.6.4 (*Jina Dev Bot*)
 
