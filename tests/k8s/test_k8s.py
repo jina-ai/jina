@@ -6,9 +6,9 @@ import os
 import pytest
 import requests as req
 import yaml
+from docarray import DocumentArray
 from pytest_kind import cluster
 
-from docarray import DocumentArray
 from jina import Document, Executor, Flow, requests
 from jina.orchestrate.deployments import Deployment
 from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
@@ -245,15 +245,9 @@ async def test_flow_with_monitoring(logger, tmpdir, docker_images, port_generato
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-monitoring')
     namespace = f'test-flow-monitoring'.lower()
 
-    port1 = port_generator()
-    port2 = port_generator()
-    flow = Flow(
-        name='test-flow-monitoring', monitoring=True, port_monitoring=port1
-    ).add(
+    flow = Flow(name='test-flow-monitoring', monitoring=True).add(
         name='segmenter',
         uses=f'docker://{docker_images[0]}',
-        monitoring=True,
-        port_monitoring=port2,
     )
 
     flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
@@ -286,10 +280,21 @@ async def test_flow_with_monitoring(logger, tmpdir, docker_images, port_generato
         .metadata.name
     )
 
-    pod_port_ref = [(gateway_pod_name, port1)]
+    executor_pod_name = (
+        core_client.list_namespaced_pod(
+            namespace=namespace, label_selector='app=segmenter'
+        )
+        .items[0]
+        .metadata.name
+    )
 
-    for (pod_name, port) in pod_port_ref:
-        with portforward.forward(namespace, pod_name, port, port, config_path):
+    port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
+    port = port_generator()
+
+    for pod_name in [gateway_pod_name, executor_pod_name]:
+        with portforward.forward(
+            namespace, pod_name, port, port_monitoring, config_path
+        ):
             resp = req.get(f'http://localhost:{port}/')
             assert resp.status_code == 200
 
