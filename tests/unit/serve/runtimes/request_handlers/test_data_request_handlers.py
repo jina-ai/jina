@@ -139,8 +139,8 @@ async def test_data_request_handler_clear_docs(logger):
     [
         ('key', False),
         ('key_1', False),
-        ('key__executor', True),
-        ('key_2__exec2', True),
+        ('executor__key', True),
+        ('exec2__key_2', True),
         ('__results__', False),
     ],
 )
@@ -151,9 +151,9 @@ def test_is_specific_executor(key_name, is_specific):
 @pytest.mark.parametrize(
     'full_key,key , executor',
     [
-        ('key__executor', 'key', 'executor'),
-        ('key_1__executor', 'key_1', 'executor'),
-        ('key__executor_1', 'key', 'executor_1'),
+        ('executor__key', 'key', 'executor'),
+        ('executor__key_1', 'key_1', 'executor'),
+        ('executor_1__key', 'key', 'executor_1'),
     ],
 )
 def test_split_key_executor_name(full_key, key, executor):
@@ -164,21 +164,23 @@ def test_split_key_executor_name(full_key, key, executor):
     'param, parsed_param, executor_name',
     [
         (
-            {'key': 1, 'key__executor': 2, 'key__wrong_executor': 3},
+            {'key': 1, 'executor__key': 2, 'wrong_executor__key': 3},
             {'key': 2},
             'executor',
         ),
-        ({'key__executor': 2, 'key__wrong_executor': 3}, {'key': 2}, 'executor'),
+        ({'executor__key': 2, 'wrong_executor__key': 3}, {'key': 2}, 'executor'),
         (
-            {'a': 1, 'key__executor': 2, 'key__wrong_executor': 3},
+            {'a': 1, 'executor__key': 2, 'wrong_executor__key': 3},
             {'key': 2, 'a': 1},
             'executor',
         ),
-        ({'key_1': 0, 'key_2__exec2': 1}, {'key_1': 0}, 'executor'),
+        ({'key_1': 0, 'exec2__key_2': 1}, {'key_1': 0}, 'executor'),
     ],
 )
-def test_parse_param(param, parsed_param, executor_name):
-    assert DataRequestHandler._parse_params(param, executor_name) == parsed_param
+def test_parse_specific_param(param, parsed_param, executor_name):
+    assert (
+        DataRequestHandler._parse_specific_params(param, executor_name) == parsed_param
+    )
 
 
 @pytest.mark.parametrize(

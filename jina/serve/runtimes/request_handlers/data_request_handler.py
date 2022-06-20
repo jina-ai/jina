@@ -413,8 +413,8 @@ class DataRequestHandler:
         """
         key_split = key_name.split(DataRequestHandler._SPECIFIC_EXECUTOR_SEPARATOR)
 
-        executor_name = key_split.pop(-1)
-        new_key_name = ''.join(key_split)
+        new_key_name = key_split.pop(-1)
+        executor_name = ''.join(key_split)
 
         return new_key_name, executor_name
 

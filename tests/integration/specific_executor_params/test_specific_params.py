@@ -16,7 +16,7 @@ def test_specific_params():
     with flow:
         response = flow.index(
             DocumentArray.empty(size=5),
-            parameters={'key_1': True, 'key_2__exec2': False},
+            parameters={'key_1': True, 'exec2__key_2': False},
             return_responses=True,
         )
 
