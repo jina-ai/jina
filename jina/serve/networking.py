@@ -29,6 +29,7 @@ if TYPE_CHECKING:
 
 DEFAULT_MINIMUM_RETRIES = 3
 
+
 class ReplicaList:
     """
     Maintains a list of connections to replicas and uses round robin for selecting a replica
@@ -148,6 +149,7 @@ class GrpcConnectionPool:
     K8S_PORT_USES_AFTER = 8082
     K8S_PORT_USES_BEFORE = 8081
     K8S_PORT = 8080
+    K8S_PORT_MONITORING = 9090
 
     class ConnectionStubs:
         """

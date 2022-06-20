@@ -2206,6 +2206,12 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
                 v.args.port = GrpcConnectionPool.K8S_PORT
                 v.first_pod_args.port = GrpcConnectionPool.K8S_PORT
+
+                v.args.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
+                v.first_pod_args.port_monitoring = (
+                    GrpcConnectionPool.K8S_PORT_MONITORING
+                )
+
                 v.args.default_port = False
 
             deployment_base = os.path.join(output_base_path, node)

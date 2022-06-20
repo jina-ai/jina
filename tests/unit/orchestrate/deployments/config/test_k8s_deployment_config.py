@@ -70,6 +70,7 @@ def test_parse_args(
                 'uses_metas',
                 'uses_before_address',
                 'uses_after_address',
+                'port_monitoring',
             ),
         )
         assert (
@@ -129,6 +130,7 @@ def test_parse_args(
             if len(deployment_config.deployment_args['deployments']) > 1
             else 'executor'
         )
+        assert depl_arg.port_monitoring == GrpcConnectionPool.K8S_PORT_MONITORING
         cargs = copy.deepcopy(args)
         cargs.shard_id = i
         assert namespace_equal(
@@ -142,6 +144,7 @@ def test_parse_args(
                 'uses_before',  # the uses_before and after is head business
                 'uses_after',
                 'name',
+                'port_monitoring',
             ),
         )
 
@@ -206,6 +209,7 @@ def test_parse_args_custom_executor(shards: int):
                 'port',
                 'k8s_namespace',
                 'name',
+                'port_monitoring',
             ),
         )
 
