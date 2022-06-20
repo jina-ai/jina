@@ -2,7 +2,6 @@ import asyncio
 import contextlib
 import ipaddress
 import os
-import time
 from collections import defaultdict
 from typing import Dict, List, Optional, Set, Tuple
 from urllib.parse import urlparse
@@ -684,7 +683,7 @@ class GrpcConnectionPool:
         },  # same deployment can have multiple addresses (replicas)
         total_num_tries: int = 1,  # number of retries + 1
         current_address: str = '',  # the specific address that was contacted during this attempt
-        connection_list: ReplicaList = None,
+        connection_list: Optional[ReplicaList] = None,
     ):
         # connection failures, cancelled requests, and timed out requests should be retried
         # all other cases should not be retried and will be raised immediately
@@ -709,9 +708,7 @@ class GrpcConnectionPool:
             # after connection failure the gRPC `channel` gets stuck in a failure state for a few seconds
             # removing and re-adding the connection (stub) is faster & more reliable than just waiting
             if connection_list:
-                await asyncio.create_task(
-                    connection_list.remove_connection(current_address)
-                )
+                await connection_list.remove_connection(current_address)
                 connection_list.add_connection(current_address)
 
             raise InternalNetworkError(
@@ -784,6 +781,7 @@ class GrpcConnectionPool:
                         timeout=timeout,
                     )
                 except AioRpcError as e:
+                    print(f'CONNECTION LIST: {connection_list}')
                     await self._handle_aiorpcerror(
                         error=e,
                         retry_i=i,
