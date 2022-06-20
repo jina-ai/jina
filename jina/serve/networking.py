@@ -781,7 +781,6 @@ class GrpcConnectionPool:
                         timeout=timeout,
                     )
                 except AioRpcError as e:
-                    print(f'CONNECTION LIST: {connection_list}')
                     await self._handle_aiorpcerror(
                         error=e,
                         retry_i=i,
