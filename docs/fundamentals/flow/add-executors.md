@@ -173,7 +173,7 @@ Flow().add(host='123.45.67.89', port=12345, external=True)
 
 This is adding an external Executor to the Flow. The Flow will not start or stop this Executor and assumes that is externally managed and available at `123.45.67.89:12345`
 
-You can use as well external Executor with `tls` enabled.
+You can also use external Executors with `tls` enabled.
 
 ```python
 from jina import Flow
@@ -182,7 +182,7 @@ Flow().add(host='123.45.67.89', port=443, external=True, tls=True)
 ```
 
 ```{hint} 
-Using `tls` to connect to the External Executor is especially needed if you want to use an external Executor deployed with JCloud. See the JCloud {ref}`documentatiom <jcloud-external-executors>`
+Using `tls` to connect to the External Executor is especially needed if you want to use an external Executor deployed with JCloud. See the JCloud {ref}`documentation <jcloud-external-executors>`
 for further details
 ```
 

@@ -46,7 +46,7 @@ executors:
 (jcloud-external-executors)=
 ## Deploy external executors
 
-You can also expose the Executors only by setting `expose_gateway` to `false`. Read more about {ref}`External Executors <external-executors>`
+You can also expose only the Executors by setting `expose_gateway` to `False`. Read more about {ref}`External Executors <external-executors>`
 
 ```yaml
 jtype: Flow
