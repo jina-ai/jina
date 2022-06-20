@@ -2,8 +2,8 @@ import multiprocessing
 import time
 
 import pytest
-
 from docarray import DocumentArray
+
 from jina import Client, Executor, requests
 from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
@@ -161,8 +161,9 @@ async def test_runtimes_headless_topology(
 
 
 @pytest.mark.parametrize('protocol', ['grpc'])
+@pytest.mark.parametrize('fail_first', [False])
 @pytest.mark.asyncio
-async def test_runtimes_reconnect(port_generator, protocol):
+async def test_runtimes_reconnect(port_generator, protocol, fail_first):
     # create gateway and workers manually, then terminate worker process to provoke an error
     worker_port = port_generator()
     gateway_port = port_generator()
@@ -180,19 +181,22 @@ async def test_runtimes_reconnect(port_generator, protocol):
     )
 
     try:
-        # send request while Executor is not UP, WILL FAIL
-        p = multiprocessing.Process(target=_send_request, args=(gateway_port, protocol))
-        p.start()
-        p.join()
-        assert p.exitcode != 0  # The request will fail and raise
+        if fail_first:
+            # send request while Executor is not UP, WILL FAIL
+            p = multiprocessing.Process(
+                target=_send_request, args=(gateway_port, protocol)
+            )
+            p.start()
+            p.join()
+            assert p.exitcode != 0  # The request will fail and raise
 
         worker_process = _create_worker(worker_port)
-        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
             timeout=5.0,
             ctrl_address=f'0.0.0.0:{worker_port}',
             ready_or_shutdown_event=multiprocessing.Event(),
         )
-        # send request while Executor is UP, WILL SUCCEED
+
         p = multiprocessing.Process(target=_send_request, args=(gateway_port, protocol))
         p.start()
         p.join()
@@ -215,7 +219,6 @@ async def test_runtimes_reconnect(port_generator, protocol):
             ctrl_address=f'0.0.0.0:{worker_port}',
             ready_or_shutdown_event=multiprocessing.Event(),
         )
-        # time.sleep(1)
         p = multiprocessing.Process(target=_send_request, args=(gateway_port, protocol))
         p.start()
         p.join()
@@ -235,8 +238,8 @@ async def test_runtimes_reconnect(port_generator, protocol):
         assert False
     finally:  # clean up runtimes
         gateway_process.terminate()
-        worker_process.terminate()
         gateway_process.join()
+        worker_process.terminate()
         worker_process.join()
 
 

@@ -2,6 +2,7 @@ import asyncio
 import contextlib
 import ipaddress
 import os
+import time
 from collections import defaultdict
 from typing import Dict, List, Optional, Set, Tuple
 from urllib.parse import urlparse
@@ -28,6 +29,7 @@ if TYPE_CHECKING:
 
 
 DEFAULT_MINIMUM_RETRIES = 3
+
 
 class ReplicaList:
     """
@@ -551,7 +553,9 @@ class GrpcConnectionPool:
         )
         if connection_list:
             connection = connection_list.get_next_connection()
-        return self._send_discover_endpoint(connection, timeout=timeout)
+        return self._send_discover_endpoint(
+            connection, timeout=timeout, connection_list=connection_list
+        )
 
     def send_request_once(
         self,
@@ -670,42 +674,55 @@ class GrpcConnectionPool:
         """
         await self._connections.close()
 
-    def _handle_aiorpcerror(
+    async def _handle_aiorpcerror(
         self,
-        e: AioRpcError,
+        error: AioRpcError,
         retry_i: int = 0,
         request_id: str = '',
-        dest_addr: Set[str] = {''},
-        num_retries: int = 0,
+        tried_addresses: Set[str] = {
+            ''
+        },  # same deployment can have multiple addresses (replicas)
+        total_num_tries: int = 1,  # number of retries + 1
+        current_address: str = '',  # the specific address that was contacted during this attempt
+        connection_list: ReplicaList = None,
     ):
-        # connection failures and cancelled requests should be retried
+        # connection failures, cancelled requests, and timed out requests should be retried
         # all other cases should not be retried and will be raised immediately
         # connection failures have the code grpc.StatusCode.UNAVAILABLE
         # cancelled requests have the code grpc.StatusCode.CANCELLED
+        # timed out requests have the code grpc.StatusCode.DEADLINE_EXCEEDED
         # requests usually gets cancelled when the server shuts down
         # retries for cancelled requests will hit another replica in K8s
         if (
-            e.code() != grpc.StatusCode.UNAVAILABLE
-            and e.code() != grpc.StatusCode.CANCELLED
-            and e.code() != grpc.StatusCode.DEADLINE_EXCEEDED
+            error.code() != grpc.StatusCode.UNAVAILABLE
+            and error.code() != grpc.StatusCode.CANCELLED
+            and error.code() != grpc.StatusCode.DEADLINE_EXCEEDED
         ):
             raise
         elif (
-            e.code() == grpc.StatusCode.UNAVAILABLE
-            or e.code() == grpc.StatusCode.DEADLINE_EXCEEDED
-        ) and retry_i >= num_retries - 1:
+            error.code() == grpc.StatusCode.UNAVAILABLE
+            or error.code() == grpc.StatusCode.DEADLINE_EXCEEDED
+        ) and retry_i >= total_num_tries - 1:  # retries exhausted. if we land here it already failed once, therefore -1
             self._logger.debug(f'GRPC call failed, retries exhausted')
             from jina.excepts import InternalNetworkError
 
+            # after connection failure the gRPC `channel` gets stuck in a failure state for a few seconds
+            # removing and re-adding the connection (stub) is faster & more reliable than just waiting
+            if connection_list:
+                await asyncio.create_task(
+                    connection_list.remove_connection(current_address)
+                )
+                connection_list.add_connection(current_address)
+
             raise InternalNetworkError(
-                og_exception=e,
+                og_exception=error,
                 request_id=request_id,
-                dest_addr=dest_addr,
-                details=e.details(),
+                dest_addr=tried_addresses,
+                details=error.details(),
             )
         else:
             self._logger.debug(
-                f'GRPC call failed with code {e.code()}, retry attempt {retry_i + 1}/{num_retries - 1}.'
+                f'GRPC call failed with code {error.code()}, retry attempt {retry_i + 1}/{total_num_tries - 1}.'
                 f' Trying next replica, if available.'
             )
 
@@ -740,12 +757,14 @@ class GrpcConnectionPool:
                         timeout=timeout,
                     )
                 except AioRpcError as e:
-                    self._handle_aiorpcerror(
-                        e=e,
+                    await self._handle_aiorpcerror(
+                        error=e,
                         retry_i=i,
                         request_id=requests[0].request_id,
-                        dest_addr=tried_addresses,
-                        num_retries=total_num_tries,
+                        tried_addresses=tried_addresses,
+                        total_num_tries=total_num_tries,
+                        current_address=current_connection.address,
+                        connection_list=connections,
                     )
 
         return asyncio.create_task(task_wrapper())
@@ -754,6 +773,7 @@ class GrpcConnectionPool:
         self,
         connection: ConnectionStubs,
         timeout: Optional[float] = None,
+        connection_list: ReplicaList = None,  # needed for clean network error handling, but not crucial
     ) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
@@ -764,8 +784,12 @@ class GrpcConnectionPool:
                         timeout=timeout,
                     )
                 except AioRpcError as e:
-                    self._handle_aiorpcerror(
-                        e=e, retry_i=i, dest_addr=connection.address
+                    await self._handle_aiorpcerror(
+                        error=e,
+                        retry_i=i,
+                        tried_addresses=connection.address,
+                        current_address=connection.address,
+                        connection_list=connection_list,
                     )
                 except AttributeError:
                     # in gateway2gateway communication, gateway does not expose this endpoint. So just send empty list which corresponds to all endpoints valid
