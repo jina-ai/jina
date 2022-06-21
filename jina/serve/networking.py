@@ -3,7 +3,7 @@ import contextlib
 import ipaddress
 import os
 from collections import defaultdict
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple, Union
 from urllib.parse import urlparse
 
 import grpc
@@ -42,7 +42,7 @@ class ReplicaList:
         self._rr_counter = 0  # round robin counter
         self.summary = summary
 
-    async def reset_connection(self, address: str):
+    async def reset_connection(self, address: str) -> Union[grpc.aio.Channel, None]:
         """
         Removes and then re-adds a connection.
         Result is the same as calling :meth:`remove_connection` and then :meth:`add_connection`, but this allows for
@@ -86,7 +86,7 @@ class ReplicaList:
             self._address_to_channel[address] = channel
             self._connections.append(stubs)
 
-    async def remove_connection(self, address: str):
+    async def remove_connection(self, address: str) -> Union[grpc.aio.Channel, None]:
         """
         Remove connection with address from the connection list
         :param address: Remove connection for this address
