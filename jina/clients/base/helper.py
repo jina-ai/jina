@@ -29,7 +29,13 @@ class AioHttpClientlet(ABC):
         self.msg_recv = 0
         self.msg_sent = 0
         self.session = None
-        self._session_kwargs = kwargs
+        self._session_kwargs = {}
+        if kwargs.get('headers', None):
+            self._session_kwargs['headers'] = kwargs.get('headers')
+        if kwargs.get('auth', None):
+            self._session_kwargs['auth'] = kwargs.get('auth')
+        if kwargs.get('cookies', None):
+            self._session_kwargs['cookies'] = kwargs.get('cookies')
 
     @abstractmethod
     async def send_message(self, **kwargs):
