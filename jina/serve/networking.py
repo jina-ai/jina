@@ -42,6 +42,52 @@ class ReplicaList:
         self._rr_counter = 0  # round robin counter
         self.summary = summary
 
+    async def reset_connection(self, address: str):
+        """
+        Removes and then re-adds a connection.
+        Result is the same as calling :meth:`remove_connection` and then :meth:`add_connection`, but this allows for
+        handling of race condition if multiple callers reset a connection at the same time.
+
+        :param address: Target address of this connection
+        :returns: The reset connection or None if there was no connection for the given address
+        """
+        if (
+            address in self._address_to_connection_idx
+            and self._address_to_connection_idx[address] is not None
+        ):
+            # remove connection:
+            self._rr_counter = (
+                self._rr_counter % (len(self._connections) - 1)
+                if (len(self._connections) - 1)
+                else 0
+            )
+            idx_to_update = self._address_to_connection_idx[address]
+            self._address_to_connection_idx[address] = None
+            reset_connection = self._connections[idx_to_update]
+            self._connections[idx_to_update] = None
+            closing_channel = self._address_to_channel[address]
+            self._address_to_channel[address] = None
+            # we should handle graceful termination better, 0.5 is a rather random number here
+            await closing_channel.close(0.5)
+
+            # re-add connection:
+            try:
+                parsed_address = urlparse(address)
+                address = parsed_address.netloc if parsed_address.netloc else address
+                use_tls = parsed_address.scheme in TLS_PROTOCOL_SCHEMES
+            except:
+                use_tls = False
+
+            self._address_to_connection_idx[address] = idx_to_update
+            stubs, channel = GrpcConnectionPool.create_async_channel_stub(
+                address, tls=use_tls, summary=self.summary
+            )
+            self._address_to_channel[address] = channel
+            self._connections[idx_to_update] = stubs
+
+            return reset_connection
+        return None
+
     def add_connection(self, address: str):
         """
         Add connection with address to the connection list
@@ -91,15 +137,28 @@ class ReplicaList:
 
         return None
 
-    def get_next_connection(self):
+    async def get_next_connection(self):
         """
         Returns a connection from the list. Strategy is round robin
         :returns: A connection from the pool
         """
         try:
-            connection = self._connections[self._rr_counter]
+            connection = None
+            for _ in range(len(self._connections)):
+                connection = self._connections[self._rr_counter]
+                if (
+                    connection is not None
+                ):  # can be None when there is a race condition in _resetting_ a connection
+                    break
+            if (
+                connection is None
+            ):  # if still None, then all connections were affected by race condition
+                await asyncio.sleep(
+                    0
+                )  # give control to async event loop so race cond. can resolve itself; then retry
+                return await self.get_next_connection()
         except IndexError:
-            # This can happen as a race condition while removing connections
+            # This can happen as a race condition while _removing_ connections
             self._rr_counter = 0
             connection = self._connections[self._rr_counter]
         self._rr_counter = (self._rr_counter + 1) % len(self._connections)
@@ -547,14 +606,11 @@ class GrpcConnectionPool:
         :param timeout: timeout for sending the requests
         :return: asyncio.Task items to send call
         """
-        connection = None
         connection_list = self._connections.get_replicas(
             deployment, head, shard_id, False
         )
-        if connection_list:
-            connection = connection_list.get_next_connection()
         return self._send_discover_endpoint(
-            connection, timeout=timeout, connection_list=connection_list
+            timeout=timeout, connection_list=connection_list
         )
 
     def send_request_once(
@@ -709,8 +765,7 @@ class GrpcConnectionPool:
             # after connection failure the gRPC `channel` gets stuck in a failure state for a few seconds
             # removing and re-adding the connection (stub) is faster & more reliable than just waiting
             if connection_list:
-                await connection_list.remove_connection(current_address)
-                connection_list.add_connection(current_address)
+                await connection_list.reset_connection(current_address)
 
             raise InternalNetworkError(
                 og_exception=error,
@@ -745,7 +800,7 @@ class GrpcConnectionPool:
             else:
                 total_num_tries = 1 + retries  # try once, then do all the retries
             for i in range(total_num_tries):
-                current_connection = connections.get_next_connection()
+                current_connection = await connections.get_next_connection()
                 tried_addresses.add(current_connection.address)
                 try:
                     return await current_connection.send_requests(
@@ -769,13 +824,15 @@ class GrpcConnectionPool:
 
     def _send_discover_endpoint(
         self,
-        connection: ConnectionStubs,
+        connection_list: ReplicaList,
         timeout: Optional[float] = None,
-        connection_list: ReplicaList = None,  # needed for clean network error handling, but not crucial
     ) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
         async def task_wrapper():
+            connection = None
+            if connection_list:
+                connection = await connection_list.get_next_connection()
             for i in range(3):
                 try:
                     return await connection.send_discover_endpoint(
