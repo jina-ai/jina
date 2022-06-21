@@ -76,23 +76,12 @@ def test_client_on_error_call(protocol, exception):
     ],
 )
 def test_client_on_error_raise_exception(protocol, exception):
-    class OnError:
-        def __init__(self):
-            self.is_called = False
 
-        def __call__(self, response, exception_param: Optional[Exception] = None):
-            self.is_called = True
-            assert type(exception_param) == exception
-
-    on_error = OnError()
-
-    Client(host='0.0.0.0', protocol=protocol, port=12345).post(
-        '/blah',
-        inputs=DocumentArray.empty(10),
-        on_error=on_error,
-    )
-
-    assert on_error.is_called
+    with pytest.raises(exception):
+        Client(host='0.0.0.0', protocol=protocol, port=12345).post(
+            '/blah',
+            inputs=DocumentArray.empty(10),
+        )
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
