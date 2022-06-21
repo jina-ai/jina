@@ -160,8 +160,8 @@ async def test_runtimes_headless_topology(
         worker_process.join()
 
 
-@pytest.mark.parametrize('protocol', ['grpc'])
-@pytest.mark.parametrize('fail_first', [False])
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'grpc'])
+@pytest.mark.parametrize('fail_first', [True, False])
 @pytest.mark.asyncio
 async def test_runtimes_reconnect(port_generator, protocol, fail_first):
     # create gateway and workers manually, then terminate worker process to provoke an error

@@ -78,9 +78,10 @@ class ReplicaList:
             idx_to_delete = self._address_to_connection_idx.pop(address)
 
             popped_connection = self._connections.pop(idx_to_delete)
-            # we should handle graceful termination better, 0.5 is a rather random number here
-            await self._address_to_channel[address].close(0.5)
+            closing_channel = self._address_to_channel[address]
             del self._address_to_channel[address]
+            # we should handle graceful termination better, 0.5 is a rather random number here
+            await closing_channel.close(0.5)
             # update the address/idx mapping
             for address in self._address_to_connection_idx:
                 if self._address_to_connection_idx[address] > idx_to_delete:
