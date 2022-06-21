@@ -46,6 +46,7 @@ filelock:                   standard,devel
 requests:                   standard,devel
 websockets:                 standard,devel
 pydantic:                   standard,devel
+importlib_metadata:         core
 python-multipart:           standard,devel
 aiofiles:                   standard,devel
 aiohttp:                    standard,devel
