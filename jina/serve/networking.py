@@ -146,16 +146,13 @@ class ReplicaList:
             connection = None
             for _ in range(len(self._connections)):
                 connection = self._connections[self._rr_counter]
-                if (
-                    connection is not None
-                ):  # can be None when there is a race condition in _resetting_ a connection
+                # connection is None when there is a race condition in _resetting_ a connection. In that case, retry.
+                if connection is not None:
                     break
-            if (
-                connection is None
-            ):  # if still None, then all connections were affected by race condition
-                await asyncio.sleep(
-                    0
-                )  # give control to async event loop so race cond. can resolve itself; then retry
+            if connection is None:
+                # if still None, then all connections were affected by race condition
+                # give control back to async event loop so race condition can resolve itself; then retry
+                await asyncio.sleep(0)
                 return await self.get_next_connection()
         except IndexError:
             # This can happen as a race condition while _removing_ connections
