@@ -145,9 +145,9 @@ class ReplicaList:
         try:
             connection = None
             for i in range(len(self._connections)):
-                internal_rr_counter = self._rr_counter + i % len(self._connections)
+                internal_rr_counter = (self._rr_counter + i) % len(self._connections)
                 connection = self._connections[internal_rr_counter]
-                # connection is None when there is a race condition in _resetting_ a connection. In that case, retry.
+                # connection can be None when there is a race condition in _resetting_ a connection. In that case, retry
                 if connection is not None:
                     break
             if connection is None:
