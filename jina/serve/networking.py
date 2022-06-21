@@ -56,36 +56,23 @@ class ReplicaList:
             and self._address_to_connection_idx[address] is not None
         ):
             # remove connection:
-            self._rr_counter = (
-                self._rr_counter % (len(self._connections) - 1)
-                if (len(self._connections) - 1)
-                else 0
-            )
-            idx_to_update = self._address_to_connection_idx[address]
+            # in contrast to remove_connection(), we don't 'shorten' the data structures below, instead just set to None
+            # so if someone else accesses them in the meantime (race condition), they know that they can just wait
+            id_to_reset = self._address_to_connection_idx[address]
             self._address_to_connection_idx[address] = None
-            reset_connection = self._connections[idx_to_update]
-            self._connections[idx_to_update] = None
-            closing_channel = self._address_to_channel[address]
+            connection_to_reset = self._connections[id_to_reset]
+            self._connections[id_to_reset] = None
+            channel_to_reset = self._address_to_channel[address]
             self._address_to_channel[address] = None
-            # we should handle graceful termination better, 0.5 is a rather random number here
-            await closing_channel.close(0.5)
+            await self._destroy_connection(channel_to_reset)
 
             # re-add connection:
-            try:
-                parsed_address = urlparse(address)
-                address = parsed_address.netloc if parsed_address.netloc else address
-                use_tls = parsed_address.scheme in TLS_PROTOCOL_SCHEMES
-            except:
-                use_tls = False
-
-            self._address_to_connection_idx[address] = idx_to_update
-            stubs, channel = GrpcConnectionPool.create_async_channel_stub(
-                address, tls=use_tls, summary=self.summary
-            )
+            self._address_to_connection_idx[address] = id_to_reset
+            stubs, channel = self._create_connection(address)
             self._address_to_channel[address] = channel
-            self._connections[idx_to_update] = stubs
+            self._connections[id_to_reset] = stubs
 
-            return reset_connection
+            return connection_to_reset
         return None
 
     def add_connection(self, address: str):
@@ -94,19 +81,9 @@ class ReplicaList:
         :param address: Target address of this connection
         """
         if address not in self._address_to_connection_idx:
-            try:
-                parsed_address = urlparse(address)
-                address = parsed_address.netloc if parsed_address.netloc else address
-                use_tls = parsed_address.scheme in TLS_PROTOCOL_SCHEMES
-            except:
-                use_tls = False
-
             self._address_to_connection_idx[address] = len(self._connections)
-            stubs, channel = GrpcConnectionPool.create_async_channel_stub(
-                address, tls=use_tls, summary=self.summary
-            )
+            stubs, channel = self._create_connection(address)
             self._address_to_channel[address] = channel
-
             self._connections.append(stubs)
 
     async def remove_connection(self, address: str):
@@ -122,12 +99,10 @@ class ReplicaList:
                 else 0
             )
             idx_to_delete = self._address_to_connection_idx.pop(address)
-
             popped_connection = self._connections.pop(idx_to_delete)
             closing_channel = self._address_to_channel[address]
             del self._address_to_channel[address]
-            # we should handle graceful termination better, 0.5 is a rather random number here
-            await closing_channel.close(0.5)
+            await self._destroy_connection(closing_channel)
             # update the address/idx mapping
             for address in self._address_to_connection_idx:
                 if self._address_to_connection_idx[address] > idx_to_delete:
@@ -136,6 +111,23 @@ class ReplicaList:
             return popped_connection
 
         return None
+
+    def _create_connection(self, address):
+        try:
+            parsed_address = urlparse(address)
+            address = parsed_address.netloc if parsed_address.netloc else address
+            use_tls = parsed_address.scheme in TLS_PROTOCOL_SCHEMES
+        except:
+            use_tls = False
+
+        stubs, channel = GrpcConnectionPool.create_async_channel_stub(
+            address, tls=use_tls, summary=self.summary
+        )
+        return stubs, channel
+
+    async def _destroy_connection(self, connection, grace=0.5):
+        # we should handle graceful termination better, 0.5 is a rather random number here
+        await connection.close(grace)
 
     async def get_next_connection(self):
         """
