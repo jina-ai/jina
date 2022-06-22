@@ -104,6 +104,8 @@ class DataRequest(Request):
         request: Optional[RequestSourceType] = None,
     ):
         self.buffer = None
+        self._buffer_when_load_wo_data = None
+
         try:
             if isinstance(request, jina_pb2.DataRequestProto):
                 self._pb_body = request
@@ -129,27 +131,81 @@ class DataRequest(Request):
     @property
     def is_decompressed(self) -> bool:
         """
-        Checks if the underlying proto object was already deserialized
-
-        :return: True if the proto was deserialized before
+        Checks if the underlying proto object was already deserialized into a :class:`jina.proto.jina_pb2.DataRequestProto`
+        or a :class:`jina.proto.jina_pb2.DataRequestProtoWoDocs`
+           :return: True if the proto was deserialized before
         """
         return self.buffer is None
 
     @property
-    def proto(self) -> 'jina_pb2.DataRequestProto':
+    def is_decompressed_wo_data(self) -> bool:
         """
-        Cast ``self`` to a :class:`jina_pb2.DataRequestProto`. Laziness will be broken and serialization will be recomputed when calling
-        :meth:`SerializeToString`.
-        :return: protobuf instance
+        Checks if the underlying proto object was already deserialized into a :class:`jina.proto.jina_pb2.DataRequestProtoWoDocs` i,e
+         a DataRequest without docs
+
+        :return: True if the proto was deserialized before into a DataRequest without docs
+        """
+        return self.is_decompressed and self._buffer_when_load_wo_data is not None
+
+    @property
+    def proto_wo_data(self) -> 'jina_pb2.DataRequestProtoWoDocs':
+        """
+        Transform the current buffer to a :class:`jina_pb2.DataRequestProtoWoDocs`. Laziness will be broken and
+        serialization will be recomputed when calling :meth:`SerializeToString`. :return: protobuf instance
+        :return: DataRequestProtoWoDocs protobuf instance
         """
         if not self.is_decompressed:
-            self._decompress()
+            self._decompress_wo_data()
         return self._pb_body
 
+    @property
+    def proto(self) -> 'jina_pb2.DataRequestProto':
+        """
+        Cast ``self`` to a :class:`jina_pb2.DataRequestProto`. Laziness will be broken and serialization will be recomputed when calling.
+        Under the hood it is calling :meth:`jina.types.request.data.DataRequest.proto_wo_data`. This method is keep for legacy.
+        :meth:`SerializeToString`.
+        :return: DataRequestProto protobuf instance
+        """
+        return self.proto_data
+
+    @property
+    def proto_data(self) -> 'jina_pb2.DataRequestProto':
+        """
+        Transform the current buffer to a :class:`jina_pb2.DataRequestProto`. Laziness will be broken and
+        serialization will be recomputed when calling :meth:`SerializeToString`. :return: protobuf instance
+        :return: DataRequestProto protobuf instance
+        """
+        if not self.is_decompressed:
+            if self.is_decompressed_wo_data:
+                self._decompress_from_wo_data_buffer()
+            else:
+                self._decompress()
+        return self._pb_body
+
+    def _decompress_wo_data(self):
+        """Decompress the buffer into a DataRequestProto without docs, it is useful if one want to access the parameters
+        or the header of the proto without the cost of deserializing the Docs."""
+
+        # Under the hood it used a different DataRequestProto (the DataRequestProtoWoDocs) that will just ignore the
+        # bytes from the bytes related to the docs that are store at the end of the Proto buffer
+
+        self._pb_body = jina_pb2.DataRequestProtoWoDocs()
+        self._pb_body.ParseFromString(self.buffer)
+        self._buffer_when_load_wo_data = self.buffer
+        self.buffer = None
+
     def _decompress(self):
+        """Decompress the buffer into a DataRequestProto"""
         self._pb_body = jina_pb2.DataRequestProto()
         self._pb_body.ParseFromString(self.buffer)
         self.buffer = None
+
+    def _decompress_from_wo_data_buffer(self):
+        """Decompress the buffer into a DataRequestProto when the buffer has already been deserialized into a
+        DataRequestProtoWoDocs"""
+        self._pb_body = jina_pb2.DataRequestProto()
+        self._pb_body.ParseFromString(self._buffer_when_load_wo_data)
+        self._buffer_when_load_wo_data = None
 
     def to_dict(self) -> Dict:
         """Return the object in Python dictionary.
@@ -179,7 +235,7 @@ class DataRequest(Request):
 
     @cached_property
     def data(self) -> 'DataRequest._DataContent':
-        """Get the data contaned in this data request
+        """Get the data contained in this data request
 
         :return: the data content as an instance of _DataContent wrapping docs
         """
@@ -191,7 +247,7 @@ class DataRequest(Request):
         :return: a Python dict view of the parameters.
         """
         # if u get this u need to have it decompressed
-        return json_format.MessageToDict(self.proto.parameters)
+        return json_format.MessageToDict(self.proto_wo_data.parameters)
 
     @parameters.setter
     def parameters(self, value: Dict):
@@ -217,7 +273,7 @@ class DataRequest(Request):
 
         :return: the status object of this request
         """
-        return self.proto.header.status
+        return self.proto_wo_data.header.status
 
     @property
     def request_id(self):
