@@ -3,12 +3,10 @@ import time
 
 import pytest
 import requests
-from docarray import Document, DocumentArray
 
-from jina import Executor, Flow, __windows__, helper
+from jina import Executor, Flow, helper
 from jina import requests as req
 from jina.clients import Client
-from jina.excepts import BadClientInput
 from jina.orchestrate.pods.factory import PodFactory
 from jina.parsers import set_gateway_parser
 from tests import random_docs
