@@ -121,6 +121,17 @@ message DataRequestProto {
     DataContentProto data = 4; // container for docs and groundtruths
 }
 
+message DataRequestProtoWoDocs {
+
+    HeaderProto header = 1; // header contains meta info defined by the user
+
+    google.protobuf.Struct parameters = 2; // extra kwargs that will be used in executor
+
+    repeated RouteProto routes = 3; // status info on every routes
+
+}
+
+
 /**
  * Represents a list of data requests
  * This should be replaced by streaming
