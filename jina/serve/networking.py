@@ -134,19 +134,31 @@ class ReplicaList:
         Returns a connection from the list. Strategy is round robin
         :returns: A connection from the pool
         """
+        return await self._get_next_connection(num_retries=3)
+
+    async def _get_next_connection(self, num_retries=0):
+        """
+        :param num_retries: how many retries should be performed when all connections are currently unavailable
+        :returns: A connection from the pool
+        """
         try:
             connection = None
             for i in range(len(self._connections)):
                 internal_rr_counter = (self._rr_counter + i) % len(self._connections)
                 connection = self._connections[internal_rr_counter]
-                # connection can be None when there is a race condition in _resetting_ a connection. In that case, retry
+                # connection is None if it is currently being reset. In that case, try different connection
                 if connection is not None:
                     break
-            if connection is None:
-                # if still None, then all connections were affected by race condition
-                # give control back to async event loop so race condition can resolve itself; then retry
+            if connection is None and num_retries <= 0:
+                # if still None, then all connections are currently being reset
+                if num_retries <= 0:
+                    raise ConnectionError(
+                        f'All connections in {self._connections} are currently being reset and cannot be used.'
+                    )
+            elif connection is None:
+                # give control back to async event loop so connection resetting can be completed; then retry
                 await asyncio.sleep(0)
-                return await self.get_next_connection()
+                return await self._get_next_connection(num_retries=num_retries - 1)
         except IndexError:
             # This can happen as a race condition while _removing_ connections
             self._rr_counter = 0
