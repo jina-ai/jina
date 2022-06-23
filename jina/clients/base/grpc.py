@@ -132,3 +132,6 @@ class GRPCBaseClient(BaseClient):
                 ) from err
             else:
                 raise BadClient(msg) from err
+        except:
+            # Not sure why, adding this line helps in fixing a hanging test
+            raise

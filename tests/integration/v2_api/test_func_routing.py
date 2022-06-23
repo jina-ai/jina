@@ -121,9 +121,9 @@ def test_func_joiner():
 
     f = (
         Flow(port=port)
-        .add(uses=M1)
-        .add(uses=M2, needs='gateway')
-        .add(uses=Joiner, needs=['executor0', 'executor1'])
+        .add(name='executor0', uses=M1)
+        .add(name='executor1', uses=M2, needs='gateway')
+        .add(uses=Joiner, needs=['executor0', 'executor1'], disable_reduce=True)
     )
 
     with f:

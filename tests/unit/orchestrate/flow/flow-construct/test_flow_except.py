@@ -279,7 +279,7 @@ def test_flow_startup_exception_not_hanging_invalid_config(protocol):
             pass
 
 
-def test_flow_does_not_import_exec_depencies():
+def test_flow_does_not_import_exec_dependencies():
     cur_dir = os.path.dirname(os.path.abspath(__file__))
     f = Flow().add(
         name='importErrorExecutor',
@@ -301,11 +301,9 @@ def test_flow_head_runtime_failure(monkeypatch):
 
     monkeypatch.setattr(DataRequestHandler, 'merge_routes', fail)
 
-    with pytest.raises(BadServer) as err_info:
-        with Flow().add(shards=2) as f:
-            f.index(
-                [Document(text='abbcs')],
-            )
+    with Flow().add(shards=2) as f:
+        with pytest.raises(BadServer) as err_info:
+            f.index([Document(text='abbcs')])
     err_text = err_info.value.args[0].status.description
     assert 'NotImplementedError' in err_text
     assert 'Intentional' in err_text and 'error' in err_text
