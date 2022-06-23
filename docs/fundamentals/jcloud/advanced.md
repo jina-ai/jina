@@ -90,3 +90,26 @@ executors:
   - name: custom
     uses: jinahub+docker://CustomExecutor
 ```
+
+## Flow retention days
+
+In Jcloud, we have default life-cycle(24hrs) for each flow and we will remove flows periodically if they are beyond the life-cycle. To change the default behavior and manage it by yourself, you can setup `retention_days` args in `jcloud`. `-1` is never expired, `0` is to use the default life-cycle, or `X`(0<X<365), which means keep the flow utill X days. `0` is the default value if you don't pass `retention_days` argument.
+
+```yaml
+jtype: Flow
+jcloud:
+  retention_days: -1
+executors:
+  - name: custom
+    uses: jinahub+docker://CustomExecutor
+```
+
+## Jcloud Annotations
+
+To manage `jcloud` resources in kubernetes, we will update the annotations to resources. Below are the arguments that will pass to kubernetes annotation and its format.
+
+```
+'jina.ai/jina-version': jcloud.version # jina version of flows
+'jina.ai/retention-days': jcloud.retention_days # flow retetion period
+'jina.ai/user': flow.user # User of the flow
+```

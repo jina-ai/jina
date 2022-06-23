@@ -35,7 +35,10 @@ class GRPCBaseClient(BaseClient):
                 stub = jina_pb2_grpc.JinaGatewayDryRunRPCStub(channel)
                 self.logger.debug(f'connected to {self.args.host}:{self.args.port}')
                 call_result = stub.dry_run(
-                    jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(), **kwargs
+                    jina_pb2.google_dot_protobuf_dot_empty__pb2.Empty(),
+                    metadata=kwargs.get('metadata', None),
+                    credentials=kwargs.get('credentials', None),
+                    timeout=kwargs.get('timeout', None),
                 )
                 metadata, response = (
                     await call_result.trailing_metadata(),
@@ -75,12 +78,14 @@ class GRPCBaseClient(BaseClient):
                 self.logger.debug(f'connected to {self.args.host}:{self.args.port}')
 
                 with ProgressBar(
-                    total_length=self._inputs_length, disable=not (self.show_progress)
+                    total_length=self._inputs_length, disable=not self.show_progress
                 ) as p_bar:
-
                     async for resp in stub.Call(
                         req_iter,
                         compression=self.compression,
+                        metadata=kwargs.get('metadata', None),
+                        credentials=kwargs.get('credentials', None),
+                        timeout=kwargs.get('timeout', None),
                     ):
                         callback_exec(
                             response=resp,

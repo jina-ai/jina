@@ -1,12 +1,11 @@
 from typing import Optional
 
 import aiohttp
-import grpc
 import numpy as np
 import pytest
-from docarray import DocumentArray
 from docarray.document.generators import from_ndarray
 
+from docarray import DocumentArray
 from jina import Client, Flow
 from jina.excepts import BadClientCallback
 
