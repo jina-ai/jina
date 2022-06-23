@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/clients/base/websocket.html" />
 
-    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+    <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
         <title>jina.clients.base.websocket - Jina 3.6.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -379,7 +379,7 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Sends a dry run to the Flow to validate if the Flow is ready to receive requests</span>
 
-<span class="sd">        :param kwargs: potential kwargs received passed from the public interface</span>
+<span class="sd">        :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `WebsocketClientlet`</span>
 <span class="sd">        :return: boolean indicating the readiness of the Flow</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
@@ -387,7 +387,7 @@
                 <span class="n">proto</span> <span class="o">=</span> <span class="s1">&#39;wss&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tls</span> <span class="k">else</span> <span class="s1">&#39;ws&#39;</span>
                 <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">proto</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/dry_run&#39;</span>
                 <span class="n">iolet</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_async_context</span><span class="p">(</span>
-                    <span class="n">WebsocketClientlet</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+                    <span class="n">WebsocketClientlet</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="p">)</span>
 
                 <span class="k">async</span> <span class="k">def</span> <span class="nf">_receive</span><span class="p">():</span>
@@ -438,7 +438,7 @@
 <span class="sd">        :param on_done: the callback for on_done</span>
 <span class="sd">        :param on_error: the callback for on_error</span>
 <span class="sd">        :param on_always: the callback for on_always</span>
-<span class="sd">        :param kwargs: kwargs for _get_task_name and _get_requests</span>
+<span class="sd">        :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `WebsocketClientlet`</span>
 <span class="sd">        :yields: generator over results</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -457,7 +457,7 @@
                 <span class="n">proto</span> <span class="o">=</span> <span class="s1">&#39;wss&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tls</span> <span class="k">else</span> <span class="s1">&#39;ws&#39;</span>
                 <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">proto</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/&#39;</span>
                 <span class="n">iolet</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_async_context</span><span class="p">(</span>
-                    <span class="n">WebsocketClientlet</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+                    <span class="n">WebsocketClientlet</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="p">)</span>
 
                 <span class="n">request_buffer</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
@@ -573,7 +573,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 20, 2022</div>
+                            Last updated on Jun 23, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

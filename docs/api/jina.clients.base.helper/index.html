@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.clients.base.helper.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.04.1"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
         <title>jina.clients.base.helper module - Jina 3.6.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -386,7 +386,7 @@
 <span id="jina-clients-base-helper-module"></span><h1>jina.clients.base.helper module<a class="headerlink" href="#module-jina.clients.base.helper" title="Permalink to this headline">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.clients.base.helper.AioHttpClientlet">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">AioHttpClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">AioHttpClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>aiohttp session manager</p>
 <p>HTTP Client to be used with the streamer</p>
@@ -395,19 +395,22 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>url</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – url to send http/websocket request to</p></li>
 <li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaLogger</span></code></a>) – jina logger</p></li>
+<li><p><strong>kwargs</strong> – kwargs  which will be forwarded to the <cite>aiohttp.Session</cite> instance. Used to pass headers to requests</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.clients.base.helper.AioHttpClientlet.send_message">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet.send_message" title="Permalink to this definition">#</a></dt>
-<dd><p>Send message to Gateway</p>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet.send_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet.send_message" title="Permalink to this definition">#</a></dt>
+<dd><p>Send message to Gateway
+:param kwargs: kwargs which will be forwarded to the <cite>aiohttp.Session.post</cite> method. Used to pass headers to requests</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.clients.base.helper.AioHttpClientlet.send_dry_run">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_dry_run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet.send_dry_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet.send_dry_run" title="Permalink to this definition">#</a></dt>
-<dd><p>Query the dry_run endpoint from Gateway</p>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">send_dry_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#AioHttpClientlet.send_dry_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.AioHttpClientlet.send_dry_run" title="Permalink to this definition">#</a></dt>
+<dd><p>Query the dry_run endpoint from Gateway
+:param kwargs: kwargs which will be forwarded to the <cite>aiohttp.Session.post</cite> method. Used to pass headers to requests</p>
 </dd></dl>
 
 <dl class="py method">
@@ -451,7 +454,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.clients.base.helper.HTTPClientlet">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">HTTPClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#HTTPClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.HTTPClientlet" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.base.helper.</span></span><span class="sig-name descname"><span class="pre">HTTPClientlet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/base/helper/#HTTPClientlet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.base.helper.HTTPClientlet" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.clients.base.helper.AioHttpClientlet" title="jina.clients.base.helper.AioHttpClientlet"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.base.helper.AioHttpClientlet</span></code></a></p>
 <p>HTTP Client to be used with the streamer</p>
 <p>HTTP Client to be used with the streamer</p>
@@ -460,6 +463,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>url</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – url to send http/websocket request to</p></li>
 <li><p><strong>logger</strong> (<a class="reference internal" href="../jina.logging.logger/#jina.logging.logger.JinaLogger" title="jina.logging.logger.JinaLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaLogger</span></code></a>) – jina logger</p></li>
+<li><p><strong>kwargs</strong> – kwargs  which will be forwarded to the <cite>aiohttp.Session</cite> instance. Used to pass headers to requests</p></li>
 </ul>
 </dd>
 </dl>
@@ -552,6 +556,7 @@ In contrast to the iterator built into AioHTTP, this also records the message th
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>url</strong> – url to send http/websocket request to</p></li>
 <li><p><strong>logger</strong> – jina logger</p></li>
+<li><p><strong>kwargs</strong> – kwargs  which will be forwarded to the <cite>aiohttp.Session</cite> instance. Used to pass headers to requests</p></li>
 </ul>
 </dd>
 </dl>
@@ -688,7 +693,7 @@ we need to make sure we don’t create multiple tasks with <cite>recv_message</c
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 20, 2022</div>
+                            Last updated on Jun 23, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
