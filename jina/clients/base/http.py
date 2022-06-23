@@ -44,7 +44,7 @@ class HTTPBaseClient(BaseClient):
     async def _dry_run(self, **kwargs) -> bool:
         """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
 
-        :param kwargs: potential kwargs received passed from the public interface
+        :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `HTTPClientlet`
         :return: boolean indicating the health/readiness of the Flow
         """
         from jina.proto import jina_pb2
@@ -54,10 +54,10 @@ class HTTPBaseClient(BaseClient):
                 proto = 'https' if self.args.tls else 'http'
                 url = f'{proto}://{self.args.host}:{self.args.port}/dry_run'
                 iolet = await stack.enter_async_context(
-                    HTTPClientlet(url=url, logger=self.logger)
+                    HTTPClientlet(url=url, logger=self.logger, **kwargs)
                 )
 
-                response = await iolet.send_dry_run()
+                response = await iolet.send_dry_run(**kwargs)
                 r_status = response.status
 
                 r_str = await response.json()
@@ -83,7 +83,7 @@ class HTTPBaseClient(BaseClient):
         :param on_done: the callback for on_done
         :param on_error: the callback for on_error
         :param on_always: the callback for on_always
-        :param kwargs: kwargs for _get_task_name and _get_requests
+        :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `HTTPClientlet`
         :yields: generator over results
         """
         with ImportExtensions(required=True):
@@ -102,7 +102,7 @@ class HTTPBaseClient(BaseClient):
                 proto = 'https' if self.args.tls else 'http'
                 url = f'{proto}://{self.args.host}:{self.args.port}/post'
                 iolet = await stack.enter_async_context(
-                    HTTPClientlet(url=url, logger=self.logger)
+                    HTTPClientlet(url=url, logger=self.logger, **kwargs)
                 )
 
                 def _request_handler(request: 'Request') -> 'asyncio.Future':

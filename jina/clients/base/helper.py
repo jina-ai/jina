@@ -17,26 +17,38 @@ if TYPE_CHECKING:
 class AioHttpClientlet(ABC):
     """aiohttp session manager"""
 
-    def __init__(self, url: str, logger: 'JinaLogger') -> None:
+    def __init__(self, url: str, logger: 'JinaLogger', **kwargs) -> None:
         """HTTP Client to be used with the streamer
 
         :param url: url to send http/websocket request to
         :param logger: jina logger
+        :param kwargs: kwargs  which will be forwarded to the `aiohttp.Session` instance. Used to pass headers to requests
         """
         self.url = url
         self.logger = logger
         self.msg_recv = 0
         self.msg_sent = 0
         self.session = None
+        self._session_kwargs = {}
+        if kwargs.get('headers', None):
+            self._session_kwargs['headers'] = kwargs.get('headers')
+        if kwargs.get('auth', None):
+            self._session_kwargs['auth'] = kwargs.get('auth')
+        if kwargs.get('cookies', None):
+            self._session_kwargs['cookies'] = kwargs.get('cookies')
 
     @abstractmethod
-    async def send_message(self):
-        """Send message to Gateway"""
+    async def send_message(self, **kwargs):
+        """Send message to Gateway
+        :param kwargs: kwargs which will be forwarded to the `aiohttp.Session.post` method. Used to pass headers to requests
+        """
         ...
 
     @abstractmethod
-    async def send_dry_run(self):
-        """Query the dry_run endpoint from Gateway"""
+    async def send_dry_run(self, **kwargs):
+        """Query the dry_run endpoint from Gateway
+        :param kwargs: kwargs which will be forwarded to the `aiohttp.Session.post` method. Used to pass headers to requests
+        """
         ...
 
     @abstractmethod
@@ -63,7 +75,7 @@ class AioHttpClientlet(ABC):
         with ImportExtensions(required=True):
             import aiohttp
 
-        self.session = aiohttp.ClientSession()
+        self.session = aiohttp.ClientSession(**self._session_kwargs)
         await self.session.__aenter__()
         return self
 
@@ -206,6 +218,7 @@ class WebsocketClientlet(AioHttpClientlet):
         self.websocket = await self.session.ws_connect(
             url=self.url,
             protocols=(WebsocketSubProtocols.BYTES.value,),
+            **self._session_kwargs,
         ).__aenter__()
         self.response_iter = WsResponseIter(self.websocket)
         return self

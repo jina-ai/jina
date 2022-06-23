@@ -7,7 +7,7 @@ from jina.helper import get_or_reuse_loop, run_async
 from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:
-    from jina import DocumentArray
+    from docarray import DocumentArray
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request import Response
 
@@ -221,7 +221,7 @@ class AsyncPostMixin:
         :param show_progress: if set, client will show a progress bar on receiving every request.
         :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.
         :param return_responses: if set to True, the result will come as Response and not as a `DocumentArray`
-        :param kwargs: additional parameters
+        :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call
         :yield: Response object
 
         .. warning::
