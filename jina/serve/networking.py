@@ -86,9 +86,16 @@ class ReplicaList:
             self._address_to_channel[address] = channel
             self._connections.append(stubs)
 
-    async def remove_connection(self, address: str) -> Union[grpc.aio.Channel, None]:
+    async def _remove_connection(self, address: str) -> Union[grpc.aio.Channel, None]:
         """
         Remove connection with address from the connection list
+
+        .. warning::
+            This completely removes the connection, including all dictionary keys that point to it.
+            Therefore be careful not to call this method while iterating over all connections.
+            If you want to reset (remove and re-add) a connection, use :meth:`jina.serve.networking.ReplicaList.reset_connection`,
+            which is safe to use in this scenario.
+
         :param address: Remove connection for this address
         :returns: The removed connection or None if there was not any for the given address
         """
@@ -475,7 +482,7 @@ class GrpcConnectionPool:
                 )
                 connection = await self._deployments[deployment][type][
                     entity_id
-                ].remove_connection(address)
+                ]._remove_connection(address)
                 if not self._deployments[deployment][type][entity_id].has_connections():
                     del self._deployments[deployment][type][entity_id]
                 return connection

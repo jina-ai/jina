@@ -44,7 +44,7 @@ async def test_connection_list(mocker, monkeypatch):
     assert connection_list.has_connection(address='1.1.1.1')
     assert connection_list.has_connection(address='1.1.1.2')
 
-    assert await connection_list.remove_connection(address='1.1.1.2')
+    assert await connection_list._remove_connection(address='1.1.1.2')
     assert not connection_list.has_connection(address='1.1.1.2')
 
     connection_list.add_connection(address='1.1.1.2')
@@ -55,7 +55,7 @@ async def test_connection_list(mocker, monkeypatch):
     assert connection_list.get_next_connection()
     assert connection_list.get_next_connection()
 
-    assert await connection_list.remove_connection('1.1.1.2')
+    assert await connection_list._remove_connection('1.1.1.2')
     assert connection_list.get_next_connection()
     await connection_list.close()
 
