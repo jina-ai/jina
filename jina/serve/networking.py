@@ -113,12 +113,9 @@ class ReplicaList:
         return None
 
     def _create_connection(self, address):
-        try:
-            parsed_address = urlparse(address)
-            address = parsed_address.netloc if parsed_address.netloc else address
-            use_tls = parsed_address.scheme in TLS_PROTOCOL_SCHEMES
-        except:
-            use_tls = False
+        parsed_address = urlparse(address)
+        address = parsed_address.netloc if parsed_address.netloc else address
+        use_tls = parsed_address.scheme in TLS_PROTOCOL_SCHEMES
 
         stubs, channel = GrpcConnectionPool.create_async_channel_stub(
             address, tls=use_tls, summary=self.summary
