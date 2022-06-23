@@ -280,13 +280,15 @@ After performing {meth}`~jina.clients.mixin.PostMixin.post`, you may want to fur
 
 For this purpose, Jina implements a promise-like interface, letting you specify three kinds of callback functions:
 
-- `on_done` is executed after successful completion of one request while streaming
-- `on_error` is executed whenever an error occurs in one request while streaming
-- `on_always` is always performed, no matter the success or failure of one request while streaming
+- `on_done` is executed while streaming, after successful completion of each request
+- `on_error` is executed while streaming, whenever an error occurs in each request
+- `on_always` is always performed while streaming, no matter the success or failure of each request
 
 
-Note that, these callbacks only work for requests while streaming. If the failure is due to an error happening outside of 
-streaming, then these callbacks will not be triggered. For example, a `SIGKILL` from the client OS during the handling of the request
+Note that these callbacks only work for requests (and failures) *inside the stream*, for example inside an Executor.
+If the failure is due to an error happening outside of 
+streaming, then these callbacks will not be triggered.
+For example, a `SIGKILL` from the client OS during the handling of the request, or a networking issue,
 will not trigger the callback.
 
 
