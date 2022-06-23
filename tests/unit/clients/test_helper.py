@@ -1,9 +1,10 @@
 import aiohttp
 import pytest
-from jina import Flow, Executor, requests
-from jina.logging.logger import JinaLogger
-from jina.clients.request.helper import _new_data_request
+
+from jina import Executor, Flow, requests
 from jina.clients.base.helper import HTTPClientlet, WebsocketClientlet
+from jina.clients.request.helper import _new_data_request
+from jina.logging.logger import JinaLogger
 from jina.types.request.data import DataRequest
 
 logger = JinaLogger('clientlet')
