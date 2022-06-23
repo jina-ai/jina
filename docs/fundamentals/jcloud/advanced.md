@@ -103,13 +103,3 @@ executors:
   - name: custom
     uses: jinahub+docker://CustomExecutor
 ```
-
-## Jcloud Annotations
-
-To manage `jcloud` resources in kubernetes, we will update the annotations to resources. Below are the arguments that will pass to kubernetes annotation and its format.
-
-```
-'jina.ai/jina-version': jcloud.version # jina version of flows
-'jina.ai/retention-days': jcloud.retention_days # flow retetion period
-'jina.ai/user': flow.user # User of the flow
-```
