@@ -198,6 +198,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14089,4 +14090,30 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```944f8e56```](https://github.com/jina-ai/jina/commit/944f8e56321eb5d152d3bb1337c298fd86bc7af6)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
  - [[```873c5a30```](https://github.com/jina-ai/jina/commit/873c5a30fc3c7d67b858f8c54491492ba9fa2929)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```68af1d07```](https://github.com/jina-ai/jina/commit/68af1d075374028c4dadc9c76d58d5311a3cc921)] __-__ __version__: the next version will be 3.6.4 (*Jina Dev Bot*)
+
+<a name=release-note-3-6-5></a>
+## Release Note (`3.6.5`)
+
+> Release time: 2022-06-23 07:57:23
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  tarrantro,  Jina Dev Bot,  samsja,  Kelly,  🙇
+
+
+### 🆕 New Features
+
+ - [[```65d68735```](https://github.com/jina-ai/jina/commit/65d6873500f008dafba193340f8731bca39bc7dc)] __-__ expose kwargs to Clients (#4947) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```6715f0b3```](https://github.com/jina-ai/jina/commit/6715f0b357fc7dd89e260ef9d9239efa720268a8)] __-__ add wolf annotations document (#4944) (*tarrantro*)
+ - [[```aeb44de5```](https://github.com/jina-ai/jina/commit/aeb44de5132e23cd67596369ea0026f5a8aaa9ad)] __-__ add external executor tls for jcloud (#4942) (*samsja*)
+
+### 🍹 Other Improvements
+
+ - [[```5c446cf8```](https://github.com/jina-ai/jina/commit/5c446cf8243103c8c3fca5c1b737f9c6b7e5ab9b)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```ace551ff```](https://github.com/jina-ai/jina/commit/ace551ffd0ec688866d85986c5d72b9f0e1d1542)] __-__ update JClould banner (#4938) (*Kelly*)
+ - [[```9dac3f69```](https://github.com/jina-ai/jina/commit/9dac3f693b6b7d89b9b02095b68e7e07cb358087)] __-__ __version__: the next version will be 3.6.5 (*Jina Dev Bot*)
 
