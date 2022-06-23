@@ -3,9 +3,9 @@ from typing import Optional
 import aiohttp
 import numpy as np
 import pytest
+from docarray import DocumentArray
 from docarray.document.generators import from_ndarray
 
-from docarray import DocumentArray
 from jina import Client, Flow
 from jina.excepts import BadClientCallback
 
@@ -81,43 +81,3 @@ def test_client_on_error_raise_exception(protocol, exception):
             '/blah',
             inputs=DocumentArray.empty(10),
         )
-
-
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_client_on_error_deprecation(protocol):
-    class OnError:
-        def __init__(self):
-            self.is_called = False
-
-        def __call__(self, response):  # this is deprecated
-            self.is_called = True
-
-    on_error = OnError()
-
-    Client(host='0.0.0.0', protocol=protocol, port=12345).post(
-        '/blah',
-        inputs=DocumentArray.empty(10),
-        on_error=on_error,
-    )
-
-    assert on_error.is_called
-
-
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
-def test_client_on_always_after_exception(protocol):
-    class OnAlways:
-        def __init__(self):
-            self.is_called = False
-
-        def __call__(self, response):
-            self.is_called = True
-
-    on_always = OnAlways()
-
-    Client(host='0.0.0.0', protocol=protocol, port=12345).post(
-        '/blah',
-        inputs=DocumentArray.empty(10),
-        on_always=on_always,
-    )
-
-    assert on_always.is_called
