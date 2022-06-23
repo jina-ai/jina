@@ -144,9 +144,12 @@ class PathImporter:
         # assume paths are Python module names
         not_python_module_paths = []
         for path in paths:
-            try:
-                importlib.import_module(path)
-            except:
+            if not os.path.isfile(path):
+                try:
+                    importlib.import_module(path)
+                except:
+                    not_python_module_paths.append(path)
+            else:
                 not_python_module_paths.append(path)
 
         # try again, but assume they are file paths instead of module names
