@@ -133,7 +133,7 @@ def test_lazy_parameters():
     r.parameters = parameters
     byte_array = DataRequestProto.SerializeToString(r)
 
-    deserialized_request = DataRequestProto.FromString(byte_array)
+    deserialized_request = DataRequest(byte_array)
     assert not deserialized_request.is_decompressed
     assert deserialized_request.parameters == parameters
     assert deserialized_request.is_decompressed_wo_data
@@ -152,7 +152,7 @@ def test_send_data_request_wo_data():
 
     byte_array = DataRequestProto.SerializeToString(r)
 
-    deserialized_request = DataRequestProto.FromString(byte_array)
+    deserialized_request = DataRequest(byte_array)
 
     assert deserialized_request.parameters is not None
     assert deserialized_request.is_decompressed_wo_data
@@ -174,7 +174,7 @@ def test_delete_of_pb2_wo_data():
 
     byte_array = DataRequestProto.SerializeToString(r)
 
-    deserialized_request = DataRequestProto.FromString(byte_array)
+    deserialized_request = DataRequest(byte_array)
 
     assert (
         deserialized_request.parameters is not None
