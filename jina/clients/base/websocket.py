@@ -102,7 +102,7 @@ class WebSocketBaseClient(BaseClient):
             proto = 'wss' if self.args.tls else 'ws'
             url = f'{proto}://{self.args.host}:{self.args.port}/'
             iolet = await stack.enter_async_context(
-                WebsocketClientlet(url=url, logger=self.logger **kwargs)
+                WebsocketClientlet(url=url, logger=self.logger, **kwargs)
             )
 
             request_buffer: Dict[
