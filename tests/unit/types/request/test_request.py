@@ -122,7 +122,7 @@ def test_status():
     assert not deserialized_request.is_decompressed
 
 
-def test_lazy_parameters():
+def test_load_parameters_wo_loading_data():  # test that accessing parameters does not load the data
     doc_count = 1000
     r = DataRequest()
     da = r.docs
@@ -143,7 +143,7 @@ def test_lazy_parameters():
         deserialized_request._pb_body_wo_data.data
 
 
-def test_send_data_request_wo_data():
+def test_send_data_request_wo_data():  # check that when sending a DataRequestWoData the docs are sent
     doc_count = 1000
     r = DataRequest()
     da = r.docs
@@ -165,7 +165,7 @@ def test_send_data_request_wo_data():
     assert final_request.docs == r.docs
 
 
-def test_delete_of_pb2_wo_data():
+def test_delete_of_pb2_wo_data():  # ensure that pb2_wo_data is destroyed when accessing data
     doc_count = 1000
     r = DataRequest()
     da = r.docs
