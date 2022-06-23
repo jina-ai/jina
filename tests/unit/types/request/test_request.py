@@ -140,7 +140,7 @@ def test_lazy_parameters():
     assert not deserialized_request.is_decompressed
 
     with pytest.raises(AttributeError):
-        deserialized_request._pb_body.data
+        deserialized_request._pb_body_wo_data.data
 
 
 def test_send_data_request_wo_data():
