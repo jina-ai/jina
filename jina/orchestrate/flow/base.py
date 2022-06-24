@@ -1159,7 +1159,8 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
         op_flow._deployment_nodes[deployment_name] = Deployment(args, needs)
 
-        op_flow._last_deployment = deployment_name
+        if not args.floating:
+            op_flow._last_deployment = deployment_name
 
         return op_flow
 
@@ -1362,7 +1363,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         hanging_deployments = _hanging_deployments(op_flow)
         if hanging_deployments:
             op_flow.logger.warning(
-                f'{hanging_deployments} are hanging in this flow with no deployment receiving from them, '
+                f'{hanging_deployments} are "floating" in this flow with no deployment receiving from them, '
                 f'you may want to double check if it is intentional or some mistake'
             )
         op_flow._build_level = FlowBuildLevel.GRAPH

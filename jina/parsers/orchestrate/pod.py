@@ -111,3 +111,11 @@ def mixin_pod_parser(parser):
         dest='retries',
         help=f'Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)',
     )
+
+    gp.add_argument(
+        '--floating',
+        action='store_true',
+        default=False,
+        help='If set, the current Pod/Deployment can not be further chained, '
+        'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
+    )
