@@ -25,7 +25,7 @@ class BadExecutor(Executor):
 
 @pytest.mark.parametrize('protocol', ['http', 'grpc', 'websocket'])
 def test_bad_flow(mocker, protocol):
-    def validate(req, e: Exception = None):
+    def validate(req):
         bad_routes = [
             r for r in req.routes if r.status.code == jina_pb2.StatusProto.ERROR
         ]
@@ -52,7 +52,7 @@ def test_bad_flow(mocker, protocol):
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_bad_flow_customized(mocker, protocol):
-    def validate(req, e: Exception = None):
+    def validate(req):
         bad_routes = [
             r for r in req.routes if r.status.code == jina_pb2.StatusProto.ERROR
         ]
@@ -89,7 +89,7 @@ class MyExecutor(Executor):
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_except_with_shards(mocker, protocol):
-    def validate(req, e: Exception = None):
+    def validate(req):
         assert req.status.code == jina_pb2.StatusProto.ERROR
         err_routes = [
             r.status for r in req.routes if r.status.code == jina_pb2.StatusProto.ERROR
