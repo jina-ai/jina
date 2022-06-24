@@ -1959,22 +1959,31 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
         if self.monitoring:
             for name, deployment in self:
-                _address = [
-                    f'[link=http://localhost:{deployment.args.port_monitoring}]Local[/]',
-                    f'[link=http://{self.address_private}:{deployment.args.port_monitoring}]Private[/]',
-                ]
-
-                if self.address_public:
-                    _address.append(
-                        f'[link=http://{self.address_public}:{deployment.args.port_monitoring}]Public[/]'
-                    )
 
                 if deployment.args.monitoring:
-                    address_table.add_row(
-                        ':bar_chart:',
-                        f'Monitor [b]{name}:{deployment.args.port_monitoring}[/]',
-                        '·'.join(_address),
-                    )
+
+                    for replica in deployment.pod_args['pods'][0]:
+                        _address = [
+                            f'[link=http://localhost:{replica.port_monitoring}]Local[/]',
+                            f'[link=http://{self.address_private}:{replica.port_monitoring}]Private[/]',
+                        ]
+
+                        if self.address_public:
+                            _address.append(
+                                f'[link=http://{self.address_public}:{deployment.args.port_monitoring}]Public[/]'
+                            )
+
+                        _name = (
+                            name
+                            if len(deployment.pod_args['pods'][0]) == 1
+                            else replica.name
+                        )
+
+                        address_table.add_row(
+                            ':bar_chart:',
+                            f'Monitor [b]{_name}:{replica.port_monitoring}[/]',
+                            '·'.join(_address),
+                        )
 
         return address_table
 
