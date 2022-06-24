@@ -1,4 +1,5 @@
 from jina import Client, Document, DocumentArray, Executor, Flow, requests
+from jina.helper import random_port
 
 
 def test_func_simple_routing():
@@ -12,10 +13,12 @@ def test_func_simple_routing():
             assert kwargs['parameters']['topk'] == 10
             kwargs['docs'][0].tags['hello'] = 'world'
 
-    f = Flow(port=1234).add(uses=MyExecutor)
+    port = random_port()
+
+    f = Flow(port=port).add(uses=MyExecutor)
 
     with f:
-        results = Client(port=1234).post(
+        results = Client(port=f.port).post(
             on='/search',
             inputs=[(Document(), Document()) for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
@@ -25,7 +28,7 @@ def test_func_simple_routing():
         assert results[0].data.docs[0].tags['hello'] == 'world'
 
     with f:
-        results = Client(port=1234).post(
+        results = Client(port=f.port).post(
             on='/random',
             inputs=[Document() for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
@@ -40,13 +43,16 @@ def test_func_failure():
         def foo(self, **kwargs):
             raise Exception()
 
-    f = Flow(port=1234).add(uses=MyExecutor)
+    port = random_port()
+
+    f = Flow(port=port).add(uses=MyExecutor)
 
     with f:
-        results = Client(port=1234).post(
+        results = Client(port=f.port).post(
             on='/search',
             inputs=[(Document(), Document()) for _ in range(3)],
             return_responses=True,
+            continue_on_error=True,
         )
 
     assert results[0].header.status.code == 1
@@ -60,10 +66,11 @@ def test_func_default_routing():
                 assert j in kwargs
             assert len(kwargs['docs']) == 3
 
-    f = Flow(port=1234).add(uses=MyExecutor)
+    port = random_port()
+    f = Flow(port=port).add(uses=MyExecutor)
 
     with f:
-        Client(port=1234).post(
+        Client(port=f.port).post(
             on='/some_endpoint',
             inputs=[Document() for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
@@ -77,10 +84,11 @@ def test_func_return_():
         def foo(self, **kwargs):
             return DocumentArray([Document(), Document()])
 
-    f = Flow(port=1234).add(uses=MyExecutor)
+    port = random_port()
+    f = Flow(port=port).add(uses=MyExecutor)
 
     with f:
-        Client(port=1234).post(
+        Client(port=f.port).post(
             on='/some_endpoint',
             inputs=[Document() for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
@@ -89,7 +97,9 @@ def test_func_return_():
         )
 
 
-def test_func_joiner(mocker):
+def test_func_joiner():
+    port = random_port()
+
     class Joiner(Executor):
         @requests
         def foo(self, docs_matrix, **kwargs):
@@ -110,14 +120,14 @@ def test_func_joiner(mocker):
                 d.text = f'world {idx}'
 
     f = (
-        Flow(port=1234)
-        .add(uses=M1)
-        .add(uses=M2, needs='gateway')
-        .add(uses=Joiner, needs=['executor0', 'executor1'])
+        Flow(port=port)
+        .add(name='executor0', uses=M1)
+        .add(name='executor1', uses=M2, needs='gateway')
+        .add(uses=Joiner, needs=['executor0', 'executor1'], disable_reduce=True)
     )
 
     with f:
-        resp = Client(port=1234).post(
+        resp = Client(port=f.port).post(
             on='/some_endpoint',
             inputs=[Document() for _ in range(3)],
             parameters={'hello': 'world', 'topk': 10},
@@ -129,10 +139,11 @@ def test_func_joiner(mocker):
 
 
 def test_dealer_routing(mocker):
-    f = Flow(port=1234).add(shards=3)
+    port = random_port()
+    f = Flow(port=port).add(shards=3)
     mock = mocker.Mock()
     with f:
-        Client(port=1234).post(
+        Client(port=f.port).post(
             on='/some_endpoint',
             inputs=[Document() for _ in range(100)],
             request_size=2,
@@ -154,12 +165,14 @@ def test_target_executor(mocker):
         def bar(self, **kwargs):
             pass
 
-    f = Flow(port=1234).add(name='p0', uses=Foo).add(name='p1', uses=Bar)
+    port = random_port()
+
+    f = Flow(port=port).add(name='p0', uses=Foo).add(name='p1', uses=Bar)
 
     with f:
         success_mock = mocker.Mock()
         fail_mock = mocker.Mock()
-        Client(port=1234).post(
+        Client(port=f.port).post(
             '/hello',
             target_executor='p0',
             inputs=Document(),
@@ -188,15 +201,16 @@ def test_target_executor_with_overlaped_name(mocker):
         def success(self, **kwargs):
             pass
 
+    port = random_port()
     f = (
-        Flow(port=1234)
+        Flow(port=port)
         .add(uses=FailExecutor, name='foo_with_what_ever_suffix')
         .add(uses=PassExecutor, name='foo')
     )
 
     with f:
         mock = mocker.Mock()
-        Client(port=1234).post(
+        Client(port=f.port).post(
             on='/foo',
             target_executor='^foo$',
             inputs=Document(),
@@ -207,9 +221,10 @@ def test_target_executor_with_overlaped_name(mocker):
 
 
 def test_target_executor_with_one_pathways():
-    f = Flow(port=1234).add().add(name='my_target')
+    port = random_port()
+    f = Flow(port=port).add().add(name='my_target')
     with f:
-        results = Client(port=1234).post(
+        results = Client(port=f.port).post(
             on='/search',
             inputs=Document(),
             target_executor='my_target',
@@ -219,9 +234,10 @@ def test_target_executor_with_one_pathways():
 
 
 def test_target_executor_with_two_pathways():
-    f = Flow(port=1234).add().add(needs=['gateway', 'executor0'], name='my_target')
+    port = random_port()
+    f = Flow(port=port).add().add(needs=['gateway', 'executor0'], name='my_target')
     with f:
-        results = Client(port=1234).post(
+        results = Client(port=f.port).post(
             on='/search',
             inputs=Document(),
             target_executor='my_target',
@@ -231,9 +247,10 @@ def test_target_executor_with_two_pathways():
 
 
 def test_target_executor_with_two_pathways_one_skip():
-    f = Flow(port=1234).add().add(needs=['gateway', 'executor0']).add(name='my_target')
+    port = random_port()
+    f = Flow(port=port).add().add(needs=['gateway', 'executor0']).add(name='my_target')
     with f:
-        results = Client(port=1234).post(
+        results = Client(port=f.port).post(
             on='/search',
             inputs=Document(),
             target_executor='my_target',
@@ -243,9 +260,10 @@ def test_target_executor_with_two_pathways_one_skip():
 
 
 def test_target_executor_with_shards():
-    f = Flow(port=1234).add(shards=2).add(name='my_target')
+    port = random_port()
+    f = Flow(port=port).add(shards=2).add(name='my_target')
     with f:
-        results = Client(port=1234).post(
+        results = Client(port=f.port).post(
             on='/search',
             inputs=Document(),
             target_executor='my_target',
