@@ -1524,11 +1524,11 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
             )
             t_m.start()
 
-            # kick off ip getter thread
-            addr_table = self._init_table()
+            # kick off ip getter thread, address, http, graphq
+            all_panels = []
 
             t_ip = threading.Thread(
-                target=self._get_address_table, args=(addr_table,), daemon=True
+                target=self._get_address_table, args=(all_panels,), daemon=True
             )
             t_ip.start()
 
@@ -1545,14 +1545,10 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                 )
                 self.close()
                 raise RuntimeFailToStart
+            from rich.rule import Rule
 
-        if addr_table:
             print(
-                Panel(
-                    addr_table,
-                    title=':tada: [b]Flow is ready to serve![/]',
-                    expand=False,
-                )
+                Rule(':tada: Flow is ready to serve!'), *all_panels
             )  # can't use logger here see : https://github.com/Textualize/rich/discussions/2024
         self.logger.debug(
             f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
@@ -1870,24 +1866,27 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         return self._deployment_nodes.items().__iter__()
 
     def _init_table(self):
-        table = Table(title=None, box=None, highlight=True, show_header=False)
+        table = Table(
+            title=None, box=None, highlight=True, show_header=False, min_width=40
+        )
+        table.add_column('', justify='left')
         table.add_column('', justify='right')
         table.add_column('', justify='right')
-        table.add_column('', justify='right')
-        table.add_column('', justify='right')
-
         return table
 
-    def _get_address_table(self, address_table):
+    def _get_address_table(self, all_panels: List[Panel]):
+
+        address_table = self._init_table()
+
         _protocol = str(self.protocol)
         if self.gateway_args.ssl_certfile and self.gateway_args.ssl_keyfile:
             _protocol = f'{self.protocol}S'
             address_table.add_row(
-                ':link:', 'Protocol', f':closed_lock_with_key: {_protocol}'
+                ':chains:', 'Protocol', f':closed_lock_with_key: {_protocol}'
             )
 
         else:
-            address_table.add_row(':link:', 'Protocol', _protocol)
+            address_table.add_row(':chains:', 'Protocol', _protocol)
 
         _protocol = _protocol.lower()
         address_table.add_row(
@@ -1908,7 +1907,17 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                 f'[link={_protocol}://{self.address_public}:{self.port}]{self.address_public}:{self.port}[/]',
             )
 
+        all_panels.append(
+            Panel(
+                address_table,
+                title=':link: [b]Endpoint[/]',
+                expand=False,
+            )
+        )
+
         if self.protocol == GatewayProtocolType.HTTP:
+
+            http_ext_table = self._init_table()
 
             _address = [
                 f'[link={_protocol}://localhost:{self.port}/docs]Local[/]',
@@ -1918,10 +1927,10 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                 _address.append(
                     f'[link={_protocol}://{self.address_public}:{self.port}/docs]Public[/]'
                 )
-            address_table.add_row(
+            http_ext_table.add_row(
                 ':speech_balloon:',
-                'Swagger UI [dim](/docs)[/]',
-                '·'.join(_address),
+                'Swagger UI',
+                '.../docs',
             )
 
             _address = [
@@ -1934,10 +1943,10 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                     f'[link={_protocol}://{self.address_public}:{self.port}/redoc]Public[/]'
                 )
 
-            address_table.add_row(
+            http_ext_table.add_row(
                 ':books:',
-                'Redoc [dim](/redoc)[/]',
-                '·'.join(_address),
+                'Redoc',
+                '.../redoc',
             )
 
             if self.gateway_args.expose_graphql_endpoint:
@@ -1951,32 +1960,61 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                         f'[link={_protocol}://{self.address_public}:{self.port}/graphql]Public[/]'
                     )
 
-                address_table.add_row(
+                http_ext_table.add_row(
                     ':strawberry:',
-                    'GraphQL UI [dim](/graphql)[/]',
-                    '·'.join(_address),
+                    'GraphQL UI',
+                    '.../graphql',
                 )
 
-        if self.monitoring:
-            for name, deployment in self:
-                _address = [
-                    f'[link=http://localhost:{deployment.args.port_monitoring}]Local[/]',
-                    f'[link=http://{self.address_private}:{deployment.args.port_monitoring}]Private[/]',
-                ]
+            all_panels.append(
+                Panel(
+                    http_ext_table,
+                    title=':gem: [b]HTTP extension[/]',
+                    expand=False,
+                )
+            )
 
-                if self.address_public:
-                    _address.append(
-                        f'[link=http://{self.address_public}:{deployment.args.port_monitoring}]Public[/]'
-                    )
+        if self.monitoring:
+            monitor_ext_table = self._init_table()
+
+            for name, deployment in self:
 
                 if deployment.args.monitoring:
-                    address_table.add_row(
-                        ':bar_chart:',
-                        f'Monitor [b]{name}:{deployment.args.port_monitoring}[/]',
-                        '·'.join(_address),
-                    )
 
-        return address_table
+                    for replica in deployment.pod_args['pods'][0]:
+                        _address = [
+                            f'[link=http://localhost:{replica.port_monitoring}]Local[/]',
+                            f'[link=http://{self.address_private}:{replica.port_monitoring}]Private[/]',
+                        ]
+
+                        if self.address_public:
+                            _address.append(
+                                f'[link=http://{self.address_public}:{deployment.args.port_monitoring}]Public[/]'
+                            )
+
+                        _name = (
+                            name
+                            if len(deployment.pod_args['pods'][0]) == 1
+                            else replica.name
+                        )
+
+                        monitor_ext_table.add_row(
+                            ':flashlight:',  # upstream issue: they dont have :torch: emoji, so we use :flashlight:
+                            # to represent observability of Prometheus (even they have :torch: it will be a war
+                            # between AI community and Cloud-native community fighting on this emoji)
+                            _name,
+                            f'...[b]:{replica.port_monitoring}[/]',
+                        )
+
+            all_panels.append(
+                Panel(
+                    monitor_ext_table,
+                    title=':gem: [b]Prometheus extension[/]',
+                    expand=False,
+                )
+            )
+
+        return all_panels
 
     @allowed_levels([FlowBuildLevel.RUNNING])
     def block(
