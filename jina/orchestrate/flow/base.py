@@ -1494,7 +1494,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
         progress = Progress(
             SpinnerColumn(),
-            TextColumn('Waiting [b]{task.fields[pending_str]}[/]', justify='right'),
+            TextColumn('Waiting [b]{task.fields[pending_str]}[/]...', justify='right'),
             BarColumn(),
             MofNCompleteColumn(),
             TimeElapsedColumn(),
@@ -1516,27 +1516,26 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                     daemon=True,
                 )
                 threads.append(t)
-                t.start()
-
-            # kick off spinner thread
-            t_m = threading.Thread(
-                target=_polling_status, args=(progress, task), daemon=True
-            )
-            t_m.start()
 
             # kick off ip getter thread, address, http, graphq
             all_panels = []
 
             t_ip = threading.Thread(
-                target=self._get_address_table, args=(all_panels,), daemon=True
+                target=self._get_summary_table, args=(all_panels, results), daemon=True
             )
-            t_ip.start()
+            threads.append(t_ip)
+
+            # kick off spinner thread
+            t_m = threading.Thread(
+                target=_polling_status, args=(progress, task), daemon=True
+            )
+            threads.append(t_m)
+
+            for t in threads:
+                t.start()
 
             for t in threads:
                 t.join()
-            if t_ip is not None:
-                t_ip.join()
-            t_m.join()
 
             error_deployments = [k for k, v in results.items() if v != 'done']
             if error_deployments:
@@ -1874,7 +1873,9 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         table.add_column('', justify='right')
         return table
 
-    def _get_address_table(self, all_panels: List[Panel]):
+    def _get_summary_table(self, all_panels: List[Panel], results):
+
+        results['summary'] = 'pending'
 
         address_table = self._init_table()
 
@@ -2014,6 +2015,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                 )
             )
 
+        results['summary'] = 'done'
         return all_panels
 
     @allowed_levels([FlowBuildLevel.RUNNING])
