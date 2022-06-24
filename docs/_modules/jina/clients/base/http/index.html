@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/clients/base/http.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>jina.clients.base.http - Jina 3.6.5 documentation</title>
+        <title>jina.clients.base.http - Jina 3.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -146,7 +146,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.6.5 documentation</div>
+                <div class="brand">Jina 3.6.6 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -360,7 +360,7 @@
 
 <span class="kn">from</span> <span class="nn">jina.clients.base</span> <span class="kn">import</span> <span class="n">BaseClient</span>
 <span class="kn">from</span> <span class="nn">jina.clients.base.helper</span> <span class="kn">import</span> <span class="n">HTTPClientlet</span>
-<span class="kn">from</span> <span class="nn">jina.clients.helper</span> <span class="kn">import</span> <span class="n">callback_exec</span><span class="p">,</span> <span class="n">callback_exec_on_error</span>
+<span class="kn">from</span> <span class="nn">jina.clients.helper</span> <span class="kn">import</span> <span class="n">callback_exec</span>
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">BadClient</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="kn">import</span> <span class="n">ProgressBar</span>
@@ -447,83 +447,62 @@
         <span class="n">request_iterator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_requests</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncExitStack</span><span class="p">()</span> <span class="k">as</span> <span class="n">stack</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">cm1</span> <span class="o">=</span> <span class="n">ProgressBar</span><span class="p">(</span>
-                    <span class="n">total_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_inputs_length</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">)</span>
+            <span class="n">cm1</span> <span class="o">=</span> <span class="n">ProgressBar</span><span class="p">(</span>
+                <span class="n">total_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_inputs_length</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">p_bar</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">cm1</span><span class="p">)</span>
+
+            <span class="n">proto</span> <span class="o">=</span> <span class="s1">&#39;https&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tls</span> <span class="k">else</span> <span class="s1">&#39;http&#39;</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">proto</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/post&#39;</span>
+            <span class="n">iolet</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_async_context</span><span class="p">(</span>
+                <span class="n">HTTPClientlet</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">_request_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;asyncio.Future&#39;</span><span class="p">:</span>
+                <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                For HTTP Client, for each request in the iterator, we `send_message` using</span>
+<span class="sd">                http POST request and add it to the list of tasks which is awaited and yielded.</span>
+<span class="sd">                :param request: current request in the iterator</span>
+<span class="sd">                :return: asyncio Task for sending message</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">iolet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">))</span>
+
+            <span class="k">def</span> <span class="nf">_result_handler</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">result</span>
+
+            <span class="n">streamer</span> <span class="o">=</span> <span class="n">RequestStreamer</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+                <span class="n">request_handler</span><span class="o">=</span><span class="n">_request_handler</span><span class="p">,</span>
+                <span class="n">result_handler</span><span class="o">=</span><span class="n">_result_handler</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">):</span>
+                <span class="n">r_status</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span>
+
+                <span class="n">r_str</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response_status</span><span class="p">(</span><span class="n">r_status</span><span class="p">,</span> <span class="n">r_str</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+
+                <span class="n">da</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">if</span> <span class="s1">&#39;data&#39;</span> <span class="ow">in</span> <span class="n">r_str</span> <span class="ow">and</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
+                    <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+                    <span class="k">del</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+
+                <span class="n">resp</span> <span class="o">=</span> <span class="n">DataRequest</span><span class="p">(</span><span class="n">r_str</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">da</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">resp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">da</span>
+
+                <span class="n">callback_exec</span><span class="p">(</span>
+                    <span class="n">response</span><span class="o">=</span><span class="n">resp</span><span class="p">,</span>
+                    <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
+                    <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
+                    <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
+                    <span class="n">continue_on_error</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">continue_on_error</span><span class="p">,</span>
+                    <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="n">p_bar</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">cm1</span><span class="p">)</span>
-
-                <span class="n">proto</span> <span class="o">=</span> <span class="s1">&#39;https&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tls</span> <span class="k">else</span> <span class="s1">&#39;http&#39;</span>
-                <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">proto</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/post&#39;</span>
-                <span class="n">iolet</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_async_context</span><span class="p">(</span>
-                    <span class="n">HTTPClientlet</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-                <span class="p">)</span>
-
-                <span class="k">def</span> <span class="nf">_request_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;asyncio.Future&#39;</span><span class="p">:</span>
-                    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                    For HTTP Client, for each request in the iterator, we `send_message` using</span>
-<span class="sd">                    http POST request and add it to the list of tasks which is awaited and yielded.</span>
-<span class="sd">                    :param request: current request in the iterator</span>
-<span class="sd">                    :return: asyncio Task for sending message</span>
-<span class="sd">                    &quot;&quot;&quot;</span>
-                    <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">iolet</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">))</span>
-
-                <span class="k">def</span> <span class="nf">_result_handler</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
-                    <span class="k">return</span> <span class="n">result</span>
-
-                <span class="n">streamer</span> <span class="o">=</span> <span class="n">RequestStreamer</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
-                    <span class="n">request_handler</span><span class="o">=</span><span class="n">_request_handler</span><span class="p">,</span>
-                    <span class="n">result_handler</span><span class="o">=</span><span class="n">_result_handler</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">streamer</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">request_iterator</span><span class="p">):</span>
-                    <span class="n">r_status</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span>
-
-                    <span class="n">r_str</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response_status</span><span class="p">(</span><span class="n">r_status</span><span class="p">,</span> <span class="n">r_str</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
-
-                    <span class="n">da</span> <span class="o">=</span> <span class="kc">None</span>
-                    <span class="k">if</span> <span class="s1">&#39;data&#39;</span> <span class="ow">in</span> <span class="n">r_str</span> <span class="ow">and</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
-
-                        <span class="n">da</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
-                        <span class="k">del</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
-
-                    <span class="n">resp</span> <span class="o">=</span> <span class="n">DataRequest</span><span class="p">(</span><span class="n">r_str</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">da</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">resp</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">da</span>
-
-                    <span class="n">callback_exec</span><span class="p">(</span>
-                        <span class="n">response</span><span class="o">=</span><span class="n">resp</span><span class="p">,</span>
-                        <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
-                        <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
-                        <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
-                        <span class="n">continue_on_error</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">continue_on_error</span><span class="p">,</span>
-                        <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
-                        <span class="n">p_bar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-                    <span class="k">yield</span> <span class="n">resp</span>
-
-            <span class="k">except</span> <span class="p">(</span><span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="ne">ConnectionError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;Error while fetching response from HTTP server </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">&#39;</span>
-                <span class="p">)</span>
-
-                <span class="k">if</span> <span class="n">on_error</span> <span class="ow">or</span> <span class="n">on_always</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">on_error</span><span class="p">:</span>
-                        <span class="n">callback_exec_on_error</span><span class="p">(</span><span class="n">on_error</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">on_always</span><span class="p">:</span>
-                        <span class="n">callback_exec</span><span class="p">(</span>
-                            <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                            <span class="n">on_error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                            <span class="n">on_done</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                            <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
-                            <span class="n">continue_on_error</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">continue_on_error</span><span class="p">,</span>
-                            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-                        <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">e</span></div>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
+                    <span class="n">p_bar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+                <span class="k">yield</span> <span class="n">resp</span></div>
 </pre></div>
                 </article>
             </div>
@@ -538,7 +517,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 23, 2022</div>
+                            Last updated on Jun 24, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

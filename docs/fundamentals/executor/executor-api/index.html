@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/executor/executor-api/" />
   
-<meta property="og:site_name" content="Jina 3.6.5 Documentation" />
+<meta property="og:site_name" content="Jina 3.6.6 Documentation" />
   
 <meta property="og:description" content="Executor is a self-contained component and performs a group of tasks on a DocumentArray. It encapsulates functions that process DocumentArray s. Inside the Executor, these functions are decorated with@requests. To create an Executor, you only need to follow three principles: An Executor should su..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.6.5 Documentation" />
+<meta property="og:image:alt" content="Jina 3.6.6 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/executor/executor-api.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Basics - Jina 3.6.5 documentation</title>
+        <title>Basics - Jina 3.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -179,7 +179,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.6.5 documentation</div>
+                <div class="brand">Jina 3.6.6 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -525,9 +525,9 @@ you install jina on your system.</p>
 <p>An Executor object contains <code class="xref py py-attr docutils literal notranslate"><span class="pre">metas</span></code> as an attribute when loaded from the Flow. It is of <a class="reference external" href="https://docs.python.org/3/library/types.html#types.SimpleNamespace"><code class="docutils literal notranslate"><span class="pre">SimpleNamespace</span></code></a> type and contains some key-value information.</p>
 <p>The list of the <code class="docutils literal notranslate"><span class="pre">metas</span></code> are:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name given to the Executor</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">description</span></code>: Optional description of the Executor</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code>: List of Python modules needed to import the Executor</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name given to the Executor;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">description</span></code>: Description of the Executor (optional, reserved for future-use in auto-docs);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code>: List of Python modules needed to import the Executor. It can be Python package path e.g. <code class="docutils literal notranslate"><span class="pre">foo.bar.package.module</span></code> or file path to the modules needed to import the Executor.</p></li>
 </ul>
 <p>These can be provided to the Executor via the <span class="xref std std-ref">Python or YAML API</span>.</p>
 </section>
@@ -542,7 +542,7 @@ As the name suggests, <code class="docutils literal notranslate"><span class="pr
 <li><p><code class="docutils literal notranslate"><span class="pre">shards</span></code>: Number of <a class="reference internal" href="../../flow/topologies/#partition-data-by-using-shards"><span class="std std-ref">shards</span></a> of the same Executor deployed with the Flow.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">shard_id</span></code>: Identifier of the <code class="docutils literal notranslate"><span class="pre">shard</span></code> corresponding to the given Executor instance.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code>: Path to be used by the Executor. Note that the actual workspace directory used by the Executor is obtained by appending <code class="docutils literal notranslate"><span class="pre">'/&lt;executor_name&gt;/&lt;shard_id&gt;/'</span></code> to this value.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code>: Path to the modules needed to import the Executor. This is another way to pass <code class="docutils literal notranslate"><span class="pre">py-modules</span></code> to the Executor from the Flow</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code>: Python package path e.g. <code class="docutils literal notranslate"><span class="pre">foo.bar.package.module</span></code> or file path to the modules needed to import the Executor. This is another way to pass <code class="docutils literal notranslate"><span class="pre">py-modules</span></code> to the Executor from the Flow</p></li>
 </ul>
 <p>These can <strong>not</strong> be provided by the user through any API. They are generated by the Flow orchestration.</p>
 </section>
@@ -593,7 +593,7 @@ As the name suggests, <code class="docutils literal notranslate"><span class="pr
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 23, 2022</div>
+                            Last updated on Jun 24, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

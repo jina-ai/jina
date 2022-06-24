@@ -1,6 +1,6 @@
 (client)=
 # Client
-{class}`~jina.Client` enables you to send `Documents` to a running {class}`~jina.Flow` in a number of different ways, as shown below.
+{class}`~jina.Client` enables you to send Documents to a running {class}`~jina.Flow` in a number of different ways, as shown below.
 
 Clients support three different networking protocols: HTTP, gRPC, WebSocket and GraphQL
 
@@ -229,7 +229,7 @@ Those Documents are internally batched into a `Request`, providing a smaller mem
 to {ref}`callback functions <callback-functions>`.
 
 The size of these batches can be controlled with the `request_size` keyword.
-The default `request_size` is 100 `Documents`. The optimal size will depend on your use case.
+The default `request_size` is 100 Documents. The optimal size will depend on your use case.
 ```python
 from docarray import Document, DocumentArray
 from jina import Flow, Client
@@ -276,19 +276,20 @@ In the simplest case, you can specify a precise Executor name, and the request w
 
 ## Callbacks
 
-After performing `client.post()`, you may want to further process the obtained results.
+After performing {meth}`~jina.clients.mixin.PostMixin.post`, you may want to further process the obtained results.
 
 For this purpose, Jina implements a promise-like interface, letting you specify three kinds of callback functions:
 
-- `on_done` is executed after successful completion of {meth}`~jina.clients.mixin.PostMixin.post`
-- `on_error` is executed whenever an error occurs in {meth}`~jina.clients.mixin.PostMixin.post`
-- `on_always` is always performed, no matter the success or failure of {meth}`~jina.clients.mixin.PostMixin.post`
+- `on_done` is executed while streaming, after successful completion of each request
+- `on_error` is executed while streaming, whenever an error occurs in each request
+- `on_always` is always performed while streaming, no matter the success or failure of each request
 
-```{hint} 
-Both `on_done`and `on_always` callback won't be trigger if the failure is due to an error happening outside of 
-networking or internal jina issues. For example, if a `SIGKILL` is triggered by the OS during the handling of the request
-none of the callback will be executed.   
-```
+
+Note that these callbacks only work for requests (and failures) *inside the stream*, for example inside an Executor.
+If the failure is due to an error happening outside of 
+streaming, then these callbacks will not be triggered.
+For example, a `SIGKILL` from the client OS during the handling of the request, or a networking issue,
+will not trigger the callback.
 
 
 
@@ -343,8 +344,7 @@ In the example below, our Flow passes the message then prints the result when su
 If something goes wrong, it beeps. Finally, the result is written to output.txt.
 
 ```python
-from jina import Flow, Client
-from docarray import Document
+from jina import Flow, Client, Document
 
 
 def beep(*args):
@@ -365,13 +365,7 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
     )
 ```
 
-Additionally, the `on_error` callback can be triggered by a raise of an exception. The callback must take an optional 
-`exception` parameters as an argument.
 
-```python
-def on_error(resp, exception: Exception):
-    ...
-```
 
 ## Returns
 

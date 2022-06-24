@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/importer.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>jina.importer - Jina 3.6.5 documentation</title>
+        <title>jina.importer - Jina 3.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -146,7 +146,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.6.5 documentation</div>
+                <div class="brand">Jina 3.6.6 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -352,7 +352,8 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.importer</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
@@ -493,17 +494,23 @@
 
 <span class="sd">        :param paths: Paths of the modules.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># assume paths are Python module names</span>
+        <span class="n">not_python_module_paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">not_python_module_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">not_python_module_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># try again, but assume they are file paths instead of module names</span>
         <span class="kn">from</span> <span class="nn">jina.jaml.helper</span> <span class="kn">import</span> <span class="n">complete_path</span>
 
-        <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">complete_path</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">]</span>
-
-        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;cannot import module from </span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s1">, file not exist&#39;</span>
-                <span class="p">)</span>
-
-            <span class="n">_path_import</span><span class="p">(</span><span class="n">p</span><span class="p">)</span></div></div>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">not_python_module_paths</span><span class="p">:</span>
+            <span class="n">_path_import</span><span class="p">(</span><span class="n">complete_path</span><span class="p">(</span><span class="n">m</span><span class="p">))</span></div></div>
 </pre></div>
                 </article>
             </div>
@@ -518,7 +525,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 23, 2022</div>
+                            Last updated on Jun 24, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/clients/mixin.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>jina.clients.mixin - Jina 3.6.5 documentation</title>
+        <title>jina.clients.mixin - Jina 3.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -146,7 +146,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.6.5 documentation</div>
+                <div class="brand">Jina 3.6.6 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -507,7 +507,6 @@
         <span class="n">c</span><span class="o">.</span><span class="n">continue_on_error</span> <span class="o">=</span> <span class="n">continue_on_error</span>
 
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">_include_results_field_in_param</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
-        <span class="n">on_error</span> <span class="o">=</span> <span class="n">_wrap_on_error</span><span class="p">(</span><span class="n">on_error</span><span class="p">)</span> <span class="k">if</span> <span class="n">on_error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">on_error</span>
 
         <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
@@ -595,7 +594,6 @@
         <span class="n">c</span><span class="o">.</span><span class="n">continue_on_error</span> <span class="o">=</span> <span class="n">continue_on_error</span>
 
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">_include_results_field_in_param</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
-        <span class="n">on_error</span> <span class="o">=</span> <span class="n">_wrap_on_error</span><span class="p">(</span><span class="n">on_error</span><span class="p">)</span> <span class="k">if</span> <span class="n">on_error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">on_error</span>
 
         <span class="k">async</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">_get_results</span><span class="p">(</span>
             <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
@@ -618,25 +616,6 @@
     <span class="n">search</span> <span class="o">=</span> <span class="n">partialmethod</span><span class="p">(</span><span class="n">post</span><span class="p">,</span> <span class="s1">&#39;/search&#39;</span><span class="p">)</span>
     <span class="n">update</span> <span class="o">=</span> <span class="n">partialmethod</span><span class="p">(</span><span class="n">post</span><span class="p">,</span> <span class="s1">&#39;/update&#39;</span><span class="p">)</span>
     <span class="n">delete</span> <span class="o">=</span> <span class="n">partialmethod</span><span class="p">(</span><span class="n">post</span><span class="p">,</span> <span class="s1">&#39;/delete&#39;</span><span class="p">)</span></div>
-
-
-<span class="k">def</span> <span class="nf">_wrap_on_error</span><span class="p">(</span><span class="n">on_error</span><span class="p">):</span>
-    <span class="n">num_args</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">signature</span><span class="p">(</span><span class="n">on_error</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">num_args</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;on_error callback taking only the response parameters is deprecated. Please add one parameter &quot;</span>
-            <span class="s2">&quot;to handle additional optional Exception as well&quot;</span><span class="p">,</span>
-            <span class="ne">DeprecationWarning</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="nd">@wraps</span><span class="p">(</span><span class="n">on_error</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">_fn</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">exception</span><span class="p">):</span>  <span class="c1"># just skip the exception</span>
-            <span class="k">return</span> <span class="n">on_error</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">_fn</span>
-
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">on_error</span>
 </pre></div>
                 </article>
             </div>
@@ -651,7 +630,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 23, 2022</div>
+                            Last updated on Jun 24, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

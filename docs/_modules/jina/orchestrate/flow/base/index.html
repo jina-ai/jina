@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/orchestrate/flow/base.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>jina.orchestrate.flow.base - Jina 3.6.5 documentation</title>
+        <title>jina.orchestrate.flow.base - Jina 3.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -146,7 +146,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.6.5 documentation</div>
+                <div class="brand">Jina 3.6.6 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -1878,11 +1878,11 @@
             <span class="p">)</span>
             <span class="n">t_m</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-            <span class="c1"># kick off ip getter thread</span>
-            <span class="n">addr_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_table</span><span class="p">()</span>
+            <span class="c1"># kick off ip getter thread, address, http, graphq</span>
+            <span class="n">all_panels</span> <span class="o">=</span> <span class="p">[]</span>
 
             <span class="n">t_ip</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
-                <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_address_table</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">addr_table</span><span class="p">,),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span>
+                <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_address_table</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">all_panels</span><span class="p">,),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span>
             <span class="p">)</span>
             <span class="n">t_ip</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
@@ -1899,14 +1899,10 @@
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                 <span class="k">raise</span> <span class="n">RuntimeFailToStart</span>
+            <span class="kn">from</span> <span class="nn">rich.rule</span> <span class="kn">import</span> <span class="n">Rule</span>
 
-        <span class="k">if</span> <span class="n">addr_table</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span>
-                <span class="n">Panel</span><span class="p">(</span>
-                    <span class="n">addr_table</span><span class="p">,</span>
-                    <span class="n">title</span><span class="o">=</span><span class="s1">&#39;:tada: [b]Flow is ready to serve![/]&#39;</span><span class="p">,</span>
-                    <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="p">)</span>
+                <span class="n">Rule</span><span class="p">(</span><span class="s1">&#39;:tada: Flow is ready to serve!&#39;</span><span class="p">),</span> <span class="o">*</span><span class="n">all_panels</span>
             <span class="p">)</span>  <span class="c1"># can&#39;t use logger here see : https://github.com/Textualize/rich/discussions/2024</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_deployments</span><span class="si">}</span><span class="s1"> Deployments (i.e. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_pods</span><span class="si">}</span><span class="s1"> Pods) are running in this Flow&#39;</span>
@@ -2224,24 +2220,27 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_init_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">box</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">highlight</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">box</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">highlight</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">min_width</span><span class="o">=</span><span class="mi">40</span>
+        <span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
-        <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
-        <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">justify</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
-
         <span class="k">return</span> <span class="n">table</span>
 
-    <span class="k">def</span> <span class="nf">_get_address_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address_table</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_address_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_panels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Panel</span><span class="p">]):</span>
+
+        <span class="n">address_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_table</span><span class="p">()</span>
+
         <span class="n">_protocol</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_args</span><span class="o">.</span><span class="n">ssl_certfile</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_args</span><span class="o">.</span><span class="n">ssl_keyfile</span><span class="p">:</span>
             <span class="n">_protocol</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">S&#39;</span>
             <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                <span class="s1">&#39;:link:&#39;</span><span class="p">,</span> <span class="s1">&#39;Protocol&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;:closed_lock_with_key: </span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="s1">&#39;:chains:&#39;</span><span class="p">,</span> <span class="s1">&#39;Protocol&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;:closed_lock_with_key: </span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">&#39;:link:&#39;</span><span class="p">,</span> <span class="s1">&#39;Protocol&#39;</span><span class="p">,</span> <span class="n">_protocol</span><span class="p">)</span>
+            <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">&#39;:chains:&#39;</span><span class="p">,</span> <span class="s1">&#39;Protocol&#39;</span><span class="p">,</span> <span class="n">_protocol</span><span class="p">)</span>
 
         <span class="n">_protocol</span> <span class="o">=</span> <span class="n">_protocol</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
@@ -2262,7 +2261,17 @@
                 <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">[/]&#39;</span><span class="p">,</span>
             <span class="p">)</span>
 
+        <span class="n">all_panels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">Panel</span><span class="p">(</span>
+                <span class="n">address_table</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="s1">&#39;:link: [b]Endpoint[/]&#39;</span><span class="p">,</span>
+                <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">==</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">:</span>
+
+            <span class="n">http_ext_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_table</span><span class="p">()</span>
 
             <span class="n">_address</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://localhost:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/docs]Local[/]&#39;</span><span class="p">,</span>
@@ -2272,10 +2281,10 @@
                 <span class="n">_address</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/docs]Public[/]&#39;</span>
                 <span class="p">)</span>
-            <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+            <span class="n">http_ext_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                 <span class="s1">&#39;:speech_balloon:&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;Swagger UI [dim](/docs)[/]&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;·&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_address</span><span class="p">),</span>
+                <span class="s1">&#39;Swagger UI&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;.../docs&#39;</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="n">_address</span> <span class="o">=</span> <span class="p">[</span>
@@ -2288,10 +2297,10 @@
                     <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/redoc]Public[/]&#39;</span>
                 <span class="p">)</span>
 
-            <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+            <span class="n">http_ext_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                 <span class="s1">&#39;:books:&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;Redoc [dim](/redoc)[/]&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;·&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_address</span><span class="p">),</span>
+                <span class="s1">&#39;Redoc&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;.../redoc&#39;</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway_args</span><span class="o">.</span><span class="n">expose_graphql_endpoint</span><span class="p">:</span>
@@ -2305,32 +2314,61 @@
                         <span class="sa">f</span><span class="s1">&#39;[link=</span><span class="si">{</span><span class="n">_protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/graphql]Public[/]&#39;</span>
                     <span class="p">)</span>
 
-                <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                <span class="n">http_ext_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                     <span class="s1">&#39;:strawberry:&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;GraphQL UI [dim](/graphql)[/]&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;·&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_address</span><span class="p">),</span>
+                    <span class="s1">&#39;GraphQL UI&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;.../graphql&#39;</span><span class="p">,</span>
                 <span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitoring</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-                <span class="n">_address</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="sa">f</span><span class="s1">&#39;[link=http://localhost:</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">]Local[/]&#39;</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s1">&#39;[link=http://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">]Private[/]&#39;</span><span class="p">,</span>
-                <span class="p">]</span>
+            <span class="n">all_panels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">Panel</span><span class="p">(</span>
+                    <span class="n">http_ext_table</span><span class="p">,</span>
+                    <span class="n">title</span><span class="o">=</span><span class="s1">&#39;:gem: [b]HTTP extension[/]&#39;</span><span class="p">,</span>
+                    <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
 
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="p">:</span>
-                    <span class="n">_address</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s1">&#39;[link=http://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">]Public[/]&#39;</span>
-                    <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitoring</span><span class="p">:</span>
+            <span class="n">monitor_ext_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_table</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
 
                 <span class="k">if</span> <span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">monitoring</span><span class="p">:</span>
-                    <span class="n">address_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                        <span class="s1">&#39;:bar_chart:&#39;</span><span class="p">,</span>
-                        <span class="sa">f</span><span class="s1">&#39;Monitor [b]</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">[/]&#39;</span><span class="p">,</span>
-                        <span class="s1">&#39;·&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_address</span><span class="p">),</span>
-                    <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">address_table</span>
+                    <span class="k">for</span> <span class="n">replica</span> <span class="ow">in</span> <span class="n">deployment</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                        <span class="n">_address</span> <span class="o">=</span> <span class="p">[</span>
+                            <span class="sa">f</span><span class="s1">&#39;[link=http://localhost:</span><span class="si">{</span><span class="n">replica</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">]Local[/]&#39;</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s1">&#39;[link=http://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_private</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">replica</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">]Private[/]&#39;</span><span class="p">,</span>
+                        <span class="p">]</span>
+
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="p">:</span>
+                            <span class="n">_address</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s1">&#39;[link=http://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address_public</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">]Public[/]&#39;</span>
+                            <span class="p">)</span>
+
+                        <span class="n">_name</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">name</span>
+                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">deployment</span><span class="o">.</span><span class="n">pod_args</span><span class="p">[</span><span class="s1">&#39;pods&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span>
+                            <span class="k">else</span> <span class="n">replica</span><span class="o">.</span><span class="n">name</span>
+                        <span class="p">)</span>
+
+                        <span class="n">monitor_ext_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                            <span class="s1">&#39;:flashlight:&#39;</span><span class="p">,</span>  <span class="c1"># upstream issue: they dont have :torch: emoji, so we use :flashlight:</span>
+                            <span class="c1"># to represent observability of Prometheus (even they have :torch: it will be a war</span>
+                            <span class="c1"># between AI community and Cloud-native community fighting on this emoji)</span>
+                            <span class="n">_name</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s1">&#39;...[b]:</span><span class="si">{</span><span class="n">replica</span><span class="o">.</span><span class="n">port_monitoring</span><span class="si">}</span><span class="s1">[/]&#39;</span><span class="p">,</span>
+                        <span class="p">)</span>
+
+            <span class="n">all_panels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">Panel</span><span class="p">(</span>
+                    <span class="n">monitor_ext_table</span><span class="p">,</span>
+                    <span class="n">title</span><span class="o">=</span><span class="s1">&#39;:gem: [b]Prometheus extension[/]&#39;</span><span class="p">,</span>
+                    <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">all_panels</span>
 
 <div class="viewcode-block" id="Flow.block"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.block">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">block</span><span class="p">(</span>
@@ -2704,7 +2742,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 23, 2022</div>
+                            Last updated on Jun 24, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

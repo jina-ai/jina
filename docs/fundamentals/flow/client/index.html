@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/client/" />
   
-<meta property="og:site_name" content="Jina 3.6.5 Documentation" />
+<meta property="og:site_name" content="Jina 3.6.6 Documentation" />
   
 <meta property="og:description" content="Client enables you to send Documents to a running Flow in a number of different ways, as shown below. Clients support three different networking protocols: HTTP, gRPC, WebSocket and GraphQL For each of them, you first connect your Client to the API Gateway, before you can send requests to it. Con..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.6.5 Documentation" />
+<meta property="og:image:alt" content="Jina 3.6.6 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/client.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Client - Jina 3.6.5 documentation</title>
+        <title>Client - Jina 3.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -179,7 +179,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.6.5 documentation</div>
+                <div class="brand">Jina 3.6.6 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -386,7 +386,7 @@
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="client">
 <span id="id1"></span><h1>Client<a class="headerlink" href="#client" title="Permalink to this headline">#</a></h1>
-<p><a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> enables you to send <code class="docutils literal notranslate"><span class="pre">Documents</span></code> to a running <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> in a number of different ways, as shown below.</p>
+<p><a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> enables you to send Documents to a running <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> in a number of different ways, as shown below.</p>
 <p>Clients support three different networking protocols: HTTP, gRPC, WebSocket and GraphQL</p>
 <p>For each of them, you first connect your Client to the API Gateway, before you can send requests to it.</p>
 <section id="connect">
@@ -575,7 +575,7 @@ This means you can iterate over Responses one by one, as they come in.</p>
 Those Documents are internally batched into a <code class="docutils literal notranslate"><span class="pre">Request</span></code>, providing a smaller memory footprint and faster response times thanks
 to <a class="reference internal" href="#callback-functions"><span class="std std-ref">callback functions</span></a>.</p>
 <p>The size of these batches can be controlled with the <code class="docutils literal notranslate"><span class="pre">request_size</span></code> keyword.
-The default <code class="docutils literal notranslate"><span class="pre">request_size</span></code> is 100 <code class="docutils literal notranslate"><span class="pre">Documents</span></code>. The optimal size will depend on your use case.</p>
+The default <code class="docutils literal notranslate"><span class="pre">request_size</span></code> is 100 Documents. The optimal size will depend on your use case.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Client</span>
 
@@ -620,19 +620,18 @@ In the simplest case, you can specify a precise Executor name, and the request w
 </section>
 <section id="callbacks">
 <h2>Callbacks<a class="headerlink" href="#callbacks" title="Permalink to this headline">#</a></h2>
-<p>After performing <code class="docutils literal notranslate"><span class="pre">client.post()</span></code>, you may want to further process the obtained results.</p>
+<p>After performing <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a>, you may want to further process the obtained results.</p>
 <p>For this purpose, Jina implements a promise-like interface, letting you specify three kinds of callback functions:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">on_done</span></code> is executed after successful completion of <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">on_error</span></code> is executed whenever an error occurs in <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">on_always</span></code> is always performed, no matter the success or failure of <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on_done</span></code> is executed while streaming, after successful completion of each request</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on_error</span></code> is executed while streaming, whenever an error occurs in each request</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on_always</span></code> is always performed while streaming, no matter the success or failure of each request</p></li>
 </ul>
-<div class="admonition hint">
-<p class="admonition-title">Hint</p>
-<p>Both <code class="docutils literal notranslate"><span class="pre">on_done</span></code>and <code class="docutils literal notranslate"><span class="pre">on_always</span></code> callback won’t be trigger if the failure is due to an error happening outside of
-networking or internal jina issues. For example, if a <code class="docutils literal notranslate"><span class="pre">SIGKILL</span></code> is triggered by the OS during the handling of the request
-none of the callback will be executed.</p>
-</div>
+<p>Note that these callbacks only work for requests (and failures) <em>inside the stream</em>, for example inside an Executor.
+If the failure is due to an error happening outside of
+streaming, then these callbacks will not be triggered.
+For example, a <code class="docutils literal notranslate"><span class="pre">SIGKILL</span></code> from the client OS during the handling of the request, or a networking issue,
+will not trigger the callback.</p>
 <p>Callback functions in Jina expect a <code class="docutils literal notranslate"><span class="pre">Response</span></code> of the type <a class="reference internal" href="../../../api/jina.types.request.data/#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a>, which contains resulting Documents,
 parameters, and other information.</p>
 <div class="admonition hint">
@@ -678,8 +677,7 @@ same object as <code class="docutils literal notranslate"><span class="pre">dr.d
 </div>
 <p>In the example below, our Flow passes the message then prints the result when successful.
 If something goes wrong, it beeps. Finally, the result is written to output.txt.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
 
 
 <span class="k">def</span> <span class="nf">beep</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -698,12 +696,6 @@ If something goes wrong, it beeps. Finally, the result is written to output.txt.
         <span class="n">on_error</span><span class="o">=</span><span class="n">beep</span><span class="p">,</span>
         <span class="n">on_always</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">fp</span><span class="p">),</span>
     <span class="p">)</span>
-</pre></div>
-</div>
-<p>Additionally, the <code class="docutils literal notranslate"><span class="pre">on_error</span></code> callback can be triggered by a raise of an exception. The callback must take an optional
-<code class="docutils literal notranslate"><span class="pre">exception</span></code> parameters as an argument.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_error</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">):</span>
-    <span class="o">...</span>
 </pre></div>
 </div>
 </section>
@@ -863,7 +855,7 @@ set the Client’s <code class="docutils literal notranslate"><span class="pre">
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 23, 2022</div>
+                            Last updated on Jun 24, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
