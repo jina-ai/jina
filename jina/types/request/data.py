@@ -18,7 +18,7 @@ class DataRequest(Request):
     """
     Represents a DataRequest used for exchanging :class:`docarray.DocumentArray` with and within a Flow.
 
-    When calling :meth:`~jina.clients.mixin.PostMixin.post` (so when calling `post` on any Jina client),
+    When calling :meth:`~jina.clients.mixin.PostMixin.post` on any Jina client,
     the provided input :class:`docarray.DocumentArray` will be
     converted to a :class:`DataRequest` before being sent to a Flow.
     """
