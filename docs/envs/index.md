@@ -3,7 +3,7 @@
 
 Jina uses a number of environment variables to determine different behaviours.
 
-If you use containerized Executors, you can pass separate environment variables to each Executor in the following way:
+If you use containerized Executors (including {ref}`Kubernetes <kubernetes>` and {ref}`Docker Compose <docker-compose>`), you can pass separate environment variables to each Executor in the following way:
 
 
 `````{tab} YAML
@@ -17,6 +17,7 @@ executors:
   port: 49583
   env:
     JINA_LOG_LEVEL: DEBUG
+    MYSECRET: ${{ ENV.MYSECRET }}
 - name: executor1
   port: 62156
   env:
@@ -28,11 +29,13 @@ executors:
 
 ```python
 from jina import Flow
+import os
 
+secret = os.environ['MYSECRET']
 f = (
     Flow()
-    .add(env={"JINA_LOG_LEVEL": "DEBUG"})
-    .add(env={"JINA_LOG_LEVEL": "INFO", "CUDA_VISIBLE_DEVICES": 1})
+    .add(env={'JINA_LOG_LEVEL': 'DEBUG', 'MYSECRET': secret})
+    .add(env={'JINA_LOG_LEVEL': 'INFO', 'CUDA_VISIBLE_DEVICES': 1})
 )
 f.save_config("envflow.yml")
 ```
