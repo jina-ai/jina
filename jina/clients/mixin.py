@@ -8,6 +8,7 @@ from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:
     from docarray import DocumentArray
+
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request import Response
 
@@ -98,6 +99,18 @@ class HealthCheckMixin:
         :return: boolean indicating the health/readiness of the Flow
         """
         return run_async(self.client._dry_run, **kwargs)
+
+
+class AsyncHealthCheckMixin:
+    """The Health check Mixin for Client and Flow to expose `dry_run` API"""
+
+    async def dry_run(self, **kwargs) -> bool:
+        """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
+
+        :param kwargs: potential kwargs received passed from the public interface
+        :return: boolean indicating the health/readiness of the Flow
+        """
+        return await self.client._dry_run(**kwargs)
 
 
 class PostMixin:
