@@ -2,6 +2,7 @@ import pytest
 from docarray import DocumentArray
 
 from jina import Client, Document, Executor, Flow, requests, types
+from jina.excepts import BadServer
 
 
 class SimplExecutor(Executor):
@@ -58,10 +59,9 @@ def test_automatically_set_returnresults(on_done, on_always, on_error):
 
 def test_empty_docarray():
     f = Flow().add(uses=SimplExecutor)
-    with f:
-        docs = f.post(on='/')
-    assert isinstance(docs, DocumentArray)
-    assert len(docs) == 0
+    with pytest.raises(BadServer):
+        with f:
+            docs = f.post(on='/')
 
 
 def test_flow_client_defaults():
