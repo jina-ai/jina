@@ -1,7 +1,8 @@
 import collections
 import json
 import os
-import warnings
+import urllib.parse
+import urllib.request
 from typing import Any, Dict, List, Optional, TextIO, Tuple, Union
 
 from yaml import MappingNode
@@ -129,6 +130,7 @@ def parse_config_source(
     allow_class_type: bool = True,
     allow_dict: bool = True,
     allow_json: bool = True,
+    allow_url: bool = True,
     extra_search_paths: Optional[List[str]] = None,
     *args,
     **kwargs,
@@ -144,6 +146,7 @@ def parse_config_source(
     :param allow_class_type: flag
     :param allow_dict: flag
     :param allow_json: flag
+    :param allow_url: flag
     :param extra_search_paths: extra paths to search for
     :param args: unused
     :param kwargs: unused
@@ -165,6 +168,10 @@ def parse_config_source(
     elif allow_yaml_file and is_yaml_filepath(path):
         comp_path = complete_path(path, extra_search_paths)
         return open(comp_path, encoding='utf8'), comp_path
+    elif allow_url and urllib.parse.urlparse(path).scheme in {'http', 'https'}:
+        req = urllib.request.Request(path, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req) as fp:
+            return io.StringIO(fp.read().decode('utf-8')), None
     elif allow_raw_yaml_content and path.lstrip().startswith(('!', 'jtype')):
         # possible YAML content
         path = path.replace('|', '\n    with: ')
