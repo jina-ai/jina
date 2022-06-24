@@ -250,3 +250,29 @@ def test_pending_request(port_generator):
             assert not code
 
         _assert_after()
+
+
+def test_monitoring_replicas_parsing(port_generator, executor):
+    n_replicas = 3
+    port_monitoring_list = [port_generator() for _ in range(n_replicas)]
+    port_monitoring = ','.join([str(port) for port in port_monitoring_list])
+
+    with Flow().add(
+        uses=executor,
+        port_monitoring=port_monitoring,
+        replicas=n_replicas,
+        monitoring=True,
+    ) as f:
+
+        unique_port_exposed = set(
+            [
+                pod.port_monitoring
+                for pod in f._deployment_nodes['executor0'].pod_args['pods'][0]
+            ]
+        )
+
+        assert unique_port_exposed == set(port_monitoring_list)
+
+        for port in port_monitoring_list:
+            resp = req.get(f'http://localhost:{port}/')
+            assert resp.status_code == 200
