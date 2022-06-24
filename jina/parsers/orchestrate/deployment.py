@@ -1,6 +1,7 @@
 """Argparser module for Deployment runtimes"""
 import argparse
 
+from jina import helper
 from jina.enums import DeploymentRoleType
 from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
 
@@ -58,4 +59,12 @@ def mixin_base_deployment_parser(parser):
         action='store_true',
         default=False,
         help='If set, connect to deployment using tls encryption',
+    )
+
+    gp.add_argument(
+        '--port-monitoring',
+        type=str,
+        default=str(helper.random_port()),
+        dest='port_monitoring',
+        help=f'The port on which the prometheus server is exposed, default is a random port between [49152, 65535]',
     )
