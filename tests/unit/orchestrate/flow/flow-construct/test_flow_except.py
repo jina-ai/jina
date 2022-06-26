@@ -80,7 +80,7 @@ def test_bad_flow_customized(mocker, protocol):
     validate_callback(on_error_mock, validate)
 
 
-class MyExecutor(Executor):
+class NotImplementedExecutor(Executor):
     @requests
     def foo(self, **kwargs):
         raise NotImplementedError
@@ -102,7 +102,7 @@ def test_except_with_shards(mocker, protocol):
         Flow(protocol=protocol)
         .add(name='r1')
         .add(name='r2', uses=DummyCrafterExcept, shards=3)
-        .add(name='r3', uses=MyExecutor)
+        .add(name='r3', uses=NotImplementedExecutor)
     )
 
     with f:
@@ -118,29 +118,29 @@ def test_except_with_shards(mocker, protocol):
     validate_callback(on_error_mock, validate)
 
 
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+@pytest.mark.parametrize('protocol', ['grpc', 'websocket', 'http'])
 def test_on_error_callback(mocker, protocol):
-    def validate1():
-        raise NotImplementedError
-
-    def validate2(x, *args):
+    def validate(x, *args):
         x = x.routes
         assert len(x) == 3  # gateway, r1, r3, gateway
         badones = [r for r in x if r.status.code == jina_pb2.StatusProto.ERROR]
         assert badones[0].executor == 'r3'
 
-    f = Flow(protocol=protocol).add(name='r1').add(name='r3', uses=MyExecutor)
+    f = (
+        Flow(protocol=protocol)
+        .add(name='r1')
+        .add(name='r3', uses=NotImplementedExecutor)
+    )
 
     on_error_mock = mocker.Mock()
 
     with f:
         f.index(
             [Document(text='abbcs'), Document(text='efgh')],
-            on_done=validate1,
             on_error=on_error_mock,
         )
 
-    validate_callback(on_error_mock, validate2)
+    validate_callback(on_error_mock, validate)
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
@@ -159,7 +159,7 @@ def test_no_error_callback(mocker, protocol):
     on_error_mock.assert_not_called()
 
 
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+@pytest.mark.parametrize('protocol', ['websocket', 'http', 'grpc'])
 def test_flow_on_callback(protocol):
     f = Flow(protocol=protocol).add()
     hit = []
