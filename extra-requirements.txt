@@ -33,7 +33,7 @@ grpcio-health-checking>=1.46.0:  core
 pyyaml>=5.3.1:              core
 packaging>=20.0:            core
 docarray>=0.13.14:          core
-lz4<3.1.2:                  perf, standard,devel
+lz4<3.1.2:                        perf, standard,devel
 uvloop:                     perf, standard,devel
 prometheus_client:          perf, standard,devel
 fastapi>=0.76.0:            standard,devel

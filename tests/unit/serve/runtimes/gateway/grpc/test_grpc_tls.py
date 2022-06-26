@@ -2,8 +2,8 @@ import os
 import time
 
 import pytest
-
 from docarray import Document
+
 from jina import Client, Flow
 from jina.serve.networking import GrpcConnectionPool
 
@@ -40,7 +40,7 @@ def test_grpc_ssl_with_flow(cert_pem, key_pem, error_log_level):
         with pytest.raises(ConnectionError):
             Client(protocol='grpc', port=f.port, tls=True).index([Document()])
     # the openssl error from above seems to take a bit to actually terminate and may cause the next test to seg fault
-    time.sleep(1.0)
+    time.sleep(15.0)
 
 
 def test_grpc_ssl_with_flow_and_client(cert_pem, key_pem, error_log_level):
@@ -58,3 +58,4 @@ def test_grpc_ssl_with_flow_and_client(cert_pem, key_pem, error_log_level):
             tls=True,
             timeout=1.0,
         )
+    time.sleep(15.0)

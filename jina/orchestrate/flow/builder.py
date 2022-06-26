@@ -1,12 +1,12 @@
 from functools import wraps
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from jina.excepts import FlowBuildLevelError
 
 # noinspection PyUnreachableCode
 if TYPE_CHECKING:
-    from jina.orchestrate.flow.base import Flow
     from jina.enums import FlowBuildLevel
+    from jina.orchestrate.flow.base import Flow
 
 
 def allowed_levels(levels: List['FlowBuildLevel']):
@@ -48,7 +48,7 @@ def _hanging_deployments(op_flow: 'Flow') -> List[str]:
     :param op_flow: the Flow we're operating on
     :return: names of hanging Deployments (nobody recv from them) in the Flow.
     """
-    all_needs = {v for p in op_flow._deployment_nodes.values() for v in p.needs}
-    all_names = {p for p in op_flow._deployment_nodes.keys()}
+    all_needs = {k for p, v in op_flow for k in v.needs}
+    all_names = {p for p, v in op_flow if not v.args.floating}
     # all_names is always a superset of all_needs
     return list(all_names.difference(all_needs))

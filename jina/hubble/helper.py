@@ -621,7 +621,7 @@ We can not discover any Executor in your uploaded bundle. This is often due to o
   - The bundle did not contain any valid executor.
   - The config.yml's `jtype` is mismatched with the actual Executor class name.
     For more information about the expected bundle structure, please refer to the documentation.
-    https://docs.jina.ai/fundamentals/executor/repository-structure/
+    https://docs.jina.ai/fundamentals/executor/executor-files/#multiple-python-files-yaml 
 '''
         msg += '''
 For more detailed information, you can try the `executor-normalizer` locally to see the root cause.

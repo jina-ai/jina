@@ -1,5 +1,6 @@
 from jina.clients.base.http import HTTPBaseClient
 from jina.clients.mixin import (
+    AsyncHealthCheckMixin,
     AsyncMutateMixin,
     AsyncPostMixin,
     HealthCheckMixin,
@@ -30,7 +31,7 @@ class HTTPClient(HTTPBaseClient, PostMixin, MutateMixin, HealthCheckMixin):
 
 
 class AsyncHTTPClient(
-    HTTPBaseClient, AsyncPostMixin, AsyncMutateMixin, HealthCheckMixin
+    HTTPBaseClient, AsyncPostMixin, AsyncMutateMixin, AsyncHealthCheckMixin
 ):
     """
     Asynchronous client connecting to a Gateway using HTTP protocol.

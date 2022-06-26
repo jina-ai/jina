@@ -158,7 +158,7 @@ with f:
     f.post(on='/index', inputs=news_generator, show_progress=True)
 ```
 
-The `PQLiteIndexer` will save your indexed `Documents` to your specified `workspace` (directory).
+The `PQLiteIndexer` will save your indexed Documents to your specified `workspace` (directory).
 Since the default number of shards is one.
 All the data will be saved to `YOUR-WORKSPACE-DIR/PQLiteIndexer/0/` where `0` is the shard id.
 
@@ -180,7 +180,7 @@ f = (
 )
 ```
 
-Now open your workspace directory, you'll find we created 2 shards to store your indexed `Documents`:
+Now open your workspace directory, you'll find we created 2 shards to store your indexed Documents:
 `YOUR-WORKSPACE-DIR/PQLiteIndexer/0/` and `YOUR-WORKSPACE-DIR/PQLiteIndexer/1/`.
 
 ### Different polling strategies
@@ -191,8 +191,8 @@ Jina supports two `polling` strategies:
 1. `any`: requests will be randomly assigned to one shard.
 2. `all`: requests will be handled by all shards.
 
-In practice, when you are indexing your `Documents`,
-it's better to set `polling='any'` to only store the `Documents` into one shard to avoid duplicates.
+In practice, when you are indexing your Documents,
+it's better to set `polling='any'` to only store the Documents into one shard to avoid duplicates.
 On the other hand, at search time, the search requests should be across all shards.
 Thus we should set `polling='all''`.
 
