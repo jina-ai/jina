@@ -122,11 +122,8 @@ def test_except_with_shards(mocker, protocol):
 def test_on_error_callback(mocker, protocol):
     def validate(x, *args):
         x = x.routes
-        print(f' length of x is {len(x)}')
         assert len(x) == 3  # gateway, r1, r3, gateway
         badones = [r for r in x if r.status.code == jina_pb2.StatusProto.ERROR]
-        print(f' length of badones is {len(badones)}')
-        print(f' lbadones[0].executor is {badones[0].executor}')
         assert badones[0].executor == 'r3'
 
     f = (
