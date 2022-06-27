@@ -714,29 +714,27 @@ class Deployment(BaseDeployment):
                 elif args.shards == 1 and args.replicas > 1:
                     _args.port_monitoring = (
                         helper.random_port()
-                        if len(args.all_port_monitoring)
-                        < replica_id
-                        + 1  # if the list of all port is smaller the the number of replicas it became random
+                        if replica_id >= len(args.all_port_monitoring)
                         else args.all_port_monitoring[replica_id]
                     )
                     _args.port = helper.random_port()
                 elif args.shards > 1 and args.replicas == 1:
+                    port_monitoring_index = shard_id + 1  # first one is for the head
                     _args.port_monitoring = (
                         helper.random_port()
-                        if len(args.all_port_monitoring)
-                        < shard_id + 1 + 1  # first one is for the head
-                        else args.all_port_monitoring[
-                            shard_id + 1
-                        ]  # we skip the head port here
+                        if port_monitoring_index >= len(args.all_port_monitoring)
+                        else args.all_port_monitoring[port_monitoring_index]
                     )
                     _args.port = helper.random_port()
                 elif args.shards > 1 and args.replicas > 1:
+                    port_monitoring_index = (
+                        replica_id + args.replicas * shard_id + 1
+                    )  # the first index is for the head
                     _args.port_monitoring = (
                         helper.random_port()
-                        if len(args.all_port_monitoring)
-                        < replica_id + shard_id + 1 + 1  # first one is for the head
+                        if port_monitoring_index >= len(args.all_port_monitoring)
                         else args.all_port_monitoring[
-                            replica_id + shard_id + 1
+                            port_monitoring_index
                         ]  # we skip the head port here
                     )
                     _args.port = helper.random_port()

@@ -93,6 +93,67 @@ def test_monitoring_head(port_generator, executor):
         assert f'jina_sending_request_seconds' in str(resp.content)
 
 
+def test_monitoring_head_few_port(port_generator, executor):
+    n_shards = 2
+    port1 = port_generator()
+    port2 = port_generator()
+
+    f = Flow(monitoring=True, port_monitoring=port1).add(
+        uses=executor, port_monitoring=port2, shards=n_shards
+    )
+
+    assert f._deployment_nodes['executor0'].head_port_monitoring == port2
+
+    unique_port_exposed = set(
+        [
+            pod[0].port_monitoring
+            for key, pod in f._deployment_nodes['executor0'].pod_args['pods'].items()
+        ]
+    )
+    with f:
+        for port in [port2, port1]:
+            resp = req.get(f'http://localhost:{port}/')
+            assert resp.status_code == 200
+
+
+def test_monitoring_replicas_and_shards(port_generator, executor):
+    n_shards = 2
+    n_replicas = 3
+    port_shards_list = [port_generator() for _ in range(n_shards * n_replicas)]
+    port_head = port_generator()
+    port_monitoring = ','.join([str(port) for port in [port_head] + port_shards_list])
+    port1 = port_generator()
+
+    f = Flow(monitoring=True, port_monitoring=port1).add(
+        uses=executor,
+        port_monitoring=port_monitoring,
+        shards=n_shards,
+        replicas=n_replicas,
+    )
+
+    assert f._deployment_nodes['executor0'].head_port_monitoring == port_head
+
+    unique_port_exposed = set(
+        [
+            pod.port_monitoring
+            for _, deployment in f._deployment_nodes.items()
+            for _, list_pod in deployment.pod_args['pods'].items()
+            for pod in list_pod
+        ]
+    )
+
+    assert unique_port_exposed == set(port_shards_list)
+    with f:
+        for port in [port_head, port1] + port_shards_list:
+            resp = req.get(f'http://localhost:{port}/')
+            assert resp.status_code == 200
+
+        f.search(inputs=DocumentArray())
+        resp = req.get(f'http://localhost:{port_head}/')
+        assert f'jina_receiving_request_seconds' in str(resp.content)
+        assert f'jina_sending_request_seconds' in str(resp.content)
+
+
 def test_document_processed_total(port_generator, executor):
     port0 = port_generator()
     port1 = port_generator()
