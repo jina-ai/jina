@@ -1,8 +1,6 @@
 from typing import TYPE_CHECKING, Dict, List, Optional
 
 from docarray import DocumentArray
-
-from jina import __default_endpoint__
 from jina.excepts import BadConfigSource
 from jina.importer import ImportExtensions
 from jina.serve.executors import BaseExecutor
@@ -122,6 +120,8 @@ class DataRequestHandler:
         :returns: the processed message
         """
         # skip executor if endpoints mismatch
+        from jina import __default_endpoint__
+
         if (
             requests[0].header.exec_endpoint not in self._executor.requests
             and __default_endpoint__ not in self._executor.requests
