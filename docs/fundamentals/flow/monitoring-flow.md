@@ -91,6 +91,51 @@ On the other hand, If you want to only enable the monitoring on a given Executor
 Flow().add(...).add(uses=MyExecutor, monitoring=True)
 ```
 
+### Enable monitoring with replicas and shards
+
+When using replicas or shards (see this how-to scale-out) all of the duplicate Executor will expose their own metrics.
+
+When deploying a Flow locally (i.e without Kubernetes or Docker Compose) all the duplicate will use a random `port_monitoring`
+expect one that will use the `port_monitoring` that you precise. You can as well pass a list of ports to be used by the different replicas 
+for the monitoring by passing a string of several ports separated by a comma.
+
+For example :
+
+````{tab} via Python API
+
+```python
+from jina import Flow
+
+with Flow(monitoring=True).add(
+    uses='jinahub://SimpleIndexer', replicas=2, port_monitoring='9091,9092'
+) as f:
+    f.block()
+```
+````
+
+````{tab} via YAML
+This example shows how to start a Flow with monitoring enabled via yaml:
+
+In a `flow.yaml` file
+```yaml
+jtype: Flow
+with:
+  monitoring: true
+executors:
+- uses: jinahub://SimpleIndexer
+  replicas=2
+  port_monitoring: '9091,9092'
+```
+
+```bash
+jina flow --uses flow.yaml
+```
+````
+
+```{tip} Monitoring with shards
+When using shards, an extra head will be created and you will need to pass a list of N+1 ports to `port_monitoring`, N beeing the number of shards you desire
+```
+
 ## Available metrics
 
 A {class}`~jina.Flow` supports different metrics out of the box, in addition to allowing the user to define their own custom metrics.
