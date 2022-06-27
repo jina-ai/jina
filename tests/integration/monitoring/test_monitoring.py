@@ -3,8 +3,8 @@ import time
 
 import pytest
 import requests as req
-from docarray import DocumentArray
 
+from docarray import DocumentArray
 from jina import Executor, Flow, requests
 
 
@@ -68,7 +68,6 @@ def test_monitoring_head(port_generator, executor):
     with Flow(monitoring=True, port_monitoring=port_generator()).add(
         uses=executor, port_monitoring=port1
     ).add(uses=executor, port_monitoring=port2, shards=2) as f:
-
         port3 = f._deployment_nodes['executor0'].pod_args['pods'][0][0].port_monitoring
         port4 = f._deployment_nodes['executor1'].pod_args['pods'][0][0].port_monitoring
 
@@ -89,7 +88,6 @@ def test_document_processed_total(port_generator, executor):
     with Flow(monitoring=True, port_monitoring=port0).add(
         uses=executor, port_monitoring=port1
     ) as f:
-
         resp = req.get(f'http://localhost:{port1}/')
         assert resp.status_code == 200
 
@@ -133,7 +131,7 @@ def test_disable_monitoring_on_pods(port_generator, executor):
         monitoring=False,
     ):
         with pytest.raises(req.exceptions.ConnectionError):  # disable on port1
-            resp = req.get(f'http://localhost:{port1}/')
+            _ = req.get(f'http://localhost:{port1}/')
 
         resp = req.get(f'http://localhost:{port0}/')  # enable on port0
         assert resp.status_code == 200
@@ -149,7 +147,7 @@ def test_disable_monitoring_on_gatway_only(port_generator, executor):
         monitoring=True,
     ):
         with pytest.raises(req.exceptions.ConnectionError):  # disable on port1
-            resp = req.get(f'http://localhost:{port0}/')
+            _ = req.get(f'http://localhost:{port0}/')
 
         resp = req.get(f'http://localhost:{port1}/')  # enable on port0
         assert resp.status_code == 200
@@ -162,7 +160,6 @@ def test_requests_size(port_generator, executor):
     with Flow(monitoring=True, port_monitoring=port0).add(
         uses=executor, port_monitoring=port1
     ) as f:
-
         f.post('/foo', inputs=DocumentArray.empty(size=1))
 
         resp = req.get(f'http://localhost:{port1}/')  # enable on port0
@@ -192,7 +189,8 @@ def test_requests_size(port_generator, executor):
         assert measured_request_bytes_sum > measured_request_bytes_sum_init
 
 
-def test_pending_request(port_generator):
+@pytest.mark.parametrize('failure', [False, True])
+def test_pending_request(port_generator, failure):
     port0 = port_generator()
     port1 = port_generator()
 
@@ -200,13 +198,15 @@ def test_pending_request(port_generator):
         @requests
         def foo(self, docs, **kwargs):
             time.sleep(5)
+            if failure:
+                raise Exception
 
     with Flow(monitoring=True, port_monitoring=port0).add(
         uses=SlowExecutor, port_monitoring=port1
     ) as f:
 
         def _send_request():
-            f.search(inputs=DocumentArray.empty(size=1))
+            f.search(inputs=DocumentArray.empty(size=1), continue_on_error=True)
 
         def _assert_pending_value(val: str):
             resp = req.get(f'http://localhost:{port0}/')
@@ -216,19 +216,9 @@ def test_pending_request(port_generator):
                 in str(resp.content)
             )
 
-        _assert_while = lambda: _assert_pending_value(
-            '1.0'
-        )  # while the request is being processed the counter is at one
-        _assert_after = lambda: _assert_pending_value(
-            '0.0'
-        )  # but before and after it is at 0
-        _assert_before = lambda: _assert_pending_value(
-            '0.0'
-        )  # but before and after it is at 0
-
         p_send = multiprocessing.Process(target=_send_request)
-        p_before = multiprocessing.Process(target=_assert_before)
-        p_while = multiprocessing.Process(target=_assert_while)
+        p_before = multiprocessing.Process(target=_assert_pending_value, args=('0.0',))
+        p_while = multiprocessing.Process(target=_assert_pending_value, args=('1.0',))
 
         p_before.start()
         time.sleep(1)
@@ -247,6 +237,6 @@ def test_pending_request(port_generator):
             )  # collect the exit codes and assert after all of them have been terminated, to avoid timeouts
 
         for code in exitcodes:
-            assert not code
+            assert code == 0
 
-        _assert_after()
+        _assert_pending_value('0.0')
