@@ -137,8 +137,8 @@ async def test_run_async_flow_other_task_concurrent(protocol):
     with TimeContext('concurrent await') as t:
         await concurrent_main(protocol)
 
-    # some dispatch cost, can't be just 5s, usually at 7~8s, but must <10s
-    assert t.duration < 10
+    # some dispatch cost, can't be just 5s, usually at ~10s, but must <12s
+    assert t.duration < 12
 
 
 @pytest.mark.slow
