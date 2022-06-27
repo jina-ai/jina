@@ -62,22 +62,33 @@ def test_enable_monitoring_gateway(protocol, port_generator, executor):
 
 
 def test_monitoring_head(port_generator, executor):
+    n_shards = 2
+    port_shards_list = [port_generator() for _ in range(n_shards)]
+    port_head = port_generator()
+    port_monitoring = ','.join([str(port) for port in [port_head] + port_shards_list])
     port1 = port_generator()
-    port2 = port_generator()
 
-    with Flow(monitoring=True, port_monitoring=port_generator()).add(
-        uses=executor, port_monitoring=port1
-    ).add(uses=executor, port_monitoring=port2, shards=2) as f:
+    f = Flow(monitoring=True, port_monitoring=port1).add(
+        uses=executor, port_monitoring=port_monitoring, shards=n_shards
+    )
 
-        port3 = f._deployment_nodes['executor0'].pod_args['pods'][0][0].port_monitoring
-        port4 = f._deployment_nodes['executor1'].pod_args['pods'][0][0].port_monitoring
+    assert f._deployment_nodes['executor0'].head_port_monitoring == port_head
 
-        for port in [port1, port2, port3, port4]:
+    unique_port_exposed = set(
+        [
+            pod[0].port_monitoring
+            for key, pod in f._deployment_nodes['executor0'].pod_args['pods'].items()
+        ]
+    )
+
+    assert unique_port_exposed == set(port_shards_list)
+    with f:
+        for port in [port_head, port1] + port_shards_list:
             resp = req.get(f'http://localhost:{port}/')
             assert resp.status_code == 200
 
         f.search(inputs=DocumentArray())
-        resp = req.get(f'http://localhost:{port2}/')
+        resp = req.get(f'http://localhost:{port_head}/')
         assert f'jina_receiving_request_seconds' in str(resp.content)
         assert f'jina_sending_request_seconds' in str(resp.content)
 
@@ -89,7 +100,6 @@ def test_document_processed_total(port_generator, executor):
     with Flow(monitoring=True, port_monitoring=port0).add(
         uses=executor, port_monitoring=port1
     ) as f:
-
         resp = req.get(f'http://localhost:{port1}/')
         assert resp.status_code == 200
 
@@ -162,7 +172,6 @@ def test_requests_size(port_generator, executor):
     with Flow(monitoring=True, port_monitoring=port0).add(
         uses=executor, port_monitoring=port1
     ) as f:
-
         f.post('/foo', inputs=DocumentArray.empty(size=1))
 
         resp = req.get(f'http://localhost:{port1}/')  # enable on port0
@@ -263,7 +272,6 @@ def test_monitoring_replicas_parsing(port_generator, executor):
         replicas=n_replicas,
         monitoring=True,
     ) as f:
-
         unique_port_exposed = set(
             [
                 pod.port_monitoring

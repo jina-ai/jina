@@ -101,6 +101,13 @@ class BaseDeployment(ExitStack):
         """
         return self.head_args.port if self.head_args else None
 
+    @property
+    def head_port_monitoring(self):
+        """Get the port_monitoring of the HeadPod of this deployment
+        .. # noqa: DAR201
+        """
+        return self.head_args.port_monitoring if self.head_args else None
+
     def __enter__(self) -> 'BaseDeployment':
         with CatchAllCleanupContextManager(self):
             return self.start()
@@ -263,6 +270,9 @@ class Deployment(BaseDeployment):
             if not type(_all_port_monitoring) == list
             else _all_port_monitoring
         )
+        self.args.port_monitoring = int(
+            self.args.all_port_monitoring[0]
+        )  # this is for the head
 
     def update_pod_args(self):
         """Update args of all its pods based on Deployment args. Including head/tail"""
@@ -701,15 +711,38 @@ class Deployment(BaseDeployment):
                     # we should rather use the pre assigned one
                     args.port = args.port
                     _args.port_monitoring = args.all_port_monitoring[0]
-                else:
-
+                elif args.shards == 1 and args.replicas > 1:
                     _args.port_monitoring = (
                         helper.random_port()
-                        if len(args.all_port_monitoring) < replica_id + 1
+                        if len(args.all_port_monitoring)
+                        < replica_id
+                        + 1  # if the list of all port is smaller the the number of replicas it became random
                         else args.all_port_monitoring[replica_id]
                     )
-
                     _args.port = helper.random_port()
+                elif args.shards > 1 and args.replicas == 1:
+                    _args.port_monitoring = (
+                        helper.random_port()
+                        if len(args.all_port_monitoring)
+                        < shard_id + 1 + 1  # first one is for the head
+                        else args.all_port_monitoring[
+                            shard_id + 1
+                        ]  # we skip the head port here
+                    )
+                    _args.port = helper.random_port()
+                elif args.shards > 1 and args.replicas > 1:
+                    _args.port_monitoring = (
+                        helper.random_port()
+                        if len(args.all_port_monitoring)
+                        < replica_id + shard_id + 1 + 1  # first one is for the head
+                        else args.all_port_monitoring[
+                            replica_id + shard_id + 1
+                        ]  # we skip the head port here
+                    )
+                    _args.port = helper.random_port()
+                else:
+                    _args.port = helper.random_port()
+                    _args.port_monitoring = helper.random_port()
 
                 # pod workspace if not set then derive from workspace
                 if not _args.workspace:
