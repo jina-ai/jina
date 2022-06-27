@@ -13,6 +13,7 @@ from grpc_reflection.v1alpha.reflection_pb2 import ServerReflectionRequest
 from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 
 from jina.enums import PollingType
+from jina.excepts import EstablishGrpcConnectionError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2, jina_pb2_grpc
@@ -57,7 +58,7 @@ class ReplicaList:
         ):
             # remove connection:
             # in contrast to remove_connection(), we don't 'shorten' the data structures below, instead just set to None
-            # so if someone else accesses them in the meantime (race condition), they know that they can just wait
+            # so if someone else accesses them in the meantime, they know that they can just wait
             id_to_reset = self._address_to_connection_idx[address]
             self._address_to_connection_idx[address] = None
             connection_to_reset = self._connections[id_to_reset]
@@ -153,11 +154,11 @@ class ReplicaList:
                 # connection is None if it is currently being reset. In that case, try different connection
                 if connection is not None:
                     break
-            if connection is None and num_retries <= 0:
-                # if still None, then all connections are currently being reset
+            all_connections_unavailable = connection is None and num_retries <= 0
+            if all_connections_unavailable:
                 if num_retries <= 0:
-                    raise ConnectionError(
-                        f'All connections in {self._connections} are currently being reset and cannot be used.'
+                    raise EstablishGrpcConnectionError(
+                        f'Error while resetting connections {self._connections}. Connections cannot be used.'
                     )
             elif connection is None:
                 # give control back to async event loop so connection resetting can be completed; then retry
