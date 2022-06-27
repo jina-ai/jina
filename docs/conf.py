@@ -118,6 +118,7 @@ extensions = [
     'sphinx_inline_tabs',
 ]
 
+intersphinx_mapping = {'docarray': ('https://docarray.jina.ai/', None)}
 myst_enable_extensions = ['colon_fence']
 autosummary_generate = True
 

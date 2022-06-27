@@ -1,5 +1,10 @@
 from jina.clients.base.grpc import GRPCBaseClient
-from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin
+from jina.clients.mixin import (
+    AsyncHealthCheckMixin,
+    AsyncPostMixin,
+    HealthCheckMixin,
+    PostMixin,
+)
 
 
 class GRPCClient(GRPCBaseClient, PostMixin, HealthCheckMixin):
@@ -23,7 +28,7 @@ class GRPCClient(GRPCBaseClient, PostMixin, HealthCheckMixin):
     """
 
 
-class AsyncGRPCClient(GRPCBaseClient, AsyncPostMixin, HealthCheckMixin):
+class AsyncGRPCClient(GRPCBaseClient, AsyncPostMixin, AsyncHealthCheckMixin):
     """
     Asynchronous client connecting to a Gateway using gRPC protocol.
 

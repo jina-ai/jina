@@ -1,7 +1,10 @@
-import pytest
 from collections import OrderedDict
-from jina import Document, DocumentArray, Executor, Flow, Client, requests
+
+import pytest
 from docarray.array.chunk import ChunkArray
+
+from jina import Client, Document, DocumentArray, Executor, Flow, requests
+from jina.helper import random_port
 
 
 class DummyExecutor(Executor):
@@ -52,22 +55,23 @@ class ChunkMerger(Executor):
 @pytest.mark.parametrize('num_replicas, num_shards', [(1, 1), (2, 2)])
 def test_sharding_tail_pod(num_replicas, num_shards):
     """TODO(Maximilian): Make (1, 2) and (2, 1) also workable"""
-
-    f = Flow(port=1234).add(
+    port = random_port()
+    f = Flow(port=port).add(
         uses=DummyExecutor,
         replicas=num_replicas,
         shards=num_shards,
         uses_after=MatchMerger,
     )
     with f:
-        results = Client(port=1234, return_responses=True).post(
-            on='/search',
-            inputs=Document(matches=[Document()]),
+        results = Client(port=f.port).post(
+            on='/search', inputs=Document(matches=[Document()]), return_responses=True
         )
         assert len(results[0].docs[0].matches) == num_shards
 
 
 def test_merging_head_pod():
+    port = random_port()
+
     def multimodal_generator():
         for i in range(0, 5):
             document = Document()
@@ -76,7 +80,7 @@ def test_merging_head_pod():
             yield document
 
     f = (
-        Flow(port=1234)
+        Flow(port=port)
         .add(uses={'jtype': 'DummyExecutor', 'with': {'mode': '1'}}, name='executor1')
         .add(
             uses={'jtype': 'DummyExecutor', 'with': {'mode': '2'}},
@@ -88,9 +92,8 @@ def test_merging_head_pod():
         )
     )
     with f:
-        results = Client(port=1234, return_responses=True).post(
-            on='/search',
-            inputs=multimodal_generator(),
+        results = Client(port=f.port).post(
+            on='/search', inputs=multimodal_generator(), return_responses=True
         )
         assert len(results[0].docs[0].chunks) == 2
         assert len(results[0].docs) == 5

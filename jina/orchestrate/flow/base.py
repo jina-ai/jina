@@ -144,6 +144,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         env: Optional[dict] = None,
         expose_endpoints: Optional[str] = None,
         expose_graphql_endpoint: Optional[bool] = False,
+        floating: Optional[bool] = False,
         graph_conditions: Optional[str] = '{}',
         graph_description: Optional[str] = '{}',
         grpc_server_kwargs: Optional[dict] = None,
@@ -193,6 +194,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         :param env: The map of environment variables that are available inside runtime
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
+        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_kwargs: Dictionary of kwargs arguments that will be passed to the grpc server when starting the server # todo update
@@ -239,7 +241,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
           Note that the recommended way is to only import a single module - a simple python file, if your
           executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
           which should be structured as a python package. For more details, please see the
-          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/repository-structure/>`__
+          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param replicas: The number of replicas in the deployment
@@ -309,7 +311,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
               When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param uses: The YAML file represents a flow
+        :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
         .. # noqa: DAR202
@@ -366,6 +368,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         :param env: The map of environment variables that are available inside runtime
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
+        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_kwargs: Dictionary of kwargs arguments that will be passed to the grpc server when starting the server # todo update
@@ -412,7 +415,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
           Note that the recommended way is to only import a single module - a simple python file, if your
           executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
           which should be structured as a python package. For more details, please see the
-          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/repository-structure/>`__
+          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param replicas: The number of replicas in the deployment
@@ -458,7 +461,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
               When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
-        :param uses: The YAML file represents a flow
+        :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
         .. # noqa: DAR102
@@ -782,6 +785,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
         external: Optional[bool] = False,
+        floating: Optional[bool] = False,
         force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
         host: Optional[str] = '0.0.0.0',
@@ -834,6 +838,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
+        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
 
@@ -878,7 +883,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
           Note that the recommended way is to only import a single module - a simple python file, if your
           executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
           which should be structured as a python package. For more details, please see the
-          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/repository-structure/>`__
+          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param quiet_remote_logs: Do not display the streaming of remote logs on local console
@@ -979,6 +984,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
+        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
 
@@ -1023,7 +1029,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
           Note that the recommended way is to only import a single module - a simple python file, if your
           executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
           which should be structured as a python package. For more details, please see the
-          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/repository-structure/>`__
+          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param quiet_remote_logs: Do not display the streaming of remote logs on local console
@@ -1159,7 +1165,8 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
         op_flow._deployment_nodes[deployment_name] = Deployment(args, needs)
 
-        op_flow._last_deployment = deployment_name
+        if not args.floating:
+            op_flow._last_deployment = deployment_name
 
         return op_flow
 
@@ -1362,7 +1369,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         hanging_deployments = _hanging_deployments(op_flow)
         if hanging_deployments:
             op_flow.logger.warning(
-                f'{hanging_deployments} are hanging in this flow with no deployment receiving from them, '
+                f'{hanging_deployments} are "floating" in this flow with no deployment receiving from them, '
                 f'you may want to double check if it is intentional or some mistake'
             )
         op_flow._build_level = FlowBuildLevel.GRAPH
@@ -1494,7 +1501,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
         progress = Progress(
             SpinnerColumn(),
-            TextColumn('Waiting [b]{task.fields[pending_str]}[/]', justify='right'),
+            TextColumn('Waiting [b]{task.fields[pending_str]}[/]...', justify='right'),
             BarColumn(),
             MofNCompleteColumn(),
             TimeElapsedColumn(),
@@ -1516,27 +1523,26 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                     daemon=True,
                 )
                 threads.append(t)
-                t.start()
+
+            # kick off ip getter thread, address, http, graphq
+            all_panels = []
+
+            t_ip = threading.Thread(
+                target=self._get_summary_table, args=(all_panels, results), daemon=True
+            )
+            threads.append(t_ip)
 
             # kick off spinner thread
             t_m = threading.Thread(
                 target=_polling_status, args=(progress, task), daemon=True
             )
-            t_m.start()
+            threads.append(t_m)
 
-            # kick off ip getter thread
-            addr_table = self._init_table()
-
-            t_ip = threading.Thread(
-                target=self._get_address_table, args=(addr_table,), daemon=True
-            )
-            t_ip.start()
+            for t in threads:
+                t.start()
 
             for t in threads:
                 t.join()
-            if t_ip is not None:
-                t_ip.join()
-            t_m.join()
 
             error_deployments = [k for k, v in results.items() if v != 'done']
             if error_deployments:
@@ -1545,14 +1551,10 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                 )
                 self.close()
                 raise RuntimeFailToStart
+            from rich.rule import Rule
 
-        if addr_table:
             print(
-                Panel(
-                    addr_table,
-                    title=':tada: [b]Flow is ready to serve![/]',
-                    expand=False,
-                )
+                Rule(':tada: Flow is ready to serve!'), *all_panels
             )  # can't use logger here see : https://github.com/Textualize/rich/discussions/2024
         self.logger.debug(
             f'{self.num_deployments} Deployments (i.e. {self.num_pods} Pods) are running in this Flow'
@@ -1870,24 +1872,29 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         return self._deployment_nodes.items().__iter__()
 
     def _init_table(self):
-        table = Table(title=None, box=None, highlight=True, show_header=False)
+        table = Table(
+            title=None, box=None, highlight=True, show_header=False, min_width=40
+        )
+        table.add_column('', justify='left')
         table.add_column('', justify='right')
         table.add_column('', justify='right')
-        table.add_column('', justify='right')
-        table.add_column('', justify='right')
-
         return table
 
-    def _get_address_table(self, address_table):
+    def _get_summary_table(self, all_panels: List[Panel], results):
+
+        results['summary'] = 'pending'
+
+        address_table = self._init_table()
+
         _protocol = str(self.protocol)
         if self.gateway_args.ssl_certfile and self.gateway_args.ssl_keyfile:
             _protocol = f'{self.protocol}S'
             address_table.add_row(
-                ':link:', 'Protocol', f':closed_lock_with_key: {_protocol}'
+                ':chains:', 'Protocol', f':closed_lock_with_key: {_protocol}'
             )
 
         else:
-            address_table.add_row(':link:', 'Protocol', _protocol)
+            address_table.add_row(':chains:', 'Protocol', _protocol)
 
         _protocol = _protocol.lower()
         address_table.add_row(
@@ -1908,7 +1915,17 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                 f'[link={_protocol}://{self.address_public}:{self.port}]{self.address_public}:{self.port}[/]',
             )
 
+        all_panels.append(
+            Panel(
+                address_table,
+                title=':link: [b]Endpoint[/]',
+                expand=False,
+            )
+        )
+
         if self.protocol == GatewayProtocolType.HTTP:
+
+            http_ext_table = self._init_table()
 
             _address = [
                 f'[link={_protocol}://localhost:{self.port}/docs]Local[/]',
@@ -1918,10 +1935,10 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                 _address.append(
                     f'[link={_protocol}://{self.address_public}:{self.port}/docs]Public[/]'
                 )
-            address_table.add_row(
+            http_ext_table.add_row(
                 ':speech_balloon:',
-                'Swagger UI [dim](/docs)[/]',
-                '·'.join(_address),
+                'Swagger UI',
+                '.../docs',
             )
 
             _address = [
@@ -1934,10 +1951,10 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                     f'[link={_protocol}://{self.address_public}:{self.port}/redoc]Public[/]'
                 )
 
-            address_table.add_row(
+            http_ext_table.add_row(
                 ':books:',
-                'Redoc [dim](/redoc)[/]',
-                '·'.join(_address),
+                'Redoc',
+                '.../redoc',
             )
 
             if self.gateway_args.expose_graphql_endpoint:
@@ -1951,13 +1968,23 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                         f'[link={_protocol}://{self.address_public}:{self.port}/graphql]Public[/]'
                     )
 
-                address_table.add_row(
+                http_ext_table.add_row(
                     ':strawberry:',
-                    'GraphQL UI [dim](/graphql)[/]',
-                    '·'.join(_address),
+                    'GraphQL UI',
+                    '.../graphql',
                 )
 
+            all_panels.append(
+                Panel(
+                    http_ext_table,
+                    title=':gem: [b]HTTP extension[/]',
+                    expand=False,
+                )
+            )
+
         if self.monitoring:
+            monitor_ext_table = self._init_table()
+
             for name, deployment in self:
 
                 if deployment.args.monitoring:
@@ -1979,13 +2006,24 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                             else replica.name
                         )
 
-                        address_table.add_row(
-                            ':bar_chart:',
-                            f'Monitor [b]{_name}:{replica.port_monitoring}[/]',
-                            '·'.join(_address),
+                        monitor_ext_table.add_row(
+                            ':flashlight:',  # upstream issue: they dont have :torch: emoji, so we use :flashlight:
+                            # to represent observability of Prometheus (even they have :torch: it will be a war
+                            # between AI community and Cloud-native community fighting on this emoji)
+                            _name,
+                            f'...[b]:{replica.port_monitoring}[/]',
                         )
 
-        return address_table
+            all_panels.append(
+                Panel(
+                    monitor_ext_table,
+                    title=':gem: [b]Prometheus extension[/]',
+                    expand=False,
+                )
+            )
+
+        results['summary'] = 'done'
+        return all_panels
 
     @allowed_levels([FlowBuildLevel.RUNNING])
     def block(

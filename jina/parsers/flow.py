@@ -13,7 +13,12 @@ def mixin_flow_features_parser(parser):
 
     gp = add_arg_group(parser, title='Flow Feature')
 
-    gp.add_argument('--uses', type=str, help='The YAML file represents a flow')
+    gp.add_argument(
+        '--uses',
+        type=str,
+        help='The YAML path represents a flow. It can be either a local file path or a URL.',
+    )
+
     gp.add_argument(
         '--env',
         action=KVAppendAction,

@@ -1,9 +1,9 @@
 """Helper functions for clients in Jina."""
 
 from functools import wraps
-from typing import Callable, Optional
+from typing import Callable
 
-from jina.excepts import BadClientCallback
+from jina.excepts import BadClientCallback, BadServer
 from jina.helper import get_rich_console
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2
@@ -72,34 +72,14 @@ def callback_exec(
     :param continue_on_error: whether to continue on error
     :param logger: a logger instance
     """
-    if on_error and response.header.status.code >= jina_pb2.StatusProto.ERROR:
-
-        @wraps(on_error)
-        def on_error_wrap(resp):
-            on_error(resp, None)
-
-        _safe_callback(on_error_wrap, continue_on_error, logger)(response)
+    if response.header.status.code >= jina_pb2.StatusProto.ERROR:
+        if on_error:
+            _safe_callback(on_error, continue_on_error, logger)(response)
+        elif continue_on_error:
+            logger.error(f'Server error: {response.header}')
+        else:
+            raise BadServer(response.header)
     elif on_done and response.header.status.code == jina_pb2.StatusProto.SUCCESS:
         _safe_callback(on_done, continue_on_error, logger)(response)
     if on_always:
         _safe_callback(on_always, continue_on_error, logger)(response)
-
-
-def callback_exec_on_error(
-    on_error: Callable,
-    exception: Exception,
-    logger: JinaLogger,
-    response: Optional = None,
-) -> None:
-    """Execute the on_error callback with the response, Use when an error outside the response status was thrown.
-    :param on_error: the on_error callback
-    :param exception: the exception with was thrown and led to the call of on_error
-    :param logger: a logger instance
-    :param response: the response
-    """
-
-    @wraps(on_error)
-    def on_error_wrap(resp):
-        on_error(resp, exception)
-
-    _safe_callback(on_error_wrap, False, logger)(response)

@@ -199,6 +199,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -526,6 +527,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.6.3`)](#release-note-363)
 - [Release Note (`3.6.4`)](#release-note-364)
 - [Release Note (`3.6.5`)](#release-note-365)
+- [Release Note (`3.6.6`)](#release-note-366)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -14117,4 +14119,34 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```5c446cf8```](https://github.com/jina-ai/jina/commit/5c446cf8243103c8c3fca5c1b737f9c6b7e5ab9b)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```ace551ff```](https://github.com/jina-ai/jina/commit/ace551ffd0ec688866d85986c5d72b9f0e1d1542)] __-__ update JClould banner (#4938) (*Kelly*)
  - [[```9dac3f69```](https://github.com/jina-ai/jina/commit/9dac3f693b6b7d89b9b02095b68e7e07cb358087)] __-__ __version__: the next version will be 3.6.5 (*Jina Dev Bot*)
+
+<a name=release-note-3-6-6></a>
+## Release Note (`3.6.6`)
+
+> Release time: 2022-06-24 14:18:33
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  samsja,  Johannes Messner,  Jina Dev Bot,  tarrantro,  🙇
+
+
+### 🆕 New Features
+
+ - [[```3469bd88```](https://github.com/jina-ai/jina/commit/3469bd883f9f8cdb2467447c456bdd9aa12eaa34)] __-__ native python module path in py_modules (#4954) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```12910c1c```](https://github.com/jina-ai/jina/commit/12910c1ca4c6a242f682225b4f36de802617697c)] __-__ revert 4410 and fix silent error (#4949) (*Han Xiao*)
+ - [[```6eaf38ba```](https://github.com/jina-ai/jina/commit/6eaf38ba151a585de94ac7781be7c19e6dae7145)] __-__ handle replicas in ui monitoring (#4956) (*samsja*)
+
+### 📗 Documentation
+
+ - [[```675f1075```](https://github.com/jina-ai/jina/commit/675f10757da899ed4728bff9170461c1318caf89)] __-__ explanation how to set env vars (#4955) (*Johannes Messner*)
+ - [[```4c41d4e8```](https://github.com/jina-ai/jina/commit/4c41d4e8888e39e438b460f7be1cb8e042b7af57)] __-__ undo wolf document updates (#4953) (*tarrantro*)
+
+### 🍹 Other Improvements
+
+ - [[```0fbb7335```](https://github.com/jina-ai/jina/commit/0fbb73357a4670f590c7c9336153a5fb1ac482db)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```f968cbe5```](https://github.com/jina-ai/jina/commit/f968cbe592ae1f565ef96634e0d40b4b4de9b50f)] __-__ __version__: the next version will be 3.6.6 (*Jina Dev Bot*)
 

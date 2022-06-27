@@ -34,7 +34,7 @@ You can do this by setting `Flow(timeout_send=time_in_ms)` in Python
 or `timeout_send: time_in_ms` in your Flow YAML with-block.
 
 Especially neural network forward passes on CPU (and other unusually expensive operations) can lead to timeouts with the default setting.
-```
+````
 
 ````{admonition} Hint: Custom retry policy
 :class: hint

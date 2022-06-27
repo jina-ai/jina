@@ -1,23 +1,25 @@
 from jina import Client, Document, DocumentArray, Executor, Flow, requests
-
-exposed_port = 12345
+from jina.helper import random_port
 
 
 def test_override_requests():
+    port = random_port()
+
     class FooExecutor(Executor):
         @requests(on='/foo')
         def foo(self, docs, **kwargs):
             for doc in docs:
                 doc.text = 'foo called'
 
-    with Flow(port=exposed_port).add(
-        uses=FooExecutor, uses_requests={'/non_foo': 'foo'}
-    ) as f:
-        c = Client(port=exposed_port, return_responses=True)
-        resp1 = c.post(on='/foo', inputs=DocumentArray([Document(text='')]))
+    with Flow(port=port).add(uses=FooExecutor, uses_requests={'/non_foo': 'foo'}) as f:
+        c = Client(port=f.port)
+        resp1 = c.post(
+            on='/foo', inputs=DocumentArray([Document(text='')]), return_responses=True
+        )
         resp2 = c.post(
             on='/non_foo',
             inputs=DocumentArray([Document(text='')]),
+            return_responses=True,
         )
 
     assert resp1[0].docs[0].text == ''
@@ -25,6 +27,8 @@ def test_override_requests():
 
 
 def test_override_requests_uses_after():
+    port = random_port()
+
     class FooExecutor(Executor):
         @requests(on='/bar')
         def foo(self, docs, **kwargs):
@@ -37,7 +41,7 @@ def test_override_requests_uses_after():
             for doc in docs:
                 doc.text = 'bar called'
 
-    with Flow(port=exposed_port).add(
+    with Flow(port=port).add(
         uses=FooExecutor,
         uses_requests={'/foo': 'foo'},
         shards=2,
@@ -45,13 +49,18 @@ def test_override_requests_uses_after():
         uses_after=OtherExecutor,
         uses_before=OtherExecutor,
     ) as f:
-        c = Client(port=exposed_port, return_responses=True)
-        resp1 = c.post(on='/foo', inputs=DocumentArray([Document(text='')]))
+        c = Client(port=f.port)
+        resp1 = c.post(
+            on='/foo', inputs=DocumentArray([Document(text='')]), return_responses=True
+        )
         resp2 = c.post(
             on='/non_foo',
             inputs=DocumentArray([Document(text='')]),
+            return_responses=True,
         )
-        resp3 = c.post(on='/bar', inputs=DocumentArray([Document(text='')]))
+        resp3 = c.post(
+            on='/bar', inputs=DocumentArray([Document(text='')]), return_responses=True
+        )
 
     assert resp1[0].docs[0].text == 'foo called'
     assert resp2[0].docs[0].text == ''

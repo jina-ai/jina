@@ -1,5 +1,10 @@
 from jina.clients.base.websocket import WebSocketBaseClient
-from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin
+from jina.clients.mixin import (
+    AsyncHealthCheckMixin,
+    AsyncPostMixin,
+    HealthCheckMixin,
+    PostMixin,
+)
 
 
 class WebSocketClient(WebSocketBaseClient, PostMixin, HealthCheckMixin):
@@ -23,7 +28,7 @@ class WebSocketClient(WebSocketBaseClient, PostMixin, HealthCheckMixin):
     """
 
 
-class AsyncWebSocketClient(WebSocketBaseClient, AsyncPostMixin, HealthCheckMixin):
+class AsyncWebSocketClient(WebSocketBaseClient, AsyncPostMixin, AsyncHealthCheckMixin):
     """
     Asynchronous client connecting to a Gateway using WebSocket protocol.
 

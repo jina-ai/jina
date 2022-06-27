@@ -1,7 +1,8 @@
-from docarray import DocumentArray
-from jina import Document, Executor, Flow, Client, requests, types
-
 import pytest
+from docarray import DocumentArray
+
+from jina import Client, Document, Executor, Flow, requests, types
+from jina.excepts import BadServer
 
 
 class SimplExecutor(Executor):
@@ -30,7 +31,7 @@ def test_flatten_docarrays():
     assert docs[0].text == 'Hello World!'
 
 
-def my_cb(resp, e: Exception = None):
+def my_cb(resp):
     return resp
 
 
@@ -58,10 +59,9 @@ def test_automatically_set_returnresults(on_done, on_always, on_error):
 
 def test_empty_docarray():
     f = Flow().add(uses=SimplExecutor)
-    with f:
-        docs = f.post(on='/')
-    assert isinstance(docs, DocumentArray)
-    assert len(docs) == 0
+    with pytest.raises(BadServer):
+        with f:
+            docs = f.post(on='/')
 
 
 def test_flow_client_defaults():

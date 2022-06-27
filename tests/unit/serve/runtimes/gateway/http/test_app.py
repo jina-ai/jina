@@ -5,9 +5,9 @@ from tempfile import NamedTemporaryFile
 import aiohttp
 import pytest
 import requests as req
-from docarray import Document, DocumentArray
 from fastapi.testclient import TestClient
 
+from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 from jina.helper import random_port
 from jina.logging.logger import JinaLogger
@@ -18,7 +18,7 @@ from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime, get_fastapi_app
 from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
 
 
-class TestExecutor(Executor):
+class ExecutorTest(Executor):
     @requests
     def empty(self, docs: 'DocumentArray', **kwargs):
         print(f"# docs {docs}")
@@ -35,7 +35,7 @@ def error_log_level():
 def test_tag_update():
     port = random_port()
 
-    f = Flow(port=port, protocol='http').add(uses=TestExecutor)
+    f = Flow(port=port, protocol='http').add(uses=ExecutorTest)
     d1 = Document(id='1', prop1='val')
     d2 = Document(id='2', prop2='val')
     with f:

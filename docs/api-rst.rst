@@ -53,8 +53,23 @@ For further details, please refer to the full :ref:`user guide <executor-cookboo
    websocket.AsyncWebSocketClient
 
 
+:mod:`jina.types.request` - Networking messages
+--------------------
 
-:mod:`jina.serve.runtimes` - Internals
+.. currentmodule:: jina.types.request
+
+.. autosummary::
+   :nosignatures:
+   :template: class.rst
+
+   Request
+   data.DataRequest
+   data.Response
+   status.StatusMessage
+
+
+
+:mod:`jina.serve.runtimes` - Flow internals
 --------------------
 
 .. currentmodule:: jina.serve.runtimes

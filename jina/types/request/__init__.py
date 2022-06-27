@@ -8,12 +8,13 @@ from jina.types.mixin import ProtoTypeMixin
 
 class Request(ProtoTypeMixin):
     """
-    :class:`Request` is one of the **primitive data type** in Jina.
+    :class:`Request` is one of the primitive data types in Jina, and serves as a base for
+    :class:`~data.DataRequest` and :class:`~data.Response`.
 
     It offers a Pythonic interface to allow users access and manipulate
     :class:`jina.jina_pb2.RequestProto` object without working with Protobuf itself.
 
-    A container for serialized :class:`jina_pb2.RequestProto` that only triggers deserialization
+    It serves as a container for serialized :class:`jina_pb2.RequestProto` that only triggers deserialization
     and decompression when receives the first read access to its member.
 
     It overrides :meth:`__getattr__` to provide the same get/set interface as an
