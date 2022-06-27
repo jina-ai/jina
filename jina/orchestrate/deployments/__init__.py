@@ -706,27 +706,17 @@ class Deployment(BaseDeployment):
                 # the gateway needs to respect the assigned port
                 if args.deployment_role == DeploymentRoleType.GATEWAY or args.external:
                     _args.port = args.port
-                elif args.shards == 1 and args.replicas == 1:
-                    # if there are no shards/replicas, we dont need to distribute ports randomly
-                    # we should rather use the pre assigned one
-                    args.port = args.port
-                    _args.port_monitoring = args.all_port_monitoring[0]
-                elif args.shards == 1 and args.replicas > 1:
+                elif args.shards == 1:
+
                     _args.port_monitoring = (
                         helper.random_port()
                         if replica_id >= len(args.all_port_monitoring)
                         else args.all_port_monitoring[replica_id]
                     )
+                    # if there are no shards/replicas, we dont need to distribute ports randomly
+                    # we should rather use the pre assigned one
                     _args.port = helper.random_port()
-                elif args.shards > 1 and args.replicas == 1:
-                    port_monitoring_index = shard_id + 1  # first one is for the head
-                    _args.port_monitoring = (
-                        helper.random_port()
-                        if port_monitoring_index >= len(args.all_port_monitoring)
-                        else args.all_port_monitoring[port_monitoring_index]
-                    )
-                    _args.port = helper.random_port()
-                elif args.shards > 1 and args.replicas > 1:
+                elif args.shards > 1:
                     port_monitoring_index = (
                         replica_id + args.replicas * shard_id + 1
                     )  # the first index is for the head
