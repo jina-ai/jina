@@ -406,6 +406,7 @@ metas:
                 )
 
                 image = None
+                warning = None
                 session_id = req_header.get('jinameta-session-id')
                 for stream_line in resp.iter_lines():
                     stream_msg = json.loads(stream_line)
@@ -439,6 +440,7 @@ metas:
                         )
                     elif t == 'complete':
                         image = stream_msg['payload']
+                        warning = stream_msg.get('warning')
                         st.update(
                             f'Cloud building ... [dim]{subject}: {t} ({stream_msg["message"]})[/dim]'
                         )
@@ -454,7 +456,9 @@ metas:
                             )
 
                 if image:
-                    new_uuid8, new_secret = self._prettyprint_result(console, image)
+                    new_uuid8, new_secret = self._prettyprint_result(
+                        console, image, warning=warning
+                    )
                     if new_uuid8 != uuid8 or new_secret != secret:
                         dump_secret(work_path, new_uuid8, new_secret or '')
                 else:
@@ -469,7 +473,7 @@ metas:
                 )
                 raise e
 
-    def _prettyprint_result(self, console, image):
+    def _prettyprint_result(self, console, image, *, warning: Optional[str] = None):
         # TODO: only support single executor now
 
         from rich import box
@@ -500,6 +504,12 @@ metas:
             )
 
         table.add_row(':eyes: Visibility', visibility)
+
+        if warning:
+            table.add_row(
+                ':warning: Warning',
+                f':exclamation:️ [bold yellow]{warning}',
+            )
 
         p1 = Panel(
             table,

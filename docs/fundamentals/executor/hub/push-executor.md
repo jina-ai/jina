@@ -28,6 +28,11 @@ You can then visit [the Hub portal](https://hub.jina.ai), click on the "Recent" 
 If no `--public` or `--private` argument is provided, then it is **public** by default.
 ````
 
+````{admonition} Note
+:class: note
+If you are logged in to the Hub using our CLI tools (`jina auth login` or `jcloud login`), you can push and pull your executors without `SECRET`.
+````
+
 ````{admonition} Important
 :class: important
 Anyone can use public Executors, but to use a private Executor you must know its `SECRET`.
