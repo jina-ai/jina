@@ -6,10 +6,10 @@ from jina.enums import PodRoleType
 from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
 
 
-def mixin_pod_parser(parser, port=True):
+def mixin_pod_parser(parser, port_monitoring=True):
     """Mixing in arguments required by :class:`Pod` into the given parser.
     :param parser: the parser instance to which we add arguments
-    :param port: if to include the port parsing
+    :param port_monitoring: if to include the port parsing
     """
 
     gp = add_arg_group(parser, title='Pod')
@@ -97,7 +97,7 @@ def mixin_pod_parser(parser, port=True):
         help='If set, spawn an http server with a prometheus endpoint to expose metrics',
     )
 
-    if port:
+    if port_monitoring:
         gp.add_argument(
             '--port-monitoring',
             type=int,

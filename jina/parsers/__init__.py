@@ -3,11 +3,11 @@ from jina.parsers.helper import _SHOW_ALL_ARGS
 from jina.parsers.orchestrate.runtimes.head import mixin_head_parser
 
 
-def set_pod_parser(parser=None, port=True):
+def set_pod_parser(parser=None, port_monitoring=True):
     """Set the parser for the Pod
 
     :param parser: an optional existing parser to build upon
-    :param port: if to include the port parsing
+    :param port_monitoring: if to include the port parsing
     :return: the parser
     """
     if not parser:
@@ -32,7 +32,7 @@ def set_pod_parser(parser=None, port=True):
     mixin_container_runtime_parser(parser)
     mixin_remote_runtime_parser(parser)
     mixin_distributed_feature_parser(parser)
-    mixin_pod_parser(parser, port=port)
+    mixin_pod_parser(parser, port_monitoring=port_monitoring)
     mixin_hub_pull_options_parser(parser)
     mixin_head_parser(parser)
 
@@ -50,7 +50,7 @@ def set_deployment_parser(parser=None):
 
         parser = set_base_parser()
 
-    set_pod_parser(parser, port=False)
+    set_pod_parser(parser, port_monitoring=False)
 
     from jina.parsers.orchestrate.deployment import mixin_base_deployment_parser
 
