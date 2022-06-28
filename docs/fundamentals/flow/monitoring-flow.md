@@ -93,13 +93,14 @@ Flow().add(...).add(uses=MyExecutor, monitoring=True)
 
 ### Enable monitoring with replicas and shards
 
-When using replicas or shards (see this how-to scale-out) all of the duplicate Executor will expose their own metrics.
+```{tip} 
+This section is only relevant if you deploy your Flow natively. When deploying your Flow with Kubernetes or Docker Compose
+all of the `port_monitoring` will be set to default : `9090`.  
+```
 
-When deploying a Flow locally (i.e without Kubernetes or Docker Compose) all the duplicate will use a random `port_monitoring`
-expect one that will use the `port_monitoring` that you precise. You can as well pass a list of ports to be used by the different replicas 
-for the monitoring by passing a string of several ports separated by a comma.
+To enable monitoring with replicas and shards when deploying natively, you need to pass a list of `port_monitoring` separated by a comma to your Flow.
 
-For example :
+Example:
 
 ````{tab} via Python API
 
@@ -135,6 +136,10 @@ jina flow --uses flow.yaml
 ```{tip} Monitoring with shards
 When using shards, an extra head will be created and you will need to pass a list of N+1 ports to `port_monitoring`, N beeing the number of shards you desire
 ```
+
+If you precise less `port_monitoring` than you have replicas of your Executor (or even not passing any at all) the unkown one
+will be assigned randomly. It is a better practice to precise a port for all of them otherwise you will have to change 
+your Prometheus configuration each time you restart your application.
 
 ## Available metrics
 
