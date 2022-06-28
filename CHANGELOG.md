@@ -201,6 +201,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14191,4 +14192,24 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```e33513ec```](https://github.com/jina-ai/jina/commit/e33513ec3365065e61f93c9190e659d6e75833b3)] __-__ add hub integration (#4971) (*zhangkai*)
  - [[```8314c83b```](https://github.com/jina-ai/jina/commit/8314c83b8bf9dcc7f2b33a49acd6d2ff7765b6e5)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```f8de1a1f```](https://github.com/jina-ai/jina/commit/f8de1a1fae6b0890de35f16c8c6ccd562bd16b78)] __-__ __version__: the next version will be 3.6.7 (*Jina Dev Bot*)
+
+<a name=release-note-3-6-8></a>
+## Release Note (`3.6.8`)
+
+> Release time: 2022-06-28 13:16:22
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Delgermurun,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```4a201bfc```](https://github.com/jina-ai/jina/commit/4a201bfc6ba562353c25320e136955d9f90de236)] __-__ __import__: remove early check file exist (#4977) (*Han Xiao*)
+ - [[```3a0e0720```](https://github.com/jina-ai/jina/commit/3a0e07208cc3b273e201f61df53e417bef22a092)] __-__ use secret if logged in user provided it explicitly (#4975) (*Delgermurun*)
+
+### 🍹 Other Improvements
+
+ - [[```897b0eb9```](https://github.com/jina-ai/jina/commit/897b0eb951cde120aa6af05a036a9b6e88abb571)] __-__ __version__: the next version will be 3.6.8 (*Jina Dev Bot*)
 
