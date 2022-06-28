@@ -12,7 +12,7 @@ from typing import Dict, List, Optional, Set, Union
 
 from jina import __default_executor__, __default_host__, __docker_host__, helper
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
-from jina.helper import CatchAllCleanupContextManager, _parse_port
+from jina.helper import CatchAllCleanupContextManager, _parse_ports
 from jina.hubble.helper import replace_secret_of_hub_uri
 from jina.hubble.hubio import HubIO
 from jina.jaml.helper import complete_path
@@ -264,7 +264,7 @@ class Deployment(BaseDeployment):
         self.join()
 
     def _update_port_args(self):
-        _all_port_monitoring = _parse_port(self.args.port_monitoring)
+        _all_port_monitoring = _parse_ports(self.args.port_monitoring)
         self.args.all_port_monitoring = (
             [_all_port_monitoring]
             if not type(_all_port_monitoring) == list

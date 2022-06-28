@@ -1620,7 +1620,7 @@ def is_port_free(host, port):
             return True
 
 
-def _parse_port(port: str) -> Union[int, List]:
+def _parse_ports(port: str) -> Union[int, List]:
     """Parse port
 
     EXAMPLE USAGE
