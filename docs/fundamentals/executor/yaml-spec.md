@@ -3,13 +3,13 @@
 
 This page outlines the specification for valid Executor YAML files.
 
-Such YAML configurations can be used in a Flow via `Flow().add(uses='exec.yml')`, or loaded directly via `BaseExecutor.load_config('exec.yml')`.
+Such YAML configurations can be used in a Flow via `Flow().add(uses='exec.yml')`, or loaded directly via `Executor.load_config('exec.yml')`.
 
 Note that Executor YAML configurations always refer back to an Executor defined in a Python file.
 
 ## Example
 
-The following constitutes an example Executor configuration:
+The following constitutes an example {class}`~jina.Executor` configuration:
 
 ```yaml
 jtype: MyExecutor

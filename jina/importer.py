@@ -1,3 +1,4 @@
+import importlib
 import os
 import sys
 import warnings
@@ -139,14 +140,20 @@ class PathImporter:
 
         :param paths: Paths of the modules.
         """
+
+        # assume paths are Python module names
+        not_python_module_paths = []
+        for path in paths:
+            if not os.path.isfile(path):
+                try:
+                    importlib.import_module(path)
+                except:
+                    not_python_module_paths.append(path)
+            else:
+                not_python_module_paths.append(path)
+
+        # try again, but assume they are file paths instead of module names
         from jina.jaml.helper import complete_path
 
-        paths = [complete_path(m) for m in paths]
-
-        for p in paths:
-            if not os.path.exists(p):
-                raise FileNotFoundError(
-                    f'cannot import module from {p}, file not exist'
-                )
-
-            _path_import(p)
+        for m in not_python_module_paths:
+            _path_import(complete_path(m))

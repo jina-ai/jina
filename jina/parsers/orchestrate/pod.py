@@ -1,7 +1,7 @@
 """Argparser module for Pod runtimes"""
 import argparse
 
-from jina import __default_port_monitoring__, helper
+from jina import helper
 from jina.enums import PodRoleType
 from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
 
@@ -99,9 +99,9 @@ def mixin_pod_parser(parser):
     gp.add_argument(
         '--port-monitoring',
         type=int,
-        default=__default_port_monitoring__,  # default prometheus server port
+        default=helper.random_port(),  # default prometheus server port
         dest='port_monitoring',
-        help=f'The port on which the prometheus server is exposed, default port is {__default_port_monitoring__} ',
+        help=f'The port on which the prometheus server is exposed, default is a random port between [49152, 65535]',
     )
 
     gp.add_argument(
@@ -110,4 +110,12 @@ def mixin_pod_parser(parser):
         default=-1,
         dest='retries',
         help=f'Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)',
+    )
+
+    gp.add_argument(
+        '--floating',
+        action='store_true',
+        default=False,
+        help='If set, the current Pod/Deployment can not be further chained, '
+        'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
     )

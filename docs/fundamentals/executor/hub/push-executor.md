@@ -1,7 +1,7 @@
 (push-executor)=
 # Publish
 
-If you want to share your Executor, you can push it to Jina Hub.
+If you want to share your {class}`~jina.Executor`s, you can push it to Jina Hub.
 
 There are two types of sharing:
 - **Public** (default): Anyone can use public Executors without any restrictions.
@@ -20,6 +20,11 @@ jina hub push [--public/--private] <path_to_executor_folder>
 
 
 It will return `NAME` & `SECRET`, which you will need to use (if the Executor is private) or update the Executor. **Please keep them carefully.**
+
+````{admonition} Note
+:class: note
+If you are logged in to the Hub using our CLI tools (`jina auth login` or `jcloud login`), you can push and pull your executors without `SECRET`.
+````
 
 You can then visit [the Hub portal](https://hub.jina.ai), click on the "Recent" tab and see your published Executor.
 

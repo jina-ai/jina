@@ -1,10 +1,10 @@
 (external-executor)=
 # Use external Executors
 
-Normally, we have seen how `Flow` ties up `Executors` together, and how an `Executor` lives in the context of a Flow.
+Normally, we have seen how {class}`~jina.Flow` ties up {class}`~jina.Executor`s together, and how an Executor lives in the context of a Flow.
 
-However, this is not always the case, and sometimes you may want to launch an `Executor` on its own, and perhaps have the same
-`Executor` be used by different `Flows`.
+However, this is not always the case, and sometimes you may want to launch an Executor on its own, and perhaps have the same
+Executor be used by different Flows.
 
 
 ````{admonition} Where can external Executors run?
@@ -24,7 +24,7 @@ You need:
 - `host`, the host address of the Executor
 - `port`, the port on which the Executor receives information
 
-Then, adding the Executor is a simple call to `Flow.add()` with the `external` argument set to True. This tells the Flow that
+Then, adding the Executor is a simple call to {meth}`~jina.Flow.add`  with the `external` argument set to True. This tells the Flow that
 it does not need to start the Executor itself.:
 
 ```python
@@ -55,7 +55,7 @@ In the following sections we will describe how to run standalone Executors via t
 ````{admonition} Advanced deployment options
 :class: seealso
 This tutorial walks through the basics of spawing a standalone (external) Executor. For more advanced options, refer to the
-{ref}`CLI <api/cli>` and {ref}`Executor API section <serve-executor-standalone>`
+[CLI](../cli/index.rst) and {ref}`Executor API section <serve-executor-standalone>`
 ````
 
 ## Using Jina Hub

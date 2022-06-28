@@ -6,7 +6,7 @@ import pytest
 from docarray.document.generators import from_ndarray
 
 from jina import Document, Executor, Flow, requests
-from jina.excepts import RuntimeFailToStart
+from jina.excepts import BadServer, RuntimeFailToStart
 from jina.proto import jina_pb2
 from tests import validate_callback
 
@@ -25,7 +25,7 @@ class BadExecutor(Executor):
 
 @pytest.mark.parametrize('protocol', ['http', 'grpc', 'websocket'])
 def test_bad_flow(mocker, protocol):
-    def validate(req, e: Exception):
+    def validate(req):
         bad_routes = [
             r for r in req.routes if r.status.code == jina_pb2.StatusProto.ERROR
         ]
@@ -52,7 +52,7 @@ def test_bad_flow(mocker, protocol):
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_bad_flow_customized(mocker, protocol):
-    def validate(req, e: Exception):
+    def validate(req):
         bad_routes = [
             r for r in req.routes if r.status.code == jina_pb2.StatusProto.ERROR
         ]
@@ -80,7 +80,7 @@ def test_bad_flow_customized(mocker, protocol):
     validate_callback(on_error_mock, validate)
 
 
-class MyExecutor(Executor):
+class NotImplementedExecutor(Executor):
     @requests
     def foo(self, **kwargs):
         raise NotImplementedError
@@ -89,7 +89,7 @@ class MyExecutor(Executor):
 @pytest.mark.slow
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 def test_except_with_shards(mocker, protocol):
-    def validate(req, e: Exception):
+    def validate(req):
         assert req.status.code == jina_pb2.StatusProto.ERROR
         err_routes = [
             r.status for r in req.routes if r.status.code == jina_pb2.StatusProto.ERROR
@@ -102,7 +102,7 @@ def test_except_with_shards(mocker, protocol):
         Flow(protocol=protocol)
         .add(name='r1')
         .add(name='r2', uses=DummyCrafterExcept, shards=3)
-        .add(name='r3', uses=MyExecutor)
+        .add(name='r3', uses=NotImplementedExecutor)
     )
 
     with f:
@@ -118,29 +118,29 @@ def test_except_with_shards(mocker, protocol):
     validate_callback(on_error_mock, validate)
 
 
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+@pytest.mark.parametrize('protocol', ['grpc', 'websocket', 'http'])
 def test_on_error_callback(mocker, protocol):
-    def validate1():
-        raise NotImplementedError
-
-    def validate2(x, *args):
+    def validate(x, *args):
         x = x.routes
         assert len(x) == 3  # gateway, r1, r3, gateway
         badones = [r for r in x if r.status.code == jina_pb2.StatusProto.ERROR]
         assert badones[0].executor == 'r3'
 
-    f = Flow(protocol=protocol).add(name='r1').add(name='r3', uses=MyExecutor)
+    f = (
+        Flow(protocol=protocol)
+        .add(name='r1')
+        .add(name='r3', uses=NotImplementedExecutor)
+    )
 
     on_error_mock = mocker.Mock()
 
     with f:
         f.index(
             [Document(text='abbcs'), Document(text='efgh')],
-            on_done=validate1,
             on_error=on_error_mock,
         )
 
-    validate_callback(on_error_mock, validate2)
+    validate_callback(on_error_mock, validate)
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
@@ -159,7 +159,7 @@ def test_no_error_callback(mocker, protocol):
     on_error_mock.assert_not_called()
 
 
-@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
+@pytest.mark.parametrize('protocol', ['websocket', 'http', 'grpc'])
 def test_flow_on_callback(protocol):
     f = Flow(protocol=protocol).add()
     hit = []
@@ -279,7 +279,7 @@ def test_flow_startup_exception_not_hanging_invalid_config(protocol):
             pass
 
 
-def test_flow_does_not_import_exec_depencies():
+def test_flow_does_not_import_exec_dependencies():
     cur_dir = os.path.dirname(os.path.abspath(__file__))
     f = Flow().add(
         name='importErrorExecutor',
@@ -291,7 +291,7 @@ def test_flow_does_not_import_exec_depencies():
             pass
 
 
-def test_flow_head_runtime_failure(monkeypatch, capfd):
+def test_flow_head_runtime_failure(monkeypatch):
     from jina.serve.runtimes.request_handlers.data_request_handler import (
         DataRequestHandler,
     )
@@ -302,13 +302,11 @@ def test_flow_head_runtime_failure(monkeypatch, capfd):
     monkeypatch.setattr(DataRequestHandler, 'merge_routes', fail)
 
     with Flow().add(shards=2) as f:
-        f.index(
-            [Document(text='abbcs')],
-        )
-
-    out, err = capfd.readouterr()
-    assert 'NotImplementedError' in out
-    assert 'Intentional' in out and 'error' in out
+        with pytest.raises(BadServer) as err_info:
+            f.index([Document(text='abbcs')])
+    err_text = err_info.value.args[0].status.description
+    assert 'NotImplementedError' in err_text
+    assert 'Intentional' in err_text and 'error' in err_text
 
 
 class TimeoutSlowExecutor(Executor):

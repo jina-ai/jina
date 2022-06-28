@@ -1,15 +1,42 @@
 (flow-yaml-spec)=
 # YAML specification
 
-This page outlines the specification for valid Flow YAML files.
+This page outlines the specification for valid {class}`~jina.Executor` YAML files.
 
-Such YAML configurations can be used to generate a Flow object via `Flow.load_config('flow.yml')`.
+Such YAML configurations can be used to generate a {class}`~jina.Executor` object via {meth}`~jina.jaml.JAMLCompatible.load_config`.
 
-To generate a YAML configuration from a `Flow` Python object, run `f.save_config()`.
+To generate a YAML configuration from a {class}`~jina.Flow` Python object, use {meth}`~jina.jaml.JAMLCompatible.save_config`.
 
-## Example
+## YAML completion in IDE
 
-The following constitutes an example Flow configuration:
+We provide a [JSON Schema](https://json-schema.org/) for your IDE to enable code completion, syntax validation, members listing and displaying help text. Here is a [video tutorial](https://youtu.be/qOD-6mihUzQ) to walk you through the setup.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/qOD-6mihUzQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+### PyCharm users
+
+1. Click menu `Preferences` -> `JSON Schema mappings`;
+2. Add a new schema, in the `Schema File or URL` write `https://api.jina.ai/schemas/latest.json`; select `JSON Schema Version 7`;
+3. Add a file path pattern and link it to `*.jaml` or `*.jina.yml` or any suffix you commonly used for Jina Flow's YAML.
+
+### VSCode users
+
+1. Install the extension: `YAML Language Support by Red Hat`;
+2. In IDE-level `settings.json` add:
+
+```json
+"yaml.schemas": {
+    "https://api.jina.ai/schemas/latest.json": ["/*.jina.yml", "/*.jaml"],
+}
+```
+
+You can bind Schema to any file suffix you commonly used for Jina Flow's YAML.
+
+
+## Example YAML
+
+The following constitutes an example Flow YAML:
 
 ```yaml
 jtype: Flow
@@ -41,21 +68,28 @@ String that is always set to "Flow", indicating the corresponding Python class.
 String indicating the version of the Flow.
 
 ### `with`
-Keyword arguments passed to the Flow `__init__()` method. A complete list of these arguments can be found [here](https://docs.jina.ai/api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow),
-or by running `jina flow --help`.
+
+Keyword arguments passed to Flow `__init__()` method. You can set Flow-specific arguments and Gateway-specific arguments here:
+
+#### Flow arguments
+
+```{include} flow-args.md
+```
+
+#### Gateway arguments 
+
+```{include} gateway-args.md
+```
+
 
 ### `executors`
 Collection of Executors used in the Flow.
-Each item in the collection corresponds to on `f.add()` call and specifies one Executor.
+Each item in the collection corresponds to on {meth}`~jina.Flow.add` call and specifies one Executor.
 
-All keyword arguments passed to the Flow `add()` method can be added.
-A complete list of these arguments can be found [here](https://docs.jina.ai/api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.add).
+All keyword arguments passed to the Flow {meth}`~jina.Flow.add` method can be used here.
 
-#### `uses`
-
-`uses` can take a direct reference to a Python class, or a path to an Executor YAML specification, equivalently the `f.add(uses=...)` pattern.
-
-Alternatively, an Executor YAML configuration can be proved directly inline in the Flow YAML configuration, like shown in the example above.
+```{include} executor-args.md
+```
 
 
 ## Variables
@@ -66,7 +100,7 @@ This means that the following variable substitutions are supported:
 
 ### Environment variables
 
-Use `${{ ENV.VAR }}` to refer to the environment variable `VAR`.
+Use `${{ ENV.VAR }}` to refer to the environment variable `VAR`. You can find all {ref}`Jina environment variables here<jina-env-vars>`.
 
 ### Context variables
 

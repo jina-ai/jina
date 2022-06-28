@@ -15,7 +15,13 @@ RequestSourceType = TypeVar(
 
 
 class DataRequest(Request):
-    """Represents a DataRequest used for exchanging DocumentArrays to and within a Flow"""
+    """
+    Represents a DataRequest used for exchanging :class:`docarray.DocumentArray` with and within a Flow.
+
+    When calling :meth:`~jina.clients.mixin.PostMixin.post` on any Jina client,
+    the provided input :class:`docarray.DocumentArray` will be
+    converted to a :class:`DataRequest` before being sent to a Flow.
+    """
 
     class _DataContent:
         def __init__(self, content: 'jina_pb2.DataRequestProto.DataContentProto'):
@@ -239,11 +245,10 @@ class DataRequest(Request):
 
 class Response(DataRequest):
     """
-    Response is the :class:`Request` object returns from the flow. Right now it shares the same representation as
-    :class:`Request`. At 0.8.12, :class:`Response` is a simple alias. But it does give a more consistent semantic on
-    the client API: send a :class:`Request` and receive a :class:`Response`.
+    Response is the :class:`~jina.types.request.Request` object returned by the flow.
 
-    .. note::
-        For now it only exposes `Docs` and `GroundTruth`. Users should very rarely access `Control` commands, so preferably
-        not confuse the user by adding `CommandMixin`.
+    At the moment it is an alias for :class:`~jina.types.request.Request`,
+    and therefore shares an identical representation.
+    Currently, its sole purpose is to give a more consistent semantic on
+    the client API: send a :class:`~jina.types.request.data.DataRequest` and receive a :class:`~jina.types.request.data.Response`.
     """

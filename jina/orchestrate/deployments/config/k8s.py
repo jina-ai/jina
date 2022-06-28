@@ -274,6 +274,9 @@ class K8sDeploymentConfig:
                 )
                 parsed_args['head_deployment'].gpus = None
                 parsed_args['head_deployment'].port = GrpcConnectionPool.K8S_PORT
+                parsed_args[
+                    'head_deployment'
+                ].port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
                 parsed_args['head_deployment'].uses = None
                 parsed_args['head_deployment'].uses_metas = None
                 parsed_args['head_deployment'].uses_with = None
@@ -315,6 +318,8 @@ class K8sDeploymentConfig:
             cargs.uses_after = None
             if args.name != 'gateway':
                 cargs.port = GrpcConnectionPool.K8S_PORT
+                cargs.port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
+
             cargs.uses_before_address = None
             cargs.uses_after_address = None
             if shards > 1:

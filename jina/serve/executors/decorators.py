@@ -139,10 +139,46 @@ def requests(
     on: Optional[Union[str, Sequence[str]]] = None,
 ):
     """
-    `@requests` defines when a function will be invoked. It has a keyword `on=` to define the endpoint.
+    `@requests` defines the endpoints of an Executor. It has a keyword `on=` to define the endpoint.
 
-    A class method decorated with plan `@requests` (without `on=`) is the default handler for all endpoints.
+    A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints.
     That means, it is the fallback handler for endpoints that are not found.
+
+    EXAMPLE USAGE
+
+    .. code-block:: python
+
+        from jina import Executor, requests, Flow
+        from docarray import Document
+
+
+        # define Executor with custom `@requests` endpoints
+        class MyExecutor(Executor):
+            @requests(on='/index')
+            def index(self, docs, **kwargs):
+                print(docs)  # index docs here
+
+            @requests(on=['/search', '/query'])
+            def search(self, docs, **kwargs):
+                print(docs)  # perform search here
+
+            @requests  # default/fallback endpoint
+            def foo(self, docs, **kwargs):
+                print(docs)  # process docs here
+
+
+        f = Flow().add(uses=MyExecutor)  # add your Executor to a Flow
+        with f:
+            f.post(
+                on='/index', inputs=Document(text='I am here!')
+            )  # send doc to `index` method
+            f.post(
+                on='/search', inputs=Document(text='Who is there?')
+            )  # send doc to `search` method
+            f.post(
+                on='/query', inputs=Document(text='Who is there?')
+            )  # send doc to `search` method
+            f.post(on='/bar', inputs=Document(text='Who is there?'))  # send doc to `foo` method
 
     :param func: the method to decorate
     :param on: the endpoint string, by convention starts with `/`
@@ -206,11 +242,61 @@ def monitor(
     documentation: Optional[str] = None,
 ):
     """
-    `@monitor()` allow to monitor internal method of your executor. You can access these metrics by enabling the
-    monitoring on your Executor. It will track the time spend calling the function and the number of times it has been
+    Decorator and context manager that allows monitoring of an Executor.
+
+    You can access these metrics by enabling
+    monitoring on your Executor. It will track the time spent calling the function and the number of times it has been
     called. Under the hood it will create a prometheus Summary : https://prometheus.io/docs/practices/histograms/.
 
-    :warning: Don't use this decorator with the @request decorator as it already handle monitoring under the hood
+    EXAMPLE USAGE
+
+        As decorator
+
+        .. code-block:: python
+
+            from jina import Executor, monitor
+
+
+            class MyExecutor(Executor):
+                @requests  # `@requests` are monitored automatically
+                def foo(self, docs, *args, **kwargs):
+                    ...
+                    self.my_method()
+                    ...
+
+                # custom metric for `my_method`
+                @monitor(name='metric_name', documentation='useful information goes here')
+                def my_method(self):
+                    ...
+
+        As context manager
+
+        .. code-block:: python
+
+            from jina import Executor, requests
+
+
+            class MyExecutor(Executor):
+                @requests  # `@requests` are monitored automatically
+                def foo(self, docs, *args, **kwargs):
+                    ...
+                    # custom metric for code block
+                    with self.monitor('metric_name', 'useful information goes here'):
+                        docs = process(docs)
+
+        To enable the defined :meth:`monitor` blocks, enable monitoring on the Flow level
+
+        .. code-block:: python
+
+            from jina import Flow
+
+            f = Flow(monitoring=True, port_monitoring=9090).add(
+                uses=MyExecutor, port_monitoring=9091
+            )
+            with f:
+                ...
+
+    :warning: Don't use this decorator in combination with the @request decorator. @request's are already monitored.
 
     :param name: the name of the metrics, by default it is based on the name of the method it decorates
     :param documentation:  the description of the metrics, by default it is based on the name of the method it decorates

@@ -21,9 +21,8 @@ from jina.serve.executors.decorators import (
 )
 
 if TYPE_CHECKING:
-    from prometheus_client import Summary
-
     from docarray import DocumentArray
+    from prometheus_client import Summary
 
 __dry_run_endpoint__ = '_jina_dry_run_'
 
@@ -75,7 +74,24 @@ class ExecutorType(type(JAMLCompatible), type):
 
 class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     """
-    The base class of the executor, can be used to build encoder, indexer, etc.
+    The base class of all Executors, can be used to build encoder, indexer, etc.
+
+    :class:`jina.Executor` as an alias for this class.
+
+    EXAMPLE USAGE
+
+    .. code-block:: python
+
+        from jina import Executor, requests, Flow
+
+
+        class MyExecutor(Executor):
+            @requests
+            def foo(self, docs, **kwargs):
+                print(docs)  # process docs here
+
+
+        f = Flow().add(uses=Executor)  # you can add your Executor to a Flow
 
     Any executor inherited from :class:`BaseExecutor` always has the **meta** defined in :mod:`jina.executors.metas.defaults`.
 
@@ -84,7 +100,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     .. highlight:: python
     .. code-block:: python
 
-        class MyAwesomeExecutor:
+        class MyAwesomeExecutor(Executor):
             def __init__(awesomeness=5):
                 pass
 

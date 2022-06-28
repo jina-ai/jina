@@ -48,6 +48,7 @@ html_baseurl = 'https://docs.jina.ai'
 sitemap_url_scheme = '{link}'
 sitemap_locales = [None]
 sitemap_filename = "sitemap.xml"
+autodoc_default_options = {"members": True, "inherited-members": True, 'class-doc-from': '__init__',}
 
 html_theme_options = {
     'light_logo': 'logo-light.svg',
@@ -67,6 +68,10 @@ html_theme_options = {
 
     # start-announce
 
+    "announcement": '''
+    <a href="https://www.meetup.com/jina-community-meetup/events/286438459/">Get answers to all your questions at our Office Hour on June 30 at 19:00 CET</a>
+    ''',
+        
     # end-announce
 }
 
@@ -96,6 +101,7 @@ epub_exclude_files = ['search.html']
 
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx_autodoc_typehints',
     'sphinx.ext.viewcode',
     'sphinx.ext.coverage',
@@ -112,7 +118,9 @@ extensions = [
     'sphinx_inline_tabs',
 ]
 
+intersphinx_mapping = {'docarray': ('https://docarray.jina.ai/', None)}
 myst_enable_extensions = ['colon_fence']
+autosummary_generate = True
 
 # -- Custom 404 page
 

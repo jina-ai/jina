@@ -1,7 +1,7 @@
 (monitoring-flow)=
 # Monitor
  
-A Jina {ref}`Flow <flow-cookbook>` exposes several core metrics that allow you to have a deeper look
+A Jina {class}`~jina.Flow` exposes several core metrics that allow you to have a deeper look
 at what is happening inside it. Metrics allow you to, for example, monitor the overall performance 
 of your Flow, detect bottlenecks, or alert your team when some component of your Flow is down.
 
@@ -13,7 +13,7 @@ To visualize your metrics through a dashboard, we recommend [Grafana](https://gr
 
 ## Enable monitoring
 
-A {ref}`Flow <flow-cookbook>` is composed of several Pods, namely the Gateway, the Executors, and potentially a Head (see the {ref}`architecture overview <architecture-overview>` for more details). Each of these Pods is its own microservice. These services expose their own metrics using the [Prometheus client](https://prometheus.io/docs/instrumenting/clientlibs/).
+A {class}`~jina.Flow` is composed of several Pods, namely the {class}`~jina.serve.runtimes.gateway.GatewayRuntime`, the {class}`~jina.Executor`s, and potentially a {class}`~jina.serve.runtimes.head.HeadRuntime` (see the {ref}`architecture overview <architecture-overview>` for more details). Each of these Pods is its own microservice. These services expose their own metrics using the [Prometheus client](https://prometheus.io/docs/instrumenting/clientlibs/).
 This means that they are as many metrics endpoints as there are Pods in your Flow. 
 
 Let's give an example to illustrate it :
@@ -57,10 +57,11 @@ metrics endpoints:
 * `http://localhost:9090` for the gateway
 * `http://localhost:9091` for the SimpleIndexer
 
-````{admonition} Default Monitoring port
-:class: hint
-The default monitoring port is `9090`, if you want to enable the monitoring on both the Gateway and the Executors you need to specify
-the `prometheus_port` for the Executors. 
+````{admonition} Change the default monitoring port
+:class: caution
+When Jina is used locally, all of the `port_monitoring` will be random by default (within the range [49152, 65535]). However we 
+strongly encourage you to precise these ports for the Gateway and for all of the Executors. Otherwise it will change at 
+restart and you will have to change your Prometheus configuration file.
 ````
 
 
@@ -92,7 +93,7 @@ Flow().add(...).add(uses=MyExecutor, monitoring=True)
 
 ## Available metrics
 
-Flows support different metrics out of the box, in addition to allowing the user to define their own custom metrics.
+A {class}`~jina.Flow` supports different metrics out of the box, in addition to allowing the user to define their own custom metrics.
 
 Because not all Pods have the same role, they expose different kinds of metrics:
 

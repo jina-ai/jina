@@ -1,6 +1,6 @@
 # File structure
 
-Besides organizing your Executor code inline, you can also write it as an "external" module and then use it via YAML. This is useful when your Executor’s logic is too complicated to fit into a single file.
+Besides organizing your {class}`~jina.Executor` code inline, you can also write it as an "external" module and then use it via YAML. This is useful when your Executor’s logic is too complicated to fit into a single file.
 
 ```{tip}
 The best practice is to use `jina hub new` to create a new Executor. It automatically generates the files you need in the correct structure.

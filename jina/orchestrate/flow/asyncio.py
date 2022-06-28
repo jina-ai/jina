@@ -4,7 +4,7 @@ from jina.orchestrate.flow.base import Flow
 
 class AsyncFlow(AsyncPostMixin, Flow):
     """
-    :class:`AsyncFlow` is the asynchronous version of the :class:`Flow`. They share the same interface, except
+    Asynchronous version of :class:`jina.Flow`. They share the same interface, except
     in :class:`AsyncFlow` :meth:`train`, :meth:`index`, :meth:`search` methods are coroutines
     (i.e. declared with the async/await syntax), simply calling them will not schedule them to be executed.
     To actually run a coroutine, user need to put them in an eventloop, e.g. via ``asyncio.run()``,

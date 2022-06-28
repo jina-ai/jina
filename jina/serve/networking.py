@@ -216,6 +216,7 @@ class GrpcConnectionPool:
     K8S_PORT_USES_AFTER = 8082
     K8S_PORT_USES_BEFORE = 8081
     K8S_PORT = 8080
+    K8S_PORT_MONITORING = 9090
 
     class ConnectionStubs:
         """

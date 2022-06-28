@@ -1,16 +1,30 @@
 (dockerize-exec)=
-# Dockerize your Executor
+# Containerize
 
-Once you have understood what an `Executor` is and how it can be used inside a `Flow`, you may be interested in wrapping this Executor into a container
-so that you can isolate its dependencies and make it ready to run in the cloud or in Kubernetes.
+Once you have understood what an {class}`~jina.Executor` is and how it can be used inside a {class}`~jina.Flow`, you may be interested in wrapping this Executor into a container so that you can isolate its dependencies and make it ready to run in the cloud or in Kubernetes.
 
-One option is to leverage {ref}`Jina Hub <hub/index>` infrastructure to make sure your Executor can run as a container.
+````{tip}
+The recommended way of containerizing an Executor is to leverage {ref}`Jina Hub <jina-hub>` to make sure your Executor can run as a container. It handles auto-provisioning, building, version controlling etc. 
 
-However, you can also build a Docker image yourself and use it like any other Executor. There are some requirements
+Simply:
+```bash
+jina hub new
+
+# work on the executor
+
+jina hub push .
+```
+
+The image building will happen on the cloud, and available immedidately for other to use.
+````
+
+
+
+You can also build a Docker image yourself and use it like any other Executor. There are some requirements
 on how this image needs to be built, the main ones being:
 
-- Jina must be installed inside the image
-- The Jina CLI command to start the Executor has to be the default entrypoint
+- Jina must be installed inside the image.
+- The Jina CLI command to start the Executor has to be the default entrypoint.
 
 ## Prerequisites
 
@@ -44,15 +58,14 @@ When a containerized Executor is run inside a Flow,
 under the hood Jina executes `docker run` with extra arguments.
 
 This means that Jina assumes that whatever runs inside the container, also runs like it would in a regular OS process. Therefore, you need to make sure that
-the basic entrypoint of the image calls `jina executor` {ref}`CLI <../api/cli>` command.
+the basic entrypoint of the image calls `jina executor` {ref}`CLI <../api/jina_cli>` command.
 
 ```dockerfile
 ENTRYPOINT ["jina", "executor", "--uses", "config.yml"]
 ```
 
-```{warning} Name your config config.yml
-Even though you can theoretically name your Executor config file like you want. We **strongly encourage** you to name
-it `config.yml` otherwise using your containerize Executor with Kubernetes will require extra step.
+```{tip}
+We **strongly encourage** you to name the Executor YAML as `config.yml`, otherwise using your containerize Executor with Kubernetes will require extra step.
 ```
 
 ## Example: Dockerized Executor
@@ -104,7 +117,7 @@ In this case, our Executor has only one requirement besides Jina: `torch`.
 
 In `requirements.txt`, we specify a single requirement:
 
-```requirements.txt
+```text
 torch
 ```
 

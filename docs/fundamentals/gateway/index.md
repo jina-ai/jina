@@ -2,9 +2,9 @@
 
 # Gateway
 
-Every `Flow` provides an API Gateway to receive requests over the network. Supported protocols are gRPC, HTTP and WebSocket with TLS.
+Every {class}`~jina.Flow` provides an API Gateway to receive requests over the network. Supported protocols are gRPC, HTTP and WebSocket with TLS.
 
-There are two ways of defining a gateway, either directly from the Python API or using yaml files. For each section we will show you both possibles way of configuring your gateway.
+There are two ways of defining a Gateway, either directly from the Python API or using yaml files. For each section we will show you both possibles way of configuring your Gateway.
 
 ```{admonition} Jina Client
 :class: caution
@@ -18,7 +18,7 @@ For more proper use of the Client, and more information about the Client itself,
 ```
 
 (flow-protocol)=
-## Serve Flow with different protocols
+## Supported protocols
 You can use three different protocols to serve the `Flow`: `grpc`,`http` and `websocket`
 
 ````{tab} gRPC
@@ -146,7 +146,7 @@ with:
 (custom-http)=
 ## Customize HTTP interface
 
-Not every Executor endpoint will automatically be exposed through the external HTTP interface.
+Not every {class}`~jina.Executor` endpoint will automatically be exposed through the external HTTP interface.
 By default, any Flow exposes the following CRUD and debug HTTP endpoints: `/status`, `/post`, `/index`, `/search`, `/update`, and `/delete`.
 
 Executors that provide additional endpoints (e.g. `/foo`) will be exposed only after manual configuration.
@@ -209,7 +209,7 @@ with:
         - fine-tuning
 ```
 ````
-### Hide default endpoints from HTTP interface
+### Hide default endpoints
 
 It is possible to hide the default CRUD and debug endpoints in production. This might be useful when the context is not applicable.
 For example, in the code snippet below, we didn't implement any CRUD endpoints for the executor, hence it does not make sense to expose them to public.
@@ -234,7 +234,7 @@ with:
 After setting up a Flow in this way, the {ref}`default HTTP endpoints <custom-http>` will not be exposed.
 
 (cors)=
-### Enable Cross-Origin Resource Sharing (CORS)
+### Enable cross-origin resource sharing
 
 To make a Flow accessible from a website with a different domain, you need to enable [Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
 Among other things, CORS is necessary to provide a {ref}`Swagger UI interface <swagger-ui>` for your Flow.
@@ -247,7 +247,7 @@ from jina import Flow
 f = Flow(cors=True, protocol='http')
 ```
 
-### Advanced configuration options
+### Advanced options
 
 HTTP support in Jina is powered by [Uvicorn](https://www.uvicorn.org/).
 You can configure the Flow's internal Uvicorn sever to your heart's content by passing `uvicorn_kwargs` to the Flow:
@@ -269,51 +269,118 @@ see their [website](https://www.uvicorn.org/settings/).
 ````
 
 
-## Add GraphQL endpoint
-
-````{admonition} Caution
-:class: caution
-
-GraphQL support is an optional feature that requires optional dependencies.
-To install these, run `pip install jina[graphql]` or `pip install jina[all]`.
-
-Unfortunately, these dependencies are **not available through Conda**. You will have to use `pip` to be able to use GraphQL
-feature.
-````
-
-A Flow can optionally expose a [GraphQL](https://graphql.org/) endpoint, located at `/graphql`.
-To enable this endpoint, all you need to do is set `expose_graphql_endpoint=True` on your HTTP Flow:
 
 
-````{tab} Python
+
+
+
+
+## Get status
+
+```{tip}
+Though you can run Executors, Gateway and Client in different Jina versions, it is recommended to work with the same Jina version.
+```
+
+Gateway provides an endpoint that exposes relevant information about the environment where it runs. 
+
+This information exposes information in a dict-like structure with the following keys:
+- `jina`: A dictionary containing information about the system and the versions of several packages including jina package itself
+- `envs`: A dictionary containing all the values if set of the {ref}`environment variables used in Jina <jina-env-vars>`
+
+
+### Use gRPC
+
+
+To see how this works, first instantiate a Flow with an Executor exposed to a specific port and block it for serving:
 
 ```python
 from jina import Flow
 
-f = Flow(protocol='http', expose_graphql_endpont=True)
+PROTOCOL = 'grpc'  # it could also be http or websocket
+
+with Flow(protocol=PROTOCOL, port=12345).add() as f:
+    f.block()
 ```
-````
 
-````{tab} YAML
-```yaml
-jtype: Flow
-with:
-  protocol: 'http'
-  expose_graphql_endpont: True, 
+Then, you can use [grpcurl](https://github.com/fullstorydev/grpcurl)  sending status check request to the Gateway.
+
+```shell
+docker pull fullstorydev/grpcurl:latest
+docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12345 jina.JinaInfoRPC/_status
 ```
-````
+
+The error-free output below signifies a correctly running Gateway:
+
+```json
+{
+  "jina": {
+    "architecture": "######",
+    "ci-vendor": "######",
+    "docarray": "######",
+    "grpcio": "######",
+    "jina": "######",
+    "jina-proto": "######",
+    "jina-vcs-tag": "######",
+    "platform": "######",
+    "platform-release": "######",
+    "platform-version": "######",
+    "processor": "######",
+    "proto-backend": "######",
+    "protobuf": "######",
+    "python": "######", 
+    "pyyaml": "######",
+    "session-id": "######",
+    "uid": "######",
+    "uptime": "######"
+  },
+  "envs": {
+    "JINA_AUTH_TOKEN": "(unset)",
+    "JINA_DEFAULT_HOST": "(unset)",
+    "JINA_DEFAULT_TIMEOUT_CTRL": "(unset)",
+    "JINA_DEFAULT_WORKSPACE_BASE": "#####",
+    "JINA_DEPLOYMENT_NAME": "(unset)",
+    "JINA_DISABLE_HEALTHCHECK_LOGS": "(unset)",
+    "JINA_DISABLE_UVLOOP": "(unset)",
+    "JINA_EARLY_STOP": "(unset)",
+    "JINA_FULL_CLI": "(unset)",
+    "JINA_GATEWAY_IMAGE": "(unset)",
+    "JINA_GRPC_RECV_BYTES": "(unset)",
+    "JINA_GRPC_SEND_BYTES": "(unset)",
+    "JINA_HUBBLE_REGISTRY": "(unset)",
+    "JINA_HUB_CACHE_DIR": "(unset)",
+    "JINA_HUB_NO_IMAGE_REBUILD": "(unset)",
+    "JINA_HUB_ROOT": "(unset)",
+    "JINA_LOCKS_ROOT": "(unset)",
+    "JINA_LOG_CONFIG": "(unset)",
+    "JINA_LOG_LEVEL": "(unset)",
+    "JINA_LOG_NO_COLOR": "(unset)",
+    "JINA_MP_START_METHOD": "(unset)",
+    "JINA_RANDOM_PORT_MAX": "(unset)",
+    "JINA_RANDOM_PORT_MIN": "(unset)"
+  }
+}
+```
+
+```{tip}
+You can also use it to check Executor status, as Executor's communication protocol is gRPC.
+```
+
+### Use HTTP/Websocket
+
+When using HTTP or Websocket as the Gateway protocol, you can use curl to target the `/status` endpoint and get the Jina info.
+
+```shell
+curl http://localhost:12345/status
+```
+
+```json
+{"jina":{"jina":"######","docarray":"######","jina-proto":"######","jina-vcs-tag":"(unset)","protobuf":"######","proto-backend":"######","grpcio":"######","pyyaml":"######","python":"######","platform":"######","platform-release":"######","platform-version":"######","architecture":"######","processor":"######","uid":"######","session-id":"######","uptime":"######","ci-vendor":"(unset)"},"envs":{"JINA_AUTH_TOKEN":"(unset)","JINA_DEFAULT_HOST":"(unset)","JINA_DEFAULT_TIMEOUT_CTRL":"(unset)","JINA_DEFAULT_WORKSPACE_BASE":"######","JINA_DEPLOYMENT_NAME":"(unset)","JINA_DISABLE_UVLOOP":"(unset)","JINA_EARLY_STOP":"(unset)","JINA_FULL_CLI":"(unset)","JINA_GATEWAY_IMAGE":"(unset)","JINA_GRPC_RECV_BYTES":"(unset)","JINA_GRPC_SEND_BYTES":"(unset)","JINA_HUBBLE_REGISTRY":"(unset)","JINA_HUB_CACHE_DIR":"(unset)","JINA_HUB_NO_IMAGE_REBUILD":"(unset)","JINA_HUB_ROOT":"(unset)","JINA_LOG_CONFIG":"(unset)","JINA_LOG_LEVEL":"(unset)","JINA_LOG_NO_COLOR":"(unset)","JINA_MP_START_METHOD":"(unset)","JINA_RANDOM_PORT_MAX":"(unset)","JINA_RANDOM_PORT_MIN":"(unset)","JINA_DISABLE_HEALTHCHECK_LOGS":"(unset)","JINA_LOCKS_ROOT":"(unset)"}}
+```
 
 
-````{admonition} See Also
-:class: seealso
+## Add gRPC compression
 
-For more details about the Jina GraphQL enpoint, see {ref}`here <flow-graphql>`.
-````
-
-
-## Custom gRPC compression
-
-Communication between `Executors` inside a `Flow` is done via `grpc`. To optimize the performance and the bandwith of this connections,
+Communication between {class}`~jina.Executor`s inside a {class}`~jina.Flow` is done via `grpc`. To optimize the performance and the bandwidth of these connections,
 Jina allows the users to specify their (`compression`)[https://grpc.github.io/grpc/python/grpc.html#compression] by passing this `compression` argument to the Flow.
 
 The supported methods are: `NoCompression`, `Gzip` and `Deflate`.
@@ -325,6 +392,7 @@ f = Flow(compression='Gzip').add(...)
 ```
 
 (flow-tls)=
+
 ## Enable TLS
 
 You can enable TLS encryption between your Flow's Gateway and a Client, for any of the protocols supported by Jina (HTTP, gRPC, and Websocket).
@@ -353,7 +421,7 @@ If both of these are provided, the Flow will automatically configure itself to u
 (prefetch)=
 ## Limit outstanding requests
 
-By default, Jina’s Client sends requests to the Flow as fast as possible without any delay. If a client sends their request faster than the Flow can process them, this can put a high load on the Flow. Typically, this is most likely to happen for Flows with expensive indexing.
+By default, Jina’s {class}`~jina.Client` sends requests to the Flow as fast as possible without any delay. If a client sends their request faster than the {class}`~jina.Flow` can process them, this can put a high load on the Flow. Typically, this is most likely to happen for Flows with expensive indexing.
 
 You can control the number of in flight requests per Client with the `prefetch` argument. E.g. setting `prefetch=2` lets the API accept only 2 requests per client in parallel, hence limiting the load. By default, prefetch is disabled (set to 0).
 
@@ -399,9 +467,9 @@ with:
 ```
 ````
 
-## Set timeouts for requests
+## Set timeouts
 
-You can set timeouts for sending requests to the Executors within a Flow by passing the `timeout_send` parameter. The timeout is specified in milliseconds. By default, it is `None` and the timeout is disabled.
+You can set timeouts for sending requests to the {class}`~jina.Executor`s within a {class}`~jina.Flow` by passing the `timeout_send` parameter. The timeout is specified in milliseconds. By default, it is `None` and the timeout is disabled.
 
 If you use timeouts, you may also need to set the {ref}`prefetch <prefetch>` option in the Flow. Otherwise, requests may queue up at an Executor and eventually time out.
 
@@ -411,6 +479,47 @@ with Flow(timeout_send=1000) as f:
 ```
 The example above limits every request to the Executors in the Flow to a timeout of 1 second.
 
+
+## GraphQL support
+
+````{admonition} Caution
+:class: caution
+
+GraphQL support is an optional feature that requires optional dependencies.
+To install these, run `pip install jina[graphql]` or `pip install jina[all]`.
+
+Unfortunately, these dependencies are **not available through Conda**. You will have to use `pip` to be able to use GraphQL
+feature.
+````
+
+A {class}`~jina.Flow` can optionally expose a [GraphQL](https://graphql.org/) endpoint, located at `/graphql`.
+To enable this endpoint, all you need to do is set `expose_graphql_endpoint=True` on your HTTP Flow:
+
+
+````{tab} Python
+
+```python
+from jina import Flow
+
+f = Flow(protocol='http', expose_graphql_endpont=True)
+```
+````
+
+````{tab} YAML
+```yaml
+jtype: Flow
+with:
+  protocol: 'http'
+  expose_graphql_endpont: True, 
+```
+````
+
+
+````{admonition} See Also
+:class: seealso
+
+For more details about the Jina GraphQL enpoint, see {ref}`here <flow-graphql>`.
+````
 
 
 ## See further

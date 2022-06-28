@@ -10,10 +10,10 @@
 
 
 <p align=center>
+<a href="https://pypi.org/project/jina/"><img alt="PyPI" src="https://img.shields.io/pypi/v/jina?label=Release&style=flat-square"></a>
+<a href="https://codecov.io/gh/jina-ai/jina"><img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/jina-ai/jina/master?&logo=Codecov&logoColor=white&style=flat-square"></a>
+<a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-3.1k-blueviolet?logo=slack&amp;logoColor=white&style=flat-square"></a>
 <a href="https://github.com/jina-ai/jina/actions/workflows/cd.yml"><img alt="Github CD status" src="https://github.com/jina-ai/jina/actions/workflows/cd.yml/badge.svg"></a>
-<a href="https://pypi.org/project/jina/"><img alt="PyPI" src="https://img.shields.io/pypi/v/jina?label=PyPI&logo=pypi&logoColor=white&style=flat-square"></a>
-<a href="https://codecov.io/gh/jina-ai/jina"><img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/jina-ai/jina/master?logo=Codecov&logoColor=white&style=flat-square"></a>
-<a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-3.0k-blueviolet?logo=slack&amp;logoColor=white&style=flat-square"></a>
 </p>
 
 <!-- start jina-description -->
@@ -37,7 +37,7 @@ Applications built with Jina enjoy the following features out-of-the-box:
 
 ☁️ **Cloud-native**
   - Seamless Docker container integration: sharing, exploring, sandboxing, versioning and dependency control via [Jina Hub](https://hub.jina.ai).
-  - Fast deployment to Kubernetes, Docker Compose and Jina Cloud.
+  - Fast deployment to Kubernetes, Docker Compose and [Jina Cloud](https://docs.jina.ai/fundamentals/jcloud/).
   - Full observability via Prometheus and Grafana.
 
 🍱 **Ecosystem**

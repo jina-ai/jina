@@ -62,12 +62,40 @@ def Client(
     'HTTPClient',
     'AsyncHTTPClient',
 ]:
-    """Jina Python client.
+    # implementation_stub_inject_start_client
 
-    :param args: Namespace args.
-    :param kwargs: Additional arguments.
-    :return: An instance of :class:`GRPCClient` or :class:`WebSocketClient`.
+    """Convenience function that returns client instance for given protocol.
+
+    EXAMPLE USAGE
+
+    .. code-block:: python
+
+        from jina import Client
+        from docarray import Document
+
+        # select protocol from 'grpc', 'http', or 'websocket'; default is 'grpc'
+        # select asyncio True of False; default is False
+        # select host address to connect to
+        c = Client(
+            protocol='grpc', asyncio=False, host='grpc://my.awesome.flow:1234'
+        )  # returns GRPCClient instance
+        c.post(on='/index', inputs=Document(text='hello!'))
+
+    :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
+    :param host: The host address of the runtime, by default it is 0.0.0.0.
+    :param port: The port of the Gateway, which the client should connect to.
+    :param protocol: Communication protocol between server and client.
+    :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
+    :param return_responses: If set, return results as List of Requests instead of a reduced DocArray.
+    :param tls: If set, connect to gateway using tls encryption
+    :return: the new Client object
+
+    .. # noqa: DAR102
+    .. # noqa: DAR202
+    .. # noqa: DAR101
+    .. # noqa: DAR003
     """
+    # implementation_stub_inject_end_client
     if not (
         args and isinstance(args, argparse.Namespace)
     ):  # we need to parse the kwargs as soon as possible otherwise to get the gateway type

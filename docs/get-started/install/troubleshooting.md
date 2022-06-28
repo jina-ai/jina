@@ -23,7 +23,7 @@ Building wheels for collected packages: numpy
 
 It could simply be that your local `pip` is too old. Updating it should solve the problem:
 
-```python
+```bash
 pip install -U pip
 ```
 
@@ -58,11 +58,14 @@ Unfortunately, `conda install` is not supported on Windows. You can either do `p
 
 ## Upgrading from Jina 2.x to 3.x
 If you upgraded an existing Jina installation from 2.x to 3.x you may see the following error message:
-```commandline
+
+```text
 OSError: `docarray` dependency is not installed correctly, please reinstall with `pip install -U --force-reinstall docarray`
 ```
+
 This can be fixed by reinstalling the `docarray` package manually:
-```commandline
+
+```bash
 pip install -U --force-reinstall docarray
 ```
 

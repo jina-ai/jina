@@ -1,7 +1,7 @@
 (flow-add-executors)=
 # Add Executors
 
-A `Flow` orchestrates its Executors as a graph and will send requests to all Executors in the desired order. Executors can be added with the `.add()` method of the `Flow` or be listed in the yaml configuration of a Flow. When you start a `Flow`, it will check the configured Executors and starts instances of these Executors accordingly. When adding Executors you have to define its type with the `uses` keyword. Executors can be used from various sources like code, docker images and the Hub:
+A {class}`~jina.Flow` orchestrates its {class}`~jina.Executor`s as a graph and will send requests to all Executors in the desired order. Executors can be added with the {meth}`~jina.Flow.add` method of the Flow or be listed in the yaml configuration of a Flow. When you start a Flow, it will check the configured Executors and starts instances of these Executors accordingly. When adding Executors you have to define its type with the `uses` keyword. Executors can be used from various sources like code, docker images and the Hub:
 
 ````{tab} Python
 
@@ -102,11 +102,11 @@ In this example, both `FooExecutor` and `BarExecutor` are defined inside of `exe
 `````
 
 
-The response of the `Flow` defined above is `['foo was here', 'bar was here']`, because the request was first sent to FooExecutor and then to BarExecutor.
+The response of the Flow defined above is `['foo was here', 'bar was here']`, because the request was first sent to FooExecutor and then to BarExecutor.
 
 ## Supported Executors
 
-As explained above, the type of Executor is defined by providing the `uses` keyword. The source of an Executor can be code, docker images or Hub images.
+As explained above, the type of {class}`~jina.Executor` is defined by providing the `uses` keyword. The source of an Executor can be code, docker images or Hub images.
 
 ```python
 class ExecutorClass(Executor):
@@ -158,7 +158,7 @@ f = Flow(extra_search_paths=['../executor']).add(uses='config1.yml').add(uses='c
 ```
 
 ````
-
+(external-executors)=
 ### External Executors
 
 Usually a Flow will manage all of its Executors. External Executors are not managed by the current Flow object but by others. For example, one may want to share expensive Executors between Flows. Often these Executors are stateless, GPU based Encoders.
@@ -173,9 +173,22 @@ Flow().add(host='123.45.67.89', port=12345, external=True)
 
 This is adding an external Executor to the Flow. The Flow will not start or stop this Executor and assumes that is externally managed and available at `123.45.67.89:12345`
 
+You can also use external Executors with `tls` enabled.
+
+```python
+from jina import Flow
+
+Flow().add(host='123.45.67.89', port=443, external=True, tls=True)
+```
+
+```{hint} 
+Using `tls` to connect to the External Executor is especially needed if you want to use an external Executor deployed with JCloud. See the JCloud {ref}`documentation <jcloud-external-executors>`
+for further details
+```
+
 
 ## Set configs
-You can set and override Executor configs when adding them into a `Flow`.
+You can set and override {class}`~jina.Executor` configs when adding them into a {class}`~jina.Flow`.
 
 This example shows how to start a Flow with an Executor via the Python API:
 
@@ -325,7 +338,7 @@ foo
 
 ## Unify NDArray types
 
-Different Executors in a Flow may depend on slightly different `types` for array-like data such as `doc.tensor` and `doc.embedding`,
+Different {class}`~jina.Executor`s in a {class}`~jina.Flow` may depend on slightly different `types` for array-like data such as `doc.tensor` and `doc.embedding`,
 for example because they were written using different machine learning frameworks.
 As the builder of a Flow you don't always have control over this, for example when using Executors from the Jina Hub.
 

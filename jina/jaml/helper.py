@@ -1,7 +1,8 @@
 import collections
 import json
 import os
-import warnings
+import urllib.parse
+import urllib.request
 from typing import Any, Dict, List, Optional, TextIO, Tuple, Union
 
 from yaml import MappingNode
@@ -129,6 +130,7 @@ def parse_config_source(
     allow_class_type: bool = True,
     allow_dict: bool = True,
     allow_json: bool = True,
+    allow_url: bool = True,
     extra_search_paths: Optional[List[str]] = None,
     *args,
     **kwargs,
@@ -144,6 +146,7 @@ def parse_config_source(
     :param allow_class_type: flag
     :param allow_dict: flag
     :param allow_json: flag
+    :param allow_url: flag
     :param extra_search_paths: extra paths to search for
     :param args: unused
     :param kwargs: unused
@@ -165,6 +168,10 @@ def parse_config_source(
     elif allow_yaml_file and is_yaml_filepath(path):
         comp_path = complete_path(path, extra_search_paths)
         return open(comp_path, encoding='utf8'), comp_path
+    elif allow_url and urllib.parse.urlparse(path).scheme in {'http', 'https'}:
+        req = urllib.request.Request(path, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req) as fp:
+            return io.StringIO(fp.read().decode('utf-8')), None
     elif allow_raw_yaml_content and path.lstrip().startswith(('!', 'jtype')):
         # possible YAML content
         path = path.replace('|', '\n    with: ')
@@ -188,12 +195,17 @@ def parse_config_source(
         )
 
 
-def complete_path(path: str, extra_search_paths: Optional[List[str]] = None) -> str:
+def complete_path(
+    path: str,
+    extra_search_paths: Optional[List[str]] = None,
+    raise_nonexist: bool = True,
+) -> str:
     """
     Complete the path of file via searching in abs and relative paths.
 
     :param path: path of file.
     :param extra_search_paths: extra paths to conduct search
+    :param raise_nonexist: raise exception if the file does not exist
     :return: Completed file path.
     """
     _p = _search_file_in_paths(path, extra_search_paths)
@@ -202,7 +214,7 @@ def complete_path(path: str, extra_search_paths: Optional[List[str]] = None) -> 
         _p = path
     if _p:
         return os.path.abspath(_p)
-    else:
+    elif raise_nonexist:
         raise FileNotFoundError(f'can not find {path}')
 
 
@@ -256,15 +268,5 @@ def load_py_modules(d: Dict, extra_search_paths: Optional[List[str]] = None) -> 
 
     _finditem(d)
     if mod:
-        if len(mod) > 1:
-            warnings.warn(
-                'It looks like you are trying to import multiple python modules using'
-                ' `py_modules`. When using multiple python files to define an executor,'
-                ' the recommended practice is to structure the files in a python'
-                ' package, and only import the `__init__.py` file of that package.'
-                ' For more details, please check out the cookbook: '
-                'https://docs.jina.ai/fundamentals/executor/repository-structure/'
-            )
-
-        mod = [complete_path(m, extra_search_paths) for m in mod]
+        mod = [complete_path(m, extra_search_paths, raise_nonexist=False) for m in mod]
         PathImporter.add_modules(*mod)

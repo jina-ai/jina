@@ -36,6 +36,10 @@ class BadClient(Exception, BaseJinaException):
     """A wrongly defined client, can not communicate with jina server correctly."""
 
 
+class BadServer(Exception, BaseJinaException):
+    """Error happens on the server side."""
+
+
 class BadClientCallback(BadClient, BaseJinaException):
     """Error in the callback function on the client side."""
 

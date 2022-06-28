@@ -7,7 +7,8 @@ from jina.helper import get_or_reuse_loop, run_async
 from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:
-    from jina import DocumentArray
+    from docarray import DocumentArray
+
     from jina.clients.base import CallbackFnType, InputType
     from jina.types.request import Response
 
@@ -100,6 +101,18 @@ class HealthCheckMixin:
         return run_async(self.client._dry_run, **kwargs)
 
 
+class AsyncHealthCheckMixin:
+    """The Health check Mixin for Client and Flow to expose `dry_run` API"""
+
+    async def dry_run(self, **kwargs) -> bool:
+        """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
+
+        :param kwargs: potential kwargs received passed from the public interface
+        :return: boolean indicating the health/readiness of the Flow
+        """
+        return await self.client._dry_run(**kwargs)
+
+
 class PostMixin:
     """The Post Mixin class for Client and Flow"""
 
@@ -153,7 +166,6 @@ class PostMixin:
         c.continue_on_error = continue_on_error
 
         parameters = _include_results_field_in_param(parameters)
-        on_error = _wrap_on_error(on_error) if on_error is not None else on_error
 
         from jina import DocumentArray
 
@@ -221,7 +233,7 @@ class AsyncPostMixin:
         :param show_progress: if set, client will show a progress bar on receiving every request.
         :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.
         :param return_responses: if set to True, the result will come as Response and not as a `DocumentArray`
-        :param kwargs: additional parameters
+        :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call
         :yield: Response object
 
         .. warning::
@@ -241,7 +253,6 @@ class AsyncPostMixin:
         c.continue_on_error = continue_on_error
 
         parameters = _include_results_field_in_param(parameters)
-        on_error = _wrap_on_error(on_error) if on_error is not None else on_error
 
         async for result in c._get_results(
             inputs=inputs,
@@ -264,22 +275,3 @@ class AsyncPostMixin:
     search = partialmethod(post, '/search')
     update = partialmethod(post, '/update')
     delete = partialmethod(post, '/delete')
-
-
-def _wrap_on_error(on_error):
-    num_args = len(signature(on_error).parameters)
-    if num_args == 1:
-        warnings.warn(
-            "on_error callback taking only the response parameters is deprecated. Please add one parameter "
-            "to handle additional optional Exception as well",
-            DeprecationWarning,
-        )
-
-        @wraps(on_error)
-        def _fn(resp, exception):  # just skip the exception
-            return on_error(resp)
-
-        return _fn
-
-    else:
-        return on_error

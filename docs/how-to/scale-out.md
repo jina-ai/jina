@@ -3,16 +3,16 @@
 
 ## Overview
 
-A Jina `Flow` orchestrates multiple `Executors`.
-By default, a Jina `Executor` runs with a single `replica` and `shard`.
-Some `Executor` in the Flow might be less performant than others,
+A Jina {class}`~jina.Flow` orchestrates multiple {class}`~jina.Executor`s.
+By default, a Jina Executor runs with a single `replica` and `shard`.
+Some Executor in the Flow might be less performant than others,
 this could turn into a performance bottleneck in your Jina application.
 
-To solve this, Jina `Flow` allows you to config the number of `replicas` and `shards`.
-`replica` is used to increase `Executor` throughput and availability.
+To solve this, Jina Flow allows you to config the number of `replicas` and `shards`.
+`replica` is used to increase Executor throughput and availability.
 `shard` is used for data partitioning.
 
-In this document, we'll dive into these two concepts and see how you can make use of `replicas` and `shards` to scale out your `Executor`.
+In this document, we'll dive into these two concepts and see how you can make use of `replicas` and `shards` to scale out your Executor.
 
 ## Before you start
 <!-- Delete this section if your readers can go to the steps without requiring any prerequisite knowledge. -->
@@ -33,7 +33,7 @@ pip install pqlite==0.2.3
 
 ### Context
 
-Imagine you are building a text-based search system and you have an `Executor` to transform text to its [tf-idf](https://en.wikipedia.org/wiki/Tf-idf) vector representation.
+Imagine you are building a text-based search system and you have an {class}`~jina.Executor` to transform text to its [tf-idf](https://en.wikipedia.org/wiki/Tf-idf) vector representation.
 This could become a performance bottleneck to your search system.
 The Executor looks like this:
 
@@ -68,7 +68,7 @@ class MyVectorizer(Executor):
         docs.embeddings = X
 ```
 
-And we create a `Flow` and make use this `Executor`:
+And we create a Flow and make use this Executor:
 
 ```python
 from jina import Flow
@@ -78,7 +78,7 @@ f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyVectorizer
 
 ### Scale up an Executor
 
-When you start your `Flow`, you might discover to process all the text corpus, this process takes a while:
+When you start your {class}`~jina.Flow`, you might discover to process all the text corpus, this process takes a while:
 
 ```python
 with f:
@@ -98,7 +98,7 @@ What if you need to index millions of documents?
 ⠇       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━ 0:00:06 18.1 step/s . 115 steps done in 6 seconds
 ```
 
-Jina allows you to scale your `Executor` very easily, with only one parameter change:
+Jina allows you to scale your {class}`~jina.Executor` very easily, with only one parameter change:
 
 ```diff
 + f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyVectorizer, replicas=2)
@@ -152,13 +152,13 @@ f = (
 
 ### Partitioning the data
 
-Now let's run the `Flow` to index your data:
+Now let's run the {class}`~jina.Flow`to index your data:
 ```python
 with f:
     f.post(on='/index', inputs=news_generator, show_progress=True)
 ```
 
-The `PQLiteIndexer` will save your indexed `Documents` to your specified `workspace` (directory).
+The `PQLiteIndexer` will save your indexed Documents to your specified `workspace` (directory).
 Since the default number of shards is one.
 All the data will be saved to `YOUR-WORKSPACE-DIR/PQLiteIndexer/0/` where `0` is the shard id.
 
@@ -180,7 +180,7 @@ f = (
 )
 ```
 
-Now open your workspace directory, you'll find we created 2 shards to store your indexed `Documents`:
+Now open your workspace directory, you'll find we created 2 shards to store your indexed Documents:
 `YOUR-WORKSPACE-DIR/PQLiteIndexer/0/` and `YOUR-WORKSPACE-DIR/PQLiteIndexer/1/`.
 
 ### Different polling strategies
@@ -191,8 +191,8 @@ Jina supports two `polling` strategies:
 1. `any`: requests will be randomly assigned to one shard.
 2. `all`: requests will be handled by all shards.
 
-In practice, when you are indexing your `Documents`,
-it's better to set `polling='any'` to only store the `Documents` into one shard to avoid duplicates.
+In practice, when you are indexing your Documents,
+it's better to set `polling='any'` to only store the Documents into one shard to avoid duplicates.
 On the other hand, at search time, the search requests should be across all shards.
 Thus we should set `polling='all''`.
 
