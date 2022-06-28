@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/orchestrate/flow/builder.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>jina.orchestrate.flow.builder - Jina 3.6.6 documentation</title>
+        <title>jina.orchestrate.flow.builder - Jina 3.6.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -146,7 +146,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.6.6 documentation</div>
+                <div class="brand">Jina 3.6.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -353,14 +353,14 @@
                 <article role="main">
                     <h1>Source code for jina.orchestrate.flow.builder</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">FlowBuildLevelError</span>
 
 <span class="c1"># noinspection PyUnreachableCode</span>
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">jina.orchestrate.flow.base</span> <span class="kn">import</span> <span class="n">Flow</span>
     <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">FlowBuildLevel</span>
+    <span class="kn">from</span> <span class="nn">jina.orchestrate.flow.base</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 
 <div class="viewcode-block" id="allowed_levels"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.builder/#jina.orchestrate.flow.builder.allowed_levels">[docs]</a><span class="k">def</span> <span class="nf">allowed_levels</span><span class="p">(</span><span class="n">levels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;FlowBuildLevel&#39;</span><span class="p">]):</span>
@@ -402,8 +402,8 @@
 <span class="sd">    :param op_flow: the Flow we&#39;re operating on</span>
 <span class="sd">    :return: names of hanging Deployments (nobody recv from them) in the Flow.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">all_needs</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">needs</span><span class="p">}</span>
-    <span class="n">all_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+    <span class="n">all_needs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">op_flow</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">needs</span><span class="p">}</span>
+    <span class="n">all_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">op_flow</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">floating</span><span class="p">}</span>
     <span class="c1"># all_names is always a superset of all_needs</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">all_names</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">all_needs</span><span class="p">))</span>
 </pre></div>
@@ -420,7 +420,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 24, 2022</div>
+                            Last updated on Jun 28, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

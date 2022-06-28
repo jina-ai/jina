@@ -68,7 +68,7 @@ You can create an example local project using `jc new`. The default structure lo
 
 where,
 
-- `executor1` directory has all Executor related code/config. You can read the best practices for [file structures](https://docs.jina.ai/fundamentals/executor/repository-structure/). Multiple such Executor directories can be created.
+- `executor1` directory has all Executor related code/config. You can read the best practices for [file structures](https://docs.jina.ai/fundamentals/executor/executor-files/). Multiple such Executor directories can be created.
 - `flow.yml` Your Flow YAML.
 - `.env` All environment variables used during deployment.
 

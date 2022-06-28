@@ -10,11 +10,11 @@
   
 <meta property="og:url" content="https://docs.jina.ai/api/jina.types.request.data/" />
   
-<meta property="og:site_name" content="Jina 3.6.6 Documentation" />
+<meta property="og:site_name" content="Jina 3.6.7 Documentation" />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.6.6 Documentation" />
+<meta property="og:image:alt" content="Jina 3.6.7 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -37,7 +37,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.types.request.data.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>jina.types.request.data module - Jina 3.6.6 documentation</title>
+        <title>jina.types.request.data module - Jina 3.6.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -177,7 +177,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.6.6 documentation</div>
+                <div class="brand">Jina 3.6.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -388,7 +388,10 @@
 <dt class="sig sig-object py" id="jina.types.request.data.DataRequest">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.request.data.</span></span><span class="sig-name descname"><span class="pre">DataRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/data/#DataRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.data.DataRequest" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.request.Request</span></code></a></p>
-<p>Represents a DataRequest used for exchanging DocumentArrays to and within a Flow</p>
+<p>Represents a DataRequest used for exchanging <code class="xref py py-class docutils literal notranslate"><span class="pre">docarray.DocumentArray</span></code> with and within a Flow.</p>
+<p>When calling <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> on any Jina client,
+the provided input <code class="xref py py-class docutils literal notranslate"><span class="pre">docarray.DocumentArray</span></code> will be
+converted to a <a class="reference internal" href="#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a> before being sent to a Flow.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.request.data.DataRequest.is_decompressed">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_decompressed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.is_decompressed" title="Permalink to this definition">#</a></dt>
@@ -630,14 +633,11 @@ will be converted to Python list.</p>
 <dt class="sig sig-object py" id="jina.types.request.data.Response">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.request.data.</span></span><span class="sig-name descname"><span class="pre">Response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/data/#Response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.data.Response" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.request.data.DataRequest</span></code></a></p>
-<p>Response is the <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> object returns from the flow. Right now it shares the same representation as
-<code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code>. At 0.8.12, <a class="reference internal" href="#jina.types.request.data.Response" title="jina.types.request.data.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a> is a simple alias. But it does give a more consistent semantic on
-the client API: send a <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> and receive a <a class="reference internal" href="#jina.types.request.data.Response" title="jina.types.request.data.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>For now it only exposes <cite>Docs</cite> and <cite>GroundTruth</cite>. Users should very rarely access <cite>Control</cite> commands, so preferably
-not confuse the user by adding <cite>CommandMixin</cite>.</p>
-</div>
+<p>Response is the <a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> object returned by the flow.</p>
+<p>At the moment it is an alias for <a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a>,
+and therefore shares an identical representation.
+Currently, its sole purpose is to give a more consistent semantic on
+the client API: send a <a class="reference internal" href="#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a> and receive a <a class="reference internal" href="#jina.types.request.data.Response" title="jina.types.request.data.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.types.request.data.Response.CopyFrom">
 <span class="sig-name descname"><span class="pre">CopyFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.data.Response.CopyFrom" title="Permalink to this definition">#</a></dt>
@@ -884,7 +884,7 @@ will be converted to Python list.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 24, 2022</div>
+                            Last updated on Jun 28, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

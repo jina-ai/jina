@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/cli/index/" />
   
-<meta property="og:site_name" content="Jina 3.6.6 Documentation" />
+<meta property="og:site_name" content="Jina 3.6.7 Documentation" />
   
 <meta property="og:description" content="Command-Line Interface: Positional Arguments: cli,, Possible choices: executor, flow, ping, export, new, gateway, hub, help, pod, deployment, client,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-commands:: executor: Start..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.6.6 Documentation" />
+<meta property="og:image:alt" content="Jina 3.6.7 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/cli/index.html" />
 
     <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Command-Line Interface - Jina 3.6.6 documentation</title>
+        <title>Command-Line Interface - Jina 3.6.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -179,7 +179,7 @@
         </div>
         <div class="header-center">
             <a href="../">
-                <div class="brand">Jina 3.6.6 documentation</div>
+                <div class="brand">Jina 3.6.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -427,8 +427,9 @@
               <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span>
-              <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
+              <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
               <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
 </pre></div>
@@ -523,11 +524,11 @@ JSON dict, {endpoint: PollingType}
 <p>Note that the recommended way is to only import a single module - a simple python file, if your
 executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
 which should be structured as a python package. For more details, please see the
-<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/repository-structure/">Executor cookbook</a></p>
+<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/executor-files/">Executor cookbook</a></p>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 63954</p>
+<p>Default: 61769</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -632,7 +633,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 59692</p>
+<p>Default: 57939</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -640,11 +641,15 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: 60613</p>
+<p>Default: 56244</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
 <p>Default: -1</p>
+</dd>
+<dt><kbd>--floating</kbd></dt>
+<dd><p>If set, the current Pod/Deployment can not be further chained, and the next <cite>.add()</cite> will chain after the last Pod/Deployment not this current one.</p>
+<p>Default: False</p>
 </dd>
 </dl>
 </section>
@@ -730,7 +735,7 @@ Python files, data files.</p>
 <h4>Flow Feature arguments<a class="headerlink" href="#Flow Feature arguments" title="Permalink to this headline">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--uses</kbd></dt>
-<dd><p>The YAML file represents a flow</p>
+<dd><p>The YAML path represents a flow. It can be either a local file path or a URL.</p>
 </dd>
 <dt><kbd>--env</kbd></dt>
 <dd><p>The map of environment variables that are available inside runtime</p>
@@ -937,6 +942,7 @@ Python files, data files.</p>
              <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="Named Arguments_repeat6">
@@ -1056,11 +1062,11 @@ JSON dict, {endpoint: PollingType}
 <p>Note that the recommended way is to only import a single module - a simple python file, if your
 executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
 which should be structured as a python package. For more details, please see the
-<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/repository-structure/">Executor cookbook</a></p>
+<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/executor-files/">Executor cookbook</a></p>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 61544</p>
+<p>Default: 51233</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1164,7 +1170,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 50984</p>
+<p>Default: 55117</p>
 </dd>
 <dt><kbd>--compression</kbd></dt>
 <dd><p>Possible choices: NoCompression, Deflate, Gzip</p>
@@ -1199,7 +1205,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 60322</p>
+<p>Default: 52304</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1207,11 +1213,15 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: 55397</p>
+<p>Default: 65171</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
 <p>Default: -1</p>
+</dd>
+<dt><kbd>--floating</kbd></dt>
+<dd><p>If set, the current Pod/Deployment can not be further chained, and the next <cite>.add()</cite> will chain after the last Pod/Deployment not this current one.</p>
+<p>Default: False</p>
 </dd>
 </dl>
 </section>
@@ -1400,7 +1410,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
          <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">logs</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span>
-         <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span>
+         <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
          <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span>
@@ -1497,11 +1507,11 @@ JSON dict, {endpoint: PollingType}
 <p>Note that the recommended way is to only import a single module - a simple python file, if your
 executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
 which should be structured as a python package. For more details, please see the
-<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/repository-structure/">Executor cookbook</a></p>
+<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/executor-files/">Executor cookbook</a></p>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 63155</p>
+<p>Default: 63222</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1606,7 +1616,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 57128</p>
+<p>Default: 64752</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1614,11 +1624,15 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: 59114</p>
+<p>Default: 54394</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
 <p>Default: -1</p>
+</dd>
+<dt><kbd>--floating</kbd></dt>
+<dd><p>If set, the current Pod/Deployment can not be further chained, and the next <cite>.add()</cite> will chain after the last Pod/Deployment not this current one.</p>
+<p>Default: False</p>
 </dd>
 </dl>
 </section>
@@ -1677,8 +1691,8 @@ Python files, data files.</p>
                 <span class="p">[</span><span class="o">--</span><span class="n">upload</span><span class="o">-</span><span class="n">files</span> <span class="p">[</span><span class="n">FILE</span> <span class="p">[</span><span class="n">FILE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">shards</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">replicas</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">monitoring</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span>
-                <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">monitoring</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">retries</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">floating</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">before</span><span class="o">-</span><span class="n">address</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">address</span><span class="p">]</span>
                 <span class="p">[</span><span class="o">--</span><span class="n">connection</span><span class="o">-</span><span class="nb">list</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
@@ -1776,11 +1790,11 @@ JSON dict, {endpoint: PollingType}
 <p>Note that the recommended way is to only import a single module - a simple python file, if your
 executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
 which should be structured as a python package. For more details, please see the
-<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/repository-structure/">Executor cookbook</a></p>
+<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/executor-files/">Executor cookbook</a></p>
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 57760</p>
+<p>Default: 62839</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1885,7 +1899,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 63889</p>
+<p>Default: 60540</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1893,11 +1907,15 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: 63539</p>
+<p>Default: 53508</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
 <p>Default: -1</p>
+</dd>
+<dt><kbd>--floating</kbd></dt>
+<dd><p>If set, the current Pod/Deployment can not be further chained, and the next <cite>.add()</cite> will chain after the last Pod/Deployment not this current one.</p>
+<p>Default: False</p>
 </dd>
 </dl>
 </section>
@@ -2046,7 +2064,7 @@ Python files, data files.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 24, 2022</div>
+                            Last updated on Jun 28, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

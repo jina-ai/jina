@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/types/request.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>jina.types.request - Jina 3.6.6 documentation</title>
+        <title>jina.types.request - Jina 3.6.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -146,7 +146,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.6.6 documentation</div>
+                <div class="brand">Jina 3.6.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -362,12 +362,13 @@
 
 <div class="viewcode-block" id="Request"><a class="viewcode-back" href="../../../../api/jina.types.request/#jina.types.request.Request">[docs]</a><span class="k">class</span> <span class="nc">Request</span><span class="p">(</span><span class="n">ProtoTypeMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    :class:`Request` is one of the **primitive data type** in Jina.</span>
+<span class="sd">    :class:`Request` is one of the primitive data types in Jina, and serves as a base for</span>
+<span class="sd">    :class:`~data.DataRequest` and :class:`~data.Response`.</span>
 
 <span class="sd">    It offers a Pythonic interface to allow users access and manipulate</span>
 <span class="sd">    :class:`jina.jina_pb2.RequestProto` object without working with Protobuf itself.</span>
 
-<span class="sd">    A container for serialized :class:`jina_pb2.RequestProto` that only triggers deserialization</span>
+<span class="sd">    It serves as a container for serialized :class:`jina_pb2.RequestProto` that only triggers deserialization</span>
 <span class="sd">    and decompression when receives the first read access to its member.</span>
 
 <span class="sd">    It overrides :meth:`__getattr__` to provide the same get/set interface as an</span>
@@ -410,7 +411,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 24, 2022</div>
+                            Last updated on Jun 28, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

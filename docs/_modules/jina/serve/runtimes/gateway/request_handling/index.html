@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/request_handling.html" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>jina.serve.runtimes.gateway.request_handling - Jina 3.6.6 documentation</title>
+        <title>jina.serve.runtimes.gateway.request_handling - Jina 3.6.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -146,7 +146,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.6.6 documentation</div>
+                <div class="brand">Jina 3.6.7 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -414,6 +414,22 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span> <span class="o">=</span> <span class="kc">None</span>
 
+    <span class="k">def</span> <span class="nf">_update_start_request_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_request_init_time</span><span class="p">[</span><span class="n">request</span><span class="o">.</span><span class="n">request_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_update_end_request_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span><span class="p">:</span>
+            <span class="n">init_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_init_time</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">request_id</span>
+            <span class="p">)</span>  <span class="c1"># need to pop otherwise it stays in memory forever</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">init_time</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="o">.</span><span class="n">dec</span><span class="p">()</span>
+
 <div class="viewcode-block" id="RequestHandler.handle_request"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_request">[docs]</a>    <span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span> <span class="s1">&#39;TopologyGraph&#39;</span><span class="p">,</span> <span class="n">connection_pool</span><span class="p">:</span> <span class="s1">&#39;GrpcConnectionPool&#39;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">&#39;Request&#39;</span><span class="p">],</span> <span class="s1">&#39;asyncio.Future&#39;</span><span class="p">]:</span>
@@ -448,10 +464,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_executor_endpoint_mapping</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">endp</span><span class="o">.</span><span class="n">endpoints</span>
 
         <span class="k">def</span> <span class="nf">_handle_request</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;asyncio.Future&#39;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_request_init_time</span><span class="p">[</span><span class="n">request</span><span class="o">.</span><span class="n">request_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_start_request_metrics</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
             <span class="c1"># important that the gateway needs to have an instance of the graph per request</span>
             <span class="n">request_graph</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
 
@@ -496,10 +510,14 @@
             <span class="k">async</span> <span class="k">def</span> <span class="nf">_process_results_at_end_gateway</span><span class="p">(</span>
                 <span class="n">tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">],</span> <span class="n">request_graph</span><span class="p">:</span> <span class="n">TopologyGraph</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor_endpoint_mapping</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">gather_endpoints</span><span class="p">(</span><span class="n">request_graph</span><span class="p">))</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor_endpoint_mapping</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">gather_endpoints</span><span class="p">(</span><span class="n">request_graph</span><span class="p">))</span>
 
-                <span class="n">partial_responses</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+                    <span class="n">partial_responses</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_end_request_metrics</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+                    <span class="k">raise</span>
                 <span class="n">partial_responses</span><span class="p">,</span> <span class="n">metadatas</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">partial_responses</span><span class="p">)</span>
                 <span class="n">filtered_partial_responses</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
                     <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="n">partial_responses</span><span class="p">)</span>
@@ -539,19 +557,11 @@
 <span class="sd">            :param result: The result returned to the gateway. It extracts the request to be returned to the client</span>
 <span class="sd">            :return: Returns a request to be returned to the client</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-
             <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">routes</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">route</span><span class="o">.</span><span class="n">executor</span> <span class="o">==</span> <span class="s1">&#39;gateway&#39;</span><span class="p">:</span>
                     <span class="n">route</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">GetCurrentTime</span><span class="p">()</span>
 
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span><span class="p">:</span>
-                <span class="n">init_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_init_time</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">request_id</span>
-                <span class="p">)</span>  <span class="c1"># need to pop otherwise it stays in memory forever</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">init_time</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="o">.</span><span class="n">dec</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_end_request_metrics</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">result</span>
 
@@ -570,7 +580,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 24, 2022</div>
+                            Last updated on Jun 28, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

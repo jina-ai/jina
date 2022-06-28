@@ -5,6 +5,6 @@
 | `log_config` | The YAML config of the logger used in this object. | `string` | `default` |
 | `quiet` | If set, then no log will be emitted from this object. | `boolean` | `False` |
 | `quiet_error` | If set, then exception stack information will not be added to the log | `boolean` | `False` |
-| `uses` | The YAML file represents a flow | `string` | `None` |
+| `uses` | The YAML path represents a flow. It can be either a local file path or a URL. | `string` | `None` |
 | `env` | The map of environment variables that are available inside runtime | `object` | `None` |
 | `inspect` | The strategy on those inspect deployments in the flow.<br><br>    If `REMOVE` is given then all inspect deployments are removed when building the flow. | `string` | `COLLECT` |
