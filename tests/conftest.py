@@ -69,6 +69,11 @@ def test_log_level(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def test_grpc_flags(monkeypatch):
+    monkeypatch.setenv('GRPC_VERBOSITY', 'DEBUG')
+
+
+@pytest.fixture(autouse=True)
 def test_timeout_ctrl_time(monkeypatch):
     monkeypatch.setenv('JINA_DEFAULT_TIMEOUT_CTRL', '500')
 

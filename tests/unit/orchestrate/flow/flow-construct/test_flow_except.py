@@ -13,7 +13,7 @@ from tests import validate_callback
 
 class DummyCrafterExcept(Executor):
     @requests
-    def craft(self, *args, **kwargs):
+    def craft(self, **kwargs):
         return 1 / 0
 
 
@@ -183,8 +183,6 @@ def test_flow_on_callback(protocol):
 
     assert hit == ['done', 'always']
 
-    hit.clear()
-
 
 class DummyCrafterNotImplemented(Executor):
     @requests
@@ -215,8 +213,6 @@ def test_flow_on_error_callback(protocol):
         )
 
     assert hit == ['error', 'always']
-
-    hit.clear()
 
 
 class ExceptionExecutor1(Executor):
