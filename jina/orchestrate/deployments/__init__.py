@@ -706,8 +706,11 @@ class Deployment(BaseDeployment):
                 # the gateway needs to respect the assigned port
                 if args.deployment_role == DeploymentRoleType.GATEWAY or args.external:
                     _args.port = args.port
-                elif args.shards == 1:
+                elif args.shards == 1 and args.replicas == 1:
+                    _args.port = args.port
+                    _args.port_monitoring = args.port_monitoring
 
+                elif args.shards == 1:
                     _args.port_monitoring = (
                         helper.random_port()
                         if replica_id >= len(args.all_port_monitoring)
