@@ -137,8 +137,8 @@ jina flow --uses flow.yaml
 When using shards, an extra head will be created and you will need to pass a list of N+1 ports to `port_monitoring`, N beeing the number of shards you desire
 ```
 
-If you precise less `port_monitoring` than you have replicas of your Executor (or even not passing any at all) the unkown one
-will be assigned randomly. It is a better practice to precise a port for all of them otherwise you will have to change 
+If you precise fewer `port_monitoring` than you have replicas of your Executor (or even not passing any at all), the unkown ports
+will be assigned randomly. It is a better practice to precise a port for every replica, otherwise you will have to change 
 your Prometheus configuration each time you restart your application.
 
 ## Available metrics
