@@ -195,12 +195,17 @@ def parse_config_source(
         )
 
 
-def complete_path(path: str, extra_search_paths: Optional[List[str]] = None) -> str:
+def complete_path(
+    path: str,
+    extra_search_paths: Optional[List[str]] = None,
+    raise_nonexist: bool = True,
+) -> str:
     """
     Complete the path of file via searching in abs and relative paths.
 
     :param path: path of file.
     :param extra_search_paths: extra paths to conduct search
+    :param raise_nonexist: raise exception if the file does not exist
     :return: Completed file path.
     """
     _p = _search_file_in_paths(path, extra_search_paths)
@@ -209,7 +214,7 @@ def complete_path(path: str, extra_search_paths: Optional[List[str]] = None) -> 
         _p = path
     if _p:
         return os.path.abspath(_p)
-    else:
+    elif raise_nonexist:
         raise FileNotFoundError(f'can not find {path}')
 
 
@@ -263,5 +268,5 @@ def load_py_modules(d: Dict, extra_search_paths: Optional[List[str]] = None) -> 
 
     _finditem(d)
     if mod:
-        mod = [complete_path(m, extra_search_paths) for m in mod]
+        mod = [complete_path(m, extra_search_paths, raise_nonexist=False) for m in mod]
         PathImporter.add_modules(*mod)
