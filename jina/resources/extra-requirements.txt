@@ -33,9 +33,8 @@ grpcio-health-checking>=1.46.0:  core
 pyyaml>=5.3.1:              core
 packaging>=20.0:            core
 docarray>=0.13.14:          core
-lz4<3.1.2:                        perf, standard,devel
-uvloop:                     perf, standard,devel
-prometheus_client:          perf, standard,devel
+uvloop:                     perf,standard,devel
+prometheus_client:          perf,standard,devel
 fastapi>=0.76.0:            standard,devel
 uvicorn[standard]:          standard,devel
 docarray[common]>=0.13.14:  standard,devel
@@ -70,8 +69,8 @@ pytest-kind==21.1.3:        test
 pytest-lazy-fixture:        test
 torch:                      cicd
 psutil:                     test
-strawberry-graphql>=0.96.0: cicd, devel
-sgqlc:                      cicd, devel
+strawberry-graphql>=0.96.0: cicd,devel
+sgqlc:                      cicd,devel
 bs4:                        cicd
 jsonschema:                 cicd
 portforward>=0.2.4:         cicd
