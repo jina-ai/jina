@@ -195,7 +195,10 @@ def parse_config_source(
         )
 
 
-def complete_path(path: str, extra_search_paths: Optional[List[str]] = None) -> str:
+def complete_path(
+    path: str,
+    extra_search_paths: Optional[List[str]] = None,
+) -> str:
     """
     Complete the path of file via searching in abs and relative paths.
 
@@ -263,5 +266,4 @@ def load_py_modules(d: Dict, extra_search_paths: Optional[List[str]] = None) -> 
 
     _finditem(d)
     if mod:
-        mod = [complete_path(m, extra_search_paths) for m in mod]
         PathImporter.add_modules(*mod)
