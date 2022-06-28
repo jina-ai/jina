@@ -314,9 +314,7 @@ def _send_request(gateway_port, protocol):
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_pending_requests_with_connection_error(port_generator, protocol):
-    runtime_name = (
-        'gateway/rep-0/GRPCGatewayRuntime' if protocol == 'grpc' else 'gateway/rep-0'
-    )
+    runtime_name = 'gateway/GRPCGatewayRuntime' if protocol == 'grpc' else 'gateway'
     gateway_port = port_generator()
     worker_port = port_generator()
     port_monitoring = port_generator()
