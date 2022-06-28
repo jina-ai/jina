@@ -200,6 +200,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14149,4 +14150,45 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```0fbb7335```](https://github.com/jina-ai/jina/commit/0fbb73357a4670f590c7c9336153a5fb1ac482db)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```f968cbe5```](https://github.com/jina-ai/jina/commit/f968cbe592ae1f565ef96634e0d40b4b4de9b50f)] __-__ __version__: the next version will be 3.6.6 (*Jina Dev Bot*)
+
+<a name=release-note-3-6-7></a>
+## Release Note (`3.6.7`)
+
+> Release time: 2022-06-28 10:54:01
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  zhangkai,  Johannes Messner,  Jina Dev Bot,  Han Xiao,  Delgermurun,  Deepankar Mahapatro,  🙇
+
+
+### 🆕 New Features
+
+ - [[```e0b78d56```](https://github.com/jina-ai/jina/commit/e0b78d5692e42646ad3554c85a9ea7507ab8e954)] __-__ __flow__: adding floating deployment (#4967) (*Han Xiao*)
+ - [[```355f89f6```](https://github.com/jina-ai/jina/commit/355f89f6e39b27e4c539d0fa88f54dc35afb148b)] __-__ improve ui after flow success (#4966) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```1d5271a8```](https://github.com/jina-ai/jina/commit/1d5271a85b14d09fe8fec81407572043862fe663)] __-__ fix monitoring update of metrics on exception (#4974) (*Joan Fontanals*)
+ - [[```c27a47be```](https://github.com/jina-ai/jina/commit/c27a47be54624ea59c877ce07c9562cbe07ca8af)] __-__ replace broken executor files docs link (#4964) (*Delgermurun*)
+ - [[```ef961e96```](https://github.com/jina-ai/jina/commit/ef961e96c663954c523cc9376d2221b7c150652b)] __-__ add async dry run method (#4963) (*Deepankar Mahapatro*)
+
+### 🧼 Code Refactoring
+
+ - [[```558e683a```](https://github.com/jina-ai/jina/commit/558e683a6bf7f3a1ed813aa41c440359546301eb)] __-__ change exec name in test (#4970) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```b595584b```](https://github.com/jina-ai/jina/commit/b595584b696d00b0a24d84abbd83814ded953069)] __-__ expose networking requests in api reference (#4960) (*Johannes Messner*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```2512caf5```](https://github.com/jina-ai/jina/commit/2512caf5c7ee2f917aee7eddeb5a919e7da120a2)] __-__ remove unnecessary folder (#4969) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```afa3892f```](https://github.com/jina-ai/jina/commit/afa3892fdd6c9df7ff9d2bd91d14911369e91f92)] __-__ remove lz4 reqs (#4978) (*Joan Fontanals*)
+ - [[```e33513ec```](https://github.com/jina-ai/jina/commit/e33513ec3365065e61f93c9190e659d6e75833b3)] __-__ add hub integration (#4971) (*zhangkai*)
+ - [[```8314c83b```](https://github.com/jina-ai/jina/commit/8314c83b8bf9dcc7f2b33a49acd6d2ff7765b6e5)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```f8de1a1f```](https://github.com/jina-ai/jina/commit/f8de1a1fae6b0890de35f16c8c6ccd562bd16b78)] __-__ __version__: the next version will be 3.6.7 (*Jina Dev Bot*)
 
