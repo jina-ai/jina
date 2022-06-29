@@ -8,7 +8,6 @@
 jc deploy flow.yml --env-file flow.env
 ```
 
-
 ### A project folder
 
 - You can include your environment variables in the `.env` file in the local project and JCloud will take care of managing them.
@@ -43,7 +42,42 @@ executors:
     jcloud:
       capacity: on-demand
 ```
-(jcloud-external-executors)=
+
+## Storage
+
+```{note}
+We currently support 2 kind of storage type `ebs` and `efs`. The former one is block device and the second one is shared file system.
+
+ By default, we attach an `efs` to all the Executors in a Flow. The benefits of doing so are
+
+- It can grow in size dynamically, so you don't need to shrink/grow volumes as & when necessary.  
+- All Executors in the Flow can share a disk. 
+- The same disk can also be shared with another Flow by passing `--workspace-id <prev-flow-id>` while deploying a Flow.
+
+If your Executor needs high IO, you can use `ebs` instead. 
+- The disk cannot be shared with other Executors / Flows. 
+- You must pass a size of storage  (default: `1G`,  max `10G`)
+```
+
+```yaml
+jtype: Flow
+executors:
+  - name: indexer1
+    uses: jinahub+docker://SimpleIndexer
+    jcloud:
+      resources:
+        storage: 
+          type: ebs
+          size: 10G
+  - name: indexer2
+    uses: jinahub+docker://SimpleIndexer
+    jcloud:
+      resources:
+        storage: 
+          type: efs
+```
+
+
 ## Deploy external executors
 
 You can also expose only the Executors by setting `expose_gateway` to `False`. Read more about {ref}`External Executors <external-executors>`
@@ -61,7 +95,6 @@ executors:
 :width: 70%
 ```
 
-
 Similarly, you can also deploy & expose multiple External Executors.
 
 ```yaml
@@ -78,6 +111,7 @@ executors:
 ```{figure} external-executors-multiple.png
 :width: 70%
 ```
+
 ## Deploy with specific `jina` version
 
 To manage `jina` version while deploying a Flow to `jcloud`, you can pass `version` arg in the Flow yaml.
@@ -95,7 +129,7 @@ executors:
 
 In Jcloud, we have default life-cycle(24hrs) for each flow and we will remove flows periodically if they are beyond the life-cycle. To change the default behavior and manage it by yourself, you can setup `retention_days` args in `jcloud`. `-1` is never expired, `0` is to use the default life-cycle, or `X`(0<X<365), which means keep the flow utill X days. `0` is the default value if you don't pass `retention_days` argument.
 
-```yaml
+```
 jtype: Flow
 jcloud:
   retention_days: -1
