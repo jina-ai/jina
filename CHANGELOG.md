@@ -202,6 +202,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14214,4 +14215,32 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```897b0eb9```](https://github.com/jina-ai/jina/commit/897b0eb951cde120aa6af05a036a9b6e88abb571)] __-__ __version__: the next version will be 3.6.8 (*Jina Dev Bot*)
+
+<a name=release-note-3-6-9></a>
+## Release Note (`3.6.9`)
+
+> Release time: 2022-06-29 15:03:04
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ samsja,  tarrantro,  Johannes Messner,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```27a3f942```](https://github.com/jina-ai/jina/commit/27a3f942c7f228f072c35832aa9e4fb1d30a6118)] __-__ allow to pass a list of port monitoring to replicas  (#4961) (*samsja*)
+
+### 🐞 Bug fixes
+
+ - [[```d21870ac```](https://github.com/jina-ai/jina/commit/d21870ac47fc1594b45a5f01ee48cddf5c18b2ff)] __-__ fix reconnect issues (#4941) (*Johannes Messner*)
+
+### 📗 Documentation
+
+ - [[```0884fe9e```](https://github.com/jina-ai/jina/commit/0884fe9e7ff4e429442d8cbbad75b181ac371583)] __-__ add wolf ebs support docs (#4980) (*tarrantro*)
+
+### 🍹 Other Improvements
+
+ - [[```2a2f57d6```](https://github.com/jina-ai/jina/commit/2a2f57d6e0bd8c8eb05ffcd9e5065bc592f94eb9)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```407a266e```](https://github.com/jina-ai/jina/commit/407a266e9ee638015063b3dda41291dd6476ed16)] __-__ __version__: the next version will be 3.6.9 (*Jina Dev Bot*)
 
