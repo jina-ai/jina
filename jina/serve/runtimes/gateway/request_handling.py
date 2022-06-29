@@ -60,6 +60,22 @@ class RequestHandler:
             self._receiving_request_metrics = None
             self._pending_requests_metrics = None
 
+    def _update_start_request_metrics(self, request: 'Request'):
+        if self._receiving_request_metrics:
+            self._request_init_time[request.request_id] = time.time()
+        if self._pending_requests_metrics:
+            self._pending_requests_metrics.inc()
+
+    def _update_end_request_metrics(self, result: 'Request'):
+        if self._receiving_request_metrics:
+            init_time = self._request_init_time.pop(
+                result.request_id
+            )  # need to pop otherwise it stays in memory forever
+            self._receiving_request_metrics.observe(time.time() - init_time)
+
+        if self._pending_requests_metrics:
+            self._pending_requests_metrics.dec()
+
     def handle_request(
         self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
     ) -> Callable[['Request'], 'asyncio.Future']:
@@ -94,10 +110,8 @@ class RequestHandler:
                 self._executor_endpoint_mapping[node.name] = endp.endpoints
 
         def _handle_request(request: 'Request') -> 'asyncio.Future':
-            if self._receiving_request_metrics:
-                self._request_init_time[request.request_id] = time.time()
-            if self._pending_requests_metrics:
-                self._pending_requests_metrics.inc()
+            self._update_start_request_metrics(request)
+
             # important that the gateway needs to have an instance of the graph per request
             request_graph = copy.deepcopy(graph)
 
@@ -142,10 +156,14 @@ class RequestHandler:
             async def _process_results_at_end_gateway(
                 tasks: List[asyncio.Task], request_graph: TopologyGraph
             ) -> asyncio.Future:
-                if self._executor_endpoint_mapping is None:
-                    await asyncio.gather(gather_endpoints(request_graph))
+                try:
+                    if self._executor_endpoint_mapping is None:
+                        await asyncio.gather(gather_endpoints(request_graph))
 
-                partial_responses = await asyncio.gather(*tasks)
+                    partial_responses = await asyncio.gather(*tasks)
+                except:
+                    self._update_end_request_metrics(request)
+                    raise
                 partial_responses, metadatas = zip(*partial_responses)
                 filtered_partial_responses = list(
                     filter(lambda x: x is not None, partial_responses)
@@ -185,19 +203,11 @@ class RequestHandler:
             :param result: The result returned to the gateway. It extracts the request to be returned to the client
             :return: Returns a request to be returned to the client
             """
-
             for route in result.routes:
                 if route.executor == 'gateway':
                     route.end_time.GetCurrentTime()
 
-            if self._receiving_request_metrics:
-                init_time = self._request_init_time.pop(
-                    result.request_id
-                )  # need to pop otherwise it stays in memory forever
-                self._receiving_request_metrics.observe(time.time() - init_time)
-
-            if self._pending_requests_metrics:
-                self._pending_requests_metrics.dec()
+            self._update_end_request_metrics(result)
 
             return result
 
