@@ -1,9 +1,11 @@
 import multiprocessing
 import time
+import uuid
 
 import pytest
+from docarray import DocumentArray
 
-from jina import Client, Document, Executor, requests
+from jina import Client, Executor, requests
 from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
@@ -13,9 +15,14 @@ from .test_runtimes import _create_gateway_runtime, _create_head_runtime
 
 
 class DummyExec(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._id = str(uuid.uuid4())
+        print(f'DummyExecutor {self._id} created')
+
     @requests(on='/foo')
-    def foo(self, *args, **kwargs):
-        pass
+    def foo(self, docs, *args, **kwargs):
+        docs[0].text = self._id
 
 
 def _create_worker_runtime(port, name='', executor=None):
@@ -59,15 +66,24 @@ def _create_head(port, connection_list_dict, polling, retries=-1):
     return p
 
 
-def _send_request(gateway_port, protocol):
+def _check_all_replicas_connected(num_replicas, gateway_port, protocol):
+    """check if all replicas are connected"""
+    exec_ids = set()
+    exec_id_list = []
+    for i in range(num_replicas + 1):
+        id_ = _send_request(gateway_port, protocol, request_size=2)[0].text
+        exec_ids.add(id_)
+        exec_id_list.append(id_)
+    print(exec_id_list)
+    assert len(exec_ids) == num_replicas
+
+
+def _send_request(gateway_port, protocol, request_size=1):
     """send request to gateway and see what happens"""
     c = Client(host='localhost', port=gateway_port, protocol=protocol)
-    return c.post(
-        '/foo',
-        inputs=[Document(text='hi') for _ in range(2)],
-        request_size=1,
-        return_responses=True,
-    )
+    res = c.post('/foo', inputs=DocumentArray.empty(2), request_size=request_size)
+    assert len(res) == 2
+    return res
 
 
 def _test_error(gateway_port, error_ports, protocol):
@@ -161,6 +177,179 @@ async def test_runtimes_headless_topology(
         worker_process.terminate()
         gateway_process.join()
         worker_process.join()
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'grpc'])
+@pytest.mark.parametrize('fail_endpoint_discovery', [True, False])
+@pytest.mark.asyncio
+async def test_runtimes_reconnect(port_generator, protocol, fail_endpoint_discovery):
+    # create gateway and workers manually, then terminate worker process to provoke an error
+    worker_port = port_generator()
+    gateway_port = port_generator()
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
+
+    gateway_process = _create_gateway(
+        gateway_port, graph_description, pod_addresses, protocol
+    )
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{gateway_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    try:
+        if fail_endpoint_discovery:
+            # send request while Executor is not UP, WILL FAIL
+            p = multiprocessing.Process(
+                target=_send_request, args=(gateway_port, protocol)
+            )
+            p.start()
+            p.join()
+            assert p.exitcode != 0  # The request will fail and raise
+
+        worker_process = _create_worker(worker_port)
+        assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ctrl_address=f'0.0.0.0:{worker_port}',
+            ready_or_shutdown_event=multiprocessing.Event(),
+        )
+
+        p = multiprocessing.Process(target=_send_request, args=(gateway_port, protocol))
+        p.start()
+        p.join()
+        assert p.exitcode == 0  # The request will not fail and raise
+        worker_process.terminate()  # kill worker
+        worker_process.join()
+        assert not worker_process.is_alive()
+
+        # send request while Executor is not UP, WILL FAIL
+        p = multiprocessing.Process(target=_send_request, args=(gateway_port, protocol))
+        p.start()
+        p.join()
+        assert p.exitcode != 0
+
+        worker_process = _create_worker(worker_port)
+
+        assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ctrl_address=f'0.0.0.0:{worker_port}',
+            ready_or_shutdown_event=multiprocessing.Event(),
+        )
+        p = multiprocessing.Process(target=_send_request, args=(gateway_port, protocol))
+        p.start()
+        p.join()
+        assert (
+            p.exitcode == 0
+        )  # if exitcode != 0 then test in other process did not pass and this should fail
+        # ----------- 2. test that gateways remain alive -----------
+        # just do the same again, expecting the same failure
+        worker_process.terminate()  # kill worker
+        worker_process.join()
+        assert not worker_process.is_alive()
+        assert (
+            worker_process.exitcode == 0
+        )  # if exitcode != 0 then test in other process did not pass and this should fail
+
+    except Exception:
+        assert False
+    finally:  # clean up runtimes
+        gateway_process.terminate()
+        gateway_process.join()
+        worker_process.terminate()
+        worker_process.join()
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'grpc'])
+@pytest.mark.parametrize('fail_endpoint_discovery', [True, False])
+@pytest.mark.asyncio
+async def test_runtimes_reconnect_replicas(
+    port_generator, protocol, fail_endpoint_discovery
+):
+    # create gateway and workers manually, then terminate worker process to provoke an error
+    worker_ports = [port_generator() for _ in range(3)]
+    worker0_port, worker1_port, worker2_port = worker_ports
+    gateway_port = port_generator()
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["0.0.0.0:{worker0_port}", "0.0.0.0:{worker1_port}", "0.0.0.0:{worker2_port}"]}}'
+
+    worker_processes = []
+    for p in worker_ports:
+        worker_processes.append(_create_worker(p))
+        time.sleep(0.1)
+        AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ctrl_address=f'0.0.0.0:{p}',
+            ready_or_shutdown_event=multiprocessing.Event(),
+        )
+
+    gateway_process = _create_gateway(
+        gateway_port, graph_description, pod_addresses, protocol
+    )
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{gateway_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    p_first_check = multiprocessing.Process(
+        target=_check_all_replicas_connected, args=(3, gateway_port, protocol)
+    )
+    p_first_check.start()
+    p_first_check.join()
+    assert (
+        p_first_check.exitcode == 0
+    )  # all replicas are connected. At the end, the Flow should return to this state.
+
+    worker_processes[1].terminate()  # kill 'middle' worker
+    worker_processes[1].join()
+
+    try:
+        if fail_endpoint_discovery:
+            # send request while Executor is not UP, WILL FAIL
+            p = multiprocessing.Process(
+                target=_send_request, args=(gateway_port, protocol)
+            )
+            p.start()
+            p.join()
+
+        p = multiprocessing.Process(target=_send_request, args=(gateway_port, protocol))
+        p.start()
+        p.join()
+
+        p = multiprocessing.Process(target=_send_request, args=(gateway_port, protocol))
+        p.start()
+        p.join()
+
+        worker_processes[1] = _create_worker(worker_ports[1])
+
+        assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+            timeout=5.0,
+            ctrl_address=f'0.0.0.0:{worker_ports[1]}',
+            ready_or_shutdown_event=multiprocessing.Event(),
+        )
+
+        time.sleep(1)
+
+        p_second_check = multiprocessing.Process(
+            target=_check_all_replicas_connected, args=(3, gateway_port, protocol)
+        )
+        p_second_check.start()
+        p_second_check.join()
+        assert p_second_check.exitcode == 0  # all replicas are connected again.
+    except Exception:
+        assert False
+    finally:  # clean up runtimes
+        gateway_process.terminate()
+        gateway_process.join()
+        p_first_check.terminate()
+        p_first_check.join()
+        for p in worker_processes:
+            p.terminate()
+            p.join()
+        p_second_check.terminate()
+        p_second_check.join()
 
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])

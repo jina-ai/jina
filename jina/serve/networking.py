@@ -3,7 +3,7 @@ import contextlib
 import ipaddress
 import os
 from collections import defaultdict
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple, Union
 from urllib.parse import urlparse
 
 import grpc
@@ -13,6 +13,7 @@ from grpc_reflection.v1alpha.reflection_pb2 import ServerReflectionRequest
 from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 
 from jina.enums import PollingType
+from jina.excepts import EstablishGrpcConnectionError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2, jina_pb2_grpc
@@ -42,30 +43,60 @@ class ReplicaList:
         self._rr_counter = 0  # round robin counter
         self.summary = summary
 
+    async def reset_connection(self, address: str) -> Union[grpc.aio.Channel, None]:
+        """
+        Removes and then re-adds a connection.
+        Result is the same as calling :meth:`remove_connection` and then :meth:`add_connection`, but this allows for
+        handling of race condition if multiple callers reset a connection at the same time.
+
+        :param address: Target address of this connection
+        :returns: The reset connection or None if there was no connection for the given address
+        """
+        if (
+            address in self._address_to_connection_idx
+            and self._address_to_connection_idx[address] is not None
+        ):
+            # remove connection:
+            # in contrast to remove_connection(), we don't 'shorten' the data structures below, instead just set to None
+            # so if someone else accesses them in the meantime, they know that they can just wait
+            id_to_reset = self._address_to_connection_idx[address]
+            self._address_to_connection_idx[address] = None
+            connection_to_reset = self._connections[id_to_reset]
+            self._connections[id_to_reset] = None
+            channel_to_reset = self._address_to_channel[address]
+            self._address_to_channel[address] = None
+            await self._destroy_connection(channel_to_reset)
+
+            # re-add connection:
+            self._address_to_connection_idx[address] = id_to_reset
+            stubs, channel = self._create_connection(address)
+            self._address_to_channel[address] = channel
+            self._connections[id_to_reset] = stubs
+
+            return connection_to_reset
+        return None
+
     def add_connection(self, address: str):
         """
         Add connection with address to the connection list
         :param address: Target address of this connection
         """
         if address not in self._address_to_connection_idx:
-            try:
-                parsed_address = urlparse(address)
-                address = parsed_address.netloc if parsed_address.netloc else address
-                use_tls = parsed_address.scheme in TLS_PROTOCOL_SCHEMES
-            except:
-                use_tls = False
-
             self._address_to_connection_idx[address] = len(self._connections)
-            stubs, channel = GrpcConnectionPool.create_async_channel_stub(
-                address, tls=use_tls, summary=self.summary
-            )
+            stubs, channel = self._create_connection(address)
             self._address_to_channel[address] = channel
-
             self._connections.append(stubs)
 
-    async def remove_connection(self, address: str):
+    async def remove_connection(self, address: str) -> Union[grpc.aio.Channel, None]:
         """
         Remove connection with address from the connection list
+
+        .. warning::
+            This completely removes the connection, including all dictionary keys that point to it.
+            Therefore, be careful not to call this method while iterating over all connections.
+            If you want to reset (remove and re-add) a connection, use :meth:`jina.serve.networking.ReplicaList.reset_connection`,
+            which is safe to use in this scenario.
+
         :param address: Remove connection for this address
         :returns: The removed connection or None if there was not any for the given address
         """
@@ -76,11 +107,10 @@ class ReplicaList:
                 else 0
             )
             idx_to_delete = self._address_to_connection_idx.pop(address)
-
             popped_connection = self._connections.pop(idx_to_delete)
-            # we should handle graceful termination better, 0.5 is a rather random number here
-            await self._address_to_channel[address].close(0.5)
+            closing_channel = self._address_to_channel[address]
             del self._address_to_channel[address]
+            await self._destroy_connection(closing_channel)
             # update the address/idx mapping
             for address in self._address_to_connection_idx:
                 if self._address_to_connection_idx[address] > idx_to_delete:
@@ -90,15 +120,52 @@ class ReplicaList:
 
         return None
 
-    def get_next_connection(self):
+    def _create_connection(self, address):
+        parsed_address = urlparse(address)
+        address = parsed_address.netloc if parsed_address.netloc else address
+        use_tls = parsed_address.scheme in TLS_PROTOCOL_SCHEMES
+
+        stubs, channel = GrpcConnectionPool.create_async_channel_stub(
+            address, tls=use_tls, summary=self.summary
+        )
+        return stubs, channel
+
+    async def _destroy_connection(self, connection, grace=0.5):
+        # we should handle graceful termination better, 0.5 is a rather random number here
+        await connection.close(grace)
+
+    async def get_next_connection(self):
         """
         Returns a connection from the list. Strategy is round robin
         :returns: A connection from the pool
         """
+        return await self._get_next_connection(num_retries=3)
+
+    async def _get_next_connection(self, num_retries=0):
+        """
+        :param num_retries: how many retries should be performed when all connections are currently unavailable
+        :returns: A connection from the pool
+        """
         try:
-            connection = self._connections[self._rr_counter]
+            connection = None
+            for i in range(len(self._connections)):
+                internal_rr_counter = (self._rr_counter + i) % len(self._connections)
+                connection = self._connections[internal_rr_counter]
+                # connection is None if it is currently being reset. In that case, try different connection
+                if connection is not None:
+                    break
+            all_connections_unavailable = connection is None and num_retries <= 0
+            if all_connections_unavailable:
+                if num_retries <= 0:
+                    raise EstablishGrpcConnectionError(
+                        f'Error while resetting connections {self._connections}. Connections cannot be used.'
+                    )
+            elif connection is None:
+                # give control back to async event loop so connection resetting can be completed; then retry
+                await asyncio.sleep(0)
+                return await self._get_next_connection(num_retries=num_retries - 1)
         except IndexError:
-            # This can happen as a race condition while removing connections
+            # This can happen as a race condition while _removing_ connections
             self._rr_counter = 0
             connection = self._connections[self._rr_counter]
         self._rr_counter = (self._rr_counter + 1) % len(self._connections)
@@ -547,13 +614,12 @@ class GrpcConnectionPool:
         :param timeout: timeout for sending the requests
         :return: asyncio.Task items to send call
         """
-        connection = None
         connection_list = self._connections.get_replicas(
             deployment, head, shard_id, False
         )
-        if connection_list:
-            connection = connection_list.get_next_connection()
-        return self._send_discover_endpoint(connection, timeout=timeout)
+        return self._send_discover_endpoint(
+            timeout=timeout, connection_list=connection_list
+        )
 
     def send_request_once(
         self,
@@ -672,42 +738,52 @@ class GrpcConnectionPool:
         """
         await self._connections.close()
 
-    def _handle_aiorpcerror(
+    async def _handle_aiorpcerror(
         self,
-        e: AioRpcError,
+        error: AioRpcError,
         retry_i: int = 0,
         request_id: str = '',
-        dest_addr: Set[str] = {''},
-        num_retries: int = 0,
+        tried_addresses: Set[str] = {
+            ''
+        },  # same deployment can have multiple addresses (replicas)
+        total_num_tries: int = 1,  # number of retries + 1
+        current_address: str = '',  # the specific address that was contacted during this attempt
+        connection_list: Optional[ReplicaList] = None,
     ):
-        # connection failures and cancelled requests should be retried
+        # connection failures, cancelled requests, and timed out requests should be retried
         # all other cases should not be retried and will be raised immediately
         # connection failures have the code grpc.StatusCode.UNAVAILABLE
         # cancelled requests have the code grpc.StatusCode.CANCELLED
+        # timed out requests have the code grpc.StatusCode.DEADLINE_EXCEEDED
         # requests usually gets cancelled when the server shuts down
         # retries for cancelled requests will hit another replica in K8s
         if (
-            e.code() != grpc.StatusCode.UNAVAILABLE
-            and e.code() != grpc.StatusCode.CANCELLED
-            and e.code() != grpc.StatusCode.DEADLINE_EXCEEDED
+            error.code() != grpc.StatusCode.UNAVAILABLE
+            and error.code() != grpc.StatusCode.CANCELLED
+            and error.code() != grpc.StatusCode.DEADLINE_EXCEEDED
         ):
             raise
         elif (
-            e.code() == grpc.StatusCode.UNAVAILABLE
-            or e.code() == grpc.StatusCode.DEADLINE_EXCEEDED
-        ) and retry_i >= num_retries - 1:
+            error.code() == grpc.StatusCode.UNAVAILABLE
+            or error.code() == grpc.StatusCode.DEADLINE_EXCEEDED
+        ) and retry_i >= total_num_tries - 1:  # retries exhausted. if we land here it already failed once, therefore -1
             self._logger.debug(f'GRPC call failed, retries exhausted')
             from jina.excepts import InternalNetworkError
 
+            # after connection failure the gRPC `channel` gets stuck in a failure state for a few seconds
+            # removing and re-adding the connection (stub) is faster & more reliable than just waiting
+            if connection_list:
+                await connection_list.reset_connection(current_address)
+
             raise InternalNetworkError(
-                og_exception=e,
+                og_exception=error,
                 request_id=request_id,
-                dest_addr=dest_addr,
-                details=e.details(),
+                dest_addr=tried_addresses,
+                details=error.details(),
             )
         else:
             self._logger.debug(
-                f'GRPC call failed with code {e.code()}, retry attempt {retry_i + 1}/{num_retries - 1}.'
+                f'GRPC call failed with code {error.code()}, retry attempt {retry_i + 1}/{total_num_tries - 1}.'
                 f' Trying next replica, if available.'
             )
 
@@ -732,7 +808,7 @@ class GrpcConnectionPool:
             else:
                 total_num_tries = 1 + retries  # try once, then do all the retries
             for i in range(total_num_tries):
-                current_connection = connections.get_next_connection()
+                current_connection = await connections.get_next_connection()
                 tried_addresses.add(current_connection.address)
                 try:
                     return await current_connection.send_requests(
@@ -742,32 +818,41 @@ class GrpcConnectionPool:
                         timeout=timeout,
                     )
                 except AioRpcError as e:
-                    self._handle_aiorpcerror(
-                        e=e,
+                    await self._handle_aiorpcerror(
+                        error=e,
                         retry_i=i,
                         request_id=requests[0].request_id,
-                        dest_addr=tried_addresses,
-                        num_retries=total_num_tries,
+                        tried_addresses=tried_addresses,
+                        total_num_tries=total_num_tries,
+                        current_address=current_connection.address,
+                        connection_list=connections,
                     )
 
         return asyncio.create_task(task_wrapper())
 
     def _send_discover_endpoint(
         self,
-        connection: ConnectionStubs,
+        connection_list: ReplicaList,
         timeout: Optional[float] = None,
     ) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
         async def task_wrapper():
+            connection = None
+            if connection_list:
+                connection = await connection_list.get_next_connection()
             for i in range(3):
                 try:
                     return await connection.send_discover_endpoint(
                         timeout=timeout,
                     )
                 except AioRpcError as e:
-                    self._handle_aiorpcerror(
-                        e=e, retry_i=i, dest_addr=connection.address
+                    await self._handle_aiorpcerror(
+                        error=e,
+                        retry_i=i,
+                        tried_addresses=connection.address,
+                        current_address=connection.address,
+                        connection_list=connection_list,
                     )
                 except AttributeError:
                     # in gateway2gateway communication, gateway does not expose this endpoint. So just send empty list which corresponds to all endpoints valid

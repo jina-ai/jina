@@ -77,7 +77,11 @@ class NoContainerizedError(Exception, BaseJinaException):
 
 
 class PortAlreadyUsed(RuntimeError, BaseJinaException):
-    """Raised when to use a port which is already used"""
+    """Raised when trying to use a port which is already used"""
+
+
+class EstablishGrpcConnectionError(Exception, BaseJinaException):
+    """Raised when Exception occurs when establishing or resetting gRPC connection"""
 
 
 class InternalNetworkError(grpc.aio.AioRpcError, BaseJinaException):
