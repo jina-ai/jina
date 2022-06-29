@@ -9,6 +9,7 @@ from jina import Executor, Flow, __default_endpoint__
 from jina.clients.helper import _safe_callback, pprint_routes
 from jina.excepts import BadClientCallback, NotSupportedError
 from jina.helper import (
+    _parse_ports,
     cached_property,
     convert_tuple_to_list,
     deprecated_alias,
@@ -364,3 +365,11 @@ def test_run_async():
 
     end_fd_count = p.num_fds()
     assert first_fd_count == end_fd_count
+
+
+@pytest.mark.parametrize(
+    'port, output',
+    [('8080', 8080), ('1,2,6', [1, 2, 6])],
+)
+def test_parse_port(port, output):
+    assert _parse_ports(port) == output

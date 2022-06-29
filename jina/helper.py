@@ -1618,3 +1618,30 @@ def is_port_free(host, port):
             return False
         else:
             return True
+
+
+def _parse_ports(port: str) -> Union[int, List]:
+    """Parse port
+
+    EXAMPLE USAGE
+
+    .. code-block:: python
+
+
+        _parse_port('8000')
+        8000
+
+        _parse_port('8001:8002:8005')
+        [80001, 8002, 8005]
+
+    :param port: the string to parse
+    :return: the port or the iterable ports
+    """
+    try:
+        port = int(port)
+    except ValueError as e:
+        if ',' in port:
+            port = [int(port_) for port_ in port.split(',')]
+        else:
+            raise e
+    return port

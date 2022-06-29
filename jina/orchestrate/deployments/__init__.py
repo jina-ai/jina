@@ -12,7 +12,7 @@ from typing import Dict, List, Optional, Set, Union
 
 from jina import __default_executor__, __default_host__, __docker_host__, helper
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
-from jina.helper import CatchAllCleanupContextManager
+from jina.helper import CatchAllCleanupContextManager, _parse_ports
 from jina.hubble.helper import replace_secret_of_hub_uri
 from jina.hubble.hubio import HubIO
 from jina.jaml.helper import complete_path
@@ -100,6 +100,13 @@ class BaseDeployment(ExitStack):
         .. # noqa: DAR201
         """
         return self.head_args.port if self.head_args else None
+
+    @property
+    def head_port_monitoring(self):
+        """Get the port_monitoring of the HeadPod of this deployment
+        .. # noqa: DAR201
+        """
+        return self.head_args.port_monitoring if self.head_args else None
 
     def __enter__(self) -> 'BaseDeployment':
         with CatchAllCleanupContextManager(self):
@@ -248,12 +255,24 @@ class Deployment(BaseDeployment):
         self.uses_after_pod = None
         self.head_pod = None
         self.shards = {}
+        self._update_port_args()
         self.update_pod_args()
         self._sandbox_deployed = False
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
+
+    def _update_port_args(self):
+        _all_port_monitoring = _parse_ports(self.args.port_monitoring)
+        self.args.all_port_monitoring = (
+            [_all_port_monitoring]
+            if not type(_all_port_monitoring) == list
+            else _all_port_monitoring
+        )
+        self.args.port_monitoring = int(
+            self.args.all_port_monitoring[0]
+        )  # this is for the head
 
     def update_pod_args(self):
         """Update args of all its pods based on Deployment args. Including head/tail"""
@@ -688,9 +707,30 @@ class Deployment(BaseDeployment):
                 if args.deployment_role == DeploymentRoleType.GATEWAY or args.external:
                     _args.port = args.port
                 elif args.shards == 1 and args.replicas == 1:
+                    _args.port = args.port
+                    _args.port_monitoring = args.port_monitoring
+
+                elif args.shards == 1:
+                    _args.port_monitoring = (
+                        helper.random_port()
+                        if replica_id >= len(args.all_port_monitoring)
+                        else args.all_port_monitoring[replica_id]
+                    )
                     # if there are no shards/replicas, we dont need to distribute ports randomly
                     # we should rather use the pre assigned one
-                    args.port = args.port
+                    _args.port = helper.random_port()
+                elif args.shards > 1:
+                    port_monitoring_index = (
+                        replica_id + args.replicas * shard_id + 1
+                    )  # the first index is for the head
+                    _args.port_monitoring = (
+                        helper.random_port()
+                        if port_monitoring_index >= len(args.all_port_monitoring)
+                        else args.all_port_monitoring[
+                            port_monitoring_index
+                        ]  # we skip the head port here
+                    )
+                    _args.port = helper.random_port()
                 else:
                     _args.port = helper.random_port()
                     _args.port_monitoring = helper.random_port()
