@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/orchestrate/deployments.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>jina.orchestrate.deployments - Jina 3.6.8 documentation</title>
+        <title>jina.orchestrate.deployments - Jina 3.6.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -146,7 +146,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.6.8 documentation</div>
+                <div class="brand">Jina 3.6.9 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -366,7 +366,7 @@
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_executor__</span><span class="p">,</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span><span class="p">,</span> <span class="n">helper</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DeploymentRoleType</span><span class="p">,</span> <span class="n">PodRoleType</span><span class="p">,</span> <span class="n">PollingType</span>
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">CatchAllCleanupContextManager</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">CatchAllCleanupContextManager</span><span class="p">,</span> <span class="n">_parse_ports</span>
 <span class="kn">from</span> <span class="nn">jina.hubble.helper</span> <span class="kn">import</span> <span class="n">replace_secret_of_hub_uri</span>
 <span class="kn">from</span> <span class="nn">jina.hubble.hubio</span> <span class="kn">import</span> <span class="n">HubIO</span>
 <span class="kn">from</span> <span class="nn">jina.jaml.helper</span> <span class="kn">import</span> <span class="n">complete_path</span>
@@ -454,6 +454,13 @@
 <span class="sd">        .. # noqa: DAR201</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">head_port_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the port_monitoring of the HeadPod of this deployment</span>
+<span class="sd">        .. # noqa: DAR201</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_args</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;BaseDeployment&#39;</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">CatchAllCleanupContextManager</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -602,12 +609,24 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">uses_after_pod</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">head_pod</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shards</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_port_args</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_pod_args</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sandbox_deployed</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_update_port_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">_all_port_monitoring</span> <span class="o">=</span> <span class="n">_parse_ports</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">all_port_monitoring</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">[</span><span class="n">_all_port_monitoring</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">_all_port_monitoring</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span>
+            <span class="k">else</span> <span class="n">_all_port_monitoring</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">all_port_monitoring</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>  <span class="c1"># this is for the head</span>
 
 <div class="viewcode-block" id="Deployment.update_pod_args"><a class="viewcode-back" href="../../../../api/jina.orchestrate.deployments/#jina.orchestrate.deployments.Deployment.update_pod_args">[docs]</a>    <span class="k">def</span> <span class="nf">update_pod_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Update args of all its pods based on Deployment args. Including head/tail&quot;&quot;&quot;</span>
@@ -1042,9 +1061,30 @@
                 <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">deployment_role</span> <span class="o">==</span> <span class="n">DeploymentRoleType</span><span class="o">.</span><span class="n">GATEWAY</span> <span class="ow">or</span> <span class="n">args</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span>
                 <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">shards</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port_monitoring</span>
+
+                <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">shards</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">replica_id</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">all_port_monitoring</span><span class="p">)</span>
+                        <span class="k">else</span> <span class="n">args</span><span class="o">.</span><span class="n">all_port_monitoring</span><span class="p">[</span><span class="n">replica_id</span><span class="p">]</span>
+                    <span class="p">)</span>
                     <span class="c1"># if there are no shards/replicas, we dont need to distribute ports randomly</span>
                     <span class="c1"># we should rather use the pre assigned one</span>
-                    <span class="n">args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">port</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">shards</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">port_monitoring_index</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">replica_id</span> <span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">replicas</span> <span class="o">*</span> <span class="n">shard_id</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="p">)</span>  <span class="c1"># the first index is for the head</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">port_monitoring_index</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">all_port_monitoring</span><span class="p">)</span>
+                        <span class="k">else</span> <span class="n">args</span><span class="o">.</span><span class="n">all_port_monitoring</span><span class="p">[</span>
+                            <span class="n">port_monitoring_index</span>
+                        <span class="p">]</span>  <span class="c1"># we skip the head port here</span>
+                    <span class="p">)</span>
+                    <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
                     <span class="n">_args</span><span class="o">.</span><span class="n">port_monitoring</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()</span>
@@ -1235,7 +1275,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 28, 2022</div>
+                            Last updated on Jun 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

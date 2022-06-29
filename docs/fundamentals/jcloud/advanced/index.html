@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/jcloud/advanced/" />
   
-<meta property="og:site_name" content="Jina 3.6.8 Documentation" />
+<meta property="og:site_name" content="Jina 3.6.9 Documentation" />
   
-<meta property="og:description" content="Environment variables: A single YAML: A project folder: You can include your environment variables in the.env file in the local project and JCloud will take care of managing them., You can optionally pass a custom.env.. Fine-grained resources request: By default, jcloud allocates 100M of RAM to e..." />
+<meta property="og:description" content="Environment variables: A single YAML: A project folder: You can include your environment variables in the.env file in the local project and JCloud will take care of managing them., You can optionally pass a custom.env.. Request for fine-grained resources: memory: By default, jcloud allocates 100M..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_images/external-executor.png" />
   
-<meta property="og:image:alt" content="Jina 3.6.8 Documentation" />
+<meta property="og:image:alt" content="Jina 3.6.9 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/jcloud/advanced.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Advanced - Jina 3.6.8 documentation</title>
+        <title>Advanced - Jina 3.6.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -179,7 +179,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.6.8 documentation</div>
+                <div class="brand">Jina 3.6.9 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -406,8 +406,10 @@
 </ul>
 </section>
 </section>
-<section id="fine-grained-resources-request">
-<h2>Fine-grained <code class="docutils literal notranslate"><span class="pre">resources</span></code> request<a class="headerlink" href="#fine-grained-resources-request" title="Permalink to this headline">#</a></h2>
+<section id="request-for-fine-grained-resources">
+<h2>Request for fine-grained <code class="docutils literal notranslate"><span class="pre">resources</span></code><a class="headerlink" href="#request-for-fine-grained-resources" title="Permalink to this headline">#</a></h2>
+<section id="memory">
+<h3>memory<a class="headerlink" href="#memory" title="Permalink to this headline">#</a></h3>
 <p>By default, <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> allocates <code class="docutils literal notranslate"><span class="pre">100M</span></code> of RAM to each Executor. There might be cases where your Executor requires more memory. For example, DALLE-mini (generating image from text prompt) would need more than 100M to load the model. You can request higher memory for your Executor using <code class="docutils literal notranslate"><span class="pre">resources</span></code> arg while deploying the Flow (max 16G allowed per Executor).</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
@@ -419,8 +421,47 @@
 </pre></div>
 </div>
 </section>
-<section id="spot-vs-on-demand-capacity">
-<h2><code class="docutils literal notranslate"><span class="pre">spot</span></code> vs <code class="docutils literal notranslate"><span class="pre">on-demand</span></code> capacity<a class="headerlink" href="#spot-vs-on-demand-capacity" title="Permalink to this headline">#</a></h2>
+<section id="storage">
+<h3>storage<a class="headerlink" href="#storage" title="Permalink to this headline">#</a></h3>
+<p>We currently support 2 kinds of storage types <a class="reference external" href="https://aws.amazon.com/efs/">efs</a> (default) and <a class="reference external" href="https://aws.amazon.com/ebs/">ebs</a>. The former one is a network file storage, whereas the latter is a block device.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default, we attach an <code class="docutils literal notranslate"><span class="pre">efs</span></code> to all the Executors in a Flow. The benefits of doing so are</p>
+<ul class="simple">
+<li><p>It can grow in size dynamically, so you don’t need to shrink/grow volumes as &amp; when necessary.</p></li>
+<li><p>All Executors in the Flow can share a disk.</p></li>
+<li><p>The same disk can also be shared with another Flow by passing a workspace-id while deploying a Flow.</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc deploy flow.yml --workspace-id &lt;prev-flow-id&gt;
+</pre></div>
+</div>
+<p>If your Executor needs high IO, you can use <code class="docutils literal notranslate"><span class="pre">ebs</span></code> instead. Please note that,</p>
+<ul class="simple">
+<li><p>The disk cannot be shared with other Executors / Flows.</p></li>
+<li><p>You must pass a size of storage (default: <code class="docutils literal notranslate"><span class="pre">1G</span></code>, max <code class="docutils literal notranslate"><span class="pre">10G</span></code>).</p></li>
+</ul>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
+<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer1</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://SimpleIndexer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">storage</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ebs</span><span class="w"></span>
+<span class="w">          </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10G</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer2</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://SimpleIndexer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">storage</span><span class="p">:</span><span class="w"></span>
+<span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">efs</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="capacity-spot-vs-on-demand">
+<h2>Capacity (<code class="docutils literal notranslate"><span class="pre">spot</span></code> vs <code class="docutils literal notranslate"><span class="pre">on-demand</span></code>)<a class="headerlink" href="#capacity-spot-vs-on-demand" title="Permalink to this headline">#</a></h2>
 <p>For cost optimization, <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> tries to deploy all Executors on <code class="docutils literal notranslate"><span class="pre">spot</span></code> capacity. These are ideal for stateless Executors, which can withstand interruptions &amp; restarts. It is recommended to use <code class="docutils literal notranslate"><span class="pre">on-demand</span></code> capacity for stateful Executors (e.g.- indexers) though.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
@@ -431,8 +472,8 @@
 </pre></div>
 </div>
 </section>
-<section id="deploy-external-executors">
-<span id="jcloud-external-executors"></span><h2>Deploy external executors<a class="headerlink" href="#deploy-external-executors" title="Permalink to this headline">#</a></h2>
+<section id="external-executors">
+<h2>External executors<a class="headerlink" href="#external-executors" title="Permalink to this headline">#</a></h2>
 <p>You can also expose only the Executors by setting <code class="docutils literal notranslate"><span class="pre">expose_gateway</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code>. Read more about <a class="reference internal" href="../../flow/add-executors/#external-executors"><span class="std std-ref">External Executors</span></a></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
@@ -460,8 +501,8 @@
 <a class="reference internal image-reference" href="../../../_images/external-executors-multiple.png"><img alt="../../../_images/external-executors-multiple.png" src="../../../_images/external-executors-multiple.png" style="width: 70%;" /></a>
 </figure>
 </section>
-<section id="deploy-with-specific-jina-version">
-<h2>Deploy with specific <code class="docutils literal notranslate"><span class="pre">jina</span></code> version<a class="headerlink" href="#deploy-with-specific-jina-version" title="Permalink to this headline">#</a></h2>
+<section id="jina-version">
+<h2><code class="docutils literal notranslate"><span class="pre">jina</span></code> version<a class="headerlink" href="#jina-version" title="Permalink to this headline">#</a></h2>
 <p>To manage <code class="docutils literal notranslate"><span class="pre">jina</span></code> version while deploying a Flow to <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>, you can pass <code class="docutils literal notranslate"><span class="pre">version</span></code> arg in the Flow yaml.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
@@ -472,9 +513,9 @@
 </pre></div>
 </div>
 </section>
-<section id="flow-retention-days">
-<h2>Flow retention days<a class="headerlink" href="#flow-retention-days" title="Permalink to this headline">#</a></h2>
-<p>In Jcloud, we have default life-cycle(24hrs) for each flow and we will remove flows periodically if they are beyond the life-cycle. To change the default behavior and manage it by yourself, you can setup <code class="docutils literal notranslate"><span class="pre">retention_days</span></code> args in <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>. <code class="docutils literal notranslate"><span class="pre">-1</span></code> is never expired, <code class="docutils literal notranslate"><span class="pre">0</span></code> is to use the default life-cycle, or <code class="docutils literal notranslate"><span class="pre">X</span></code>(0&lt;X&lt;365), which means keep the flow utill X days. <code class="docutils literal notranslate"><span class="pre">0</span></code> is the default value if you don’t pass <code class="docutils literal notranslate"><span class="pre">retention_days</span></code> argument.</p>
+<section id="retention-days">
+<h2>Retention days<a class="headerlink" href="#retention-days" title="Permalink to this headline">#</a></h2>
+<p>In JCloud, we have a default life-cycle of 24hrs for Flows, after which they’re removed, if idle. You can manage the same yourself by passing the right parameter for <code class="docutils literal notranslate"><span class="pre">retention-days</span></code> under <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>. <code class="docutils literal notranslate"><span class="pre">0</span></code> is to use the default life-cycle, <code class="docutils literal notranslate"><span class="pre">X</span></code> (0&lt;X&lt;365), which is meant to keep the Flow alive until X days, and <code class="docutils literal notranslate"><span class="pre">-1</span></code> is for never expired,</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">retention_days</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span><span class="w"></span>
@@ -521,7 +562,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 28, 2022</div>
+                            Last updated on Jun 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -559,11 +600,15 @@
 <li><a class="reference internal" href="#a-project-folder">A project folder</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#fine-grained-resources-request">Fine-grained <code class="docutils literal notranslate"><span class="pre">resources</span></code> request</a></li>
-<li><a class="reference internal" href="#spot-vs-on-demand-capacity"><code class="docutils literal notranslate"><span class="pre">spot</span></code> vs <code class="docutils literal notranslate"><span class="pre">on-demand</span></code> capacity</a></li>
-<li><a class="reference internal" href="#deploy-external-executors">Deploy external executors</a></li>
-<li><a class="reference internal" href="#deploy-with-specific-jina-version">Deploy with specific <code class="docutils literal notranslate"><span class="pre">jina</span></code> version</a></li>
-<li><a class="reference internal" href="#flow-retention-days">Flow retention days</a></li>
+<li><a class="reference internal" href="#request-for-fine-grained-resources">Request for fine-grained <code class="docutils literal notranslate"><span class="pre">resources</span></code></a><ul>
+<li><a class="reference internal" href="#memory">memory</a></li>
+<li><a class="reference internal" href="#storage">storage</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capacity-spot-vs-on-demand">Capacity (<code class="docutils literal notranslate"><span class="pre">spot</span></code> vs <code class="docutils literal notranslate"><span class="pre">on-demand</span></code>)</a></li>
+<li><a class="reference internal" href="#external-executors">External executors</a></li>
+<li><a class="reference internal" href="#jina-version"><code class="docutils literal notranslate"><span class="pre">jina</span></code> version</a></li>
+<li><a class="reference internal" href="#retention-days">Retention days</a></li>
 </ul>
 </li>
 </ul>

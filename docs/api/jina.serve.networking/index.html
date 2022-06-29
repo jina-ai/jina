@@ -10,11 +10,11 @@
   
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.networking/" />
   
-<meta property="og:site_name" content="Jina 3.6.8 Documentation" />
+<meta property="og:site_name" content="Jina 3.6.9 Documentation" />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.6.8 Documentation" />
+<meta property="og:image:alt" content="Jina 3.6.9 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -37,7 +37,7 @@
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.networking.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>jina.serve.networking module - Jina 3.6.8 documentation</title>
+        <title>jina.serve.networking module - Jina 3.6.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -177,7 +177,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.6.8 documentation</div>
+                <div class="brand">Jina 3.6.9 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -390,6 +390,25 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Maintains a list of connections to replicas and uses round robin for selecting a replica</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.networking.ReplicaList.reset_connection">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reset_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#ReplicaList.reset_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.ReplicaList.reset_connection" title="Permalink to this definition">#</a></dt>
+<dd><p>Removes and then re-adds a connection.
+Result is the same as calling <a class="reference internal" href="#jina.serve.networking.ReplicaList.remove_connection" title="jina.serve.networking.ReplicaList.remove_connection"><code class="xref py py-meth docutils literal notranslate"><span class="pre">remove_connection()</span></code></a> and then <a class="reference internal" href="#jina.serve.networking.ReplicaList.add_connection" title="jina.serve.networking.ReplicaList.add_connection"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_connection()</span></code></a>, but this allows for
+handling of race condition if multiple callers reset a connection at the same time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Target address of this connection</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Channel</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The reset connection or None if there was no connection for the given address</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.networking.ReplicaList.add_connection">
 <span class="sig-name descname"><span class="pre">add_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#ReplicaList.add_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.ReplicaList.add_connection" title="Permalink to this definition">#</a></dt>
 <dd><p>Add connection with address to the connection list
@@ -400,15 +419,30 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.networking.ReplicaList.remove_connection">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">remove_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#ReplicaList.remove_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.ReplicaList.remove_connection" title="Permalink to this definition">#</a></dt>
-<dd><p>Remove connection with address from the connection list
-:type address: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param address: Remove connection for this address
-:returns: The removed connection or None if there was not any for the given address</p>
+<dd><p>Remove connection with address from the connection list</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This completely removes the connection, including all dictionary keys that point to it.
+Therefore, be careful not to call this method while iterating over all connections.
+If you want to reset (remove and re-add) a connection, use <a class="reference internal" href="#jina.serve.networking.ReplicaList.reset_connection" title="jina.serve.networking.ReplicaList.reset_connection"><code class="xref py py-meth docutils literal notranslate"><span class="pre">jina.serve.networking.ReplicaList.reset_connection()</span></code></a>,
+which is safe to use in this scenario.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Remove connection for this address</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Channel</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The removed connection or None if there was not any for the given address</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.networking.ReplicaList.get_next_connection">
-<span class="sig-name descname"><span class="pre">get_next_connection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#ReplicaList.get_next_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.ReplicaList.get_next_connection" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_next_connection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/networking/#ReplicaList.get_next_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.networking.ReplicaList.get_next_connection" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a connection from the list. Strategy is round robin
 :returns: A connection from the pool</p>
 </dd></dl>
@@ -890,7 +924,7 @@ Documentation is here <a class="reference external" href="https://github.com/grp
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 28, 2022</div>
+                            Last updated on Jun 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

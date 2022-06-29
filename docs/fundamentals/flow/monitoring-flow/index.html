@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/monitoring-flow/" />
   
-<meta property="og:site_name" content="Jina 3.6.8 Documentation" />
+<meta property="og:site_name" content="Jina 3.6.9 Documentation" />
   
 <meta property="og:description" content="A Jina Flow exposes several core metrics that allow you to have a deeper look at what is happening inside it. Metrics allow you to, for example, monitor the overall performance of your Flow, detect bottlenecks, or alert your team when some component of your Flow is down. Jina Flows expose metrics..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.6.8 Documentation" />
+<meta property="og:image:alt" content="Jina 3.6.9 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/monitoring-flow.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Monitor - Jina 3.6.8 documentation</title>
+        <title>Monitor - Jina 3.6.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -179,7 +179,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.6.8 documentation</div>
+                <div class="brand">Jina 3.6.9 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -458,6 +458,52 @@ interested in monitoring a single Executor. Note that by default the monitoring 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">monitoring</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
+<section id="enable-monitoring-with-replicas-and-shards">
+<h3>Enable monitoring with replicas and shards<a class="headerlink" href="#enable-monitoring-with-replicas-and-shards" title="Permalink to this headline">#</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>This section is only relevant if you deploy your Flow natively. When deploying your Flow with Kubernetes or Docker Compose
+all of the <code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code> will be set to default : <code class="docutils literal notranslate"><span class="pre">9090</span></code>.</p>
+</div>
+<p>To enable monitoring with replicas and shards when deploying natively, you need to pass a list of <code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code> separated by a comma to your Flow.</p>
+<p>Example:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">via Python API</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="k">with</span> <span class="n">Flow</span><span class="p">(</span><span class="n">monitoring</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinahub://SimpleIndexer&#39;</span><span class="p">,</span> <span class="n">replicas</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">port_monitoring</span><span class="o">=</span><span class="s1">&#39;9091,9092&#39;</span>
+<span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">via YAML</label><div class="tab-content docutils">
+<p>This example shows how to start a Flow with monitoring enabled via yaml:</p>
+<p>In a <code class="docutils literal notranslate"><span class="pre">flow.yaml</span></code> file</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
+<span class="nt">with</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">monitoring</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w"></span>
+<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub://SimpleIndexer</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">replicas=2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">port_monitoring</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;9091,9092&#39;</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yaml
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Monitoring with shards
+When using shards, an extra head will be created and you will need to pass a list of N+1 ports to <code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code>, N beeing the number of shards you desire</p>
+</div>
+<p>If you precise fewer <code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code> than you have replicas of your Executor (or even not passing any at all), the unknown ports
+will be assigned randomly. It is a better practice to precise a port for every replica, otherwise you will have to change
+your Prometheus configuration each time you restart your application.</p>
+</section>
 </section>
 <section id="available-metrics">
 <h2>Available metrics<a class="headerlink" href="#available-metrics" title="Permalink to this headline">#</a></h2>
@@ -609,7 +655,7 @@ Executor.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jun 28, 2022</div>
+                            Last updated on Jun 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -642,7 +688,10 @@ Executor.</p>
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Monitor</a><ul>
-<li><a class="reference internal" href="#enable-monitoring">Enable monitoring</a></li>
+<li><a class="reference internal" href="#enable-monitoring">Enable monitoring</a><ul>
+<li><a class="reference internal" href="#enable-monitoring-with-replicas-and-shards">Enable monitoring with replicas and shards</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#available-metrics">Available metrics</a><ul>
 <li><a class="reference internal" href="#gateway-pods">Gateway Pods</a></li>
 <li><a class="reference internal" href="#head-pods">Head Pods</a></li>

@@ -91,6 +91,56 @@ On the other hand, If you want to only enable the monitoring on a given Executor
 Flow().add(...).add(uses=MyExecutor, monitoring=True)
 ```
 
+### Enable monitoring with replicas and shards
+
+```{tip} 
+This section is only relevant if you deploy your Flow natively. When deploying your Flow with Kubernetes or Docker Compose
+all of the `port_monitoring` will be set to default : `9090`.  
+```
+
+To enable monitoring with replicas and shards when deploying natively, you need to pass a list of `port_monitoring` separated by a comma to your Flow.
+
+Example:
+
+````{tab} via Python API
+
+```python
+from jina import Flow
+
+with Flow(monitoring=True).add(
+    uses='jinahub://SimpleIndexer', replicas=2, port_monitoring='9091,9092'
+) as f:
+    f.block()
+```
+````
+
+````{tab} via YAML
+This example shows how to start a Flow with monitoring enabled via yaml:
+
+In a `flow.yaml` file
+```yaml
+jtype: Flow
+with:
+  monitoring: true
+executors:
+- uses: jinahub://SimpleIndexer
+  replicas=2
+  port_monitoring: '9091,9092'
+```
+
+```bash
+jina flow --uses flow.yaml
+```
+````
+
+```{tip} Monitoring with shards
+When using shards, an extra head will be created and you will need to pass a list of N+1 ports to `port_monitoring`, N beeing the number of shards you desire
+```
+
+If you precise fewer `port_monitoring` than you have replicas of your Executor (or even not passing any at all), the unknown ports
+will be assigned randomly. It is a better practice to precise a port for every replica, otherwise you will have to change 
+your Prometheus configuration each time you restart your application.
+
 ## Available metrics
 
 A {class}`~jina.Flow` supports different metrics out of the box, in addition to allowing the user to define their own custom metrics.
