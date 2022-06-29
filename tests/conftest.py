@@ -69,6 +69,11 @@ def test_log_level(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def test_grpc_fork_support_false(monkeypatch):
+    monkeypatch.setenv('GRPC_ENABLE_FORK_SUPPORT', 'false')
+
+
+@pytest.fixture(autouse=True)
 def test_timeout_ctrl_time(monkeypatch):
     monkeypatch.setenv('JINA_DEFAULT_TIMEOUT_CTRL', '500')
 
