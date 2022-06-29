@@ -198,7 +198,7 @@ class ReplicaList:
         Close all connections and clean up internal state
         """
         for address in self._address_to_channel:
-            await self._address_to_channel[address].close(0.5)
+            await self._address_to_channel[address].close(None)
         self._address_to_channel.clear()
         self._address_to_connection_idx.clear()
         self._connections.clear()
