@@ -140,7 +140,7 @@ class DataRequest(Request):
     @property
     def is_decompressed_wo_data(self) -> bool:
         """
-        Checks if the underlying proto object was already deserialized into a :class:`jina.proto.jina_pb2.DataRequestProtoWoDocs` i,e
+        Checks if the underlying proto object was already deserialized into a :class:`jina.proto.jina_pb2.DataRequestProtoWoData` i,e
         a DataRequest without docs
 
         :return: True if the proto was deserialized before into a DataRequest without docs
@@ -150,9 +150,9 @@ class DataRequest(Request):
     @property
     def proto_wo_data(
         self,
-    ) -> Union['jina_pb2.DataRequestProtoWoDocs', 'jina_pb2.DataRequestProto']:
+    ) -> Union['jina_pb2.DataRequestProtoWoData', 'jina_pb2.DataRequestProto']:
         """
-        Transform the current buffer to a :class:`jina_pb2.DataRequestProtoWoDocs` unless the full proto has already
+        Transform the current buffer to a :class:`jina_pb2.DataRequestProtoWoData` unless the full proto has already
         been initialized or . Laziness will be broken and serialization will be recomputed when
         calling :meth:`SerializeToString`.
         :return: protobuf instance containing parameters
@@ -190,9 +190,9 @@ class DataRequest(Request):
         """Decompress the buffer into a DataRequestProto without docs, it is useful if one want to access the parameters
         or the header of the proto without the cost of deserializing the Docs."""
 
-        # Under the hood it used a different DataRequestProto (the DataRequestProtoWoDocs) that will just ignore the
+        # Under the hood it used a different DataRequestProto (the DataRequestProtoWoData) that will just ignore the
         # bytes from the bytes related to the docs that are store at the end of the Proto buffer
-        self._pb_body_wo_data = jina_pb2.DataRequestProtoWoDocs()
+        self._pb_body_wo_data = jina_pb2.DataRequestProtoWoData()
         self._pb_body_wo_data.ParseFromString(self.buffer)
 
     def _decompress(self):

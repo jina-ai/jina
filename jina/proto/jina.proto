@@ -121,7 +121,7 @@ message DataRequestProto {
     DataContentProto data = 4; // container for docs and groundtruths
 }
 
-message DataRequestProtoWoDocs {
+message DataRequestProtoWoData {
 
     HeaderProto header = 1; // header contains meta info defined by the user
 
