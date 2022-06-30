@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Dict, List, Optional
+import copy
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from docarray import DocumentArray
 
@@ -18,6 +19,8 @@ if TYPE_CHECKING:
 
 class DataRequestHandler:
     """Object to encapsulate the code related to handle the data requests passing to executor and its returned values"""
+
+    _KEY_RESULT = '__results__'
 
     def __init__(
         self,
@@ -113,6 +116,7 @@ class DataRequestHandler:
         specific_parameters = parameters.get(executor_name, None)
         if specific_parameters:
             parsed_params.update(**specific_parameters)
+
         return parsed_params
 
     async def handle(self, requests: List['DataRequest']) -> DataRequest:
@@ -141,6 +145,7 @@ class DataRequestHandler:
                 ).observe(req.nbytes)
 
         params = self._parse_params(requests[0].parameters, self._executor.metas.name)
+
         docs = DataRequestHandler.get_docs_from_request(
             requests,
             field='docs',
@@ -162,7 +167,7 @@ class DataRequestHandler:
                 docs = return_data
             elif isinstance(return_data, dict):
                 params = requests[0].parameters
-                results_key = '__results__'
+                results_key = self._KEY_RESULT
 
                 if not results_key in params.keys():
                     params[results_key] = dict()
@@ -260,7 +265,7 @@ class DataRequestHandler:
         :param requests: List of DataRequest objects
         :return: parameters matrix: list of parameters (Dict) objects
         """
-        key_result = '__results__'
+        key_result = DataRequestHandler._KEY_RESULT
         parameters = requests[0].parameters
         if key_result not in parameters.keys():
             parameters[key_result] = dict()
@@ -282,7 +287,7 @@ class DataRequestHandler:
         :param requests: requests to get the field from
         :param field: field name to access
 
-        :returns: DocumentArray extraced from the field from all messages
+        :returns: DocumentArray extracted from the field from all messages
         """
         if len(requests) > 1:
             result = DocumentArray(
