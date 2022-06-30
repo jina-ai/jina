@@ -1,0 +1,7 @@
+jtype: Flow
+with:
+  port: 8080
+executors:
+  - name: myexec1
+    uses: TestExecutor
+    py_modules: exec.py
