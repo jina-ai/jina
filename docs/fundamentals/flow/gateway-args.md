@@ -16,7 +16,7 @@
 | `host_in` | The host address for binding to, by default it is 0.0.0.0 | `string` | `0.0.0.0` |
 | `native` | If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime. | `boolean` | `False` |
 | `output_array_type` | The type of array `tensor` and `embedding` will be serialized to.<br><br>Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found <br>`here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.<br>Defaults to retaining whatever type is returned by the Executor. | `string` | `None` |
-| `prefetch` | Number of requests fetched from the client before feeding into the first Executor. <br>    <br>    Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default) | `number` | `0` |
+| `prefetch` | Number of requests fetched from the client before feeding into the first Executor. <br>    <br>    Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default) | `number` | `1000` |
 | `title` | The title of this HTTP server. It will be used in automatics docs such as Swagger UI. | `string` | `None` |
 | `description` | The description of this HTTP server. It will be used in automatics docs such as Swagger UI. | `string` | `None` |
 | `cors` | If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access. | `boolean` | `False` |
