@@ -68,6 +68,10 @@ html_theme_options = {
 
     # start-announce
 
+    "announcement": '''
+    <a href="basic">Learn more about How</a>
+    ''',
+        
     # end-announce
 }
 
