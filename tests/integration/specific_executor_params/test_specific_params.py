@@ -21,7 +21,7 @@ def test_specific_params():
         .add(
             uses=MyExec,
             name='exec2',
-            uses_with={'params_awaited': {'key_1': True, 'key_2': True}},
+            uses_with={'params_awaited': {'key_1': True, 'key_2': False}},
         )
     )
 

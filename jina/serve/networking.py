@@ -670,12 +670,6 @@ class GrpcConnectionPool:
         :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :return: asyncio.Task representing the send call
         """
-
-        for request in requests:  # apply filtering on the name of the Deployment
-            request.parameters = _parse_specific_params(  # todo fix here
-                parameters=request.parameters, executor_name=deployment
-            )
-
         replicas = self._connections.get_replicas(deployment, head, shard_id)
         if replicas:
             return self._send_requests(
