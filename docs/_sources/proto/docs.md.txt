@@ -10,6 +10,7 @@
     - [DataRequestListProto](#jina-DataRequestListProto)
     - [DataRequestProto](#jina-DataRequestProto)
     - [DataRequestProto.DataContentProto](#jina-DataRequestProto-DataContentProto)
+    - [DataRequestProtoWoData](#jina-DataRequestProtoWoData)
     - [EndpointsProto](#jina-EndpointsProto)
     - [HeaderProto](#jina-HeaderProto)
     - [JinaInfoProto](#jina-JinaInfoProto)
@@ -110,6 +111,23 @@ Represents a DataRequest
 | ----- | ---- | ----- | ----------- |
 | docs | [docarray.DocumentArrayProto](#docarray-DocumentArrayProto) |  | the docs in this request |
 | docs_bytes | [bytes](#bytes) |  | the docs in this request as bytes |
+
+
+
+
+
+
+<a name="jina-DataRequestProtoWoData"></a>
+
+### DataRequestProtoWoData
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| header | [HeaderProto](#jina-HeaderProto) |  | header contains meta info defined by the user |
+| parameters | [google.protobuf.Struct](#google-protobuf-Struct) |  | extra kwargs that will be used in executor |
+| routes | [RouteProto](#jina-RouteProto) | repeated | status info on every routes |
 
 
 
