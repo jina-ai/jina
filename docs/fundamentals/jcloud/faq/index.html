@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.6.10 Documentation" />
   
-<meta property="og:description" content="Why does it take a while on every operation of jcloud? Because the event listener at Jina Cloud is serverless by design, which means it spawns an instance on-demand to process your requests from jcloud. Note that operations such as deploy, remove in jcloud are not high-frequency. Hence, having a ..." />
+<meta property="og:description" content="Is everything free? Yes! We just need your feedback - use jc survey to help us understand your needs., How powerful is JCloud? JCloud scales according to your need. You can demand all the resources (RAM / disk / instance-capacity) your Flows & Executors need. If there’s anything particular you’d ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -381,23 +381,28 @@
                     <section class="tex2jax_ignore mathjax_ignore" id="faq">
 <h1>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">#</a></h1>
 <ul>
-<li><p><strong>Why does it take a while on every operation of <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>?</strong></p>
-<p>Because the event listener at Jina Cloud is serverless by design, which means it spawns an instance on-demand to process your requests from <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>. Note that operations such as <code class="docutils literal notranslate"><span class="pre">deploy</span></code>, <code class="docutils literal notranslate"><span class="pre">remove</span></code> in <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> are not high-frequency. Hence, having a serverless listener is much more cost-efficient than an always-on listener. The downside is slower operations, nevertheless this does not affect the deployed service. Your deployed service is <strong>always on</strong>.</p>
-</li>
-<li><p><strong>How long do you persist my service?</strong></p>
-<p>Forever. Until you manually <code class="docutils literal notranslate"><span class="pre">remove</span></code> it, we will persist your service as long as possible.</p>
-</li>
 <li><p><strong>Is everything free?</strong></p>
 <p>Yes! We just need your feedback - use <code class="docutils literal notranslate"><span class="pre">jc</span> <span class="pre">survey</span></code> to help us understand your needs.</p>
 </li>
-<li><p><strong>How powerful is Jina Cloud?</strong></p>
-<p>Jina Cloud scales according to your need. You can demand for the resources your Flow requires. If there’s anything particular you’d be looking for, you can contact us <a class="reference external" href="https://slack.jina.ai">on Slack</a> or let us know via <code class="docutils literal notranslate"><span class="pre">jc</span> <span class="pre">survey</span></code>.</p>
+<li><p><strong>How powerful is JCloud?</strong></p>
+<p>JCloud scales according to your need. You can demand all the resources (RAM / disk / instance-capacity) your Flows &amp; Executors need. If there’s anything particular you’d be looking for, you can contact us <a class="reference external" href="https://slack.jina.ai">on Slack</a> or let us know via <code class="docutils literal notranslate"><span class="pre">jc</span> <span class="pre">survey</span></code>.</p>
 </li>
-<li><p><strong>How can I enable verbose logs with <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>?</strong></p>
-<p>To make the output more verbose, you can add <code class="docutils literal notranslate"><span class="pre">--loglevel</span> <span class="pre">DEBUG</span></code> <em>before</em> each CLI subcommand, e.g.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc --loglevel DEBUG deploy toy.yml
+<li><p><strong>What restrictions are there on JCloud?</strong></p>
+<ul class="simple">
+<li><p>JCloud doesn’t support GPUs yet.</p></li>
+<li><p>Executors are currently allowed a maximum of 16G RAM &amp; 10GB disk (using EBS).</p></li>
+<li><p>Deployments are only supported in <code class="docutils literal notranslate"><span class="pre">us-east</span></code> region.</p></li>
+</ul>
+</li>
+<li><p><strong>How long do you persist my service?</strong></p>
+<p>Flows are terminated if they are not serving requests for the last 24hrs. But this is configurable by passing <a class="reference internal" href="../advanced/#retention-days"><span class="std std-ref">retention-days</span></a> argument.</p>
+</li>
+<li><p><strong>My Flow deployment failed. How I do to fix it?</strong></p>
+<p>As a first step, please enable verbose logs while deploying the Flow. You can add <code class="docutils literal notranslate"><span class="pre">--loglevel</span> <span class="pre">DEBUG</span></code> <em>before</em> each CLI subcommand, e.g.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc --loglevel DEBUG deploy flow.yml
 </pre></div>
 </div>
+<p>If you don’t see any obvious errors, please raise an issue in <a class="reference external" href="https://github.com/jina-ai/jcloud/issues/new/choose">JCloud</a></p>
 </li>
 </ul>
 </section>

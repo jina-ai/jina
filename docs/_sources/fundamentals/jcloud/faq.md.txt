@@ -1,25 +1,29 @@
 # FAQ
 
-- **Why does it take a while on every operation of `jcloud`?**
-
-  Because the event listener at Jina Cloud is serverless by design, which means it spawns an instance on-demand to process your requests from `jcloud`. Note that operations such as `deploy`, `remove` in `jcloud` are not high-frequency. Hence, having a serverless listener is much more cost-efficient than an always-on listener. The downside is slower operations, nevertheless this does not affect the deployed service. Your deployed service is **always on**.
-
-- **How long do you persist my service?**
-
-  Forever. Until you manually `remove` it, we will persist your service as long as possible.
-
 - **Is everything free?**
 
   Yes! We just need your feedback - use `jc survey` to help us understand your needs.
 
-- **How powerful is Jina Cloud?**
+- **How powerful is JCloud?**
 
-  Jina Cloud scales according to your need. You can demand for the resources your Flow requires. If there's anything particular you'd be looking for, you can contact us [on Slack](https://slack.jina.ai) or let us know via `jc survey`.
+  JCloud scales according to your need. You can demand all the resources (RAM / disk / instance-capacity) your Flows & Executors need. If there's anything particular you'd be looking for, you can contact us [on Slack](https://slack.jina.ai) or let us know via `jc survey`.
 
-- **How can I enable verbose logs with `jcloud`?**
+- **What restrictions are there on JCloud?**
 
-  To make the output more verbose, you can add `--loglevel DEBUG` _before_ each CLI subcommand, e.g.
+  - JCloud doesn't support GPUs yet.
+  - Executors are currently allowed a maximum of 16G RAM & 10GB disk (using EBS).
+  - Deployments are only supported in `us-east` region.
+
+- **How long do you persist my service?**
+
+  Flows are terminated if they are not serving requests for the last 24hrs. But this is configurable by passing {ref}`retention-days <retention-days>` argument.
+
+- **My Flow deployment failed. How I do to fix it?**
+
+  As a first step, please enable verbose logs while deploying the Flow. You can add `--loglevel DEBUG` _before_ each CLI subcommand, e.g.
 
   ```bash
-  jc --loglevel DEBUG deploy toy.yml
+  jc --loglevel DEBUG deploy flow.yml
   ```
+
+  If you don't see any obvious errors, please raise an issue in [JCloud](https://github.com/jina-ai/jcloud/issues/new/choose)
