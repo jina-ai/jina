@@ -94,7 +94,7 @@ class DummyNoDocAccessMockConnectionPool:
             import random
 
             await asyncio.sleep(1 / (random.randint(1, 3) * 10))
-            if requests[0].is_decompressed:
+            if requests[0].is_decompressed_with_data:
                 return (
                     DataRequest(request=requests[0].proto.SerializePartialToString()),
                     {},
