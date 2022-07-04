@@ -132,7 +132,7 @@ class DataRequest(Request):
     def is_decompressed(self) -> bool:
         """
         Checks if the underlying proto object was already deserialized into a :class:`jina.proto.jina_pb2.DataRequestProto` or
-        :class:`jina.proto.jina_pb2.DataRequestProtoWoData`. This does not necessarily mean that the data (docs) inside the request is also decompressed.
+        :class:`jina.proto.jina_pb2.DataRequestProtoWoData`
            :return: True if the proto was deserialized before
         """
         return type(self._pb_body) in [
@@ -143,8 +143,8 @@ class DataRequest(Request):
     @property
     def is_decompressed_with_data(self) -> bool:
         """
-        Checks if the underlying proto object was already deserialized into a :class:`jina.proto.jina_pb2.DataRequestProto`. In this case the full proto is decompressed, including the data (docs).
-           :return: True if the proto was deserialized before, including the data (docs)
+        Checks if the underlying proto object was already deserialized into a :class:`jina.proto.jina_pb2.DataRequestProto`
+           :return: True if the proto was deserialized before
         """
         return type(self._pb_body) is jina_pb2.DataRequestProto
 
@@ -176,8 +176,7 @@ class DataRequest(Request):
         self,
     ) -> Union['jina_pb2.DataRequestProto', 'jina_pb2.DataRequestProtoWoData']:
         """
-        Cast ``self`` to a :class:`jina_pb2.DataRequestProto` or a :class:`jina_pb2.DataRequestProto`. Laziness will be broken and serialization will be recomputed when calling.
-        it returns the underlying proto if it already exists (even if he is loaded without data) or creates a new one.
+        Cast ``self`` to a :class:`jina_pb2.DataRequestProto`. Laziness will be broken and serialization will be recomputed when calling.
         :meth:`SerializeToString`.
         :return: DataRequestProto protobuf instance
         """
