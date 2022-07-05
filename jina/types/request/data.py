@@ -132,7 +132,7 @@ class DataRequest(Request):
     def is_decompressed(self) -> bool:
         """
         Checks if the underlying proto object was already deserialized into a :class:`jina.proto.jina_pb2.DataRequestProto` or
-        :class:`jina.proto.jina_pb2.DataRequestProtoWoData` This does not necessarily mean that the docs are loaded.
+        :class:`jina.proto.jina_pb2.DataRequestProtoWoData`. This does not necessarily mean that the data (docs) inside the request is also decompressed.
            :return: True if the proto was deserialized before
         """
         return type(self._pb_body) in [
@@ -143,8 +143,8 @@ class DataRequest(Request):
     @property
     def is_decompressed_with_data(self) -> bool:
         """
-        Checks if the underlying proto object was already deserialized into a :class:`jina.proto.jina_pb2.DataRequestProto`. In this case the full proto is loaded including tha data ( docs )
-           :return: True if the proto was deserialized before
+        Checks if the underlying proto object was already deserialized into a :class:`jina.proto.jina_pb2.DataRequestProto`. In this case the full proto is decompressed, including the data (docs).
+           :return: True if the proto was deserialized before, including the data (docs)
         """
         return type(self._pb_body) is jina_pb2.DataRequestProto
 
