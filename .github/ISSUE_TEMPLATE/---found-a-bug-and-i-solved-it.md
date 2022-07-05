@@ -1,6 +1,6 @@
 ---
 name: "\U0001F41E Found a Bug!"
-about: I met a problem! It is Jina’s bug and I’d like raise others attention.
+about: I have found a problem! It is Jina’s bug and I’d like to raise other's attention on it.
 title: ''
 labels: kind/bug
 assignees: ''
@@ -11,7 +11,7 @@ assignees: ''
 <!-- A clear and concise description of what the bug is. -->
 
 **Describe how you solve it**
-<!-- copy past your code/pull request link -->
+<!-- copy paste your code/pull request link -->
 
 ---
 
