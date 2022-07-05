@@ -11,7 +11,7 @@ assignees: ''
 <!-- A clear and concise description of what the feature is. -->
 
 **Your proposal**
-<!-- copy past your code/pull request link -->
+<!-- copy paste your code/pull request link -->
 
 ---
 <!-- Optional, but really help us locate the problem faster -->
