@@ -26,4 +26,10 @@
   jc --loglevel DEBUG deploy flow.yml
   ```
 
+  Alternatively, you can also configure it by using Environment Variable `JCLOUD_LOGLEVEL`, e.g.
+
+  ```bash
+  export JCLOUD_LOGLEVEL=DEBUG && jc deploy flow.yml
+  ```
+
   If you don't see any obvious errors, please raise an issue in [JCloud](https://github.com/jina-ai/jcloud/issues/new/choose)
