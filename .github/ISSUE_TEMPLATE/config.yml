@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
-  - name: "📚 Read docs"
+  - name: "📚 View the docs"
     url: https://docs.jina.ai/
-    about: Find your solution from our documenations
+    about: Find your solution from our documentations
   - name: "😊 Join us"
     url: https://career.jina.ai
     about: Shape the neural search ecosystem in open-source!
 #  - name: "🔎 Search on Existing Issues"
 #    url: https://github.com/jina-ai/jina/search?q=&type=Issues
-#    about: Someone else may already post this issue and got solved
+#    about: Someone else may already have posted this issue and it got solved.
