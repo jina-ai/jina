@@ -126,9 +126,9 @@ If you are deploying Jina with K8s, you can consider this `Executor` as a K8s `D
 
 Now with your text corpus encoded as TF-IDF embeddings,
 it's time to save the results.
-We'll use Jina's [PQLiteIndexer](https://hub.jina.ai/executor/pn1qofsj) to persist our embeddings for fast Approximate Nearest Neighbor Search.
+We'll use Jina's [ANNLiteIndexer](https://hub.jina.ai/executor/7yypg8qk) to persist our embeddings for fast Approximate Nearest Neighbor Search.
 
-And you add this `PQLiteIndexer` to your Flow:
+And you add this `ANNLiteIndexer` to your Flow:
 
 ```python
 from jina import Flow
@@ -139,7 +139,7 @@ f = (
     .add(name='slow_executor', uses=MyVectorizer)
     .add(
         name='pqlite_executor',
-        uses='jinahub://PQLiteIndexer/v0.2.3-rc',
+        uses='jinahub://ANNLiteIndexer/v0.2.3-rc',
         uses_with={
             'dim': 130107,  # the dimension is fitted on the corpus in news dataset
             'metric': 'cosine',
@@ -158,9 +158,9 @@ with f:
     f.post(on='/index', inputs=news_generator, show_progress=True)
 ```
 
-The `PQLiteIndexer` will save your indexed Documents to your specified `workspace` (directory).
+The `ANNLiteIndexer` will save your indexed Documents to your specified `workspace` (directory).
 Since the default number of shards is one.
-All the data will be saved to `YOUR-WORKSPACE-DIR/PQLiteIndexer/0/` where `0` is the shard id.
+All the data will be saved to `YOUR-WORKSPACE-DIR/ANNLiteIndexer/0/` where `0` is the shard id.
 
 If you want to distribute your data to different places, Jina allows you to use `shards` to specify the number of shards.
 
@@ -171,7 +171,7 @@ f = (
     .add(name='slow_executor', uses=MyVectorizer)
     .add(
         name='pqlite_executor',
-        uses='jinahub://PQLiteIndexer',
+        uses='jinahub://ANNLiteIndexer',
         uses_with={'dim': 130107, 'metric': 'cosine'},
         workspace='CHANGE-TO-YOUR-PATH/workspace',
         install_requirements=True,
@@ -181,7 +181,7 @@ f = (
 ```
 
 Now open your workspace directory, you'll find we created 2 shards to store your indexed Documents:
-`YOUR-WORKSPACE-DIR/PQLiteIndexer/0/` and `YOUR-WORKSPACE-DIR/PQLiteIndexer/1/`.
+`YOUR-WORKSPACE-DIR/ANNLiteIndexer/0/` and `YOUR-WORKSPACE-DIR/ANNLiteIndexer/1/`.
 
 ### Different polling strategies
 
@@ -210,7 +210,7 @@ f = (
     .add(name='slow_executor', uses=MyVectorizer)
     .add(
         name='pqlite_executor',
-        uses='jinahub://PQLiteIndexer/v0.2.3-rc',
+        uses='jinahub://ANNLiteIndexer/v0.2.3-rc',
         uses_with={'dim': 130107, 'metric': 'cosine'},
         workspace='CHANGE-TO-YOUR-PATH/workspace',
         install_requirements=True,
