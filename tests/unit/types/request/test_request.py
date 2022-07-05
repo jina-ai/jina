@@ -86,14 +86,14 @@ def test_lazy_serialization():
     byte_array = DataRequestProto.SerializeToString(r)
 
     deserialized_request = DataRequestProto.FromString(byte_array)
-    assert not deserialized_request.is_decompressed
+    assert not deserialized_request.is_decompressed_with_data
     assert len(deserialized_request.docs) == doc_count
     assert deserialized_request.docs == r.docs
-    assert deserialized_request.is_decompressed
+    assert deserialized_request.is_decompressed_with_data
     assert not deserialized_request.is_decompressed_wo_data
 
 
-def test_lazy_serialization_bytes():
+def test_lazy_serialization_bytes(request_proto_bytes):
     doc_count = 1000
     r = DataRequest()
     da = r.docs
@@ -102,10 +102,10 @@ def test_lazy_serialization_bytes():
     byte_array = DataRequestProto.SerializeToString(r)
 
     deserialized_request = DataRequestProto.FromString(byte_array)
-    assert not deserialized_request.is_decompressed
+    assert not deserialized_request.is_decompressed_with_data
     assert len(deserialized_request.docs) == doc_count
     assert deserialized_request.docs == r.docs
-    assert deserialized_request.is_decompressed
+    assert deserialized_request.is_decompressed_with_data
     assert not deserialized_request.is_decompressed_wo_data
 
 
@@ -116,10 +116,10 @@ def test_status():
     byte_array = DataRequestProto.SerializeToString(r)
 
     deserialized_request = DataRequestProto.FromString(byte_array)
-    assert not deserialized_request.is_decompressed
+    assert not deserialized_request.is_decompressed_with_data
     assert deserialized_request.status.code == jina_pb2.StatusProto.ERROR
     assert deserialized_request.is_decompressed_wo_data
-    assert not deserialized_request.is_decompressed
+    assert not deserialized_request.is_decompressed_with_data
 
 
 def test_load_parameters_wo_loading_data():  # test that accessing parameters does not load the data
@@ -134,13 +134,38 @@ def test_load_parameters_wo_loading_data():  # test that accessing parameters do
     byte_array = DataRequestProto.SerializeToString(r)
 
     deserialized_request = DataRequest(byte_array)
-    assert not deserialized_request.is_decompressed
+    assert not deserialized_request.is_decompressed_with_data
     assert deserialized_request.parameters == parameters
     assert deserialized_request.is_decompressed_wo_data
-    assert not deserialized_request.is_decompressed
+    assert not deserialized_request.is_decompressed_with_data
 
-    with pytest.raises(AttributeError):
-        deserialized_request._pb_body_wo_data.data
+
+def test_change_parameters_wo_loading_data():  # test that changing parameters does not load the data
+    doc_count = 1000
+    r = DataRequest()
+    da = r.docs
+    da.extend([Document(text='534534534er5yr5y645745675675675345')] * doc_count)
+    r.data.docs = da
+
+    parameters = {'a': 0}
+    new_parameters = {'b': 1}
+
+    r.parameters = parameters
+    byte_array = DataRequestProto.SerializeToString(r)
+
+    deserialized_request = DataRequest(byte_array)
+    assert not deserialized_request.is_decompressed_with_data
+    assert deserialized_request.parameters == parameters
+    assert deserialized_request.is_decompressed_wo_data
+
+    deserialized_request.parameters = new_parameters
+
+    new_byte_array = DataRequestProto.SerializeToString(deserialized_request)
+    new_deserialized_request = DataRequest(new_byte_array)
+
+    assert new_deserialized_request.parameters == new_parameters
+    new_deserialized_request.docs
+    assert new_deserialized_request.docs == da
 
 
 def test_send_data_request_wo_data():  # check that when sending a DataRequestWoData the docs are sent
@@ -180,7 +205,7 @@ def test_delete_of_pb2_wo_data():  # ensure that pb2_wo_data is destroyed when a
         deserialized_request.parameters is not None
     )  # access the parameters and create the proto wo data
     assert deserialized_request.is_decompressed_wo_data
-    assert not deserialized_request.is_decompressed
+    assert not deserialized_request.is_decompressed_with_data
 
     assert (
         deserialized_request.docs == r.docs
@@ -189,4 +214,84 @@ def test_delete_of_pb2_wo_data():  # ensure that pb2_wo_data is destroyed when a
     assert (
         not deserialized_request.is_decompressed_wo_data
     )  # check that it is destroyed
-    assert deserialized_request.is_decompressed
+    assert deserialized_request.is_decompressed_with_data
+
+
+def test_change_only_params():  # check that when sending a DataRequestWoData the docs are sent
+    doc_count = 1000
+    r = DataRequest()
+    da = r.docs
+    da.extend([Document(text='534534534er5yr5y645745675675675345')] * doc_count)
+    r.data.docs = da
+
+    byte_array = DataRequestProto.SerializeToString(r)
+
+    deserialized_request = DataRequest(byte_array)
+
+    assert deserialized_request.parameters is not None
+    assert deserialized_request.is_decompressed_wo_data
+
+    final_request = DataRequestProto.FromString(
+        DataRequestProto.SerializeToString(deserialized_request)
+    )
+
+    assert len(final_request.docs) == doc_count
+    assert final_request.docs == r.docs
+
+
+def test_proto_wo_data_to_data(request_proto_bytes):
+    proto_wo_data = jina_pb2.DataRequestProtoWoData()
+    proto_wo_data.ParseFromString(request_proto_bytes)
+
+    proto_data = jina_pb2.DataRequestProto()
+    proto_data.ParseFromString(request_proto_bytes)
+
+    assert (  # check that once we serialize both proto have the same content
+        proto_wo_data.SerializePartialToString()
+        == proto_data.SerializePartialToString()
+    )
+
+
+@pytest.fixture()
+def request_proto_bytes():
+    doc_count = 1000
+    r = DataRequest()
+    da = r.docs
+    da.extend([Document(text='534534534er5yr5y645745675675675345')] * doc_count)
+    r.data.docs = da
+    return DataRequestProto.SerializeToString(r)
+
+
+def test_proto_wo_data_to_param_change_data(request_proto_bytes):
+
+    proto_wo_data = jina_pb2.DataRequestProtoWoData()
+    proto_wo_data.ParseFromString(request_proto_bytes)
+
+    proto_data = jina_pb2.DataRequestProto()
+    proto_data.ParseFromString(request_proto_bytes)
+
+    for proto in [proto_data, proto_wo_data]:
+        proto.parameters.Clear()
+        proto.parameters.update({'b': 1})
+
+    assert (  # check that once we serialize both proto have the same content
+        proto_wo_data.SerializePartialToString()
+        == proto_data.SerializePartialToString()
+    )
+
+
+def test_proto_wo_data_docs():  # check if we can access the docs after deserializing from a proto_wo_data
+    doc_count = 1000
+    r = DataRequest()
+    da = r.docs
+    da.extend([Document(text='534534534er5yr5y645745675675675345')] * doc_count)
+    r.data.docs = da
+
+    proto_wo_data = jina_pb2.DataRequestProtoWoData()
+    proto_wo_data.ParseFromString(DataRequestProto.SerializeToString(r))
+
+    bytes_ = proto_wo_data.SerializePartialToString()
+
+    new_data_request = DataRequest(bytes_)
+
+    assert new_data_request.docs == r.docs
