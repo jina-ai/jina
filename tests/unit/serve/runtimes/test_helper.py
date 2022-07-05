@@ -16,6 +16,7 @@ from jina.serve.runtimes.helper import (
         ('executor__key', True),
         ('exec2__key_2', True),
         ('__results__', False),
+        ('__banana__', False),
     ],
 )
 def test_is_specific_executor(key_name, is_specific):
