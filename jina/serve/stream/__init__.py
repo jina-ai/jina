@@ -157,6 +157,7 @@ class RequestStreamer:
                 update_all_handled()
             except self._EndOfStreaming:
                 pass
+        # here I should "asynchronously wait" for the `floating` tasks to finish while the response has been yielded
 
     async def _stream_requests_with_prefetch(
         self, request_iterator: Union[Iterator, AsyncIterator], prefetch: int
