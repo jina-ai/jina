@@ -187,9 +187,34 @@ with f:
 This might be useful to control `Executor` objects during their lifetime.
 ````
 
+(specific-params)=
+### Specific parameters per Executor
+
+You can pass specific parameters to each Executor by using the `executorname__paramname` syntax.
+The Executor named `executorname` will receive the parameter `paramname` (without the `executorname__` in the key name) 
+and none of the other Executors will receive it.
+
+For instance in the following Flow:
+
+```python
+from jina import Flow
+from docarray import DocumentArray
+
+with Flow().add(name='exec1').add(name='exec2') as flow:
+
+    flow.index(
+        DocumentArray.empty(size=5),
+        parameters={'exec1__traversal_path': '@r', 'exec2__traversal_path': '@c'},
+    )
+```
+
+The Executor `exec1` will receive `{'traversal_path':'@r'}` as parameters, whereas `exec2` will receive `{'traversal_path':'@c'}` as parameters.
+
+This feature is intended for the case where there are multiple Executors that take the same parameter names, but you want to use different values for each Executor.
+This is often the case for Executors from the Hub, since they tend to share a common interface for parameters.
+
+
 (callback-functions)=
-
-
 ## Async send
 
 There also exists an async version of the Python Client which works with {meth}`~jina.clients.mixin.PostMixin.post` and {meth}`~jina.clients.mixin.MutateMixin.mutate`.
