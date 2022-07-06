@@ -13,7 +13,7 @@ def test_specific_params():
 
         @requests
         def process(self, docs, parameters, **kwargs):
-            assert parameters == self.params_awaited
+            docs[0].tags['assert'] = parameters == self.params_awaited
 
     flow = (
         Flow()
@@ -26,7 +26,9 @@ def test_specific_params():
     )
 
     with flow:
-        flow.index(
-            DocumentArray.empty(size=5),
+        docs = flow.index(
+            DocumentArray.empty(size=1),
             parameters={'key_1': True, 'exec2__key_2': False},
         )
+
+        assert docs[0].tags['assert']
