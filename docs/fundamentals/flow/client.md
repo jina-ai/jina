@@ -188,9 +188,9 @@ This might be useful to control `Executor` objects during their lifetime.
 ````
 
 (specific-params)=
-### Specific parameters per Executor
+### Send specific parameters to each Executors
 
-You can pass specific parameters to each Executor by using the `executorname__paramname` syntax.
+You can send specific parameters to each Executor by using the `executorname__paramname` syntax.
 The Executor named `executorname` will receive the parameter `paramname` (without the `executorname__` in the key name) 
 and none of the other Executors will receive it.
 
