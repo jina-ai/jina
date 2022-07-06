@@ -2,7 +2,7 @@ blank_issues_enabled: false
 contact_links:
   - name: "📚 Read the docs"
     url: https://docs.jina.ai/
-    about: Find your solution from our documentations
+    about: Find your solution from our documentation
   - name: "😊 Join us"
     url: https://career.jina.ai
     about: Shape the neural search ecosystem in open-source!
