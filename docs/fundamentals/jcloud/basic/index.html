@@ -499,15 +499,25 @@ the deletion, to make it non-interactive to better suit your use case, set below
 </section>
 <section id="get-status">
 <h2>Get status<a class="headerlink" href="#get-status" title="Permalink to this headline">#</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc status 173503c192
+<p>To get the status of a Flow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc status 15937a10bd
 </pre></div>
 </div>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../../_images/status.png"><img alt="../../../_images/status.png" src="../../../_images/status.png" style="width: 70%;" /></a>
 </figure>
 </section>
+<section id="monitoring">
+<h2>Monitoring<a class="headerlink" href="#monitoring" title="Permalink to this headline">#</a></h2>
+<p>To enable monitoring with the Flow, you can set <code class="docutils literal notranslate"><span class="pre">monitoring:</span> <span class="pre">true</span></code> in the Flow yaml and you’d be given access to a <a class="reference external" href="https://grafana.com/">Grafana</a> dashboard.</p>
+<p>To access the dashboard, get the status of the Flow first (see above section), at the bottom of the pane you should see the <code class="docutils literal notranslate"><span class="pre">dashboards</span></code> link. Visit the URL and you will find some basic metrics such as ‘Number of Request Gateway Received’ and ‘Time elapsed between receiving a request and sending back the response’:</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../../_images/monitoring.png"><img alt="../../../_images/monitoring.png" src="../../../_images/monitoring.png" style="width: 70%;" /></a>
+</figure>
+</section>
 <section id="list-flows">
 <h2>List Flows<a class="headerlink" href="#list-flows" title="Permalink to this headline">#</a></h2>
+<p>To list all the Flows you have:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc list
 </pre></div>
 </div>
@@ -567,7 +577,7 @@ the deletion, to make it non-interactive to better suit your use case, set below
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 05, 2022</div>
+                            Last updated on Jul 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -610,6 +620,7 @@ the deletion, to make it non-interactive to better suit your use case, set below
 <li><a class="reference internal" href="#view-logs">View logs</a></li>
 <li><a class="reference internal" href="#remove-flows">Remove Flows</a></li>
 <li><a class="reference internal" href="#get-status">Get status</a></li>
+<li><a class="reference internal" href="#monitoring">Monitoring</a></li>
 <li><a class="reference internal" href="#list-flows">List Flows</a></li>
 </ul>
 </li>

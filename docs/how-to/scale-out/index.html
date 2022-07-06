@@ -499,8 +499,8 @@ If you are deploying Jina with K8s, you can consider this <code class="docutils 
 <h3>Context<a class="headerlink" href="#id1" title="Permalink to this headline">#</a></h3>
 <p>Now with your text corpus encoded as TF-IDF embeddings,
 it’s time to save the results.
-We’ll use Jina’s <a class="reference external" href="https://hub.jina.ai/executor/pn1qofsj">PQLiteIndexer</a> to persist our embeddings for fast Approximate Nearest Neighbor Search.</p>
-<p>And you add this <code class="docutils literal notranslate"><span class="pre">PQLiteIndexer</span></code> to your Flow:</p>
+We’ll use Jina’s <a class="reference external" href="https://hub.jina.ai/executor/7yypg8qk">ANNLiteIndexer</a> to persist our embeddings for fast Approximate Nearest Neighbor Search.</p>
+<p>And you add this <code class="docutils literal notranslate"><span class="pre">ANNLiteIndexer</span></code> to your Flow:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
@@ -509,7 +509,7 @@ We’ll use Jina’s <a class="reference external" href="https://hub.jina.ai/exe
     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;slow_executor&#39;</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="n">MyVectorizer</span><span class="p">)</span>
     <span class="o">.</span><span class="n">add</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;pqlite_executor&#39;</span><span class="p">,</span>
-        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinahub://PQLiteIndexer/v0.2.3-rc&#39;</span><span class="p">,</span>
+        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinahub://ANNLiteIndexer/v0.2.3-rc&#39;</span><span class="p">,</span>
         <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span>
             <span class="s1">&#39;dim&#39;</span><span class="p">:</span> <span class="mi">130107</span><span class="p">,</span>  <span class="c1"># the dimension is fitted on the corpus in news dataset</span>
             <span class="s1">&#39;metric&#39;</span><span class="p">:</span> <span class="s1">&#39;cosine&#39;</span><span class="p">,</span>
@@ -528,9 +528,9 @@ We’ll use Jina’s <a class="reference external" href="https://hub.jina.ai/exe
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/index&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">news_generator</span><span class="p">,</span> <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">PQLiteIndexer</span></code> will save your indexed Documents to your specified <code class="docutils literal notranslate"><span class="pre">workspace</span></code> (directory).
+<p>The <code class="docutils literal notranslate"><span class="pre">ANNLiteIndexer</span></code> will save your indexed Documents to your specified <code class="docutils literal notranslate"><span class="pre">workspace</span></code> (directory).
 Since the default number of shards is one.
-All the data will be saved to <code class="docutils literal notranslate"><span class="pre">YOUR-WORKSPACE-DIR/PQLiteIndexer/0/</span></code> where <code class="docutils literal notranslate"><span class="pre">0</span></code> is the shard id.</p>
+All the data will be saved to <code class="docutils literal notranslate"><span class="pre">YOUR-WORKSPACE-DIR/ANNLiteIndexer/0/</span></code> where <code class="docutils literal notranslate"><span class="pre">0</span></code> is the shard id.</p>
 <p>If you want to distribute your data to different places, Jina allows you to use <code class="docutils literal notranslate"><span class="pre">shards</span></code> to specify the number of shards.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Flow</span><span class="p">()</span>
@@ -538,7 +538,7 @@ All the data will be saved to <code class="docutils literal notranslate"><span c
     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;slow_executor&#39;</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="n">MyVectorizer</span><span class="p">)</span>
     <span class="o">.</span><span class="n">add</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;pqlite_executor&#39;</span><span class="p">,</span>
-        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinahub://PQLiteIndexer&#39;</span><span class="p">,</span>
+        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinahub://ANNLiteIndexer&#39;</span><span class="p">,</span>
         <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;dim&#39;</span><span class="p">:</span> <span class="mi">130107</span><span class="p">,</span> <span class="s1">&#39;metric&#39;</span><span class="p">:</span> <span class="s1">&#39;cosine&#39;</span><span class="p">},</span>
         <span class="n">workspace</span><span class="o">=</span><span class="s1">&#39;CHANGE-TO-YOUR-PATH/workspace&#39;</span><span class="p">,</span>
         <span class="n">install_requirements</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -548,7 +548,7 @@ All the data will be saved to <code class="docutils literal notranslate"><span c
 </pre></div>
 </div>
 <p>Now open your workspace directory, you’ll find we created 2 shards to store your indexed Documents:
-<code class="docutils literal notranslate"><span class="pre">YOUR-WORKSPACE-DIR/PQLiteIndexer/0/</span></code> and <code class="docutils literal notranslate"><span class="pre">YOUR-WORKSPACE-DIR/PQLiteIndexer/1/</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">YOUR-WORKSPACE-DIR/ANNLiteIndexer/0/</span></code> and <code class="docutils literal notranslate"><span class="pre">YOUR-WORKSPACE-DIR/ANNLiteIndexer/1/</span></code>.</p>
 </section>
 <section id="different-polling-strategies">
 <h3>Different polling strategies<a class="headerlink" href="#different-polling-strategies" title="Permalink to this headline">#</a></h3>
@@ -574,7 +574,7 @@ The new <code class="docutils literal notranslate"><span class="pre">Flow</span>
     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;slow_executor&#39;</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="n">MyVectorizer</span><span class="p">)</span>
     <span class="o">.</span><span class="n">add</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;pqlite_executor&#39;</span><span class="p">,</span>
-        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinahub://PQLiteIndexer/v0.2.3-rc&#39;</span><span class="p">,</span>
+        <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinahub://ANNLiteIndexer/v0.2.3-rc&#39;</span><span class="p">,</span>
         <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;dim&#39;</span><span class="p">:</span> <span class="mi">130107</span><span class="p">,</span> <span class="s1">&#39;metric&#39;</span><span class="p">:</span> <span class="s1">&#39;cosine&#39;</span><span class="p">},</span>
         <span class="n">workspace</span><span class="o">=</span><span class="s1">&#39;CHANGE-TO-YOUR-PATH/workspace&#39;</span><span class="p">,</span>
         <span class="n">install_requirements</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -633,7 +633,7 @@ use the <code class="docutils literal notranslate"><span class="pre">shards</spa
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 05, 2022</div>
+                            Last updated on Jul 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
