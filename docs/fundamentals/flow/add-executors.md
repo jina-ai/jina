@@ -159,11 +159,11 @@ f = Flow(extra_search_paths=['../executor']).add(uses='config1.yml').add(uses='c
 
 ````
 (specific-params)=
-### Specific Parameters per Executor
+### Specific parameters per Executor
 
 You can pass specific parameters to each Executor by using the `executorname__paramname` syntax.
 The Executor named `executorname` will receive the parameter `paramname` (without the `executorname__` in the key name) 
-and none of the other Executor will receive it.
+and none of the other Executors will receive it.
 
 For instance in the following Flow:
 
@@ -179,10 +179,10 @@ with Flow().add(name='exec1').add(name='exec2') as flow:
     )
 ```
 
-The `exec1` will receive `{'traversal_path':'@r'}` as parameter whereas `exec2` will receive `{'traversal_path':'@c'}` as parameter.
+The Executor `exec1` will receive `{'traversal_path':'@r'}` as parameters, whereas `exec2` will receive `{'traversal_path':'@c'}` as parameters.
 
-This feature is really helpful when you have multiple parameters that await the same parameters name, but you want to use different values for each Executor.
-Especially when you use Executor from the hub, they usually share a common parameters interface and it is needed to be able to gave different value to different Executor.
+This feature is intended for the case where there are multiple Executors that take the same parameter names, but you want to use different values for each Executor.
+This is often the case for Executors from the Hub, since they tend to share a common interface for parameters.
 
 ```
 
