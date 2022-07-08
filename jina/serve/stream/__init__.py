@@ -102,9 +102,11 @@ class RequestStreamer:
         :yield: responses
         """
         result_queue = asyncio.Queue()
+        hanging_queue = asyncio.Queue()
         end_of_iter = asyncio.Event()
         all_requests_handled = asyncio.Event()
         requests_to_handle = self._RequestsCounter()
+        hanging_tasks_to_handle = self._RequestsCounter()
 
         def update_all_handled():
             if end_of_iter.is_set() and requests_to_handle.count == 0:
@@ -125,6 +127,9 @@ class RequestStreamer:
             """
             result_queue.put_nowait(future)
 
+        def hanging_callback(future: 'asyncio.Future'):
+            hanging_queue.put_nowait(future)
+
         async def iterate_requests() -> None:
             """
             1. Traverse through the request iterator.
@@ -136,8 +141,11 @@ class RequestStreamer:
             """
             async for request in AsyncRequestsIterator(iterator=request_iterator):
                 requests_to_handle.count += 1
-                future: 'asyncio.Future' = self._request_handler(request=request)
+                future, future_hanging = self._request_handler(request=request)
                 future.add_done_callback(callback)
+                if future_hanging is not None:
+                    hanging_tasks_to_handle.count += 1
+                    future_hanging.add_done_callback(hanging_callback)
             if self._end_of_iter_handler is not None:
                 self._end_of_iter_handler()
             end_of_iter.set()
@@ -147,7 +155,14 @@ class RequestStreamer:
                 future_cancel = asyncio.ensure_future(end_future())
                 result_queue.put_nowait(future_cancel)
 
+        async def handle_hanging_tasks():
+            while hanging_tasks_to_handle.count > 0 and not hanging_queue.empty():
+                _ = await hanging_queue.get_nowait()
+                hanging_tasks_to_handle.count -= 1
+
         asyncio.create_task(iterate_requests())
+        asyncio.create_task(handle_hanging_tasks())
+
         while not all_requests_handled.is_set():
             future = await result_queue.get()
             try:
@@ -208,15 +223,6 @@ class RequestStreamer:
             onrecv_task = []
             # the following code "interleaves" prefetch_task and onrecv_task, when one dries, it switches to the other
             while prefetch_task:
-                # if self.logger.debug_enabled:
-                #     if hasattr(self.msg_handler, 'msg_sent') and hasattr(
-                #         self.msg_handler, 'msg_recv'
-                #     ):
-                #         self.logger.debug(
-                #             f'send: {self.msg_handler.msg_sent} '
-                #             f'recv: {self.msg_handler.msg_recv} '
-                #             f'pending: {self.msg_handler.msg_sent - self.msg_handler.msg_recv}'
-                #         )
                 onrecv_task.clear()
                 for r in asyncio.as_completed(prefetch_task):
                     res = await r
