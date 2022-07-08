@@ -423,6 +423,53 @@ def test_pull(test_envs, mocker, monkeypatch):
     HubIO(args).pull()
 
 
+def test_pull_with_no_name(test_envs, mocker, monkeypatch):
+    mock = mocker.Mock()
+
+    def _mock_fetch(
+        name,
+        tag=None,
+        secret=None,
+        image_required=True,
+        rebuild_image=True,
+        force=False,
+    ):
+        mock(name=name)
+        return (
+            HubExecutor(
+                uuid='dummy_mwu_encoder',
+                name=None,
+                tag='v0',
+                image_name='jinahub/pod.dummy_mwu_encoder',
+                md5sum=None,
+                visibility=True,
+                archive_url=None,
+            ),
+            False,
+        )
+
+    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
+
+    def _mock_download(url, stream=True, headers=None):
+        mock(url=url)
+        return DownloadMockResponse(response_code=200)
+
+    def _mock_head(url):
+        from collections import namedtuple
+
+        HeadInfo = namedtuple('HeadInfo', ['headers'])
+        return HeadInfo(headers={})
+
+    monkeypatch.setattr(requests, 'get', _mock_download)
+    monkeypatch.setattr(requests, 'head', _mock_head)
+
+    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
+    HubIO(args).pull()
+
+    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder:secret'])
+    HubIO(args).pull()
+
+
 class MockDockerClient:
     def __init__(self, fail_pull: bool = True):
         self.fail_pull = fail_pull
