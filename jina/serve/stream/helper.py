@@ -1,14 +1,38 @@
 import asyncio
-from typing import AsyncIterator, Iterator, Union
+from typing import AsyncIterator, Iterator, Optional, Union
 
 from jina.helper import get_or_reuse_loop
+
+
+class RequestsCounter:
+    """Class used to wrap a count integer so that it can be updated inside methods.
+
+    .. code-block:: python
+
+        def count_increment(i: int, rc: RequestCounter):
+            i += 1
+            rc.count += 1
+
+
+        c_int = 0
+        c_rc = RequestsCounter()
+        count_increment(c_int, c_rc)
+
+        assert c_int == 0
+        assert c_rc.count == 1
+    """
+
+    count = 0
 
 
 class AsyncRequestsIterator:
     """Iterator to allow async iteration of blocking/non-blocking iterator from the Client"""
 
     def __init__(
-        self, iterator: Union[Iterator, AsyncIterator], request_counter=None, prefetch=0
+        self,
+        iterator: Union[Iterator, AsyncIterator],
+        request_counter: Optional[RequestsCounter] = None,
+        prefetch: int = 0,
     ) -> None:
         """Async request iterator
 
@@ -36,6 +60,9 @@ class AsyncRequestsIterator:
         return self
 
     async def __anext__(self):
+        if self._prefetch > 0:
+            while self._request_counter.count >= self._prefetch:
+                await asyncio.sleep(0)
         if isinstance(self.iterator, Iterator):
 
             """
@@ -56,9 +83,6 @@ class AsyncRequestsIterator:
                 raise StopAsyncIteration
         elif isinstance(self.iterator, AsyncIterator):
             # we assume that `AsyncIterator` doesn't block the event loop
-            if self._prefetch > 0:
-                while self._request_counter.count >= self._prefetch:
-                    await asyncio.sleep(0)
             request = await self.iterator.__anext__()
 
         return request

@@ -1,16 +1,16 @@
-import time
 import asyncio
+import time
+
+import pytest
 
 from jina import Document
 from jina.clients.request import request_generator
-from jina.serve.stream.helper import AsyncRequestsIterator
-
-import pytest
+from jina.serve.stream.helper import AsyncRequestsIterator, RequestsCounter
 
 
 def slow_blocking_generator():
     for i in range(2):
-        yield Document(id=i)
+        yield Document(id=str(i))
         time.sleep(2)
 
 
@@ -37,3 +37,33 @@ async def test_iter_requests():
     task.cancel()
     # ideally count will be 20, but to avoid flaky CI
     assert count > 15
+
+
+@pytest.mark.asyncio
+async def test_iter_requests_with_prefetch():
+
+    max_amount_requests = RequestsCounter()
+    counter = RequestsCounter()
+
+    async def consume_requests():
+        while True:
+            await asyncio.sleep(0.01)
+            if counter.count > 0:
+                counter.count -= 1
+
+    async def req_iterator(max_amount_requests):
+        for i in range(1000):
+            await asyncio.sleep(0.001)
+            counter.count += 1
+            if counter.count > max_amount_requests.count:
+                max_amount_requests.count = counter.count
+            yield i
+
+    consume_task = asyncio.create_task(consume_requests())
+    async for _ in AsyncRequestsIterator(
+        req_iterator(max_amount_requests), counter, 10
+    ):
+        pass
+
+    consume_task.cancel()
+    assert max_amount_requests.count == 10

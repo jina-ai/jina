@@ -13,7 +13,7 @@ from typing import (
 
 from jina.excepts import InternalNetworkError
 from jina.logging.logger import JinaLogger
-from jina.serve.stream.helper import AsyncRequestsIterator
+from jina.serve.stream.helper import AsyncRequestsIterator, RequestsCounter
 
 __all__ = ['RequestStreamer']
 
@@ -30,9 +30,6 @@ class RequestStreamer:
 
     class _EndOfStreaming(Exception):
         pass
-
-    class _RequestsCounter:
-        count = 0
 
     def __init__(
         self,
@@ -101,7 +98,7 @@ class RequestStreamer:
         result_queue = asyncio.Queue()
         end_of_iter = asyncio.Event()
         all_requests_handled = asyncio.Event()
-        requests_to_handle = self._RequestsCounter()
+        requests_to_handle = RequestsCounter()
 
         def update_all_handled():
             if end_of_iter.is_set() and requests_to_handle.count == 0:
