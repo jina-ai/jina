@@ -1,4 +1,5 @@
 import asyncio
+
 import pytest
 
 from jina import Document, DocumentArray
@@ -39,7 +40,7 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
     def end_of_iter_fn():
         # with a sync generator, iteration
         assert len(requests_handled) == num_requests
-        assert len(results_handled) < num_requests
+        assert len(results_handled) <= num_requests
 
     def _yield_data_request():
         req = DataRequest()
