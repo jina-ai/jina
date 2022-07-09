@@ -115,7 +115,7 @@ def test_disable_prefetch_slow_client_fast_executor(protocol, inputs):
         f'protocol: {protocol}, input: {inputs.__name__}'
     )
     final_da = DocumentArray()
-    with Flow(protocol=protocol).add(uses=FastExecutor) as f:
+    with Flow(protocol=protocol, prefetch=0).add(uses=FastExecutor) as f:
         f.post(
             on='/',
             inputs=inputs,
