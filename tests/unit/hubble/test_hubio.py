@@ -464,7 +464,6 @@ def test_pull_with_no_name(test_envs, mocker, monkeypatch):
     monkeypatch.setattr(requests, 'head', _mock_head)
 
     def _mock_get_prettyprint_usage(self,console, executor_name, usage_kind=None):
-        mock(self=self)
         mock(console=console)
         mock(usage_kind=usage_kind)
         print('executor_name:', executor_name)
