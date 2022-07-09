@@ -69,7 +69,7 @@ html_theme_options = {
     # start-announce
 
     "announcement": '''
-    <a href="https://www.meetup.com/jina-community-meetup/events/286438459/">Get answers to all your questions at our Office Hour on June 30 at 19:00 CET</a>
+    <a href="https://www.meetup.com/jina-community-meetup/events/286748566/">Learn more about how basic linear algebra can speed up your data science code together with  Jodie Burchell and Jina AI on July 12 at 18:00 CET</a>
     ''',
         
     # end-announce

@@ -41,7 +41,7 @@ always be `unhealthy`
 To follow this how-to, you should first ensure that [`Docker Compose`](https://docs.docker.com/compose/install/) is installed locally.
 
 This example shows how to build and deploy a Flow with Docker Compose, using [`CLIPImageEncoder`](https://hub.jina.ai/executor/0hnlmu3q)
-as an image encoder and [`PQLiteIndexer`](https://hub.jina.ai/executor/pn1qofsj) as an indexer to perform fast nearest
+as an image encoder and [`ANNLiteIndexer`](https://hub.jina.ai/executor/7yypg8qk) as an indexer to perform fast nearest
 neighbor retrieval on image embeddings.
 
 ### Deploy your Flow
