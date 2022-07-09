@@ -101,6 +101,7 @@ class RequestStreamer:
         all_requests_handled = asyncio.Event()
         requests_to_handle = RequestsCounter()
         hanging_tasks_to_handle = RequestsCounter()
+        all_hanging_requests_awaited = asyncio.Event()
 
         def update_all_handled():
             if end_of_iter.is_set() and requests_to_handle.count == 0:
@@ -144,6 +145,9 @@ class RequestStreamer:
                 if future_hanging is not None:
                     hanging_tasks_to_handle.count += 1
                     future_hanging.add_done_callback(hanging_callback)
+                else:
+                    all_hanging_requests_awaited.set()
+
             if self._end_of_iter_handler is not None:
                 self._end_of_iter_handler()
             end_of_iter.set()
@@ -154,12 +158,14 @@ class RequestStreamer:
                 result_queue.put_nowait(future_cancel)
 
         async def handle_hanging_tasks():
-            while hanging_tasks_to_handle.count > 0 and not hanging_queue.empty():
-                _ = await hanging_queue.get_nowait()
+            while not all_hanging_requests_awaited.is_set():
+                _ = await hanging_queue.get()
                 hanging_tasks_to_handle.count -= 1
+                if hanging_tasks_to_handle.count == 0 and all_requests_handled.is_set():
+                    all_hanging_requests_awaited.set()
 
         asyncio.create_task(iterate_requests())
-        asyncio.create_task(handle_hanging_tasks())
+        hanging_hanging_tasks = asyncio.create_task(handle_hanging_tasks())
 
         while not all_requests_handled.is_set():
             future = await result_queue.get()
@@ -170,3 +176,5 @@ class RequestStreamer:
                 update_all_handled()
             except self._EndOfStreaming:
                 pass
+
+        await hanging_hanging_tasks
