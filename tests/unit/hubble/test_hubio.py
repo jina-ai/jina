@@ -463,10 +463,16 @@ def test_pull_with_no_name(test_envs, mocker, monkeypatch):
     monkeypatch.setattr(requests, 'get', _mock_download)
     monkeypatch.setattr(requests, 'head', _mock_head)
 
-    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
-    HubIO(args).pull()
+    def _mock_get_prettyprint_usage(self,console, executor_name, usage_kind=None):
+        mock(self=self)
+        mock(console=console)
+        mock(usage_kind=usage_kind)
+        print('executor_name:', executor_name)
+        assert executor_name != 'None'
 
-    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder:secret'])
+    monkeypatch.setattr(HubIO, '_get_prettyprint_usage', _mock_get_prettyprint_usage)
+
+    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
     HubIO(args).pull()
 
 
