@@ -203,6 +203,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14244,4 +14245,42 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```2a2f57d6```](https://github.com/jina-ai/jina/commit/2a2f57d6e0bd8c8eb05ffcd9e5065bc592f94eb9)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```407a266e```](https://github.com/jina-ai/jina/commit/407a266e9ee638015063b3dda41291dd6476ed16)] __-__ __version__: the next version will be 3.6.9 (*Jina Dev Bot*)
+
+<a name=release-note-3-6-10></a>
+## Release Note (`3.6.10`)
+
+> Release time: 2022-07-11 07:01:07
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ zhangkai,  Joan Fontanals,  Zac Li,  samsja,  Jina Dev Bot,  Deepankar Mahapatro,  🙇
+
+
+### 🆕 New Features
+
+ - [[```0b74830b```](https://github.com/jina-ai/jina/commit/0b74830b701ce3aca8405c5bcc2b51ce4a68e2d0)] __-__ set prefetch default to 1000 (#4985) (*Joan Fontanals*)
+ - [[```c3849c6f```](https://github.com/jina-ai/jina/commit/c3849c6fee4a65a77a82b2cfda9670d727ff0f53)] __-__ allow to access parameters of data request wo loading data  (#4991) (*samsja*)
+ - [[```34997cc0```](https://github.com/jina-ai/jina/commit/34997cc032eebe5a30452ddc018f5eb403c1c667)] __-__ allow to load parameters from jina data request proto wo loading the full docs (#4950) (*samsja*)
+
+### 🐞 Bug fixes
+
+ - [[```f70caed2```](https://github.com/jina-ai/jina/commit/f70caed27eb76d14c503b4e46bb23ec07e30b04a)] __-__ __hubble__: fix the way to generate executor name of the func hub pull (#5001) (*zhangkai*)
+
+### 📗 Documentation
+
+ - [[```b2fa4fe5```](https://github.com/jina-ai/jina/commit/b2fa4fe54b85a51bb672b9030eb850678b81121c)] __-__ __jcloud__: add monitoring bit (#4997) (*Zac Li*)
+ - [[```2dd40397```](https://github.com/jina-ai/jina/commit/2dd40397eae9b13adc2f68e5e79b33c8673a9d5e)] __-__ change pqlite reference to annlite in docs (#4994) (*Joan Fontanals*)
+ - [[```d498a172```](https://github.com/jina-ai/jina/commit/d498a1726694c4b28a140e542e667301b9599861)] __-__ __jcloud__: expand faq section (#4993) (*Zac Li*)
+ - [[```73589ff0```](https://github.com/jina-ai/jina/commit/73589ff0b968da0eab90f2126925d071dc09e267)] __-__ __jcloud__: refactor faq section (#4989) (*Deepankar Mahapatro*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```9b6824fa```](https://github.com/jina-ai/jina/commit/9b6824fa5bcd6cd8b47881c85c70f6255c3d7331)] __-__ add debug lines for test (#4982) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```0dcb2277```](https://github.com/jina-ai/jina/commit/0dcb227729a8449fb363ca8500627f3bf77de942)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```17662518```](https://github.com/jina-ai/jina/commit/176625180e4c94c329b8354473a24b9b6b68d4af)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```d6690f66```](https://github.com/jina-ai/jina/commit/d6690f6668027c4338d3f1e834fbbb033e278698)] __-__ __version__: the next version will be 3.6.10 (*Jina Dev Bot*)
 
