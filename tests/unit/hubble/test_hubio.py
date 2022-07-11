@@ -375,8 +375,8 @@ class DownloadMockResponse:
     def status_code(self):
         return self.response_code
 
-
-def test_pull(test_envs, mocker, monkeypatch):
+@pytest.mark.parametrize('executer_name', ['alias_dummy',None])
+def test_pull(test_envs, mocker, monkeypatch, executer_name):
     mock = mocker.Mock()
 
     def _mock_fetch(
@@ -391,54 +391,7 @@ def test_pull(test_envs, mocker, monkeypatch):
         return (
             HubExecutor(
                 uuid='dummy_mwu_encoder',
-                name='alias_dummy',
-                tag='v0',
-                image_name='jinahub/pod.dummy_mwu_encoder',
-                md5sum=None,
-                visibility=True,
-                archive_url=None,
-            ),
-            False,
-        )
-
-    monkeypatch.setattr(HubIO, 'fetch_meta', _mock_fetch)
-
-    def _mock_download(url, stream=True, headers=None):
-        mock(url=url)
-        return DownloadMockResponse(response_code=200)
-
-    def _mock_head(url):
-        from collections import namedtuple
-
-        HeadInfo = namedtuple('HeadInfo', ['headers'])
-        return HeadInfo(headers={})
-
-    monkeypatch.setattr(requests, 'get', _mock_download)
-    monkeypatch.setattr(requests, 'head', _mock_head)
-
-    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
-    HubIO(args).pull()
-
-    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder:secret'])
-    HubIO(args).pull()
-
-
-def test_pull_with_no_name(test_envs, mocker, monkeypatch):
-    mock = mocker.Mock()
-
-    def _mock_fetch(
-        name,
-        tag=None,
-        secret=None,
-        image_required=True,
-        rebuild_image=True,
-        force=False,
-    ):
-        mock(name=name)
-        return (
-            HubExecutor(
-                uuid='dummy_mwu_encoder',
-                name=None,
+                name=executer_name,
                 tag='v0',
                 image_name='jinahub/pod.dummy_mwu_encoder',
                 md5sum=None,
@@ -472,6 +425,9 @@ def test_pull_with_no_name(test_envs, mocker, monkeypatch):
     monkeypatch.setattr(HubIO, '_get_prettyprint_usage', _mock_get_prettyprint_usage)
 
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
+    HubIO(args).pull()
+
+    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder:secret'])
     HubIO(args).pull()
 
 
