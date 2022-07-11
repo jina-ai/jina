@@ -101,6 +101,7 @@ class RequestStreamer:
         requests_to_handle = _RequestsCounter()
         hanging_tasks_to_handle = _RequestsCounter()
         all_hanging_requests_awaited = asyncio.Event()
+        empty_requests_iterator = asyncio.Event()
 
         def update_all_handled():
             if end_of_iter.is_set() and requests_to_handle.count == 0:
@@ -133,11 +134,13 @@ class RequestStreamer:
             4. Handle EOI (needed for websocket client)
             5. Set `end_of_iter` event
             """
+            num_reqs = 0
             async for request in AsyncRequestsIterator(
                 iterator=request_iterator,
                 request_counter=requests_to_handle,
                 prefetch=self._prefetch,
             ):
+                num_reqs += 1
                 requests_to_handle.count += 1
                 future_responses, future_hanging = self._request_handler(
                     request=request
@@ -149,6 +152,9 @@ class RequestStreamer:
                 else:
                     all_hanging_requests_awaited.set()
 
+            if num_reqs == 0:
+                empty_requests_iterator.set()
+
             if self._end_of_iter_handler is not None:
                 self._end_of_iter_handler()
             end_of_iter.set()
@@ -157,13 +163,19 @@ class RequestStreamer:
                 # It will be waiting for something that will never appear
                 future_cancel = asyncio.ensure_future(end_future())
                 result_queue.put_nowait(future_cancel)
-            if all_hanging_requests_awaited.is_set():
+            if (
+                all_hanging_requests_awaited.is_set()
+                or empty_requests_iterator.is_set()
+            ):
                 # It will be waiting for something that will never appear
                 future_cancel = asyncio.ensure_future(end_future())
                 hanging_queue.put_nowait(future_cancel)
 
         async def handle_hanging_tasks():
-            while not all_hanging_requests_awaited.is_set():
+            while (
+                not all_hanging_requests_awaited.is_set()
+                and not empty_requests_iterator.is_set()
+            ):
                 hanging_response = await hanging_queue.get()
                 try:
                     hanging_response.result()
