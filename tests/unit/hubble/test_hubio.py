@@ -421,7 +421,6 @@ def test_pull(test_envs, mocker, monkeypatch, executor_name):
         mock(usage_kind=usage_kind)
         print('_mock_get_prettyprint_usage executor_name:', executor_name)
         assert executor_name != 'None'
-        assert print('executor_name:', executor_name)
 
     monkeypatch.setattr(HubIO, '_get_prettyprint_usage', _mock_get_prettyprint_usage)
 
