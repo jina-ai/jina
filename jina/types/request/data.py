@@ -218,6 +218,7 @@ class DataRequest(Request):
             self._pb_body_old = self._pb_body
             self._pb_body = jina_pb2.DataRequestProto()
             self._pb_body.ParseFromString(self._pb_body_old.SerializePartialToString())
+            del self._pb_body_old
         else:
             raise ValueError('the buffer is already decompressed')
 
@@ -307,10 +308,10 @@ class DataRequest(Request):
         return cls(request=request)
 
     def __copy__(self):
-        return DataRequest(request=self.proto)
+        return DataRequest(request=self.proto_with_data)
 
     def __deepcopy__(self, _):
-        return DataRequest(request=copy.deepcopy(self.proto))
+        return DataRequest(request=copy.deepcopy(self.proto_with_data))
 
 
 class Response(DataRequest):

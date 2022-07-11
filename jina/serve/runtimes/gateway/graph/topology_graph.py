@@ -10,6 +10,7 @@ import grpc.aio
 from jina import __default_endpoint__
 from jina.excepts import InternalNetworkError
 from jina.serve.networking import GrpcConnectionPool
+from jina.serve.runtimes.helper import _parse_specific_params
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest
 
@@ -43,6 +44,7 @@ class TopologyGraph:
             self.number_of_parts = number_of_parts
             self.hanging = hanging
             self.parts_to_send = []
+            self.original_parameters = []
             self.start_time = None
             self.end_time = None
             self.status = None
@@ -55,12 +57,21 @@ class TopologyGraph:
         def leaf(self):
             return len(self.outgoing_nodes) == 0
 
-        def _update_requests(self):
+        def _update_requests_with_filter_condition(self):
             for i in range(len(self.parts_to_send)):
                 copy_req = copy.deepcopy(self.parts_to_send[i])
                 filtered_docs = copy_req.docs.find(self._filter_condition)
                 copy_req.data.docs = filtered_docs
+
                 self.parts_to_send[i] = copy_req
+
+        def _update_request_by_params(self, deployment_name: str):
+
+            for i in range(len(self.parts_to_send)):
+                specific_parameters = _parse_specific_params(
+                    self.original_parameters[i], deployment_name
+                )
+                self.parts_to_send[i].parameters = specific_parameters
 
         def _handle_internalnetworkerror(self, err):
             err_code = err.code()
@@ -101,12 +112,18 @@ class TopologyGraph:
             if metadata and 'is-error' in metadata:
                 return request, metadata
             elif request is not None:
+                original_parameters = copy.deepcopy(request.parameters)
+                request.parameters = _parse_specific_params(
+                    request.parameters, self.name
+                )
                 self.parts_to_send.append(request)
+                self.original_parameters.append(original_parameters)
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
                     self.start_time = datetime.utcnow()
+                    self._update_request_by_params(self.name)
                     if self._filter_condition is not None:
-                        self._update_requests()
+                        self._update_requests_with_filter_condition()
                     if self._reduce and len(self.parts_to_send) > 1:
                         self.parts_to_send = [
                             DataRequestHandler.reduce_requests(self.parts_to_send)
@@ -135,6 +152,13 @@ class TopologyGraph:
                             timeout=self._timeout_send,
                             retries=self._retries,
                         )
+                        return_parameters = original_parameters
+                        if DataRequestHandler._KEY_RESULT in resp.parameters:
+                            return_parameters[
+                                DataRequestHandler._KEY_RESULT
+                            ] = resp.parameters[DataRequestHandler._KEY_RESULT]
+
+                        resp.parameters = return_parameters
                     except InternalNetworkError as err:
                         self._handle_internalnetworkerror(err)
 

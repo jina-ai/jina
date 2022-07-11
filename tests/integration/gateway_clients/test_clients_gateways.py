@@ -145,18 +145,43 @@ def create_runtime(
     runtime_cls = None
     if call_counts:
 
-        def decompress(self):
-            call_counts.put_nowait('called')
+        def decompress_wo_data(self):
             from jina.proto import jina_pb2
 
-            self._pb_body = jina_pb2.DataRequestProto()
+            call_counts.put_nowait('called')
+
+            self._pb_body = jina_pb2.DataRequestProtoWoData()
             self._pb_body.ParseFromString(self.buffer)
             self.buffer = None
+
+        def decompress(self):
+            from jina.proto import jina_pb2
+
+            call_counts.put_nowait('called')
+
+            if self.buffer:
+                self._pb_body = jina_pb2.DataRequestProto()
+                self._pb_body.ParseFromString(self.buffer)
+                self.buffer = None
+            elif self.is_decompressed_wo_data:
+                self._pb_body_old = self._pb_body
+                self._pb_body = jina_pb2.DataRequestProto()
+                self._pb_body.ParseFromString(
+                    self._pb_body_old.SerializePartialToString()
+                )
+            else:
+                raise ValueError('the buffer is already decompressed')
 
         monkeypatch.setattr(
             DataRequest,
             '_decompress',
             decompress,
+        )
+
+        monkeypatch.setattr(
+            DataRequest,
+            '_decompress_wo_data',
+            decompress_wo_data,
         )
     if protocol == 'grpc':
         runtime_cls = GRPCGatewayRuntime
@@ -274,8 +299,8 @@ def test_grpc_gateway_runtime_lazy_request_access(linear_graph_dict, monkeypatch
     p.terminate()
     p.join()
     assert (
-        _queue_length(call_counts) == NUM_PARALLEL_CLIENTS * 2
-    )  # request should be decompressed at start and end only
+        _queue_length(call_counts) == NUM_PARALLEL_CLIENTS * 3
+    )  # request should be decompressed at start and end and when accessing parameters
     for cp in client_processes:
         assert cp.exitcode == 0
 
