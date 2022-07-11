@@ -44,6 +44,7 @@ class TopologyGraph:
             self.number_of_parts = number_of_parts
             self.hanging = hanging
             self.parts_to_send = []
+            self.original_parameters = []
             self.start_time = None
             self.end_time = None
             self.status = None
@@ -64,14 +65,13 @@ class TopologyGraph:
 
                 self.parts_to_send[i] = copy_req
 
-        def _update_request_by_params(
-            self, original_parameters: Dict, deployment_name: str
-        ):
-            specific_paraneters = _parse_specific_params(
-                original_parameters, deployment_name
-            )
+        def _update_request_by_params(self, deployment_name: str):
+
             for i in range(len(self.parts_to_send)):
-                self.parts_to_send[i].parameters = specific_paraneters
+                specific_parameters = _parse_specific_params(
+                    self.original_parameters[i], deployment_name
+                )
+                self.parts_to_send[i].parameters = specific_parameters
 
         def _handle_internalnetworkerror(self, err):
             err_code = err.code()
@@ -112,12 +112,14 @@ class TopologyGraph:
             if metadata and 'is-error' in metadata:
                 return request, metadata
             elif request is not None:
+                original_parameters = copy.deepcopy(request.parameters)
+
                 self.parts_to_send.append(request)
+                self.original_parameters.append(original_parameters)
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
                     self.start_time = datetime.utcnow()
-                    original_parameters = copy.deepcopy(request.parameters)
-                    self._update_request_by_params(original_parameters, self.name)
+                    self._update_request_by_params(self.name)
                     if self._filter_condition is not None:
                         self._update_requests()
                     if self._reduce and len(self.parts_to_send) > 1:
