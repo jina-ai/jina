@@ -43,7 +43,7 @@ class DataRequestProto:
 
 class DataRequestListProto:
     """This class is a drop-in replacement for gRPC default serializer.
-    It replace default serializer to make sure the message sending interface is convenient.
+    It replaces default serializer to make sure the message sending interface is convenient.
     It can handle sending single messages or a list of messages. It also returns a list of messages.
     Effectively this is hiding MessageListProto from the consumer
     """
@@ -57,9 +57,9 @@ class DataRequestListProto:
         """
         protos = []
         if not isinstance(x, Iterable):
-            protos.append(x.proto)
+            protos.append(x.proto_with_data)
         else:
-            protos = [r.proto for r in x]
+            protos = [r.proto_with_data for r in x]
 
         return jina_pb2.DataRequestListProto(requests=protos).SerializeToString()
 
