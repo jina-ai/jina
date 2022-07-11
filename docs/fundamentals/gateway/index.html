@@ -734,7 +734,7 @@ parameters:</p>
 <section id="limit-outstanding-requests">
 <span id="prefetch"></span><h2>Limit outstanding requests<a class="headerlink" href="#limit-outstanding-requests" title="Permalink to this headline">#</a></h2>
 <p>By default, Jina’s <a class="reference internal" href="../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> sends requests to the Flow as fast as possible without any delay. If a client sends their request faster than the <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> can process them, this can put a high load on the Flow. Typically, this is most likely to happen for Flows with expensive indexing.</p>
-<p>You can control the number of in flight requests per Client with the <code class="docutils literal notranslate"><span class="pre">prefetch</span></code> argument. E.g. setting <code class="docutils literal notranslate"><span class="pre">prefetch=2</span></code> lets the API accept only 2 requests per client in parallel, hence limiting the load. By default, prefetch is disabled (set to 0).</p>
+<p>You can control the number of in flight requests per Client with the <code class="docutils literal notranslate"><span class="pre">prefetch</span></code> argument. E.g. setting <code class="docutils literal notranslate"><span class="pre">prefetch=2</span></code> lets the API accept only 2 requests per client in parallel, hence limiting the load. By default, prefetch is set to 1000. To disable it you can set it to 0.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">requests_generator</span><span class="p">():</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">Document</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
@@ -860,7 +860,7 @@ To enable this endpoint, all you need to do is set <code class="docutils literal
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 06, 2022</div>
+                            Last updated on Jul 11, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

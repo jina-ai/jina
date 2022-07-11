@@ -352,21 +352,51 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.serve.stream.helper</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_or_reuse_loop</span>
+
+
+<div class="viewcode-block" id="RequestsCounter"><a class="viewcode-back" href="../../../../../api/jina.serve.stream.helper/#jina.serve.stream.helper.RequestsCounter">[docs]</a><span class="k">class</span> <span class="nc">RequestsCounter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class used to wrap a count integer so that it can be updated inside methods.</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        def count_increment(i: int, rc: RequestCounter):</span>
+<span class="sd">            i += 1</span>
+<span class="sd">            rc.count += 1</span>
+
+
+<span class="sd">        c_int = 0</span>
+<span class="sd">        c_rc = RequestsCounter()</span>
+<span class="sd">        count_increment(c_int, c_rc)</span>
+
+<span class="sd">        assert c_int == 0</span>
+<span class="sd">        assert c_rc.count == 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span></div>
 
 
 <div class="viewcode-block" id="AsyncRequestsIterator"><a class="viewcode-back" href="../../../../../api/jina.serve.stream.helper/#jina.serve.stream.helper.AsyncRequestsIterator">[docs]</a><span class="k">class</span> <span class="nc">AsyncRequestsIterator</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Iterator to allow async iteration of blocking/non-blocking iterator from the Client&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterator</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">iterator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterator</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">],</span>
+        <span class="n">request_counter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RequestsCounter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prefetch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Async request iterator</span>
-<span class="sd">        TODO (Deepankar): accept `num_req`</span>
 
 <span class="sd">        :param iterator: request iterator</span>
+<span class="sd">        :param request_counter: counter of the numbers of request being handled at a given moment</span>
+<span class="sd">        :param prefetch: The max amount of requests to be handled at a given moment (0 disables feature)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iterator</span> <span class="o">=</span> <span class="n">iterator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request_counter</span> <span class="o">=</span> <span class="n">request_counter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prefetch</span> <span class="o">=</span> <span class="n">prefetch</span>
 
 <div class="viewcode-block" id="AsyncRequestsIterator.iterator__next__"><a class="viewcode-back" href="../../../../../api/jina.serve.stream.helper/#jina.serve.stream.helper.AsyncRequestsIterator.iterator__next__">[docs]</a>    <span class="k">def</span> <span class="nf">iterator__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -384,7 +414,11 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="fm">__anext__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefetch</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_counter</span><span class="o">.</span><span class="n">count</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefetch</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterator</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">):</span>
+
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            An `Iterator` indicates &quot;blocking&quot; code, which might block all tasks in the event loop.</span>
 <span class="sd">            Hence we iterate in the default executor provided by asyncio.</span>
@@ -420,7 +454,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 06, 2022</div>
+                            Last updated on Jul 11, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

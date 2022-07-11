@@ -371,6 +371,62 @@
 
 
 <div class="viewcode-block" id="DocumentArray"><a class="viewcode-back" href="../../../../api/jina/#jina.DocumentArray">[docs]</a><span class="k">class</span> <span class="nc">DocumentArray</span><span class="p">(</span><span class="n">AllMixins</span><span class="p">,</span> <span class="n">BaseDocumentArray</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    DocumentArray is a list-like container of :class:`~docarray.Document` objects.</span>
+
+<span class="sd">    A DocumentArray can be used to store, embed, and retrieve :class:`~docarray.Document` objects.</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from docarray import Document, DocumentArray</span>
+
+<span class="sd">        da = DocumentArray(</span>
+<span class="sd">            [Document(text=&#39;The cake is a lie&#39;), Document(text=&#39;Do a barrel roll!&#39;)]</span>
+<span class="sd">        )</span>
+<span class="sd">        da.apply(Document.embed_feature_hashing)</span>
+
+<span class="sd">        query = Document(text=&#39;Can i have some cake?&#39;).embed_feature_hashing()</span>
+<span class="sd">        query.match(da, metric=&#39;jaccard&#39;, use_scipy=True)</span>
+
+<span class="sd">        print(query.matches[:, (&#39;text&#39;, &#39;scores__jaccard__value&#39;)])</span>
+
+<span class="sd">    .. code-block:: bash</span>
+
+<span class="sd">        [[&#39;The cake is a lie&#39;, &#39;Do a barrel roll!&#39;], [0.9, 1.0]]</span>
+
+<span class="sd">    A DocumentArray can also :ref:`embed its contents using a neural network &lt;embed-via-model&gt;`,</span>
+<span class="sd">    process them using an :ref:`external Flow or Executor &lt;da-post&gt;`, and persist Documents in a :ref:`Document Store &lt;doc-store&gt;` for</span>
+<span class="sd">    fast vector search:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from docarray import Document, DocumentArray</span>
+<span class="sd">        import numpy as np</span>
+
+<span class="sd">        n_dim = 3</span>
+<span class="sd">        metric = &#39;Euclidean&#39;</span>
+
+<span class="sd">        # initialize a DocumentArray with ANNLiter Document Store</span>
+<span class="sd">        da = DocumentArray(</span>
+<span class="sd">            storage=&#39;annlite&#39;,</span>
+<span class="sd">            config={&#39;n_dim&#39;: n_dim, &#39;columns&#39;: [(&#39;price&#39;, &#39;float&#39;)], &#39;metric&#39;: metric},</span>
+<span class="sd">        )</span>
+<span class="sd">        # add Documents to the DocumentArray</span>
+<span class="sd">        with da:</span>
+<span class="sd">            da.extend(</span>
+<span class="sd">                [</span>
+<span class="sd">                    Document(id=f&#39;r{i}&#39;, embedding=i * np.ones(n_dim), tags={&#39;price&#39;: i})</span>
+<span class="sd">                    for i in range(10)</span>
+<span class="sd">                ]</span>
+<span class="sd">            )</span>
+<span class="sd">        # perform vector search</span>
+<span class="sd">        np_query = np.ones(n_dim) * 8</span>
+<span class="sd">        results = da.find(np_query)</span>
+
+<span class="sd">    .. seealso::</span>
+<span class="sd">        For further details, see our :ref:`user guide &lt;documentarray&gt;`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -474,7 +530,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 06, 2022</div>
+                            Last updated on Jul 11, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

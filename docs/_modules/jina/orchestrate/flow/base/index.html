@@ -514,7 +514,7 @@
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span>
         <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
         <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GRPC&#39;</span><span class="p">,</span>
         <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -587,7 +587,7 @@
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.</span>
 
-<span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)</span>
+<span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)</span>
 <span class="sd">        :param protocol: Communication protocol between server and client.</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
@@ -761,7 +761,7 @@
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.</span>
 
-<span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (disabled by default)</span>
+<span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)</span>
 <span class="sd">        :param protocol: Communication protocol between server and client.</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
@@ -2751,7 +2751,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 06, 2022</div>
+                            Last updated on Jul 11, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -1141,7 +1141,7 @@
                     <span class="n">force</span><span class="o">=</span><span class="n">need_pull</span><span class="p">,</span>
                 <span class="p">)</span>
 
-                <span class="n">presented_id</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">executor</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">executor</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
+                <span class="n">presented_id</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">executor</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="n">executor</span><span class="o">.</span><span class="n">uuid</span>
                 <span class="n">executor_name</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">presented_id</span><span class="si">}</span><span class="s1">&#39;</span>
                     <span class="k">if</span> <span class="n">executor</span><span class="o">.</span><span class="n">visibility</span> <span class="o">==</span> <span class="s1">&#39;public&#39;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">secret</span>
@@ -1256,7 +1256,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 06, 2022</div>
+                            Last updated on Jul 11, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

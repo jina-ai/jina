@@ -385,15 +385,43 @@
                     <section id="module-jina.serve.stream.helper">
 <span id="jina-serve-stream-helper-module"></span><h1>jina.serve.stream.helper module<a class="headerlink" href="#module-jina.serve.stream.helper" title="Permalink to this headline">#</a></h1>
 <dl class="py class">
+<dt class="sig sig-object py" id="jina.serve.stream.helper.RequestsCounter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.stream.helper.</span></span><span class="sig-name descname"><span class="pre">RequestsCounter</span></span><a class="reference internal" href="../../_modules/jina/serve/stream/helper/#RequestsCounter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.stream.helper.RequestsCounter" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class used to wrap a count integer so that it can be updated inside methods.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">count_increment</span><span class="p">(</span><span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">rc</span><span class="p">:</span> <span class="n">RequestCounter</span><span class="p">):</span>
+    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">rc</span><span class="o">.</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+
+<span class="n">c_int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">c_rc</span> <span class="o">=</span> <span class="n">RequestsCounter</span><span class="p">()</span>
+<span class="n">count_increment</span><span class="p">(</span><span class="n">c_int</span><span class="p">,</span> <span class="n">c_rc</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">c_int</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="k">assert</span> <span class="n">c_rc</span><span class="o">.</span><span class="n">count</span> <span class="o">==</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.serve.stream.helper.RequestsCounter.count">
+<span class="sig-name descname"><span class="pre">count</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#jina.serve.stream.helper.RequestsCounter.count" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="jina.serve.stream.helper.AsyncRequestsIterator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.stream.helper.</span></span><span class="sig-name descname"><span class="pre">AsyncRequestsIterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/stream/helper/#AsyncRequestsIterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.stream.helper.AsyncRequestsIterator" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.stream.helper.</span></span><span class="sig-name descname"><span class="pre">AsyncRequestsIterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_counter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/stream/helper/#AsyncRequestsIterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.stream.helper.AsyncRequestsIterator" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Iterator to allow async iteration of blocking/non-blocking iterator from the Client</p>
-<p>Async request iterator
-TODO (Deepankar): accept <cite>num_req</cite></p>
+<p>Async request iterator</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>iterator</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncIterator</span></code>]) – request iterator</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>iterator</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncIterator</span></code>]) – request iterator</p></li>
+<li><p><strong>request_counter</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="#jina.serve.stream.helper.RequestsCounter" title="jina.serve.stream.helper.RequestsCounter"><code class="xref py py-class docutils literal notranslate"><span class="pre">RequestsCounter</span></code></a>]) – counter of the numbers of request being handled at a given moment</p></li>
+<li><p><strong>prefetch</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – The max amount of requests to be handled at a given moment (0 disables feature)</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -425,7 +453,7 @@ TODO (Deepankar): accept <cite>num_req</cite></p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 06, 2022</div>
+                            Last updated on Jul 11, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
