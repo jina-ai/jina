@@ -13,7 +13,7 @@ from typing import (
 
 from jina.excepts import InternalNetworkError
 from jina.logging.logger import JinaLogger
-from jina.serve.stream.helper import AsyncRequestsIterator
+from jina.serve.stream.helper import AsyncRequestsIterator, RequestsCounter
 
 __all__ = ['RequestStreamer']
 
@@ -30,9 +30,6 @@ class RequestStreamer:
 
     class _EndOfStreaming(Exception):
         pass
-
-    class _RequestsCounter:
-        count = 0
 
     def __init__(
         self,
@@ -69,11 +66,8 @@ class RequestStreamer:
         :yield: responses from Executors
         """
 
-        async_iter: AsyncIterator = (
-            self._stream_requests_with_prefetch(request_iterator, self._prefetch)
-            if self._prefetch > 0
-            else self._stream_requests(request_iterator)
-        )
+        async_iter: AsyncIterator = self._stream_requests(request_iterator)
+
         try:
             async for response in async_iter:
                 yield response
@@ -104,7 +98,7 @@ class RequestStreamer:
         result_queue = asyncio.Queue()
         end_of_iter = asyncio.Event()
         all_requests_handled = asyncio.Event()
-        requests_to_handle = self._RequestsCounter()
+        requests_to_handle = RequestsCounter()
 
         def update_all_handled():
             if end_of_iter.is_set() and requests_to_handle.count == 0:
@@ -134,7 +128,11 @@ class RequestStreamer:
             4. Handle EOI (needed for websocket client)
             5. Set `end_of_iter` event
             """
-            async for request in AsyncRequestsIterator(iterator=request_iterator):
+            async for request in AsyncRequestsIterator(
+                iterator=request_iterator,
+                request_counter=requests_to_handle,
+                prefetch=self._prefetch,
+            ):
                 requests_to_handle.count += 1
                 future: 'asyncio.Future' = self._request_handler(request=request)
                 future.add_done_callback(callback)
@@ -157,72 +155,3 @@ class RequestStreamer:
                 update_all_handled()
             except self._EndOfStreaming:
                 pass
-
-    async def _stream_requests_with_prefetch(
-        self, request_iterator: Union[Iterator, AsyncIterator], prefetch: int
-    ):
-        """Implements request and response handling with prefetching
-
-        :param request_iterator: requests iterator from Client
-        :param prefetch: number of requests to prefetch
-        :yield: response
-        """
-
-        async def iterate_requests(
-            num_req: int, fetch_to: List[Union['asyncio.Task', 'asyncio.Future']]
-        ):
-            """
-            1. Traverse through the request iterator.
-            2. Append the future returned from `handle_request` to `fetch_to` which will later be awaited.
-
-            :param num_req: number of requests
-            :param fetch_to: the task list storing requests
-            :return: False if append task to `fetch_to` else False
-            """
-            count = 0
-            async for request in AsyncRequestsIterator(iterator=request_iterator):
-                fetch_to.append(self._request_handler(request))
-                count += 1
-                if count == num_req:
-                    return False
-            return True
-
-        prefetch_task = []
-        is_req_empty = await iterate_requests(prefetch, prefetch_task)
-        if is_req_empty and not prefetch_task:
-            self.logger.error(
-                'receive an empty stream from the client! '
-                'please check your client\'s inputs, '
-                'you can use "Client.check_input(inputs)"'
-            )
-            return
-
-        # the total num requests < prefetch
-        if is_req_empty:
-            for r in asyncio.as_completed(prefetch_task):
-                res = await r
-                yield self._result_handler(res)
-        else:
-            # if there are left over (`else` clause above is unnecessary for code but for better readability)
-            onrecv_task = []
-            # the following code "interleaves" prefetch_task and onrecv_task, when one dries, it switches to the other
-            while prefetch_task:
-                # if self.logger.debug_enabled:
-                #     if hasattr(self.msg_handler, 'msg_sent') and hasattr(
-                #         self.msg_handler, 'msg_recv'
-                #     ):
-                #         self.logger.debug(
-                #             f'send: {self.msg_handler.msg_sent} '
-                #             f'recv: {self.msg_handler.msg_recv} '
-                #             f'pending: {self.msg_handler.msg_sent - self.msg_handler.msg_recv}'
-                #         )
-                onrecv_task.clear()
-                for r in asyncio.as_completed(prefetch_task):
-                    res = await r
-                    yield self._result_handler(res)
-                    if not is_req_empty:
-                        is_req_empty = await iterate_requests(1, onrecv_task)
-
-                # this list dries, clear it and feed it with on_recv_task
-                prefetch_task.clear()
-                prefetch_task = [j for j in onrecv_task]
