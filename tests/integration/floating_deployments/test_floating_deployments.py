@@ -1,0 +1,106 @@
+import os
+import time
+
+import pytest
+
+from jina import DocumentArray, Executor, Flow, requests
+
+TIME_SLEEP_FLOATING = 5
+
+
+class FloatingTestExecutor(Executor):
+    def __init__(self, file_name, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.file_name = file_name
+
+    @requests
+    def foo(self, docs, **kwargs):
+        time.sleep(TIME_SLEEP_FLOATING)
+        with open(self.file_name, 'a+') as f:
+            f.write('here ')
+
+        for d in docs:
+            d.text = 'change it'
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+def test_floating_executors(tmpdir, protocol):
+    NUM_REQ = 20
+    file_name = os.path.join(str(tmpdir), 'file.txt')
+    expected_str = 'here ' * NUM_REQ
+
+    f = (
+        Flow(protocol=protocol)
+        .add(name='first')
+        .add(
+            name='second',
+            floating=True,
+            uses=FloatingTestExecutor,
+            uses_with={'file_name': file_name},
+        )
+    )
+
+    with f:
+        for j in range(NUM_REQ):
+            start_time = time.time()
+            ret = f.post(on='/default', inputs=DocumentArray.empty(1))
+            end_time = time.time()
+            print(f' reply took {end_time - start_time}s')
+            assert (
+                end_time - start_time
+            ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
+            # Floating Executor finishes
+            assert len(ret) == 1
+            assert ret[0].text == ''
+
+    with open(file_name, 'r') as f:
+        resulted_str = f.read()
+
+    assert resulted_str == expected_str
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+def test_multiple_floating_points(tmpdir, protocol):
+    NUM_REQ = 20
+    file_name1 = os.path.join(str(tmpdir), 'file1.txt')
+    file_name2 = os.path.join(str(tmpdir), 'file2.txt')
+    expected_str = 'here ' * NUM_REQ
+
+    f = (
+        Flow(protocol=protocol)
+        .add(name='first')
+        .add(
+            name='second',
+            floating=True,
+            uses=FloatingTestExecutor,
+            uses_with={'file_name': file_name1},
+        )
+        .add(
+            name='third',
+            floating=True,
+            uses=FloatingTestExecutor,
+            uses_with={'file_name': file_name2},
+        )
+    )
+
+    with f:
+        for j in range(NUM_REQ):
+            start_time = time.time()
+            ret = f.post(on='/default', inputs=DocumentArray.empty(1))
+            end_time = time.time()
+            print(f' reply took {end_time - start_time}s')
+            assert (
+                end_time - start_time
+            ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
+            assert len(ret) == 1
+            assert ret[0].text == ''
+
+    with open(file_name1, 'r') as f:
+        resulted_str = f.read()
+
+    assert resulted_str == expected_str
+
+    with open(file_name2, 'r') as f:
+        resulted_str = f.read()
+
+    assert resulted_str == expected_str
