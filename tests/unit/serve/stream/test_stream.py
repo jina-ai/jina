@@ -27,7 +27,7 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
             return request
 
         future = asyncio.ensure_future(task())
-        return future
+        return future, None
 
     def result_handle_fn(result):
         results_handled.append(result)

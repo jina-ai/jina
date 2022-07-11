@@ -139,8 +139,10 @@ class RequestStreamer:
                 prefetch=self._prefetch,
             ):
                 requests_to_handle.count += 1
-                future, future_hanging = self._request_handler(request=request)
-                future.add_done_callback(callback)
+                future_responses, future_hanging = self._request_handler(
+                    request=request
+                )
+                future_responses.add_done_callback(callback)
                 if future_hanging is not None:
                     hanging_tasks_to_handle.count += 1
                     future_hanging.add_done_callback(hanging_callback)
