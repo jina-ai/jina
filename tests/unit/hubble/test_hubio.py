@@ -375,8 +375,8 @@ class DownloadMockResponse:
     def status_code(self):
         return self.response_code
 
-
-def test_pull(test_envs, mocker, monkeypatch):
+@pytest.mark.parametrize('executor_name', ['alias_dummy', None])
+def test_pull(test_envs, mocker, monkeypatch, executor_name):
     mock = mocker.Mock()
 
     def _mock_fetch(
@@ -391,7 +391,7 @@ def test_pull(test_envs, mocker, monkeypatch):
         return (
             HubExecutor(
                 uuid='dummy_mwu_encoder',
-                name='alias_dummy',
+                name=executor_name,
                 tag='v0',
                 image_name='jinahub/pod.dummy_mwu_encoder',
                 md5sum=None,
@@ -415,6 +415,14 @@ def test_pull(test_envs, mocker, monkeypatch):
 
     monkeypatch.setattr(requests, 'get', _mock_download)
     monkeypatch.setattr(requests, 'head', _mock_head)
+
+    def _mock_get_prettyprint_usage(self,console, executor_name, usage_kind=None):
+        mock(console=console)
+        mock(usage_kind=usage_kind)
+        print('_mock_get_prettyprint_usage executor_name:', executor_name)
+        assert executor_name != 'None'
+
+    monkeypatch.setattr(HubIO, '_get_prettyprint_usage', _mock_get_prettyprint_usage)
 
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
     HubIO(args).pull()
