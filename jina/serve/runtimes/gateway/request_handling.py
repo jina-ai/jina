@@ -1,7 +1,7 @@
 import asyncio
 import copy
 import time
-from typing import TYPE_CHECKING, Callable, List, Optional
+from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
 
 import grpc.aio
 
@@ -12,6 +12,8 @@ from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 
 if TYPE_CHECKING:
+    from asyncio import Future
+
     from prometheus_client import CollectorRegistry
 
     from jina.types.request import Request
@@ -109,7 +111,7 @@ class RequestHandler:
             for node, (endp, _) in zip(nodes, endpoints):
                 self._executor_endpoint_mapping[node.name] = endp.endpoints
 
-        def _handle_request(request: 'Request') -> 'asyncio.Future':
+        def _handle_request(request: 'Request') -> 'Tuple[Future, Optional[Future]]':
             self._update_start_request_metrics(request)
 
             # important that the gateway needs to have an instance of the graph per request
@@ -183,9 +185,15 @@ class RequestHandler:
                 future = asyncio.Future()
                 future.set_result((request, {}))
                 tasks_to_respond.append(future)
-            return asyncio.ensure_future(
-                _process_results_at_end_gateway(tasks_to_respond, request_graph)
-            ), asyncio.ensure_future(asyncio.gather(*tasks_to_ignore))
+
+            return (
+                asyncio.ensure_future(
+                    _process_results_at_end_gateway(tasks_to_respond, request_graph)
+                ),
+                asyncio.ensure_future(asyncio.gather(*tasks_to_ignore))
+                if len(tasks_to_ignore) > 0
+                else None,
+            )
 
         return _handle_request
 

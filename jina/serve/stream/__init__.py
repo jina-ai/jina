@@ -155,13 +155,24 @@ class RequestStreamer:
                 # It will be waiting for something that will never appear
                 future_cancel = asyncio.ensure_future(end_future())
                 result_queue.put_nowait(future_cancel)
+            if all_hanging_requests_awaited.is_set():
+                # It will be waiting for something that will never appear
+                future_cancel = asyncio.ensure_future(end_future())
+                hanging_queue.put_nowait(future_cancel)
 
         async def handle_hanging_tasks():
             while not all_hanging_requests_awaited.is_set():
-                _ = await hanging_queue.get()
-                hanging_tasks_to_handle.count -= 1
-                if hanging_tasks_to_handle.count == 0 and all_requests_handled.is_set():
-                    all_hanging_requests_awaited.set()
+                hanging_response = await hanging_queue.get()
+                try:
+                    hanging_response.result()
+                    hanging_tasks_to_handle.count -= 1
+                    if (
+                        hanging_tasks_to_handle.count == 0
+                        and all_requests_handled.is_set()
+                    ):
+                        all_hanging_requests_awaited.set()
+                except self._EndOfStreaming:
+                    pass
 
         asyncio.create_task(iterate_requests())
         hanging_hanging_tasks = asyncio.create_task(handle_hanging_tasks())
