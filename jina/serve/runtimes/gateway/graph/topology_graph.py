@@ -59,7 +59,6 @@ class TopologyGraph:
 
         def _update_requests_with_filter_condition(self):
             for i in range(len(self.parts_to_send)):
-                self.parts_to_send[i].docs
                 copy_req = copy.deepcopy(self.parts_to_send[i])
                 filtered_docs = copy_req.docs.find(self._filter_condition)
                 copy_req.data.docs = filtered_docs
