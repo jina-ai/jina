@@ -6,14 +6,13 @@ from typing import (
     Awaitable,
     Callable,
     Iterator,
-    List,
     Optional,
     Union,
 )
 
 from jina.excepts import InternalNetworkError
 from jina.logging.logger import JinaLogger
-from jina.serve.stream.helper import AsyncRequestsIterator, RequestsCounter
+from jina.serve.stream.helper import AsyncRequestsIterator, _RequestsCounter
 
 __all__ = ['RequestStreamer']
 
@@ -99,8 +98,8 @@ class RequestStreamer:
         hanging_queue = asyncio.Queue()
         end_of_iter = asyncio.Event()
         all_requests_handled = asyncio.Event()
-        requests_to_handle = RequestsCounter()
-        hanging_tasks_to_handle = RequestsCounter()
+        requests_to_handle = _RequestsCounter()
+        hanging_tasks_to_handle = _RequestsCounter()
         all_hanging_requests_awaited = asyncio.Event()
 
         def update_all_handled():

@@ -4,18 +4,18 @@ from typing import AsyncIterator, Iterator, Optional, Union
 from jina.helper import get_or_reuse_loop
 
 
-class RequestsCounter:
+class _RequestsCounter:
     """Class used to wrap a count integer so that it can be updated inside methods.
 
     .. code-block:: python
 
-        def count_increment(i: int, rc: RequestCounter):
+        def count_increment(i: int, rc: _RequestsCounter):
             i += 1
             rc.count += 1
 
 
         c_int = 0
-        c_rc = RequestsCounter()
+        c_rc = _RequestsCounter()
         count_increment(c_int, c_rc)
 
         assert c_int == 0
@@ -31,7 +31,7 @@ class AsyncRequestsIterator:
     def __init__(
         self,
         iterator: Union[Iterator, AsyncIterator],
-        request_counter: Optional[RequestsCounter] = None,
+        request_counter: Optional[_RequestsCounter] = None,
         prefetch: int = 0,
     ) -> None:
         """Async request iterator
