@@ -787,7 +787,7 @@ metas:
                     force=need_pull,
                 )
 
-                presented_id = getattr(executor, 'name', executor.uuid)
+                presented_id = executor.name if executor.name else executor.uuid
                 executor_name = (
                     f'{presented_id}'
                     if executor.visibility == 'public' or not secret
