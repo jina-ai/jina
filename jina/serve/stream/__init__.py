@@ -95,12 +95,12 @@ class RequestStreamer:
         :yield: responses
         """
         result_queue = asyncio.Queue()
-        hanging_queue = asyncio.Queue()
+        floating_results_queue = asyncio.Queue()
         end_of_iter = asyncio.Event()
         all_requests_handled = asyncio.Event()
         requests_to_handle = _RequestsCounter()
-        hanging_tasks_to_handle = _RequestsCounter()
-        all_hanging_requests_awaited = asyncio.Event()
+        floating_tasks_to_handle = _RequestsCounter()
+        all_floating_requests_awaited = asyncio.Event()
         empty_requests_iterator = asyncio.Event()
 
         def update_all_handled():
@@ -123,7 +123,7 @@ class RequestStreamer:
             result_queue.put_nowait(future)
 
         def hanging_callback(future: 'asyncio.Future'):
-            hanging_queue.put_nowait(future)
+            floating_results_queue.put_nowait(future)
 
         async def iterate_requests() -> None:
             """
@@ -147,10 +147,10 @@ class RequestStreamer:
                 )
                 future_responses.add_done_callback(callback)
                 if future_hanging is not None:
-                    hanging_tasks_to_handle.count += 1
+                    floating_tasks_to_handle.count += 1
                     future_hanging.add_done_callback(hanging_callback)
                 else:
-                    all_hanging_requests_awaited.set()
+                    all_floating_requests_awaited.set()
 
             if num_reqs == 0:
                 empty_requests_iterator.set()
@@ -164,29 +164,29 @@ class RequestStreamer:
                 future_cancel = asyncio.ensure_future(end_future())
                 result_queue.put_nowait(future_cancel)
             if (
-                all_hanging_requests_awaited.is_set()
+                all_floating_requests_awaited.is_set()
                 or empty_requests_iterator.is_set()
             ):
                 # It will be waiting for something that will never appear
                 future_cancel = asyncio.ensure_future(end_future())
-                hanging_queue.put_nowait(future_cancel)
+                floating_results_queue.put_nowait(future_cancel)
 
-        async def handle_hanging_tasks():
+        async def handle_floating_responses():
             while (
-                not all_hanging_requests_awaited.is_set()
+                not all_floating_requests_awaited.is_set()
                 and not empty_requests_iterator.is_set()
             ):
-                hanging_response = await hanging_queue.get()
+                hanging_response = await floating_results_queue.get()
                 try:
                     hanging_response.result()
-                    hanging_tasks_to_handle.count -= 1
-                    if hanging_tasks_to_handle.count == 0 and end_of_iter.is_set():
-                        all_hanging_requests_awaited.set()
+                    floating_tasks_to_handle.count -= 1
+                    if floating_tasks_to_handle.count == 0 and end_of_iter.is_set():
+                        all_floating_requests_awaited.set()
                 except self._EndOfStreaming:
                     pass
 
         asyncio.create_task(iterate_requests())
-        hanging_hanging_tasks = asyncio.create_task(handle_hanging_tasks())
+        handle_floating_task = asyncio.create_task(handle_floating_responses())
 
         while not all_requests_handled.is_set():
             future = await result_queue.get()
@@ -198,4 +198,4 @@ class RequestStreamer:
             except self._EndOfStreaming:
                 pass
 
-        await hanging_hanging_tasks
+        await handle_floating_task

@@ -3,7 +3,7 @@ import time
 
 import pytest
 
-from jina import DocumentArray, Executor, Flow, requests
+from jina import DocumentArray, Executor, Flow, __default_endpoint__, requests
 
 TIME_SLEEP_FLOATING = 5
 
@@ -43,9 +43,8 @@ def test_floating_executors(tmpdir, protocol):
     with f:
         for j in range(NUM_REQ):
             start_time = time.time()
-            ret = f.post(on='/default', inputs=DocumentArray.empty(1))
+            ret = f.post(on=__default_endpoint__, inputs=DocumentArray.empty(1))
             end_time = time.time()
-            print(f' reply took {end_time - start_time}s')
             assert (
                 end_time - start_time
             ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
@@ -86,7 +85,7 @@ def test_multiple_floating_points(tmpdir, protocol):
     with f:
         for j in range(NUM_REQ):
             start_time = time.time()
-            ret = f.post(on='/default', inputs=DocumentArray.empty(1))
+            ret = f.post(on=__default_endpoint__, inputs=DocumentArray.empty(1))
             end_time = time.time()
             print(f' reply took {end_time - start_time}s')
             assert (
@@ -104,11 +103,6 @@ def test_multiple_floating_points(tmpdir, protocol):
         resulted_str = f.read()
 
     assert resulted_str == expected_str
-
-    return {
-        'pod1': ['end-gateway'],
-        'pod_last': ['end-gateway'],
-    }
 
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
@@ -146,7 +140,7 @@ def test_complex_flow(tmpdir, protocol):
     with f:
         for j in range(NUM_REQ):
             start_time = time.time()
-            ret = f.post(on='/default', inputs=DocumentArray.empty(1))
+            ret = f.post(on=__default_endpoint__, inputs=DocumentArray.empty(1))
             end_time = time.time()
             print(f' reply took {end_time - start_time}s')
             assert (
