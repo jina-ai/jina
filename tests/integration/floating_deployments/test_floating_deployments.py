@@ -59,6 +59,42 @@ def test_floating_executors(tmpdir, protocol):
 
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+def test_floating_executors_right_after_gateway(tmpdir, protocol):
+    NUM_REQ = 20
+    file_name = os.path.join(str(tmpdir), 'file.txt')
+    expected_str = 'here ' * NUM_REQ
+
+    f = (
+        Flow(protocol=protocol)
+        .add(name='first')
+        .add(
+            name='second',
+            floating=True,
+            uses=FloatingTestExecutor,
+            uses_with={'file_name': file_name},
+            needs=['gateway'],
+        )
+    )
+
+    with f:
+        for j in range(NUM_REQ):
+            start_time = time.time()
+            ret = f.post(on=__default_endpoint__, inputs=DocumentArray.empty(1))
+            end_time = time.time()
+            assert (
+                end_time - start_time
+            ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
+            # Floating Executor finishes
+            assert len(ret) == 1
+            assert ret[0].text == ''
+
+    with open(file_name, 'r') as f:
+        resulted_str = f.read()
+
+    assert resulted_str == expected_str
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_multiple_floating_points(tmpdir, protocol):
     NUM_REQ = 20
     file_name1 = os.path.join(str(tmpdir), 'file1.txt')
@@ -116,14 +152,14 @@ def test_complex_flow(tmpdir, protocol):
         .add(name='pod0')
         .add(name='pod4', needs=['gateway'])
         .add(
-            name='pod6',
-            needs=['gateway'],
+            name='floating_pod6',
+            needs=['pod4'],
             floating=True,
             uses=FloatingTestExecutor,
             uses_with={'file_name': file_name2},
         )
         .add(
-            name='pod1',
+            name='floating_pod1',
             needs=['pod0'],
             floating=True,
             uses=FloatingTestExecutor,
