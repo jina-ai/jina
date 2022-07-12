@@ -5,7 +5,6 @@ from jina import Executor, Flow, requests
 from jina.clients.base.helper import HTTPClientlet, WebsocketClientlet
 from jina.clients.request.helper import _new_data_request
 from jina.excepts import BadServer
-
 from jina.logging.logger import JinaLogger
 from jina.types.request.data import DataRequest
 
@@ -42,9 +41,7 @@ async def test_http_clientlet():
 @pytest.mark.asyncio
 async def test_websocket_clientlet():
     with pytest.raises(aiohttp.ClientError):
-        async with WebsocketClientlet(
-            url='ws://localhost:12345', logger=logger
-        ) as iolet:
+        async with WebsocketClientlet(url='ws://localhost:12345', logger=logger):
             pass
 
 
@@ -63,14 +60,3 @@ def test_client_behaviour(flow_with_exception_request, mocker):
             )
         on_always_mock.assert_called_once()
         on_done_mock.assert_not_called()
-
-    on_error_mock = mocker.Mock()
-    on_done_mock = mocker.Mock()
-    on_always_mock = mocker.Mock()
-    with flow_with_exception_request as f:
-        f.post(
-            '', on_done=on_done_mock, on_error=on_error_mock, on_always=on_always_mock
-        )
-    on_always_mock.assert_called_once()
-    on_done_mock.assert_not_called()
-    on_error_mock.assert_called_once()
