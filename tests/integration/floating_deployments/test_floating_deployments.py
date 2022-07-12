@@ -104,3 +104,63 @@ def test_multiple_floating_points(tmpdir, protocol):
         resulted_str = f.read()
 
     assert resulted_str == expected_str
+
+    return {
+        'pod1': ['end-gateway'],
+        'pod_last': ['end-gateway'],
+    }
+
+
+@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+def test_complex_flow(tmpdir, protocol):
+    NUM_REQ = 20
+    file_name1 = os.path.join(str(tmpdir), 'file1.txt')
+    file_name2 = os.path.join(str(tmpdir), 'file2.txt')
+    expected_str = 'here ' * NUM_REQ
+
+    f = (
+        Flow(protocol=protocol)
+        .add(name='pod0')
+        .add(name='pod4', needs=['gateway'])
+        .add(
+            name='pod6',
+            needs=['gateway'],
+            floating=True,
+            uses=FloatingTestExecutor,
+            uses_with={'file_name': file_name2},
+        )
+        .add(
+            name='pod1',
+            needs=['pod0'],
+            floating=True,
+            uses=FloatingTestExecutor,
+            uses_with={'file_name': file_name1},
+        )
+        .add(name='pod2', needs=['pod0'])
+        .add(name='pod3', needs=['pod2'])
+        .add(name='pod5', needs=['pod4'])
+        .add(name='merger', needs=['pod5', 'pod3'])
+        .add(name='pod_last', needs=['merger'])
+    )
+
+    with f:
+        for j in range(NUM_REQ):
+            start_time = time.time()
+            ret = f.post(on='/default', inputs=DocumentArray.empty(1))
+            end_time = time.time()
+            print(f' reply took {end_time - start_time}s')
+            assert (
+                end_time - start_time
+            ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
+            assert len(ret) == 1
+            assert ret[0].text == ''
+
+    with open(file_name1, 'r') as f:
+        resulted_str = f.read()
+
+    assert resulted_str == expected_str
+
+    with open(file_name2, 'r') as f:
+        resulted_str = f.read()
+
+    assert resulted_str == expected_str
