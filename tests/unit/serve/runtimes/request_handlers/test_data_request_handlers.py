@@ -1,13 +1,11 @@
 import pytest
-
 from docarray import Document, DocumentArray
+
 from jina import Executor, requests
+from jina.clients.request import request_generator
 from jina.logging.logger import JinaLogger
 from jina.parsers import set_pod_parser
-from jina.serve.runtimes.request_handlers.data_request_handler import (
-    DataRequestHandler,
-)
-from jina.clients.request import request_generator
+from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 
 
 class NewDocsExecutor(Executor):
