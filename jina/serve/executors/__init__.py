@@ -21,7 +21,6 @@ from jina.serve.executors.decorators import (
 )
 
 if TYPE_CHECKING:
-    from docarray import DocumentArray
     from prometheus_client import Summary
 
 __dry_run_endpoint__ = '_jina_dry_run_'
@@ -141,6 +140,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 f' Endpoint {__dry_run_endpoint__} is defined by the Executor. Be aware that this endpoint is usually reserved to enable health checks from the Client through the gateway.'
                 f' So it is recommended not to expose this endpoint. '
             )
+        if type(self) == BaseExecutor:
+            self.requests[__default_endpoint__] = self._dry_run_func
 
     def _dry_run_func(self, *args, **kwargs):
         pass
