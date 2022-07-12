@@ -180,10 +180,7 @@ class RequestStreamer:
                 try:
                     hanging_response.result()
                     hanging_tasks_to_handle.count -= 1
-                    if (
-                        hanging_tasks_to_handle.count == 0
-                        and all_requests_handled.is_set()
-                    ):
+                    if hanging_tasks_to_handle.count == 0 and end_of_iter.is_set():
                         all_hanging_requests_awaited.set()
                 except self._EndOfStreaming:
                     pass
