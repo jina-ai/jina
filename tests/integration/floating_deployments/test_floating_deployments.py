@@ -5,7 +5,7 @@ import pytest
 
 from jina import DocumentArray, Executor, Flow, __default_endpoint__, requests
 
-TIME_SLEEP_FLOATING = 5
+TIME_SLEEP_FLOATING = 2
 
 
 class FloatingTestExecutor(Executor):
@@ -87,7 +87,6 @@ def test_multiple_floating_points(tmpdir, protocol):
             start_time = time.time()
             ret = f.post(on=__default_endpoint__, inputs=DocumentArray.empty(1))
             end_time = time.time()
-            print(f' reply took {end_time - start_time}s')
             assert (
                 end_time - start_time
             ) < TIME_SLEEP_FLOATING  # check that the response arrives before the
@@ -142,7 +141,6 @@ def test_complex_flow(tmpdir, protocol):
             start_time = time.time()
             ret = f.post(on=__default_endpoint__, inputs=DocumentArray.empty(1))
             end_time = time.time()
-            print(f' reply took {end_time - start_time}s')
             assert (
                 end_time - start_time
             ) < TIME_SLEEP_FLOATING  # check that the response arrives before the

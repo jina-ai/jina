@@ -52,6 +52,7 @@ class RequestStreamer:
         self._request_handler = request_handler
         self._result_handler = result_handler
         self._end_of_iter_handler = end_of_iter_handler
+        self.total_num_floating_tasks_alive = 0
 
     async def stream(
         self, request_iterator, context=None, *args
@@ -187,6 +188,12 @@ class RequestStreamer:
 
         asyncio.create_task(iterate_requests())
         handle_floating_task = asyncio.create_task(handle_floating_responses())
+        self.total_num_floating_tasks_alive += 1
+
+        def floating_task_done(*args):
+            self.total_num_floating_tasks_alive -= 1
+
+        handle_floating_task.add_done_callback(floating_task_done)
 
         while not all_requests_handled.is_set():
             future = await result_queue.get()
@@ -198,4 +205,9 @@ class RequestStreamer:
             except self._EndOfStreaming:
                 pass
 
-        await handle_floating_task
+    async def wait_floating_requests_end(self):
+        """
+        Await this coroutine to make sure that all the floating tasks that the request handler may bring are properly consumed
+        """
+        while self.total_num_floating_tasks_alive > 0:
+            await asyncio.sleep(0)
