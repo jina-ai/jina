@@ -204,6 +204,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14284,4 +14285,33 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```0dcb2277```](https://github.com/jina-ai/jina/commit/0dcb227729a8449fb363ca8500627f3bf77de942)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
  - [[```17662518```](https://github.com/jina-ai/jina/commit/176625180e4c94c329b8354473a24b9b6b68d4af)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```d6690f66```](https://github.com/jina-ai/jina/commit/d6690f6668027c4338d3f1e834fbbb033e278698)] __-__ __version__: the next version will be 3.6.10 (*Jina Dev Bot*)
+
+<a name=release-note-3-6-11></a>
+## Release Note (`3.6.11`)
+
+> Release time: 2022-07-13 09:45:10
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Zac Li,  Jina Dev Bot,  Joan Fontanals,  samsja,  🙇
+
+
+### 🆕 New Features
+
+ - [[```f0703afe```](https://github.com/jina-ai/jina/commit/f0703afe45e07c032e0a8068d3cdf16992b40cd7)] __-__ param per executor gateway (#4939) (*samsja*)
+
+### 🐞 Bug fixes
+
+ - [[```7e127049```](https://github.com/jina-ai/jina/commit/7e127049d2ea838e7c6c1159604b705d77f3513f)] __-__ more logging in dry run (#5008) (*Zac Li*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```73784fda```](https://github.com/jina-ai/jina/commit/73784fda86821b9ff8906fdc990027cb27d9d9c4)] __-__ have baseexecutor bind default endpoint (#5007) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```295649fe```](https://github.com/jina-ai/jina/commit/295649fe971f4c0ed4da01a218b8e9f6c79bda34)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```c5fded55```](https://github.com/jina-ai/jina/commit/c5fded55d5c0f869faea71378be9a0824eb245d9)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```e1c5756d```](https://github.com/jina-ai/jina/commit/e1c5756db2bb4a9065fe9d4b9311b57028d8cdc4)] __-__ __version__: the next version will be 3.6.11 (*Jina Dev Bot*)
 
