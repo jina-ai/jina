@@ -153,7 +153,7 @@ def test_complex_flow(tmpdir, protocol):
         .add(name='pod4', needs=['gateway'])
         .add(
             name='floating_pod6',
-            needs=['pod4'],
+            needs=['gateway'],
             floating=True,
             uses=FloatingTestExecutor,
             uses_with={'file_name': file_name2},
