@@ -412,6 +412,10 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_handle_response_status</span><span class="p">(</span><span class="n">r_status</span><span class="p">,</span> <span class="n">r_str</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">r_str</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">:</span>
                     <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;Returned code is not expected! Description: </span><span class="si">{</span><span class="n">r_str</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s1">&#39;Error while fetching response from HTTP server </span><span class="si">{</span><span class="n">e</span><span class="si">!r}</span><span class="s1">&#39;</span>
