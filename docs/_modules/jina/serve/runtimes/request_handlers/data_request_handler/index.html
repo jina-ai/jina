@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/request_handlers/data_request_handler.html" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>jina.serve.runtimes.request_handlers.data_request_handler - Jina 3.6.10 documentation</title>
+        <title>jina.serve.runtimes.request_handlers.data_request_handler - Jina 3.6.11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -124,13 +124,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://www.meetup.com/jina-community-meetup/events/286748566/">Learn more about how basic linear algebra can speed up your data science code together with  Jodie Burchell and Jina AI on July 12 at 18:00 CET</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -146,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.6.10 documentation</div>
+                <div class="brand">Jina 3.6.11 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -352,7 +346,8 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.serve.runtimes.request_handlers.data_request_handler</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
 
@@ -372,6 +367,8 @@
 
 <div class="viewcode-block" id="DataRequestHandler"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler">[docs]</a><span class="k">class</span> <span class="nc">DataRequestHandler</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Object to encapsulate the code related to handle the data requests passing to executor and its returned values&quot;&quot;&quot;</span>
+
+    <span class="n">_KEY_RESULT</span> <span class="o">=</span> <span class="s1">&#39;__results__&#39;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -467,6 +464,7 @@
         <span class="n">specific_parameters</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">executor_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">specific_parameters</span><span class="p">:</span>
             <span class="n">parsed_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">specific_parameters</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">parsed_params</span>
 
 <div class="viewcode-block" id="DataRequestHandler.handle"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.handle">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;DataRequest&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">DataRequest</span><span class="p">:</span>
@@ -495,6 +493,7 @@
                 <span class="p">)</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">nbytes</span><span class="p">)</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_params</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
         <span class="n">docs</span> <span class="o">=</span> <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">get_docs_from_request</span><span class="p">(</span>
             <span class="n">requests</span><span class="p">,</span>
             <span class="n">field</span><span class="o">=</span><span class="s1">&#39;docs&#39;</span><span class="p">,</span>
@@ -516,7 +515,7 @@
                 <span class="n">docs</span> <span class="o">=</span> <span class="n">return_data</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">return_data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="n">params</span> <span class="o">=</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span>
-                <span class="n">results_key</span> <span class="o">=</span> <span class="s1">&#39;__results__&#39;</span>
+                <span class="n">results_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_KEY_RESULT</span>
 
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">results_key</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                     <span class="n">params</span><span class="p">[</span><span class="n">results_key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -614,7 +613,7 @@
 <span class="sd">        :param requests: List of DataRequest objects</span>
 <span class="sd">        :return: parameters matrix: list of parameters (Dict) objects</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">key_result</span> <span class="o">=</span> <span class="s1">&#39;__results__&#39;</span>
+        <span class="n">key_result</span> <span class="o">=</span> <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">_KEY_RESULT</span>
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span>
         <span class="k">if</span> <span class="n">key_result</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">parameters</span><span class="p">[</span><span class="n">key_result</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -636,7 +635,7 @@
 <span class="sd">        :param requests: requests to get the field from</span>
 <span class="sd">        :param field: field name to access</span>
 
-<span class="sd">        :returns: DocumentArray extraced from the field from all messages</span>
+<span class="sd">        :returns: DocumentArray extracted from the field from all messages</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">(</span>
@@ -718,7 +717,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 11, 2022</div>
+                            Last updated on Jul 13, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
