@@ -170,7 +170,7 @@ class BasePod(ABC):
             self.logger.debug(
                 f'{"shutdown is is already set" if self.is_shutdown.is_set() else "Runtime was never started"}. Runtime will end gracefully on its own'
             )
-            pass
+            self._terminate()
         self.is_shutdown.set()
         self.logger.debug(__stop_msg__)
         self.logger.close()
