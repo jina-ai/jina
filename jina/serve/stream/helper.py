@@ -61,7 +61,7 @@ class AsyncRequestsIterator:
 
     async def __anext__(self):
         if self._prefetch > 0:
-            while self._request_counter.count >= self._prefetch:
+            while self._request_counter.count > self._prefetch:
                 await asyncio.sleep(0)
         if isinstance(self.iterator, Iterator):
 
