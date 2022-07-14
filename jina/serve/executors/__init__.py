@@ -179,14 +179,14 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def _add_requests(self, _requests: Optional[Dict]):
         if not hasattr(self, 'requests'):
             self.requests = {}
-
         if _requests:
             func_names = {f.__name__: e for e, f in self.requests.items()}
             for endpoint, func in _requests.items():
                 # the following line must be `getattr(self.__class__, func)` NOT `getattr(self, func)`
                 # this to ensure we always have `_func` as unbound method
                 if func in func_names:
-                    del self.requests[func_names[func]]
+                    if func_names[func] in self.requests:
+                        del self.requests[func_names[func]]
 
                 _func = getattr(self.__class__, func)
                 if callable(_func):
