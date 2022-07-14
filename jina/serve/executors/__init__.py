@@ -7,8 +7,6 @@ import warnings
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union
 
-import catch as catch
-
 from jina import __args_executor_init__, __default_endpoint__
 from jina.enums import BetterEnum
 from jina.helper import ArgNamespace, T, iscoroutinefunction, typename
