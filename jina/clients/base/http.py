@@ -108,7 +108,9 @@ class HTTPBaseClient(BaseClient):
                 HTTPClientlet(url=url, logger=self.logger, **kwargs)
             )
 
-            def _request_handler(request: 'Request') -> 'Tuple[asyncio.Future, None]':
+            def _request_handler(
+                request: 'Request',
+            ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
                 """
                 For HTTP Client, for each request in the iterator, we `send_message` using
                 http POST request and add it to the list of tasks which is awaited and yielded.

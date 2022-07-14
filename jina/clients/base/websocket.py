@@ -139,7 +139,9 @@ class WebSocketBaseClient(BaseClient):
                 """Send End of iteration signal to the Gateway"""
                 asyncio.create_task(iolet.send_eoi())
 
-            def _request_handler(request: 'Request') -> 'Tuple[asyncio.Future, None]':
+            def _request_handler(
+                request: 'Request',
+            ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
                 """
                 For each request in the iterator, we send the `Message` using `iolet.send_message()`.
                 For websocket requests from client, for each request in the iterator, we send the request in `bytes`
