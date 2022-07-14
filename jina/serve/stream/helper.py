@@ -60,9 +60,6 @@ class AsyncRequestsIterator:
         return self
 
     async def __anext__(self):
-        if self._prefetch > 0:
-            while self._request_counter.count >= self._prefetch:
-                await asyncio.sleep(0)
         if isinstance(self.iterator, Iterator):
 
             """
@@ -85,4 +82,7 @@ class AsyncRequestsIterator:
             # we assume that `AsyncIterator` doesn't block the event loop
             request = await self.iterator.__anext__()
 
+        if self._prefetch > 0:
+            while self._request_counter.count >= self._prefetch:
+                await asyncio.sleep(0)
         return request
