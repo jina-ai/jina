@@ -292,7 +292,9 @@ param3: 30
 ```
 
 ### Set `requests` via `uses_requests`
-You can set/override the `requests` configuration of an executor and bind methods to endpoints that you provide. In the following codes, we replace the endpoint `/foo` binded to the `foo()` function with `/non_foo` and add a new endpoint `/bar` for binding `bar()`. Note the `all_req()` function is binded to **all** the endpoints except those explicitly bound to other functions, i.e. `/non_foo` and `/bar`.
+You can set/override the `requests` configuration of an executor and bind methods to endpoints that you provide. 
+In the following codes, we replace the endpoint `/foo` binded to the `foo()` function with both `/non_foo` and `/alias_foo`. 
+And add a new endpoint `/bar` for binding `bar()`. Note the `all_req()` function is binded to **all** the endpoints except those explicitly bound to other functions, i.e. `/non_foo`, `/alias_foo` and `/bar`.
 
 ```python
 from jina import Executor, requests, Flow
@@ -316,12 +318,14 @@ flow = Flow().add(
     uses_requests={
         '/bar': 'bar',
         '/non_foo': 'foo',
+        '/alias_foo': 'foo',
     },
 )
 with flow as f:
     f.post('/bar', parameters={'recipient': 'bar()'})
     f.post('/non_foo', parameters={'recipient': 'foo()'})
     f.post('/foo', parameters={'recipient': 'all_req()'})
+    f.post('/alias_foo', parameters={'recipient': 'foo()'})
 ```
 
 ```text
@@ -332,8 +336,10 @@ with flow as f:
 	🏠 Local access:	0.0.0.0:36507
 	🔒 Private network:	192.168.1.101:36507
 	🌐 Public address:	197.28.82.165:36507
-bar
-foo
+bar bar()
+foo foo()
+all req all_req()
+foo foo()
 ```
 
 ## Unify NDArray types

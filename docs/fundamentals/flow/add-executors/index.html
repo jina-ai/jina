@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/add-executors/" />
   
-<meta property="og:site_name" content="Jina 3.6.12 Documentation" />
+<meta property="og:site_name" content="Jina 3.6.13 Documentation" />
   
 <meta property="og:description" content="A Flow orchestrates its Executor s as a graph and will send requests to all Executors in the desired order. Executors can be added with the add() method of the Flow or be listed in the yaml configuration of a Flow. When you start a Flow, it will check the configured Executors and starts instances..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.6.12 Documentation" />
+<meta property="og:image:alt" content="Jina 3.6.13 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/add-executors.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Add Executors - Jina 3.6.12 documentation</title>
+        <title>Add Executors - Jina 3.6.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -179,7 +179,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.6.12 documentation</div>
+                <div class="brand">Jina 3.6.13 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -651,7 +651,9 @@ param3: 30
 </section>
 <section id="set-requests-via-uses-requests">
 <h3>Set <code class="docutils literal notranslate"><span class="pre">requests</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_requests</span></code><a class="headerlink" href="#set-requests-via-uses-requests" title="Permalink to this headline">#</a></h3>
-<p>You can set/override the <code class="docutils literal notranslate"><span class="pre">requests</span></code> configuration of an executor and bind methods to endpoints that you provide. In the following codes, we replace the endpoint <code class="docutils literal notranslate"><span class="pre">/foo</span></code> binded to the <code class="docutils literal notranslate"><span class="pre">foo()</span></code> function with <code class="docutils literal notranslate"><span class="pre">/non_foo</span></code> and add a new endpoint <code class="docutils literal notranslate"><span class="pre">/bar</span></code> for binding <code class="docutils literal notranslate"><span class="pre">bar()</span></code>. Note the <code class="docutils literal notranslate"><span class="pre">all_req()</span></code> function is binded to <strong>all</strong> the endpoints except those explicitly bound to other functions, i.e. <code class="docutils literal notranslate"><span class="pre">/non_foo</span></code> and <code class="docutils literal notranslate"><span class="pre">/bar</span></code>.</p>
+<p>You can set/override the <code class="docutils literal notranslate"><span class="pre">requests</span></code> configuration of an executor and bind methods to endpoints that you provide.
+In the following codes, we replace the endpoint <code class="docutils literal notranslate"><span class="pre">/foo</span></code> binded to the <code class="docutils literal notranslate"><span class="pre">foo()</span></code> function with both <code class="docutils literal notranslate"><span class="pre">/non_foo</span></code> and <code class="docutils literal notranslate"><span class="pre">/alias_foo</span></code>.
+And add a new endpoint <code class="docutils literal notranslate"><span class="pre">/bar</span></code> for binding <code class="docutils literal notranslate"><span class="pre">bar()</span></code>. Note the <code class="docutils literal notranslate"><span class="pre">all_req()</span></code> function is binded to <strong>all</strong> the endpoints except those explicitly bound to other functions, i.e. <code class="docutils literal notranslate"><span class="pre">/non_foo</span></code>, <code class="docutils literal notranslate"><span class="pre">/alias_foo</span></code> and <code class="docutils literal notranslate"><span class="pre">/bar</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
 
 
@@ -673,12 +675,14 @@ param3: 30
     <span class="n">uses_requests</span><span class="o">=</span><span class="p">{</span>
         <span class="s1">&#39;/bar&#39;</span><span class="p">:</span> <span class="s1">&#39;bar&#39;</span><span class="p">,</span>
         <span class="s1">&#39;/non_foo&#39;</span><span class="p">:</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;/alias_foo&#39;</span><span class="p">:</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span>
     <span class="p">},</span>
 <span class="p">)</span>
 <span class="k">with</span> <span class="n">flow</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/bar&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;recipient&#39;</span><span class="p">:</span> <span class="s1">&#39;bar()&#39;</span><span class="p">})</span>
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/non_foo&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;recipient&#39;</span><span class="p">:</span> <span class="s1">&#39;foo()&#39;</span><span class="p">})</span>
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;recipient&#39;</span><span class="p">:</span> <span class="s1">&#39;all_req()&#39;</span><span class="p">})</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/alias_foo&#39;</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;recipient&#39;</span><span class="p">:</span> <span class="s1">&#39;foo()&#39;</span><span class="p">})</span>
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>      executor0@221058[L]:ready and listening
@@ -688,8 +692,10 @@ param3: 30
 	🏠 Local access:	0.0.0.0:36507
 	🔒 Private network:	192.168.1.101:36507
 	🌐 Public address:	197.28.82.165:36507
-bar
-foo
+bar bar()
+foo foo()
+all req all_req()
+foo foo()
 </pre></div>
 </div>
 </section>
