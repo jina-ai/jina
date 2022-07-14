@@ -81,6 +81,7 @@ class AsyncRequestsIterator:
         elif isinstance(self.iterator, AsyncIterator):
             # we assume that `AsyncIterator` doesn't block the event loop
             request = await self.iterator.__anext__()
+
         if self._prefetch > 0:
             while self._request_counter.count >= self._prefetch:
                 await asyncio.sleep(0)

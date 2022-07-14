@@ -206,6 +206,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14337,4 +14338,23 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```7ff09b1c```](https://github.com/jina-ai/jina/commit/7ff09b1c4635b502464d1c936ed786c00ea53145)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```1e0a8a77```](https://github.com/jina-ai/jina/commit/1e0a8a7733f98e51388d808794d84f1091f45bda)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
  - [[```674229ed```](https://github.com/jina-ai/jina/commit/674229ed40be920b8b15c1a6f1758121670937a2)] __-__ __version__: the next version will be 3.6.12 (*Jina Dev Bot*)
+
+<a name=release-note-3-6-13></a>
+## Release Note (`3.6.13`)
+
+> Release time: 2022-07-14 15:10:51
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ felix-wang,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```9e38b05b```](https://github.com/jina-ai/jina/commit/9e38b05b7e18f62fe900fda8f9f38690f86fd3a4)] __-__ map multiple endpoints to same func (#5009) (*felix-wang*)
+
+### 🍹 Other Improvements
+
+ - [[```5987b1e2```](https://github.com/jina-ai/jina/commit/5987b1e2acf9a07a7d2ac5759deb4cc809c0695e)] __-__ __version__: the next version will be 3.6.13 (*Jina Dev Bot*)
 

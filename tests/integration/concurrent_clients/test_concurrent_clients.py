@@ -1,11 +1,11 @@
-import pytest
-
-from jina import Flow, Executor, Client, requests, DocumentArray, Document
 import multiprocessing
 import random
 import time
 from functools import partial
 
+import pytest
+
+from jina import Client, Document, DocumentArray, Executor, Flow, requests
 from jina.types.request.data import Response
 
 NUM_REQUESTS = 5
@@ -39,8 +39,6 @@ def test_concurrent_clients(concurrent, protocol, shards, polling, prefetch, rer
     f = Flow(protocol=protocol, prefetch=prefetch).add(
         uses=MyExecutor, shards=shards, polling=polling
     )
-
-    set_of_clients_served = set()
 
     with f:
         pqueue = multiprocessing.Queue()
