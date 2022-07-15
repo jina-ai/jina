@@ -12,6 +12,7 @@ import docker
 import pytest
 import requests
 import yaml
+from jina.hubble import hubio
 
 from jina.hubble.helper import (
     _get_auth_token,
@@ -133,7 +134,15 @@ class FetchMetaMockResponse:
 @pytest.mark.parametrize('force', [None, 'UUID8'])
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache):
+@pytest.mark.parametrize('build_env', ['DOCSQA_LIB_TOKEN=test key2=test2'])
+@pytest.mark.parametrize(
+    'expected_error',
+    [
+        ('The given requirements.txt require `DOCSQA_LIB_TOKEN` does not exist!'),
+       
+    ],
+)
+def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, build_env, expected_error):
     mock = mocker.Mock()
 
     def _mock_post(url, data, headers=None, stream=True):
@@ -156,8 +165,13 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache):
     if no_cache:
         _args_list.append('--no-cache')
 
+    if build_env:
+        _args_list.extend(['--build-env', build_env])
+
     args = set_hub_push_parser().parse_args(_args_list)
-    result = HubIO(args).push()
+
+    result =  HubIO(args).push()
+    
 
     # remove .jina
     exec_config_path = os.path.join(exec_path, '.jina')
@@ -179,6 +193,11 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache):
         assert form_data['id'] == ['UUID8']
     else:
         assert form_data.get('id') is None
+    
+    if build_env:
+        assert form_data['buildEnv'] == ['{"DOCSQA_LIB_TOKEN": "test", "key2": "test2"}']
+    else:
+        assert form_data.get('buildEnv') is None
 
     if mode == '--private':
         assert form_data['private'] == ['True']
@@ -237,8 +256,8 @@ def test_push_wrong_dockerfile(
         info.value
     )
 
-
-def test_push_with_authorization(mocker, monkeypatch, auth_token):
+@pytest.mark.parametrize('build_env', ['DOCSQA_LIB_TOKEN=test key2=test2'])
+def test_push_with_authorization(mocker, monkeypatch, auth_token, build_env):
     mock = mocker.Mock()
 
     def _mock_post(url, data, headers, stream):
@@ -248,8 +267,11 @@ def test_push_with_authorization(mocker, monkeypatch, auth_token):
     monkeypatch.setattr(requests, 'post', _mock_post)
 
     exec_path = os.path.join(cur_dir, 'dummy_executor')
-    args = set_hub_push_parser().parse_args([exec_path])
+    _args_list = [exec_path]
+    if build_env:
+        _args_list.extend(['--build-env', build_env])
 
+    args = set_hub_push_parser().parse_args(_args_list)
     HubIO(args).push()
 
     # remove .jina

@@ -484,6 +484,20 @@ def is_requirements_installed(
         return isinstance(ex, VersionConflict)
     return True
 
+def get_requirements_env_variables(requirements_file: 'Path'):
+    from .requirements import get_env_variables
+    env_variables = []
+    with requirements_file.open() as requirements:
+        for req in requirements:
+            req = req.strip()
+            if (not req) or req.startswith('#'):
+                continue
+            else:
+                variables = get_env_variables(req)
+                env_variables.extend(variables)
+
+    return env_variables
+
 
 def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jina',)):
     from .requirements import parse_requirement

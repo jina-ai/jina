@@ -1,6 +1,7 @@
 """Argparser module for hub push"""
 
 import argparse
+from email.policy import default
 import os
 
 from jina.parsers.helper import add_arg_group
@@ -60,6 +61,11 @@ One can later fetch a tagged Executor via `jinahub[+docker]://MyExecutor/gpu`
         '--force',
         type=str,
         help='If set, push will overwrite the Executor on the Hub that shares the same NAME or UUID8 identifier',
+    )
+    gp.add_argument(
+        '--build-env',
+        type=str,
+        help='A list of environment variables. It will be used in project build phrase.',
     )
     gp.add_argument(
         '--secret',

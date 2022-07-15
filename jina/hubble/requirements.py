@@ -47,6 +47,7 @@ VCS_REGEX = re.compile(
     rf'^(?P<scheme>{VCS_SCHEMES_REGEX})://((?P<login>[^/@]+)@)?'
     r'(?P<path>[^#@]+)(@(?P<revision>[^#]+))?(#(?P<fragment>\S+))?'
 )
+ENV_VAR_RE = re.compile(r"(?P<var>\$\{(?P<name>[A-Z0-9_]+)\})")
 
 
 extras_require_search = re.compile(r'(?P<name>.+)\[(?P<extras>[^\]]+)\]')
@@ -75,7 +76,6 @@ def parse_requirement(line: str) -> 'Requirement':
     :param line: a line of a requirement file
     :returns: a Requirement instance for the given line
     """
-
     vcs_match = VCS_REGEX.match(line)
     uri_match = URI_REGEX.match(line)
 
@@ -99,3 +99,61 @@ def parse_requirement(line: str) -> 'Requirement':
         line = f'{egg or name} @ {line}'
 
     return Requirement.parse(line)
+
+
+def get_env_variables(line: str):
+    env_variables = [];
+    for env_var, var_name in ENV_VAR_RE.findall(line):
+        env_variables.append(var_name)
+    env_variables = list(set(env_variables));
+    return env_variables
+
+
+def expand_env_variables(line: str):
+    """ 
+    Replace all environment variables that can be retrieved via `os.getenv`.
+    The only allowed format for environment variables defined in the
+    requirement file is `${MY_VARIABLE_1}` to ensure two things:
+    1. Strings that contain a `$` aren't accidentally (partially) expanded.
+    2. Ensure consistency across platforms for requirement files.
+    Valid characters in variable names follow the `POSIX standard
+    <http://pubs.opengroup.org/onlinepubs/9699919799/>`_ and are limited
+    to uppercase letter, digits and the `_` (underscore).
+    Replace environment variables in requirement if it's defined.
+    """
+    for env_var, var_name in ENV_VAR_RE.findall(line):
+            value = os.getenv(var_name)
+
+            if not value:
+                raise Exception(f'The given requirements.txt require environment variables `{var_name}` does not exist!')
+
+            line = line.replace(env_var, value)
+    return line
+
+
+def _expand_env_variables(lines_enum):
+    """ 
+    Replace all environment variables that can be retrieved via `os.getenv`.
+    The only allowed format for environment variables defined in the
+    requirement file is `${MY_VARIABLE_1}` to ensure two things:
+    1. Strings that contain a `$` aren't accidentally (partially) expanded.
+    2. Ensure consistency across platforms for requirement files.
+    Valid characters in variable names follow the `POSIX standard
+    <http://pubs.opengroup.org/onlinepubs/9699919799/>`_ and are limited
+    to uppercase letter, digits and the `_` (underscore).
+    Replace environment variables in requirement if it's defined.
+    """
+    for line in lines_enum:
+        line = os.path.expandvars(line)
+        yield line
+    for line_number, line in lines_enum:
+
+        for env_var, var_name in ENV_VAR_RE.findall(line):
+            value = os.getenv(var_name)
+
+            if not value:
+                raise Exception(f'The given requirements.txt require environment variables `{var_name}` does not exist!')
+
+            line = line.replace(env_var, value)
+
+        yield line_number, line
