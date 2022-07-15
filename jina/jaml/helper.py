@@ -216,6 +216,8 @@ def complete_path(
         return os.path.abspath(_p)
     elif raise_nonexist:
         raise FileNotFoundError(f'can not find {path}')
+    else:
+        return path
 
 
 def _search_file_in_paths(path, extra_search_paths: Optional[List[str]] = None):
