@@ -88,16 +88,16 @@ def test_executor_with_pymodule_path():
 
     ex = Executor.load_config(
         '''
-    jtype: TestExecutor
+    jtype: MyExecutor
     with:
         bar: 123
     metas:
         py_modules:
-            - unit.serve.executors.metas_executors
+            - unit.serve.executors.dummy_executor
     '''
     )
     assert ex.bar == 123
-    assert ex.process(None) is None
+    assert ex.process(DocumentArray([Document()]))[0].text == 'hello world'
 
 
 @property
