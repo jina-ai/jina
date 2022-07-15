@@ -88,9 +88,6 @@ def test_executor_with_pymodule_path():
         '''
         )
 
-    import sys
-
-    sys.path.append(cur_dir)
     ex = Executor.load_config(
         '''
     jtype: TestExecutor
@@ -98,7 +95,7 @@ def test_executor_with_pymodule_path():
         bar: 123
     metas:
         py_modules:
-            - metas_executors
+            - unit.serve.executors.metas_executors
     '''
     )
     assert ex.bar == 123
