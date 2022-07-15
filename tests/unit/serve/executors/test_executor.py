@@ -19,8 +19,6 @@ from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 
-cur_dir = os.path.dirname(os.path.abspath(__file__))
-
 PORT = 12350
 
 
