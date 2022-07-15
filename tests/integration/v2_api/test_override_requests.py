@@ -11,7 +11,9 @@ def test_override_requests():
             for doc in docs:
                 doc.text = 'foo called'
 
-    with Flow(port=port).add(uses=FooExecutor, uses_requests={'/non_foo': 'foo'}) as f:
+    with Flow(port=port).add(
+        uses=FooExecutor, uses_requests={'/non_foo': 'foo', '/another_foo': 'foo'}
+    ) as f:
         c = Client(port=f.port)
         resp1 = c.post(
             on='/foo', inputs=DocumentArray([Document(text='')]), return_responses=True
@@ -21,9 +23,15 @@ def test_override_requests():
             inputs=DocumentArray([Document(text='')]),
             return_responses=True,
         )
+        resp3 = c.post(
+            on='/another_foo',
+            inputs=DocumentArray([Document(text='')]),
+            return_responses=True,
+        )
 
     assert resp1[0].docs[0].text == ''
     assert resp2[0].docs[0].text == 'foo called'
+    assert resp3[0].docs[0].text == 'foo called'
 
 
 def test_override_requests_uses_after():
