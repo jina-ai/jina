@@ -19,6 +19,8 @@ from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+
 PORT = 12350
 
 
@@ -82,19 +84,25 @@ def test_executor_with_pymodule_path():
         jtype: BaseExecutor
         metas:
             py_modules:
-                - jina.serve.executor
+                - jina.no_valide.executor
         '''
         )
 
+    import sys
+
+    sys.path.append(cur_dir)
     ex = Executor.load_config(
         '''
-    jtype: BaseExecutor
+    jtype: TestExecutor
+    with:
+        bar: 123
     metas:
         py_modules:
-            - jina.serve.executors
+            - metas_executors
     '''
     )
-    assert ex.metas.py_modules == ['jina.serve.executors']
+    assert ex.bar == 123
+    assert ex.process(None) is None
 
 
 @property
