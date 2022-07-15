@@ -75,6 +75,28 @@ def test_executor_import_with_external_dependencies(capsys):
     assert 'hello' in out
 
 
+def test_executor_with_pymodule_path():
+    with pytest.raises(FileNotFoundError):
+        ex = Executor.load_config(
+            '''
+        jtype: BaseExecutor
+        metas:
+            py_modules:
+                - jina.serve.executor
+        '''
+        )
+
+    ex = Executor.load_config(
+        '''
+    jtype: BaseExecutor
+    metas:
+        py_modules:
+            - jina.serve.executors
+    '''
+    )
+    assert ex.metas.py_modules == ['jina.serve.executors']
+
+
 @property
 def workspace(self) -> str:
     """
