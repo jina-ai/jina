@@ -838,10 +838,10 @@ class GrpcConnectionPool:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
         async def task_wrapper():
-            connection = None
-            if connection_list:
-                connection = await connection_list.get_next_connection()
             for i in range(3):
+                connection = None
+                if connection_list:
+                    connection = await connection_list.get_next_connection()
                 try:
                     return await connection.send_discover_endpoint(
                         timeout=timeout,
@@ -853,6 +853,7 @@ class GrpcConnectionPool:
                         tried_addresses=connection.address,
                         current_address=connection.address,
                         connection_list=connection_list,
+                        total_num_tries=3,
                     )
                 except AttributeError:
                     # in gateway2gateway communication, gateway does not expose this endpoint. So just send empty list which corresponds to all endpoints valid
