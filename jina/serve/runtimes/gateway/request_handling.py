@@ -158,7 +158,7 @@ class RequestHandler:
             ) -> asyncio.Future:
                 try:
                     if self._executor_endpoint_mapping is None:
-                        await asyncio.gather(gather_endpoints(request_graph))
+                        asyncio.create_task(gather_endpoints(request_graph))
 
                     partial_responses = await asyncio.gather(*tasks)
                 except:
