@@ -207,6 +207,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14359,4 +14360,26 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```5987b1e2```](https://github.com/jina-ai/jina/commit/5987b1e2acf9a07a7d2ac5759deb4cc809c0695e)] __-__ __version__: the next version will be 3.6.13 (*Jina Dev Bot*)
+
+<a name=release-note-3-6-14></a>
+## Release Note (`3.6.14`)
+
+> Release time: 2022-07-17 15:52:56
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ felix-wang,  Han Xiao,  Jina Dev Bot,  Joan Fontanals,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```b2304e6b```](https://github.com/jina-ai/jina/commit/b2304e6ba700e4b7b73f1ca840f46868b34d8bfc)] __-__ use python module path in pymodules (#5013) (*felix-wang*)
+ - [[```d23ad848```](https://github.com/jina-ai/jina/commit/d23ad84874567cf08c5aeb08aeeeb10ac4476eee)] __-__ fix the async request iterator prefetching behavior (#5012) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```21edc961```](https://github.com/jina-ai/jina/commit/21edc9614a0300b46d7260f90632277885fb0c0d)] __-__ update docs (*Han Xiao*)
+ - [[```c056fad0```](https://github.com/jina-ai/jina/commit/c056fad074ae6f46a61b193fd89af6b7f0751be8)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```e710e2ea```](https://github.com/jina-ai/jina/commit/e710e2eaa85337b047c45694bb640c5033d951be)] __-__ __version__: the next version will be 3.6.14 (*Jina Dev Bot*)
 
