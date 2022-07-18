@@ -431,7 +431,7 @@ class GrpcConnectionPool:
                         deployment, type_, 0, increase_access_count
                     )
                 self._logger.debug(
-                    f'did not find a connection for deployment {deployment}, type {type} and entity_id {entity_id}. There are {len(self._deployments[deployment][type]) if deployment in self._deployments else 0} available connections for this deployment and type. '
+                    f'did not find a connection for deployment {deployment}, type {type_} and entity_id {entity_id}. There are {len(self._deployments[deployment][type_]) if deployment in self._deployments else 0} available connections for this deployment and type. '
                 )
                 return None
 
@@ -619,9 +619,15 @@ class GrpcConnectionPool:
         connection_list = self._connections.get_replicas(
             deployment, head, shard_id, True
         )
-        return self._send_discover_endpoint(
-            timeout=timeout, connection_list=connection_list, retries=retries
-        )
+        if connection_list:
+            return self._send_discover_endpoint(
+                timeout=timeout, connection_list=connection_list, retries=retries
+            )
+        else:
+            self._logger.debug(
+                f'no available connections for deployment {deployment} and shard {shard_id}'
+            )
+            return None
 
     def send_request_once(
         self,
