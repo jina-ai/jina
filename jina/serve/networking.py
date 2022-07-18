@@ -66,7 +66,6 @@ class ReplicaList:
             channel_to_reset = self._address_to_channel[address]
             self._address_to_channel[address] = None
             await self._destroy_connection(channel_to_reset)
-
             # re-add connection:
             self._address_to_connection_idx[address] = id_to_reset
             stubs, channel = self._create_connection(address)
@@ -134,12 +133,13 @@ class ReplicaList:
         # we should handle graceful termination better, 0.5 is a rather random number here
         await connection.close(grace)
 
-    async def get_next_connection(self):
+    async def get_next_connection(self, num_retries=3):
         """
         Returns a connection from the list. Strategy is round robin
+        :param num_retries: how many retries should be performed when all connections are currently unavailable
         :returns: A connection from the pool
         """
-        return await self._get_next_connection(num_retries=3)
+        return await self._get_next_connection(num_retries=num_retries)
 
     async def _get_next_connection(self, num_retries=3):
         """
@@ -616,7 +616,6 @@ class GrpcConnectionPool:
         :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :return: asyncio.Task items to send call
         """
-        self._logger.debug(f' send-disc for {deployment}')
         connection_list = self._connections.get_replicas(
             deployment, head, shard_id, True
         )
@@ -811,7 +810,9 @@ class GrpcConnectionPool:
             else:
                 total_num_tries = 1 + retries  # try once, then do all the retries
             for i in range(total_num_tries):
-                current_connection = await connections.get_next_connection()
+                current_connection = await connections.get_next_connection(
+                    num_retries=total_num_tries
+                )
                 tried_addresses.add(current_connection.address)
                 try:
                     return await current_connection.send_requests(
@@ -857,31 +858,22 @@ class GrpcConnectionPool:
             for i in range(total_num_tries):
                 connection = None
                 if connection_list:
-                    connection = await connection_list.get_next_connection()
+                    connection = await connection_list.get_next_connection(
+                        num_retries=total_num_tries
+                    )
                     tried_addresses.add(connection.address)
                 try:
-
-                    self._logger.debug(
-                        f'{i}/3 Try to send discover endpoint to {connection.address}'
-                    )
-                    res = await connection.send_discover_endpoint(
+                    return await connection.send_discover_endpoint(
                         timeout=timeout,
                     )
-                    self._logger.debug(
-                        f' Successfully sent discover endpoint to {connection.address}'
-                    )
-                    return res
                 except AioRpcError as e:
-                    self._logger.debug(
-                        f' AioRpcError raised when trying to send discover endpoint to {connection.address}'
-                    )
                     await self._handle_aiorpcerror(
                         error=e,
                         retry_i=i,
                         tried_addresses=tried_addresses,
                         current_address=connection.address,
                         connection_list=connection_list,
-                        total_num_tries=3,
+                        total_num_tries=total_num_tries,
                     )
                 except AttributeError:
                     # in gateway2gateway communication, gateway does not expose this endpoint. So just send empty list which corresponds to all endpoints valid
