@@ -856,12 +856,10 @@ class GrpcConnectionPool:
             else:
                 total_num_tries = 1 + retries  # try once, then do all the retries
             for i in range(total_num_tries):
-                connection = None
-                if connection_list:
-                    connection = await connection_list.get_next_connection(
-                        num_retries=total_num_tries
-                    )
-                    tried_addresses.add(connection.address)
+                connection = await connection_list.get_next_connection(
+                    num_retries=total_num_tries
+                )
+                tried_addresses.add(connection.address)
                 try:
                     return await connection.send_discover_endpoint(
                         timeout=timeout,
