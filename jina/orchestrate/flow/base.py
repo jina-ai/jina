@@ -1283,7 +1283,9 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         )
 
     @allowed_levels([FlowBuildLevel.EMPTY])
-    def build(self, copy_flow: bool = False) -> 'Flow':
+    def build(
+        self, copy_flow: bool = False, disable_build_sandbox: bool = False
+    ) -> 'Flow':
         """
         Build the current Flow and make it ready to use
 
@@ -1293,6 +1295,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
             context manager, or using :meth:`start`, :meth:`build` will be invoked.
 
         :param copy_flow: when set to true, then always copy the current Flow and do the modification on top of it then return, otherwise, do in-line modification
+        :param disable_build_sandbox: when set to true, the sandbox building part will be skipped, will be used by `plot`
         :return: the current Flow (by default)
 
         .. note::
@@ -1317,8 +1320,9 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         if op_flow.args.inspect == FlowInspectType.COLLECT:
             op_flow.gather_inspect(copy_flow=False)
 
-        for deployment in self._deployment_nodes.values():
-            deployment.update_sandbox_args()
+        if not disable_build_sandbox:
+            for deployment in self._deployment_nodes.values():
+                deployment.update_sandbox_args()
 
         if GATEWAY_NAME not in op_flow._deployment_nodes:
             op_flow._add_gateway(
@@ -1729,7 +1733,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         )
 
         if build and op_flow._build_level.value == FlowBuildLevel.EMPTY:
-            op_flow.build(False)
+            op_flow.build(copy_flow=False, disable_build_sandbox=True)
 
         mermaid_str = op_flow._mermaid_str
         if vertical_layout:
