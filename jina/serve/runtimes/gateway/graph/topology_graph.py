@@ -93,7 +93,7 @@ class TopologyGraph:
                 raise
 
         def get_endpoints(self, connection_pool: GrpcConnectionPool) -> asyncio.Task:
-            return connection_pool.send_discover_endpoint(self.name)
+            return connection_pool.send_discover_endpoint(self.name, self._retries)
 
         async def _wait_previous_and_send(
             self,

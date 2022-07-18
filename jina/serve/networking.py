@@ -141,7 +141,7 @@ class ReplicaList:
         """
         return await self._get_next_connection(num_retries=3)
 
-    async def _get_next_connection(self, num_retries=0):
+    async def _get_next_connection(self, num_retries=3):
         """
         :param num_retries: how many retries should be performed when all connections are currently unavailable
         :returns: A connection from the pool
@@ -605,6 +605,7 @@ class GrpcConnectionPool:
         head: bool = True,
         shard_id: Optional[int] = None,
         timeout: Optional[float] = None,
+        retries: Optional[int] = -1,
     ) -> asyncio.Task:
         """Sends a discover Endpoint call to target.
 
@@ -612,13 +613,15 @@ class GrpcConnectionPool:
         :param head: If True it is send to the head, otherwise to the worker pods
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param timeout: timeout for sending the requests
+        :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :return: asyncio.Task items to send call
         """
+        self._logger.debug(f' send-disc for {deployment}')
         connection_list = self._connections.get_replicas(
-            deployment, head, shard_id, False
+            deployment, head, shard_id, True
         )
         return self._send_discover_endpoint(
-            timeout=timeout, connection_list=connection_list
+            timeout=timeout, connection_list=connection_list, retries=retries
         )
 
     def send_request_once(
@@ -834,23 +837,48 @@ class GrpcConnectionPool:
         self,
         connection_list: ReplicaList,
         timeout: Optional[float] = None,
+        retries: Optional[int] = -1,
     ) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
         async def task_wrapper():
-            for i in range(3):
+
+            tried_addresses = set()
+            if retries is None or retries < 0:
+                total_num_tries = (
+                    max(
+                        DEFAULT_MINIMUM_RETRIES,
+                        len(connection_list.get_all_connections()),
+                    )
+                    + 1
+                )
+            else:
+                total_num_tries = 1 + retries  # try once, then do all the retries
+            for i in range(total_num_tries):
                 connection = None
                 if connection_list:
                     connection = await connection_list.get_next_connection()
+                    tried_addresses.add(connection.address)
                 try:
-                    return await connection.send_discover_endpoint(
+
+                    self._logger.debug(
+                        f'{i}/3 Try to send discover endpoint to {connection.address}'
+                    )
+                    res = await connection.send_discover_endpoint(
                         timeout=timeout,
                     )
+                    self._logger.debug(
+                        f' Successfully sent discover endpoint to {connection.address}'
+                    )
+                    return res
                 except AioRpcError as e:
+                    self._logger.debug(
+                        f' AioRpcError raised when trying to send discover endpoint to {connection.address}'
+                    )
                     await self._handle_aiorpcerror(
                         error=e,
                         retry_i=i,
-                        tried_addresses=connection.address,
+                        tried_addresses=tried_addresses,
                         current_address=connection.address,
                         connection_list=connection_list,
                         total_num_tries=3,
