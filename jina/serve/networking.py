@@ -66,7 +66,6 @@ class ReplicaList:
             channel_to_reset = self._address_to_channel[address]
             self._address_to_channel[address] = None
             await self._destroy_connection(channel_to_reset)
-
             # re-add connection:
             self._address_to_connection_idx[address] = id_to_reset
             stubs, channel = self._create_connection(address)
@@ -134,14 +133,15 @@ class ReplicaList:
         # we should handle graceful termination better, 0.5 is a rather random number here
         await connection.close(grace)
 
-    async def get_next_connection(self):
+    async def get_next_connection(self, num_retries=3):
         """
         Returns a connection from the list. Strategy is round robin
+        :param num_retries: how many retries should be performed when all connections are currently unavailable
         :returns: A connection from the pool
         """
-        return await self._get_next_connection(num_retries=3)
+        return await self._get_next_connection(num_retries=num_retries)
 
-    async def _get_next_connection(self, num_retries=0):
+    async def _get_next_connection(self, num_retries=3):
         """
         :param num_retries: how many retries should be performed when all connections are currently unavailable
         :returns: A connection from the pool
@@ -431,7 +431,7 @@ class GrpcConnectionPool:
                         deployment, type_, 0, increase_access_count
                     )
                 self._logger.debug(
-                    f'did not find a connection for deployment {deployment}, type {type} and entity_id {entity_id}. There are {len(self._deployments[deployment][type]) if deployment in self._deployments else 0} available connections for this deployment and type. '
+                    f'did not find a connection for deployment {deployment}, type {type_} and entity_id {entity_id}. There are {len(self._deployments[deployment][type_]) if deployment in self._deployments else 0} available connections for this deployment and type. '
                 )
                 return None
 
@@ -605,6 +605,7 @@ class GrpcConnectionPool:
         head: bool = True,
         shard_id: Optional[int] = None,
         timeout: Optional[float] = None,
+        retries: Optional[int] = -1,
     ) -> asyncio.Task:
         """Sends a discover Endpoint call to target.
 
@@ -612,14 +613,21 @@ class GrpcConnectionPool:
         :param head: If True it is send to the head, otherwise to the worker pods
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param timeout: timeout for sending the requests
+        :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :return: asyncio.Task items to send call
         """
         connection_list = self._connections.get_replicas(
-            deployment, head, shard_id, False
+            deployment, head, shard_id, True
         )
-        return self._send_discover_endpoint(
-            timeout=timeout, connection_list=connection_list
-        )
+        if connection_list:
+            return self._send_discover_endpoint(
+                timeout=timeout, connection_list=connection_list, retries=retries
+            )
+        else:
+            self._logger.debug(
+                f'no available connections for deployment {deployment} and shard {shard_id}'
+            )
+            return None
 
     def send_request_once(
         self,
@@ -808,7 +816,9 @@ class GrpcConnectionPool:
             else:
                 total_num_tries = 1 + retries  # try once, then do all the retries
             for i in range(total_num_tries):
-                current_connection = await connections.get_next_connection()
+                current_connection = await connections.get_next_connection(
+                    num_retries=total_num_tries
+                )
                 tried_addresses.add(current_connection.address)
                 try:
                     return await current_connection.send_requests(
@@ -834,14 +844,28 @@ class GrpcConnectionPool:
         self,
         connection_list: ReplicaList,
         timeout: Optional[float] = None,
+        retries: Optional[int] = -1,
     ) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
         async def task_wrapper():
-            connection = None
-            if connection_list:
-                connection = await connection_list.get_next_connection()
-            for i in range(3):
+
+            tried_addresses = set()
+            if retries is None or retries < 0:
+                total_num_tries = (
+                    max(
+                        DEFAULT_MINIMUM_RETRIES,
+                        len(connection_list.get_all_connections()),
+                    )
+                    + 1
+                )
+            else:
+                total_num_tries = 1 + retries  # try once, then do all the retries
+            for i in range(total_num_tries):
+                connection = await connection_list.get_next_connection(
+                    num_retries=total_num_tries
+                )
+                tried_addresses.add(connection.address)
                 try:
                     return await connection.send_discover_endpoint(
                         timeout=timeout,
@@ -850,9 +874,10 @@ class GrpcConnectionPool:
                     await self._handle_aiorpcerror(
                         error=e,
                         retry_i=i,
-                        tried_addresses=connection.address,
+                        tried_addresses=tried_addresses,
                         current_address=connection.address,
                         connection_list=connection_list,
+                        total_num_tries=total_num_tries,
                     )
                 except AttributeError:
                     # in gateway2gateway communication, gateway does not expose this endpoint. So just send empty list which corresponds to all endpoints valid

@@ -111,6 +111,7 @@ class DummyMockConnectionPool:
         requests,
         deployment: str,
         head: bool,
+        shard_id=None,
         endpoint: str = None,
         timeout: float = 1.0,
         retries: int = -1,
@@ -132,6 +133,17 @@ class DummyMockConnectionPool:
 
             await asyncio.sleep(1 / (random.randint(1, 3) * 10))
             return response_msg, {}
+
+        return asyncio.create_task(task_wrapper())
+
+    def send_discover_endpoint(self, *args, **kwargs):
+        async def task_wrapper():
+            from jina import __default_endpoint__
+            from jina.proto import jina_pb2
+
+            ep = jina_pb2.EndpointsProto()
+            ep.endpoints.extend([__default_endpoint__])
+            return ep, None
 
         return asyncio.create_task(task_wrapper())
 
@@ -227,6 +239,11 @@ def test_grpc_gateway_runtime_handle_messages_linear(
         'send_requests_once',
         DummyMockConnectionPool.send_requests_once,
     )
+    monkeypatch.setattr(
+        networking.GrpcConnectionPool,
+        'send_discover_endpoint',
+        DummyMockConnectionPool.send_discover_endpoint,
+    )
     port = random_port()
 
     def client_validate(client_id: int):
@@ -269,6 +286,11 @@ def test_grpc_gateway_runtime_lazy_request_access(linear_graph_dict, monkeypatch
         networking.GrpcConnectionPool,
         'send_requests_once',
         DummyNoDocAccessMockConnectionPool.send_requests_once,
+    )
+    monkeypatch.setattr(
+        networking.GrpcConnectionPool,
+        'send_discover_endpoint',
+        DummyMockConnectionPool.send_discover_endpoint,
     )
     port = random_port()
 
@@ -313,6 +335,11 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
         networking.GrpcConnectionPool,
         'send_requests_once',
         DummyMockConnectionPool.send_requests_once,
+    )
+    monkeypatch.setattr(
+        networking.GrpcConnectionPool,
+        'send_discover_endpoint',
+        DummyMockConnectionPool.send_discover_endpoint,
     )
     port = random_port()
 
@@ -361,6 +388,11 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
         networking.GrpcConnectionPool,
         'send_requests_once',
         DummyMockConnectionPool.send_requests_once,
+    )
+    monkeypatch.setattr(
+        networking.GrpcConnectionPool,
+        'send_discover_endpoint',
+        DummyMockConnectionPool.send_discover_endpoint,
     )
     port = random_port()
 
@@ -412,6 +444,11 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_deployment(
         'send_requests_once',
         DummyMockConnectionPool.send_requests_once,
     )
+    monkeypatch.setattr(
+        networking.GrpcConnectionPool,
+        'send_discover_endpoint',
+        DummyMockConnectionPool.send_discover_endpoint,
+    )
     port = random_port()
 
     def client_validate(client_id: int):
@@ -461,6 +498,11 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
         networking.GrpcConnectionPool,
         'send_requests_once',
         DummyMockConnectionPool.send_requests_once,
+    )
+    monkeypatch.setattr(
+        networking.GrpcConnectionPool,
+        'send_discover_endpoint',
+        DummyMockConnectionPool.send_discover_endpoint,
     )
     port = random_port()
 
