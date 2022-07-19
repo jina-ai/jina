@@ -29,6 +29,7 @@ def test_non_blocking_gateway(shards, expected_response):
 
     f = Flow().add(uses=FastSlowExecutor, shards=shards, polling='ANY')
     with f:
+        f.post(on='/custom', inputs=data, request_size=1)
+        # first request is not to be trusted because of discovery endpoint
         f.post(on='/custom', inputs=data, request_size=1, on_done=fill_responses)
-
     assert response == expected_response

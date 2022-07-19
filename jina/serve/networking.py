@@ -29,6 +29,7 @@ if TYPE_CHECKING:
 
 
 DEFAULT_MINIMUM_RETRIES = 3
+GRACE_PERIOD_DESTROY_CONNECTION = 0.5
 
 
 class ReplicaList:
@@ -36,12 +37,14 @@ class ReplicaList:
     Maintains a list of connections to replicas and uses round robin for selecting a replica
     """
 
-    def __init__(self, summary):
+    def __init__(self, summary, logger):
         self._connections = []
         self._address_to_connection_idx = {}
         self._address_to_channel = {}
         self._rr_counter = 0  # round robin counter
         self.summary = summary
+        self._logger = logger
+        self._destroyed_event = asyncio.Event()
 
     async def reset_connection(self, address: str) -> Union[grpc.aio.Channel, None]:
         """
@@ -52,6 +55,8 @@ class ReplicaList:
         :param address: Target address of this connection
         :returns: The reset connection or None if there was no connection for the given address
         """
+        self._logger.debug(f'resetting connection to {address}')
+
         if (
             address in self._address_to_connection_idx
             and self._address_to_connection_idx[address] is not None
@@ -65,7 +70,9 @@ class ReplicaList:
             self._connections[id_to_reset] = None
             channel_to_reset = self._address_to_channel[address]
             self._address_to_channel[address] = None
+            self._destroyed_event.clear()
             await self._destroy_connection(channel_to_reset)
+            self._destroyed_event.set()
             # re-add connection:
             self._address_to_connection_idx[address] = id_to_reset
             stubs, channel = self._create_connection(address)
@@ -109,7 +116,9 @@ class ReplicaList:
             popped_connection = self._connections.pop(idx_to_delete)
             closing_channel = self._address_to_channel[address]
             del self._address_to_channel[address]
-            await self._destroy_connection(closing_channel)
+            await self._destroy_connection(
+                closing_channel, grace=GRACE_PERIOD_DESTROY_CONNECTION
+            )
             # update the address/idx mapping
             for address in self._address_to_connection_idx:
                 if self._address_to_connection_idx[address] > idx_to_delete:
@@ -162,8 +171,16 @@ class ReplicaList:
                     )
             elif connection is None:
                 # give control back to async event loop so connection resetting can be completed; then retry
-                await asyncio.sleep(0)
-                return await self._get_next_connection(num_retries=num_retries - 1)
+                self._logger.debug(
+                    f' No valid connection found, give chance for potential resetting of connection'
+                )
+                try:
+                    await asyncio.wait_for(
+                        self._destroyed_event.wait(),
+                        timeout=GRACE_PERIOD_DESTROY_CONNECTION,
+                    )
+                finally:
+                    return await self._get_next_connection(num_retries=num_retries - 1)
         except IndexError:
             # This can happen as a race condition while _removing_ connections
             self._rr_counter = 0
@@ -449,7 +466,7 @@ class GrpcConnectionPool:
         ):
             self._add_deployment(deployment)
             if entity_id not in self._deployments[deployment][type]:
-                connection_list = ReplicaList(self.summary)
+                connection_list = ReplicaList(self.summary, self._logger)
                 self._deployments[deployment][type][entity_id] = connection_list
 
             if not self._deployments[deployment][type][entity_id].has_connection(

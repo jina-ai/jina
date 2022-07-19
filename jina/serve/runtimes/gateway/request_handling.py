@@ -163,7 +163,7 @@ class RequestHandler:
                         and not self._gathering_endpoints
                     ):
                         self._gathering_endpoints = True
-                        await gather_endpoints(request_graph)
+                        asyncio.create_task(gather_endpoints(request_graph))
 
                     partial_responses = await asyncio.gather(*tasks)
                 except:
