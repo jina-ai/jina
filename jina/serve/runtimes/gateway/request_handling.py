@@ -34,6 +34,7 @@ class RequestHandler:
     ):
         self._request_init_time = {} if metrics_registry else None
         self._executor_endpoint_mapping = None
+        self._gathering_endpoints = False
 
         if metrics_registry:
             with ImportExtensions(
@@ -159,7 +160,11 @@ class RequestHandler:
                 tasks: List[asyncio.Task], request_graph: TopologyGraph
             ) -> asyncio.Future:
                 try:
-                    if self._executor_endpoint_mapping is None:
+                    if (
+                        self._executor_endpoint_mapping is None
+                        and not self._gathering_endpoints
+                    ):
+                        self._gathering_endpoints = True
                         asyncio.create_task(gather_endpoints(request_graph))
 
                     partial_responses = await asyncio.gather(*tasks)

@@ -73,3 +73,6 @@ def test_name_python_jaml_identical():
     # Make sure that the executor meta name is equal to only the class name
     assert jaml_metas_name == 'TestExecutor'
     assert py_metas_name == 'TestExecutor'
+
+    # Make sure that the executor can be loaded from a native python module path as well
+    load_py_modules({'py_modules': ['metas_executors']})

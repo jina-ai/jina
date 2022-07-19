@@ -468,12 +468,12 @@ with Flow() as f:
 
 ````
 
-
+(client-compress)=
 ## Enable compression
 
-If the communication to the Gateway is via gRPC, you can pass `compression` parameter to  {meth}`~jina.clients.mixin.PostMixin.post` to benefit from (gRPC compression)[https://grpc.github.io/grpc/python/grpc.html#compression] methods. 
+If the communication to the Gateway is via gRPC, you can pass `compression` parameter to  {meth}`~jina.clients.mixin.PostMixin.post` to benefit from [gRPC compression](https://grpc.github.io/grpc/python/grpc.html#compression) methods. 
 
-The supported choices are: None, `NoCompression`, `Gzip` and `Deflate`.
+The supported choices are: None, `gzip` and `deflate`.
 
 ```python
 from jina import Client
@@ -481,6 +481,11 @@ from jina import Client
 client = Client()
 client.post(..., compression='Gzip')
 ```
+
+Note that this setting is only effective the communication between the client and the Flow's gateway.
+
+One can also specify the compression of the internal communication {ref}`as described here<serve-compress>`.
+
 
 ## Enable TLS
 

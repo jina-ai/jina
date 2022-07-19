@@ -48,11 +48,23 @@ def simple_graph_dict_indexer():
 
 
 class DummyMockConnectionPool:
+    def send_discover_endpoint(self, *args, **kwargs):
+        async def task_wrapper():
+            from jina import __default_endpoint__
+            from jina.proto import jina_pb2
+
+            ep = jina_pb2.EndpointsProto()
+            ep.endpoints.extend([__default_endpoint__])
+            return ep, None
+
+        return asyncio.create_task(task_wrapper())
+
     def send_requests_once(
         self,
         requests,
         deployment: str,
         head: bool,
+        shard_id=None,
         endpoint: str = None,
         timeout: float = 1.0,
         retries: int = -1,
@@ -206,6 +218,11 @@ def test_disable_prefetch_slow_client_fast_executor(
         'send_requests_once',
         DummyMockConnectionPool.send_requests_once,
     )
+    monkeypatch.setattr(
+        networking.GrpcConnectionPool,
+        'send_discover_endpoint',
+        DummyMockConnectionPool.send_discover_endpoint,
+    )
     port = random_port()
 
     p = multiprocessing.Process(
@@ -221,7 +238,7 @@ def test_disable_prefetch_slow_client_fast_executor(
 
     final_da = DocumentArray()
 
-    client = Client(protocol=protocol, port=port, return_responses=True)
+    client = Client(protocol=protocol, port=port)
     client.post(
         on='/',
         inputs=inputs,
@@ -264,6 +281,11 @@ def test_disable_prefetch_fast_client_slow_executor(
         'send_requests_once',
         DummyMockConnectionPool.send_requests_once,
     )
+    monkeypatch.setattr(
+        networking.GrpcConnectionPool,
+        'send_discover_endpoint',
+        DummyMockConnectionPool.send_discover_endpoint,
+    )
     port = random_port()
     final_da = DocumentArray()
     p = multiprocessing.Process(
@@ -276,7 +298,7 @@ def test_disable_prefetch_fast_client_slow_executor(
     )
     p.start()
     time.sleep(1.0)
-    client = Client(protocol=protocol, port=port, return_responses=True)
+    client = Client(protocol=protocol, port=port)
     client.post(
         on='/',
         inputs=inputs,
@@ -332,13 +354,18 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
 
     def client(gen, port):
         Client(protocol=protocol, port=port).post(
-            on='/index', inputs=gen, request_size=1, return_responses=True
+            on='/index', inputs=gen, request_size=1
         )
 
     monkeypatch.setattr(
         networking.GrpcConnectionPool,
         'send_requests_once',
         DummyMockConnectionPool.send_requests_once,
+    )
+    monkeypatch.setattr(
+        networking.GrpcConnectionPool,
+        'send_discover_endpoint',
+        DummyMockConnectionPool.send_discover_endpoint,
     )
     port = random_port()
 
@@ -376,9 +403,8 @@ def test_multiple_clients(prefetch, protocol, monkeypatch, simple_graph_dict_ind
         p.join()
 
     order_of_ids = list(
-        Client(protocol=protocol, port=port, return_responses=True)
+        Client(protocol=protocol, port=port)
         .post(on='/status', inputs=[Document()])[0]
-        .docs[0]
         .tags['ids']
     )
     # There must be total 150 docs indexed.
