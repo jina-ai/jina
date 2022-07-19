@@ -19,7 +19,7 @@ For more proper use of the Client, and more information about the Client itself,
 
 (flow-protocol)=
 ## Supported protocols
-You can use three different protocols to serve the `Flow`: `grpc`,`http` and `websocket`
+You can use three different protocols to serve the `Flow`: gRPC, HTTP and Websocket.
 
 ````{tab} gRPC
 
@@ -377,19 +377,22 @@ curl http://localhost:12345/status
 {"jina":{"jina":"######","docarray":"######","jina-proto":"######","jina-vcs-tag":"(unset)","protobuf":"######","proto-backend":"######","grpcio":"######","pyyaml":"######","python":"######","platform":"######","platform-release":"######","platform-version":"######","architecture":"######","processor":"######","uid":"######","session-id":"######","uptime":"######","ci-vendor":"(unset)"},"envs":{"JINA_AUTH_TOKEN":"(unset)","JINA_DEFAULT_HOST":"(unset)","JINA_DEFAULT_TIMEOUT_CTRL":"(unset)","JINA_DEFAULT_WORKSPACE_BASE":"######","JINA_DEPLOYMENT_NAME":"(unset)","JINA_DISABLE_UVLOOP":"(unset)","JINA_EARLY_STOP":"(unset)","JINA_FULL_CLI":"(unset)","JINA_GATEWAY_IMAGE":"(unset)","JINA_GRPC_RECV_BYTES":"(unset)","JINA_GRPC_SEND_BYTES":"(unset)","JINA_HUBBLE_REGISTRY":"(unset)","JINA_HUB_CACHE_DIR":"(unset)","JINA_HUB_NO_IMAGE_REBUILD":"(unset)","JINA_HUB_ROOT":"(unset)","JINA_LOG_CONFIG":"(unset)","JINA_LOG_LEVEL":"(unset)","JINA_LOG_NO_COLOR":"(unset)","JINA_MP_START_METHOD":"(unset)","JINA_RANDOM_PORT_MAX":"(unset)","JINA_RANDOM_PORT_MIN":"(unset)","JINA_DISABLE_HEALTHCHECK_LOGS":"(unset)","JINA_LOCKS_ROOT":"(unset)"}}
 ```
 
-
+(server-compress)=
 ## Add gRPC compression
 
-Communication between {class}`~jina.Executor`s inside a {class}`~jina.Flow` is done via `grpc`. To optimize the performance and the bandwidth of these connections,
-Jina allows the users to specify their (`compression`)[https://grpc.github.io/grpc/python/grpc.html#compression] by passing this `compression` argument to the Flow.
+The communication between {class}`~jina.Executor`s inside a {class}`~jina.Flow` is done via gRPC. To optimize the performance and the bandwidth of these connections,
+Jina allows the users to specify their [compression](https://grpc.github.io/grpc/python/grpc.html#compression) by specifying `compression` argument to the Flow.
 
-The supported methods are: `NoCompression`, `Gzip` and `Deflate`.
+The supported methods are: none, `gzip` and `deflate`.
 
 ```python
 from jina import Flow
 
-f = Flow(compression='Gzip').add(...)
+f = Flow(compression='gzip').add(...)
 ```
+
+Note that this setting is only effective the internal communication of the Flow.
+One can also specify the compression between client and gateway {ref}`as described here<client-compress>`.
 
 (flow-tls)=
 
