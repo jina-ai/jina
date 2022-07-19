@@ -195,41 +195,48 @@ def test_complex_flow(tmpdir, protocol):
 
 
 @pytest.mark.parametrize('needs', ['gateway', 'executor0'])
-def test_floating_needs(needs):
+def test_floating_needs(needs, tmpdir):
+    NUM_REQ = 20
+    file_name = os.path.join(str(tmpdir), 'file.txt')
+    expected_str = 'here ' * NUM_REQ
+
     class FastChangingExecutor(Executor):
         @requests()
         def foo(self, docs, **kwargs):
             for doc in docs:
                 doc.text = 'Hello World'
 
-    class SlowChangingExecutor(Executor):
-        @requests()
-        def foo(self, docs, **kwargs):
-            time.sleep(TIME_SLEEP_FLOATING)
-            for doc in docs:
-                doc.text = 'Change the document but will not affect response'
-
     f = (
         Flow()
         .add(name='executor0', uses=FastChangingExecutor)
         .add(
             name='floating_executor',
-            uses=SlowChangingExecutor,
+            uses=FloatingTestExecutor,
+            uses_with={'file_name': file_name},
             needs=[needs],
             floating=True,
         )
     )
     with f:
-        f.post(on='/endpoint', inputs=DocumentArray.empty(1))  # we need to send a first
-        start_time = time.time()
-        response = f.post(on='/endpoint', inputs=DocumentArray.empty(2))
-        end_time = time.time()
-        assert (end_time - start_time) < TIME_SLEEP_FLOATING
-        assert response.texts == ['Hello World', 'Hello World']
+        for j in range(NUM_REQ):
+            start_time = time.time()
+            response = f.post(on='/endpoint', inputs=DocumentArray.empty(2))
+            end_time = time.time()
+            assert (end_time - start_time) < TIME_SLEEP_FLOATING
+            assert response.texts == ['Hello World', 'Hello World']
+
+    with open(file_name, 'r') as f:
+        resulted_str = f.read()
+
+    assert resulted_str == expected_str
 
 
 @pytest.mark.parametrize('needs', ['gateway', 'executor0', 'executor1'])
-def test_floating_needs_more_complex(needs):
+def test_floating_needs_more_complex(needs, tmpdir):
+    NUM_REQ = 20
+    file_name = os.path.join(str(tmpdir), 'file.txt')
+    expected_str = 'here ' * NUM_REQ
+
     class FastChangingExecutor(Executor):
         @requests()
         def foo(self, docs, **kwargs):
@@ -242,31 +249,30 @@ def test_floating_needs_more_complex(needs):
             for doc in docs:
                 doc.text += ' from FastAddExecutor'
 
-    class SlowChangingExecutor(Executor):
-        @requests()
-        def foo(self, docs, **kwargs):
-            time.sleep(TIME_SLEEP_FLOATING)
-            for doc in docs:
-                doc.text = 'Change the document but will not affect response'
-
     f = (
         Flow()
         .add(name='executor0', uses=FastChangingExecutor)
         .add(name='executor1', uses=FastAddExecutor, needs=['executor0'])
         .add(
             name='floating_executor',
-            uses=SlowChangingExecutor,
+            uses=FloatingTestExecutor,
+            uses_with={'file_name': file_name},
             needs=[needs],
             floating=True,
         )
     )
     with f:
-        f.post(on='/endpoint', inputs=DocumentArray.empty(1))  # we need to send a first
-        start_time = time.time()
-        response = f.post(on='/endpoint', inputs=DocumentArray.empty(2))
-        end_time = time.time()
-        assert (end_time - start_time) < TIME_SLEEP_FLOATING
-        assert response.texts == [
-            'Hello World from FastAddExecutor',
-            'Hello World from FastAddExecutor',
-        ]
+        for j in range(NUM_REQ):
+            start_time = time.time()
+            response = f.post(on='/endpoint', inputs=DocumentArray.empty(2))
+            end_time = time.time()
+            assert (end_time - start_time) < TIME_SLEEP_FLOATING
+            assert response.texts == [
+                'Hello World from FastAddExecutor',
+                'Hello World from FastAddExecutor',
+            ]
+
+    with open(file_name, 'r') as f:
+        resulted_str = f.read()
+
+    assert resulted_str == expected_str
