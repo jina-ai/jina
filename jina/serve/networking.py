@@ -44,6 +44,7 @@ class ReplicaList:
         self._rr_counter = 0  # round robin counter
         self.summary = summary
         self._logger = logger
+        self._destroyed_event = asyncio.Event()
 
     async def reset_connection(self, address: str) -> Union[grpc.aio.Channel, None]:
         """
@@ -69,7 +70,9 @@ class ReplicaList:
             self._connections[id_to_reset] = None
             channel_to_reset = self._address_to_channel[address]
             self._address_to_channel[address] = None
+            self._destroyed_event.clear()
             await self._destroy_connection(channel_to_reset)
+            self._destroyed_event.set()
             # re-add connection:
             self._address_to_connection_idx[address] = id_to_reset
             stubs, channel = self._create_connection(address)
@@ -171,8 +174,13 @@ class ReplicaList:
                 self._logger.debug(
                     f' No valid connection found, give chance for potential resetting of connection'
                 )
-                await asyncio.sleep(GRACE_PERIOD_DESTROY_CONNECTION)
-                return await self._get_next_connection(num_retries=num_retries - 1)
+                try:
+                    await asyncio.wait_for(
+                        self._destroyed_event.wait(),
+                        timeout=GRACE_PERIOD_DESTROY_CONNECTION,
+                    )
+                finally:
+                    return await self._get_next_connection(num_retries=num_retries - 1)
         except IndexError:
             # This can happen as a race condition while _removing_ connections
             self._rr_counter = 0
