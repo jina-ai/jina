@@ -183,8 +183,6 @@ def test_flow_on_callback(protocol):
 
     assert hit == ['done', 'always']
 
-    hit.clear()
-
 
 class DummyCrafterNotImplemented(Executor):
     @requests
@@ -215,8 +213,6 @@ def test_flow_on_error_callback(protocol):
         )
 
     assert hit == ['error', 'always']
-
-    hit.clear()
 
 
 class ExceptionExecutor1(Executor):
@@ -291,24 +287,6 @@ def test_flow_does_not_import_exec_dependencies():
             pass
 
 
-def test_flow_head_runtime_failure(monkeypatch):
-    from jina.serve.runtimes.request_handlers.data_request_handler import (
-        DataRequestHandler,
-    )
-
-    def fail(*args, **kwargs):
-        raise NotImplementedError('Intentional error')
-
-    monkeypatch.setattr(DataRequestHandler, 'merge_routes', fail)
-
-    with Flow().add(shards=2) as f:
-        with pytest.raises(BadServer) as err_info:
-            f.index([Document(text='abbcs')])
-    err_text = err_info.value.args[0].status.description
-    assert 'NotImplementedError' in err_text
-    assert 'Intentional' in err_text and 'error' in err_text
-
-
 class TimeoutSlowExecutor(Executor):
     @requests(on='/index')
     def foo(self, *args, **kwargs):
@@ -332,3 +310,21 @@ def test_flow_timeout_send():
     with f:
         with pytest.raises(Exception):
             f.index([Document()])
+
+
+def test_flow_head_runtime_failure(monkeypatch):
+    from jina.serve.runtimes.request_handlers.data_request_handler import (
+        DataRequestHandler,
+    )
+
+    def fail(*args, **kwargs):
+        raise NotImplementedError('Intentional error')
+
+    monkeypatch.setattr(DataRequestHandler, 'merge_routes', fail)
+
+    with Flow().add(shards=2) as f:
+        with pytest.raises(BadServer) as err_info:
+            f.index([Document(text='abbcs')])
+    err_text = err_info.value.args[0].status.description
+    assert 'NotImplementedError' in err_text
+    assert 'Intentional' in err_text and 'error' in err_text
