@@ -192,3 +192,81 @@ def test_complex_flow(tmpdir, protocol):
         resulted_str = f.read()
 
     assert resulted_str == expected_str
+
+
+@pytest.mark.parametrize('needs', ['gateway', 'executor0'])
+def test_floating_needs(needs):
+    class FastChangingExecutor(Executor):
+        @requests()
+        def foo(self, docs, **kwargs):
+            for doc in docs:
+                doc.text = 'Hello World'
+
+    class SlowChangingExecutor(Executor):
+        @requests()
+        def foo(self, docs, **kwargs):
+            time.sleep(TIME_SLEEP_FLOATING)
+            for doc in docs:
+                doc.text = 'Change the document but will not affect response'
+
+    f = (
+        Flow()
+        .add(name='executor0', uses=FastChangingExecutor)
+        .add(
+            name='floating_executor',
+            uses=SlowChangingExecutor,
+            needs=[needs],
+            floating=True,
+        )
+    )
+    with f:
+        f.post(on='/endpoint', inputs=DocumentArray.empty(1))  # we need to send a first
+        start_time = time.time()
+        response = f.post(on='/endpoint', inputs=DocumentArray.empty(2))
+        end_time = time.time()
+        assert (end_time - start_time) < TIME_SLEEP_FLOATING
+        assert response.texts == ['Hello World', 'Hello World']
+
+
+@pytest.mark.parametrize('needs', ['gateway', 'executor0', 'executor1'])
+def test_floating_needs_more_complex(needs):
+    class FastChangingExecutor(Executor):
+        @requests()
+        def foo(self, docs, **kwargs):
+            for doc in docs:
+                doc.text = 'Hello World'
+
+    class FastAddExecutor(Executor):
+        @requests()
+        def foo(self, docs, **kwargs):
+            for doc in docs:
+                doc.text += ' from FastAddExecutor'
+
+    class SlowChangingExecutor(Executor):
+        @requests()
+        def foo(self, docs, **kwargs):
+            time.sleep(TIME_SLEEP_FLOATING)
+            for doc in docs:
+                doc.text = 'Change the document but will not affect response'
+
+    f = (
+        Flow()
+        .add(name='executor0', uses=FastChangingExecutor)
+        .add(name='executor1', uses=FastAddExecutor, needs=['executor0'])
+        .add(
+            name='floating_executor',
+            uses=SlowChangingExecutor,
+            needs=[needs],
+            floating=True,
+        )
+    )
+    with f:
+        f.post(on='/endpoint', inputs=DocumentArray.empty(1))  # we need to send a first
+        start_time = time.time()
+        response = f.post(on='/endpoint', inputs=DocumentArray.empty(2))
+        end_time = time.time()
+        assert (end_time - start_time) < TIME_SLEEP_FLOATING
+        assert response.texts == [
+            'Hello World from FastAddExecutor',
+            'Hello World from FastAddExecutor',
+        ]

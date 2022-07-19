@@ -187,6 +187,75 @@ for further details
 ```
 
 
+(floating-executors)=
+### Floating Executors
+
+Normally, all Executors form a pipeline that handle and transform the request until it is returned to the Client.
+
+However, you can add Executors that are not connected to the Pipeline and that are not considered in the Flow to form the response for the Client.
+This way of adding Executors in the Flow is meant to be used for asynchronous tasks that may take some time and that are not critical to building the response of the service you are building. For instance,
+logging specific information in external services, storing partial results, etc ...
+ 
+Those Executors are marked with the `floating` keyword when added to a `Flow`
+
+```python
+import time
+from jina import Flow, Executor, requests, DocumentArray
+
+
+class FastChangingExecutor(Executor):
+    @requests()
+    def foo(self, docs, **kwargs):
+        for doc in docs:
+            doc.text = 'Hello World'
+
+
+class SlowChangingExecutor(Executor):
+    @requests()
+    def foo(self, docs, **kwargs):
+        time.sleep(2)
+        print(f' Received {docs.texts}')
+        for doc in docs:
+            doc.text = 'Change the document but will not affect response'
+
+
+f = (
+    Flow()
+    .add(name='executor0', uses=FastChangingExecutor)
+    .add(
+        name='floating_executor',
+        uses=SlowChangingExecutor,
+        needs=['gateway'],
+        floating=True,
+    )
+)
+with f:
+    f.post(on='/endpoint', inputs=DocumentArray.empty(1))  # we need to send a first
+    start_time = time.time()
+    response = f.post(on='/endpoint', inputs=DocumentArray.empty(2))
+    end_time = time.time()
+    print(f' Response time took {end_time - start_time}s')
+    print(f' {response.texts}')
+```
+
+```text
+ Response time took 0.011997222900390625s
+ ['Hello World', 'Hello World']
+ Received ['Hello World', 'Hello World']
+```
+
+In this example you can see how the response is returned without waiting for the `floating` Executor to complete. However, the Flow is not closed until
+the request has been handled also by it.
+
+
+You can plot the Flow and observe how the Executor is floating disconnected from the **Gateway**.
+
+```{figure} flow_floating.svg
+:width: 70%
+
+```
+
+
 ## Set configs
 You can set and override {class}`~jina.Executor` configs when adding them into a {class}`~jina.Flow`.
 
