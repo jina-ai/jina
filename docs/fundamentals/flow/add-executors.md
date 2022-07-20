@@ -255,6 +255,49 @@ You can plot the Flow and observe how the Executor is floating disconnected from
 
 ```
 
+When composing Flows with floating Executors there are certain behaviors that need to be taken into account:
+
+- When adding an Executor after a floating one without specifying its needs parameter, it is chained after the previous non-floating one.
+```python
+from jina import Flow
+
+f = Flow().add().add(name='middle', floating=True).add()
+f.plot()
+```
+
+```{figure} flow_middle_1.svg
+:width: 70%
+
+```
+
+- If you want to chain more than one floating Executor, you need to add both with the floating flag, and explicitly specify the `needs` argument.
+
+```python
+from jina import Flow
+
+f = Flow().add().add(name='middle', floating=True).add(needs=['middle'], floating=True)
+f.plot()
+```
+
+```{figure} flow_chain_floating.svg
+:width: 70%
+
+```
+
+- If you try to add a floating Executor as part of `needs` parameter of another Executor, then the floating Executor is not considered floating anymore.
+
+```python
+from jina import Flow
+
+f = Flow().add().add(name='middle', floating=True).add(needs=['middle'])
+f.plot()
+```
+
+```{figure} flow_cancel_floating.svg
+:width: 70%
+
+```
+
 
 ## Set configs
 You can set and override {class}`~jina.Executor` configs when adding them into a {class}`~jina.Flow`.
