@@ -25,11 +25,11 @@ jobs:
           fetch-depth: 100
       - run: |
           truncate --size=24KB README.md > README-trunc.md
-      - uses: peter-evans/dockerhub-description@v2.3.0
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_DEVBOT_USER }}
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
-          DOCKERHUB_REPOSITORY: jinaai/jina
+      - uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_DEVBOT_USER  }}
+          password: ${{ secrets.DOCKERHUB_DEVBOT_PWD }}
+          repository: jinaai/jina
           readme-filepath: ./README-trunc.md
       - uses: actions/checkout@v2
         with:
