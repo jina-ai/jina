@@ -357,13 +357,11 @@ metas:
                 if (len(env_list) != 2):
                     raise Exception( f' the `${index}` environment variable is wrong format, correct is: key=value ')
                 if check_requirements_env_variable(env_list[0]) is False:
-                   raise Exception( f'the --build-env key:`${env_list[0]}` Can only consist of capital letters and underline')
+                    raise Exception( f'the --build-env key:`${env_list[0]}` Can only consist of capital letters and underline')
                 build_env_dict[env_list[0]] = env_list[1]
             build_env = build_env_dict if len(list(build_env_dict.keys()))>0 else None
 
         requirements_file = work_path / 'requirements.txt'
-        # if build_env and not requirements_file.exists():
-        #     raise Exception(f'The given --build-env environment variables not be used, and requirements.txt is not exists')
 
         requirements_env_variables = []
         if requirements_file.exists(): 
@@ -377,20 +375,12 @@ metas:
         if len(requirements_env_variables) != 0 and not build_env:
             requirements_env_variables_str = ','.join(requirements_env_variables)
             raise Exception(f'The given requirements.txt require `{requirements_env_variables_str}` does not exist!')
-        # elif len(requirements_env_variables) == 0 and build_env:
-        #     build_env_keys = list(build_env.keys())
-        #     str_build_env_keys = ",".join(build_env_keys)
-        #     raise Exception(f'The given environment variables As follows:`{str_build_env_keys}` not be used in the given requirements.txt!')
         elif len(requirements_env_variables) != 0 and build_env:
             build_env_keys = list(build_env.keys())
             in_requirements_env_variables = list(set(requirements_env_variables).difference(set(build_env_keys)))
-            # in_build_env_keys = list(set(build_env_keys).difference(set(requirements_env_variables)))
             if len(in_requirements_env_variables):
                 in_requirements_env_variables_str = ",".join(in_requirements_env_variables)
                 raise Exception(f'The given requirements.txt set environment variables As follows:`{in_requirements_env_variables_str}` not be support in --build-env in cli!')
-            # if len(in_build_env_keys):
-            #     in_build_env_keys_str = ",".join(in_build_env_keys)
-            #     raise Exception(f'The given environment variables As follows:`{in_build_env_keys_str}` not be used in the given requirements.txt!')
 
         console = get_rich_console()
         with console.status(f'Pushing `{self.args.path}` ...') as st:

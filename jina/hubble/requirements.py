@@ -111,6 +111,7 @@ def get_env_variables(line: str):
     env_variables = list(set(env_variables));
     return env_variables
 
+
 def check_env_variable(str):
     return True if ENV_VAR_RE_ONLY_MATCH_UPPERCASE_UNDERLINE.match(str) is not None else False
 
