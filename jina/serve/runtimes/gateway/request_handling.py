@@ -122,8 +122,8 @@ class RequestHandler:
                 request_doc_ids = request.data.docs[
                     :, 'id'
                 ]  # used to maintain order of docs that are filtered by executors
-            tasks_to_respond = []
-            tasks_to_ignore = []
+            responding_tasks = []
+            floating_tasks = []
             endpoint = request.header.exec_endpoint
             r = request.routes.add()
             r.executor = 'gateway'
@@ -142,8 +142,8 @@ class RequestHandler:
                 # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their
                 # subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous
                 # nodes
-                tasks_to_respond.extend([task for ret, task in leaf_tasks if ret])
-                tasks_to_ignore.extend([task for ret, task in leaf_tasks if not ret])
+                responding_tasks.extend([task for ret, task in leaf_tasks if ret])
+                floating_tasks.extend([task for ret, task in leaf_tasks if not ret])
 
             def _sort_response_docs(response):
                 # sort response docs according to their order in the initial request
@@ -184,18 +184,18 @@ class RequestHandler:
                 return response
 
             # In case of empty topologies
-            if not tasks_to_respond:
+            if not responding_tasks:
                 r.end_time.GetCurrentTime()
                 future = asyncio.Future()
                 future.set_result((request, {}))
-                tasks_to_respond.append(future)
+                responding_tasks.append(future)
 
             return (
                 asyncio.ensure_future(
-                    _process_results_at_end_gateway(tasks_to_respond, request_graph)
+                    _process_results_at_end_gateway(responding_tasks, request_graph)
                 ),
-                asyncio.ensure_future(asyncio.gather(*tasks_to_ignore))
-                if len(tasks_to_ignore) > 0
+                asyncio.ensure_future(asyncio.gather(*floating_tasks))
+                if len(floating_tasks) > 0
                 else None,
             )
 
