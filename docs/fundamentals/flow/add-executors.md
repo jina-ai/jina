@@ -190,11 +190,12 @@ for further details
 (floating-executors)=
 ### Floating Executors
 
-Normally, all Executors form a pipeline that handle and transform the request until it is returned to the Client.
+Normally, all Executors form a pipeline that handles and transforms a given request until it is finally returned to the Client.
 
-However, you can add Executors that are not connected to the Pipeline and that are not considered in the Flow to form the response for the Client.
-This way of adding Executors in the Flow is meant to be used for asynchronous tasks that may take some time and that are not critical to building the response of the service you are building. For instance,
-logging specific information in external services, storing partial results, etc ...
+However, you can add Executors that do not feed their outputs back to the pipeline. Therefore, this output will not form the response for the Client.
+
+This way of adding Executors in a Flow can be used for asynchronous backround tasks that may take some time and that are not needed for the response of the service you are building. For instance,
+logging specific information in external services, storing partial results, etc.
  
 Those Executors are marked with the `floating` keyword when added to a `Flow`
 
@@ -254,10 +255,11 @@ You can plot the Flow and observe how the Executor is floating disconnected from
 :width: 70%
 
 ```
+A floating Executor can never come before a non-floating Executor in the {ref}`topology <flow-complex-topologies>` of your Flow.
 
-When composing Flows with floating Executors there are certain behaviors that need to be taken into account:
+This leads to the following behaviors:
 
-- When adding an Executor after a floating one without specifying its needs parameter, it is chained after the previous non-floating one.
+- **Implicit reordering**: When adding a non-floating Executor after a floating Executor without specifying its `needs` parameter, the non-floating Executor is chained after the previous non-floating one.
 ```python
 from jina import Flow
 
@@ -270,7 +272,7 @@ f.plot()
 
 ```
 
-- If you want to chain more than one floating Executor, you need to add both with the floating flag, and explicitly specify the `needs` argument.
+- **Chaining floating Executors**: If you want to chain more than one floating Executor, you need to add all of them with the `floating` flag, and explicitly specify the `needs` argument.
 
 ```python
 from jina import Flow
@@ -284,7 +286,7 @@ f.plot()
 
 ```
 
-- If you try to add a floating Executor as part of `needs` parameter of another Executor, then the floating Executor is not considered floating anymore.
+- **Overriding of `floating` flag**: If you try to add a floating Executor as part of `needs` parameter of a non-floating Executor, then the floating Executor is not considered floating anymore.
 
 ```python
 from jina import Flow
