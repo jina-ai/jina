@@ -81,7 +81,7 @@ class RequestHandler:
 
     def handle_request(
         self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
-    ) -> Callable[['Request'], 'asyncio.Future']:
+    ) -> Callable[['Request'], 'Tuple[Future, Optional[Future]]']:
         """
         Function that handles the requests arriving to the gateway. This will be passed to the streamer.
 
@@ -132,9 +132,9 @@ class RequestHandler:
             # querying the graph
             for origin_node in request_graph.origin_nodes:
                 leaf_tasks = origin_node.get_leaf_tasks(
-                    connection_pool,
-                    request,
-                    None,
+                    connection_pool=connection_pool,
+                    request_to_send=request,
+                    previous_task=None,
                     endpoint=endpoint,
                     executor_endpoint_mapping=self._executor_endpoint_mapping,
                     target_executor_pattern=request.header.target_executor,
@@ -201,7 +201,7 @@ class RequestHandler:
 
         return _handle_request
 
-    def handle_result(self) -> Callable[['Request'], 'asyncio.Future']:
+    def handle_result(self) -> Callable[['Request'], 'Request']:
         """
         Function that handles the result when extracted from the request future
 

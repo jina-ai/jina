@@ -5,7 +5,7 @@ import pytest
 
 from jina import DocumentArray, Executor, Flow, __default_endpoint__, requests
 
-TIME_SLEEP_FLOATING = 2
+TIME_SLEEP_FLOATING = 1.0
 
 
 class FloatingTestExecutor(Executor):
@@ -234,8 +234,31 @@ def test_floating_needs(needs, tmpdir):
 @pytest.mark.parametrize('needs', ['gateway', 'executor0', 'executor1'])
 def test_floating_needs_more_complex(needs, tmpdir):
     NUM_REQ = 20
-    file_name = os.path.join(str(tmpdir), 'file.txt')
-    expected_str = 'here ' * NUM_REQ
+    print(f' tmpdir {tmpdir}')
+    file_name1 = os.path.join(str(tmpdir), 'file1.txt')
+    file_name2 = os.path.join(str(tmpdir), 'file2.txt')
+
+    class FloatingTestExecutorWriteDocs(Executor):
+        def __init__(self, file_name, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.file_name = file_name
+
+        @requests
+        def foo(self, docs, **kwargs):
+            time.sleep(TIME_SLEEP_FLOATING)
+            with open(self.file_name, 'a+') as f:
+                for d in docs:
+                    f.write(d.text)
+
+            for d in docs:
+                d.text = 'change it'
+
+    expected_str1 = ''
+    if needs == 'executor0':
+        expected_str1 = 'Hello World' * NUM_REQ
+    elif needs == 'executor1':
+        expected_str1 = 'Hello World from FastAddExecutor' * NUM_REQ
+    expected_str2 = 'change it' * NUM_REQ
 
     class FastChangingExecutor(Executor):
         @requests()
@@ -255,24 +278,35 @@ def test_floating_needs_more_complex(needs, tmpdir):
         .add(name='executor1', uses=FastAddExecutor, needs=['executor0'])
         .add(
             name='floating_executor',
-            uses=FloatingTestExecutor,
-            uses_with={'file_name': file_name},
+            uses=FloatingTestExecutorWriteDocs,
+            uses_with={'file_name': file_name1},
             needs=[needs],
+            floating=True,
+        )
+        .add(
+            name='floating_executor_2',
+            uses=FloatingTestExecutorWriteDocs,
+            uses_with={'file_name': file_name2},
+            needs=['floating_executor'],
             floating=True,
         )
     )
     with f:
         for j in range(NUM_REQ):
             start_time = time.time()
-            response = f.post(on='/endpoint', inputs=DocumentArray.empty(2))
+            response = f.post(on='/endpoint', inputs=DocumentArray.empty(1))
             end_time = time.time()
             assert (end_time - start_time) < TIME_SLEEP_FLOATING
             assert response.texts == [
                 'Hello World from FastAddExecutor',
-                'Hello World from FastAddExecutor',
             ]
 
-    with open(file_name, 'r') as f:
+    with open(file_name1, 'r') as f:
         resulted_str = f.read()
 
-    assert resulted_str == expected_str
+    assert resulted_str == expected_str1
+
+    with open(file_name2, 'r') as f:
+        resulted_str = f.read()
+
+    assert resulted_str == expected_str2
