@@ -1,3 +1,5 @@
+# cf. https://github.com/ryanfox/sphinx-markdown-tables/issues/36
+markdown<3.4.0
 sphinx
 sphinx-argparse==0.3.1
 sphinxcontrib-apidoc==0.3.0
