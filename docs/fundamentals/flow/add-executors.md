@@ -190,14 +190,16 @@ for further details
 (floating-executors)=
 ### Floating Executors
 
+Some Executors in your Flow may be used for asynchronous background tasks that can take some time and that do not generate a needed output. For instance,
+logging specific information in external services, storing partial results, etc.
+
+You can unblock your Flow from such tasks by using *floating Executors*.
+
 Normally, all Executors form a pipeline that handles and transforms a given request until it is finally returned to the Client.
 
-However, you can add Executors that do not feed their outputs back to the pipeline. Therefore, this output will not form the response for the Client.
-
-This way of adding Executors in a Flow can be used for asynchronous backround tasks that may take some time and that are not needed for the response of the service you are building. For instance,
-logging specific information in external services, storing partial results, etc.
+However, floating Executors do not feed their outputs back to the pipeline. Therefore, this output will not form the response for the Client, and the response can be returned without waiting for the floating Executor to complete his task.
  
-Those Executors are marked with the `floating` keyword when added to a `Flow`
+Those Executors are marked with the `floating` keyword when added to a `Flow`:
 
 ```python
 import time
