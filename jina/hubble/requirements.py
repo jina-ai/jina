@@ -5,6 +5,7 @@ import re
 from typing import Dict, Tuple, cast
 
 from pkg_resources import Requirement
+from soupsieve import match
 
 # Adopted from requirements-parser:
 # https://github.com/madpah/requirements-parser
@@ -48,6 +49,8 @@ VCS_REGEX = re.compile(
     r'(?P<path>[^#@]+)(@(?P<revision>[^#]+))?(#(?P<fragment>\S+))?'
 )
 ENV_VAR_RE = re.compile(r"(?P<var>\$\{(?P<name>[A-Z0-9_]+)\})")
+
+ENV_VAR_RE_ONLY_MATCH_UPPERCASE_UNDERLINE = re.compile(r"^[A-Z_]+$");
 
 
 extras_require_search = re.compile(r'(?P<name>.+)\[(?P<extras>[^\]]+)\]')
@@ -107,6 +110,9 @@ def get_env_variables(line: str):
         env_variables.append(var_name)
     env_variables = list(set(env_variables));
     return env_variables
+
+def env_variables_only_match_uppercase_underline(str):
+    return True if ENV_VAR_RE_ONLY_MATCH_UPPERCASE_UNDERLINE.match(str) is not None else False
 
 
 def expand_env_variables(line: str):

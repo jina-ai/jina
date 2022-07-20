@@ -23,7 +23,8 @@ from jina.hubble.helper import (
     get_request_header,
     parse_hub_uri,
     upload_file,
-    get_requirements_env_variables
+    get_requirements_env_variables,
+    check_requirements_env_variable
 )
 from jina.hubble.hubapi import (
     dump_secret,
@@ -355,6 +356,8 @@ metas:
                 env_list = env.split('=')
                 if (len(env_list) != 2):
                     raise Exception( f' the `${index}` environment variable is wrong format, correct is: key=value ')
+                if check_requirements_env_variable(env_list[0]) is False:
+                   raise Exception( f'the --build-env key:`${env_list[0]}` Can only consist of capital letters and underline')
                 build_env_dict[env_list[0]] = env_list[1]
             build_env = build_env_dict if len(list(build_env_dict.keys()))>0 else None
 
@@ -367,6 +370,9 @@ metas:
             if requirements_file.parent != work_path:
                 raise Exception(f'The requirements.txt must be placed at the given folder `{work_path}`')
             requirements_env_variables = get_requirements_env_variables(requirements_file)
+            for index, env in enumerate(requirements_env_variables):
+                if check_requirements_env_variable(env) is False:
+                   raise Exception( f'the requirements file env variable :`${env}` Can only consist of capital letters and underline')
 
         if len(requirements_env_variables) != 0 and not build_env:
             requirements_env_variables_str = ','.join(requirements_env_variables)

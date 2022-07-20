@@ -498,6 +498,9 @@ def get_requirements_env_variables(requirements_file: 'Path'):
 
     return env_variables
 
+def check_requirements_env_variable(str):
+    from .requirements import check_env_variable
+    return check_env_variable(str)
 
 def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jina',)):
     from .requirements import parse_requirement
