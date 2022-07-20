@@ -166,6 +166,7 @@ def get_fastapi_app(
 
     @app.on_event('shutdown')
     async def _shutdown():
+        await streamer.wait_floating_requests_end()
         await connection_pool.close()
 
     @app.websocket('/')
@@ -233,7 +234,6 @@ def get_fastapi_app(
             return request_dict
 
     from docarray import DocumentArray
-
     from jina.proto import jina_pb2
     from jina.serve.executors import __dry_run_endpoint__
     from jina.serve.runtimes.gateway.http.models import PROTO_TO_PYDANTIC_MODELS

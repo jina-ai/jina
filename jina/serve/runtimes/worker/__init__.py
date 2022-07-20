@@ -142,6 +142,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         :param context: grpc context
         :returns: the response request
         """
+        self.logger.debug('got an endpoint discovery request')
         endpointsProto = jina_pb2.EndpointsProto()
         endpointsProto.endpoints.extend(
             list(self._data_request_handler._executor.requests.keys())

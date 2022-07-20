@@ -12,6 +12,7 @@ from grpc_health.v1 import health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha.reflection_pb2 import ServerReflectionRequest
 from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 
+from jina import __default_endpoint__
 from jina.enums import PollingType
 from jina.excepts import EstablishGrpcConnectionError
 from jina.importer import ImportExtensions
@@ -30,6 +31,9 @@ if TYPE_CHECKING:
 
 DEFAULT_MINIMUM_RETRIES = 3
 GRACE_PERIOD_DESTROY_CONNECTION = 0.5
+
+default_endpoints_proto = jina_pb2.EndpointsProto()
+default_endpoints_proto.endpoints.extend([__default_endpoint__])
 
 
 class ReplicaList:
@@ -897,12 +901,7 @@ class GrpcConnectionPool:
                         total_num_tries=total_num_tries,
                     )
                 except AttributeError:
-                    # in gateway2gateway communication, gateway does not expose this endpoint. So just send empty list which corresponds to all endpoints valid
-                    from jina import __default_endpoint__
-
-                    ep = jina_pb2.EndpointsProto()
-                    ep.endpoints.extend([__default_endpoint__])
-                    return ep, None
+                    return default_endpoints_proto, None
 
         return asyncio.create_task(task_wrapper())
 

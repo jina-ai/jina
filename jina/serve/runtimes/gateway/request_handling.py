@@ -1,7 +1,7 @@
 import asyncio
 import copy
 import time
-from typing import TYPE_CHECKING, Callable, List, Optional
+from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
 
 import grpc.aio
 
@@ -12,6 +12,8 @@ from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 
 if TYPE_CHECKING:
+    from asyncio import Future
+
     from prometheus_client import CollectorRegistry
 
     from jina.types.request import Request
@@ -79,7 +81,7 @@ class RequestHandler:
 
     def handle_request(
         self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
-    ) -> Callable[['Request'], 'asyncio.Future']:
+    ) -> Callable[['Request'], 'Tuple[Future, Optional[Future]]']:
         """
         Function that handles the requests arriving to the gateway. This will be passed to the streamer.
 
@@ -110,7 +112,7 @@ class RequestHandler:
             for node, (endp, _) in zip(nodes, endpoints):
                 self._executor_endpoint_mapping[node.name] = endp.endpoints
 
-        def _handle_request(request: 'Request') -> 'asyncio.Future':
+        def _handle_request(request: 'Request') -> 'Tuple[Future, Optional[Future]]':
             self._update_start_request_metrics(request)
 
             # important that the gateway needs to have an instance of the graph per request
@@ -120,8 +122,8 @@ class RequestHandler:
                 request_doc_ids = request.data.docs[
                     :, 'id'
                 ]  # used to maintain order of docs that are filtered by executors
-            tasks_to_respond = []
-            tasks_to_ignore = []
+            responding_tasks = []
+            floating_tasks = []
             endpoint = request.header.exec_endpoint
             r = request.routes.add()
             r.executor = 'gateway'
@@ -130,9 +132,9 @@ class RequestHandler:
             # querying the graph
             for origin_node in request_graph.origin_nodes:
                 leaf_tasks = origin_node.get_leaf_tasks(
-                    connection_pool,
-                    request,
-                    None,
+                    connection_pool=connection_pool,
+                    request_to_send=request,
+                    previous_task=None,
                     endpoint=endpoint,
                     executor_endpoint_mapping=self._executor_endpoint_mapping,
                     target_executor_pattern=request.header.target_executor,
@@ -140,8 +142,8 @@ class RequestHandler:
                 # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their
                 # subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous
                 # nodes
-                tasks_to_respond.extend([task for ret, task in leaf_tasks if ret])
-                tasks_to_ignore.extend([task for ret, task in leaf_tasks if not ret])
+                responding_tasks.extend([task for ret, task in leaf_tasks if ret])
+                floating_tasks.extend([task for ret, task in leaf_tasks if not ret])
 
             def _sort_response_docs(response):
                 # sort response docs according to their order in the initial request
@@ -179,22 +181,27 @@ class RequestHandler:
 
                 if graph.has_filter_conditions:
                     _sort_response_docs(response)
-
                 return response
 
             # In case of empty topologies
-            if not tasks_to_respond:
+            if not responding_tasks:
                 r.end_time.GetCurrentTime()
                 future = asyncio.Future()
                 future.set_result((request, {}))
-                tasks_to_respond.append(future)
-            return asyncio.ensure_future(
-                _process_results_at_end_gateway(tasks_to_respond, request_graph)
+                responding_tasks.append(future)
+
+            return (
+                asyncio.ensure_future(
+                    _process_results_at_end_gateway(responding_tasks, request_graph)
+                ),
+                asyncio.ensure_future(asyncio.gather(*floating_tasks))
+                if len(floating_tasks) > 0
+                else None,
             )
 
         return _handle_request
 
-    def handle_result(self) -> Callable[['Request'], 'asyncio.Future']:
+    def handle_result(self) -> Callable[['Request'], 'Request']:
         """
         Function that handles the result when extracted from the request future
 

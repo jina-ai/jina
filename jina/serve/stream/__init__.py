@@ -6,14 +6,13 @@ from typing import (
     Awaitable,
     Callable,
     Iterator,
-    List,
     Optional,
     Union,
 )
 
 from jina.excepts import InternalNetworkError
 from jina.logging.logger import JinaLogger
-from jina.serve.stream.helper import AsyncRequestsIterator, RequestsCounter
+from jina.serve.stream.helper import AsyncRequestsIterator, _RequestsCounter
 
 __all__ = ['RequestStreamer']
 
@@ -53,6 +52,7 @@ class RequestStreamer:
         self._request_handler = request_handler
         self._result_handler = result_handler
         self._end_of_iter_handler = end_of_iter_handler
+        self.total_num_floating_tasks_alive = 0
 
     async def stream(
         self, request_iterator, context=None, *args
@@ -96,9 +96,13 @@ class RequestStreamer:
         :yield: responses
         """
         result_queue = asyncio.Queue()
+        floating_results_queue = asyncio.Queue()
         end_of_iter = asyncio.Event()
         all_requests_handled = asyncio.Event()
-        requests_to_handle = RequestsCounter()
+        requests_to_handle = _RequestsCounter()
+        floating_tasks_to_handle = _RequestsCounter()
+        all_floating_requests_awaited = asyncio.Event()
+        empty_requests_iterator = asyncio.Event()
 
         def update_all_handled():
             if end_of_iter.is_set() and requests_to_handle.count == 0:
@@ -119,6 +123,9 @@ class RequestStreamer:
             """
             result_queue.put_nowait(future)
 
+        def hanging_callback(future: 'asyncio.Future'):
+            floating_results_queue.put_nowait(future)
+
         async def iterate_requests() -> None:
             """
             1. Traverse through the request iterator.
@@ -128,14 +135,27 @@ class RequestStreamer:
             4. Handle EOI (needed for websocket client)
             5. Set `end_of_iter` event
             """
+            num_reqs = 0
             async for request in AsyncRequestsIterator(
                 iterator=request_iterator,
                 request_counter=requests_to_handle,
                 prefetch=self._prefetch,
             ):
+                num_reqs += 1
                 requests_to_handle.count += 1
-                future: 'asyncio.Future' = self._request_handler(request=request)
-                future.add_done_callback(callback)
+                future_responses, future_hanging = self._request_handler(
+                    request=request
+                )
+                future_responses.add_done_callback(callback)
+                if future_hanging is not None:
+                    floating_tasks_to_handle.count += 1
+                    future_hanging.add_done_callback(hanging_callback)
+                else:
+                    all_floating_requests_awaited.set()
+
+            if num_reqs == 0:
+                empty_requests_iterator.set()
+
             if self._end_of_iter_handler is not None:
                 self._end_of_iter_handler()
             end_of_iter.set()
@@ -144,8 +164,37 @@ class RequestStreamer:
                 # It will be waiting for something that will never appear
                 future_cancel = asyncio.ensure_future(end_future())
                 result_queue.put_nowait(future_cancel)
+            if (
+                all_floating_requests_awaited.is_set()
+                or empty_requests_iterator.is_set()
+            ):
+                # It will be waiting for something that will never appear
+                future_cancel = asyncio.ensure_future(end_future())
+                floating_results_queue.put_nowait(future_cancel)
+
+        async def handle_floating_responses():
+            while (
+                not all_floating_requests_awaited.is_set()
+                and not empty_requests_iterator.is_set()
+            ):
+                hanging_response = await floating_results_queue.get()
+                try:
+                    hanging_response.result()
+                    floating_tasks_to_handle.count -= 1
+                    if floating_tasks_to_handle.count == 0 and end_of_iter.is_set():
+                        all_floating_requests_awaited.set()
+                except self._EndOfStreaming:
+                    pass
 
         asyncio.create_task(iterate_requests())
+        handle_floating_task = asyncio.create_task(handle_floating_responses())
+        self.total_num_floating_tasks_alive += 1
+
+        def floating_task_done(*args):
+            self.total_num_floating_tasks_alive -= 1
+
+        handle_floating_task.add_done_callback(floating_task_done)
+
         while not all_requests_handled.is_set():
             future = await result_queue.get()
             try:
@@ -155,3 +204,10 @@ class RequestStreamer:
                 update_all_handled()
             except self._EndOfStreaming:
                 pass
+
+    async def wait_floating_requests_end(self):
+        """
+        Await this coroutine to make sure that all the floating tasks that the request handler may bring are properly consumed
+        """
+        while self.total_num_floating_tasks_alive > 0:
+            await asyncio.sleep(0)

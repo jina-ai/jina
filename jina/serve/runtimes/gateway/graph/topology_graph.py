@@ -22,7 +22,7 @@ class TopologyGraph:
 
     :param graph_description: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to
         determine the nodes that receive the very first request and the ones whose response needs to be sent back to the client. All the nodes with no outgoing nodes
-        will be considered to be hanging, and they will be "flagged" so that the user can ignore their tasks and not await them.
+        will be considered to be floating, and they will be "flagged" so that the user can ignore their tasks and not await them.
 
     :param conditions: A dictionary describing which Executors have special conditions to be fullfilled by the `Documents` to be sent to them.
     :param reduce: Reduce requests arriving from multiple needed predecessors, True by default
@@ -33,7 +33,7 @@ class TopologyGraph:
             self,
             name: str,
             number_of_parts: int = 1,
-            hanging: bool = False,
+            floating: bool = False,
             filter_condition: dict = None,
             reduce: bool = True,
             timeout_send: Optional[float] = None,
@@ -42,7 +42,7 @@ class TopologyGraph:
             self.name = name
             self.outgoing_nodes = []
             self.number_of_parts = number_of_parts
-            self.hanging = hanging
+            self.floating = floating
             self.parts_to_send = []
             self.original_parameters = []
             self.start_time = None
@@ -224,14 +224,14 @@ class TopologyGraph:
             )
             if self.leaf:  # I am like a leaf
                 return [
-                    (not self.hanging, wait_previous_and_send_task)
+                    (not self.floating, wait_previous_and_send_task)
                 ]  # I am the last in the chain
             hanging_tasks_tuples = []
             for outgoing_node in self.outgoing_nodes:
                 t = outgoing_node.get_leaf_tasks(
-                    connection_pool,
-                    None,
-                    wait_previous_and_send_task,
+                    connection_pool=connection_pool,
+                    request_to_send=None,
+                    previous_task=wait_previous_and_send_task,
                     endpoint=endpoint,
                     executor_endpoint_mapping=executor_endpoint_mapping,
                     target_executor_pattern=target_executor_pattern,
@@ -268,6 +268,29 @@ class TopologyGraph:
                 request = outgoing_node.add_route(request=request)
             return request
 
+    class _EndGatewayNode(_ReqReplyNode):
+
+        """
+        Dummy node to be added before the gateway. This is to solve a problem we had when implementing `floating Executors`.
+        If we do not add this at the end, this structure does not work:
+
+            GATEWAY -> EXEC1 -> FLOATING
+                    -> GATEWAY
+        """
+
+        def get_endpoints(self, *args, **kwargs) -> asyncio.Task:
+            async def task_wrapper():
+                from jina.serve.networking import default_endpoints_proto
+
+                return default_endpoints_proto, None
+
+            return asyncio.create_task(task_wrapper())
+
+        def get_leaf_tasks(
+            self, previous_task: Optional[asyncio.Task], *args, **kwargs
+        ) -> List[Tuple[bool, asyncio.Task]]:
+            return [(True, previous_task)]
+
     def __init__(
         self,
         graph_representation: Dict,
@@ -283,13 +306,13 @@ class TopologyGraph:
             origin_node_names = graph_representation['start-gateway']
         else:
             origin_node_names = set()
-        hanging_deployment_names = set()
+        floating_deployment_set = set()
         node_set = set()
         for node_name, outgoing_node_names in graph_representation.items():
             if node_name not in {'start-gateway', 'end-gateway'}:
                 node_set.add(node_name)
             if len(outgoing_node_names) == 0:
-                hanging_deployment_names.add(node_name)
+                floating_deployment_set.add(node_name)
             for out_node_name in outgoing_node_names:
                 if out_node_name not in {'start-gateway', 'end-gateway'}:
                     node_set.add(out_node_name)
@@ -303,7 +326,7 @@ class TopologyGraph:
                 number_of_parts=num_parts_per_node[node_name]
                 if num_parts_per_node[node_name] > 0
                 else 1,
-                hanging=node_name in hanging_deployment_names,
+                floating=node_name in floating_deployment_set,
                 filter_condition=condition,
                 reduce=node_name not in deployments_disable_reduce,
                 timeout_send=timeout_send,
@@ -315,6 +338,10 @@ class TopologyGraph:
                 for out_node_name in outgoing_node_names:
                     if out_node_name not in ['start-gateway', 'end-gateway']:
                         nodes[node_name].outgoing_nodes.append(nodes[out_node_name])
+                    if out_node_name == 'end-gateway':
+                        nodes[node_name].outgoing_nodes.append(
+                            self._EndGatewayNode(name='__end_gateway__', floating=False)
+                        )
 
         self._origin_nodes = [nodes[node_name] for node_name in origin_node_names]
         self.has_filter_conditions = bool(graph_conditions)

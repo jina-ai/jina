@@ -78,6 +78,7 @@ def get_fastapi_app(
 
     @app.on_event('shutdown')
     async def _shutdown():
+        await streamer.wait_floating_requests_end()
         await connection_pool.close()
 
     openapi_tags = []
@@ -106,7 +107,6 @@ def get_fastapi_app(
             return {}
 
         from docarray import DocumentArray
-
         from jina.proto import jina_pb2
         from jina.serve.executors import __dry_run_endpoint__
         from jina.serve.runtimes.gateway.http.models import (
@@ -311,13 +311,14 @@ def get_fastapi_app(
             from dataclasses import asdict
 
             import strawberry
-            from docarray import DocumentArray
             from docarray.document.strawberry_type import (
                 JSONScalar,
                 StrawberryDocument,
                 StrawberryDocumentInput,
             )
             from strawberry.fastapi import GraphQLRouter
+
+            from docarray import DocumentArray
 
             async def get_docs_from_endpoint(
                 data, target_executor, parameters, exec_endpoint

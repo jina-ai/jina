@@ -21,7 +21,7 @@ async def check_health_websocket(addr):
     import websockets
 
     try:
-        async with websockets.connect(f'ws://{addr}') as websocket:
+        async with websockets.connect(f'ws://{addr}'):
             pass
     except websockets.exceptions.WebSocketException as e:
         print('The websocket gateway is unhealthy')

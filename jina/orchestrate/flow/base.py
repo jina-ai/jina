@@ -722,7 +722,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
                 need = _add_node(graph_dict, need)
                 graph_dict[need].append(node)
 
-        # find all non hanging leafs
+        # find all non floating leafs
         last_deployment = self._last_deployment
         if last_deployment != 'gateway':
             graph_dict[last_deployment].append('end-gateway')
@@ -759,7 +759,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
     @allowed_levels([FlowBuildLevel.EMPTY])
     def needs_all(self, name: str = 'joiner', *args, **kwargs) -> 'Flow':
         """
-        Collect all hanging Deployments so far and add a blocker to the Flow; wait until all handing pods completed.
+        Collect all floating Deployments so far and add a blocker to the Flow; wait until all handing pods completed.
 
         :param name: the name of this joiner (default is ``joiner``)
         :param args: additional positional arguments which are forwarded to the add and needs function

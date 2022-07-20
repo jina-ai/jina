@@ -1,6 +1,6 @@
 import asyncio
 from contextlib import AsyncExitStack
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Tuple
 
 from starlette import status
 
@@ -108,14 +108,16 @@ class HTTPBaseClient(BaseClient):
                 HTTPClientlet(url=url, logger=self.logger, **kwargs)
             )
 
-            def _request_handler(request: 'Request') -> 'asyncio.Future':
+            def _request_handler(
+                request: 'Request',
+            ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
                 """
                 For HTTP Client, for each request in the iterator, we `send_message` using
                 http POST request and add it to the list of tasks which is awaited and yielded.
                 :param request: current request in the iterator
                 :return: asyncio Task for sending message
                 """
-                return asyncio.ensure_future(iolet.send_message(request=request))
+                return asyncio.ensure_future(iolet.send_message(request=request)), None
 
             def _result_handler(result):
                 return result

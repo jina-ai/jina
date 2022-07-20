@@ -121,6 +121,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
         # usually async_cancel should already have been called, but then its a noop
         # if the runtime is stopped without a sigterm (e.g. as a context manager, this can happen)
         self._health_servicer.enter_graceful_shutdown()
+        await self.streamer.wait_floating_requests_end()
         await self.async_cancel()
         await self._connection_pool.close()
 
