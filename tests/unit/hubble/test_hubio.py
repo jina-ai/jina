@@ -134,15 +134,8 @@ class FetchMetaMockResponse:
 @pytest.mark.parametrize('force', [None, 'UUID8'])
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['DOCSQA_LIB_TOKEN=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 key2=test2'])
-@pytest.mark.parametrize(
-    'expected_error',
-    [
-        ('The given requirements.txt require `DOCSQA_LIB_TOKEN` does not exist!'),
-       
-    ],
-)
-def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, build_env, expected_error):
+@pytest.mark.parametrize('build_env', ['DOCSQA_LIB_TOKEN=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'])
+def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, build_env):
     mock = mocker.Mock()
 
     def _mock_post(url, data, headers=None, stream=True):

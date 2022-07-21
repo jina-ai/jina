@@ -123,14 +123,12 @@ def expand_env_variables(line: str) -> str:
     2. Ensure consistency across platforms for requirement files.
     Valid characters in variable names follow the `POSIX standard
     <http://pubs.opengroup.org/onlinepubs/9699919799/>`_ and are limited
-    to uppercase letter, digits and the `_` (underscore).
+    to uppercase letter and the `_` (underscore).
     Replace environment variables in requirement if it's defined.
     """
     for env_var, var_name in ENV_VAR_RE.findall(line):
-            value = os.getenv(var_name)
-
-            if not value:
-                raise Exception(f'The given requirements.txt require environment variables `{var_name}` does not exist!')
-
-            line = line.replace(env_var, value)
+        value = os.getenv(var_name)
+        if not value:
+            raise Exception(f'The given requirements.txt require environment variables `{var_name}` does not exist!')
+        line = line.replace(env_var, value)
     return line
