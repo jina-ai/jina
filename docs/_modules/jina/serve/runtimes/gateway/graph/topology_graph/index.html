@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/graph/topology_graph.html" />
 
     <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>jina.serve.runtimes.gateway.graph.topology_graph - Jina 3.6.13 documentation</title>
+        <title>jina.serve.runtimes.gateway.graph.topology_graph - Jina 3.6.16 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css" />
@@ -146,7 +146,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../../">
-                <div class="brand">Jina 3.6.13 documentation</div>
+                <div class="brand">Jina 3.6.16 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -376,7 +376,7 @@
 
 <span class="sd">    :param graph_description: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to</span>
 <span class="sd">        determine the nodes that receive the very first request and the ones whose response needs to be sent back to the client. All the nodes with no outgoing nodes</span>
-<span class="sd">        will be considered to be hanging, and they will be &quot;flagged&quot; so that the user can ignore their tasks and not await them.</span>
+<span class="sd">        will be considered to be floating, and they will be &quot;flagged&quot; so that the user can ignore their tasks and not await them.</span>
 
 <span class="sd">    :param conditions: A dictionary describing which Executors have special conditions to be fullfilled by the `Documents` to be sent to them.</span>
 <span class="sd">    :param reduce: Reduce requests arriving from multiple needed predecessors, True by default</span>
@@ -387,7 +387,7 @@
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
             <span class="n">number_of_parts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="n">hanging</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">floating</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">filter_condition</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">reduce</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -396,7 +396,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">outgoing_nodes</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">number_of_parts</span> <span class="o">=</span> <span class="n">number_of_parts</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">hanging</span> <span class="o">=</span> <span class="n">hanging</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">floating</span> <span class="o">=</span> <span class="n">floating</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">original_parameters</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="kc">None</span>
@@ -447,7 +447,9 @@
                 <span class="k">raise</span>
 
         <span class="k">def</span> <span class="nf">get_endpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_pool</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">send_discover_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">connection_pool</span><span class="o">.</span><span class="n">send_discover_endpoint</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">retries</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_retries</span>
+            <span class="p">)</span>
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_previous_and_send</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
@@ -576,14 +578,14 @@
             <span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaf</span><span class="p">:</span>  <span class="c1"># I am like a leaf</span>
                 <span class="k">return</span> <span class="p">[</span>
-                    <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">hanging</span><span class="p">,</span> <span class="n">wait_previous_and_send_task</span><span class="p">)</span>
+                    <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">floating</span><span class="p">,</span> <span class="n">wait_previous_and_send_task</span><span class="p">)</span>
                 <span class="p">]</span>  <span class="c1"># I am the last in the chain</span>
             <span class="n">hanging_tasks_tuples</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">outgoing_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outgoing_nodes</span><span class="p">:</span>
                 <span class="n">t</span> <span class="o">=</span> <span class="n">outgoing_node</span><span class="o">.</span><span class="n">get_leaf_tasks</span><span class="p">(</span>
-                    <span class="n">connection_pool</span><span class="p">,</span>
-                    <span class="kc">None</span><span class="p">,</span>
-                    <span class="n">wait_previous_and_send_task</span><span class="p">,</span>
+                    <span class="n">connection_pool</span><span class="o">=</span><span class="n">connection_pool</span><span class="p">,</span>
+                    <span class="n">request_to_send</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">previous_task</span><span class="o">=</span><span class="n">wait_previous_and_send_task</span><span class="p">,</span>
                     <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
                     <span class="n">executor_endpoint_mapping</span><span class="o">=</span><span class="n">executor_endpoint_mapping</span><span class="p">,</span>
                     <span class="n">target_executor_pattern</span><span class="o">=</span><span class="n">target_executor_pattern</span><span class="p">,</span>
@@ -620,6 +622,29 @@
                 <span class="n">request</span> <span class="o">=</span> <span class="n">outgoing_node</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">request</span>
 
+    <span class="k">class</span> <span class="nc">_EndGatewayNode</span><span class="p">(</span><span class="n">_ReqReplyNode</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dummy node to be added before the gateway. This is to solve a problem we had when implementing `floating Executors`.</span>
+<span class="sd">        If we do not add this at the end, this structure does not work:</span>
+
+<span class="sd">            GATEWAY -&gt; EXEC1 -&gt; FLOATING</span>
+<span class="sd">                    -&gt; GATEWAY</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">get_endpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">task_wrapper</span><span class="p">():</span>
+                <span class="kn">from</span> <span class="nn">jina.serve.networking</span> <span class="kn">import</span> <span class="n">default_endpoints_proto</span>
+
+                <span class="k">return</span> <span class="n">default_endpoints_proto</span><span class="p">,</span> <span class="kc">None</span>
+
+            <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">task_wrapper</span><span class="p">())</span>
+
+        <span class="k">def</span> <span class="nf">get_leaf_tasks</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">previous_task</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]]:</span>
+            <span class="k">return</span> <span class="p">[(</span><span class="kc">True</span><span class="p">,</span> <span class="n">previous_task</span><span class="p">)]</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">graph_representation</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
@@ -635,13 +660,13 @@
             <span class="n">origin_node_names</span> <span class="o">=</span> <span class="n">graph_representation</span><span class="p">[</span><span class="s1">&#39;start-gateway&#39;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">origin_node_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-        <span class="n">hanging_deployment_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">floating_deployment_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">node_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">outgoing_node_names</span> <span class="ow">in</span> <span class="n">graph_representation</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;start-gateway&#39;</span><span class="p">,</span> <span class="s1">&#39;end-gateway&#39;</span><span class="p">}:</span>
                 <span class="n">node_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_name</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">outgoing_node_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">hanging_deployment_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_name</span><span class="p">)</span>
+                <span class="n">floating_deployment_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_name</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">out_node_name</span> <span class="ow">in</span> <span class="n">outgoing_node_names</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">out_node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;start-gateway&#39;</span><span class="p">,</span> <span class="s1">&#39;end-gateway&#39;</span><span class="p">}:</span>
                     <span class="n">node_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">out_node_name</span><span class="p">)</span>
@@ -655,7 +680,7 @@
                 <span class="n">number_of_parts</span><span class="o">=</span><span class="n">num_parts_per_node</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">num_parts_per_node</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
                 <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="n">hanging</span><span class="o">=</span><span class="n">node_name</span> <span class="ow">in</span> <span class="n">hanging_deployment_names</span><span class="p">,</span>
+                <span class="n">floating</span><span class="o">=</span><span class="n">node_name</span> <span class="ow">in</span> <span class="n">floating_deployment_set</span><span class="p">,</span>
                 <span class="n">filter_condition</span><span class="o">=</span><span class="n">condition</span><span class="p">,</span>
                 <span class="n">reduce</span><span class="o">=</span><span class="n">node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">deployments_disable_reduce</span><span class="p">,</span>
                 <span class="n">timeout_send</span><span class="o">=</span><span class="n">timeout_send</span><span class="p">,</span>
@@ -667,6 +692,10 @@
                 <span class="k">for</span> <span class="n">out_node_name</span> <span class="ow">in</span> <span class="n">outgoing_node_names</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">out_node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;start-gateway&#39;</span><span class="p">,</span> <span class="s1">&#39;end-gateway&#39;</span><span class="p">]:</span>
                         <span class="n">nodes</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span><span class="o">.</span><span class="n">outgoing_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">out_node_name</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">out_node_name</span> <span class="o">==</span> <span class="s1">&#39;end-gateway&#39;</span><span class="p">:</span>
+                        <span class="n">nodes</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span><span class="o">.</span><span class="n">outgoing_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_EndGatewayNode</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;__end_gateway__&#39;</span><span class="p">,</span> <span class="n">floating</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_origin_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">nodes</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span> <span class="k">for</span> <span class="n">node_name</span> <span class="ow">in</span> <span class="n">origin_node_names</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">has_filter_conditions</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">graph_conditions</span><span class="p">)</span>
@@ -731,7 +760,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 14, 2022</div>
+                            Last updated on Jul 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

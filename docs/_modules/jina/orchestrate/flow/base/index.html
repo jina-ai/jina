@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/orchestrate/flow/base.html" />
 
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>jina.orchestrate.flow.base - Jina 3.6.13 documentation</title>
+        <title>jina.orchestrate.flow.base - Jina 3.6.16 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
@@ -146,7 +146,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../">
-                <div class="brand">Jina 3.6.13 documentation</div>
+                <div class="brand">Jina 3.6.16 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -1076,7 +1076,7 @@
                 <span class="n">need</span> <span class="o">=</span> <span class="n">_add_node</span><span class="p">(</span><span class="n">graph_dict</span><span class="p">,</span> <span class="n">need</span><span class="p">)</span>
                 <span class="n">graph_dict</span><span class="p">[</span><span class="n">need</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 
-        <span class="c1"># find all non hanging leafs</span>
+        <span class="c1"># find all non floating leafs</span>
         <span class="n">last_deployment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_deployment</span>
         <span class="k">if</span> <span class="n">last_deployment</span> <span class="o">!=</span> <span class="s1">&#39;gateway&#39;</span><span class="p">:</span>
             <span class="n">graph_dict</span><span class="p">[</span><span class="n">last_deployment</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;end-gateway&#39;</span><span class="p">)</span>
@@ -1113,7 +1113,7 @@
 <div class="viewcode-block" id="Flow.needs_all"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.needs_all">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">needs_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;joiner&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Flow&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Collect all hanging Deployments so far and add a blocker to the Flow; wait until all handing pods completed.</span>
+<span class="sd">        Collect all floating Deployments so far and add a blocker to the Flow; wait until all handing pods completed.</span>
 
 <span class="sd">        :param name: the name of this joiner (default is ``joiner``)</span>
 <span class="sd">        :param args: additional positional arguments which are forwarded to the add and needs function</span>
@@ -1637,7 +1637,9 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Flow.build"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow.build">[docs]</a>    <span class="nd">@allowed_levels</span><span class="p">([</span><span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">])</span>
-    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">copy_flow</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Flow&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">copy_flow</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">disable_build_sandbox</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Flow&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build the current Flow and make it ready to use</span>
 
@@ -1647,6 +1649,7 @@
 <span class="sd">            context manager, or using :meth:`start`, :meth:`build` will be invoked.</span>
 
 <span class="sd">        :param copy_flow: when set to true, then always copy the current Flow and do the modification on top of it then return, otherwise, do in-line modification</span>
+<span class="sd">        :param disable_build_sandbox: when set to true, the sandbox building part will be skipped, will be used by `plot`</span>
 <span class="sd">        :return: the current Flow (by default)</span>
 
 <span class="sd">        .. note::</span>
@@ -1671,8 +1674,9 @@
         <span class="k">if</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">inspect</span> <span class="o">==</span> <span class="n">FlowInspectType</span><span class="o">.</span><span class="n">COLLECT</span><span class="p">:</span>
             <span class="n">op_flow</span><span class="o">.</span><span class="n">gather_inspect</span><span class="p">(</span><span class="n">copy_flow</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">deployment</span><span class="o">.</span><span class="n">update_sandbox_args</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">disable_build_sandbox</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">deployment</span><span class="o">.</span><span class="n">update_sandbox_args</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">GATEWAY_NAME</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="p">:</span>
             <span class="n">op_flow</span><span class="o">.</span><span class="n">_add_gateway</span><span class="p">(</span>
@@ -2083,7 +2087,7 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">build</span> <span class="ow">and</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">_build_level</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">EMPTY</span><span class="p">:</span>
-            <span class="n">op_flow</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">op_flow</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">copy_flow</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">disable_build_sandbox</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">mermaid_str</span> <span class="o">=</span> <span class="n">op_flow</span><span class="o">.</span><span class="n">_mermaid_str</span>
         <span class="k">if</span> <span class="n">vertical_layout</span><span class="p">:</span>
@@ -2751,7 +2755,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 14, 2022</div>
+                            Last updated on Jul 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

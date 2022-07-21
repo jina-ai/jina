@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/gateway/index/" />
   
-<meta property="og:site_name" content="Jina 3.6.13 Documentation" />
+<meta property="og:site_name" content="Jina 3.6.16 Documentation" />
   
 <meta property="og:description" content="Every Flow provides an API Gateway to receive requests over the network. Supported protocols are gRPC, HTTP and WebSocket with TLS. There are two ways of defining a Gateway, either directly from the Python API or using yaml files. For each section we will show you both possibles way of configurin..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.6.13 Documentation" />
+<meta property="og:image:alt" content="Jina 3.6.16 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/gateway/index.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Gateway - Jina 3.6.13 documentation</title>
+        <title>Gateway - Jina 3.6.16 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -179,7 +179,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.6.13 documentation</div>
+                <div class="brand">Jina 3.6.16 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -397,7 +397,7 @@ This does not affect how you have to configure your Flow API, so the examples he
 </div>
 <section id="supported-protocols">
 <span id="flow-protocol"></span><h2>Supported protocols<a class="headerlink" href="#supported-protocols" title="Permalink to this headline">#</a></h2>
-<p>You can use three different protocols to serve the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>: <code class="docutils literal notranslate"><span class="pre">grpc</span></code>,<code class="docutils literal notranslate"><span class="pre">http</span></code> and <code class="docutils literal notranslate"><span class="pre">websocket</span></code></p>
+<p>You can use three different protocols to serve the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>: gRPC, HTTP and Websocket.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">gRPC</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
@@ -700,15 +700,17 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
 </section>
 </section>
 <section id="add-grpc-compression">
-<h2>Add gRPC compression<a class="headerlink" href="#add-grpc-compression" title="Permalink to this headline">#</a></h2>
-<p>Communication between <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s inside a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is done via <code class="docutils literal notranslate"><span class="pre">grpc</span></code>. To optimize the performance and the bandwidth of these connections,
-Jina allows the users to specify their (<code class="docutils literal notranslate"><span class="pre">compression</span></code>)[https://grpc.github.io/grpc/python/grpc.html#compression] by passing this <code class="docutils literal notranslate"><span class="pre">compression</span></code> argument to the Flow.</p>
-<p>The supported methods are: <code class="docutils literal notranslate"><span class="pre">NoCompression</span></code>, <code class="docutils literal notranslate"><span class="pre">Gzip</span></code> and <code class="docutils literal notranslate"><span class="pre">Deflate</span></code>.</p>
+<span id="server-compress"></span><h2>Add gRPC compression<a class="headerlink" href="#add-grpc-compression" title="Permalink to this headline">#</a></h2>
+<p>The communication between <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s inside a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is done via gRPC. To optimize the performance and the bandwidth of these connections,
+Jina allows the users to specify their <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">compression</a> by specifying <code class="docutils literal notranslate"><span class="pre">compression</span></code> argument to the Flow.</p>
+<p>The supported methods are: none, <code class="docutils literal notranslate"><span class="pre">gzip</span></code> and <code class="docutils literal notranslate"><span class="pre">deflate</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">compression</span><span class="o">=</span><span class="s1">&#39;Gzip&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Note that this setting is only effective the internal communication of the Flow.
+One can also specify the compression between client and gateway <a class="reference internal" href="../flow/client/#client-compress"><span class="std std-ref">as described here</span></a>.</p>
 </section>
 <section id="enable-tls">
 <span id="flow-tls"></span><h2>Enable TLS<a class="headerlink" href="#enable-tls" title="Permalink to this headline">#</a></h2>
@@ -860,7 +862,7 @@ To enable this endpoint, all you need to do is set <code class="docutils literal
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 14, 2022</div>
+                            Last updated on Jul 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

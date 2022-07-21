@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/client/" />
   
-<meta property="og:site_name" content="Jina 3.6.13 Documentation" />
+<meta property="og:site_name" content="Jina 3.6.16 Documentation" />
   
 <meta property="og:description" content="Client enables you to send Documents to a running Flow in a number of different ways, as shown below. Clients support three different networking protocols: HTTP, gRPC, WebSocket and GraphQL For each of them, you first connect your Client to the API Gateway, before you can send requests to it. Con..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.6.13 Documentation" />
+<meta property="og:image:alt" content="Jina 3.6.16 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/client.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Client - Jina 3.6.13 documentation</title>
+        <title>Client - Jina 3.6.16 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -179,7 +179,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.6.13 documentation</div>
+                <div class="brand">Jina 3.6.16 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -789,15 +789,17 @@ This may not only be slower, but also require more memory.</p>
 </div>
 </section>
 <section id="enable-compression">
-<h2>Enable compression<a class="headerlink" href="#enable-compression" title="Permalink to this headline">#</a></h2>
-<p>If the communication to the Gateway is via gRPC, you can pass <code class="docutils literal notranslate"><span class="pre">compression</span></code> parameter to  <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> to benefit from (gRPC compression)[https://grpc.github.io/grpc/python/grpc.html#compression] methods.</p>
-<p>The supported choices are: None, <code class="docutils literal notranslate"><span class="pre">NoCompression</span></code>, <code class="docutils literal notranslate"><span class="pre">Gzip</span></code> and <code class="docutils literal notranslate"><span class="pre">Deflate</span></code>.</p>
+<span id="client-compress"></span><h2>Enable compression<a class="headerlink" href="#enable-compression" title="Permalink to this headline">#</a></h2>
+<p>If the communication to the Gateway is via gRPC, you can pass <code class="docutils literal notranslate"><span class="pre">compression</span></code> parameter to  <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> to benefit from <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">gRPC compression</a> methods.</p>
+<p>The supported choices are: None, <code class="docutils literal notranslate"><span class="pre">gzip</span></code> and <code class="docutils literal notranslate"><span class="pre">deflate</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
 <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;Gzip&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Note that this setting is only effective the communication between the client and the Flow’s gateway.</p>
+<p>One can also specify the compression of the internal communication <span class="xref std std-ref">as described here</span>.</p>
 </section>
 <section id="enable-tls">
 <h2>Enable TLS<a class="headerlink" href="#enable-tls" title="Permalink to this headline">#</a></h2>
@@ -876,7 +878,7 @@ set the Client’s <code class="docutils literal notranslate"><span class="pre">
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 14, 2022</div>
+                            Last updated on Jul 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/stream.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>jina.serve.stream - Jina 3.6.13 documentation</title>
+        <title>jina.serve.stream - Jina 3.6.16 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -146,7 +146,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.6.13 documentation</div>
+                <div class="brand">Jina 3.6.16 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -360,14 +360,13 @@
     <span class="n">Awaitable</span><span class="p">,</span>
     <span class="n">Callable</span><span class="p">,</span>
     <span class="n">Iterator</span><span class="p">,</span>
-    <span class="n">List</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
     <span class="n">Union</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">InternalNetworkError</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
-<span class="kn">from</span> <span class="nn">jina.serve.stream.helper</span> <span class="kn">import</span> <span class="n">AsyncRequestsIterator</span><span class="p">,</span> <span class="n">RequestsCounter</span>
+<span class="kn">from</span> <span class="nn">jina.serve.stream.helper</span> <span class="kn">import</span> <span class="n">AsyncRequestsIterator</span><span class="p">,</span> <span class="n">_RequestsCounter</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;RequestStreamer&#39;</span><span class="p">]</span>
 
@@ -407,6 +406,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span> <span class="o">=</span> <span class="n">request_handler</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_result_handler</span> <span class="o">=</span> <span class="n">result_handler</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_end_of_iter_handler</span> <span class="o">=</span> <span class="n">end_of_iter_handler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_num_floating_tasks_alive</span> <span class="o">=</span> <span class="mi">0</span>
 
 <div class="viewcode-block" id="RequestStreamer.stream"><a class="viewcode-back" href="../../../../api/jina.serve.stream/#jina.serve.stream.RequestStreamer.stream">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">request_iterator</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span>
@@ -450,9 +450,13 @@
 <span class="sd">        :yield: responses</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result_queue</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+        <span class="n">floating_results_queue</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
         <span class="n">end_of_iter</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
         <span class="n">all_requests_handled</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-        <span class="n">requests_to_handle</span> <span class="o">=</span> <span class="n">RequestsCounter</span><span class="p">()</span>
+        <span class="n">requests_to_handle</span> <span class="o">=</span> <span class="n">_RequestsCounter</span><span class="p">()</span>
+        <span class="n">floating_tasks_to_handle</span> <span class="o">=</span> <span class="n">_RequestsCounter</span><span class="p">()</span>
+        <span class="n">all_floating_requests_awaited</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="n">empty_requests_iterator</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
 
         <span class="k">def</span> <span class="nf">update_all_handled</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">end_of_iter</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="ow">and</span> <span class="n">requests_to_handle</span><span class="o">.</span><span class="n">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -473,6 +477,9 @@
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">result_queue</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
 
+        <span class="k">def</span> <span class="nf">hanging_callback</span><span class="p">(</span><span class="n">future</span><span class="p">:</span> <span class="s1">&#39;asyncio.Future&#39;</span><span class="p">):</span>
+            <span class="n">floating_results_queue</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
+
         <span class="k">async</span> <span class="k">def</span> <span class="nf">iterate_requests</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            1. Traverse through the request iterator.</span>
@@ -482,14 +489,27 @@
 <span class="sd">            4. Handle EOI (needed for websocket client)</span>
 <span class="sd">            5. Set `end_of_iter` event</span>
 <span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">num_reqs</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">async</span> <span class="k">for</span> <span class="n">request</span> <span class="ow">in</span> <span class="n">AsyncRequestsIterator</span><span class="p">(</span>
                 <span class="n">iterator</span><span class="o">=</span><span class="n">request_iterator</span><span class="p">,</span>
                 <span class="n">request_counter</span><span class="o">=</span><span class="n">requests_to_handle</span><span class="p">,</span>
                 <span class="n">prefetch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_prefetch</span><span class="p">,</span>
             <span class="p">):</span>
+                <span class="n">num_reqs</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">requests_to_handle</span><span class="o">.</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="n">future</span><span class="p">:</span> <span class="s1">&#39;asyncio.Future&#39;</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
-                <span class="n">future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+                <span class="n">future_responses</span><span class="p">,</span> <span class="n">future_hanging</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_handler</span><span class="p">(</span>
+                    <span class="n">request</span><span class="o">=</span><span class="n">request</span>
+                <span class="p">)</span>
+                <span class="n">future_responses</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">future_hanging</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">floating_tasks_to_handle</span><span class="o">.</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">future_hanging</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="n">hanging_callback</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">all_floating_requests_awaited</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">num_reqs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">empty_requests_iterator</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end_of_iter_handler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_end_of_iter_handler</span><span class="p">()</span>
             <span class="n">end_of_iter</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
@@ -498,8 +518,37 @@
                 <span class="c1"># It will be waiting for something that will never appear</span>
                 <span class="n">future_cancel</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">end_future</span><span class="p">())</span>
                 <span class="n">result_queue</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">future_cancel</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">all_floating_requests_awaited</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
+                <span class="ow">or</span> <span class="n">empty_requests_iterator</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
+            <span class="p">):</span>
+                <span class="c1"># It will be waiting for something that will never appear</span>
+                <span class="n">future_cancel</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">end_future</span><span class="p">())</span>
+                <span class="n">floating_results_queue</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">future_cancel</span><span class="p">)</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_floating_responses</span><span class="p">():</span>
+            <span class="k">while</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="n">all_floating_requests_awaited</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="n">empty_requests_iterator</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
+            <span class="p">):</span>
+                <span class="n">hanging_response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">floating_results_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">hanging_response</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+                    <span class="n">floating_tasks_to_handle</span><span class="o">.</span><span class="n">count</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">floating_tasks_to_handle</span><span class="o">.</span><span class="n">count</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">end_of_iter</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                        <span class="n">all_floating_requests_awaited</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+                <span class="k">except</span> <span class="bp">self</span><span class="o">.</span><span class="n">_EndOfStreaming</span><span class="p">:</span>
+                    <span class="k">pass</span>
 
         <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">iterate_requests</span><span class="p">())</span>
+        <span class="n">handle_floating_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">handle_floating_responses</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_num_floating_tasks_alive</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">def</span> <span class="nf">floating_task_done</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total_num_floating_tasks_alive</span> <span class="o">-=</span> <span class="mi">1</span>
+
+        <span class="n">handle_floating_task</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="n">floating_task_done</span><span class="p">)</span>
+
         <span class="k">while</span> <span class="ow">not</span> <span class="n">all_requests_handled</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="n">future</span> <span class="o">=</span> <span class="k">await</span> <span class="n">result_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
             <span class="k">try</span><span class="p">:</span>
@@ -508,7 +557,14 @@
                 <span class="n">requests_to_handle</span><span class="o">.</span><span class="n">count</span> <span class="o">-=</span> <span class="mi">1</span>
                 <span class="n">update_all_handled</span><span class="p">()</span>
             <span class="k">except</span> <span class="bp">self</span><span class="o">.</span><span class="n">_EndOfStreaming</span><span class="p">:</span>
-                <span class="k">pass</span></div>
+                <span class="k">pass</span>
+
+<div class="viewcode-block" id="RequestStreamer.wait_floating_requests_end"><a class="viewcode-back" href="../../../../api/jina.serve.stream/#jina.serve.stream.RequestStreamer.wait_floating_requests_end">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">wait_floating_requests_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Await this coroutine to make sure that all the floating tasks that the request handler may bring are properly consumed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_num_floating_tasks_alive</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div></div>
 </pre></div>
                 </article>
             </div>
@@ -523,7 +579,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 14, 2022</div>
+                            Last updated on Jul 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

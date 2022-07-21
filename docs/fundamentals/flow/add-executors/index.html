@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/add-executors/" />
   
-<meta property="og:site_name" content="Jina 3.6.13 Documentation" />
+<meta property="og:site_name" content="Jina 3.6.16 Documentation" />
   
 <meta property="og:description" content="A Flow orchestrates its Executor s as a graph and will send requests to all Executors in the desired order. Executors can be added with the add() method of the Flow or be listed in the yaml configuration of a Flow. When you start a Flow, it will check the configured Executors and starts instances..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.6.13 Documentation" />
+<meta property="og:image:alt" content="Jina 3.6.16 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/add-executors.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Add Executors - Jina 3.6.13 documentation</title>
+        <title>Add Executors - Jina 3.6.16 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -179,7 +179,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.6.13 documentation</div>
+                <div class="brand">Jina 3.6.16 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -547,6 +547,103 @@ Instead, you can configure a common search path for all Executors:</p>
 for further details</p>
 </div>
 </section>
+<section id="floating-executors">
+<span id="id2"></span><h3>Floating Executors<a class="headerlink" href="#floating-executors" title="Permalink to this headline">#</a></h3>
+<p>Some Executors in your Flow may be used for asynchronous background tasks that can take some time and that do not generate a needed output. For instance,
+logging specific information in external services, storing partial results, etc.</p>
+<p>You can unblock your Flow from such tasks by using <em>floating Executors</em>.</p>
+<p>Normally, all Executors form a pipeline that handles and transforms a given request until it is finally returned to the Client.</p>
+<p>However, floating Executors do not feed their outputs back to the pipeline. Therefore, this output will not form the response for the Client, and the response can be returned without waiting for the floating Executor to complete his task.</p>
+<p>Those Executors are marked with the <code class="docutils literal notranslate"><span class="pre">floating</span></code> keyword when added to a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span>
+
+
+<span class="k">class</span> <span class="nc">FastChangingExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Hello World&#39;</span>
+
+
+<span class="k">class</span> <span class="nc">SlowChangingExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; Received </span><span class="si">{</span><span class="n">docs</span><span class="o">.</span><span class="n">texts</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;Change the document but will not affect response&#39;</span>
+
+
+<span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Flow</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;executor0&#39;</span><span class="p">,</span> <span class="n">uses</span><span class="o">=</span><span class="n">FastChangingExecutor</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;floating_executor&#39;</span><span class="p">,</span>
+        <span class="n">uses</span><span class="o">=</span><span class="n">SlowChangingExecutor</span><span class="p">,</span>
+        <span class="n">needs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;gateway&#39;</span><span class="p">],</span>
+        <span class="n">floating</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/endpoint&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>  <span class="c1"># we need to send a first</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/endpoint&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; Response time took </span><span class="si">{</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">texts</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span> Response time took 0.011997222900390625s
+ [&#39;Hello World&#39;, &#39;Hello World&#39;]
+ Received [&#39;Hello World&#39;, &#39;Hello World&#39;]
+</pre></div>
+</div>
+<p>In this example you can see how the response is returned without waiting for the <code class="docutils literal notranslate"><span class="pre">floating</span></code> Executor to complete. However, the Flow is not closed until
+the request has been handled also by it.</p>
+<p>You can plot the Flow and observe how the Executor is floating disconnected from the <strong>Gateway</strong>.</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../../_images/flow_floating.svg"><img alt="../../../_images/flow_floating.svg" src="../../../_images/flow_floating.svg" width="70%" /></a>
+</figure>
+<p>A floating Executor can never come before a non-floating Executor in the <a class="reference internal" href="../topologies/#flow-complex-topologies"><span class="std std-ref">topology</span></a> of your Flow.</p>
+<p>This leads to the following behaviors:</p>
+<ul class="simple">
+<li><p><strong>Implicit reordering</strong>: When adding a non-floating Executor after a floating Executor without specifying its <code class="docutils literal notranslate"><span class="pre">needs</span></code> parameter, the non-floating Executor is chained after the previous non-floating one.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;middle&#39;</span><span class="p">,</span> <span class="n">floating</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
+<span class="n">f</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../../_images/flow_middle_1.svg"><img alt="../../../_images/flow_middle_1.svg" src="../../../_images/flow_middle_1.svg" width="70%" /></a>
+</figure>
+<ul class="simple">
+<li><p><strong>Chaining floating Executors</strong>: If you want to chain more than one floating Executor, you need to add all of them with the <code class="docutils literal notranslate"><span class="pre">floating</span></code> flag, and explicitly specify the <code class="docutils literal notranslate"><span class="pre">needs</span></code> argument.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;middle&#39;</span><span class="p">,</span> <span class="n">floating</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">needs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;middle&#39;</span><span class="p">],</span> <span class="n">floating</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../../_images/flow_chain_floating.svg"><img alt="../../../_images/flow_chain_floating.svg" src="../../../_images/flow_chain_floating.svg" width="70%" /></a>
+</figure>
+<ul class="simple">
+<li><p><strong>Overriding of <code class="docutils literal notranslate"><span class="pre">floating</span></code> flag</strong>: If you try to add a floating Executor as part of <code class="docutils literal notranslate"><span class="pre">needs</span></code> parameter of a non-floating Executor, then the floating Executor is not considered floating anymore.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;middle&#39;</span><span class="p">,</span> <span class="n">floating</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">needs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;middle&#39;</span><span class="p">])</span>
+<span class="n">f</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../../_images/flow_cancel_floating.svg"><img alt="../../../_images/flow_cancel_floating.svg" src="../../../_images/flow_cancel_floating.svg" width="70%" /></a>
+</figure>
+</section>
 </section>
 <section id="set-configs">
 <h2>Set configs<a class="headerlink" href="#set-configs" title="Permalink to this headline">#</a></h2>
@@ -758,7 +855,7 @@ documentation about <a class="reference external" href="https://docarray.jina.ai
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 14, 2022</div>
+                            Last updated on Jul 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -793,6 +890,7 @@ documentation about <a class="reference external" href="https://docarray.jina.ai
 <li><a class="reference internal" href="#">Add Executors</a><ul>
 <li><a class="reference internal" href="#supported-executors">Supported Executors</a><ul>
 <li><a class="reference internal" href="#external-executors">External Executors</a></li>
+<li><a class="reference internal" href="#floating-executors">Floating Executors</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#set-configs">Set configs</a><ul>
