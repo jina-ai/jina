@@ -490,6 +490,9 @@ def is_requirements_installed(
     return True
 
 def get_requirements_env_variables(requirements_file: 'Path') -> list:
+    """ 
+    get the env variables in requirements.txt
+    """
     env_variables = []
     with requirements_file.open() as requirements:
         for req in requirements:
@@ -503,6 +506,10 @@ def get_requirements_env_variables(requirements_file: 'Path') -> list:
     return env_variables
 
 def check_requirements_env_variable(env_variable: str) -> bool:
+    """ 
+    check the env variable is limited
+    to uppercase letter and the `_` (underscore).
+    """
     return check_env_variable(env_variable)
 
 def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jina',)):

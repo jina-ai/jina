@@ -188,7 +188,8 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
         assert form_data.get('id') is None
     
     if build_env:
-        assert form_data['buildEnv'] == ['{"DOCSQA_LIB_TOKEN": "test", "key2": "test2"}']
+        print(form_data['buildEnv'])
+        assert form_data['buildEnv'] ==  ['{"DOCSQA_LIB_TOKEN": "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"}']
     else:
         assert form_data.get('buildEnv') is None
 
