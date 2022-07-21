@@ -115,9 +115,8 @@ def mixin_pod_parser(parser, port_monitoring=True):
     )
 
     gp.add_argument(
-        '--floating',
+        '--no-telemetry',
         action='store_true',
         default=False,
-        help='If set, the current Pod/Deployment can not be further chained, '
-        'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
+        help='If set, disable telemetry during the Flow creation.',
     )

@@ -68,3 +68,11 @@ def mixin_base_deployment_parser(parser):
         dest='port_monitoring',
         help=f'The port on which the prometheus server is exposed, default is a random port between [49152, 65535]',
     )
+
+    gp.add_argument(
+        '--floating',
+        action='store_true',
+        default=False,
+        help='If set, the current Pod/Deployment can not be further chained, '
+             'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
+    )
