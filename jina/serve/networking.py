@@ -12,6 +12,7 @@ from grpc_health.v1 import health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha.reflection_pb2 import ServerReflectionRequest
 from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
 
+from jina import __default_endpoint__
 from jina.enums import PollingType
 from jina.excepts import EstablishGrpcConnectionError
 from jina.importer import ImportExtensions
@@ -29,6 +30,10 @@ if TYPE_CHECKING:
 
 
 DEFAULT_MINIMUM_RETRIES = 3
+GRACE_PERIOD_DESTROY_CONNECTION = 0.5
+
+default_endpoints_proto = jina_pb2.EndpointsProto()
+default_endpoints_proto.endpoints.extend([__default_endpoint__])
 
 
 class ReplicaList:
@@ -36,12 +41,14 @@ class ReplicaList:
     Maintains a list of connections to replicas and uses round robin for selecting a replica
     """
 
-    def __init__(self, summary):
+    def __init__(self, summary, logger):
         self._connections = []
         self._address_to_connection_idx = {}
         self._address_to_channel = {}
         self._rr_counter = 0  # round robin counter
         self.summary = summary
+        self._logger = logger
+        self._destroyed_event = asyncio.Event()
 
     async def reset_connection(self, address: str) -> Union[grpc.aio.Channel, None]:
         """
@@ -52,6 +59,8 @@ class ReplicaList:
         :param address: Target address of this connection
         :returns: The reset connection or None if there was no connection for the given address
         """
+        self._logger.debug(f'resetting connection to {address}')
+
         if (
             address in self._address_to_connection_idx
             and self._address_to_connection_idx[address] is not None
@@ -65,8 +74,9 @@ class ReplicaList:
             self._connections[id_to_reset] = None
             channel_to_reset = self._address_to_channel[address]
             self._address_to_channel[address] = None
+            self._destroyed_event.clear()
             await self._destroy_connection(channel_to_reset)
-
+            self._destroyed_event.set()
             # re-add connection:
             self._address_to_connection_idx[address] = id_to_reset
             stubs, channel = self._create_connection(address)
@@ -110,7 +120,9 @@ class ReplicaList:
             popped_connection = self._connections.pop(idx_to_delete)
             closing_channel = self._address_to_channel[address]
             del self._address_to_channel[address]
-            await self._destroy_connection(closing_channel)
+            await self._destroy_connection(
+                closing_channel, grace=GRACE_PERIOD_DESTROY_CONNECTION
+            )
             # update the address/idx mapping
             for address in self._address_to_connection_idx:
                 if self._address_to_connection_idx[address] > idx_to_delete:
@@ -134,14 +146,15 @@ class ReplicaList:
         # we should handle graceful termination better, 0.5 is a rather random number here
         await connection.close(grace)
 
-    async def get_next_connection(self):
+    async def get_next_connection(self, num_retries=3):
         """
         Returns a connection from the list. Strategy is round robin
+        :param num_retries: how many retries should be performed when all connections are currently unavailable
         :returns: A connection from the pool
         """
-        return await self._get_next_connection(num_retries=3)
+        return await self._get_next_connection(num_retries=num_retries)
 
-    async def _get_next_connection(self, num_retries=0):
+    async def _get_next_connection(self, num_retries=3):
         """
         :param num_retries: how many retries should be performed when all connections are currently unavailable
         :returns: A connection from the pool
@@ -162,8 +175,16 @@ class ReplicaList:
                     )
             elif connection is None:
                 # give control back to async event loop so connection resetting can be completed; then retry
-                await asyncio.sleep(0)
-                return await self._get_next_connection(num_retries=num_retries - 1)
+                self._logger.debug(
+                    f' No valid connection found, give chance for potential resetting of connection'
+                )
+                try:
+                    await asyncio.wait_for(
+                        self._destroyed_event.wait(),
+                        timeout=GRACE_PERIOD_DESTROY_CONNECTION,
+                    )
+                finally:
+                    return await self._get_next_connection(num_retries=num_retries - 1)
         except IndexError:
             # This can happen as a race condition while _removing_ connections
             self._rr_counter = 0
@@ -431,7 +452,7 @@ class GrpcConnectionPool:
                         deployment, type_, 0, increase_access_count
                     )
                 self._logger.debug(
-                    f'did not find a connection for deployment {deployment}, type {type} and entity_id {entity_id}. There are {len(self._deployments[deployment][type]) if deployment in self._deployments else 0} available connections for this deployment and type. '
+                    f'did not find a connection for deployment {deployment}, type {type_} and entity_id {entity_id}. There are {len(self._deployments[deployment][type_]) if deployment in self._deployments else 0} available connections for this deployment and type. '
                 )
                 return None
 
@@ -449,7 +470,7 @@ class GrpcConnectionPool:
         ):
             self._add_deployment(deployment)
             if entity_id not in self._deployments[deployment][type]:
-                connection_list = ReplicaList(self.summary)
+                connection_list = ReplicaList(self.summary, self._logger)
                 self._deployments[deployment][type][entity_id] = connection_list
 
             if not self._deployments[deployment][type][entity_id].has_connection(
@@ -605,6 +626,7 @@ class GrpcConnectionPool:
         head: bool = True,
         shard_id: Optional[int] = None,
         timeout: Optional[float] = None,
+        retries: Optional[int] = -1,
     ) -> asyncio.Task:
         """Sends a discover Endpoint call to target.
 
@@ -612,14 +634,21 @@ class GrpcConnectionPool:
         :param head: If True it is send to the head, otherwise to the worker pods
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param timeout: timeout for sending the requests
+        :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :return: asyncio.Task items to send call
         """
         connection_list = self._connections.get_replicas(
-            deployment, head, shard_id, False
+            deployment, head, shard_id, True
         )
-        return self._send_discover_endpoint(
-            timeout=timeout, connection_list=connection_list
-        )
+        if connection_list:
+            return self._send_discover_endpoint(
+                timeout=timeout, connection_list=connection_list, retries=retries
+            )
+        else:
+            self._logger.debug(
+                f'no available connections for deployment {deployment} and shard {shard_id}'
+            )
+            return None
 
     def send_request_once(
         self,
@@ -808,7 +837,9 @@ class GrpcConnectionPool:
             else:
                 total_num_tries = 1 + retries  # try once, then do all the retries
             for i in range(total_num_tries):
-                current_connection = await connections.get_next_connection()
+                current_connection = await connections.get_next_connection(
+                    num_retries=total_num_tries
+                )
                 tried_addresses.add(current_connection.address)
                 try:
                     return await current_connection.send_requests(
@@ -834,14 +865,28 @@ class GrpcConnectionPool:
         self,
         connection_list: ReplicaList,
         timeout: Optional[float] = None,
+        retries: Optional[int] = -1,
     ) -> asyncio.Task:
         # this wraps the awaitable object from grpc as a coroutine so it can be used as a task
         # the grpc call function is not a coroutine but some _AioCall
         async def task_wrapper():
-            connection = None
-            if connection_list:
-                connection = await connection_list.get_next_connection()
-            for i in range(3):
+
+            tried_addresses = set()
+            if retries is None or retries < 0:
+                total_num_tries = (
+                    max(
+                        DEFAULT_MINIMUM_RETRIES,
+                        len(connection_list.get_all_connections()),
+                    )
+                    + 1
+                )
+            else:
+                total_num_tries = 1 + retries  # try once, then do all the retries
+            for i in range(total_num_tries):
+                connection = await connection_list.get_next_connection(
+                    num_retries=total_num_tries
+                )
+                tried_addresses.add(connection.address)
                 try:
                     return await connection.send_discover_endpoint(
                         timeout=timeout,
@@ -850,17 +895,13 @@ class GrpcConnectionPool:
                     await self._handle_aiorpcerror(
                         error=e,
                         retry_i=i,
-                        tried_addresses=connection.address,
+                        tried_addresses=tried_addresses,
                         current_address=connection.address,
                         connection_list=connection_list,
+                        total_num_tries=total_num_tries,
                     )
                 except AttributeError:
-                    # in gateway2gateway communication, gateway does not expose this endpoint. So just send empty list which corresponds to all endpoints valid
-                    from jina import __default_endpoint__
-
-                    ep = jina_pb2.EndpointsProto()
-                    ep.endpoints.extend([__default_endpoint__])
-                    return ep, None
+                    return default_endpoints_proto, None
 
         return asyncio.create_task(task_wrapper())
 

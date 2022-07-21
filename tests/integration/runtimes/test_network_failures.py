@@ -353,8 +353,11 @@ async def test_runtimes_reconnect_replicas(
 
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+@pytest.mark.parametrize('fail_before_endpoint_discovery', [True, False])
 @pytest.mark.asyncio
-async def test_runtimes_replicas(port_generator, protocol):
+async def test_runtimes_replicas(
+    port_generator, protocol, fail_before_endpoint_discovery
+):
     # create gateway and workers manually, then terminate worker process to provoke an error
     worker_ports = [port_generator() for _ in range(3)]
     worker0_port, worker1_port, worker2_port = worker_ports
@@ -381,22 +384,36 @@ async def test_runtimes_replicas(port_generator, protocol):
         ready_or_shutdown_event=multiprocessing.Event(),
     )
 
-    worker_processes[0].terminate()  # kill 'middle' worker
-    worker_processes[0].join()
-
-    try:
-        # await _send_request(gateway_port, protocol)
-        # ----------- 1. test that useful errors are given -----------
+    if (
+        not fail_before_endpoint_discovery
+    ):  # make successful request and trigger endpoint discovery
         # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
-        p = multiprocessing.Process(
-            target=_test_error, args=(gateway_port, worker0_port, protocol)
-        )
+        p = multiprocessing.Process(target=_send_request, args=(gateway_port, protocol))
         p.start()
         p.join()
+        # different replica should be picked, no error should be raised
         assert (
             p.exitcode == 0
         )  # if exitcode != 0 then test in other process did not pass and this should fail
-        # no retry in the case with replicas, because round robin retry mechanism will pick different replica now
+
+    worker_processes[0].terminate()  # kill first worker
+    worker_processes[0].join()
+
+    try:
+        for _ in range(
+            len(worker_ports)
+        ):  # make sure all workers are targeted by round robin
+            # ----------- 1. test that useful errors are given -----------
+            # we have to do this in a new process because otherwise grpc will be sad and everything will crash :(
+            p = multiprocessing.Process(
+                target=_send_request, args=(gateway_port, protocol)
+            )
+            p.start()
+            p.join()
+            # different replica should be picked, no error should be raised
+            assert (
+                p.exitcode == 0
+            )  # if exitcode != 0 then test in other process did not pass and this should fail
     except Exception:
         assert False
     finally:  # clean up runtimes

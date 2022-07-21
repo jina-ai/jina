@@ -75,6 +75,31 @@ def test_executor_import_with_external_dependencies(capsys):
     assert 'hello' in out
 
 
+def test_executor_with_pymodule_path():
+    with pytest.raises(FileNotFoundError):
+        ex = Executor.load_config(
+            '''
+        jtype: BaseExecutor
+        metas:
+            py_modules:
+                - jina.no_valide.executor
+        '''
+        )
+
+    ex = Executor.load_config(
+        '''
+    jtype: MyExecutor
+    with:
+        bar: 123
+    metas:
+        py_modules:
+            - unit.serve.executors.dummy_executor
+    '''
+    )
+    assert ex.bar == 123
+    assert ex.process(DocumentArray([Document()]))[0].text == 'hello world'
+
+
 @property
 def workspace(self) -> str:
     """

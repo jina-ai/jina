@@ -46,7 +46,7 @@ def allowed_levels(levels: List['FlowBuildLevel']):
 def _hanging_deployments(op_flow: 'Flow') -> List[str]:
     """
     :param op_flow: the Flow we're operating on
-    :return: names of hanging Deployments (nobody recv from them) in the Flow.
+    :return: names of floating Deployments (nobody recv from them) in the Flow.
     """
     all_needs = {k for p, v in op_flow for k in v.needs}
     all_names = {p for p, v in op_flow if not v.args.floating}

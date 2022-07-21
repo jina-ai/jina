@@ -5,7 +5,7 @@ import pytest
 
 from jina import Document
 from jina.clients.request import request_generator
-from jina.serve.stream.helper import AsyncRequestsIterator, RequestsCounter
+from jina.serve.stream.helper import AsyncRequestsIterator, _RequestsCounter
 
 
 def slow_blocking_generator():
@@ -42,8 +42,8 @@ async def test_iter_requests():
 @pytest.mark.asyncio
 async def test_iter_requests_with_prefetch():
 
-    max_amount_requests = RequestsCounter()
-    counter = RequestsCounter()
+    max_amount_requests = _RequestsCounter()
+    counter = _RequestsCounter()
 
     async def consume_requests():
         while True:

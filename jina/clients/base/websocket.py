@@ -1,7 +1,7 @@
 """A module for the websockets-based Client for Jina."""
 import asyncio
 from contextlib import AsyncExitStack
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import TYPE_CHECKING, Dict, Optional, Tuple
 
 from starlette import status
 
@@ -139,7 +139,9 @@ class WebSocketBaseClient(BaseClient):
                 """Send End of iteration signal to the Gateway"""
                 asyncio.create_task(iolet.send_eoi())
 
-            def _request_handler(request: 'Request') -> 'asyncio.Future':
+            def _request_handler(
+                request: 'Request',
+            ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
                 """
                 For each request in the iterator, we send the `Message` using `iolet.send_message()`.
                 For websocket requests from client, for each request in the iterator, we send the request in `bytes`
@@ -152,7 +154,7 @@ class WebSocketBaseClient(BaseClient):
                 future = get_or_reuse_loop().create_future()
                 request_buffer[request.header.request_id] = future
                 asyncio.create_task(iolet.send_message(request))
-                return future
+                return future, None
 
             streamer = RequestStreamer(
                 args=self.args,

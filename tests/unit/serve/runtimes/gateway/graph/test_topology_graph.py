@@ -112,25 +112,26 @@ def test_topology_graph_build_linear(linear_graph_dict):
     assert node_deployment0.name == 'deployment0'
     assert node_deployment0.number_of_parts == 1
     assert len(node_deployment0.outgoing_nodes) == 1
-    assert not node_deployment0.hanging
+    assert not node_deployment0.floating
 
     node_deployment1 = node_deployment0.outgoing_nodes[0]
     assert node_deployment1.name == 'deployment1'
     assert node_deployment1.number_of_parts == 1
     assert len(node_deployment1.outgoing_nodes) == 1
-    assert not node_deployment1.hanging
+    assert not node_deployment1.floating
 
     node_deployment2 = node_deployment1.outgoing_nodes[0]
     assert node_deployment2.name == 'deployment2'
     assert node_deployment2.number_of_parts == 1
     assert len(node_deployment2.outgoing_nodes) == 1
-    assert not node_deployment2.hanging
+    assert not node_deployment2.floating
 
     node_deployment3 = node_deployment2.outgoing_nodes[0]
     assert node_deployment3.name == 'deployment3'
     assert node_deployment3.number_of_parts == 1
-    assert len(node_deployment3.outgoing_nodes) == 0
-    assert not node_deployment3.hanging
+    assert len(node_deployment3.outgoing_nodes) == 1
+    assert node_deployment3.outgoing_nodes[0].name == '__end_gateway__'
+    assert not node_deployment3.floating
 
 
 @pytest.mark.parametrize(
@@ -161,7 +162,7 @@ def test_topology_graph_build_bifurcation(bifurcation_graph_dict, conditions):
     ) == {'deployment1', 'deployment2'}
 
     node_deployment0 = graph.origin_nodes[node_names_list.index('deployment0')]
-    assert not node_deployment0.hanging
+    assert not node_deployment0.floating
     assert node_deployment0.name == 'deployment0'
     assert node_deployment0.number_of_parts == 1
     outgoing_deployment0_list = [node.name for node in node_deployment0.outgoing_nodes]
@@ -176,7 +177,7 @@ def test_topology_graph_build_bifurcation(bifurcation_graph_dict, conditions):
         assert node_deployment1._filter_condition == {'tags__key': {'$eq': 5}}
     assert node_deployment1.number_of_parts == 1
     assert len(node_deployment1.outgoing_nodes) == 0
-    assert node_deployment1.hanging
+    assert node_deployment1.floating
 
     node_deployment2 = node_deployment0.outgoing_nodes[
         outgoing_deployment0_list.index('deployment2')
@@ -188,19 +189,20 @@ def test_topology_graph_build_bifurcation(bifurcation_graph_dict, conditions):
         assert node_deployment2._filter_condition == {'tags__key': {'$eq': 4}}
     assert node_deployment2.number_of_parts == 1
     assert len(node_deployment2.outgoing_nodes) == 1
-    assert not node_deployment2.hanging
+    assert not node_deployment2.floating
 
     node_deployment3 = node_deployment2.outgoing_nodes[0]
     assert node_deployment3.name == 'deployment3'
     assert node_deployment3.number_of_parts == 1
-    assert len(node_deployment3.outgoing_nodes) == 0
-    assert not node_deployment3.hanging
+    assert len(node_deployment3.outgoing_nodes) == 1
+    assert node_deployment3.outgoing_nodes[0].name == '__end_gateway__'
+    assert not node_deployment3.floating
 
     node_deployment4 = graph.origin_nodes[node_names_list.index('deployment4')]
     assert node_deployment4.name == 'deployment4'
     assert node_deployment4.number_of_parts == 1
     assert len(node_deployment4.outgoing_nodes) == 1
-    assert not node_deployment4.hanging
+    assert not node_deployment4.floating
     assert set(
         [
             node.name
@@ -213,14 +215,15 @@ def test_topology_graph_build_bifurcation(bifurcation_graph_dict, conditions):
     node_deployment5 = node_deployment4.outgoing_nodes[0]
     assert node_deployment5.name == 'deployment5'
     assert node_deployment5.number_of_parts == 1
-    assert not node_deployment5.hanging
-    assert len(node_deployment5.outgoing_nodes) == 0
+    assert not node_deployment5.floating
+    assert len(node_deployment5.outgoing_nodes) == 1
+    assert node_deployment5.outgoing_nodes[0].name == '__end_gateway__'
 
     node_deployment6 = graph.origin_nodes[node_names_list.index('deployment6')]
     assert node_deployment6.name == 'deployment6'
     assert len(node_deployment6.outgoing_nodes) == 0
     assert node_deployment6.number_of_parts == 1
-    assert node_deployment6.hanging
+    assert node_deployment6.floating
     assert set([node.name for node in node_deployment6.outgoing_nodes]) == set()
 
 
@@ -232,7 +235,7 @@ def test_topology_graph_build_merge_in_gateway(
 
     node_deployment0 = graph.origin_nodes[0]
     assert node_deployment0.name == 'deployment0'
-    assert not node_deployment0.hanging
+    assert not node_deployment0.floating
     assert len(node_deployment0.outgoing_nodes) == 2
     outgoing_deployment0_list = [node.name for node in node_deployment0.outgoing_nodes]
     assert node_deployment0.number_of_parts == 1
@@ -244,7 +247,7 @@ def test_topology_graph_build_merge_in_gateway(
     assert len(node_deployment1.outgoing_nodes) == 1
     assert node_deployment1.outgoing_nodes[0].name == 'merger'
     assert node_deployment1.number_of_parts == 1
-    assert not node_deployment1.hanging
+    assert not node_deployment1.floating
 
     node_deployment2 = node_deployment0.outgoing_nodes[
         outgoing_deployment0_list.index('deployment2')
@@ -253,7 +256,7 @@ def test_topology_graph_build_merge_in_gateway(
     assert len(node_deployment2.outgoing_nodes) == 1
     assert node_deployment2.outgoing_nodes[0].name == 'merger'
     assert node_deployment2.number_of_parts == 1
-    assert not node_deployment2.hanging
+    assert not node_deployment2.floating
     assert id(node_deployment1.outgoing_nodes[0]) == id(
         node_deployment2.outgoing_nodes[0]
     )
@@ -261,8 +264,9 @@ def test_topology_graph_build_merge_in_gateway(
     merger_deployment = node_deployment1.outgoing_nodes[0]
     assert merger_deployment.name == 'merger'
     assert merger_deployment.number_of_parts == 2
-    assert len(merger_deployment.outgoing_nodes) == 0
-    assert not merger_deployment.hanging
+    assert len(merger_deployment.outgoing_nodes) == 1
+    assert merger_deployment.outgoing_nodes[0].name == '__end_gateway__'
+    assert not merger_deployment.floating
 
 
 def test_topology_graph_build_merge_in_last_deployment(
@@ -274,7 +278,7 @@ def test_topology_graph_build_merge_in_last_deployment(
     node_deployment0 = graph.origin_nodes[0]
     assert node_deployment0.number_of_parts == 1
     assert len(node_deployment0.outgoing_nodes) == 2
-    assert not node_deployment0.hanging
+    assert not node_deployment0.floating
     outgoing_deployment0_list = [node.name for node in node_deployment0.outgoing_nodes]
 
     node_deployment1 = node_deployment0.outgoing_nodes[
@@ -283,7 +287,7 @@ def test_topology_graph_build_merge_in_last_deployment(
     assert node_deployment1.number_of_parts == 1
     assert len(node_deployment1.outgoing_nodes) == 1
     assert node_deployment1.outgoing_nodes[0].name == 'merger'
-    assert not node_deployment1.hanging
+    assert not node_deployment1.floating
 
     node_deployment2 = node_deployment0.outgoing_nodes[
         outgoing_deployment0_list.index('deployment2')
@@ -291,7 +295,7 @@ def test_topology_graph_build_merge_in_last_deployment(
     assert node_deployment2.number_of_parts == 1
     assert len(node_deployment2.outgoing_nodes) == 1
     assert node_deployment2.outgoing_nodes[0].name == 'merger'
-    assert not node_deployment2.hanging
+    assert not node_deployment2.floating
 
     assert id(node_deployment1.outgoing_nodes[0]) == id(
         node_deployment2.outgoing_nodes[0]
@@ -301,13 +305,14 @@ def test_topology_graph_build_merge_in_last_deployment(
     assert merger_deployment.name == 'merger'
     assert len(merger_deployment.outgoing_nodes) == 1
     assert merger_deployment.number_of_parts == 2
-    assert not merger_deployment.hanging
+    assert not merger_deployment.floating
 
     deployment_last_deployment = merger_deployment.outgoing_nodes[0]
     assert deployment_last_deployment.name == 'deployment_last'
-    assert len(deployment_last_deployment.outgoing_nodes) == 0
+    assert len(deployment_last_deployment.outgoing_nodes) == 1
+    assert deployment_last_deployment.outgoing_nodes[0].name == '__end_gateway__'
     assert deployment_last_deployment.number_of_parts == 1
-    assert not deployment_last_deployment.hanging
+    assert not deployment_last_deployment.floating
 
 
 def test_topology_graph_build_complete(complete_graph_dict):
@@ -321,41 +326,42 @@ def test_topology_graph_build_complete(complete_graph_dict):
 
     node_deployment0 = graph.origin_nodes[node_names_list.index('deployment0')]
     assert node_deployment0.number_of_parts == 1
-    assert not node_deployment0.hanging
+    assert not node_deployment0.floating
     outgoing_deployment0_list = [node.name for node in node_deployment0.outgoing_nodes]
 
     node_deployment1 = node_deployment0.outgoing_nodes[
         outgoing_deployment0_list.index('deployment1')
     ]
     assert node_deployment1.number_of_parts == 1
-    assert not node_deployment1.hanging
-    assert len(node_deployment1.outgoing_nodes) == 0
+    assert not node_deployment1.floating
+    assert len(node_deployment1.outgoing_nodes) == 1
+    assert node_deployment1.outgoing_nodes[0].name == '__end_gateway__'
 
     node_deployment2 = node_deployment0.outgoing_nodes[
         outgoing_deployment0_list.index('deployment2')
     ]
     assert len(node_deployment2.outgoing_nodes) == 1
     assert node_deployment2.number_of_parts == 1
-    assert not node_deployment2.hanging
+    assert not node_deployment2.floating
 
     node_deployment3 = node_deployment2.outgoing_nodes[0]
     assert node_deployment3.name == 'deployment3'
     assert node_deployment3.number_of_parts == 1
     assert len(node_deployment3.outgoing_nodes) == 1
     assert node_deployment3.outgoing_nodes[0].name == 'merger'
-    assert not node_deployment3.hanging
+    assert not node_deployment3.floating
 
     node_deployment4 = graph.origin_nodes[node_names_list.index('deployment4')]
     assert node_deployment4.number_of_parts == 1
     assert len(node_deployment4.outgoing_nodes) == 1
-    assert not node_deployment4.hanging
+    assert not node_deployment4.floating
 
     node_deployment5 = node_deployment4.outgoing_nodes[0]
     assert node_deployment5.number_of_parts == 1
     assert node_deployment5.name == 'deployment5'
     assert len(node_deployment5.outgoing_nodes) == 1
     assert node_deployment5.outgoing_nodes[0].name == 'merger'
-    assert not node_deployment5.hanging
+    assert not node_deployment5.floating
 
     assert id(node_deployment3.outgoing_nodes[0]) == id(
         node_deployment5.outgoing_nodes[0]
@@ -365,19 +371,20 @@ def test_topology_graph_build_complete(complete_graph_dict):
     assert merger_deployment.name == 'merger'
     assert len(merger_deployment.outgoing_nodes) == 1
     assert merger_deployment.number_of_parts == 2
-    assert not merger_deployment.hanging
+    assert not merger_deployment.floating
 
     deployment_last_deployment = merger_deployment.outgoing_nodes[0]
     assert deployment_last_deployment.name == 'deployment_last'
-    assert len(deployment_last_deployment.outgoing_nodes) == 0
+    assert len(deployment_last_deployment.outgoing_nodes) == 1
+    assert deployment_last_deployment.outgoing_nodes[0].name == '__end_gateway__'
     assert deployment_last_deployment.number_of_parts == 1
-    assert not deployment_last_deployment.hanging
+    assert not deployment_last_deployment.floating
 
     node_deployment6 = graph.origin_nodes[node_names_list.index('deployment6')]
     assert node_deployment6.name == 'deployment6'
     assert node_deployment6.number_of_parts == 1
     assert len(node_deployment6.outgoing_nodes) == 0
-    assert node_deployment6.hanging
+    assert node_deployment6.floating
 
 
 def test_topology_graph_build_hanging_after_merge(graph_hanging_deployment_after_merge):
@@ -405,7 +412,7 @@ def test_topology_graph_build_hanging_after_merge(graph_hanging_deployment_after
     node_deployment0 = graph.origin_nodes[node_names_list.index('deployment0')]
     assert node_deployment0.name == 'deployment0'
     assert node_deployment0.number_of_parts == 1
-    assert not node_deployment0.hanging
+    assert not node_deployment0.floating
     outgoing_deployment0_list = [node.name for node in node_deployment0.outgoing_nodes]
 
     node_deployment1 = node_deployment0.outgoing_nodes[
@@ -414,7 +421,7 @@ def test_topology_graph_build_hanging_after_merge(graph_hanging_deployment_after
     assert node_deployment1.name == 'deployment1'
     assert node_deployment1.number_of_parts == 1
     assert len(node_deployment1.outgoing_nodes) == 0
-    assert node_deployment1.hanging
+    assert node_deployment1.floating
 
     node_deployment2 = node_deployment0.outgoing_nodes[
         outgoing_deployment0_list.index('deployment2')
@@ -422,13 +429,14 @@ def test_topology_graph_build_hanging_after_merge(graph_hanging_deployment_after
     assert node_deployment2.name == 'deployment2'
     assert node_deployment2.number_of_parts == 1
     assert len(node_deployment2.outgoing_nodes) == 1
-    assert not node_deployment2.hanging
+    assert not node_deployment2.floating
 
     node_deployment3 = node_deployment2.outgoing_nodes[0]
     assert node_deployment3.name == 'deployment3'
     assert node_deployment3.number_of_parts == 1
-    assert len(node_deployment3.outgoing_nodes) == 0
-    assert not node_deployment3.hanging
+    assert len(node_deployment3.outgoing_nodes) == 1
+    assert node_deployment3.outgoing_nodes[0].name == '__end_gateway__'
+    assert not node_deployment3.floating
 
     node_deployment4 = graph.origin_nodes[node_names_list.index('deployment4')]
     assert node_deployment4.name == 'deployment4'
@@ -442,27 +450,28 @@ def test_topology_graph_build_hanging_after_merge(graph_hanging_deployment_after
             ].outgoing_nodes
         ]
     ) == {'deployment5'}
-    assert not node_deployment4.hanging
+    assert not node_deployment4.floating
 
     node_deployment5 = node_deployment4.outgoing_nodes[0]
     assert node_deployment5.name == 'deployment5'
     assert node_deployment5.number_of_parts == 1
-    assert len(node_deployment5.outgoing_nodes) == 0
-    assert not node_deployment5.hanging
+    assert len(node_deployment5.outgoing_nodes) == 1
+    assert node_deployment5.outgoing_nodes[0].name == '__end_gateway__'
+    assert not node_deployment5.floating
 
     node_deployment6 = graph.origin_nodes[node_names_list.index('deployment6')]
     assert node_deployment6.name == 'deployment6'
     assert len(node_deployment6.outgoing_nodes) == 1
     assert node_deployment6.number_of_parts == 1
     assert node_deployment6.outgoing_nodes[0].name == 'deployment7'
-    assert not node_deployment6.hanging
+    assert not node_deployment6.floating
 
     node_deployment8 = graph.origin_nodes[node_names_list.index('deployment8')]
     assert node_deployment8.name == 'deployment8'
     assert len(node_deployment8.outgoing_nodes) == 1
     assert node_deployment8.number_of_parts == 1
     assert node_deployment8.outgoing_nodes[0].name == 'deployment7'
-    assert not node_deployment8.hanging
+    assert not node_deployment8.floating
 
     assert id(node_deployment6.outgoing_nodes[0]) == id(
         node_deployment8.outgoing_nodes[0]
@@ -473,13 +482,13 @@ def test_topology_graph_build_hanging_after_merge(graph_hanging_deployment_after
     assert len(node_deployment7.outgoing_nodes) == 1
     assert node_deployment7.number_of_parts == 2
     assert node_deployment7.outgoing_nodes[0].name == 'deployment9'
-    assert not node_deployment7.hanging
+    assert not node_deployment7.floating
 
     node_deployment9 = node_deployment7.outgoing_nodes[0]
     assert node_deployment9.name == 'deployment9'
     assert len(node_deployment9.outgoing_nodes) == 0
     assert node_deployment9.number_of_parts == 1
-    assert node_deployment9.hanging
+    assert node_deployment9.floating
 
 
 def test_topology_graph_build_two_joins(two_joins_graph):
@@ -492,13 +501,13 @@ def test_topology_graph_build_two_joins(two_joins_graph):
     assert node_p0.name == 'p0'
     assert node_p0.number_of_parts == 1
     assert len(node_p0.outgoing_nodes) == 1
-    assert not node_p0.hanging
+    assert not node_p0.floating
 
     node_p1 = graph.origin_nodes[origin_names.index('p1')]
     assert node_p1.name == 'p1'
     assert node_p1.number_of_parts == 1
     assert len(node_p1.outgoing_nodes) == 1
-    assert not node_p1.hanging
+    assert not node_p1.floating
 
     assert id(node_p0.outgoing_nodes[0]) == id(node_p1.outgoing_nodes[0])
 
@@ -506,7 +515,7 @@ def test_topology_graph_build_two_joins(two_joins_graph):
     assert joiner_deployment.name == 'joiner_1'
     assert len(joiner_deployment.outgoing_nodes) == 2
     assert joiner_deployment.number_of_parts == 2
-    assert not joiner_deployment.hanging
+    assert not joiner_deployment.floating
 
     joiner_outgoing_list = [node.name for node in joiner_deployment.outgoing_nodes]
 
@@ -514,20 +523,21 @@ def test_topology_graph_build_two_joins(two_joins_graph):
     assert node_p2.name == 'p2'
     assert len(node_p2.outgoing_nodes) == 1
     assert node_p2.number_of_parts == 1
-    assert not node_p2.hanging
+    assert not node_p2.floating
 
     node_p3 = joiner_deployment.outgoing_nodes[joiner_outgoing_list.index('p3')]
     assert node_p3.name == 'p3'
     assert len(node_p3.outgoing_nodes) == 1
     assert node_p3.number_of_parts == 1
-    assert not node_p3.hanging
+    assert not node_p3.floating
 
     assert id(node_p2.outgoing_nodes[0]) == id(node_p3.outgoing_nodes[0])
     node_p4 = node_p2.outgoing_nodes[0]
     assert node_p4.name == 'p4'
-    assert len(node_p4.outgoing_nodes) == 0
+    assert len(node_p4.outgoing_nodes) == 1
+    assert node_p4.outgoing_nodes[0].name == '__end_gateway__'
     assert node_p4.number_of_parts == 2
-    assert not node_p4.hanging
+    assert not node_p4.floating
 
 
 class DummyMockConnectionPool:
@@ -661,7 +671,7 @@ async def test_message_ordering_bifurcation_graph(
         runtime.receive_from_client(9, create_req_from_text('client9-Request')),
     )
     assert len(resps) == 10
-    await asyncio.sleep(0.1)  # need to terminate the hanging deployments tasks
+    await asyncio.sleep(0.1)  # need to terminate the floating deployments tasks
     for client_id, client_resps in resps:
         assert len(client_resps) == 2
 
@@ -686,7 +696,7 @@ async def test_message_ordering_bifurcation_graph(
             == sorted_clients_resps[1].docs[0].text
         )
 
-        # assert the hanging deployment was sent message
+        # assert the floating deployment was sent message
         if node_skipped != 'deployment1':
             assert (
                 f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment1'
@@ -806,7 +816,7 @@ async def test_message_ordering_complete_graph(complete_graph_dict):
         runtime.receive_from_client(9, create_req_from_text('client9-Request')),
     )
     assert len(resps) == 10
-    await asyncio.sleep(0.1)  # need to terminate the hanging deployments tasks
+    await asyncio.sleep(0.1)  # need to terminate the floating deployments tasks
     for client_id, client_resps in resps:
         assert len(client_resps) == 3
         assert (
@@ -833,7 +843,7 @@ async def test_message_ordering_complete_graph(complete_graph_dict):
 
         assert deployment2_path or deployment4_path
 
-        # assert the hanging deployment was sent message
+        # assert the floating deployment was sent message
         assert (
             f'client{client_id}-Request-client{client_id}-deployment6'
             == runtime.connection_pool.responded_messages[f'client{client_id}'][
@@ -864,7 +874,7 @@ async def test_message_ordering_hanging_after_merge_graph(
         runtime.receive_from_client(9, create_req_from_text('client9-Request')),
     )
     assert len(resps) == 10
-    await asyncio.sleep(0.1)  # need to terminate the hanging deployments tasks
+    await asyncio.sleep(0.1)  # need to terminate the floating deployments tasks
     for client_id, client_resps in resps:
         assert len(client_resps) == 2
         assert (
@@ -876,7 +886,7 @@ async def test_message_ordering_hanging_after_merge_graph(
             == client_resps[1].docs[0].text
         )
 
-        # assert the hanging deployment was sent message
+        # assert the floating deployment was sent message
         assert (
             f'client{client_id}-Request-client{client_id}-deployment0-client{client_id}-deployment1'
             == runtime.connection_pool.responded_messages[f'client{client_id}'][
@@ -932,7 +942,7 @@ async def test_message_ordering_two_joins_graph(
         runtime.receive_from_client(9, create_req_from_text('client9-Request')),
     )
     assert len(resps) == 10
-    await asyncio.sleep(0.1)  # need to terminate the hanging deployments tasks
+    await asyncio.sleep(0.1)  # need to terminate the floating deployments tasks
     for client_id, client_resps in resps:
         assert len(client_resps) == 4
         filtered_client_resps = [resp for resp in client_resps if resp is not None]
