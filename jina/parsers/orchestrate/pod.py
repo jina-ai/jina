@@ -126,5 +126,5 @@ def mixin_pod_parser(parser, port_monitoring=True):
         '--no-telemetry',
         action='store_true',
         default=False,
-        help='If set, disable telemetry during the Pod/Runtime start.',
+        help='If set, disables telemetry during the Pod/Runtime start.',
     )
