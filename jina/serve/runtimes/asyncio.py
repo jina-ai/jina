@@ -25,12 +25,12 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
     """
 
     def __init__(
-        self,
-        args: 'argparse.Namespace',
-        cancel_event: Optional[
-            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-        ] = None,
-        **kwargs,
+            self,
+            args: 'argparse.Namespace',
+            cancel_event: Optional[
+                Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+            ] = None,
+            **kwargs,
     ):
         super().__init__(args, **kwargs)
         self._loop = asyncio.new_event_loop()
@@ -51,9 +51,9 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
                 )
         else:
             with ImportExtensions(
-                required=True,
-                logger=self.logger,
-                help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
+                    required=True,
+                    logger=self.logger,
+                    help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
                 If you're using conda, please use the command `conda install -c anaconda pywin32`''',
             ):
                 import win32api
@@ -63,7 +63,37 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
             )
 
         self._setup_monitoring()
+        if not self.args.no_telemetry:
+            self._telemetry_run()
         self._loop.run_until_complete(self.async_setup())
+
+    def _telemetry_run(self) -> None:
+        """Runs in a thread a"""
+
+        import base64
+        import json
+        import urllib
+
+        def _telemetry():
+            url = 'https://telemetry.jina.ai/'
+            try:
+                data = base64.urlsafe_b64encode(
+                    json.dumps(self._telemetry_data_json()).encode('utf-8')
+                )
+                req = urllib.request.Request(
+                    url, data=data, headers={'User-Agent': 'Mozilla/5.0'}
+                )
+                urllib.request.urlopen(req)
+
+            except:
+                pass
+
+        threading.Thread(target=_telemetry, daemon=True).start()
+
+    def _telemetry_data_json(self):
+        from jina.helper import get_full_version
+        metas, envs = get_full_version()
+        return {**metas, **envs}
 
     def run_forever(self):
         """
@@ -159,10 +189,10 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
 
     @staticmethod
     def wait_for_ready_or_shutdown(
-        timeout: Optional[float],
-        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
-        ctrl_address: str,
-        **kwargs,
+            timeout: Optional[float],
+            ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+            ctrl_address: str,
+            **kwargs,
     ):
         """
         Check if the runtime has successfully started
@@ -177,7 +207,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
             if ready_or_shutdown_event.is_set() or AsyncNewLoopRuntime.is_ready(
-                ctrl_address
+                    ctrl_address
             ):
                 return True
             time.sleep(0.1)
