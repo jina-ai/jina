@@ -22,6 +22,11 @@ from jina.enums import BetterEnum
 from jina.helper import get_request_header as _get_request_header_main
 from jina.importer import ImportExtensions
 from jina.logging.predefined import default_logger
+from .requirements import (
+    get_env_variables,
+    check_env_variable,
+    parse_requirement
+)
 
 
 @lru_cache()
@@ -485,7 +490,6 @@ def is_requirements_installed(
     return True
 
 def get_requirements_env_variables(requirements_file: 'Path'):
-    from .requirements import get_env_variables
     env_variables = []
     with requirements_file.open() as requirements:
         for req in requirements:
@@ -499,12 +503,9 @@ def get_requirements_env_variables(requirements_file: 'Path'):
     return env_variables
 
 def check_requirements_env_variable(str):
-    from .requirements import check_env_variable
     return check_env_variable(str)
 
 def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jina',)):
-    from .requirements import parse_requirement
-
     with requirements_file.open() as requirements:
         install_options = []
         install_reqs = []
