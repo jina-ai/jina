@@ -163,6 +163,7 @@ ac_table = {
             '--protected-tag',
             '--force-update',
             '--force',
+            '--build-env',
             '--secret',
             '--no-cache',
             '--public',
