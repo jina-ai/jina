@@ -502,8 +502,8 @@ def get_requirements_env_variables(requirements_file: 'Path') -> list:
 
     return env_variables
 
-def check_requirements_env_variable(str) -> bool:
-    return check_env_variable(str)
+def check_requirements_env_variable(env_variable: str) -> bool:
+    return check_env_variable(env_variable)
 
 def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jina',)):
     with requirements_file.open() as requirements:

@@ -110,8 +110,8 @@ def get_env_variables(line: str) -> List:
     return env_variables
 
 
-def check_env_variable(str) -> bool:
-    return True if ENV_VAR_RE_ONLY_MATCH_UPPERCASE_UNDERLINE.match(str) is not None else False
+def check_env_variable(env_variable: str) -> bool:
+    return True if ENV_VAR_RE_ONLY_MATCH_UPPERCASE_UNDERLINE.match(env_variable) is not None else False
 
 
 def expand_env_variables(line: str) -> str:
