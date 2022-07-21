@@ -1,5 +1,7 @@
 def _telemetry_run_in_thread(event: str) -> None:
-    """Sends in a thread a request with telemetry for a given event"""
+    """Sends in a thread a request with telemetry for a given event
+    :param event: Event leading to the telemetry entry
+    """
 
     import base64
     import json
