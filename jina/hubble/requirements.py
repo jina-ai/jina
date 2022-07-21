@@ -3,9 +3,7 @@
 import os
 import re
 from typing import Dict, Tuple, cast
-
 from pkg_resources import Requirement
-from soupsieve import match
 
 # Adopted from requirements-parser:
 # https://github.com/madpah/requirements-parser

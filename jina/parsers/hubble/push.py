@@ -1,7 +1,6 @@
 """Argparser module for hub push"""
 
 import argparse
-from email.policy import default
 import os
 
 from jina.parsers.helper import add_arg_group
