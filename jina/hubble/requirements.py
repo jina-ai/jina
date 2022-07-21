@@ -2,7 +2,7 @@
 
 import os
 import re
-from typing import Dict, Tuple, cast
+from typing import Dict, Tuple, cast, List
 from pkg_resources import Requirement
 
 # Adopted from requirements-parser:
@@ -102,7 +102,7 @@ def parse_requirement(line: str) -> 'Requirement':
     return Requirement.parse(line)
 
 
-def get_env_variables(line: str):
+def get_env_variables(line: str) -> List:
     env_variables = [];
     for env_var, var_name in ENV_VAR_RE.findall(line):
         env_variables.append(var_name)
@@ -110,11 +110,11 @@ def get_env_variables(line: str):
     return env_variables
 
 
-def check_env_variable(str):
+def check_env_variable(str) -> bool:
     return True if ENV_VAR_RE_ONLY_MATCH_UPPERCASE_UNDERLINE.match(str) is not None else False
 
 
-def expand_env_variables(line: str):
+def expand_env_variables(line: str) -> str:
     """ 
     Replace all environment variables that can be retrieved via `os.getenv`.
     The only allowed format for environment variables defined in the
@@ -134,31 +134,3 @@ def expand_env_variables(line: str):
 
             line = line.replace(env_var, value)
     return line
-
-
-def _expand_env_variables(lines_enum):
-    """ 
-    Replace all environment variables that can be retrieved via `os.getenv`.
-    The only allowed format for environment variables defined in the
-    requirement file is `${MY_VARIABLE_1}` to ensure two things:
-    1. Strings that contain a `$` aren't accidentally (partially) expanded.
-    2. Ensure consistency across platforms for requirement files.
-    Valid characters in variable names follow the `POSIX standard
-    <http://pubs.opengroup.org/onlinepubs/9699919799/>`_ and are limited
-    to uppercase letter, digits and the `_` (underscore).
-    Replace environment variables in requirement if it's defined.
-    """
-    for line in lines_enum:
-        line = os.path.expandvars(line)
-        yield line
-    for line_number, line in lines_enum:
-
-        for env_var, var_name in ENV_VAR_RE.findall(line):
-            value = os.getenv(var_name)
-
-            if not value:
-                raise Exception(f'The given requirements.txt require environment variables `{var_name}` does not exist!')
-
-            line = line.replace(env_var, value)
-
-        yield line_number, line

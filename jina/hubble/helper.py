@@ -489,7 +489,7 @@ def is_requirements_installed(
         return isinstance(ex, VersionConflict)
     return True
 
-def get_requirements_env_variables(requirements_file: 'Path'):
+def get_requirements_env_variables(requirements_file: 'Path') -> list:
     env_variables = []
     with requirements_file.open() as requirements:
         for req in requirements:
@@ -502,7 +502,7 @@ def get_requirements_env_variables(requirements_file: 'Path'):
 
     return env_variables
 
-def check_requirements_env_variable(str):
+def check_requirements_env_variable(str) -> bool:
     return check_env_variable(str)
 
 def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jina',)):

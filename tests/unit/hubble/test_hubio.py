@@ -134,7 +134,7 @@ class FetchMetaMockResponse:
 @pytest.mark.parametrize('force', [None, 'UUID8'])
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['DOCSQA_LIB_TOKEN=test key2=test2'])
+@pytest.mark.parametrize('build_env', ['DOCSQA_LIB_TOKEN=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 key2=test2'])
 @pytest.mark.parametrize(
     'expected_error',
     [
@@ -256,7 +256,7 @@ def test_push_wrong_dockerfile(
         info.value
     )
 
-@pytest.mark.parametrize('build_env', ['DOCSQA_LIB_TOKEN=test key2=test2'])
+@pytest.mark.parametrize('build_env', ['DOCSQA_LIB_TOKEN=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'])
 def test_push_with_authorization(mocker, monkeypatch, auth_token, build_env):
     mock = mocker.Mock()
 
