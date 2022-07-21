@@ -490,8 +490,9 @@ def is_requirements_installed(
     return True
 
 def get_requirements_env_variables(requirements_file: 'Path') -> list:
-    """ 
-    get the env variables in requirements.txt
+    """get the env variables in requirements.txt
+    :param requirements_file: the requirements.txt file
+    :return: List of env variables in requirements.txt
     """
     env_variables = []
     with requirements_file.open() as requirements:
@@ -509,6 +510,8 @@ def check_requirements_env_variable(env_variable: str) -> bool:
     """ 
     check the env variable is limited
     to uppercase letter and the `_` (underscore).
+    :param env_variable: env_variable in the requirements.txt file
+    :return: True or False if not satisfied
     """
     return check_env_variable(env_variable)
 

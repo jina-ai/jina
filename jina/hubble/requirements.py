@@ -105,6 +105,8 @@ def parse_requirement(line: str) -> 'Requirement':
 def get_env_variables(line: str) -> List:
     """ 
     search the env variable only match uppercase letter and the `_` (underscore).
+    :param line: a line of a requirement file
+    :return: a List of components
     """
     env_variables = [];
     for env_var, var_name in ENV_VAR_RE.findall(line):
@@ -117,6 +119,8 @@ def check_env_variable(env_variable: str) -> bool:
     """ 
     check env variable, valid characters in variable names are limited
     to uppercase letter and the `_` (underscore).
+    :param env_variable: env_variable in the requirements.txt file
+    :return: True or False if not satisfied
     """
     return True if ENV_VAR_RE_ONLY_MATCH_UPPERCASE_UNDERLINE.match(env_variable) is not None else False
 
@@ -132,6 +136,8 @@ def expand_env_variables(line: str) -> str:
     <http://pubs.opengroup.org/onlinepubs/9699919799/>`_ and are limited
     to uppercase letter and the `_` (underscore).
     Replace environment variables in requirement if it's defined.
+    :param line: a line of a requirement file
+    :return: line
     """
     for env_var, var_name in ENV_VAR_RE.findall(line):
         value = os.getenv(var_name)
