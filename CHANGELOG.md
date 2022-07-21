@@ -209,6 +209,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14405,4 +14406,30 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```6a8ceaad```](https://github.com/jina-ai/jina/commit/6a8ceaadad702ed0f239f04e7f95c7e60d5a73e9)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```356d2b76```](https://github.com/jina-ai/jina/commit/356d2b76c844422ff542f5189de1e568beff87eb)] __-__ __version__: the next version will be 3.6.15 (*Jina Dev Bot*)
+
+<a name=release-note-3-6-16></a>
+## Release Note (`3.6.16`)
+
+> Release time: 2022-07-21 08:22:03
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Roshan Jossy,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```1b3edacf```](https://github.com/jina-ai/jina/commit/1b3edacf531e4e8d29eac4ea73785f8d201255d6)] __-__ wait for floating Executor tasks (#5004) (*Joan Fontanals*)
+ - [[```6ba1d165```](https://github.com/jina-ai/jina/commit/6ba1d165a2aad8e863006be69c813b5cac3d8a21)] __-__ do not await gather endpoints, simply schedule task (#5015) (*Joan Fontanals*)
+
+### 🐞 Bug fixes
+
+ - [[```6f5b3f2a```](https://github.com/jina-ai/jina/commit/6f5b3f2a9b13c2eae78b746531132cbfcdc8c2da)] __-__ fix endpoint discovery tries (#5014) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```c9b68d3d```](https://github.com/jina-ai/jina/commit/c9b68d3d15d46ee7d62d9f7e1f22c539fb309f8b)] __-__ update action to update dockerhub description (#5021) (*Roshan Jossy*)
+ - [[```c01a9fee```](https://github.com/jina-ai/jina/commit/c01a9fee2965584dea48b91383fd414c69acabc9)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```394bf110```](https://github.com/jina-ai/jina/commit/394bf11051ce787dd010bed32790940968bb7419)] __-__ __version__: the next version will be 3.6.16 (*Jina Dev Bot*)
 
