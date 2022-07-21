@@ -1467,6 +1467,10 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
         self._build_level = FlowBuildLevel.RUNNING
 
+        if not self.args.no_telemetry:
+            from jina.serve.helper import _telemetry_run_in_thread
+            _telemetry_run_in_thread(event='flow.start')
+
         return self
 
     def _wait_until_all_ready(self):

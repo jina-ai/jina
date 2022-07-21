@@ -64,36 +64,9 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
 
         self._setup_monitoring()
         if not self.args.no_telemetry:
-            self._telemetry_run()
+            from jina.serve.helper import _telemetry_run_in_thread
+            _telemetry_run_in_thread(event=f'{type(self)}.start')
         self._loop.run_until_complete(self.async_setup())
-
-    def _telemetry_run(self) -> None:
-        """Runs in a thread a"""
-
-        import base64
-        import json
-        import urllib
-
-        def _telemetry():
-            url = 'https://telemetry.jina.ai/'
-            try:
-                data = base64.urlsafe_b64encode(
-                    json.dumps(self._telemetry_data_json()).encode('utf-8')
-                )
-                req = urllib.request.Request(
-                    url, data=data, headers={'User-Agent': 'Mozilla/5.0'}
-                )
-                urllib.request.urlopen(req)
-
-            except:
-                pass
-
-        threading.Thread(target=_telemetry, daemon=True).start()
-
-    def _telemetry_data_json(self):
-        from jina.helper import get_full_version
-        metas, envs = get_full_version()
-        return {**metas, **envs}
 
     def run_forever(self):
         """

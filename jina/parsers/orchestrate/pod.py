@@ -121,10 +121,3 @@ def mixin_pod_parser(parser, port_monitoring=True):
         help='If set, the current Pod/Deployment can not be further chained, '
         'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
     )
-
-    gp.add_argument(
-        '--no-telemetry',
-        action='store_true',
-        default=False,
-        help='If set, disables telemetry during the Pod/Runtime start.',
-    )
