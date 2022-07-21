@@ -48,7 +48,7 @@ VCS_REGEX = re.compile(
     rf'^(?P<scheme>{VCS_SCHEMES_REGEX})://((?P<login>[^/@]+)@)?'
     r'(?P<path>[^#@]+)(@(?P<revision>[^#]+))?(#(?P<fragment>\S+))?'
 )
-ENV_VAR_RE = re.compile(r"(?P<var>\$\{(?P<name>[A-Z0-9_]+)\})")
+ENV_VAR_RE = re.compile(r"(?P<var>\$\{(?P<name>[A-Z_]+)\})")
 
 ENV_VAR_RE_ONLY_MATCH_UPPERCASE_UNDERLINE = re.compile(r"^[A-Z_]+$");
 
