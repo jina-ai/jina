@@ -1,3 +1,3 @@
 -f https://download.pytorch.org/whl/torch_stable.html
 pytest
-git+https://${DOCSQA_LIB_TOKEN}@github.com/jina-ai/docsqalib.git@v0.1
+-f git+https://${TEST_TOKEN}@github.com/jina-ai/docsqalib.git

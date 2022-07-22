@@ -134,7 +134,7 @@ class FetchMetaMockResponse:
 @pytest.mark.parametrize('force', [None, 'UUID8'])
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['DOCSQA_LIB_TOKEN=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'])
+@pytest.mark.parametrize('build_env', ['TEST_TOKEN=ghp_I1cCzUY'])
 def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, build_env):
     mock = mocker.Mock()
 
@@ -189,7 +189,7 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
     
     if build_env:
         print(form_data['buildEnv'])
-        assert form_data['buildEnv'] ==  ['{"DOCSQA_LIB_TOKEN": "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"}']
+        assert form_data['buildEnv'] ==  ['{"TEST_TOKEN": "ghp_I1cCzUY"}']
     else:
         assert form_data.get('buildEnv') is None
 
@@ -250,7 +250,7 @@ def test_push_wrong_dockerfile(
         info.value
     )
 
-@pytest.mark.parametrize('build_env', ['DOCSQA_LIB_TOKEN=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'])
+@pytest.mark.parametrize('build_env', ['TEST_TOKEN=ghp_I1cCzUY'])
 def test_push_with_authorization(mocker, monkeypatch, auth_token, build_env):
     mock = mocker.Mock()
 
