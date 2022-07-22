@@ -32,7 +32,7 @@ executors:
         memory: 8G
 ```
 
-### cpu
+### CPU
 
 By default, `jcloud` allocates `0.1 (1/10 of a core)` CPU to each Executor. There might be cases where your Executor requires more CPU; you can do so by using `resources` arg while deploying the Flow (max 16 CPU allowed per Executor). The input value should be a number, indicating the number of full CPU cores.
 
