@@ -73,6 +73,40 @@ executors:
           type: efs
 ```
 
+### gateway
+
+For the intenet exposure, jcloud now provide support for `kong` gateway. 
+
+We currently support 2 type of gateway. 
+
+````{note}
+
+At current stage, `alb` is default gateway type due to backward compatibility.
+
+`alb` has below features, [docs] (https://aws.amazon.com/elasticloadbalancing/application-load-balancer/)
+
+- Use AWS signed public certs
+- AWS layer 7 loadbalancer
+
+`Kong` gateway is current working as ingress controller. We haven't enable other features yet. [docs] (https://docs.konghq.com/kubernetes-ingress-controller/latest/)
+
+- Use let's encrypt signed widecard certs
+- AWS layer 4 loadbalancer
+
+Jcloud is now in progress of migrating layer 7 lb type `alb` to layer 4 lb type `kong`, we suggest user to use `kong` as gateway.
+
+````
+
+```yaml
+jtype: Flow
+jcloud:
+    gateway:
+        type: kong
+executors:
+  - name: custom
+    uses: jinahub+docker://CustomExecutor
+```
+
 ## Capacity (`spot` vs `on-demand`)
 
 For cost optimization, `jcloud` tries to deploy all Executors on `spot` capacity. These are ideal for stateless Executors, which can withstand interruptions & restarts. It is recommended to use `on-demand` capacity for stateful Executors (e.g.- indexers) though.
@@ -136,7 +170,7 @@ executors:
 (retention-days)=
 ## Retention days
 
-In JCloud, we have a default life-cycle of 24hrs for Flows, after which they're removed, if idle. You can manage the same yourself by passing the right parameter for `retention-days` under `jcloud`. `0` is to use the default life-cycle, `X` (0<X<365), which is meant to keep the Flow alive until X days, and `-1` is for never expired,
+In JCloud, we have a default life-cycle of 24hrs for Flows, after which they're removed if idle. You can manage the same yourself by passing the right parameter for `retention-days` under `jcloud`. `0` is to use the default life-cycle, `X` (0<X<365), which is meant to keep the Flow alive until X days, and `-1` is for never expired,
 
 ```yaml
 jtype: Flow
