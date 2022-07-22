@@ -51,8 +51,8 @@ sitemap_filename = "sitemap.xml"
 autodoc_default_options = {"members": True, "inherited-members": True, 'class-doc-from': '__init__',}
 
 html_theme_options = {
-    'light_logo': 'logo-light.svg',
-    'dark_logo': 'logo-dark.svg',
+    'light_logo': 'Company logo_light.svg',
+    'dark_logo': 'Company logo_dark.svg',
     "sidebar_hide_name": True,
     "light_css_variables": {
         "color-brand-primary": "#009191",
