@@ -755,12 +755,6 @@ class GrpcConnectionPool:
                 shard_id = 0
             return await self._connections.remove_replica(deployment, address, shard_id)
 
-    def start(self):
-        """
-        Starts the connection pool
-        """
-        pass
-
     async def close(self):
         """
         Closes the connection pool
