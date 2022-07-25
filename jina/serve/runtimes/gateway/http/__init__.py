@@ -89,8 +89,7 @@ class HTTPGatewayRuntime(GatewayRuntime):
         await self._server.setup()
 
     async def async_run_forever(self):
-        """Running method of ther server."""
-        self._connection_pool.start()
+        """Running method of the server."""
         await self._server.serve()
 
     async def _wait_for_cancel(self):

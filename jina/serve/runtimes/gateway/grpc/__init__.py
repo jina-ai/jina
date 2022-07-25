@@ -131,7 +131,6 @@ class GRPCGatewayRuntime(GatewayRuntime):
 
     async def async_run_forever(self):
         """The async running of server."""
-        self._connection_pool.start()
         await self.server.wait_for_termination()
 
     async def dry_run(self, empty, context) -> jina_pb2.StatusProto:

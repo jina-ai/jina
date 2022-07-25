@@ -74,6 +74,7 @@ def get_fastapi_app(
         ),
         result_handler=request_handler.handle_result(),
     )
+    streamer.Call = streamer.stream
 
     @app.on_event('shutdown')
     async def _shutdown():

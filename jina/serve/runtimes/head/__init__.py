@@ -179,7 +179,6 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
     async def async_run_forever(self):
         """Block until the GRPC server is terminated"""
-        self.connection_pool.start()
         await self._grpc_server.wait_for_termination()
 
     async def async_cancel(self):
