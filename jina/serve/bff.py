@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict
 
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.networking import GrpcConnectionPool
@@ -6,6 +6,8 @@ from jina.serve.networking import GrpcConnectionPool
 from jina.logging.logger import JinaLogger
 from jina.serve.runtimes.gateway.request_handling import RequestHandler
 from jina.serve.stream import RequestStreamer
+
+from docarray import DocumentArray
 
 __all__ = ['GatewayBFF']
 
@@ -88,6 +90,11 @@ class GatewayBFF:
 
     def stream(self, *args, **kwargs):
         return self._streamer.stream(*args, **kwargs)
+
+    def stream_docs(self, da: DocumentArray, exec_endpoint: str, request_size: int, target_executor: Optional[str] = None, parameters: Optional[Dict] = None, *args, **kwargs):
+        from jina.clients.request import request_generator # move request_generator to another module
+        from jina.enums import DataInputType
+        return self._streamer.stream(request_generator(data=da, data_type=DataInputType.DOCUMENT, exec_endpoint=exec_endpoint, request_size=request_size, target_executor=target_executor, parameters=parameters))
 
     async def close(self):
         await self._streamer.wait_floating_requests_end()
