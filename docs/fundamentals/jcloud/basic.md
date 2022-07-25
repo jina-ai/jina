@@ -22,6 +22,14 @@ jc login
 
 You can use a Google/GitHub account to register and login. Without logging in, you can't do anything.
 
+If you have no access to the web browser in your integration environment, you can also create a Personal Access Token (PAT) using below CLI that comes with `jc`:
+
+```bash
+jina auth token create <name of PAT> -e <expiration days>
+```
+
+And then set the created PAT to the Environment Variable `JINA_AUTH_TOKEN` before working with JCloud.
+
 ## Deploy
 
 In Jina's idiom, a project is a [Flow](https://docs.jina.ai/fundamentals/flow/), which represents an end-to-end task such as indexing, searching or recommending. In this README, we will use "project" and "Flow" interchangeably.
