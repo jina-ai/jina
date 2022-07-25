@@ -32,11 +32,12 @@ class RequestStreamer:
 
     def __init__(
         self,
-        args: argparse.Namespace,
         request_handler: Callable[['Request'], 'Awaitable[Request]'],
         result_handler: Callable[['Request'], Optional['Request']],
+        prefetch: int = 0,
         end_of_iter_handler: Optional[Callable[[], None]] = None,
         logger: Optional['JinaLogger'] = None,
+        **logger_kwargs
     ):
         """
         :param args: args from CLI
@@ -46,9 +47,8 @@ class RequestStreamer:
         :param logger: Optional logger that can be used for logging
 
         """
-        self.args = args
-        self.logger = logger or JinaLogger(self.__class__.__name__, **vars(args))
-        self._prefetch = getattr(self.args, 'prefetch', 0)
+        self.logger = logger or JinaLogger(self.__class__.__name__, **logger_kwargs)
+        self._prefetch = prefetch
         self._request_handler = request_handler
         self._result_handler = result_handler
         self._end_of_iter_handler = end_of_iter_handler

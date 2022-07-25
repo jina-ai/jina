@@ -67,12 +67,15 @@ def get_fastapi_app(
 
     request_handler = RequestHandler(metrics_registry, args.name)
 
+
     streamer = RequestStreamer(
-        args=args,
         request_handler=request_handler.handle_request(
             graph=topology_graph, connection_pool=connection_pool
         ),
         result_handler=request_handler.handle_result(),
+        prefetch=getattr(args, 'prefetch', 0),
+        logger=logger,
+        **vars(args)
     )
     streamer.Call = streamer.stream
 

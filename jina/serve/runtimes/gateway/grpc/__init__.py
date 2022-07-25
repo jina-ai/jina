@@ -62,11 +62,13 @@ class GRPCGatewayRuntime(GatewayRuntime):
         request_handler = RequestHandler(self.metrics_registry, self.name)
 
         self.streamer = RequestStreamer(
-            args=self.args,
             request_handler=request_handler.handle_request(
                 graph=self._topology_graph, connection_pool=self._connection_pool
             ),
             result_handler=request_handler.handle_result(),
+            prefetch=getattr(self.args, 'prefetch', 0),
+            logger=self.logger,
+            **vars(self.args)
         )
 
         self.streamer.Call = self.streamer.stream
