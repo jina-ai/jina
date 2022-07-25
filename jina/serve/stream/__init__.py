@@ -40,11 +40,12 @@ class RequestStreamer:
         **logger_kwargs
     ):
         """
-        :param args: args from CLI
         :param request_handler: The callable responsible for handling the request. It should handle a request as input and return a Future to be awaited
         :param result_handler: The callable responsible for handling the response.
         :param end_of_iter_handler: Optional callable to handle the end of iteration if some special action needs to be taken.
+        :param prefetch: How many Requests are processed from the Client at the same time.
         :param logger: Optional logger that can be used for logging
+        :param logger_kwargs: Extra keyword arguments that may be passed to the internal logger constructor if none is provided
 
         """
         self.logger = logger or JinaLogger(self.__class__.__name__, **logger_kwargs)
