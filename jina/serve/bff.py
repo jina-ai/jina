@@ -20,9 +20,6 @@ from jina.serve.stream.helper import AsyncRequestsIterator, _RequestsCounter
 from jina.serve.runtimes.gateway.request_handling import RequestHandler
 from jina.serve.stream import RequestStreamer
 
-
-
-
 __all__ = ['RequestStreamer']
 
 from jina.types.request.data import Response
@@ -45,9 +42,10 @@ class GatewayBFF:
             timeout_send,
             retries,
             compression,
-            runtime_name,
+            runtime_name='bff',
+            prefetch: int = 0,
             logger: Optional['JinaLogger'] = None,
-            metrics_registry = None,
+            metrics_registry=None,
     ):
         """
         :param graph_representation: Graph representation of the Flow
@@ -58,16 +56,18 @@ class GatewayBFF:
         self._retries = retries
         self.logger = logger
         self._metrics_registry = metrics_registry
-        self._topology_graph = self._create_topology_graph(graph_representation, graph_conditions, deployments_disable_reduce)
+        self._topology_graph = self._create_topology_graph(graph_representation, graph_conditions,
+                                                           deployments_disable_reduce)
         self._connection_pool = self._create_connection_pool(executor_addresses, compression)
         request_handler = RequestHandler(metrics_registry, runtime_name)
 
-        streamer = RequestStreamer(
-            args=args,
+        self._streamer = RequestStreamer(
             request_handler=request_handler.handle_request(
                 graph=self._topology_graph, connection_pool=self._connection_pool
             ),
             result_handler=request_handler.handle_result(),
+            prefetch=prefetch,
+            logger=self.logger,
         )
 
     def _create_topology_graph(self, graph_description, graph_conditions, deployments_disable_reduce):
@@ -103,4 +103,8 @@ class GatewayBFF:
 
         return connection_pool
 
+    def stream(self, *args, **kwargs):
+        return self._streamer.stream(*args, **kwargs)
 
+    async def close(self):
+        await self._connection_pool.close()

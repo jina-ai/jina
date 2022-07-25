@@ -18,11 +18,11 @@ if TYPE_CHECKING:
 
 
 def get_fastapi_app(
-    args: 'argparse.Namespace',
-    topology_graph: 'TopologyGraph',
-    connection_pool: 'GrpcConnectionPool',
-    logger: 'JinaLogger',
-    metrics_registry: Optional['CollectorRegistry'] = None,
+        args: 'argparse.Namespace',
+        topology_graph: 'TopologyGraph',
+        connection_pool: 'GrpcConnectionPool',
+        logger: 'JinaLogger',
+        metrics_registry: Optional['CollectorRegistry'] = None,
 ):
     """
     Get the app from FastAPI as the REST interface.
@@ -47,8 +47,8 @@ def get_fastapi_app(
     app = FastAPI(
         title=args.title or 'My Jina Service',
         description=args.description
-        or 'This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` '
-        'to customize the title and description.',
+                    or 'This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` '
+                       'to customize the title and description.',
         version=__version__,
     )
 
@@ -66,7 +66,6 @@ def get_fastapi_app(
     from jina.serve.stream import RequestStreamer
 
     request_handler = RequestHandler(metrics_registry, args.name)
-
 
     streamer = RequestStreamer(
         request_handler=request_handler.handle_request(
@@ -90,7 +89,7 @@ def get_fastapi_app(
             {
                 'name': 'Debug',
                 'description': 'Debugging interface. In production, you should hide them by setting '
-                '`--no-debug-endpoints` in `Flow`/`Gateway`.',
+                               '`--no-debug-endpoints` in `Flow`/`Gateway`.',
             }
         )
 
@@ -121,7 +120,7 @@ def get_fastapi_app(
         @app.get(
             path='/dry_run',
             summary='Get the readiness of Jina Flow service, sends an empty DocumentArray to the complete Flow to '
-            'validate connectivity',
+                    'validate connectivity',
             response_model=PROTO_TO_PYDANTIC_MODELS.StatusProto,
         )
         async def _flow_health():
@@ -178,7 +177,7 @@ def get_fastapi_app(
             # do not add response_model here, this debug endpoint should not restricts the response model
         )
         async def post(
-            body: JinaEndpointRequestModel, response: Response
+                body: JinaEndpointRequestModel, response: Response
         ):  # 'response' is a FastAPI response, not a Jina response
             """
             Post a data request to some endpoint.
@@ -285,7 +284,7 @@ def get_fastapi_app(
             {
                 'name': 'CRUD',
                 'description': 'CRUD interface. If your service does not implement those interfaces, you can should '
-                'hide them by setting `--no-crud-endpoints` in `Flow`/`Gateway`.',
+                               'hide them by setting `--no-crud-endpoints` in `Flow`/`Gateway`.',
             }
         )
         crud = {
@@ -324,7 +323,7 @@ def get_fastapi_app(
             from docarray import DocumentArray
 
             async def get_docs_from_endpoint(
-                data, target_executor, parameters, exec_endpoint
+                    data, target_executor, parameters, exec_endpoint
             ):
                 req_generator_input = {
                     'data': [asdict(d) for d in data],
@@ -335,8 +334,8 @@ def get_fastapi_app(
                 }
 
                 if (
-                    req_generator_input['data'] is not None
-                    and 'docs' in req_generator_input['data']
+                        req_generator_input['data'] is not None
+                        and 'docs' in req_generator_input['data']
                 ):
                     req_generator_input['data'] = req_generator_input['data']['docs']
                 try:
@@ -354,11 +353,11 @@ def get_fastapi_app(
             class Mutation:
                 @strawberry.mutation
                 async def docs(
-                    self,
-                    data: Optional[List[StrawberryDocumentInput]] = None,
-                    target_executor: Optional[str] = None,
-                    parameters: Optional[JSONScalar] = None,
-                    exec_endpoint: str = '/search',
+                        self,
+                        data: Optional[List[StrawberryDocumentInput]] = None,
+                        target_executor: Optional[str] = None,
+                        parameters: Optional[JSONScalar] = None,
+                        exec_endpoint: str = '/search',
                 ) -> List[StrawberryDocument]:
                     return await get_docs_from_endpoint(
                         data, target_executor, parameters, exec_endpoint
@@ -368,11 +367,11 @@ def get_fastapi_app(
             class Query:
                 @strawberry.field
                 async def docs(
-                    self,
-                    data: Optional[List[StrawberryDocumentInput]] = None,
-                    target_executor: Optional[str] = None,
-                    parameters: Optional[JSONScalar] = None,
-                    exec_endpoint: str = '/search',
+                        self,
+                        data: Optional[List[StrawberryDocumentInput]] = None,
+                        target_executor: Optional[str] = None,
+                        parameters: Optional[JSONScalar] = None,
+                        exec_endpoint: str = '/search',
                 ) -> List[StrawberryDocument]:
                     return await get_docs_from_endpoint(
                         data, target_executor, parameters, exec_endpoint
