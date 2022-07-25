@@ -1,31 +1,13 @@
-import argparse
-import asyncio
-from typing import (
-    TYPE_CHECKING,
-    AsyncIterator,
-    Awaitable,
-    Callable,
-    Iterator,
-    Optional,
-    Union,
-)
+from typing import Optional
 
-from jina.serve.stream import RequestStreamer
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.networking import GrpcConnectionPool
 
-from jina.excepts import InternalNetworkError
 from jina.logging.logger import JinaLogger
-from jina.serve.stream.helper import AsyncRequestsIterator, _RequestsCounter
 from jina.serve.runtimes.gateway.request_handling import RequestHandler
 from jina.serve.stream import RequestStreamer
 
-__all__ = ['RequestStreamer']
-
-from jina.types.request.data import Response
-
-if TYPE_CHECKING:
-    from jina.types.request import Request
+__all__ = ['GatewayBFF']
 
 
 class GatewayBFF:
@@ -69,6 +51,7 @@ class GatewayBFF:
             prefetch=prefetch,
             logger=self.logger,
         )
+        self._streamer.Call = self._streamer.stream
 
     def _create_topology_graph(self, graph_description, graph_conditions, deployments_disable_reduce):
         # check if it should be in K8s, maybe ConnectionPoolFactory to be created
@@ -107,4 +90,7 @@ class GatewayBFF:
         return self._streamer.stream(*args, **kwargs)
 
     async def close(self):
+        await self._streamer.wait_floating_requests_end()
         await self._connection_pool.close()
+
+    Call = stream

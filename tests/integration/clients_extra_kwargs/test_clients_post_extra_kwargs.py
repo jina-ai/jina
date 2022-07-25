@@ -58,8 +58,6 @@ def flow_with_grpc(monkeypatch):
                 ],
             )
 
-            self._set_topology_graph()
-            self._set_connection_pool()
 
             await self._async_setup_server()
 

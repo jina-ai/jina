@@ -13,24 +13,19 @@ from jina.logging.logger import JinaLogger
 if TYPE_CHECKING:
     from prometheus_client import CollectorRegistry
 
-    from jina.serve.networking import GrpcConnectionPool
-    from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
-
 
 def get_fastapi_app(
         args: 'argparse.Namespace',
-        topology_graph: 'TopologyGraph',
-        connection_pool: 'GrpcConnectionPool',
         logger: 'JinaLogger',
+        name: str,
         metrics_registry: Optional['CollectorRegistry'] = None,
 ):
     """
     Get the app from FastAPI as the REST interface.
 
     :param args: passed arguments.
-    :param topology_graph: topology graph that manages the logic of sending to the proper executors.
-    :param connection_pool: Connection Pool to handle multiple replicas and sending to different of them
     :param logger: Jina logger.
+    :param name: the name to use in the monitoring
     :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler
     :return: fastapi app
     """
@@ -62,26 +57,18 @@ def get_fastapi_app(
         )
         logger.warning('CORS is enabled. This service is accessible from any website!')
 
-    from jina.serve.runtimes.gateway.request_handling import RequestHandler
-    from jina.serve.stream import RequestStreamer
+    from jina.serve.bff import GatewayBFF
 
-    request_handler = RequestHandler(metrics_registry, args.name)
-
-    streamer = RequestStreamer(
-        request_handler=request_handler.handle_request(
-            graph=topology_graph, connection_pool=connection_pool
-        ),
-        result_handler=request_handler.handle_result(),
-        prefetch=getattr(args, 'prefetch', 0),
-        logger=logger,
-        **vars(args)
-    )
-    streamer.Call = streamer.stream
+    gateway_bff = GatewayBFF(graph_representation=args.graph_description, executor_addresses=args.deployments_addresses,
+                             graph_conditions=args.graph_conditions,
+                             deployments_disable_reduce=args.deployments_disable_reduce, timeout_send=args.timeout_send,
+                             retries=args.retries, compression=args.compression,
+                             runtime_name=name, prefetch=args.prefetch, logger=logger,
+                             metrics_registry=metrics_registry)
 
     @app.on_event('shutdown')
     async def _shutdown():
-        await streamer.wait_floating_requests_end()
-        await connection_pool.close()
+        await gateway_bff.close()
 
     openapi_tags = []
     if not args.no_debug_endpoints:
@@ -387,7 +374,7 @@ def get_fastapi_app(
         :param request_iterator: request iterator, with length of 1
         :return: the first result from the request iterator
         """
-        async for k in streamer.stream(request_iterator=request_iterator):
+        async for k in gateway_bff.stream(request_iterator=request_iterator):
             request_dict = k.to_dict()
             return request_dict
 

@@ -67,15 +67,12 @@ class HTTPGatewayRuntime(GatewayRuntime):
                 if ssl_file not in uvicorn_kwargs.keys():
                     uvicorn_kwargs[ssl_file] = getattr(self.args, ssl_file)
 
-        self._set_topology_graph()
-        self._set_connection_pool()
         self._server = UviServer(
             config=Config(
                 app=extend_rest_interface(
                     get_fastapi_app(
-                        self.args,
-                        topology_graph=self._topology_graph,
-                        connection_pool=self._connection_pool,
+                        args=self.args,
+                        name=self.name,
                         logger=self.logger,
                         metrics_registry=self.metrics_registry,
                     )
