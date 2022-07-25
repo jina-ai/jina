@@ -18,6 +18,7 @@ def get_fastapi_app(
         args: 'argparse.Namespace',
         logger: 'JinaLogger',
         name: str,
+        timeout_send: Optional[float] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
 ):
     """
@@ -26,6 +27,7 @@ def get_fastapi_app(
     :param args: passed arguments.
     :param logger: Jina logger.
     :param name: the name to use in the monitoring
+    :param timeout_send: Timeout to be used when sending to Executors
     :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler
     :return: fastapi app
     """
@@ -59,11 +61,16 @@ def get_fastapi_app(
 
     from jina.serve.bff import GatewayBFF
 
-    gateway_bff = GatewayBFF(graph_representation=args.graph_description, executor_addresses=args.deployments_addresses,
+    gateway_bff = GatewayBFF(graph_representation=args.graph_description,
+                             executor_addresses=args.deployments_addresses,
                              graph_conditions=args.graph_conditions,
-                             deployments_disable_reduce=args.deployments_disable_reduce, timeout_send=args.timeout_send,
-                             retries=args.retries, compression=args.compression,
-                             runtime_name=name, prefetch=args.prefetch, logger=logger,
+                             deployments_disable_reduce=args.deployments_disable_reduce,
+                             timeout_send=timeout_send,
+                             retries=args.retries,
+                             compression=args.compression,
+                             runtime_name=name,
+                             prefetch=args.prefetch,
+                             logger=logger,
                              metrics_registry=metrics_registry)
 
     @app.on_event('shutdown')

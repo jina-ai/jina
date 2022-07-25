@@ -74,6 +74,7 @@ class HTTPGatewayRuntime(GatewayRuntime):
                         args=self.args,
                         name=self.name,
                         logger=self.logger,
+                        timeout_send=self.timeout_send,
                         metrics_registry=self.metrics_registry,
                     )
                 ),

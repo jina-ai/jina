@@ -59,9 +59,12 @@ class GRPCGatewayRuntime(GatewayRuntime):
                               executor_addresses=self.args.deployments_addresses,
                               graph_conditions=self.args.graph_conditions,
                               deployments_disable_reduce=self.args.deployments_disable_reduce,
-                              timeout_send=self.args.timeout_send,
-                              retries=self.args.retries, compression=self.args.compression,
-                              runtime_name=self.name, prefetch=self.args.prefetch, logger=self.logger,
+                              timeout_send=self.timeout_send,
+                              retries=self.args.retries,
+                              compression=self.args.compression,
+                              runtime_name=self.name,
+                              prefetch=self.args.prefetch,
+                              logger=self.logger,
                               metrics_registry=self.metrics_registry)
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self.bff._streamer, self.server)

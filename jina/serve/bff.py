@@ -63,9 +63,9 @@ class GatewayBFF:
         graph_conditions = json.loads(graph_conditions)
         deployments_disable_reduce = json.loads(deployments_disable_reduce)
         return TopologyGraph(
-            graph_description,
-            graph_conditions,
-            deployments_disable_reduce,
+            graph_representation=graph_description,
+            graph_conditions=graph_conditions,
+            deployments_disable_reduce=deployments_disable_reduce,
             timeout_send=self._timeout_send,
             retries=self._retries,
         )
