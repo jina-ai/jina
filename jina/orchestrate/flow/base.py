@@ -1470,7 +1470,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
         self._build_level = FlowBuildLevel.RUNNING
 
-        if not self.args.no_telemetry:
+        if not self.args.no_telemetry and 'JINA_DISABLE_TELMETRY' not in os.environ:
             from jina.serve.helper import _telemetry_run_in_thread
 
             _telemetry_run_in_thread(event='flow.start')
