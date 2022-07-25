@@ -94,6 +94,7 @@ class GatewayBFF:
     def stream_docs(self, da: DocumentArray, exec_endpoint: str, request_size: int, target_executor: Optional[str] = None, parameters: Optional[Dict] = None, *args, **kwargs):
         from jina.clients.request import request_generator # move request_generator to another module
         from jina.enums import DataInputType
+        # this request_generator thing can be easily changed by private methods
         return self._streamer.stream(request_generator(data=da, data_type=DataInputType.DOCUMENT, exec_endpoint=exec_endpoint, request_size=request_size, target_executor=target_executor, parameters=parameters))
 
     async def close(self):

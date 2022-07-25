@@ -66,7 +66,6 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
         result_handler=result_handle_fn,
         end_of_iter_handler=end_of_iter_fn,
         prefetch=getattr(args, 'prefetch', 0),
-        **vars(args)
     )
 
     it = (
