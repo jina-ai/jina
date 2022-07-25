@@ -71,7 +71,6 @@ class WebSocketGatewayRuntime(GatewayRuntime):
                 app=extend_rest_interface(
                     get_fastapi_app(
                         args=self.args,
-                        name=self.name,
                         logger=self.logger,
                         timeout_send=self.timeout_send,
                         metrics_registry=self.metrics_registry,

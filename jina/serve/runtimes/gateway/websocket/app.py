@@ -24,7 +24,6 @@ def _fits_ws_close_msg(msg: str):
 def get_fastapi_app(
         args: 'argparse.Namespace',
         logger: 'JinaLogger',
-        name: str,
         timeout_send: Optional[float] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
 ):
@@ -33,7 +32,6 @@ def get_fastapi_app(
 
     :param args: passed arguments.
     :param logger: Jina logger.
-    :param name: the name to use in the monitoring
     :param timeout_send: Timeout to be used when sending to Executors
     :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler
     :return: fastapi app
@@ -124,7 +122,7 @@ def get_fastapi_app(
                              timeout_send=timeout_send,
                              retries=args.retries,
                              compression=args.compression,
-                             runtime_name=name,
+                             runtime_name=args.name,
                              prefetch=args.prefetch,
                              logger=logger,
                              metrics_registry=metrics_registry)
