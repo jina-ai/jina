@@ -55,19 +55,19 @@ class GRPCGatewayRuntime(GatewayRuntime):
 
     async def _async_setup_server(self):
 
-        self.bff = GatewayBFF(graph_representation=self.args.graph_description,
-                              executor_addresses=self.args.deployments_addresses,
-                              graph_conditions=self.args.graph_conditions,
-                              deployments_disable_reduce=self.args.deployments_disable_reduce,
-                              timeout_send=self.timeout_send,
-                              retries=self.args.retries,
-                              compression=self.args.compression,
-                              runtime_name=self.name,
-                              prefetch=self.args.prefetch,
-                              logger=self.logger,
-                              metrics_registry=self.metrics_registry)
+        self.gateway_bff = GatewayBFF(graph_representation=self.args.graph_description,
+                                      executor_addresses=self.args.deployments_addresses,
+                                      graph_conditions=self.args.graph_conditions,
+                                      deployments_disable_reduce=self.args.deployments_disable_reduce,
+                                      timeout_send=self.timeout_send,
+                                      retries=self.args.retries,
+                                      compression=self.args.compression,
+                                      runtime_name=self.name,
+                                      prefetch=self.args.prefetch,
+                                      logger=self.logger,
+                                      metrics_registry=self.metrics_registry)
 
-        jina_pb2_grpc.add_JinaRPCServicer_to_server(self.bff._streamer, self.server)
+        jina_pb2_grpc.add_JinaRPCServicer_to_server(self.gateway_bff._streamer, self.server)
         jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self, self.server)
         jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self.server)
 
@@ -117,7 +117,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
         # usually async_cancel should already have been called, but then its a noop
         # if the runtime is stopped without a sigterm (e.g. as a context manager, this can happen)
         self._health_servicer.enter_graceful_shutdown()
-        await self.bff.close()
+        await self.gateway_bff.close()
         await self.async_cancel()
 
     async def async_cancel(self):
@@ -149,7 +149,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
                 data=da,
                 data_type=DataInputType.DOCUMENT,
             )
-            async for _ in self.bff.stream(request_iterator=req_iterator):
+            async for _ in self.gateway_bff.stream(request_iterator=req_iterator):
                 pass
             status_message = StatusMessage()
             status_message.set_code(jina_pb2.StatusProto.SUCCESS)
