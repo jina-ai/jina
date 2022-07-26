@@ -77,32 +77,40 @@ executors:
 
 For the internet exposure, JCloud now provides support for [Kong gateway](https://konghq.com/products/api-gateway-platform). 
 
-We currently support 2 types of gateway.
+We currently support two types of gateway for internet exposure: [Kong gateway](https://konghq.com/products/api-gateway-platform) and [Application Load Balancer (ALB)](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html).
 
-#### `alb`
+#### ALB
 
-At current stage, `alb` is default gateway type due to backward compatibility. `alb` has below features, [docs] (https://aws.amazon.com/elasticloadbalancing/application-load-balancer/)
+At the current stage, ALB is the default gateway type due to backward compatibility. ALB has the features listed [here] (https://aws.amazon.com/elasticloadbalancing/application-load-balancer/).
+For the purposes of Jina, the following features are most important:
 
 - Use AWS signed public certs
 
-####  `Kong`
+#### Kong Gateway
 
-`Kong` gateway is current working as ingress controller. We haven't enable other features yet. [docs] (https://docs.konghq.com/kubernetes-ingress-controller/latest/)
+Kong Gateway is the recommended gateway in JCloud.
+Kong is currently working as ingress controller, and we will enable other [Kong features](https://docs.konghq.com/kubernetes-ingress-controller/latest/) in the future.
+For the purposes of Jina, the following features are most important:
 
-- Use let's encrypt signed widecard certs
-- Use nginx to distribute traffic as ingress controller
+- Use Let's Encrypt signed wildcard certificates
+- Use NGINX to distribute traffic as ingress controller
 
 ```{tip}
-Normally, user can retrieve the CA from client end. The difference of cert CA usually will not affect the jina usage unless the CA is not in the trust list.
+Normally, user can retrieve the CA(certificate authority) from client end. The difference of cert CA usually will not affect the jina usage unless the CA is not in the trust list.
 ```
 
-```{admonition} Why we provide kong as new gateway? 
-Well, as we are using EKS as kubernetes cluster, `alb` can be used to provide simple loadbalance service to our executor. However, there are some drawbacks. 1). `alb` is not general kubernetes services, it provided by `AWS`, which means that we can't use it in other cloud provider.
-2). `alb` is simple to configure and use, but it doesn't have features like horizontal scaling, route methods configure, etc.
-3). `alb` is layer 7 loadbalancer and `kong` is using layer 4 loadbalancer and route traffic via Kong Ingress Controller. So, `kong` is able to support tcp/udp protocol and `alb` can only support grpc/https/http.
+```{admonition} Why Kong? 
+Since we are using EKS as JCloud's Kubernetes cluster, ALB can be used to provide a simple loadbalancing service to our executor. However, there are some drawbacks:
+1). ALB is not a general Kubernetes services. Instead, it is provided by AWS, which means that we can't use it with other cloud provider.
+2). ALB is simple to configure and use, but it doesn't have features like horizontal scaling, route methods configuration, etc.
+3). ALB is layer 7 loadbalancer and Kong is using a layer 4 loadbalancer and route traffic via Kong Ingress Controller. Therefore, Kong is able to support tcp/udp protocols, whereas ALB can only support grpc/https/http.
 
-Jcloud is now in progress of migrating from `alb` to `kong`, we suggest user to use `kong` as gateway. However, `alb` is currently supported due to backward compatibility.
+JCloud is currenlty in progress of migrating from ALB to Kong, and we recommend the usage of `kong` as gateway. However, `alb` is currently still supported for backward compatibility.
 ```
+
+### Usage
+
+To enable Kong Gateway instead of ALB, specify the gateway type as `kong` in your JCloud YAML:
 
 ```yaml
 jtype: Flow
