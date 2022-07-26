@@ -24,8 +24,8 @@ class GatewayBFF:
             self,
             graph_representation: Dict,
             executor_addresses: Dict[str, Union[str, List[str]]],
-            graph_conditions: Dict,
-            deployments_disable_reduce: List[str],
+            graph_conditions: Dict = {},
+            deployments_disable_reduce: List[str] = [],
             timeout_send: Optional[float] = None,
             retries: int = 0,
             compression: Optional[str] = None,
@@ -67,11 +67,6 @@ class GatewayBFF:
     def _create_topology_graph(self, graph_description, graph_conditions, deployments_disable_reduce, timeout_send,
                                retries):
         # check if it should be in K8s, maybe ConnectionPoolFactory to be created
-        import json
-
-        graph_description = json.loads(graph_description)
-        graph_conditions = json.loads(graph_conditions)
-        deployments_disable_reduce = json.loads(deployments_disable_reduce)
         return TopologyGraph(
             graph_representation=graph_description,
             graph_conditions=graph_conditions,
@@ -81,9 +76,6 @@ class GatewayBFF:
         )
 
     def _create_connection_pool(self, deployments_addresses, compression, metrics_registry, logger):
-        import json
-
-        deployments_addresses = json.loads(deployments_addresses)
         # add the connections needed
         connection_pool = GrpcConnectionPool(
             logger=logger,
@@ -108,7 +100,7 @@ class GatewayBFF:
         """
         return self._streamer.stream(*args, **kwargs)
 
-    def stream_docs(self, docs: DocumentArray, exec_endpoint: str, request_size: int,
+    def stream_docs(self, docs: DocumentArray, request_size: int, exec_endpoint: Optional[str] = None,
                     target_executor: Optional[str] = None, parameters: Optional[Dict] = None):
         """
         stream documents and stream responses back.

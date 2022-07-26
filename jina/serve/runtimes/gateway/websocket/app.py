@@ -114,11 +114,17 @@ def get_fastapi_app(
     app = FastAPI()
 
     from jina.serve.bff import GatewayBFF
+    import json
 
-    gateway_bff = GatewayBFF(graph_representation=args.graph_description,
-                             executor_addresses=args.deployments_addresses,
-                             graph_conditions=args.graph_conditions,
-                             deployments_disable_reduce=args.deployments_disable_reduce,
+    graph_description = json.loads(args.graph_description)
+    graph_conditions = json.loads(args.graph_conditions)
+    deployments_addresses = json.loads(args.deployments_addresses)
+    deployments_disable_reduce = json.loads(args.deployments_disable_reduce)
+
+    gateway_bff = GatewayBFF(graph_representation=graph_description,
+                             executor_addresses=deployments_addresses,
+                             graph_conditions=graph_conditions,
+                             deployments_disable_reduce=deployments_disable_reduce,
                              timeout_send=timeout_send,
                              retries=args.retries,
                              compression=args.compression,

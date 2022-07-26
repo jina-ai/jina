@@ -55,10 +55,17 @@ class GRPCGatewayRuntime(GatewayRuntime):
 
     async def _async_setup_server(self):
 
-        self.gateway_bff = GatewayBFF(graph_representation=self.args.graph_description,
-                                      executor_addresses=self.args.deployments_addresses,
-                                      graph_conditions=self.args.graph_conditions,
-                                      deployments_disable_reduce=self.args.deployments_disable_reduce,
+        import json
+
+        graph_description = json.loads(self.args.graph_description)
+        graph_conditions = json.loads(self.args.graph_conditions)
+        deployments_addresses = json.loads(self.args.deployments_addresses)
+        deployments_disable_reduce = json.loads(self.args.deployments_disable_reduce)
+
+        self.gateway_bff = GatewayBFF(graph_representation=graph_description,
+                                      executor_addresses=deployments_addresses,
+                                      graph_conditions=graph_conditions,
+                                      deployments_disable_reduce=deployments_disable_reduce,
                                       timeout_send=self.timeout_send,
                                       retries=self.args.retries,
                                       compression=self.args.compression,
