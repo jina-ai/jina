@@ -1,3 +1,4 @@
+import os
 import argparse
 import asyncio
 import signal
@@ -25,12 +26,12 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
     """
 
     def __init__(
-        self,
-        args: 'argparse.Namespace',
-        cancel_event: Optional[
-            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-        ] = None,
-        **kwargs,
+            self,
+            args: 'argparse.Namespace',
+            cancel_event: Optional[
+                Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+            ] = None,
+            **kwargs,
     ):
         super().__init__(args, **kwargs)
         self._loop = asyncio.new_event_loop()
@@ -51,9 +52,9 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
                 )
         else:
             with ImportExtensions(
-                required=True,
-                logger=self.logger,
-                help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
+                    required=True,
+                    logger=self.logger,
+                    help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
                 If you're using conda, please use the command `conda install -c anaconda pywin32`''',
             ):
                 import win32api
@@ -63,6 +64,9 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
             )
 
         self._setup_monitoring()
+        if not self.args.optout_telemetry and 'JINA_DISABLE_TELMETRY' not in os.environ:
+            from jina.serve.helper import _telemetry_run_in_thread
+            _telemetry_run_in_thread(event=f'{type(self)}.start')
         self._loop.run_until_complete(self.async_setup())
 
     def run_forever(self):
@@ -159,10 +163,10 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
 
     @staticmethod
     def wait_for_ready_or_shutdown(
-        timeout: Optional[float],
-        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
-        ctrl_address: str,
-        **kwargs,
+            timeout: Optional[float],
+            ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+            ctrl_address: str,
+            **kwargs,
     ):
         """
         Check if the runtime has successfully started
@@ -177,7 +181,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
             if ready_or_shutdown_event.is_set() or AsyncNewLoopRuntime.is_ready(
-                ctrl_address
+                    ctrl_address
             ):
                 return True
             time.sleep(0.1)

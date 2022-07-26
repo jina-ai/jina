@@ -79,6 +79,11 @@ def test_timeout_ctrl_time(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def test_disable_telemetry(monkeypatch):
+    monkeypatch.setenv('JINA_OPTOUT_TELEMETRY', 'True')
+
+
+@pytest.fixture(autouse=True)
 def tmpfile(tmpdir):
     tmpfile = f'jina_test_{next(tempfile._get_candidate_names())}.db'
     return tmpdir / tmpfile

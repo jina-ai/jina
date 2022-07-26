@@ -19,9 +19,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
     """Runtime procedure leveraging :class:`Grpclet` for sending DataRequests"""
 
     def __init__(
-        self,
-        args: argparse.Namespace,
-        **kwargs,
+            self,
+            args: argparse.Namespace,
+            **kwargs,
     ):
         """Initialize grpc and data request handling.
         :param args: args from CLI
@@ -36,8 +36,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
         if self.metrics_registry:
             with ImportExtensions(
-                required=True,
-                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                    required=True,
+                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from prometheus_client import Summary
 
@@ -49,25 +49,23 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                     namespace='jina',
                     labelnames=('runtime_name',),
                 )
-                .labels(self.args.name)
-                .time()
+                    .labels(self.args.name)
+                    .time()
             )
         else:
             self._summary_time = contextlib.nullcontext()
-
-        await self._async_setup_grpc_server()
-
-    async def _async_setup_grpc_server(self):
-        """
-        Start the DataRequestHandler and wait for the GRPC server to start
-        """
-
         # Keep this initialization order
         # otherwise readiness check is not valid
         # The DataRequestHandler needs to be started BEFORE the grpc server
         self._data_request_handler = DataRequestHandler(
             self.args, self.logger, self.metrics_registry
         )
+        await self._async_setup_grpc_server()
+
+    async def _async_setup_grpc_server(self):
+        """
+        Start the DataRequestHandler and wait for the GRPC server to start
+        """
 
         self._grpc_server = grpc.aio.server(
             options=[
