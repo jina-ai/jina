@@ -71,4 +71,4 @@ The following environment variables are used internally in Jina:
 | `JINA_RANDOM_PORT_MIN`          | The min port number used when selecting random ports to apply for Executors or gateway                         |
 | `JINA_DISABLE_HEALTHCHECK_LOGS` | If set, disables the logs when processing health check requests                                                |
 | `JINA_LOCKS_ROOT`               | The root folder where file locks for concurrent Executor initialization                                        |
-| `JINA_DISABLE_TELEMETRY`        | If set, disables telemetry                                                                                     |
+| `JINA_OPTOUT_TELEMETRY`        | If set, disables telemetry                                                                                     |

@@ -58,7 +58,7 @@ def mixin_essential_parser(parser):
     )
 
     gp.add_argument(
-        '--no-telemetry',
+        '--optout-telemetry',
         action='store_true',
         default=False,
         help='If set, disables telemetry during the Flow/Pod/Runtime start.',

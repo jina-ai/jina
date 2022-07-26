@@ -47,7 +47,7 @@ The data collected is:
 - A random unique session identifier
 - Event emitting the statistics. Flow start or Runtime start
 
-If you'd like to opt out of usage statistics, make sure to add the `no-telemetry` argument to the different Flows and Executors or set the `JINA_DISABLE_TELEMETRY` environment variable.
+If you'd like to opt out of usage statistics, make sure to add the `optout-telemetry` argument to the different Flows and Executors or set the `JINA_OPTOUT_TELEMETRY` environment variable.
 
 
 

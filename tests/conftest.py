@@ -80,7 +80,7 @@ def test_timeout_ctrl_time(monkeypatch):
 
 @pytest.fixture(autouse=True)
 def test_disable_telemetry(monkeypatch):
-    monkeypatch.setenv('JINA_DISABLE_TELEMETRY', 'True')
+    monkeypatch.setenv('JINA_OPTOUT_TELEMETRY', 'True')
 
 
 @pytest.fixture(autouse=True)

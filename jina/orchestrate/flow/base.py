@@ -156,7 +156,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
-        no_telemetry: Optional[bool] = False,
+        optout_telemetry: Optional[bool] = False,
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
@@ -217,7 +217,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param no_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.
+        :param optout_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
@@ -289,7 +289,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         inspect: Optional[str] = 'COLLECT',
         log_config: Optional[str] = None,
         name: Optional[str] = None,
-        no_telemetry: Optional[bool] = False,
+        optout_telemetry: Optional[bool] = False,
         quiet: Optional[bool] = False,
         quiet_error: Optional[bool] = False,
         uses: Optional[str] = None,
@@ -312,7 +312,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
               - ...
 
               When not given, then the default naming strategy will apply.
-        :param no_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.
+        :param optout_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
@@ -394,7 +394,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param no_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.
+        :param optout_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
@@ -464,7 +464,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
               - ...
 
               When not given, then the default naming strategy will apply.
-        :param no_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.
+        :param optout_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
@@ -801,7 +801,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         monitoring: Optional[bool] = False,
         name: Optional[str] = None,
         native: Optional[bool] = False,
-        no_telemetry: Optional[bool] = False,
+        optout_telemetry: Optional[bool] = False,
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
@@ -870,7 +870,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
               When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
-        :param no_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.
+        :param optout_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
@@ -1017,7 +1017,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
               When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
-        :param no_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.
+        :param optout_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
@@ -1470,7 +1470,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
         self._build_level = FlowBuildLevel.RUNNING
 
-        if not self.args.no_telemetry and 'JINA_DISABLE_TELMETRY' not in os.environ:
+        if not self.args.optout_telemetry and 'JINA_OPTOUT_TELEMETRY' not in os.environ:
             from jina.serve.helper import _telemetry_run_in_thread
 
             _telemetry_run_in_thread(event='flow.start')
