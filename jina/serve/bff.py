@@ -120,12 +120,19 @@ class GatewayBFF:
         :param parameters: Parameters to be attached to the Requests
         :return: An iterator over the responses from the Executors
         """
-        from jina.clients.request import request_generator  # move request_generator to another module
-        from jina.enums import DataInputType
-        # this request_generator thing can be easily changed by private methods
-        return self._streamer.stream(
-            request_generator(data=docs, data_type=DataInputType.DOCUMENT, exec_endpoint=exec_endpoint,
-                              request_size=request_size, target_executor=target_executor, parameters=parameters))
+        from jina.types.request.data import DataRequest
+        def _req_generator():
+            for docs_batch in docs.batch(batch_size=request_size, shuffle=False):
+                req = DataRequest(docs_batch.to_protobuf())
+                if exec_endpoint:
+                    req.header.exec_endpoint = exec_endpoint
+                if target_executor:
+                    req.header.target_executor = target_executor
+                if parameters:
+                    req.parameters = parameters
+                yield req
+
+        return self._streamer.stream(_req_generator())
 
     async def close(self):
         """
