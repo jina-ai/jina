@@ -10,8 +10,7 @@ from jina.excepts import PortAlreadyUsed
 from jina.helper import get_full_version, is_port_free
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.gateway import GatewayRuntime
-from jina.serve.runtimes.gateway.request_handling import RequestHandler
-from jina.serve.stream import RequestStreamer
+from jina.serve.bff import GatewayBFF
 from jina.types.request.status import StatusMessage
 
 __all__ = ['GRPCGatewayRuntime']
@@ -21,9 +20,9 @@ class GRPCGatewayRuntime(GatewayRuntime):
     """Gateway Runtime for gRPC."""
 
     def __init__(
-        self,
-        args: argparse.Namespace,
-        **kwargs,
+            self,
+            args: argparse.Namespace,
+            **kwargs,
     ):
         """Initialize the runtime
         :param args: args from CLI
@@ -52,26 +51,30 @@ class GRPCGatewayRuntime(GatewayRuntime):
             ]
         )
 
-        self._set_topology_graph()
-        self._set_connection_pool()
-
         await self._async_setup_server()
 
     async def _async_setup_server(self):
 
-        request_handler = RequestHandler(self.metrics_registry, self.name)
+        import json
 
-        self.streamer = RequestStreamer(
-            args=self.args,
-            request_handler=request_handler.handle_request(
-                graph=self._topology_graph, connection_pool=self._connection_pool
-            ),
-            result_handler=request_handler.handle_result(),
-        )
+        graph_description = json.loads(self.args.graph_description)
+        graph_conditions = json.loads(self.args.graph_conditions)
+        deployments_addresses = json.loads(self.args.deployments_addresses)
+        deployments_disable_reduce = json.loads(self.args.deployments_disable_reduce)
 
-        self.streamer.Call = self.streamer.stream
+        self.gateway_bff = GatewayBFF(graph_representation=graph_description,
+                                      executor_addresses=deployments_addresses,
+                                      graph_conditions=graph_conditions,
+                                      deployments_disable_reduce=deployments_disable_reduce,
+                                      timeout_send=self.timeout_send,
+                                      retries=self.args.retries,
+                                      compression=self.args.compression,
+                                      runtime_name=self.name,
+                                      prefetch=self.args.prefetch,
+                                      logger=self.logger,
+                                      metrics_registry=self.metrics_registry)
 
-        jina_pb2_grpc.add_JinaRPCServicer_to_server(self.streamer, self.server)
+        jina_pb2_grpc.add_JinaRPCServicer_to_server(self.gateway_bff._streamer, self.server)
         jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self, self.server)
         jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self.server)
 
@@ -106,7 +109,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
             )
             self.server.add_secure_port(bind_addr, server_credentials)
         elif (
-            self.args.ssl_keyfile != self.args.ssl_certfile
+                self.args.ssl_keyfile != self.args.ssl_certfile
         ):  # if we have only ssl_keyfile and not ssl_certfile or vice versa
             raise ValueError(
                 f"you can't pass a ssl_keyfile without a ssl_certfile and vice versa"
@@ -121,9 +124,8 @@ class GRPCGatewayRuntime(GatewayRuntime):
         # usually async_cancel should already have been called, but then its a noop
         # if the runtime is stopped without a sigterm (e.g. as a context manager, this can happen)
         self._health_servicer.enter_graceful_shutdown()
-        await self.streamer.wait_floating_requests_end()
+        await self.gateway_bff.close()
         await self.async_cancel()
-        await self._connection_pool.close()
 
     async def async_cancel(self):
         """The async method to stop server."""
@@ -154,7 +156,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
                 data=da,
                 data_type=DataInputType.DOCUMENT,
             )
-            async for _ in self.streamer.stream(request_iterator=req_iterator):
+            async for _ in self.gateway_bff.stream(request_iterator=req_iterator):
                 pass
             status_message = StatusMessage()
             status_message.set_code(jina_pb2.StatusProto.SUCCESS)
