@@ -73,29 +73,36 @@ executors:
           type: efs
 ```
 
-### gateway
+### Gateway
 
-For the intenet exposure, jcloud now provide support for `kong` gateway. 
+For the internet exposure, JCloud now provides support for [Kong gateway](https://konghq.com/products/api-gateway-platform). 
 
-We currently support 2 type of gateway. 
+We currently support 2 types of gateway.
 
-````{note}
+#### `alb`
 
-At current stage, `alb` is default gateway type due to backward compatibility.
-
-`alb` has below features, [docs] (https://aws.amazon.com/elasticloadbalancing/application-load-balancer/)
+At current stage, `alb` is default gateway type due to backward compatibility. `alb` has below features, [docs] (https://aws.amazon.com/elasticloadbalancing/application-load-balancer/)
 
 - Use AWS signed public certs
-- AWS layer 7 loadbalancer
+
+####  `Kong`
 
 `Kong` gateway is current working as ingress controller. We haven't enable other features yet. [docs] (https://docs.konghq.com/kubernetes-ingress-controller/latest/)
 
 - Use let's encrypt signed widecard certs
-- AWS layer 4 loadbalancer
+- Use nginx to distribute traffic as ingress controller
 
-Jcloud is now in progress of migrating layer 7 lb type `alb` to layer 4 lb type `kong`, we suggest user to use `kong` as gateway.
+```{tip}
+Normally, user can retrieve the CA from client end. The difference of cert CA usually will not affect the jina usage unless the CA is not in the trust list.
+```
 
-````
+```{admonition} Why we provide kong as new gateway? 
+Well, as we are using EKS as kubernetes cluster, `alb` can be used to provide simple loadbalance service to our executor. However, there are some drawbacks. 1). `alb` is not general kubernetes services, it provided by `AWS`, which means that we can't use it in other cloud provider.
+2). `alb` is simple to configure and use, but it doesn't have features like horizontal scaling, route methods configure, etc.
+3). `alb` is layer 7 loadbalancer and `kong` is using layer 4 loadbalancer and route traffic via Kong Ingress Controller. So, `kong` is able to support tcp/udp protocol and `alb` can only support grpc/https/http.
+
+Jcloud is now in progress of migrating from `alb` to `kong`, we suggest user to use `kong` as gateway. However, `alb` is currently supported due to backward compatibility.
+```
 
 ```yaml
 jtype: Flow
