@@ -100,22 +100,25 @@ class GatewayBFF:
         """
         return self._streamer.stream(*args, **kwargs)
 
-    def stream_docs(self, docs: DocumentArray, request_size: int, exec_endpoint: Optional[str] = None,
-                    target_executor: Optional[str] = None, parameters: Optional[Dict] = None):
+    async def stream_docs(self, docs: DocumentArray, request_size: int, return_results: bool = False,
+                          exec_endpoint: Optional[str] = None,
+                          target_executor: Optional[str] = None, parameters: Optional[Dict] = None):
         """
         stream documents and stream responses back.
 
         :param docs: The Documents to be sent to all the Executors
-        :param exec_endpoint: The executor endpoint to which to send the Documents
         :param request_size: The amount of Documents to be put inside a single request.
+        :param return_results: If set to True, the generator will yield Responses and not `DocumentArrays`
+        :param exec_endpoint: The executor endpoint to which to send the Documents
         :param target_executor: A regex expression indicating the Executors that should receive the Request
         :param parameters: Parameters to be attached to the Requests
-        :return: An iterator over the responses from the Executors
+        :yield: Yields DocumentArrays or Responses from the Executors
         """
         from jina.types.request.data import DataRequest
         def _req_generator():
             for docs_batch in docs.batch(batch_size=request_size, shuffle=False):
-                req = DataRequest(docs_batch.to_protobuf())
+                req = DataRequest()
+                req.data.docs = docs_batch
                 if exec_endpoint:
                     req.header.exec_endpoint = exec_endpoint
                 if target_executor:
@@ -124,7 +127,11 @@ class GatewayBFF:
                     req.parameters = parameters
                 yield req
 
-        return self._streamer.stream(_req_generator())
+        async for resp in self._streamer.stream(_req_generator()):
+            if return_results:
+                yield resp
+            else:
+                yield resp.docs
 
     async def close(self):
         """
