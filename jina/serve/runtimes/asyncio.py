@@ -66,7 +66,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
         self._setup_monitoring()
         if not self.args.optout_telemetry and 'JINA_DISABLE_TELMETRY' not in os.environ:
             from jina.serve.helper import _telemetry_run_in_thread
-            _telemetry_run_in_thread(event=f'{type(self)}.start')
+            _telemetry_run_in_thread(event=f'{self.__class__.__name__}.start')
         self._loop.run_until_complete(self.async_setup())
 
     def run_forever(self):
