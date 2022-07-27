@@ -48,13 +48,13 @@ For more information about the environment variable syntax used in Jina YAML con
 
 The following environment variables are used internally in Jina:
 
-| Environment variable          | Description                                                                                                    |
-|-------------------------------|----------------------------------------------------------------------------------------------------------------|
+| Environment variable          | Description                                                                                                      |
+|-------------------------------|------------------------------------------------------------------------------------------------------------------|
 | `JINA_AUTH_TOKEN`               | If provided, `jina hub push` pushes this Executor to specific account                                          |
 | `JINA_DEFAULT_HOST`             | The default host where the server is exposed                                                                   |
 | `JINA_DEFAULT_TIMEOUT_CTRL`     | The default timeout time used by Flow to check the readiness of Executors                                      |
 | `JINA_DEFAULT_WORKSPACE_BASE`   | The default workspace folder used by an Executor if none provided through arguments                            |
-| `JINA_DEPLOYMENT_NAME`          | The name of the deployment, used by the Head Runtime in Kubernetes to connect to different deployments |
+| `JINA_DEPLOYMENT_NAME`          | The name of the deployment, used by the Head Runtime in Kubernetes to connect to different deployments         |
 | `JINA_DISABLE_UVLOOP`           | If set, Jina will not use uvloop event loop for concurrent execution                                           |
 | `JINA_FULL_CLI`                 | If set, all the CLI options will be shown in help                                                              |
 | `JINA_GATEWAY_IMAGE`            | Used when exporting a Flow to Kubernetes or docker-compose to override the default gateway image               |
@@ -71,3 +71,4 @@ The following environment variables are used internally in Jina:
 | `JINA_RANDOM_PORT_MIN`          | The min port number used when selecting random ports to apply for Executors or gateway                         |
 | `JINA_DISABLE_HEALTHCHECK_LOGS` | If set, disables the logs when processing health check requests                                                |
 | `JINA_LOCKS_ROOT`               | The root folder where file locks for concurrent Executor initialization                                        |
+| `JINA_OPTOUT_TELEMETRY`        | If set, disables telemetry                                                                                     |

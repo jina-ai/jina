@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/jcloud/advanced/" />
   
-<meta property="og:site_name" content="Jina 3.7.0 Documentation" />
+<meta property="og:site_name" content="Jina 3.7.1 Documentation" />
   
 <meta property="og:description" content="Environment variables: A single YAML: A project folder: You can include your environment variables in the.env file in the local project and JCloud will take care of managing them., You can optionally pass a custom.env.. Request for fine-grained resources: memory: By default, jcloud allocates 100M..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_images/external-executor.png" />
   
-<meta property="og:image:alt" content="Jina 3.7.0 Documentation" />
+<meta property="og:image:alt" content="Jina 3.7.1 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/jcloud/advanced.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Advanced - Jina 3.7.0 documentation</title>
+        <title>Advanced - Jina 3.7.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -179,7 +179,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.7.0 documentation</div>
+                <div class="brand">Jina 3.7.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -421,6 +421,19 @@
 </pre></div>
 </div>
 </section>
+<section id="cpu">
+<h3>CPU<a class="headerlink" href="#cpu" title="Permalink to this headline">#</a></h3>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> allocates <code class="docutils literal notranslate"><span class="pre">0.1</span> <span class="pre">(1/10</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">core)</span></code> CPU to each Executor. There might be cases where your Executor requires more CPU; you can do so by using <code class="docutils literal notranslate"><span class="pre">resources</span></code> arg while deploying the Flow (max 16 CPU allowed per Executor). The input value should be a number, indicating the number of full CPU cores.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
+<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom1</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://CustomExecutor1</span><span class="w"></span>
+<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
 <section id="storage">
 <h3>storage<a class="headerlink" href="#storage" title="Permalink to this headline">#</a></h3>
 <p>We currently support 2 kinds of storage types <a class="reference external" href="https://aws.amazon.com/efs/">efs</a> (default) and <a class="reference external" href="https://aws.amazon.com/ebs/">ebs</a>. The former one is a network file storage, whereas the latter is a block device.</p>
@@ -562,7 +575,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Jul 21, 2022</div>
+                            Last updated on Jul 27, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -602,6 +615,7 @@
 </li>
 <li><a class="reference internal" href="#request-for-fine-grained-resources">Request for fine-grained <code class="docutils literal notranslate"><span class="pre">resources</span></code></a><ul>
 <li><a class="reference internal" href="#memory">memory</a></li>
+<li><a class="reference internal" href="#cpu">CPU</a></li>
 <li><a class="reference internal" href="#storage">storage</a></li>
 </ul>
 </li>

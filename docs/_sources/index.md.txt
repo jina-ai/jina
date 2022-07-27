@@ -33,6 +33,24 @@ Now that you’re set up, let’s dive into more of how Jina works and how to bu
 :end-before: <!-- end support-pitch -->
 ```
 
+## Telemetry
+
+In order to help Jina build better solutions for the community, Jina collects some usage statistics when using it. It is impossible for Jina or any other party to identify users with the data collected,
+you can see easily in the code which data is being collected by checking the code in {meth}`~jina.serve.helper._telemetry_run_in_thread`.
+
+The data collected is:
+
+- Jina version
+- DocArray version
+- Other packages versions
+- A random unique user identifier
+- A random unique session identifier
+- Event emitting the statistics. Flow start or Runtime start
+
+If you'd like to opt out of usage statistics, make sure to add the `optout-telemetry` argument to the different Flows and Executors or set the `JINA_OPTOUT_TELEMETRY` environment variable.
+
+
+
 ```{toctree}
 :caption: Get Started
 :hidden:
