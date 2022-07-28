@@ -19,6 +19,7 @@ from jina.hubble.helper import (
     _get_hub_config,
     _get_hub_root,
     disk_cache_offline,
+    get_requirements_env_variables
 )
 from jina.hubble.hubio import HubExecutor, HubIO
 from jina.parsers.hubble import (
@@ -209,6 +210,128 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
         assert form_data['buildWithNoCache'] == ['True']
     else:
         assert form_data.get('buildWithNoCache') is None
+
+@pytest.mark.parametrize(
+    'env_variable_consist_error',
+    [
+        'The --build-env parameter key:`{build_env_key}` can only consist of capital letters and underline.'
+    ],
+)
+@pytest.mark.parametrize(
+    'env_variable_format_error',
+    [
+        'The --build-env parameter: `{build_env}` is wrong format. you can use: `--build-env {build_env}=YOUR_VALUE`.'
+    ],
+)
+@pytest.mark.parametrize('path', ['dummy_executor_fail'])
+@pytest.mark.parametrize('mode', ['--public', '--private'])
+@pytest.mark.parametrize('build_env', ['TEST_TOKEN_123=ghp_I1cCzUY', 'NO123123'])
+def test_push_wrong_build_env(
+    mocker, monkeypatch, path, mode, tmpdir, env_variable_format_error, env_variable_consist_error, build_env
+):
+    mock = mocker.Mock()
+
+    def _mock_post(url, data, headers=None, stream=True):
+        mock(url=url, data=data, headers=headers)
+        return PostMockResponse(response_code=requests.codes.created)
+
+    monkeypatch.setattr(requests, 'post', _mock_post)
+    # Second push will use --force --secret because of .jina/secret.key
+    # Then it will use put method
+    monkeypatch.setattr(requests, 'put', _mock_post)
+
+    exec_path = os.path.join(cur_dir, path)
+    _args_list = [exec_path, mode]
+
+    if build_env:
+        _args_list.extend(['--build-env', build_env])
+    
+    args = set_hub_push_parser().parse_args(_args_list)
+
+    with pytest.raises(Exception) as info:
+         result = HubIO(args).push()
+    
+    assert (
+        env_variable_format_error.format(build_env=build_env) in str( info.value ) 
+        or env_variable_consist_error.format(build_env_key=build_env.split('=')[0]) in str( info.value )
+        )
+
+@pytest.mark.parametrize(
+    'requirements_file_need_build_env_error',
+    [
+        'The requirements.txt set environment variables as follows:`{env_variables_str}` should use `--build-env'
+    ],
+)
+@pytest.mark.parametrize('path', ['dummy_executor_fail'])
+@pytest.mark.parametrize('mode', ['--public', '--private'])
+def test_push_requirements_file_require_set_env_variables(
+    mocker, monkeypatch, path, mode, tmpdir, requirements_file_need_build_env_error
+):
+    mock = mocker.Mock()
+
+    def _mock_post(url, data, headers=None, stream=True):
+        mock(url=url, data=data, headers=headers)
+        return PostMockResponse(response_code=requests.codes.created)
+
+    monkeypatch.setattr(requests, 'post', _mock_post)
+    # Second push will use --force --secret because of .jina/secret.key
+    # Then it will use put method
+    monkeypatch.setattr(requests, 'put', _mock_post)
+
+    exec_path = os.path.join(cur_dir, path)
+    _args_list = [exec_path, mode]
+
+    args = set_hub_push_parser().parse_args(_args_list)
+
+    requirements_file = os.path.join(exec_path,'requirements.txt')
+    requirements_file_env_variables = get_requirements_env_variables(Path(requirements_file))
+    
+    with pytest.raises(Exception) as info:
+         result = HubIO(args).push()
+    assert requirements_file_need_build_env_error.format(env_variables_str=','.join(requirements_file_env_variables)) in str( info.value ) 
+
+
+
+
+@pytest.mark.parametrize(
+    'diff_env_variables_error',
+    [
+        'The requirements.txt set environment variables as follows:`{env_variables_str}` should use `--build-env'
+    ],
+)
+
+@pytest.mark.parametrize('path', ['dummy_executor_fail'])
+@pytest.mark.parametrize('mode', ['--public', '--private'])
+@pytest.mark.parametrize('build_env', ['TOKEN=ghp_I1cCzUY'])
+def test_push_diff_env_variables(
+    mocker, monkeypatch, path, mode, tmpdir, diff_env_variables_error, build_env
+):
+    mock = mocker.Mock()
+
+    def _mock_post(url, data, headers=None, stream=True):
+        mock(url=url, data=data, headers=headers)
+        return PostMockResponse(response_code=requests.codes.created)
+
+    monkeypatch.setattr(requests, 'post', _mock_post)
+    # Second push will use --force --secret because of .jina/secret.key
+    # Then it will use put method
+    monkeypatch.setattr(requests, 'put', _mock_post)
+
+    exec_path = os.path.join(cur_dir, path)
+    _args_list = [exec_path, mode]
+    if build_env:
+        _args_list.extend(['--build-env', build_env])
+
+    args = set_hub_push_parser().parse_args(_args_list)
+
+    requirements_file = os.path.join(exec_path,'requirements.txt')
+    requirements_file_env_variables = get_requirements_env_variables(Path(requirements_file))
+    diff_env_variables = list(set(requirements_file_env_variables).difference(set([build_env])))
+
+    with pytest.raises(Exception) as info:
+         result = HubIO(args).push()
+
+    assert diff_env_variables_error.format(env_variables_str=','.join(diff_env_variables)) in str( info.value ) 
 
 
 @pytest.mark.parametrize(

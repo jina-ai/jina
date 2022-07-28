@@ -355,9 +355,9 @@ metas:
             for index, env in enumerate(build_envs):
                 env_list = env.split('=')
                 if (len(env_list) != 2):
-                    raise Exception( f' the `${index}` environment variable is wrong format, correct is: key=value ')
+                    raise Exception( f'The --build-env parameter: `{env}` is wrong format. you can use: `--build-env {env}=YOUR_VALUE`.')
                 if check_requirements_env_variable(env_list[0]) is False:
-                    raise Exception( f'the --build-env key:`${env_list[0]}` Can only consist of capital letters and underline')
+                    raise Exception( f'The --build-env parameter key:`{env_list[0]}` can only consist of capital letters and underline.')
                 build_env_dict[env_list[0]] = env_list[1]
             build_env = build_env_dict if len(list(build_env_dict.keys()))>0 else None
 
@@ -370,17 +370,23 @@ metas:
             requirements_env_variables = get_requirements_env_variables(requirements_file)
             for index, env in enumerate(requirements_env_variables):
                 if check_requirements_env_variable(env) is False:
-                   raise Exception( f'the requirements file env variable :`${env}` Can only consist of capital letters and underline')
+                   raise Exception( f'The requirements.txt environment variables:`${env}` can only consist of capital letters and underline')
 
-        if len(requirements_env_variables) != 0 and not build_env:
-            requirements_env_variables_str = ','.join(requirements_env_variables)
-            raise Exception(f'The given requirements.txt require `{requirements_env_variables_str}` does not exist!')
-        elif len(requirements_env_variables) != 0 and build_env:
+        if len(requirements_env_variables) and not build_env:
+            env_variables_str = ','.join(requirements_env_variables);
+            error_str= f'The requirements.txt set environment variables as follows:`{env_variables_str}` should use `--build-env';
+            for item in requirements_env_variables:
+                error_str+= f" {item}=YOUR_VALUE"
+            raise Exception(f'{error_str}` to add it.')
+        elif len(requirements_env_variables) and build_env:
             build_env_keys = list(build_env.keys())
-            in_requirements_env_variables = list(set(requirements_env_variables).difference(set(build_env_keys)))
-            if len(in_requirements_env_variables):
-                in_requirements_env_variables_str = ",".join(in_requirements_env_variables)
-                raise Exception(f'The given requirements.txt set environment variables As follows:`{in_requirements_env_variables_str}` not be support in --build-env in cli!')
+            diff_env_variables = list(set(requirements_env_variables).difference(set(build_env_keys)))
+            if len(diff_env_variables):
+                diff_env_variables_str = ",".join(diff_env_variables)
+                error_str= f'The requirements.txt set environment variables as follows:`{diff_env_variables_str}` should use `--build-env';
+                for item in diff_env_variables:
+                    error_str+= f" {item}=YOUR_VALUE"
+                raise Exception(f'{error_str}` to add it.')
 
         console = get_rich_console()
         with console.status(f'Pushing `{self.args.path}` ...') as st:
