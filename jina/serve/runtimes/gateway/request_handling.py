@@ -197,8 +197,9 @@ class RequestHandler:
 
                 collect_results = request_graph.collect_all_results()
                 resp_params = response.parameters
-                resp_params[DataRequestHandler._KEY_RESULT] = collect_results
-                response.parameters = resp_params
+                if len(collect_results) > 0:
+                    resp_params[DataRequestHandler._KEY_RESULT] = collect_results
+                    response.parameters = resp_params
                 return response
 
             # In case of empty topologies
