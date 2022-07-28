@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/graph/topology_graph.html" />
 
     <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>jina.serve.runtimes.gateway.graph.topology_graph - Jina 3.7.2 documentation</title>
+        <title>jina.serve.runtimes.gateway.graph.topology_graph - Jina 3.7.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css" />
@@ -146,7 +146,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../../">
-                <div class="brand">Jina 3.7.2 documentation</div>
+                <div class="brand">Jina 3.7.3 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -398,7 +398,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">number_of_parts</span> <span class="o">=</span> <span class="n">number_of_parts</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">floating</span> <span class="o">=</span> <span class="n">floating</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">original_parameters</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">end_time</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="kc">None</span>
@@ -406,25 +405,24 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_reduce</span> <span class="o">=</span> <span class="n">reduce</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_timeout_send</span> <span class="o">=</span> <span class="n">timeout_send</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_retries</span> <span class="o">=</span> <span class="n">retries</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">result_in_params_returned</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="nd">@property</span>
         <span class="k">def</span> <span class="nf">leaf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outgoing_nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
 
-        <span class="k">def</span> <span class="nf">_update_requests_with_filter_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">_update_requests_with_filter_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">need_copy</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">)):</span>
-                <span class="n">copy_req</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-                <span class="n">filtered_docs</span> <span class="o">=</span> <span class="n">copy_req</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filter_condition</span><span class="p">)</span>
-                <span class="n">copy_req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">filtered_docs</span>
+                <span class="n">req</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">need_copy</span> <span class="k">else</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">filtered_docs</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">docs</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filter_condition</span><span class="p">)</span>
+                <span class="n">req</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span> <span class="o">=</span> <span class="n">filtered_docs</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">req</span>
 
-                <span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy_req</span>
-
-        <span class="k">def</span> <span class="nf">_update_request_by_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-
+        <span class="k">def</span> <span class="nf">_update_request_by_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deployment_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">request_input_parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+            <span class="n">specific_parameters</span> <span class="o">=</span> <span class="n">_parse_specific_params</span><span class="p">(</span>
+                <span class="n">request_input_parameters</span><span class="p">,</span> <span class="n">deployment_name</span>
+            <span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">)):</span>
-                <span class="n">specific_parameters</span> <span class="o">=</span> <span class="n">_parse_specific_params</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">original_parameters</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">deployment_name</span>
-                <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">specific_parameters</span>
 
         <span class="k">def</span> <span class="nf">_handle_internalnetworkerror</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">):</span>
@@ -453,12 +451,14 @@
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_previous_and_send</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">request</span><span class="p">:</span> <span class="n">DataRequest</span><span class="p">,</span>
+            <span class="n">request</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataRequest</span><span class="p">],</span>
             <span class="n">previous_task</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">],</span>
             <span class="n">connection_pool</span><span class="p">:</span> <span class="n">GrpcConnectionPool</span><span class="p">,</span>
             <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
             <span class="n">executor_endpoint_mapping</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">target_executor_pattern</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">request_input_parameters</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
+            <span class="n">copy_request_at_send</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="p">):</span>
             <span class="c1"># Check my condition and send request with the condition</span>
             <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
@@ -468,18 +468,19 @@
             <span class="k">if</span> <span class="n">metadata</span> <span class="ow">and</span> <span class="s1">&#39;is-error&#39;</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">request</span><span class="p">,</span> <span class="n">metadata</span>
             <span class="k">elif</span> <span class="n">request</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">original_parameters</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
                 <span class="n">request</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">_parse_specific_params</span><span class="p">(</span>
                     <span class="n">request</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
                 <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">original_parameters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">original_parameters</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">copy_request_at_send</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">request</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
                 <span class="c1"># this is a specific needs</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_parts</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_request_by_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_request_by_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">request_input_parameters</span><span class="p">)</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_condition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_update_requests_with_filter_condition</span><span class="p">()</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_update_requests_with_filter_condition</span><span class="p">(</span><span class="n">need_copy</span><span class="o">=</span><span class="ow">not</span> <span class="n">copy_request_at_send</span><span class="p">)</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reduce</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span> <span class="o">=</span> <span class="p">[</span>
                             <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">reduce_requests</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="p">)</span>
@@ -508,13 +509,12 @@
                             <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout_send</span><span class="p">,</span>
                             <span class="n">retries</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_retries</span><span class="p">,</span>
                         <span class="p">)</span>
-                        <span class="n">return_parameters</span> <span class="o">=</span> <span class="n">original_parameters</span>
                         <span class="k">if</span> <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">_KEY_RESULT</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
-                            <span class="n">return_parameters</span><span class="p">[</span>
-                                <span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">_KEY_RESULT</span>
-                            <span class="p">]</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">_KEY_RESULT</span><span class="p">]</span>
-
-                        <span class="n">resp</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">return_parameters</span>
+                            <span class="c1"># Accumulate results from each Node and then add them to the original</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">result_in_params_returned</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">DataRequestHandler</span><span class="o">.</span><span class="n">_KEY_RESULT</span><span class="p">]</span>
+                        <span class="n">request</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">request_input_parameters</span>
+                        <span class="n">resp</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">request_input_parameters</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">parts_to_send</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
                     <span class="k">except</span> <span class="n">InternalNetworkError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_handle_internalnetworkerror</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
 
@@ -533,6 +533,9 @@
             <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">executor_endpoint_mapping</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">target_executor_pattern</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">request_input_parameters</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
+            <span class="n">request_input_has_specific_params</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">copy_request_at_send</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]]:</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Gets all the tasks corresponding from all the subgraphs born from this node</span>
@@ -543,6 +546,9 @@
 <span class="sd">            :param endpoint: Optional string defining the endpoint of this request</span>
 <span class="sd">            :param executor_endpoint_mapping: Optional map that maps the name of a Deployment with the endpoints that it binds to so that they can be skipped if needed</span>
 <span class="sd">            :param target_executor_pattern: Optional regex pattern for the target executor to decide whether or not the Executor should receive the request</span>
+<span class="sd">            :param request_input_parameters: The parameters coming from the Request as they arrive to the gateway</span>
+<span class="sd">            :param request_input_has_specific_params: Parameter added for optimization. If this is False, there is no need to copy at all the request</span>
+<span class="sd">            :param copy_request_at_send: Copy the request before actually calling the `ConnectionPool` sending</span>
 
 <span class="sd">            .. note:</span>
 <span class="sd">                deployment1 -&gt; outgoing_nodes: deployment2</span>
@@ -568,12 +574,14 @@
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">wait_previous_and_send_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_wait_previous_and_send</span><span class="p">(</span>
-                    <span class="n">request_to_send</span><span class="p">,</span>
-                    <span class="n">previous_task</span><span class="p">,</span>
-                    <span class="n">connection_pool</span><span class="p">,</span>
+                    <span class="n">request</span><span class="o">=</span><span class="n">request_to_send</span><span class="p">,</span>
+                    <span class="n">previous_task</span><span class="o">=</span><span class="n">previous_task</span><span class="p">,</span>
+                    <span class="n">connection_pool</span><span class="o">=</span><span class="n">connection_pool</span><span class="p">,</span>
                     <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
                     <span class="n">executor_endpoint_mapping</span><span class="o">=</span><span class="n">executor_endpoint_mapping</span><span class="p">,</span>
                     <span class="n">target_executor_pattern</span><span class="o">=</span><span class="n">target_executor_pattern</span><span class="p">,</span>
+                    <span class="n">request_input_parameters</span><span class="o">=</span><span class="n">request_input_parameters</span><span class="p">,</span>
+                    <span class="n">copy_request_at_send</span><span class="o">=</span><span class="n">copy_request_at_send</span>
                 <span class="p">)</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">leaf</span><span class="p">:</span>  <span class="c1"># I am like a leaf</span>
@@ -581,6 +589,7 @@
                     <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">floating</span><span class="p">,</span> <span class="n">wait_previous_and_send_task</span><span class="p">)</span>
                 <span class="p">]</span>  <span class="c1"># I am the last in the chain</span>
             <span class="n">hanging_tasks_tuples</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">num_outgoing_nodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outgoing_nodes</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">outgoing_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outgoing_nodes</span><span class="p">:</span>
                 <span class="n">t</span> <span class="o">=</span> <span class="n">outgoing_node</span><span class="o">.</span><span class="n">get_leaf_tasks</span><span class="p">(</span>
                     <span class="n">connection_pool</span><span class="o">=</span><span class="n">connection_pool</span><span class="p">,</span>
@@ -589,6 +598,9 @@
                     <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
                     <span class="n">executor_endpoint_mapping</span><span class="o">=</span><span class="n">executor_endpoint_mapping</span><span class="p">,</span>
                     <span class="n">target_executor_pattern</span><span class="o">=</span><span class="n">target_executor_pattern</span><span class="p">,</span>
+                    <span class="n">request_input_parameters</span><span class="o">=</span><span class="n">request_input_parameters</span><span class="p">,</span>
+                    <span class="n">request_input_has_specific_params</span><span class="o">=</span><span class="n">request_input_has_specific_params</span><span class="p">,</span>
+                    <span class="n">copy_request_at_send</span><span class="o">=</span><span class="n">num_outgoing_nodes</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">request_input_has_specific_params</span>
                 <span class="p">)</span>
                 <span class="c1"># We are interested in the last one, that will be the task that awaits all the previous</span>
                 <span class="n">hanging_tasks_tuples</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
@@ -745,7 +757,18 @@
                 <span class="k">if</span> <span class="n">st_node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_names</span><span class="p">:</span>
                     <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">st_node</span><span class="p">)</span>
                     <span class="n">node_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">st_node_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">nodes</span></div>
+        <span class="k">return</span> <span class="n">nodes</span>
+
+<div class="viewcode-block" id="TopologyGraph.collect_all_results"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.graph.topology_graph/#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph.collect_all_results">[docs]</a>    <span class="k">def</span> <span class="nf">collect_all_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Collect all the results from every node into a single dictionary so that gateway can collect them</span>
+
+<span class="sd">        :return: A dictionary of the results</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">result_in_params_returned</span><span class="p">:</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">result_in_params_returned</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div></div>
 </pre></div>
                 </article>
             </div>
