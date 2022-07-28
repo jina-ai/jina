@@ -10,6 +10,7 @@ from jina.excepts import InternalNetworkError
 from jina.importer import ImportExtensions
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
+from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 
 if TYPE_CHECKING:
     from asyncio import Future
@@ -138,6 +139,7 @@ class RequestHandler:
                     endpoint=endpoint,
                     executor_endpoint_mapping=self._executor_endpoint_mapping,
                     target_executor_pattern=request.header.target_executor,
+                    request_input_parameters=request.parameters
                 )
                 # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their
                 # subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous
@@ -181,6 +183,9 @@ class RequestHandler:
 
                 if graph.has_filter_conditions:
                     _sort_response_docs(response)
+
+                collect_results = request_graph.collect_all_results()
+                response.parameters[DataRequestHandler._KEY_RESULT] = collect_results
                 return response
 
             # In case of empty topologies
