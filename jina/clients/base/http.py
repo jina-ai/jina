@@ -65,7 +65,7 @@ class HTTPBaseClient(BaseClient):
                 if r_str['code'] == jina_pb2.StatusProto.SUCCESS:
                     return True
                 else:
-                    self.logger.debug(
+                    self.logger.error(
                         f'Returned code is not expected! Description: {r_str["description"]}'
                     )
             except Exception as e:
