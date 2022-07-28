@@ -10,6 +10,7 @@ from jina.excepts import InternalNetworkError
 from jina.importer import ImportExtensions
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
+from jina.serve.runtimes.helper import _is_param_for_specific_executor
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 
 if TYPE_CHECKING:
@@ -29,9 +30,9 @@ class RequestHandler:
     """
 
     def __init__(
-        self,
-        metrics_registry: Optional['CollectorRegistry'] = None,
-        runtime_name: Optional[str] = None,
+            self,
+            metrics_registry: Optional['CollectorRegistry'] = None,
+            runtime_name: Optional[str] = None,
     ):
         self._request_init_time = {} if metrics_registry else None
         self._executor_endpoint_mapping = None
@@ -39,8 +40,8 @@ class RequestHandler:
 
         if metrics_registry:
             with ImportExtensions(
-                required=True,
-                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                    required=True,
+                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
                 from prometheus_client import Gauge, Summary
 
@@ -81,7 +82,7 @@ class RequestHandler:
             self._pending_requests_metrics.dec()
 
     def handle_request(
-        self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
+            self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
     ) -> Callable[['Request'], 'Tuple[Future, Optional[Future]]']:
         """
         Function that handles the requests arriving to the gateway. This will be passed to the streamer.
@@ -102,8 +103,8 @@ class RequestHandler:
                 err_code = err.code()
                 if err_code == grpc.StatusCode.UNAVAILABLE:
                     err._details = (
-                        err.details()
-                        + f' |Gateway: Communication error with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
+                            err.details()
+                            + f' |Gateway: Communication error with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
                     )
                     raise err
                 else:
@@ -121,8 +122,8 @@ class RequestHandler:
 
             if graph.has_filter_conditions:
                 request_doc_ids = request.data.docs[
-                    :, 'id'
-                ]  # used to maintain order of docs that are filtered by executors
+                                  :, 'id'
+                                  ]  # used to maintain order of docs that are filtered by executors
             responding_tasks = []
             floating_tasks = []
             endpoint = request.header.exec_endpoint
@@ -131,6 +132,13 @@ class RequestHandler:
             r.start_time.GetCurrentTime()
             # If the request is targeting a specific deployment, we can send directly to the deployment instead of
             # querying the graph
+            num_outgoing_nodes = len(request_graph.origin_nodes)
+            has_specific_params = False
+            request_input_parameters = request.parameters
+            for key in request_input_parameters:
+                if _is_param_for_specific_executor(key):
+                    has_specific_params = True
+
             for origin_node in request_graph.origin_nodes:
                 leaf_tasks = origin_node.get_leaf_tasks(
                     connection_pool=connection_pool,
@@ -139,7 +147,9 @@ class RequestHandler:
                     endpoint=endpoint,
                     executor_endpoint_mapping=self._executor_endpoint_mapping,
                     target_executor_pattern=request.header.target_executor,
-                    request_input_parameters=request.parameters
+                    request_input_parameters=request_input_parameters,
+                    request_input_has_specific_params=has_specific_params,
+                    copy_request_at_send=num_outgoing_nodes > 1 and has_specific_params
                 )
                 # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their
                 # subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous
@@ -159,12 +169,12 @@ class RequestHandler:
                 response.data.docs = DocumentArray(sorted_docs)
 
             async def _process_results_at_end_gateway(
-                tasks: List[asyncio.Task], request_graph: TopologyGraph
+                    tasks: List[asyncio.Task], request_graph: TopologyGraph
             ) -> asyncio.Future:
                 try:
                     if (
-                        self._executor_endpoint_mapping is None
-                        and not self._gathering_endpoints
+                            self._executor_endpoint_mapping is None
+                            and not self._gathering_endpoints
                     ):
                         self._gathering_endpoints = True
                         asyncio.create_task(gather_endpoints(request_graph))
@@ -185,7 +195,9 @@ class RequestHandler:
                     _sort_response_docs(response)
 
                 collect_results = request_graph.collect_all_results()
-                response.parameters[DataRequestHandler._KEY_RESULT] = collect_results
+                resp_params = response.parameters
+                resp_params[DataRequestHandler._KEY_RESULT] = collect_results
+                response.parameters = resp_params
                 return response
 
             # In case of empty topologies
