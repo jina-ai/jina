@@ -123,9 +123,11 @@ class HTTPBaseClient(BaseClient):
                 return result
 
             streamer = RequestStreamer(
-                self.args,
                 request_handler=_request_handler,
                 result_handler=_result_handler,
+                prefetch=getattr(self.args, 'prefetch', 0),
+                logger=self.logger,
+                **vars(self.args)
             )
             async for response in streamer.stream(request_iterator):
                 r_status = response.status

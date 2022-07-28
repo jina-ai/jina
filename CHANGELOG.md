@@ -209,6 +209,9 @@
 
 
 
+
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -546,6 +549,9 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.6.13`)](#release-note-3613)
 - [Release Note (`3.6.14`)](#release-note-3614)
 - [Release Note (`3.6.15`)](#release-note-3615)
+- [Release Note (`3.6.16`)](#release-note-3616)
+- [Release Note (`3.7.0`)](#release-note-370)
+- [Release Note (`3.7.1`)](#release-note-371)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -14405,4 +14411,86 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```6a8ceaad```](https://github.com/jina-ai/jina/commit/6a8ceaadad702ed0f239f04e7f95c7e60d5a73e9)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```356d2b76```](https://github.com/jina-ai/jina/commit/356d2b76c844422ff542f5189de1e568beff87eb)] __-__ __version__: the next version will be 3.6.15 (*Jina Dev Bot*)
+
+<a name=release-note-3-6-16></a>
+## Release Note (`3.6.16`)
+
+> Release time: 2022-07-21 08:22:03
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Roshan Jossy,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```1b3edacf```](https://github.com/jina-ai/jina/commit/1b3edacf531e4e8d29eac4ea73785f8d201255d6)] __-__ wait for floating Executor tasks (#5004) (*Joan Fontanals*)
+ - [[```6ba1d165```](https://github.com/jina-ai/jina/commit/6ba1d165a2aad8e863006be69c813b5cac3d8a21)] __-__ do not await gather endpoints, simply schedule task (#5015) (*Joan Fontanals*)
+
+### 🐞 Bug fixes
+
+ - [[```6f5b3f2a```](https://github.com/jina-ai/jina/commit/6f5b3f2a9b13c2eae78b746531132cbfcdc8c2da)] __-__ fix endpoint discovery tries (#5014) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```c9b68d3d```](https://github.com/jina-ai/jina/commit/c9b68d3d15d46ee7d62d9f7e1f22c539fb309f8b)] __-__ update action to update dockerhub description (#5021) (*Roshan Jossy*)
+ - [[```c01a9fee```](https://github.com/jina-ai/jina/commit/c01a9fee2965584dea48b91383fd414c69acabc9)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```394bf110```](https://github.com/jina-ai/jina/commit/394bf11051ce787dd010bed32790940968bb7419)] __-__ __version__: the next version will be 3.6.16 (*Jina Dev Bot*)
+
+<a name=release-note-3-7-0></a>
+## Release Note (`3.7.0`)
+
+> Release time: 2022-07-21 08:50:56
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🍹 Other Improvements
+
+ - [[```1f34093a```](https://github.com/jina-ai/jina/commit/1f34093ae5d8ddeeb659cdd6bc95ad83a7704779)] __-__ bump jina version (#5022) (*Joan Fontanals*)
+ - [[```4af73ba1```](https://github.com/jina-ai/jina/commit/4af73ba1a56594b2076ba058f976977862bae029)] __-__ __version__: the next version will be 3.6.17 (*Jina Dev Bot*)
+
+<a name=release-note-3-7-1></a>
+## Release Note (`3.7.1`)
+
+> Release time: 2022-07-27 11:10:20
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Zac Li,  Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```277756d8```](https://github.com/jina-ai/jina/commit/277756d877ade63aef4d87e96746001684ccb02a)] __-__ add telemetry (#5024) (*Joan Fontanals*)
+
+### 🐞 Bug fixes
+
+ - [[```b33b21fc```](https://github.com/jina-ai/jina/commit/b33b21fc28d84d3652e17690666a5bf8737397bf)] __-__ fix the name of the event from runtimes (#5034) (*Joan Fontanals*)
+ - [[```28a8ae4c```](https://github.com/jina-ai/jina/commit/28a8ae4c851f5af6c1d8d158dd619cc87104245a)] __-__ fix get openapi schemas (#5035) (*Joan Fontanals*)
+
+### 🧼 Code Refactoring
+
+ - [[```f37aba6a```](https://github.com/jina-ai/jina/commit/f37aba6a569f80d34e6cad70b462b1767d71866e)] __-__ hide tgraph, cpool and streaming under new usable api (#5031) (*Joan Fontanals*)
+ - [[```d4f79ea9```](https://github.com/jina-ai/jina/commit/d4f79ea9a15d80cc51c59209655cc277763073d3)] __-__ small refactor on streamer (#5030) (*Joan Fontanals*)
+
+### 📗 Documentation
+
+ - [[```38ece9fa```](https://github.com/jina-ai/jina/commit/38ece9fa55ea77431db10226cf1f2dc206d79dea)] __-__ update jcloud auth docs (#5029) (*Zac Li*)
+ - [[```38e8f2f2```](https://github.com/jina-ai/jina/commit/38e8f2f2b61ea4f080cb924138caea88fcedebb3)] __-__ add jcloud cpu docs (#5026) (*Zac Li*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```7ff2a4c3```](https://github.com/jina-ai/jina/commit/7ff2a4c3d4fb23ff3cee074e8c96abf0015905b8)] __-__ divide unit orchestrate flow slow tests (#5025) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```feb9ad75```](https://github.com/jina-ai/jina/commit/feb9ad75f1416151bc21144983e628d943717522)] __-__ fix readme (*Han Xiao*)
+ - [[```87cede55```](https://github.com/jina-ai/jina/commit/87cede55c78d05c18cb1c28de901865a67257500)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```d7f6860f```](https://github.com/jina-ai/jina/commit/d7f6860f3666a8670e817f7b18914876fea52f5b)] __-__ __version__: the next version will be 3.7.1 (*Jina Dev Bot*)
 

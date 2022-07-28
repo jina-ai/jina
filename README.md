@@ -20,7 +20,7 @@
 
 Jina is a framework that empowers anyone to build cross-modal and multi-modal<sup><a href="#example-application">[*]</a></sup> applications on the cloud. It uplifts a PoC into a production-ready service. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer. 
 
-<sub><sup><a id="example-application">[*]</a> Example cross-modal application: <a href="https://github.com/jina-ai/dalle-flow/">DALL·E Flow</a>; example multi-modal services: <a href="https://github.com/jina-ai/clip-as-service/">CLIP-as-service</a>, <a href="https://github.com/jina-ai/now/">Jina Now</a>.</sup></sub>
+<sub><sup><a id="example-application">[*]</a> Example cross-modal application: <a href="https://github.com/jina-ai/discoart/">DiscoArt</a>, <a href="https://github.com/jina-ai/dalle-flow/">DALL·E Flow</a>; example multi-modal services: <a href="https://github.com/jina-ai/clip-as-service/">CLIP-as-service</a>, <a href="https://github.com/jina-ai/now/">Jina Now</a>.</sup></sub>
 
 Applications built with Jina enjoy the following features out-of-the-box:
 
