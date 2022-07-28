@@ -57,10 +57,15 @@ class TopologyGraph:
         def leaf(self):
             return len(self.outgoing_nodes) == 0
 
-        def _update_requests_with_filter_condition(self):
+        def _update_requests_with_filter_condition(self, need_copy):
             for i in range(len(self.parts_to_send)):
-                filtered_docs = self.parts_to_send[i].docs.find(self._filter_condition)
-                self.parts_to_send[i].data.docs = filtered_docs
+                req = self.parts_to_send[i] if not need_copy else copy.deepcopy(self.parts_to_send[i])
+                filtered_docs = req.docs.find(self._filter_condition)
+                req.data.docs = filtered_docs
+
+                self.parts_to_send[i] = req
+                # filtered_docs = self.parts_to_send[i].docs.find(self._filter_condition)
+                # self.parts_to_send[i].data.docs = filtered_docs
 
         def _update_request_by_params(self, deployment_name: str, request_input_parameters: Dict):
             specific_parameters = _parse_specific_params(
@@ -124,7 +129,7 @@ class TopologyGraph:
                     self.start_time = datetime.utcnow()
                     self._update_request_by_params(self.name, request_input_parameters)
                     if self._filter_condition is not None:
-                        self._update_requests_with_filter_condition()
+                        self._update_requests_with_filter_condition(need_copy=not copy_request_at_send)
                     if self._reduce and len(self.parts_to_send) > 1:
                         self.parts_to_send = [
                             DataRequestHandler.reduce_requests(self.parts_to_send)
