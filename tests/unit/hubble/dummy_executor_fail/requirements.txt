@@ -1,4 +1,6 @@
 -f https://download.pytorch.org/whl/torch_stable.html
+
+# Notes
 pytest
+
 git+https://${TEST_TOKEN_GITHUB}@github.com/jina-ai/docsqalib.git
-git+https://${TOKEN_GITHUB}@github.com/jina-ai/docsqalib.git

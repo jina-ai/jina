@@ -25,7 +25,8 @@ from jina.logging.predefined import default_logger
 from .requirements import (
     get_env_variables,
     check_env_variable,
-    parse_requirement
+    parse_requirement,
+    expand_env_variables
 )
 
 
@@ -514,6 +515,24 @@ def check_requirements_env_variable(env_variable: str) -> bool:
     :return: True or False if not satisfied
     """
     return check_env_variable(env_variable)
+
+def replace_env_variables(requirements_file: 'Path') -> list:
+    """get the env variables in requirements.txt
+    :param requirements_file: the requirements.txt file
+    :return: List of have replaced env variables in requirements.txt
+    """
+    env_variables = []
+    with requirements_file.open('r') as requirements:
+        for line in requirements.readlines():
+            line = line.strip()
+            print('---line--',line)
+            if (not line) or line.startswith('#'):
+                continue
+            else:
+                line = expand_env_variables(line)
+                env_variables.append(line)
+    return env_variables
+    
 
 def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jina',)):
     with requirements_file.open() as requirements:

@@ -188,3 +188,28 @@ def test_disk_cache(tmpfile):
     result = 3
     # does not return latest and exception is not raised, defaults to cache
     assert _myfunc(force=True) == (2, True)
+
+
+def test_replace_env_variables(mocker, monkeypatch):
+    monkeypatch.setenv("TEST_TOKEN_GITHUB", '1234567wweqwe')
+    helper.replace_env_variables(
+        Path(__file__).parent / 'dummy_executor_fail' / 'requirements.txt'
+    )
+
+
+@pytest.mark.parametrize(
+    'env_variable_error',
+    [
+        'The given requirements.txt require environment variables `{var_name}` does not exist!'
+    ],
+)
+@pytest.mark.parametrize(
+    'build_env',['TEST_TOKEN_GITHUB']
+)
+def test_fail_replace_env_variables(mocker, monkeypatch, env_variable_error, build_env):
+
+    with pytest.raises(Exception) as info:
+        helper.replace_env_variables(
+            Path(__file__).parent / 'dummy_executor_fail' / 'requirements.txt'
+        )
+    assert env_variable_error.format(var_name=build_env) in str( info.value )

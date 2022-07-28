@@ -365,8 +365,6 @@ metas:
 
         requirements_env_variables = []
         if requirements_file.exists(): 
-            if requirements_file.parent != work_path:
-                raise Exception(f'The requirements.txt must be placed at the given folder `{work_path}`')
             requirements_env_variables = get_requirements_env_variables(requirements_file)
             for index, env in enumerate(requirements_env_variables):
                 if check_requirements_env_variable(env) is False:

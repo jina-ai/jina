@@ -135,7 +135,7 @@ class FetchMetaMockResponse:
 @pytest.mark.parametrize('force', [None, 'UUID8'])
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['TEST_TOKEN=ghp_I1cCzUY'])
+@pytest.mark.parametrize('build_env', ['TEST_TOKEN=ghp_cEtXH'])
 def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, build_env):
     mock = mocker.Mock()
 
@@ -190,7 +190,7 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
     
     if build_env:
         print(form_data['buildEnv'])
-        assert form_data['buildEnv'] ==  ['{"TEST_TOKEN": "ghp_I1cCzUY"}']
+        assert form_data['buildEnv'] ==  ['{"TEST_TOKEN": "ghp_cEtXH"}']
     else:
         assert form_data.get('buildEnv') is None
 
@@ -264,8 +264,9 @@ def test_push_wrong_build_env(
 )
 @pytest.mark.parametrize('path', ['dummy_executor_fail'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
+@pytest.mark.parametrize('requirements_file', ['requirements.txt'])
 def test_push_requirements_file_require_set_env_variables(
-    mocker, monkeypatch, path, mode, tmpdir, requirements_file_need_build_env_error
+    mocker, monkeypatch, path, mode, tmpdir, requirements_file_need_build_env_error, requirements_file
 ):
     mock = mocker.Mock()
 
@@ -283,7 +284,7 @@ def test_push_requirements_file_require_set_env_variables(
 
     args = set_hub_push_parser().parse_args(_args_list)
 
-    requirements_file = os.path.join(exec_path,'requirements.txt')
+    requirements_file = os.path.join(exec_path,requirements_file)
     requirements_file_env_variables = get_requirements_env_variables(Path(requirements_file))
     
     with pytest.raises(Exception) as info:
