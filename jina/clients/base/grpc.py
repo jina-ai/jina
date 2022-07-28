@@ -46,6 +46,10 @@ class GRPCBaseClient(BaseClient):
                 )
                 if response.code == jina_pb2.StatusProto.SUCCESS:
                     return True
+                else:
+                    self.logger.error(
+                        f'Returned code is not expected! Exception: {response.exception}'
+                    )
         except Exception as e:
             self.logger.error(f'Error while getting response from grpc server {e!r}')
 
