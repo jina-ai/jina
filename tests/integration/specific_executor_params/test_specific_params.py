@@ -61,6 +61,8 @@ def test_specific_params_with_branched_flow():
         def combine(self, docs, parameters, **kwargs):
             text1_path = parameters.get('text1_access_path', None)
             text2_path = parameters.get('text2_access_path', None)
+            assert text1_path == '@.[text1]'
+            assert text2_path == '@.[text2]'
             text1_docs = docs[text1_path]
             text2_docs = docs[text2_path]
             combined_embeddings = self.model(text1_docs.embeddings, text2_docs.embeddings)

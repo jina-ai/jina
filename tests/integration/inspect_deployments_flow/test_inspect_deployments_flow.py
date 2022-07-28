@@ -5,8 +5,6 @@ import pytest
 from jina import Flow, Executor, DocumentArray, Client, requests
 from tests import random_docs
 
-exposed_port = 12345
-
 
 class DummyEvaluator1(Executor):
     tag = 1
@@ -68,8 +66,8 @@ def test_flow1(inspect, protocol, temp_folder):
 def test_flow2(inspect, protocol, temp_folder):
     f = (
         Flow(protocol=protocol, inspect=inspect)
-        .add()
-        .inspect(
+            .add()
+            .inspect(
             uses=DummyEvaluator1,
             env={'TEST_EVAL_FLOW_TMPDIR': os.environ.get('TEST_EVAL_FLOW_TMPDIR')},
         )
@@ -89,11 +87,11 @@ def test_flow3(inspect, protocol, temp_folder):
 
     f = (
         Flow(protocol=protocol, inspect=inspect)
-        .add(name='p1')
-        .inspect(uses='DummyEvaluator1', env=env)
-        .add(name='p2', needs='gateway')
-        .needs(['p1', 'p2'])
-        .inspect(uses='DummyEvaluator2', env=env)
+            .add(name='p1')
+            .inspect(uses='DummyEvaluator1', env=env)
+            .add(name='p2', needs='gateway')
+            .needs(['p1', 'p2'])
+            .inspect(uses='DummyEvaluator2', env=env)
     )
 
     with f:
@@ -110,13 +108,13 @@ def test_flow4(inspect, protocol, temp_folder):
 
     f = (
         Flow(protocol=protocol, inspect=inspect)
-        .add()
-        .inspect(uses='DummyEvaluator1', env=env)
-        .add()
-        .inspect(uses='DummyEvaluator2', env=env)
-        .add()
-        .inspect(uses='DummyEvaluator3', env=env)
-        .plot(build=True)
+            .add()
+            .inspect(uses='DummyEvaluator1', env=env)
+            .add()
+            .inspect(uses='DummyEvaluator2', env=env)
+            .add()
+            .inspect(uses='DummyEvaluator3', env=env)
+            .plot(build=True)
     )
 
     with f:
@@ -138,9 +136,11 @@ class AddEvaluationExecutor(Executor):
 
 @pytest.mark.repeat(5)
 @pytest.mark.parametrize('protocol', ['http', 'websocket', 'grpc'])
-def test_flow_returned_collect(protocol):
+def test_flow_returned_collect(protocol, port_generator):
     # TODO(Joan): This test passes because we pass the `SlowExecutor` but I do not know how to make the `COLLECT` deployment
     # use an specific executor.
+
+    exposed_port = port_generator()
 
     def validate_func(resp):
         num_evaluations = 0
@@ -153,38 +153,40 @@ def test_flow_returned_collect(protocol):
 
     f = (
         Flow(protocol=protocol, inspect='COLLECT', port=exposed_port)
-        .add()
-        .inspect(
+            .add()
+            .inspect(
             uses=AddEvaluationExecutor,
         )
     )
 
     with f:
         response = Client(
-            port=exposed_port, protocol=protocol, return_responses=True
-        ).index(inputs=docs)
+            port=exposed_port, protocol=protocol
+        ).index(inputs=docs, return_responses=True)
     validate_func(response[0])
 
 
 @pytest.mark.repeat(5)
 @pytest.mark.parametrize('inspect', ['HANG', 'REMOVE'])
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc'])
-def test_flow_not_returned(inspect, protocol):
+def test_flow_not_returned(inspect, protocol, port_generator):
+    exposed_port = port_generator()
+
     def validate_func(resp):
         for doc in resp.data.docs:
             assert len(doc.evaluations) == 0
 
     f = (
         Flow(protocol=protocol, inspect=inspect, port=exposed_port)
-        .add()
-        .inspect(
+            .add()
+            .inspect(
             uses=AddEvaluationExecutor,
         )
     )
 
     with f:
-        res = Client(protocol=protocol, port=exposed_port, return_responses=True).index(
-            inputs=docs
+        res = Client(protocol=protocol, port=exposed_port).index(
+            inputs=docs, return_responses=True
         )
 
     validate_func(res[0])

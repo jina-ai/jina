@@ -62,10 +62,7 @@ class TopologyGraph:
                 req = self.parts_to_send[i] if not need_copy else copy.deepcopy(self.parts_to_send[i])
                 filtered_docs = req.docs.find(self._filter_condition)
                 req.data.docs = filtered_docs
-
                 self.parts_to_send[i] = req
-                # filtered_docs = self.parts_to_send[i].docs.find(self._filter_condition)
-                # self.parts_to_send[i].data.docs = filtered_docs
 
         def _update_request_by_params(self, deployment_name: str, request_input_parameters: Dict):
             specific_parameters = _parse_specific_params(

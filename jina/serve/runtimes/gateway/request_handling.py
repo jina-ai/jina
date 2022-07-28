@@ -138,6 +138,7 @@ class RequestHandler:
             for key in request_input_parameters:
                 if _is_param_for_specific_executor(key):
                     has_specific_params = True
+                    break
 
             for origin_node in request_graph.origin_nodes:
                 leaf_tasks = origin_node.get_leaf_tasks(
