@@ -73,9 +73,55 @@ executors:
           type: efs
 ```
 
+### GPU support
+
+We have GPU support in JCloud. We have `2` kind of GPU usages, `shared` or `dedicated`.
+
+```{note}
+Due to enable GPU support may require to cluster to dynamically provision new GPU nodes. It may take extra 2-3 mins till all flows are running in the cluster.
+```
+
+#### Shared GPU
+
+Shared GPU is to enable time-slicing feature, which is used to allow workloads that land on oversubscribed GPUs to interleave with one another. In that case, executor may share a GPU with others(10 executor at maximum).
+
+```yaml
+jtype: Flow
+protocol: http
+executors:
+- name: sb0
+  uses: jinahub+docker://CustomExecutor
+  jcloud:
+      resources:
+        gpu: shared
+```
+
+```{note}
+Please notice, nothing special is done to isolate workloads that are granted replicas from the same underlying GPU, and each workload has access to the GPU memory and runs in the same fault-domain as of all the others (meaning if one workload crashes, they all do).  
+```
+
+#### Dedicated GPU
+
+Dedicated GPU is a normal way to provision GPU to the executor, it will automatically create nodes or assign the executor landing on GPU nodes. In this case, executor own the whole GPU, minimum GPU core is `1`, `max`maximum is `4`.
+
+```yaml
+jtype: Flow
+protocol: http
+executors:
+- name: sb0
+  uses: jinahub+docker://CustomExecutor
+  jcloud:
+      resources:
+        gpu: 2
+```
+
 ### Gateway
 
 For the internet exposure, JCloud now provides support for [Kong gateway](https://konghq.com/products/api-gateway-platform). 
+
+```{note}
+JCloud is a different concept from Jina gateway. In Jcloud, a gateway service is working as proxy to distribute internet traffics between flows through Jina gateway. JCloud gateway is to manage external https/grpcs /websockets protocol service to flows.
+```
 
 We currently support two types of gateway for internet exposure: [Kong gateway](https://konghq.com/products/api-gateway-platform) and [Application Load Balancer (ALB)](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html).
 
