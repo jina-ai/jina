@@ -1,7 +1,5 @@
 from jina import Client, Document, Executor, Flow, requests
 
-exposed_port = 12345
-
 
 def validate_results(results):
     req = results[0]
@@ -25,7 +23,9 @@ class MatchAdder(Executor):
                     doc.matches.append(Document())
 
 
-def test_single_executor():
+def test_single_executor(port_generator):
+
+    exposed_port = port_generator()
 
     f = Flow(port=exposed_port).add(
         uses={'jtype': 'MatchAdder', 'with': {'traversal_paths': 'r,m'}}
@@ -38,7 +38,9 @@ def test_single_executor():
     validate_results(results)
 
 
-def test_multi_executor():
+def test_multi_executor(port_generator):
+
+    exposed_port = port_generator()
 
     f = (
         Flow(port=exposed_port)

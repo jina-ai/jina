@@ -61,11 +61,11 @@ def test_empty_docarray():
     f = Flow().add(uses=SimplExecutor)
     with pytest.raises(BadServer):
         with f:
-            docs = f.post(on='/')
+            f.post(on='/')
 
 
-def test_flow_client_defaults():
-    exposed_port = 12345
+def test_flow_client_defaults(port_generator):
+    exposed_port = port_generator()
     f = Flow(port=exposed_port).add(uses=SimplExecutor)
     c = Client(port=exposed_port)
     with f:
