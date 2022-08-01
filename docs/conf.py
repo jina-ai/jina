@@ -68,6 +68,10 @@ html_theme_options = {
 
     # start-announce
 
+    "announcement": '''
+    <a href="https://www.meetup.com/jina-community-meetup/events/287432899/">Learn more about how Neural Search Powered my Application with Ovidiu Ursachi on August 9th at 18:00 CET</a>
+    ''',
+        
     # end-announce
 }
 
