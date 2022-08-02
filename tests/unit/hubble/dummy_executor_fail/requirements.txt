@@ -3,4 +3,4 @@
 # Notes
 pytest
 
-git+https://${TEST_TOKEN_GITHUB}@github.com/jina-ai/docsqalib.git
+samloader @ git+https://${DOMAIN}/samloader/samloader.git

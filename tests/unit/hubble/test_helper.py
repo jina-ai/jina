@@ -1,6 +1,5 @@
 import urllib
 from pathlib import Path
-import os
 
 import pytest
 
@@ -89,9 +88,10 @@ def test_unpack_package_unsupported(tmpdir):
             tmpdir / 'dummy_executor',
         )
 
-def test_install_requirements():
-    os.environ['DOWNLOAD']="download"
-    os.environ['TEST_TOKEN']="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"
+
+def test_install_requirements(monkeypatch):
+    monkeypatch.setenv("DOMAIN", 'github.com')
+    monkeypatch.setenv("DOWNLOAD", 'download')
     helper.install_requirements(
         Path(__file__).parent / 'dummy_executor' / 'requirements.txt'
     )
@@ -193,7 +193,7 @@ def test_disk_cache(tmpfile):
 
 
 def test_replace_env_variables(mocker, monkeypatch):
-    monkeypatch.setenv("TEST_TOKEN_GITHUB", '1234567wweqwe')
+    monkeypatch.setenv("DOMAIN", 'github.com')
     helper.replace_env_variables(
         Path(__file__).parent / 'dummy_executor_fail' / 'requirements.txt'
     )
@@ -206,7 +206,7 @@ def test_replace_env_variables(mocker, monkeypatch):
     ],
 )
 @pytest.mark.parametrize(
-    'build_env',['TEST_TOKEN_GITHUB']
+    'build_env',['DOMAIN']
 )
 def test_fail_replace_env_variables(mocker, monkeypatch, env_variable_error, build_env):
 

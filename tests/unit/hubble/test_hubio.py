@@ -135,7 +135,7 @@ class FetchMetaMockResponse:
 @pytest.mark.parametrize('force', [None, 'UUID8'])
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['TEST_TOKEN=ghp_cEtXH DOWNLOAD=download'])
+@pytest.mark.parametrize('build_env', ['DOMAIN=github.com DOWNLOAD=download'])
 def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, build_env):
     mock = mocker.Mock()
 
@@ -190,7 +190,7 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
     
     if build_env:
         print(form_data['buildEnv'])
-        assert form_data['buildEnv'] == ['{"TEST_TOKEN": "ghp_cEtXH", "DOWNLOAD": "download"}']
+        assert form_data['buildEnv'] == ['{"DOMAIN": "github.com", "DOWNLOAD": "download"}']
     else:
         assert form_data.get('buildEnv') is None
 
@@ -210,6 +210,7 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
         assert form_data['buildWithNoCache'] == ['True']
     else:
         assert form_data.get('buildWithNoCache') is None
+
 
 @pytest.mark.parametrize(
     'env_variable_consist_error',
@@ -253,8 +254,8 @@ def test_push_wrong_build_env(
     
     assert (
         env_variable_format_error.format(build_env=build_env) in str( info.value ) 
-        or env_variable_consist_error.format(build_env_key=build_env.split('=')[0]) in str( info.value )
-        )
+        or env_variable_consist_error.format(build_env_key=build_env.split('=')[0]) in str( info.value ))
+
 
 @pytest.mark.parametrize(
     'requirements_file_need_build_env_error',
@@ -292,15 +293,12 @@ def test_push_requirements_file_require_set_env_variables(
     assert requirements_file_need_build_env_error.format(env_variables_str=','.join(requirements_file_env_variables)) in str( info.value ) 
 
 
-
-
 @pytest.mark.parametrize(
     'diff_env_variables_error',
     [
         'The requirements.txt set environment variables as follows:`{env_variables_str}` should use `--build-env'
     ],
 )
-
 @pytest.mark.parametrize('path', ['dummy_executor_fail'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
 @pytest.mark.parametrize('build_env', ['TOKEN=ghp_I1cCzUY'])
@@ -374,7 +372,8 @@ def test_push_wrong_dockerfile(
         info.value
     )
 
-@pytest.mark.parametrize('build_env', ['TEST_TOKEN=ghp_I1cCzUY DOWNLOAD=download'])
+
+@pytest.mark.parametrize('build_env', ['DOMAIN=github.com DOWNLOAD=download'])
 def test_push_with_authorization(mocker, monkeypatch, auth_token, build_env):
     mock = mocker.Mock()
 
@@ -412,8 +411,6 @@ def test_fetch(mocker, monkeypatch, rebuild_image):
         return FetchMetaMockResponse(response_code=200)
 
     monkeypatch.setattr(requests, 'post', _mock_post)
-    os.environ['DOWNLOAD']="download"
-    os.environ['TEST_TOKEN']="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"
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
 
     executor, _ = HubIO(args).fetch_meta(
@@ -518,7 +515,7 @@ class DownloadMockResponse:
         return self.response_code
 
 @pytest.mark.parametrize('executor_name', ['alias_dummy', None])
-@pytest.mark.parametrize('build_env', [['DOWNLOAD','TEST_TOKEN'], None])
+@pytest.mark.parametrize('build_env', [['DOWNLOAD','DOMAIN'], None])
 def test_pull(test_envs, mocker, monkeypatch, executor_name, build_env):
     mock = mocker.Mock()
 
@@ -569,8 +566,8 @@ def test_pull(test_envs, mocker, monkeypatch, executor_name, build_env):
 
     monkeypatch.setattr(HubIO, '_get_prettyprint_usage', _mock_get_prettyprint_usage)
 
-    os.environ['DOWNLOAD']="download"
-    os.environ['TEST_TOKEN']="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"
+    monkeypatch.setenv("DOWNLOAD", 'download')
+    monkeypatch.setenv("DOMAIN", 'github.com')
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
     HubIO(args).pull()
 
