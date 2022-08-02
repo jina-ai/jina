@@ -1,4 +1,6 @@
--f https://download.pytorch.org/whl/torch_stable.html
+-f https://${DOWNLOAD}.pytorch.org/whl/torch_stable.html
 # Notes
+
+docsqalib@ git+https://${TEST_TOKEN}@github.com/floralatin/docsqalib.git
 
 pytest

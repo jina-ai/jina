@@ -135,7 +135,7 @@ class FetchMetaMockResponse:
 @pytest.mark.parametrize('force', [None, 'UUID8'])
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['TEST_TOKEN=ghp_cEtXH'])
+@pytest.mark.parametrize('build_env', ['TEST_TOKEN=ghp_cEtXH DOWNLOAD=download'])
 def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, build_env):
     mock = mocker.Mock()
 
@@ -190,7 +190,7 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
     
     if build_env:
         print(form_data['buildEnv'])
-        assert form_data['buildEnv'] ==  ['{"TEST_TOKEN": "ghp_cEtXH"}']
+        assert form_data['buildEnv'] == ['{"TEST_TOKEN": "ghp_cEtXH", "DOWNLOAD": "download"}']
     else:
         assert form_data.get('buildEnv') is None
 
@@ -374,7 +374,7 @@ def test_push_wrong_dockerfile(
         info.value
     )
 
-@pytest.mark.parametrize('build_env', ['TEST_TOKEN=ghp_I1cCzUY'])
+@pytest.mark.parametrize('build_env', ['TEST_TOKEN=ghp_I1cCzUY DOWNLOAD=download'])
 def test_push_with_authorization(mocker, monkeypatch, auth_token, build_env):
     mock = mocker.Mock()
 
@@ -412,6 +412,8 @@ def test_fetch(mocker, monkeypatch, rebuild_image):
         return FetchMetaMockResponse(response_code=200)
 
     monkeypatch.setattr(requests, 'post', _mock_post)
+    os.environ['DOWNLOAD']="download"
+    os.environ['TEST_TOKEN']="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"
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
 
     executor, _ = HubIO(args).fetch_meta(
@@ -516,7 +518,8 @@ class DownloadMockResponse:
         return self.response_code
 
 @pytest.mark.parametrize('executor_name', ['alias_dummy', None])
-def test_pull(test_envs, mocker, monkeypatch, executor_name):
+@pytest.mark.parametrize('build_env', [['DOWNLOAD','TEST_TOKEN'], None])
+def test_pull(test_envs, mocker, monkeypatch, executor_name, build_env):
     mock = mocker.Mock()
 
     def _mock_fetch(
@@ -526,6 +529,7 @@ def test_pull(test_envs, mocker, monkeypatch, executor_name):
         image_required=True,
         rebuild_image=True,
         force=False,
+        build_env=build_env,
     ):
         mock(name=name)
         return (
@@ -537,6 +541,7 @@ def test_pull(test_envs, mocker, monkeypatch, executor_name):
                 md5sum=None,
                 visibility=True,
                 archive_url=None,
+                build_env=build_env
             ),
             False,
         )
@@ -564,6 +569,8 @@ def test_pull(test_envs, mocker, monkeypatch, executor_name):
 
     monkeypatch.setattr(HubIO, '_get_prettyprint_usage', _mock_get_prettyprint_usage)
 
+    os.environ['DOWNLOAD']="download"
+    os.environ['TEST_TOKEN']="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"
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
     HubIO(args).pull()
 
@@ -894,3 +901,4 @@ def test_deploy_public_sandbox_create_new(mocker, monkeypatch):
     host, port = HubIO.deploy_public_sandbox(args)
     assert host == 'http://test_new_deployment.com'
     assert port == 4322
+

@@ -606,6 +606,29 @@ metas:
 
         console.print(Panel(param_str, title='Usage', expand=False, width=100))
 
+    
+    def _prettyprint_build_env_usage(self, console, build_env, usage_kind=None):
+        from rich import box
+        from rich.panel import Panel
+        from rich.syntax import Syntax
+        from rich.table import Table
+
+        param_str = Table(
+            box=box.SIMPLE,
+        )
+        param_str.add_column('')
+        param_str.add_column('env')
+        param_str.add_column('your value')
+
+
+        for item in build_env:
+            param_str.add_row(
+                'Env',
+                f"{item}:",
+                "your value"
+            )
+        console.print(Panel(param_str, title='build_env', expand=False, width=100))
+
     @staticmethod
     @disk_cache_offline(cache_file=str(get_cache_db()))
     def fetch_meta(
@@ -667,7 +690,7 @@ metas:
                 f'tag: {tag}, commit: {resp.get("commit", {}).get("id")}, '
                 f'session_id: {req_header.get("jinameta-session-id")}'
             )
-
+        buildEnv = resp['commit'].get('commitParams', {}).get('buildEnv', None);
         return HubExecutor(
             uuid=resp['id'],
             name=resp.get('name', None),
@@ -677,6 +700,7 @@ metas:
             image_name=image_name,
             archive_url=resp['package']['download'],
             md5sum=resp['package']['md5'],
+            build_env=buildEnv.keys() if buildEnv else []
         )
 
     @staticmethod
@@ -814,6 +838,7 @@ metas:
         cached_zip_file = None
         executor_name = None
         usage_kind = None
+        build_env = None
 
         try:
             need_pull = self.args.force_update
@@ -830,6 +855,8 @@ metas:
                     force=need_pull,
                 )
 
+                build_env = executor.build_env
+   
                 presented_id = executor.name if executor.name else executor.uuid
                 executor_name = (
                     f'{presented_id}'
@@ -861,6 +888,9 @@ metas:
                 elif scheme == 'jinahub':
                     import filelock
 
+                    if build_env:
+                       self._prettyprint_build_env_usage(console,build_env)
+                   
                     with filelock.FileLock(get_lockfile(), timeout=-1):
                         try:
                             pkg_path, pkg_dist_path = get_dist_path_of_executor(

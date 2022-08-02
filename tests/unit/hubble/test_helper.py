@@ -1,5 +1,6 @@
 import urllib
 from pathlib import Path
+import os
 
 import pytest
 
@@ -88,8 +89,9 @@ def test_unpack_package_unsupported(tmpdir):
             tmpdir / 'dummy_executor',
         )
 
-
 def test_install_requirements():
+    os.environ['DOWNLOAD']="download"
+    os.environ['TEST_TOKEN']="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"
     helper.install_requirements(
         Path(__file__).parent / 'dummy_executor' / 'requirements.txt'
     )
