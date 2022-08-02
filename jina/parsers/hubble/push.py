@@ -64,7 +64,7 @@ One can later fetch a tagged Executor via `jinahub[+docker]://MyExecutor/gpu`
     gp.add_argument(
         '--build-env',
         type=str,
-        help='A list of environment variables. It will be used in project build phrase.',
+        help='A list of environment variables. It will be used in project build phase.',
     )
     gp.add_argument(
         '--secret',

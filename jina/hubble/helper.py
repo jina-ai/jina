@@ -525,7 +525,6 @@ def replace_env_variables(requirements_file: 'Path') -> list:
     with requirements_file.open('r') as requirements:
         for line in requirements.readlines():
             line = line.strip()
-            print('---line--',line)
             if (not line) or line.startswith('#'):
                 continue
             else:

@@ -374,7 +374,7 @@ metas:
             env_variables_str = ','.join(requirements_env_variables);
             error_str= f'The requirements.txt set environment variables as follows:`{env_variables_str}` should use `--build-env';
             for item in requirements_env_variables:
-                error_str+= f" {item}=YOUR_VALUE"
+                error_str+= f' {item}=YOUR_VALUE'
             raise Exception(f'{error_str}` to add it.')
         elif len(requirements_env_variables) and build_env:
             build_env_keys = list(build_env.keys())
@@ -383,7 +383,7 @@ metas:
                 diff_env_variables_str = ",".join(diff_env_variables)
                 error_str= f'The requirements.txt set environment variables as follows:`{diff_env_variables_str}` should use `--build-env';
                 for item in diff_env_variables:
-                    error_str+= f" {item}=YOUR_VALUE"
+                    error_str+= f' {item}=YOUR_VALUE'
                 raise Exception(f'{error_str}` to add it.')
 
         console = get_rich_console()
@@ -617,15 +617,15 @@ metas:
             box=box.SIMPLE,
         )
         param_str.add_column('')
-        param_str.add_column('env')
-        param_str.add_column('your value')
+        param_str.add_column('Env')
+        param_str.add_column('Your value')
 
 
         for item in build_env:
             param_str.add_row(
                 'Env',
-                f"{item}:",
-                "your value"
+                f'{item}:',
+                'your value'
             )
         console.print(Panel(param_str, title='build_env', expand=False, width=100))
 
@@ -690,7 +690,7 @@ metas:
                 f'tag: {tag}, commit: {resp.get("commit", {}).get("id")}, '
                 f'session_id: {req_header.get("jinameta-session-id")}'
             )
-        buildEnv = resp['commit'].get('commitParams', {}).get('buildEnv', None);
+        buildEnv = resp['commit'].get('commitParams', {}).get('buildEnv', None)
         return HubExecutor(
             uuid=resp['id'],
             name=resp.get('name', None),

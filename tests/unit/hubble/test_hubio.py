@@ -566,8 +566,8 @@ def test_pull(test_envs, mocker, monkeypatch, executor_name, build_env):
 
     monkeypatch.setattr(HubIO, '_get_prettyprint_usage', _mock_get_prettyprint_usage)
 
-    monkeypatch.setenv("DOWNLOAD", 'download')
-    monkeypatch.setenv("DOMAIN", 'github.com')
+    monkeypatch.setenv('DOWNLOAD', 'download')
+    monkeypatch.setenv('DOMAIN', 'github.com')
     args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
     HubIO(args).pull()
 

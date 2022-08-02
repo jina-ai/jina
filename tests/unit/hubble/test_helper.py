@@ -90,8 +90,8 @@ def test_unpack_package_unsupported(tmpdir):
 
 
 def test_install_requirements(monkeypatch):
-    monkeypatch.setenv("DOMAIN", 'github.com')
-    monkeypatch.setenv("DOWNLOAD", 'download')
+    monkeypatch.setenv('DOMAIN', 'github.com')
+    monkeypatch.setenv('DOWNLOAD', 'download')
     helper.install_requirements(
         Path(__file__).parent / 'dummy_executor' / 'requirements.txt'
     )
