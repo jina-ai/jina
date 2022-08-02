@@ -212,6 +212,8 @@
 
 
 
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -552,6 +554,8 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.6.16`)](#release-note-3616)
 - [Release Note (`3.7.0`)](#release-note-370)
 - [Release Note (`3.7.1`)](#release-note-371)
+- [Release Note (`3.7.2`)](#release-note-372)
+- [Release Note (`3.7.3`)](#release-note-373)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -14493,4 +14497,43 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```feb9ad75```](https://github.com/jina-ai/jina/commit/feb9ad75f1416151bc21144983e628d943717522)] __-__ fix readme (*Han Xiao*)
  - [[```87cede55```](https://github.com/jina-ai/jina/commit/87cede55c78d05c18cb1c28de901865a67257500)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```d7f6860f```](https://github.com/jina-ai/jina/commit/d7f6860f3666a8670e817f7b18914876fea52f5b)] __-__ __version__: the next version will be 3.7.1 (*Jina Dev Bot*)
+
+<a name=release-note-3-7-2></a>
+## Release Note (`3.7.2`)
+
+> Release time: 2022-07-28 09:19:06
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Zac Li,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```fb88015e```](https://github.com/jina-ai/jina/commit/fb88015e2b0ce4d68099903f25de966563ebfa97)] __-__ add more logging in grpc dry run (#5036) (*Zac Li*)
+
+### 🍹 Other Improvements
+
+ - [[```5116b922```](https://github.com/jina-ai/jina/commit/5116b92271f174002be6de545bd4a64d3d023586)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```32dd47af```](https://github.com/jina-ai/jina/commit/32dd47af6d0255dc93e1d2aac234171dfc3b86b0)] __-__ __version__: the next version will be 3.7.2 (*Jina Dev Bot*)
+
+<a name=release-note-3-7-3></a>
+## Release Note (`3.7.3`)
+
+> Release time: 2022-07-28 14:29:23
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```032bd5e6```](https://github.com/jina-ai/jina/commit/032bd5e662dd16d4cfb394857074779970ae444a)] __-__ fix specific params problem with branches (#5038) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```81999e97```](https://github.com/jina-ai/jina/commit/81999e970c0c7f5e6fc1b1584fa1dbe0faa628ab)] __-__ __version__: the next version will be 3.7.3 (*Jina Dev Bot*)
 

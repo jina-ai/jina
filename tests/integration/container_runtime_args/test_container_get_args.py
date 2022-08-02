@@ -8,7 +8,6 @@ from jina import Client, Document, DocumentArray, Flow
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 img_name = 'jina/replica-exec'
-exposed_port = 12345
 
 
 @pytest.fixture(scope='function')
@@ -26,7 +25,8 @@ def docker_image_built():
 
 @pytest.mark.parametrize('shards', [1, 2])
 @pytest.mark.parametrize('replicas', [1, 3, 4])
-def test_containerruntime_args(docker_image_built, shards, replicas):
+def test_containerruntime_args(docker_image_built, shards, replicas, port_generator):
+    exposed_port = port_generator()
     f = Flow(port=exposed_port).add(
         name='executor_container',
         uses=f'docker://{img_name}',

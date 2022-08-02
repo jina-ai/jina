@@ -44,7 +44,6 @@ class TopologyGraph:
             self.number_of_parts = number_of_parts
             self.floating = floating
             self.parts_to_send = []
-            self.original_parameters = []
             self.start_time = None
             self.end_time = None
             self.status = None
@@ -52,25 +51,24 @@ class TopologyGraph:
             self._reduce = reduce
             self._timeout_send = timeout_send
             self._retries = retries
+            self.result_in_params_returned = None
 
         @property
         def leaf(self):
             return len(self.outgoing_nodes) == 0
 
-        def _update_requests_with_filter_condition(self):
+        def _update_requests_with_filter_condition(self, need_copy):
             for i in range(len(self.parts_to_send)):
-                copy_req = copy.deepcopy(self.parts_to_send[i])
-                filtered_docs = copy_req.docs.find(self._filter_condition)
-                copy_req.data.docs = filtered_docs
+                req = self.parts_to_send[i] if not need_copy else copy.deepcopy(self.parts_to_send[i])
+                filtered_docs = req.docs.find(self._filter_condition)
+                req.data.docs = filtered_docs
+                self.parts_to_send[i] = req
 
-                self.parts_to_send[i] = copy_req
-
-        def _update_request_by_params(self, deployment_name: str):
-
+        def _update_request_by_params(self, deployment_name: str, request_input_parameters: Dict):
+            specific_parameters = _parse_specific_params(
+                request_input_parameters, deployment_name
+            )
             for i in range(len(self.parts_to_send)):
-                specific_parameters = _parse_specific_params(
-                    self.original_parameters[i], deployment_name
-                )
                 self.parts_to_send[i].parameters = specific_parameters
 
         def _handle_internalnetworkerror(self, err):
@@ -99,12 +97,14 @@ class TopologyGraph:
 
         async def _wait_previous_and_send(
             self,
-            request: DataRequest,
+            request: Optional[DataRequest],
             previous_task: Optional[asyncio.Task],
             connection_pool: GrpcConnectionPool,
             endpoint: Optional[str],
             executor_endpoint_mapping: Optional[Dict] = None,
             target_executor_pattern: Optional[str] = None,
+            request_input_parameters: Dict = {},
+            copy_request_at_send: bool = False
         ):
             # Check my condition and send request with the condition
             metadata = {}
@@ -114,18 +114,19 @@ class TopologyGraph:
             if metadata and 'is-error' in metadata:
                 return request, metadata
             elif request is not None:
-                original_parameters = copy.deepcopy(request.parameters)
                 request.parameters = _parse_specific_params(
                     request.parameters, self.name
                 )
-                self.parts_to_send.append(request)
-                self.original_parameters.append(original_parameters)
+                if copy_request_at_send:
+                    self.parts_to_send.append(copy.deepcopy(request))
+                else:
+                    self.parts_to_send.append(request)
                 # this is a specific needs
                 if len(self.parts_to_send) == self.number_of_parts:
                     self.start_time = datetime.utcnow()
-                    self._update_request_by_params(self.name)
+                    self._update_request_by_params(self.name, request_input_parameters)
                     if self._filter_condition is not None:
-                        self._update_requests_with_filter_condition()
+                        self._update_requests_with_filter_condition(need_copy=not copy_request_at_send)
                     if self._reduce and len(self.parts_to_send) > 1:
                         self.parts_to_send = [
                             DataRequestHandler.reduce_requests(self.parts_to_send)
@@ -154,13 +155,12 @@ class TopologyGraph:
                             timeout=self._timeout_send,
                             retries=self._retries,
                         )
-                        return_parameters = original_parameters
                         if DataRequestHandler._KEY_RESULT in resp.parameters:
-                            return_parameters[
-                                DataRequestHandler._KEY_RESULT
-                            ] = resp.parameters[DataRequestHandler._KEY_RESULT]
-
-                        resp.parameters = return_parameters
+                            # Accumulate results from each Node and then add them to the original
+                            self.result_in_params_returned = resp.parameters[DataRequestHandler._KEY_RESULT]
+                        request.parameters = request_input_parameters
+                        resp.parameters = request_input_parameters
+                        self.parts_to_send.clear()
                     except InternalNetworkError as err:
                         self._handle_internalnetworkerror(err)
 
@@ -179,6 +179,9 @@ class TopologyGraph:
             endpoint: Optional[str] = None,
             executor_endpoint_mapping: Optional[Dict] = None,
             target_executor_pattern: Optional[str] = None,
+            request_input_parameters: Dict = {},
+            request_input_has_specific_params: bool = False,
+            copy_request_at_send: bool = False
         ) -> List[Tuple[bool, asyncio.Task]]:
             """
             Gets all the tasks corresponding from all the subgraphs born from this node
@@ -189,6 +192,9 @@ class TopologyGraph:
             :param endpoint: Optional string defining the endpoint of this request
             :param executor_endpoint_mapping: Optional map that maps the name of a Deployment with the endpoints that it binds to so that they can be skipped if needed
             :param target_executor_pattern: Optional regex pattern for the target executor to decide whether or not the Executor should receive the request
+            :param request_input_parameters: The parameters coming from the Request as they arrive to the gateway
+            :param request_input_has_specific_params: Parameter added for optimization. If this is False, there is no need to copy at all the request
+            :param copy_request_at_send: Copy the request before actually calling the `ConnectionPool` sending
 
             .. note:
                 deployment1 -> outgoing_nodes: deployment2
@@ -214,12 +220,14 @@ class TopologyGraph:
             """
             wait_previous_and_send_task = asyncio.create_task(
                 self._wait_previous_and_send(
-                    request_to_send,
-                    previous_task,
-                    connection_pool,
+                    request=request_to_send,
+                    previous_task=previous_task,
+                    connection_pool=connection_pool,
                     endpoint=endpoint,
                     executor_endpoint_mapping=executor_endpoint_mapping,
                     target_executor_pattern=target_executor_pattern,
+                    request_input_parameters=request_input_parameters,
+                    copy_request_at_send=copy_request_at_send
                 )
             )
             if self.leaf:  # I am like a leaf
@@ -227,6 +235,7 @@ class TopologyGraph:
                     (not self.floating, wait_previous_and_send_task)
                 ]  # I am the last in the chain
             hanging_tasks_tuples = []
+            num_outgoing_nodes = len(self.outgoing_nodes)
             for outgoing_node in self.outgoing_nodes:
                 t = outgoing_node.get_leaf_tasks(
                     connection_pool=connection_pool,
@@ -235,6 +244,9 @@ class TopologyGraph:
                     endpoint=endpoint,
                     executor_endpoint_mapping=executor_endpoint_mapping,
                     target_executor_pattern=target_executor_pattern,
+                    request_input_parameters=request_input_parameters,
+                    request_input_has_specific_params=request_input_has_specific_params,
+                    copy_request_at_send=num_outgoing_nodes > 1 and request_input_has_specific_params
                 )
                 # We are interested in the last one, that will be the task that awaits all the previous
                 hanging_tasks_tuples.extend(t)
@@ -392,3 +404,14 @@ class TopologyGraph:
                     nodes.append(st_node)
                     node_names.append(st_node_name)
         return nodes
+
+    def collect_all_results(self):
+        """Collect all the results from every node into a single dictionary so that gateway can collect them
+
+        :return: A dictionary of the results
+        """
+        res = {}
+        for node in self.all_nodes:
+            if node.result_in_params_returned:
+                res.update(node.result_in_params_returned)
+        return res
