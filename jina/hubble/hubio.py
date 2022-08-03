@@ -357,7 +357,7 @@ metas:
                 if (len(env_list) != 2):
                     raise Exception( f'The --build-env parameter: `{env}` is wrong format. you can use: `--build-env {env}=YOUR_VALUE`.')
                 if check_requirements_env_variable(env_list[0]) is False:
-                    raise Exception( f'The --build-env parameter key:`{env_list[0]}` can only consist of capital letters and underline.')
+                    raise Exception( f'The --build-env parameter key:`{env_list[0]}` can only consist of uppercase letter and number and underline.')
                 build_env_dict[env_list[0]] = env_list[1]
             build_env = build_env_dict if len(list(build_env_dict.keys()))>0 else None
 
@@ -368,7 +368,7 @@ metas:
             requirements_env_variables = get_requirements_env_variables(requirements_file)
             for index, env in enumerate(requirements_env_variables):
                 if check_requirements_env_variable(env) is False:
-                   raise Exception( f'The requirements.txt environment variables:`${env}` can only consist of capital letters and underline')
+                   raise Exception( f'The requirements.txt environment variables:`${env}` can only consist of uppercase letter and number and underline.')
 
         if len(requirements_env_variables) and not build_env:
             env_variables_str = ','.join(requirements_env_variables);

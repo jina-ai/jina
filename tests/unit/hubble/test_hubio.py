@@ -215,7 +215,7 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
 @pytest.mark.parametrize(
     'env_variable_consist_error',
     [
-        'The --build-env parameter key:`{build_env_key}` can only consist of capital letters and underline.'
+        'The --build-env parameter key:`{build_env_key}` can only consist of uppercase letter and number and underline.'
     ],
 )
 @pytest.mark.parametrize(
@@ -226,7 +226,7 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
 )
 @pytest.mark.parametrize('path', ['dummy_executor_fail'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['TEST_TOKEN_123=ghp_I1cCzUY', 'NO123123'])
+@pytest.mark.parametrize('build_env', ['TEST_TOKEN_ccc=ghp_I1cCzUY', 'NO123123'])
 def test_push_wrong_build_env(
     mocker, monkeypatch, path, mode, tmpdir, env_variable_format_error, env_variable_consist_error, build_env
 ):

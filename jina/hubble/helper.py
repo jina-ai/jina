@@ -510,7 +510,7 @@ def get_requirements_env_variables(requirements_file: 'Path') -> list:
 def check_requirements_env_variable(env_variable: str) -> bool:
     """ 
     check the env variable is limited
-    to uppercase letter and the `_` (underscore).
+    to uppercase letter and number and the `_` (underscore).
     :param env_variable: env_variable in the requirements.txt file
     :return: True or False if not satisfied
     """
