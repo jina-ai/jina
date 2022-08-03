@@ -494,6 +494,10 @@
                     <span class="n">has_specific_params</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="k">break</span>
 
+            <span class="n">target_executor</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_executor</span>
+            <span class="c1"># reset it in case we send to an external gateway</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_executor</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
             <span class="k">for</span> <span class="n">origin_node</span> <span class="ow">in</span> <span class="n">request_graph</span><span class="o">.</span><span class="n">origin_nodes</span><span class="p">:</span>
                 <span class="n">leaf_tasks</span> <span class="o">=</span> <span class="n">origin_node</span><span class="o">.</span><span class="n">get_leaf_tasks</span><span class="p">(</span>
                     <span class="n">connection_pool</span><span class="o">=</span><span class="n">connection_pool</span><span class="p">,</span>
@@ -501,7 +505,7 @@
                     <span class="n">previous_task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
                     <span class="n">executor_endpoint_mapping</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_executor_endpoint_mapping</span><span class="p">,</span>
-                    <span class="n">target_executor_pattern</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">target_executor</span><span class="p">,</span>
+                    <span class="n">target_executor_pattern</span><span class="o">=</span><span class="n">target_executor</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">request_input_parameters</span><span class="o">=</span><span class="n">request_input_parameters</span><span class="p">,</span>
                     <span class="n">request_input_has_specific_params</span><span class="o">=</span><span class="n">has_specific_params</span><span class="p">,</span>
                     <span class="n">copy_request_at_send</span><span class="o">=</span><span class="n">num_outgoing_nodes</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">has_specific_params</span>
@@ -611,7 +615,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 01, 2022</div>
+                            Last updated on Aug 03, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
