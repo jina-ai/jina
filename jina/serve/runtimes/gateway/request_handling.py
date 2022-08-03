@@ -140,6 +140,10 @@ class RequestHandler:
                     has_specific_params = True
                     break
 
+            target_executor = request.header.target_executor
+            # reset it in case we send to an external gateway
+            request.header.target_executor = ''
+
             for origin_node in request_graph.origin_nodes:
                 leaf_tasks = origin_node.get_leaf_tasks(
                     connection_pool=connection_pool,
@@ -147,7 +151,7 @@ class RequestHandler:
                     previous_task=None,
                     endpoint=endpoint,
                     executor_endpoint_mapping=self._executor_endpoint_mapping,
-                    target_executor_pattern=request.header.target_executor,
+                    target_executor_pattern=target_executor or None,
                     request_input_parameters=request_input_parameters,
                     request_input_has_specific_params=has_specific_params,
                     copy_request_at_send=num_outgoing_nodes > 1 and has_specific_params
