@@ -22,7 +22,7 @@ from jina.enums import BetterEnum
 from jina.helper import get_request_header as _get_request_header_main
 from jina.importer import ImportExtensions
 from jina.logging.predefined import default_logger
-from .requirements import (
+from jina.hubble.requirements import (
     get_env_variables,
     check_env_variable,
     parse_requirement,
