@@ -10,7 +10,6 @@
 
 - **What restrictions are there on JCloud?**
 
-  - JCloud doesn't support GPUs yet.
   - Executors are currently allowed a maximum of 16G RAM & 10GB disk (using EBS).
   - Deployments are only supported in `us-east` region.
 

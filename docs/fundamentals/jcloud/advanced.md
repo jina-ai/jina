@@ -75,15 +75,19 @@ executors:
 
 ### GPU support
 
-We have GPU support in JCloud. We have `2` kind of GPU usages, `shared` or `dedicated`.
+We have GPU support in JCloud. We have two kind of GPU usages, `shared` and `dedicated`.
 
 ```{note}
-Due to enable GPU support may require to cluster to dynamically provision new GPU nodes. It may take extra 2-3 mins till all flows are running in the cluster.
+When using GPU resources, it may take an extra 2-3 mins until all Flows are running in the cluster.
+This is because enabling GPU support may require the cluster to dynamically provision new GPU nodes.
 ```
 
 #### Shared GPU
 
-Shared GPU is to enable time-slicing feature, which is used to allow workloads that land on oversubscribed GPUs to interleave with one another. In that case, executor may share a GPU with others(10 executor at maximum).
+An executor using a `shared` GPU shares this GPU with up to 10 other users.
+This enables a time-slicing feature, which allows workloads that land on oversubscribed GPUs to interleave with one another.
+
+To enable a shared GPU resource, specify it in your YAML configuration:
 
 ```yaml
 jtype: Flow
@@ -96,13 +100,15 @@ executors:
         gpu: shared
 ```
 
-```{note}
-Please notice, nothing special is done to isolate workloads that are granted replicas from the same underlying GPU, and each workload has access to the GPU memory and runs in the same fault-domain as of all the others (meaning if one workload crashes, they all do).  
+```{caution}
+There are no special previsions in place to isolate replicas that run on the same underlying GPU. Each workload has access to the GPU memory and runs in the same fault-domain as of all the others. Therefore, if one workload crashes, they all do. 
 ```
 
 #### Dedicated GPU
 
-Dedicated GPU is a normal way to provision GPU to the executor, it will automatically create nodes or assign the executor landing on GPU nodes. In this case, executor own the whole GPU, minimum GPU core is `1`, `max`maximum is `4`.
+Using a dedicated GPU is a default way to provision GPU to the Executor. This will automatically create nodes or assign the Executor to land on a GPU node. In this case, executor owns the whole GPU. You can assign between 1 and 4 GPUs.
+
+To enable a shared GPU resource, specify it in your YAML configuration:
 
 ```yaml
 jtype: Flow
@@ -117,10 +123,10 @@ executors:
 
 ### Gateway
 
-For the internet exposure, JCloud now provides support for [Kong gateway](https://konghq.com/products/api-gateway-platform). 
+For internet exposure, JCloud now provides support for [Kong gateway](https://konghq.com/products/api-gateway-platform). 
 
 ```{note}
-JCloud is a different concept from Jina gateway. In Jcloud, a gateway service is working as proxy to distribute internet traffics between flows through Jina gateway. JCloud gateway is to manage external https/grpcs /websockets protocol service to flows.
+The JCloud gateway is a different concept from Jina gateway. In JCloud, a gateway service is working as a proxy to distribute internet traffic between Flows, each of which has a Jina gateway. Jina gateways are there to manage external https/grpcs/websockets protocol service to Flows.
 ```
 
 We currently support two types of gateway for internet exposure: [Kong gateway](https://konghq.com/products/api-gateway-platform) and [Application Load Balancer (ALB)](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html).
@@ -142,7 +148,7 @@ For the purposes of Jina, the following features are most important:
 - Use NGINX to distribute traffic as ingress controller
 
 ```{tip}
-Normally, user can retrieve the CA(certificate authority) from client end. The difference of cert CA usually will not affect the jina usage unless the CA is not in the trust list.
+Normally, user can retrieve the CA (certificate authority) from client end. The difference of cert CA usually will not affect the jina usage unless the CA is not in the trust list.
 ```
 
 ```{admonition} Why Kong? 
