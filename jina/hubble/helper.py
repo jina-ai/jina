@@ -542,12 +542,14 @@ def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jin
             if (not req) or req.startswith('#'):
                 continue
             elif req.startswith('-'):
-                install_options.extend(req.split(' '))
+                for index, item in enumerate(req.split(' ')):
+                    install_options.append(expand_env_variables(item))
             else:
+                expand_req = expand_env_variables(req)
                 req_spec = parse_requirement(req)
 
                 if req_spec.project_name not in excludes or len(req_spec.extras) > 0:
-                    install_reqs.append(req)
+                    install_reqs.append(expand_req)
     return install_reqs, install_options
 
 
