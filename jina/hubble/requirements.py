@@ -117,7 +117,7 @@ def get_env_variables(line: str) -> List:
 
 def check_env_variable(env_variable: str) -> bool:
     """ 
-    check env variable, valid characters in variable names are limited
+    check the env variable is limited
     to uppercase letter and number and the `_` (underscore).
     :param env_variable: env_variable in the requirements.txt file
     :return: True or False if not satisfied

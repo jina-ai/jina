@@ -194,7 +194,7 @@ def test_disk_cache(tmpfile):
 
 def test_replace_env_variables(mocker, monkeypatch):
     monkeypatch.setenv("DOMAIN", 'github.com')
-    helper.replace_env_variables(
+    helper.replace_requirements_env_variables(
         Path(__file__).parent / 'dummy_executor_fail' / 'requirements.txt'
     )
 
@@ -211,7 +211,7 @@ def test_replace_env_variables(mocker, monkeypatch):
 def test_fail_replace_env_variables(mocker, monkeypatch, env_variable_error, build_env):
 
     with pytest.raises(Exception) as info:
-        helper.replace_env_variables(
+        helper.replace_requirements_env_variables(
             Path(__file__).parent / 'dummy_executor_fail' / 'requirements.txt'
         )
     assert env_variable_error.format(var_name=build_env) in str( info.value )

@@ -516,10 +516,10 @@ def check_requirements_env_variable(env_variable: str) -> bool:
     """
     return check_env_variable(env_variable)
 
-def replace_env_variables(requirements_file: 'Path') -> list:
-    """get the env variables in requirements.txt
+def replace_requirements_env_variables(requirements_file: 'Path') -> list:
+    """replace the env variables in requirements.txt
     :param requirements_file: the requirements.txt file
-    :return: List of have replaced env variables in requirements.txt
+    :return: List of replaced env variables in requirements.txt
     """
     env_variables = []
     with requirements_file.open('r') as requirements:
@@ -542,14 +542,12 @@ def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jin
             if (not req) or req.startswith('#'):
                 continue
             elif req.startswith('-'):
-                for index, item in enumerate(req.split(' ')):
-                    install_options.append(expand_env_variables(item))
+                install_options.extend(req.split(' '))
             else:
-                expand_req = expand_env_variables(req)
                 req_spec = parse_requirement(req)
 
                 if req_spec.project_name not in excludes or len(req_spec.extras) > 0:
-                    install_reqs.append(expand_req)
+                    install_reqs.append(req)
     return install_reqs, install_options
 
 
