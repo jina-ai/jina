@@ -509,7 +509,7 @@ def get_requirements_env_variables(requirements_file: 'Path') -> list:
 
 def check_requirements_env_variable(env_variable: str) -> bool:
     """ 
-    check the env variable is limited
+    check the environment variables is limited
     to uppercase letter and number and the `_` (underscore).
     :param env_variable: env_variable in the requirements.txt file
     :return: True or False if not satisfied
@@ -517,7 +517,7 @@ def check_requirements_env_variable(env_variable: str) -> bool:
     return check_env_variable(env_variable)
 
 def replace_requirements_env_variables(requirements_file: 'Path') -> list:
-    """replace the env variables in requirements.txt
+    """replace the environment variables in requirements.txt
     :param requirements_file: the requirements.txt file
     :return: List of replaced env variables in requirements.txt
     """
@@ -546,7 +546,7 @@ def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jin
                     install_options.append(expand_env_variables(item))
             else:
                 expand_req = expand_env_variables(req)
-                req_spec = parse_requirement(req)
+                req_spec = parse_requirement(expand_req)
 
                 if req_spec.project_name not in excludes or len(req_spec.extras) > 0:
                     install_reqs.append(expand_req)

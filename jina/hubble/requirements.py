@@ -104,7 +104,7 @@ def parse_requirement(line: str) -> 'Requirement':
 
 def get_env_variables(line: str) -> List:
     """ 
-    search the env variable only match uppercase letter and number and the `_` (underscore).
+    search the environment variable only match uppercase letter and number and the `_` (underscore).
     :param line: a line of a requirement file
     :return: a List of components
     """
@@ -117,7 +117,7 @@ def get_env_variables(line: str) -> List:
 
 def check_env_variable(env_variable: str) -> bool:
     """ 
-    check the env variable is limited
+    check the environment variables is limited
     to uppercase letter and number and the `_` (underscore).
     :param env_variable: env_variable in the requirements.txt file
     :return: True or False if not satisfied
