@@ -5,11 +5,11 @@ import pytest
 from jina import Client, Document, Executor, Flow, requests
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
-exposed_port = 12345
 
 
 @pytest.fixture()
-def flow(request):
+def flow(request, port_generator):
+    exposed_port = port_generator()
     flow_src = request.param
     if flow_src == 'flow-yml':
         return Flow.load_config(os.path.join(cur_dir, 'flow.yml'))
@@ -32,8 +32,8 @@ def flow(request):
 @pytest.mark.parametrize('flow', ['flow-yml', 'uses-yml', 'class'], indirect=['flow'])
 def test_override_config_params(flow):
     with flow:
-        resps = Client(port=exposed_port, return_responses=True).search(
-            inputs=[Document()]
+        resps = Client(port=flow.port).search(
+            inputs=[Document()], return_responses=True
         )
     doc = resps[0].docs[0]
     assert doc.tags['param1'] == 50
@@ -43,7 +43,8 @@ def test_override_config_params(flow):
     assert doc.tags['workspace'] == 'different_workspace'
 
 
-def test_override_config_params_shards():
+def test_override_config_params_shards(port_generator):
+    exposed_port = port_generator()
     flow = Flow(port=exposed_port).add(
         uses=os.path.join(cur_dir, 'default_config.yml'),
         uses_with={'param1': 50, 'param2': 30},
@@ -51,8 +52,8 @@ def test_override_config_params_shards():
         shards=2,
     )
     with flow:
-        resps = Client(port=exposed_port, return_responses=True).search(
-            inputs=[Document()]
+        resps = Client(port=flow.port).search(
+            inputs=[Document()], return_responses=True
         )
     doc = resps[0].docs[0]
     assert doc.tags['param1'] == 50
@@ -62,7 +63,7 @@ def test_override_config_params_shards():
     assert doc.tags['workspace'] == 'different_workspace'
 
 
-def test_override_requests():
+def test_override_requests(port_generator):
     class MyExec(Executor):
         @requests
         def foo(self, docs, **kwargs):
@@ -78,42 +79,43 @@ def test_override_requests():
             for d in docs:
                 d.text = 'foobar'
 
+    exposed_port = port_generator()
     # original
     f = Flow(port=exposed_port).add(uses=MyExec)
     with f:
-        req = Client(port=exposed_port, return_responses=True).post(
-            '/index', Document()
+        req = Client(port=exposed_port).post(
+            '/index', Document(), return_responses=True
         )
         assert req[0].docs[0].text == 'foo'
 
     # change bind to bar()
     f = Flow(port=exposed_port).add(uses=MyExec, uses_requests={'/index': 'bar'})
     with f:
-        req = Client(port=exposed_port, return_responses=True).post(
-            '/index', Document()
+        req = Client(port=exposed_port).post(
+            '/index', Document(), return_responses=True
         )
         assert req[0].docs[0].text == 'bar'
 
-        req = Client(port=exposed_port, return_responses=True).post('/1', Document())
+        req = Client(port=exposed_port).post('/1', Document(), return_responses=True)
         assert req[0].docs[0].text == 'foobar'
 
     # change bind to foobar()
     f = Flow(port=exposed_port).add(uses=MyExec, uses_requests={'/index': 'foobar'})
     with f:
-        req = Client(port=exposed_port, return_responses=True).post(
-            '/index', Document()
+        req = Client(port=exposed_port).post(
+            '/index', Document(), return_responses=True
         )
         assert req[0].docs[0].text == 'foobar'
 
-        req = Client(port=exposed_port, return_responses=True).post(
-            '/index-blah', Document()
+        req = Client(port=exposed_port).post(
+            '/index-blah', Document(), return_responses=True
         )
         assert req[0].docs[0].text == 'foo'
 
     # change default bind to foo()
     f = Flow(port=exposed_port).add(uses=MyExec, uses_requests={'/default': 'bar'})
     with f:
-        req = Client(port=exposed_port, return_responses=True).post(
-            '/index', Document()
+        req = Client(port=exposed_port).post(
+            '/index', Document(), return_responses=True
         )
         assert req[0].docs[0].text == 'bar'

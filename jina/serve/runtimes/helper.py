@@ -36,7 +36,7 @@ def _get_name_from_replicas_name(name: str) -> Tuple[str]:
 def _is_param_for_specific_executor(key_name: str) -> bool:
     """Tell if a key is for a specific Executor
 
-    ex: 'key' is for every Executor whereas 'key__my_executor' is only for 'my_executor'
+    ex: 'key' is for every Executor whereas 'my_executor__key' is only for 'my_executor'
 
     :param key_name: key name of the param
     :return: return True if key_name is for specific Executor, False otherwise

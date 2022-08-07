@@ -40,7 +40,7 @@ jobs:
           architecture: x64
       - name: Prepare envionment
         run: |
-          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir

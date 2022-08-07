@@ -32,6 +32,20 @@ executors:
         memory: 8G
 ```
 
+### CPU
+
+By default, `jcloud` allocates `0.1 (1/10 of a core)` CPU to each Executor. There might be cases where your Executor requires more CPU; you can do so by using `resources` arg while deploying the Flow (max 16 CPU allowed per Executor). The input value should be a number, indicating the number of full CPU cores.
+
+```yaml
+jtype: Flow
+executors:
+  - name: custom1
+    uses: jinahub+docker://CustomExecutor1
+    jcloud:
+      resources:
+        cpu: 0.5
+```
+
 ### storage
 
 We currently support 2 kinds of storage types [efs](https://aws.amazon.com/efs/) (default) and [ebs](https://aws.amazon.com/ebs/). The former one is a network file storage, whereas the latter is a block device.

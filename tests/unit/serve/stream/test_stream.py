@@ -62,10 +62,10 @@ async def test_request_streamer(prefetch, num_requests, async_iterator):
     args = Namespace()
     args.prefetch = prefetch
     streamer = RequestStreamer(
-        args=args,
         request_handler=request_handler_fn,
         result_handler=result_handle_fn,
         end_of_iter_handler=end_of_iter_fn,
+        prefetch=getattr(args, 'prefetch', 0),
     )
 
     it = (

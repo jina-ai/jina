@@ -180,7 +180,7 @@ jobs:
           python-version: 3.7
       - name: Prepare enviroment
         run: |
-          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
@@ -220,7 +220,7 @@ jobs:
           python-version: 3.7
       - name: Prepare enviroment
         run: |
-          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
@@ -261,7 +261,7 @@ jobs:
           python-version: 3.7
       - name: Prepare enviroment
         run: |
-          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
@@ -317,7 +317,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Prepare environment
         run: |
-          docker build -f Dockerfiles/pip.Dockerfile -t jinaai/jina:test-pip .
+          docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir

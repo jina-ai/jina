@@ -8,7 +8,6 @@ OVERRIDEN_EXECUTOR1_PARAMS = {
     'param2': 60,
     'exec_name': {'param1': 'changed'},
 }
-exposed_port = 12345
 
 
 class DummyOverrideParams(Executor):
@@ -32,7 +31,8 @@ class DummyAssertIfParamsCanBeChangedInsidePods(Executor):
         assert parameters == ORIGINAL_PARAMS
 
 
-def test_override_params(mocker):
+def test_override_params(mocker, port_generator):
+    exposed_port = port_generator()
     f = (
         Flow(port=exposed_port)
         .add(

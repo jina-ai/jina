@@ -65,7 +65,7 @@ class HTTPBaseClient(BaseClient):
                 if r_str['code'] == jina_pb2.StatusProto.SUCCESS:
                     return True
                 else:
-                    self.logger.debug(
+                    self.logger.error(
                         f'Returned code is not expected! Description: {r_str["description"]}'
                     )
             except Exception as e:
@@ -123,9 +123,11 @@ class HTTPBaseClient(BaseClient):
                 return result
 
             streamer = RequestStreamer(
-                self.args,
                 request_handler=_request_handler,
                 result_handler=_result_handler,
+                prefetch=getattr(self.args, 'prefetch', 0),
+                logger=self.logger,
+                **vars(self.args)
             )
             async for response in streamer.stream(request_iterator):
                 r_status = response.status

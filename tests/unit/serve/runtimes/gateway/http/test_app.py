@@ -5,16 +5,12 @@ from tempfile import NamedTemporaryFile
 import aiohttp
 import pytest
 import requests as req
-from fastapi.testclient import TestClient
 
 from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 from jina.helper import random_port
-from jina.logging.logger import JinaLogger
 from jina.parsers import set_gateway_parser
-from jina.serve.networking import GrpcConnectionPool
-from jina.serve.runtimes.gateway import TopologyGraph
-from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime, get_fastapi_app
+from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
 from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
 
 
