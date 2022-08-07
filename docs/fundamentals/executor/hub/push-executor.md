@@ -84,3 +84,24 @@ After being pushed for the first time, the protected tags can not be pushed agai
 ```bash
 jina hub push [--public/--private] --force-update <NAME> --secret <SECRET> --protected-tag <PROTECTED_TAG_1> --protected-tag <PROTECTED_TAG_2> <path_to_executor_folder>
 ```
+
+### Set environment variables
+
+If you want to set environment variables when building the executor.
+
+You can leverage the `--build-env` option to set environment variables.
+
+```bash
+jina hub push --build-env TOKEN=YOUR_ENV_VALUE # Set an environment variable
+jina hub push --build-env FIRST_TOKEN=YOUR_ENV_VALUE SECOND_TOKEN=YOUR_ENV_VALUE # Set multiple environment variables
+```
+
+````{admonition} Note
+:class: note
+Environment variables is limited to uppercase letter and number and the `_` (underscore), and not startWith `_`.
+````
+
+````{admonition} Important
+:class: important
+If you leverage the `--build-env` set environment variables. when using executor locally, first set the corresponding environment variables. 
+````
