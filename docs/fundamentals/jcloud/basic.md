@@ -20,7 +20,7 @@ In case `jc` is already occupied by another tool, please use `jcloud` instead. I
 jc login
 ```
 
-You can use a Google/GitHub account to register and login. Without logging in, you can't do anything.
+You can use a Google/GitHub account to register and login. For all the next steps, logging in is mandatory.
 
 ## Deploy
 
