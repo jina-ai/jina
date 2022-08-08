@@ -86,7 +86,7 @@ jina hub push [--public/--private] --force-update <NAME> --secret <SECRET> --pro
 ```
 ## Use environment variables
 
-Sometimes you might want to use private token in `requirements.txt` to install private dependencies. For security reasons, you don't want to expose this token to anyone. The `--build-env` parameter could help with this situation. For example, now we have `requirements.txt` like below: 
+Sometimes you might want to use private token in `requirements.txt` to install private dependencies. For security reasons, you don't want to expose this token to anyone else. The `--build-env` parameter could help with this situation. For example, now we have `requirements.txt` like below: 
 
 ```txt
 # requirements.txt
@@ -106,15 +106,15 @@ There are restrictions in terms of naming environment variables:
 - Environment variables are limited to the uppercase letter and numbers and the `_` (underscore), not start with `_`. 
 ````
 
-````{admonition} Attention
+````{admonition} Limitations
 :class: attention
 
-There some limited things if you push Executors via `--build-env` and pull/use it as source code(but doesn't matter if you use docker image): 
+There are limitations if you push Executors via `--build-env` and pull/use it as source code (but doesn't matter if you use docker image): 
 
 - When you use `jina hub pull jinahub://YOUR_EXECUTOR`, you must set the corresponding environment variable according to the prompt.
 
   ```bash
-  export YOUR_TOKEN=foo # linux  
+  export YOUR_TOKEN=foo
   ```
 
 - When you use `.add(uses='jinahub://YOUR_EXECUTOR')` in Flow, you must set the corresponding environment variable also. 
