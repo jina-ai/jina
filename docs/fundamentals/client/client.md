@@ -539,5 +539,5 @@ For details on the allowed mutation arguments and response fields, see {ref}`her
 ```{toctree}
 :hidden:
 
-access-flow-api
+third-party-client
 ```
