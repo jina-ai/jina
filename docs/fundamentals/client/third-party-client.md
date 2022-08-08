@@ -232,7 +232,7 @@ This contribution was made by [Jonathan Rowley](https://jina-ai.slack.com/archiv
 
 ## gRPC
 
-To use the gRPC protocol with another language that python you will need to :
+To use the gRPC protocol with a language other than Python you will need to :
 
 * Download the two proto definition files : `jina.proto` and `docarray.proto` from [github](https://github.com/jina-ai/jina/tree/master/jina/proto) (be sure to use the latest release branch)
 * Compile them with [protoc](https://grpc.io/docs/protoc-installation/) and precise to which programming language you want to compile them.
