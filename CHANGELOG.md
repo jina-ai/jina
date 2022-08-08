@@ -214,6 +214,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -556,6 +557,7 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.7.1`)](#release-note-371)
 - [Release Note (`3.7.2`)](#release-note-372)
 - [Release Note (`3.7.3`)](#release-note-373)
+- [Release Note (`3.7.4`)](#release-note-374)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -14536,4 +14538,25 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```81999e97```](https://github.com/jina-ai/jina/commit/81999e970c0c7f5e6fc1b1584fa1dbe0faa628ab)] __-__ __version__: the next version will be 3.7.3 (*Jina Dev Bot*)
+
+<a name=release-note-3-7-4></a>
+## Release Note (`3.7.4`)
+
+> Release time: 2022-08-03 12:31:57
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```4c3d760f```](https://github.com/jina-ai/jina/commit/4c3d760f511da2c8716bd01c2f4566040b8d500e)] __-__ do not send target_executor to Executors (#5041) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```a51b42cc```](https://github.com/jina-ai/jina/commit/a51b42cc74a57427282ef5d0f6933b7791a1b3a4)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```ecb95829```](https://github.com/jina-ai/jina/commit/ecb95829f67d594616d5650086cbfaea1c598e97)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```286bdce8```](https://github.com/jina-ai/jina/commit/286bdce8b2c3afcb3b65a76c49dd6343bb28e171)] __-__ __version__: the next version will be 3.7.4 (*Jina Dev Bot*)
 
