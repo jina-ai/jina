@@ -1,7 +1,7 @@
 (third-party-client)=
 # Third-party clients
 
-This page is about accessing the Flow with other clients, e.g. `curl` and other programming language than python.
+This page is about accessing the Flow with other clients, e.g. `curl`, or programming languages other than python.
 
 ## HTTP
 
