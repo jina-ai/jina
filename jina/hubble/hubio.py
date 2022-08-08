@@ -616,18 +616,16 @@ metas:
         param_str = Table(
             box=box.SIMPLE,
         )
-        param_str.add_column('')
-        param_str.add_column('Env')
+        param_str.add_column('Environment variable')
         param_str.add_column('Your value')
 
-
-        for item in build_env:
+        for index, item in enumerate(build_env):
             param_str.add_row(
-                'Env',
-                f'{item}:',
+                f'{item}',
                 'your value'
             )
-        console.print(Panel(param_str, title='build_env', expand=False, width=100))
+
+        console.print(Panel(param_str, title='build_env', subtitle='You have to set the above environment variables', expand=False, width=100))
 
     @staticmethod
     @disk_cache_offline(cache_file=str(get_cache_db()))
