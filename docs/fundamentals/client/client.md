@@ -6,6 +6,12 @@ Clients support four different networking protocols: **HTTP**, **gRPC**, **WebSo
 
 For each of them, you first connect your Client to the API Gateway, before you can send requests to it.
 
+```{hint
+You want to connect to your Flow from an other programming language that Python ? Please follow the third party 
+client {ref}`documentation <third-party-client>`
+```
+
+
 ## Connect
 
 If there is not already a Flow running in the background or on the network, you can start one:

@@ -1,4 +1,4 @@
-(access-flow-api)=
+(third-party-client)=
 # Third-party clients
 
 This page is about accessing the Flow with other clients, e.g. `curl`.
