@@ -67,7 +67,7 @@ fundamentals/architecture-overview
 fundamentals/executor/index
 fundamentals/flow/index
 fundamentals/gateway/index
-fundamentals/client
+fundamentals/client/client
 fundamentals/executor/hub/index
 fundamentals/jcloud/index
 how-to/index
