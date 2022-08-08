@@ -6,13 +6,12 @@
 
 - **How powerful is JCloud?**
 
-  JCloud scales according to your need. You can demand all the resources (RAM / disk / instance-capacity) your Flows & Executors need. If there's anything particular you'd be looking for, you can contact us [on Slack](https://slack.jina.ai) or let us know via `jc survey`.
+  JCloud scales according to your need. You can demand all the resources (GPU / RAM / CPU / Storage / instance-capacity) your Flows & Executors need. If there's anything particular you'd be looking for, you can contact us [on Slack](https://slack.jina.ai) or let us know via `jc survey`.
 
 - **What restrictions are there on JCloud?**
 
-  - JCloud doesn't support GPUs yet.
-  - Executors are currently allowed a maximum of 16G RAM & 10GB disk (using EBS).
   - Deployments are only supported in `us-east` region.
+  - Each Executor is allowed a maximum of 4 GPUs, 16G RAM, 16 CPU cores & 10GB of block storage.
 
 - **How long do you persist my service?**
 

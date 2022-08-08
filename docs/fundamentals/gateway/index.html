@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/gateway/index/" />
   
-<meta property="og:site_name" content="Jina 3.7.4 Documentation" />
+<meta property="og:site_name" content="Jina 3.7.5 Documentation" />
   
 <meta property="og:description" content="Every Flow provides an API Gateway to receive requests over the network. Supported protocols are gRPC, HTTP and WebSocket with TLS. There are two ways of defining a Gateway, either directly from the Python API or using yaml files. For each section we will show you both possibles way of configurin..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.7.4 Documentation" />
+<meta property="og:image:alt" content="Jina 3.7.5 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -35,11 +35,11 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Client" href="../flow/client/" /><link rel="prev" title="YAML specification" href="../flow/yaml-spec/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Client" href="../client/client/" /><link rel="prev" title="YAML specification" href="../flow/yaml-spec/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/gateway/index.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Gateway - Jina 3.7.4 documentation</title>
+        <title>Gateway - Jina 3.7.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -179,7 +179,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.7.4 documentation</div>
+                <div class="brand">Jina 3.7.5 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -263,8 +263,8 @@
 </ul>
 </li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Gateway</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../flow/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../flow/access-flow-api/">Third-party clients</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../client/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../client/third-party-client/">Third-party clients</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -279,6 +279,8 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jcloud/basic/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jcloud/resources/">Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jcloud/resources/#example">Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../jcloud/advanced/">Advanced</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../jcloud/faq/">FAQ</a></li>
 </ul>
@@ -391,9 +393,9 @@
 <div class="caution admonition">
 <p class="admonition-title">Jina Client</p>
 <p>To showcase the workings of Flow, the examples below use a Client connecting to it, all from withing the same Python script.</p>
-<p>In most cases, this is not how a real user would access a Flow. Rather, they would use one of <a class="reference internal" href="../flow/access-flow-api/#access-flow-api"><span class="std std-ref">several ways of connecting over a network</span></a>.
+<p>In most cases, this is not how a real user would access a Flow. Rather, they would use one of <span class="xref std std-ref">several ways of connecting over a network</span>.
 This does not affect how you have to configure your Flow API, so the examples here should translate seamlessly.</p>
-<p>For more proper use of the Client, and more information about the Client itself, see the <a class="reference internal" href="../flow/client/#client"><span class="std std-ref">Client documentation</span></a>.</p>
+<p>For more proper use of the Client, and more information about the Client itself, see the <a class="reference internal" href="../client/client/#client"><span class="std std-ref">Client documentation</span></a>.</p>
 </div>
 <section id="supported-protocols">
 <span id="flow-protocol"></span><h2>Supported protocols<a class="headerlink" href="#supported-protocols" title="Permalink to this headline">#</a></h2>
@@ -579,7 +581,7 @@ For example, in the code snippet below, we didn’t implement any CRUD endpoints
 <section id="enable-cross-origin-resource-sharing">
 <span id="cors"></span><h3>Enable cross-origin resource sharing<a class="headerlink" href="#enable-cross-origin-resource-sharing" title="Permalink to this headline">#</a></h3>
 <p>To make a Flow accessible from a website with a different domain, you need to enable <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing (CORS)</a>.
-Among other things, CORS is necessary to provide a <a class="reference internal" href="../flow/access-flow-api/#swagger-ui"><span class="std std-ref">Swagger UI interface</span></a> for your Flow.</p>
+Among other things, CORS is necessary to provide a <a class="reference internal" href="../client/third-party-client/#swagger-ui"><span class="std std-ref">Swagger UI interface</span></a> for your Flow.</p>
 <p>Note that CORS is disabled by default, for security reasons.
 To enable CORS, configure your Flow in the following way:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -710,7 +712,7 @@ Jina allows the users to specify their <a class="reference external" href="https
 </pre></div>
 </div>
 <p>Note that this setting is only effective the internal communication of the Flow.
-One can also specify the compression between client and gateway <a class="reference internal" href="../flow/client/#client-compress"><span class="std std-ref">as described here</span></a>.</p>
+One can also specify the compression between client and gateway <a class="reference internal" href="../client/client/#client-compress"><span class="std std-ref">as described here</span></a>.</p>
 </section>
 <section id="enable-tls">
 <span id="flow-tls"></span><h2>Enable TLS<a class="headerlink" href="#enable-tls" title="Permalink to this headline">#</a></h2>
@@ -813,13 +815,13 @@ To enable this endpoint, all you need to do is set <code class="docutils literal
 </div>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
-<p>For more details about the Jina GraphQL enpoint, see <a class="reference internal" href="../flow/access-flow-api/#flow-graphql"><span class="std std-ref">here</span></a>.</p>
+<p>For more details about the Jina GraphQL enpoint, see <a class="reference internal" href="../client/third-party-client/#flow-graphql"><span class="std std-ref">here</span></a>.</p>
 </div>
 </section>
 <section id="see-further">
 <h2>See further<a class="headerlink" href="#see-further" title="Permalink to this headline">#</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="../flow/client/#client"><span class="std std-ref">Access the Flow with the Client</span></a></p></li>
+<li><p><a class="reference internal" href="../client/client/#client"><span class="std std-ref">Access the Flow with the Client</span></a></p></li>
 <li><p><a class="reference internal" href="../../how-to/kubernetes/#kubernetes"><span class="std std-ref">Deployment with Kubernetes</span></a></p></li>
 <li><p><a class="reference internal" href="../../how-to/docker-compose/#docker-compose"><span class="std std-ref">Deployment with Docker Compose</span></a></p></li>
 <li><p><span class="xref std std-ref">Executors inside a Flow</span></p></li>
@@ -832,7 +834,7 @@ To enable this endpoint, all you need to do is set <code class="docutils literal
             <footer>
                 
                 <div class="related-pages">
-                    <a class="next-page" href="../flow/client/">
+                    <a class="next-page" href="../client/client/">
                         <div class="page-info">
                             <div class="context">
                                 <span>Next</span>
@@ -862,7 +864,7 @@ To enable this endpoint, all you need to do is set <code class="docutils literal
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 03, 2022</div>
+                            Last updated on Aug 08, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

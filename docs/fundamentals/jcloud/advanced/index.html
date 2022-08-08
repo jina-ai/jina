@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/jcloud/advanced/" />
   
-<meta property="og:site_name" content="Jina 3.7.4 Documentation" />
+<meta property="og:site_name" content="Jina 3.7.5 Documentation" />
   
-<meta property="og:description" content="Environment variables: A single YAML: A project folder: You can include your environment variables in the.env file in the local project and JCloud will take care of managing them., You can optionally pass a custom.env.. Request for fine-grained resources: memory: By default, jcloud allocates 100M..." />
+<meta property="og:description" content="Environment variables: A single YAML: A project folder: You can include your environment variables in the.env file in the local project and JCloud will take care of managing them., You can optionally pass a custom.env.. jina version: To manage jina version while deploying a Flow to jcloud, you ca..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_images/external-executor.png" />
   
-<meta property="og:image:alt" content="Jina 3.7.4 Documentation" />
+<meta property="og:image:alt" content="Jina 3.7.5 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -35,11 +35,11 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="FAQ" href="../faq/" /><link rel="prev" title="Basic" href="../basic/" />
+    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="FAQ" href="../faq/" /><link rel="prev" title="Resources" href="../resources/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/jcloud/advanced.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Advanced - Jina 3.7.4 documentation</title>
+        <title>Advanced - Jina 3.7.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -179,7 +179,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.7.4 documentation</div>
+                <div class="brand">Jina 3.7.5 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -263,8 +263,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../gateway/">Gateway</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../flow/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../flow/access-flow-api/">Third-party clients</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../client/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../client/third-party-client/">Third-party clients</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/hub/">Hub</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -279,6 +279,8 @@
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">JCloud</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../basic/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../resources/">Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../resources/#example">Example</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Advanced</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../faq/">FAQ</a></li>
 </ul>
@@ -406,80 +408,25 @@
 </ul>
 </section>
 </section>
-<section id="request-for-fine-grained-resources">
-<h2>Request for fine-grained <code class="docutils literal notranslate"><span class="pre">resources</span></code><a class="headerlink" href="#request-for-fine-grained-resources" title="Permalink to this headline">#</a></h2>
-<section id="memory">
-<h3>memory<a class="headerlink" href="#memory" title="Permalink to this headline">#</a></h3>
-<p>By default, <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> allocates <code class="docutils literal notranslate"><span class="pre">100M</span></code> of RAM to each Executor. There might be cases where your Executor requires more memory. For example, DALLE-mini (generating image from text prompt) would need more than 100M to load the model. You can request higher memory for your Executor using <code class="docutils literal notranslate"><span class="pre">resources</span></code> arg while deploying the Flow (max 16G allowed per Executor).</p>
+<section id="jina-version">
+<h2>jina version<a class="headerlink" href="#jina-version" title="Permalink to this headline">#</a></h2>
+<p>To manage <code class="docutils literal notranslate"><span class="pre">jina</span></code> version while deploying a Flow to <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>, you can pass <code class="docutils literal notranslate"><span class="pre">version</span></code> arg in the Flow yaml.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
+<span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.4.11</span><span class="w"></span>
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dalle_mini</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://DalleMini</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8G</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Executor1</span><span class="w"></span>
 </pre></div>
 </div>
-</section>
-<section id="cpu">
-<h3>CPU<a class="headerlink" href="#cpu" title="Permalink to this headline">#</a></h3>
-<p>By default, <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> allocates <code class="docutils literal notranslate"><span class="pre">0.1</span> <span class="pre">(1/10</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">core)</span></code> CPU to each Executor. There might be cases where your Executor requires more CPU; you can do so by using <code class="docutils literal notranslate"><span class="pre">resources</span></code> arg while deploying the Flow (max 16 CPU allowed per Executor). The input value should be a number, indicating the number of full CPU cores.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://CustomExecutor1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span><span class="w"></span>
-</pre></div>
-</div>
-</section>
-<section id="storage">
-<h3>storage<a class="headerlink" href="#storage" title="Permalink to this headline">#</a></h3>
-<p>We currently support 2 kinds of storage types <a class="reference external" href="https://aws.amazon.com/efs/">efs</a> (default) and <a class="reference external" href="https://aws.amazon.com/ebs/">ebs</a>. The former one is a network file storage, whereas the latter is a block device.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>By default, we attach an <code class="docutils literal notranslate"><span class="pre">efs</span></code> to all the Executors in a Flow. The benefits of doing so are</p>
-<ul class="simple">
-<li><p>It can grow in size dynamically, so you don’t need to shrink/grow volumes as &amp; when necessary.</p></li>
-<li><p>All Executors in the Flow can share a disk.</p></li>
-<li><p>The same disk can also be shared with another Flow by passing a workspace-id while deploying a Flow.</p></li>
-</ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc deploy flow.yml --workspace-id &lt;prev-flow-id&gt;
-</pre></div>
-</div>
-<p>If your Executor needs high IO, you can use <code class="docutils literal notranslate"><span class="pre">ebs</span></code> instead. Please note that,</p>
-<ul class="simple">
-<li><p>The disk cannot be shared with other Executors / Flows.</p></li>
-<li><p>You must pass a size of storage (default: <code class="docutils literal notranslate"><span class="pre">1G</span></code>, max <code class="docutils literal notranslate"><span class="pre">10G</span></code>).</p></li>
-</ul>
-</div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://SimpleIndexer</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">storage</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ebs</span><span class="w"></span>
-<span class="w">          </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10G</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer2</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://SimpleIndexer</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">storage</span><span class="p">:</span><span class="w"></span>
-<span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">efs</span><span class="w"></span>
-</pre></div>
-</div>
-</section>
 </section>
 <section id="capacity-spot-vs-on-demand">
 <h2>Capacity (<code class="docutils literal notranslate"><span class="pre">spot</span></code> vs <code class="docutils literal notranslate"><span class="pre">on-demand</span></code>)<a class="headerlink" href="#capacity-spot-vs-on-demand" title="Permalink to this headline">#</a></h2>
 <p>For cost optimization, <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> tries to deploy all Executors on <code class="docutils literal notranslate"><span class="pre">spot</span></code> capacity. These are ideal for stateless Executors, which can withstand interruptions &amp; restarts. It is recommended to use <code class="docutils literal notranslate"><span class="pre">on-demand</span></code> capacity for stateful Executors (e.g.- indexers) though.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://CustomExecutor</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Executor1</span><span class="w"></span>
 <span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
 <span class="w">      </span><span class="nt">capacity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">on-demand</span><span class="w"></span>
 </pre></div>
@@ -514,27 +461,40 @@
 <a class="reference internal image-reference" href="../../../_images/external-executors-multiple.png"><img alt="../../../_images/external-executors-multiple.png" src="../../../_images/external-executors-multiple.png" style="width: 70%;" /></a>
 </figure>
 </section>
-<section id="jina-version">
-<h2><code class="docutils literal notranslate"><span class="pre">jina</span></code> version<a class="headerlink" href="#jina-version" title="Permalink to this headline">#</a></h2>
-<p>To manage <code class="docutils literal notranslate"><span class="pre">jina</span></code> version while deploying a Flow to <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>, you can pass <code class="docutils literal notranslate"><span class="pre">version</span></code> arg in the Flow yaml.</p>
+<section id="internet-exposure-tls">
+<h2>Internet Exposure &amp; TLS<a class="headerlink" href="#internet-exposure-tls" title="Permalink to this headline">#</a></h2>
+<p>To expose users’ Flows to the internet with TLS, JCloud provides support for 2 Gateways <a class="reference external" href="https://aws.amazon.com/elasticloadbalancing/application-load-balancer/">ALB</a> &amp; <a class="reference external" href="https://konghq.com/products/api-gateway-platform">Kong API Gateway</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The JCloud gateway is different from Jina’s Gateway. In JCloud, a gateway works as a proxy to distribute internet traffic between Flows, each of which has a Jina Gateway (which is responsible to manage external gRPC/HTTP/Websocket traffic to your Executors)</p>
+</div>
+<section id="alb">
+<h3>ALB<a class="headerlink" href="#alb" title="Permalink to this headline">#</a></h3>
+<p>Currently ALB is the default gateway for backward compatibility. We use AWS provided public certificates for TLS with the ALB.</p>
+</section>
+<section id="kong">
+<h3>Kong<a class="headerlink" href="#kong" title="Permalink to this headline">#</a></h3>
+<p>Kong is the recommended gateway in JCloud. We use <a class="reference external" href="https://letsencrypt.org/">Let’s Encrypt</a> for TLS with Kong. To enable Kong Gateway instead of ALB, specify the gateway kind as <code class="docutils literal notranslate"><span class="pre">kong</span></code> in your JCloud YAML:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.4.11</span><span class="w"></span>
+<span class="w">  </span><span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kong</span><span class="w"></span>
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://CustomExecutor</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Executor1</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
+</section>
 <section id="retention-days">
 <span id="id1"></span><h2>Retention days<a class="headerlink" href="#retention-days" title="Permalink to this headline">#</a></h2>
-<p>In JCloud, we have a default life-cycle of 24hrs for Flows, after which they’re removed, if idle. You can manage the same yourself by passing the right parameter for <code class="docutils literal notranslate"><span class="pre">retention-days</span></code> under <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>. <code class="docutils literal notranslate"><span class="pre">0</span></code> is to use the default life-cycle, <code class="docutils literal notranslate"><span class="pre">X</span></code> (0&lt;X&lt;365), which is meant to keep the Flow alive until X days, and <code class="docutils literal notranslate"><span class="pre">-1</span></code> is for never expired,</p>
+<p>In JCloud, we have a default life-cycle of 24hrs for Flows, after which they’re removed if idle. You can manage the same yourself by passing the right parameter for <code class="docutils literal notranslate"><span class="pre">retention-days</span></code> under <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>. <code class="docutils literal notranslate"><span class="pre">0</span></code> is to use the default life-cycle, <code class="docutils literal notranslate"><span class="pre">X</span></code> (0&lt;X&lt;365), which is meant to keep the Flow alive until X days, and <code class="docutils literal notranslate"><span class="pre">-1</span></code> is for never expired,</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">retention_days</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span><span class="w"></span>
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://CustomExecutor</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Executor1</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -556,7 +516,7 @@
                             <use href="#svg-arrow-right"></use>
                         </svg>
                     </a>
-                    <a class="prev-page" href="../basic/">
+                    <a class="prev-page" href="../resources/">
                         <svg>
                             <use href="#svg-arrow-right"></use>
                         </svg>
@@ -565,7 +525,7 @@
                                 <span>Previous</span>
                             </div>
                             
-                            <div class="title">Basic</div>
+                            <div class="title">Resources</div>
                             
                         </div>
                     </a>
@@ -575,7 +535,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 03, 2022</div>
+                            Last updated on Aug 08, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -613,15 +573,14 @@
 <li><a class="reference internal" href="#a-project-folder">A project folder</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#request-for-fine-grained-resources">Request for fine-grained <code class="docutils literal notranslate"><span class="pre">resources</span></code></a><ul>
-<li><a class="reference internal" href="#memory">memory</a></li>
-<li><a class="reference internal" href="#cpu">CPU</a></li>
-<li><a class="reference internal" href="#storage">storage</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#jina-version">jina version</a></li>
 <li><a class="reference internal" href="#capacity-spot-vs-on-demand">Capacity (<code class="docutils literal notranslate"><span class="pre">spot</span></code> vs <code class="docutils literal notranslate"><span class="pre">on-demand</span></code>)</a></li>
 <li><a class="reference internal" href="#external-executors">External executors</a></li>
-<li><a class="reference internal" href="#jina-version"><code class="docutils literal notranslate"><span class="pre">jina</span></code> version</a></li>
+<li><a class="reference internal" href="#internet-exposure-tls">Internet Exposure &amp; TLS</a><ul>
+<li><a class="reference internal" href="#alb">ALB</a></li>
+<li><a class="reference internal" href="#kong">Kong</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#retention-days">Retention days</a></li>
 </ul>
 </li>
