@@ -1,7 +1,7 @@
 (third-party-client)=
 # Third-party clients
 
-This page is about accessing the Flow with other clients, e.g. `curl`.
+This page is about accessing the Flow with other clients, e.g. `curl` and other programming language than python.
 
 ## HTTP
 
@@ -238,14 +238,8 @@ To use the gRPC protocol with another language that python you will need to :
 * Compile them with [protoc](https://grpc.io/docs/protoc-installation/) and precise to which programming language you want to compile them.
 * Add the generated files to your project and import them in your code. 
 
-you should finally be able to communicate with your Flow using the gRPC protocol. You can find more information on the gRPC
+You should finally be able to communicate with your Flow using the gRPC protocol. You can find more information on the gRPC
 `message` and `service` that you can use to communicate in the  [Protobuf documentation](../../proto/docs.md).
-
-
-If you want to create a gRPC client in another language, you will need to compile the
-You can find the `jina.proto`
-
-
 
 (flow-graphql)=
 ## GraphQL
