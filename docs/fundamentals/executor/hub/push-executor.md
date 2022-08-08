@@ -84,54 +84,50 @@ After being pushed for the first time, the protected tags can not be pushed agai
 ```bash
 jina hub push [--public/--private] --force-update <NAME> --secret <SECRET> --protected-tag <PROTECTED_TAG_1> --protected-tag <PROTECTED_TAG_2> <path_to_executor_folder>
 ```
+## Use environment variables
 
-### Set environment variables
+Sometimes you might want to use private token in `requirements.txt` to install private dependencies. For security reasons, you don't want to expose this token to anyone. The `--build-env` parameter could help with this situation. For example, now we have `requirements.txt` like below: 
 
-If you want to set environment variables in your requirements.txt file when building the executor. Only needs two steps:
-
-The first step:  
-In requirements.txt, you must ensure two things:
-1. Environment variables that contain a `$` aren't accidentally (partially) expanded.
-2. Environment variables are limited to the uppercase letter and numbers and the `_` (underscore), not start with `_`. 
-
-For example in your requirements.txt file:
-```file
-git+http://${FIRST_TOKEN}.github.com/your_private_repo 
-git+http://${SECOND_TOKEN}.github.com/your_private_repo
+```txt
+# requirements.txt
+git+http://${YOUR_TOKEN}@github.com/your_private_repo 
 ```
 
-The second step:  
-You can leverage the `--build-env` option to set environment variables when you use `jina hub push`. And you must ensure one thing:
-1. Environment variables are limited to the uppercase letter and numbers and the `_` (underscore), not start with `_`. 
+When doing `jina hub push`, you can pass the `--build-env` parameter:
 
-For example when you use `jina hub push`:
 ```bash
-jina hub push --build-env TOKEN=YOUR_ENV_VALUE # Set an environment variable
-jina hub push --build-env FIRST_TOKEN=YOUR_ENV_VALUE SECOND_TOKEN=YOUR_ENV_VALUE # Set multiple environment variables
+jina hub push --build-env YOUR_TOKEN=foo
 ```
+
+````{admonition} Note
+:class: note
+There are restrictions in terms of naming environment variables:
+- `{` and `}` is required when using environment variables in `requirements.txt`. e.g `$YOUR_TOKEN` doesn't work as expected. 
+- Environment variables are limited to the uppercase letter and numbers and the `_` (underscore), not start with `_`. 
+````
 
 ````{admonition} Attention
 :class: attention
 
-If you leverage the `--build-env` set environment variables in your executor. There some limited things:
+There some limited things if you push Executors via `--build-env` and pull/use it as source code(but doesn't matter if you use docker image): 
 
-- When you use `jina hub pull jinahub://YOUR_EXECUTOR`, you must set the corresponding environment variable According to the prompt.
-```linux
-export YOUR_ENV_VARIABLES=YOUR_ENV_VALUE # linux  
-```
+- When you use `jina hub pull jinahub://YOUR_EXECUTOR`, you must set the corresponding environment variable according to the prompt.
+  ```bash
+  export YOUR_ENV_VARIABLES=YOUR_ENV_VALUE # linux  
+  ```
 
 - When you use `.add(uses='jinahub://YOUR_EXECUTOR')` in Flow, you must set the corresponding environment variable also. 
 For example:
 
-```python
-from docarray import Document
-from jina import Flow, Executor, requests
-import os
-
-os.environ["YOUR_ENV_VARIABLES"]=YOUR_ENV_VALUE
-f = Flow().add(uses='jinahub://YOUR_EXECUTOR')
-
-with f:
-f.post(on='/', inputs=Document(), on_done=print)
-```
+  ```python
+  from docarray import Document
+  from jina import Flow, Executor, requests
+  import os
+  
+  os.environ["YOUR_ENV_VARIABLES"]=YOUR_ENV_VALUE
+  f = Flow().add(uses='jinahub://YOUR_EXECUTOR')
+  
+  with f:
+  f.post(on='/', inputs=Document(), on_done=print)
+  ```
 ````
