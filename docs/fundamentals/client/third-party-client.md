@@ -1,7 +1,7 @@
-(access-flow-api)=
+(third-party-client)=
 # Third-party clients
 
-This page is about accessing the Flow with other clients, e.g. `curl`.
+This page is about accessing the Flow with other clients, e.g. `curl`, or programming languages other than python.
 
 ## HTTP
 
@@ -230,6 +230,17 @@ We provide a suite of templates for the Jina Flow, in this [collection](https://
 
 This contribution was made by [Jonathan Rowley](https://jina-ai.slack.com/archives/C0169V26ATY/p1649689443888779?thread_ts=1649428823.420879&cid=C0169V26ATY), in our [community Slack](slack.jina.ai). 
 
+## gRPC
+
+To use the gRPC protocol with a language other than Python you will need to :
+
+* Download the two proto definition files: `jina.proto` and `docarray.proto` from [github](https://github.com/jina-ai/jina/tree/master/jina/proto) (be sure to use the latest release branch)
+* Compile them with [protoc](https://grpc.io/docs/protoc-installation/) and precise to which programming language you want to compile them.
+* Add the generated files to your project and import them in your code. 
+
+You should finally be able to communicate with your Flow using the gRPC protocol. You can find more information on the gRPC
+`message` and `service` that you can use to communicate in the  [Protobuf documentation](../../proto/docs.md).
+
 (flow-graphql)=
 ## GraphQL
 
@@ -288,10 +299,6 @@ The available fields in the GraphQL API are defined by the [Document Strawberry 
 
 Essentially, you can ask for any property of a Document, including `embedding`, `text`, `tensor`, `id`, `matches`, `tags`,
 and more.
-
-## gRPC
-
-If you want to create a gRPC client in another language, you will need to compile the [Protobuf definition](../../proto/docs.md). In Python, you can use our {ref}`own client <client>`.
 
 ## Websocket
 

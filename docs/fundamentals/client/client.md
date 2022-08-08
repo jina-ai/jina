@@ -2,9 +2,15 @@
 # Client
 {class}`~jina.Client` enables you to send Documents to a running {class}`~jina.Flow` in a number of different ways, as shown below.
 
-Clients support three different networking protocols: HTTP, gRPC, WebSocket and GraphQL
+Clients support four different networking protocols: **HTTP**, **gRPC**, **WebSocket** and **GraphQL**
 
 For each of them, you first connect your Client to the API Gateway, before you can send requests to it.
+
+```{hint}
+If you want to connect to your Flow from a programming language other than Python, please follow the third party 
+client {ref}`documentation <third-party-client>`.
+```
+
 
 ## Connect
 
@@ -533,5 +539,5 @@ For details on the allowed mutation arguments and response fields, see {ref}`her
 ```{toctree}
 :hidden:
 
-access-flow-api
+third-party-client
 ```
