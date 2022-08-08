@@ -132,3 +132,9 @@ For example:
   f.post(on='/', inputs=Document(), on_done=print)
   ```
 ````
+
+For multiple enviroment variables, we can pass it in this way:
+
+```bash
+jina hub push --build-env FIRST=foo --build-env SECOND=bar
+```
