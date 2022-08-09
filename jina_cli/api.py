@@ -127,6 +127,17 @@ def ping(args: 'Namespace'):
     NetworkChecker(args)
 
 
+def dryrun(args: 'Namespace'):
+    """
+    Check the health of a Flow
+
+    :param args: arguments coming from the CLI.
+    """
+    from jina.checker import dry_run_checker
+
+    dry_run_checker(args)
+
+
 def client(args: 'Namespace'):
     """
     Start a client connects to the gateway
