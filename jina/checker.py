@@ -66,9 +66,10 @@ def dry_run_checker(args: 'argparse.Namespace'):
 
     from jina import Client
 
-    client = Client(host=args.host, port=args.port, protocol=args.protocol)
+    print(args)
+    client = Client(host=args.host)
 
-    if client.dry_run():
-        default_logger.inf('dry run success')
+    if client.dry_run(timeout=args.timeout):
+        default_logger.info('dry run success')
     else:
         default_logger.warning('dry run failed')
