@@ -55,3 +55,20 @@ class NetworkChecker:
 
         # returns 1 (anomaly) when it comes to here
         exit(1)
+
+
+def dry_run_checker(args: 'argparse.Namespace'):
+    """
+    call dry run on the given endpoint
+    :param args: args provided by the CLI.
+    """
+    # No retry mechanism for dry run since it is built in the Flow
+
+    from jina import Client
+
+    client = Client(host=args.host, port=args.port, protocol=args.protocol)
+
+    if client.dry_run():
+        default_logger.inf('dry run success')
+    else:
+        default_logger.warning('dry run failed')
