@@ -247,7 +247,6 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/jcloud/basic/">Basic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/jcloud/resources/">Resources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/jcloud/resources/#example">Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/jcloud/advanced/">Advanced</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/jcloud/faq/">FAQ</a></li>
 </ul>
@@ -411,6 +410,35 @@
 
         <span class="c1"># returns 1 (anomaly) when it comes to here</span>
         <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dry_run_checker"><a class="viewcode-back" href="../../../api/jina.checker/#jina.checker.dry_run_checker">[docs]</a><span class="k">def</span> <span class="nf">dry_run_checker</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    call dry run on the given endpoint</span>
+<span class="sd">    :param args: args provided by the CLI.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># No retry mechanism for dry run since it is built in the Flow</span>
+
+    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+
+    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">client</span><span class="o">.</span><span class="n">dry_run</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">timeout</span><span class="p">):</span>
+            <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;dry run successful&#39;</span><span class="p">)</span>
+            <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;dry run failed&#39;</span><span class="p">)</span>
+            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<span class="c1"># returns 1 (anomaly) when it comes to here</span>
 </pre></div>
                 </article>
             </div>

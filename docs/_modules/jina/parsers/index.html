@@ -247,7 +247,6 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/jcloud/basic/">Basic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/jcloud/resources/">Resources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/jcloud/resources/#example">Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/jcloud/advanced/">Advanced</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/jcloud/faq/">FAQ</a></li>
 </ul>
@@ -355,6 +354,7 @@
                 <article role="main">
                     <h1>Source code for jina.parsers</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">jina.parsers.client</span> <span class="kn">import</span> <span class="n">mixin_comm_protocol_parser</span>
+<span class="kn">from</span> <span class="nn">jina.parsers.dryrun</span> <span class="kn">import</span> <span class="n">set_dryrun_parser</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_SHOW_ALL_ARGS</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.orchestrate.runtimes.head</span> <span class="kn">import</span> <span class="n">mixin_head_parser</span>
 
@@ -544,6 +544,15 @@
             <span class="s1">&#39;ping&#39;</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Ping an Executor&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Ping a Deployment and check its network connectivity.&#39;</span><span class="p">,</span>
+            <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">set_dryrun_parser</span><span class="p">(</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+            <span class="s1">&#39;dryrun&#39;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Dryrun a Flow&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;send a dryrun request to a Flow to check if it is working&#39;</span><span class="p">,</span>
             <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span>

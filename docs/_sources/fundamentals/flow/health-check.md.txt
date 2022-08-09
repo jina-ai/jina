@@ -48,6 +48,21 @@ True
 ```
 ````
 
+````{tab} via CLI
+```python
+from jina import Flow
+
+with Flow(port=12345).add() as f:
+    f.block()
+```
+```bash
+jina dryrun grpc://localhost:12345
+```
+```text
+dry run successful
+```
+````
+
 ### Flow status using third-party clients
 
 You can check the status of a Flow using any gRPC/HTTP/Websocket client, not just Jina's Client implementation.
