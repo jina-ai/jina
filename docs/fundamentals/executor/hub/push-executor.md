@@ -84,3 +84,57 @@ After being pushed for the first time, the protected tags can not be pushed agai
 ```bash
 jina hub push [--public/--private] --force-update <NAME> --secret <SECRET> --protected-tag <PROTECTED_TAG_1> --protected-tag <PROTECTED_TAG_2> <path_to_executor_folder>
 ```
+## Use environment variables
+
+Sometimes you might want to use private token in `requirements.txt` to install private dependencies. For security reasons, you don't want to expose this token to anyone else. The `--build-env` parameter could help with this situation. For example, now we have `requirements.txt` like below: 
+
+```txt
+# requirements.txt
+git+http://${YOUR_TOKEN}@github.com/your_private_repo 
+```
+
+When doing `jina hub push`, you can pass the `--build-env` parameter:
+
+```bash
+jina hub push --build-env YOUR_TOKEN=foo
+```
+
+````{admonition} Note
+:class: note
+There are restrictions in terms of naming environment variables:
+- `{` and `}` is required when using environment variables in `requirements.txt`. e.g `$YOUR_TOKEN` doesn't work as expected. 
+- Environment variables are limited to the uppercase letter and numbers and the `_` (underscore), not start with `_`. 
+````
+
+````{admonition} Limitations
+:class: attention
+
+There are limitations if you push Executors via `--build-env` and pull/use it as source code (but doesn't matter if you use docker image): 
+
+- When you use `jina hub pull jinahub://YOUR_EXECUTOR`, you must set the corresponding environment variable according to the prompt.
+
+  ```bash
+  export YOUR_TOKEN=foo
+  ```
+
+- When you use `.add(uses='jinahub://YOUR_EXECUTOR')` in Flow, you must set the corresponding environment variable also. 
+For example:
+
+  ```python
+  from docarray import Document
+  from jina import Flow, Executor, requests
+  import os
+  
+  os.environ["YOUR_TOKEN"] = 'foo'
+  f = Flow().add(uses='jinahub://YOUR_EXECUTOR')
+  
+  with f:
+  f.post(on='/', inputs=Document(), on_done=print)
+  ```
+````
+
+For multiple enviroment variables, we can pass it in this way:
+
+```bash
+jina hub push --build-env FIRST=foo --build-env SECOND=bar
+```

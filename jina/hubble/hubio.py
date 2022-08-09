@@ -23,6 +23,8 @@ from jina.hubble.helper import (
     get_request_header,
     parse_hub_uri,
     upload_file,
+    get_requirements_env_variables,
+    check_requirements_env_variable
 )
 from jina.hubble.hubapi import (
     dump_secret,
@@ -345,6 +347,44 @@ metas:
                 )
 
             dockerfile = dockerfile.relative_to(work_path)
+        
+        build_env = None
+        if self.args.build_env:
+            build_envs = self.args.build_env.strip().split()
+            build_env_dict = {}
+            for index, env in enumerate(build_envs):
+                env_list = env.split('=')
+                if (len(env_list) != 2):
+                    raise Exception( f'The --build-env parameter: `{env}` is wrong format. you can use: `--build-env {env}=YOUR_VALUE`.')
+                if check_requirements_env_variable(env_list[0]) is False:
+                    raise Exception( f'The --build-env parameter key:`{env_list[0]}` can only consist of uppercase letter and number and underline.')
+                build_env_dict[env_list[0]] = env_list[1]
+            build_env = build_env_dict if len(list(build_env_dict.keys()))>0 else None
+
+        requirements_file = work_path / 'requirements.txt'
+
+        requirements_env_variables = []
+        if requirements_file.exists(): 
+            requirements_env_variables = get_requirements_env_variables(requirements_file)
+            for index, env in enumerate(requirements_env_variables):
+                if check_requirements_env_variable(env) is False:
+                   raise Exception( f'The requirements.txt environment variables:`${env}` can only consist of uppercase letter and number and underline.')
+
+        if len(requirements_env_variables) and not build_env:
+            env_variables_str = ','.join(requirements_env_variables);
+            error_str= f'The requirements.txt set environment variables as follows:`{env_variables_str}` should use `--build-env';
+            for item in requirements_env_variables:
+                error_str+= f' {item}=YOUR_VALUE'
+            raise Exception(f'{error_str}` to add it.')
+        elif len(requirements_env_variables) and build_env:
+            build_env_keys = list(build_env.keys())
+            diff_env_variables = list(set(requirements_env_variables).difference(set(build_env_keys)))
+            if len(diff_env_variables):
+                diff_env_variables_str = ",".join(diff_env_variables)
+                error_str= f'The requirements.txt set environment variables as follows:`{diff_env_variables_str}` should use `--build-env';
+                for item in diff_env_variables:
+                    error_str+= f' {item}=YOUR_VALUE'
+                raise Exception(f'{error_str}` to add it.')
 
         console = get_rich_console()
         with console.status(f'Pushing `{self.args.path}` ...') as st:
@@ -380,6 +420,9 @@ metas:
 
                 if dockerfile:
                     form_data['dockerfile'] = str(dockerfile)
+
+                if build_env: 
+                    form_data['buildEnv'] = json.dumps(build_env)
 
                 uuid8, secret = load_secret(work_path)
                 if self.args.force_update or uuid8:
@@ -563,6 +606,27 @@ metas:
 
         console.print(Panel(param_str, title='Usage', expand=False, width=100))
 
+    
+    def _prettyprint_build_env_usage(self, console, build_env, usage_kind=None):
+        from rich import box
+        from rich.panel import Panel
+        from rich.syntax import Syntax
+        from rich.table import Table
+
+        param_str = Table(
+            box=box.SIMPLE,
+        )
+        param_str.add_column('Environment variable')
+        param_str.add_column('Your value')
+
+        for index, item in enumerate(build_env):
+            param_str.add_row(
+                f'{item}',
+                'your value'
+            )
+
+        console.print(Panel(param_str, title='build_env', subtitle='You have to set the above environment variables', expand=False, width=100))
+
     @staticmethod
     @disk_cache_offline(cache_file=str(get_cache_db()))
     def fetch_meta(
@@ -624,7 +688,7 @@ metas:
                 f'tag: {tag}, commit: {resp.get("commit", {}).get("id")}, '
                 f'session_id: {req_header.get("jinameta-session-id")}'
             )
-
+        buildEnv = resp['commit'].get('commitParams', {}).get('buildEnv', None)
         return HubExecutor(
             uuid=resp['id'],
             name=resp.get('name', None),
@@ -634,6 +698,7 @@ metas:
             image_name=image_name,
             archive_url=resp['package']['download'],
             md5sum=resp['package']['md5'],
+            build_env=buildEnv.keys() if buildEnv else []
         )
 
     @staticmethod
@@ -771,6 +836,7 @@ metas:
         cached_zip_file = None
         executor_name = None
         usage_kind = None
+        build_env = None
 
         try:
             need_pull = self.args.force_update
@@ -787,6 +853,8 @@ metas:
                     force=need_pull,
                 )
 
+                build_env = executor.build_env
+   
                 presented_id = executor.name if executor.name else executor.uuid
                 executor_name = (
                     f'{presented_id}'
@@ -818,6 +886,9 @@ metas:
                 elif scheme == 'jinahub':
                     import filelock
 
+                    if build_env:
+                       self._prettyprint_build_env_usage(console,build_env)
+                   
                     with filelock.FileLock(get_lockfile(), timeout=-1):
                         try:
                             pkg_path, pkg_dist_path = get_dist_path_of_executor(

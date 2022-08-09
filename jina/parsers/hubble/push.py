@@ -62,6 +62,11 @@ One can later fetch a tagged Executor via `jinahub[+docker]://MyExecutor/gpu`
         help='If set, push will overwrite the Executor on the Hub that shares the same NAME or UUID8 identifier',
     )
     gp.add_argument(
+        '--build-env',
+        type=str,
+        help='A list of environment variables. It will be used in project build phase.',
+    )
+    gp.add_argument(
         '--secret',
         type=str,
         help='The secret for overwrite a Hub executor',

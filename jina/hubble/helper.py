@@ -22,6 +22,12 @@ from jina.enums import BetterEnum
 from jina.helper import get_request_header as _get_request_header_main
 from jina.importer import ImportExtensions
 from jina.logging.predefined import default_logger
+from jina.hubble.requirements import (
+    get_env_variables,
+    check_env_variable,
+    parse_requirement,
+    expand_env_variables
+)
 
 
 @lru_cache()
@@ -484,10 +490,50 @@ def is_requirements_installed(
         return isinstance(ex, VersionConflict)
     return True
 
+def get_requirements_env_variables(requirements_file: 'Path') -> list:
+    """get the env variables in requirements.txt
+    :param requirements_file: the requirements.txt file
+    :return: List of env variables in requirements.txt
+    """
+    env_variables = []
+    with requirements_file.open() as requirements:
+        for req in requirements:
+            req = req.strip()
+            if (not req) or req.startswith('#'):
+                continue
+            else:
+                variables = get_env_variables(req)
+                env_variables.extend(variables)
+
+    return env_variables
+
+def check_requirements_env_variable(env_variable: str) -> bool:
+    """ 
+    check the environment variables is limited
+    to uppercase letter and number and the `_` (underscore).
+    :param env_variable: env_variable in the requirements.txt file
+    :return: True or False if not satisfied
+    """
+    return check_env_variable(env_variable)
+
+def replace_requirements_env_variables(requirements_file: 'Path') -> list:
+    """replace the environment variables in requirements.txt
+    :param requirements_file: the requirements.txt file
+    :return: List of replaced env variables in requirements.txt
+    """
+    env_variables = []
+    with requirements_file.open('r') as requirements:
+        for line in requirements.readlines():
+            line = line.strip()
+            if (not line) or line.startswith('#'):
+                continue
+            else:
+                line = expand_env_variables(line)
+                env_variables.append(line)
+    return env_variables
+    
 
 def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jina',)):
-    from .requirements import parse_requirement
-
     with requirements_file.open() as requirements:
         install_options = []
         install_reqs = []
@@ -496,13 +542,14 @@ def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jin
             if (not req) or req.startswith('#'):
                 continue
             elif req.startswith('-'):
-                install_options.extend(req.split(' '))
+                for index, item in enumerate(req.split(' ')):
+                    install_options.append(expand_env_variables(item))
             else:
-                req_spec = parse_requirement(req)
+                expand_req = expand_env_variables(req)
+                req_spec = parse_requirement(expand_req)
 
                 if req_spec.project_name not in excludes or len(req_spec.extras) > 0:
-                    install_reqs.append(req)
-
+                    install_reqs.append(expand_req)
     return install_reqs, install_options
 
 

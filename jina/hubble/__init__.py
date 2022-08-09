@@ -14,3 +14,4 @@ class HubExecutor:
     image_name: Optional[str] = None
     archive_url: Optional[str] = None
     md5sum: Optional[str] = None
+    build_env: Optional[list] = None
