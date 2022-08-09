@@ -68,7 +68,19 @@ def dry_run_checker(args: 'argparse.Namespace'):
 
     client = Client(host=args.host)
 
-    if client.dry_run(timeout=args.timeout):
-        default_logger.info('dry run successful')
-    else:
-        default_logger.warning('dry run failed')
+    try:
+
+        if client.dry_run(timeout=args.timeout):
+            default_logger.info('dry run successful')
+            exit(0)
+        else:
+            default_logger.warning('dry run failed')
+            exit(1)
+
+    except KeyboardInterrupt:
+        pass
+
+    exit(1)
+
+
+# returns 1 (anomaly) when it comes to here
