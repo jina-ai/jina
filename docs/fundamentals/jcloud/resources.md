@@ -4,7 +4,7 @@ Since each Executor has its own business logic, it might need different Cloud re
 
 In JCloud, we allow users to pass highly customizable, fine-grained resource requests for each Executor using `resources` argument in your Flow YAML.
 
-### Memory
+#### Memory
 
 By default, `100M` of RAM is allocated to each Executor. You can use `memory` arg under `resources` to customise it.
 
@@ -22,7 +22,7 @@ executors:
         memory: 8G
 ```
 
-### CPU
+#### CPU
 
 By default, `0.1 (1/10 of a core)` CPU is allocated to each Executor. You can use `cpu` arg under `resources` to customise it.
 
@@ -40,7 +40,7 @@ executors:
         cpu: 0.5
 ```
 
-### Storage
+#### Storage
 
 JCloud supports 2 kinds of Storage types [efs](https://aws.amazon.com/efs/) (default) and [ebs](https://aws.amazon.com/ebs/). The former one is a network file storage, whereas the latter is a block device.
 
@@ -81,7 +81,7 @@ executors:
           type: efs
 ```
 
-### GPU
+#### GPU
 
 JCloud supports GPU workloads with two different usages - `shared` & `dedicated`.
 
@@ -89,7 +89,7 @@ JCloud supports GPU workloads with two different usages - `shared` & `dedicated`
 When using GPU resources, it may take few extra mins until all Executors ready to serve traffic.
 ```
 
-#### Shared
+##### Shared
 
 An executor using a `shared` GPU shares this GPU with up to 10 other Executors.
 This enables a time-slicing, which allows workloads that land on oversubscribed GPUs to interleave with one another.
@@ -108,7 +108,7 @@ executors:
 There are no special provisions in place to isolate replicas that run on the same underlying GPU. Each workload has access to the GPU memory and runs in the same fault-domain as of all the others. Therefore, if one workload crashes, they all do. 
 ```
 
-#### Dedicated
+##### Dedicated
 
 Using a dedicated GPU is the default way to provision GPU for the Executor. This will automatically create nodes or assign the Executor to land on a GPU node. In this case, executor owns the whole GPU. You can assign between 1 and 4 GPUs.
 
@@ -123,7 +123,7 @@ executors:
 ```
 
 
-## Example
+### Example
 
 Here's a Flow with 2 Executors with specific resource needs. `indexer` demands for 10G `ebs` disk, whereas `encoder` demands for 2 cores, 8G RAM & 2 dedicated GPUs. 
 
