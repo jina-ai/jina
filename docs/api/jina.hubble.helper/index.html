@@ -157,13 +157,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://www.meetup.com/jina-community-meetup/events/287432899/">Learn more about how Neural Search Powered my Application with Ovidiu Ursachi on August 9th at 18:00 CET</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -643,6 +637,37 @@ the function name</p></li>
 :param show_warning: if to show a warning when a dependency is not satisfied
 :rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
 :return: True or False if not satisfied</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.get_requirements_env_variables">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">get_requirements_env_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requirements_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#get_requirements_env_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.get_requirements_env_variables" title="Permalink to this definition">#</a></dt>
+<dd><p>get the env variables in requirements.txt
+:type requirements_file: <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>
+:param requirements_file: the requirements.txt file
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>
+:return: List of env variables in requirements.txt</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.check_requirements_env_variable">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">check_requirements_env_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_variable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#check_requirements_env_variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.check_requirements_env_variable" title="Permalink to this definition">#</a></dt>
+<dd><p>check the environment variables is limited
+to uppercase letter and number and the <cite>_</cite> (underscore).
+:type env_variable: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param env_variable: env_variable in the requirements.txt file
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:return: True or False if not satisfied</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.helper.replace_requirements_env_variables">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.helper.</span></span><span class="sig-name descname"><span class="pre">replace_requirements_env_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requirements_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/helper/#replace_requirements_env_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.helper.replace_requirements_env_variables" title="Permalink to this definition">#</a></dt>
+<dd><p>replace the environment variables in requirements.txt
+:type requirements_file: <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>
+:param requirements_file: the requirements.txt file
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>
+:return: List of replaced env variables in requirements.txt</p>
 </dd></dl>
 
 <dl class="py function">

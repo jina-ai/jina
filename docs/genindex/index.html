@@ -123,13 +123,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://www.meetup.com/jina-community-meetup/events/287432899/">Learn more about how Neural Search Powered my Application with Ovidiu Ursachi on August 9th at 18:00 CET</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -746,8 +740,6 @@
 </li>
         <li><a href="../api/jina.enums/#jina.enums.BetterEnum">BetterEnum (class in jina.enums)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.binary_str">binary_str() (jina.types.mixin.ProtoTypeMixin method)</a>
 
         <ul>
@@ -760,6 +752,8 @@
           <li><a href="../api/jina.types.request.status/#jina.types.request.status.StatusMessage.binary_str">(jina.types.request.status.StatusMessage method)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina/#jina.Document.blob">blob (jina.Document property)</a>
 </li>
         <li><a href="../api/jina/#jina.DocumentArray.blobs">blobs (jina.DocumentArray property)</a>
@@ -792,6 +786,8 @@
           <li><a href="../api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.build">(jina.orchestrate.flow.base.Flow method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.hubble/#jina.hubble.HubExecutor.build_env">build_env (jina.hubble.HubExecutor attribute)</a>
+</li>
         <li><a href="../api/jina.orchestrate.pods.factory/#jina.orchestrate.pods.factory.PodFactory.build_pod">build_pod() (jina.orchestrate.pods.factory.PodFactory static method)</a>
 </li>
         <li><a href="../api/jina.enums/#jina.enums.WebsocketSubProtocols.BYTES">BYTES (jina.enums.WebsocketSubProtocols attribute)</a>
@@ -848,6 +844,8 @@
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_document_start">check_document_start() (jina.jaml.helper.JinaLoader method)</a>
 </li>
+        <li><a href="../api/jina.hubble.requirements/#jina.hubble.requirements.check_env_variable">check_env_variable() (in module jina.hubble.requirements)</a>
+</li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_event">check_event() (jina.jaml.helper.JinaLoader method)</a>
 </li>
         <li><a href="../api/jina.clients.base/#jina.clients.base.BaseClient.check_input">check_input() (jina.clients.base.BaseClient static method)</a>
@@ -879,6 +877,8 @@
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_plain">check_plain() (jina.jaml.helper.JinaLoader method)</a>
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_printable">check_printable() (jina.jaml.helper.JinaLoader method)</a>
+</li>
+        <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.check_requirements_env_variable">check_requirements_env_variable() (in module jina.hubble.helper)</a>
 </li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_resolver_prefix">check_resolver_prefix() (jina.jaml.helper.JinaLoader method)</a>
 
@@ -1040,6 +1040,8 @@
 </li>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.ProgressBar.console">console (jina.logging.profile.ProgressBar property)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.construct">construct() (jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel class method)</a>
 
         <ul>
@@ -1052,8 +1054,6 @@
           <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.construct">(jina.serve.runtimes.gateway.http.models.JinaResponseModel class method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_document">construct_document() (jina.jaml.helper.JinaConstructor method)</a>
 
         <ul>
@@ -1698,6 +1698,8 @@
 </li>
         <li><a href="../api/jina.helper/#jina.helper.expand_env_var">expand_env_var() (in module jina.helper)</a>
 </li>
+        <li><a href="../api/jina.hubble.requirements/#jina.hubble.requirements.expand_env_variables">expand_env_variables() (in module jina.hubble.requirements)</a>
+</li>
         <li><a href="../api/jina_cli.api/#jina_cli.api.export">export() (in module jina_cli.api)</a>
 </li>
         <li><a href="../api/jina.exporter/#jina.exporter.export_docker_compose">export_docker_compose() (in module jina.exporter)</a>
@@ -2097,6 +2099,8 @@
 </li>
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.get_download_cache_dir">get_download_cache_dir() (in module jina.hubble.helper)</a>
 </li>
+        <li><a href="../api/jina.hubble.requirements/#jina.hubble.requirements.get_env_variables">get_env_variables() (in module jina.hubble.requirements)</a>
+</li>
         <li><a href="../api/jina.jaml.helper/#jina.jaml.helper.JinaLoader.get_event">get_event() (jina.jaml.helper.JinaLoader method)</a>
 </li>
         <li><a href="../api/jina.serve.runtimes.gateway.http.app/#jina.serve.runtimes.gateway.http.app.get_fastapi_app">get_fastapi_app() (in module jina.serve.runtimes.gateway.http.app)</a>
@@ -2178,6 +2182,8 @@
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.ProgressBar.get_renderables">get_renderables() (jina.logging.profile.ProgressBar method)</a>
 </li>
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.get_request_header">get_request_header() (in module jina.hubble.helper)</a>
+</li>
+        <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.get_requirements_env_variables">get_requirements_env_variables() (in module jina.hubble.helper)</a>
 </li>
         <li><a href="../api/jina.helper/#jina.helper.get_rich_console">get_rich_console() (in module jina.helper)</a>
 </li>
@@ -4743,6 +4749,8 @@
 </li>
         <li><a href="../api/jina.serve.runtimes.request_handlers.data_request_handler/#jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler.replace_parameters">replace_parameters() (jina.serve.runtimes.request_handlers.data_request_handler.DataRequestHandler static method)</a>
 </li>
+        <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.replace_requirements_env_variables">replace_requirements_env_variables() (in module jina.hubble.helper)</a>
+</li>
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.replace_secret_of_hub_uri">replace_secret_of_hub_uri() (in module jina.hubble.helper)</a>
 </li>
         <li><a href="../api/jina.serve.networking/#jina.serve.networking.ReplicaList">ReplicaList (class in jina.serve.networking)</a>
@@ -4755,14 +4763,14 @@
           <li><a href="../api/jina.clients.request.asyncio/#jina.clients.request.asyncio.request_generator">(in module jina.clients.request.asyncio)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.types.request.data/#jina.types.request.data.DataRequest.request_id">request_id (jina.types.request.data.DataRequest property)</a>
 
         <ul>
           <li><a href="../api/jina.types.request.data/#jina.types.request.data.Response.request_id">(jina.types.request.data.Response property)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina.hubble.helper/#jina.hubble.helper.HubbleReturnStatus.REQUESTED_ENTITY_NOT_FOUND">REQUESTED_ENTITY_NOT_FOUND (jina.hubble.helper.HubbleReturnStatus attribute)</a>
 </li>
         <li><a href="../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler">RequestHandler (class in jina.serve.runtimes.gateway.request_handling)</a>

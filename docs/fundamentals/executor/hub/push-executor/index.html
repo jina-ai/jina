@@ -157,13 +157,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://www.meetup.com/jina-community-meetup/events/287432899/">Learn more about how Neural Search Powered my Application with Ovidiu Ursachi on August 9th at 18:00 CET</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -454,6 +448,55 @@ After being pushed for the first time, the protected tags can not be pushed agai
 </div>
 </section>
 </section>
+<section id="use-environment-variables">
+<h2>Use environment variables<a class="headerlink" href="#use-environment-variables" title="Permalink to this headline">#</a></h2>
+<p>Sometimes you might want to use private token in <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> to install private dependencies. For security reasons, you don’t want to expose this token to anyone else. The <code class="docutils literal notranslate"><span class="pre">--build-env</span></code> parameter could help with this situation. For example, now we have <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> like below:</p>
+<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span># requirements.txt
+git+http://${YOUR_TOKEN}@github.com/your_private_repo 
+</pre></div>
+</div>
+<p>When doing <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">push</span></code>, you can pass the <code class="docutils literal notranslate"><span class="pre">--build-env</span></code> parameter:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub push --build-env <span class="nv">YOUR_TOKEN</span><span class="o">=</span>foo
+</pre></div>
+</div>
+<div class="note admonition">
+<p class="admonition-title">Note</p>
+<p>There are restrictions in terms of naming environment variables:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">{</span></code> and <code class="docutils literal notranslate"><span class="pre">}</span></code> is required when using environment variables in <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>. e.g <code class="docutils literal notranslate"><span class="pre">$YOUR_TOKEN</span></code> doesn’t work as expected.</p></li>
+<li><p>Environment variables are limited to the uppercase letter and numbers and the <code class="docutils literal notranslate"><span class="pre">_</span></code> (underscore), not start with <code class="docutils literal notranslate"><span class="pre">_</span></code>.</p></li>
+</ul>
+</div>
+<div class="attention admonition">
+<p class="admonition-title">Limitations</p>
+<p>There are limitations if you push Executors via <code class="docutils literal notranslate"><span class="pre">--build-env</span></code> and pull/use it as source code (but doesn’t matter if you use docker image):</p>
+<ul>
+<li><p>When you use <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">pull</span> <span class="pre">jinahub://YOUR_EXECUTOR</span></code>, you must set the corresponding environment variable according to the prompt.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">YOUR_TOKEN</span><span class="o">=</span>foo
+</pre></div>
+</div>
+</li>
+<li><p>When you use <code class="docutils literal notranslate"><span class="pre">.add(uses='jinahub://YOUR_EXECUTOR')</span></code> in Flow, you must set the corresponding environment variable also.
+For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;YOUR_TOKEN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;foo&#39;</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinahub://YOUR_EXECUTOR&#39;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+<span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">Document</span><span class="p">(),</span> <span class="n">on_done</span><span class="o">=</span><span class="nb">print</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<p>For multiple enviroment variables, we can pass it in this way:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub push --build-env <span class="nv">FIRST</span><span class="o">=</span>foo --build-env <span class="nv">SECOND</span><span class="o">=</span>bar
+</pre></div>
+</div>
+</section>
 </section>
 
                 </article>
@@ -530,6 +573,7 @@ After being pushed for the first time, the protected tags can not be pushed agai
 <li><a class="reference internal" href="#protected-tags">Protected tags</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#use-environment-variables">Use environment variables</a></li>
 </ul>
 </li>
 </ul>

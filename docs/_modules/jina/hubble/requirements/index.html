@@ -124,13 +124,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://www.meetup.com/jina-community-meetup/events/287432899/">Learn more about how Neural Search Powered my Application with Ovidiu Ursachi on August 9th at 18:00 CET</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -357,8 +351,7 @@
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">cast</span>
-
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">pkg_resources</span> <span class="kn">import</span> <span class="n">Requirement</span>
 
 <span class="c1"># Adopted from requirements-parser:</span>
@@ -402,6 +395,9 @@
     <span class="sa">rf</span><span class="s1">&#39;^(?P&lt;scheme&gt;</span><span class="si">{</span><span class="n">VCS_SCHEMES_REGEX</span><span class="si">}</span><span class="s1">)://((?P&lt;login&gt;[^/@]+)@)?&#39;</span>
     <span class="sa">r</span><span class="s1">&#39;(?P&lt;path&gt;[^#@]+)(@(?P&lt;revision&gt;[^#]+))?(#(?P&lt;fragment&gt;\S+))?&#39;</span>
 <span class="p">)</span>
+<span class="n">ENV_VAR_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?P&lt;var&gt;\$\{(?P&lt;name&gt;[A-Z0-9_]+)\})&quot;</span><span class="p">)</span>
+
+<span class="n">ENV_VAR_RE_ONLY_MATCH_UPPERCASE_UNDERLINE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[A-Z0-9_]+$&quot;</span><span class="p">);</span>
 
 
 <span class="n">extras_require_search</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?P&lt;name&gt;.+)\[(?P&lt;extras&gt;[^\]]+)\]&#39;</span><span class="p">)</span>
@@ -430,7 +426,6 @@
 <span class="sd">    :param line: a line of a requirement file</span>
 <span class="sd">    :returns: a Requirement instance for the given line</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="n">vcs_match</span> <span class="o">=</span> <span class="n">VCS_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
     <span class="n">uri_match</span> <span class="o">=</span> <span class="n">URI_REGEX</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
@@ -454,6 +449,51 @@
         <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">egg</span> <span class="ow">or</span> <span class="n">name</span><span class="si">}</span><span class="s1"> @ </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s1">&#39;</span>
 
     <span class="k">return</span> <span class="n">Requirement</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_env_variables"><a class="viewcode-back" href="../../../../api/jina.hubble.requirements/#jina.hubble.requirements.get_env_variables">[docs]</a><span class="k">def</span> <span class="nf">get_env_variables</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    search the environment variable only match uppercase letter and number and the `_` (underscore).</span>
+<span class="sd">    :param line: a line of a requirement file</span>
+<span class="sd">    :return: a List of components</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">env_variables</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">for</span> <span class="n">env_var</span><span class="p">,</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="n">ENV_VAR_RE</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+        <span class="n">env_variables</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span>
+    <span class="n">env_variables</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">env_variables</span><span class="p">));</span>
+    <span class="k">return</span> <span class="n">env_variables</span></div>
+
+
+<div class="viewcode-block" id="check_env_variable"><a class="viewcode-back" href="../../../../api/jina.hubble.requirements/#jina.hubble.requirements.check_env_variable">[docs]</a><span class="k">def</span> <span class="nf">check_env_variable</span><span class="p">(</span><span class="n">env_variable</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    check the environment variables is limited</span>
+<span class="sd">    to uppercase letter and number and the `_` (underscore).</span>
+<span class="sd">    :param env_variable: env_variable in the requirements.txt file</span>
+<span class="sd">    :return: True or False if not satisfied</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">ENV_VAR_RE_ONLY_MATCH_UPPERCASE_UNDERLINE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">env_variable</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="expand_env_variables"><a class="viewcode-back" href="../../../../api/jina.hubble.requirements/#jina.hubble.requirements.expand_env_variables">[docs]</a><span class="k">def</span> <span class="nf">expand_env_variables</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Replace all environment variables that can be retrieved via `os.getenv`.</span>
+<span class="sd">    The only allowed format for environment variables defined in the</span>
+<span class="sd">    requirement file is `${MY_VARIABLE_1}` to ensure two things:</span>
+<span class="sd">    1. Strings that contain a `$` aren&#39;t accidentally (partially) expanded.</span>
+<span class="sd">    2. Ensure consistency across platforms for requirement files.</span>
+<span class="sd">    Valid characters in variable names follow the `POSIX standard</span>
+<span class="sd">    &lt;http://pubs.opengroup.org/onlinepubs/9699919799/&gt;`_ and are limited</span>
+<span class="sd">    to uppercase letter and number and the `_` (underscore).</span>
+<span class="sd">    Replace environment variables in requirement if it&#39;s defined.</span>
+<span class="sd">    :param line: a line of a requirement file</span>
+<span class="sd">    :return: line</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">env_var</span><span class="p">,</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="n">ENV_VAR_RE</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The given requirements.txt require environment variables `</span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s1">` does not exist!&#39;</span><span class="p">)</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">env_var</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">line</span></div>
 </pre></div>
                 </article>
             </div>

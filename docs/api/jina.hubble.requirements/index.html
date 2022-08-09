@@ -157,13 +157,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://www.meetup.com/jina-community-meetup/events/287432899/">Learn more about how Neural Search Powered my Application with Ovidiu Ursachi on August 9th at 18:00 CET</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -403,6 +397,44 @@
 <dd class="field-odd"><p>a Requirement instance for the given line</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.requirements.get_env_variables">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.requirements.</span></span><span class="sig-name descname"><span class="pre">get_env_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/requirements/#get_env_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.requirements.get_env_variables" title="Permalink to this definition">#</a></dt>
+<dd><p>search the environment variable only match uppercase letter and number and the <cite>_</cite> (underscore).
+:type line: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param line: a line of a requirement file
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>
+:return: a List of components</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.requirements.check_env_variable">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.requirements.</span></span><span class="sig-name descname"><span class="pre">check_env_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_variable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/requirements/#check_env_variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.requirements.check_env_variable" title="Permalink to this definition">#</a></dt>
+<dd><p>check the environment variables is limited
+to uppercase letter and number and the <cite>_</cite> (underscore).
+:type env_variable: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param env_variable: env_variable in the requirements.txt file
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>
+:return: True or False if not satisfied</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.requirements.expand_env_variables">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.requirements.</span></span><span class="sig-name descname"><span class="pre">expand_env_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/requirements/#expand_env_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.requirements.expand_env_variables" title="Permalink to this definition">#</a></dt>
+<dd><p>Replace all environment variables that can be retrieved via <cite>os.getenv</cite>.
+The only allowed format for environment variables defined in the
+requirement file is <cite>${MY_VARIABLE_1}</cite> to ensure two things:
+1. Strings that contain a <cite>$</cite> aren’t accidentally (partially) expanded.
+2. Ensure consistency across platforms for requirement files.
+Valid characters in variable names follow the <a class="reference external" href="http://pubs.opengroup.org/onlinepubs/9699919799/">POSIX standard</a> and are limited
+to uppercase letter and number and the <cite>_</cite> (underscore).
+Replace environment variables in requirement if it’s defined.
+:type line: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param line: a line of a requirement file
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:return: line</p>
 </dd></dl>
 
 </section>

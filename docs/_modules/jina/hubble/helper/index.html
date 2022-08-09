@@ -124,13 +124,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://www.meetup.com/jina-community-meetup/events/287432899/">Learn more about how Neural Search Powered my Application with Ovidiu Ursachi on August 9th at 18:00 CET</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -377,6 +371,12 @@
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_request_header</span> <span class="k">as</span> <span class="n">_get_request_header_main</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
+<span class="kn">from</span> <span class="nn">jina.hubble.requirements</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_env_variables</span><span class="p">,</span>
+    <span class="n">check_env_variable</span><span class="p">,</span>
+    <span class="n">parse_requirement</span><span class="p">,</span>
+    <span class="n">expand_env_variables</span>
+<span class="p">)</span>
 
 
 <span class="nd">@lru_cache</span><span class="p">()</span>
@@ -839,10 +839,50 @@
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="n">VersionConflict</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">True</span></div>
 
+<div class="viewcode-block" id="get_requirements_env_variables"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.get_requirements_env_variables">[docs]</a><span class="k">def</span> <span class="nf">get_requirements_env_variables</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">:</span> <span class="s1">&#39;Path&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;get the env variables in requirements.txt</span>
+<span class="sd">    :param requirements_file: the requirements.txt file</span>
+<span class="sd">    :return: List of env variables in requirements.txt</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">env_variables</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="n">requirements_file</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">requirements</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">requirements</span><span class="p">:</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">req</span><span class="p">)</span> <span class="ow">or</span> <span class="n">req</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">variables</span> <span class="o">=</span> <span class="n">get_env_variables</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+                <span class="n">env_variables</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">env_variables</span></div>
+
+<div class="viewcode-block" id="check_requirements_env_variable"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.check_requirements_env_variable">[docs]</a><span class="k">def</span> <span class="nf">check_requirements_env_variable</span><span class="p">(</span><span class="n">env_variable</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    check the environment variables is limited</span>
+<span class="sd">    to uppercase letter and number and the `_` (underscore).</span>
+<span class="sd">    :param env_variable: env_variable in the requirements.txt file</span>
+<span class="sd">    :return: True or False if not satisfied</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">check_env_variable</span><span class="p">(</span><span class="n">env_variable</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="replace_requirements_env_variables"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.replace_requirements_env_variables">[docs]</a><span class="k">def</span> <span class="nf">replace_requirements_env_variables</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">:</span> <span class="s1">&#39;Path&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;replace the environment variables in requirements.txt</span>
+<span class="sd">    :param requirements_file: the requirements.txt file</span>
+<span class="sd">    :return: List of replaced env variables in requirements.txt</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">env_variables</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="n">requirements_file</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">requirements</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">requirements</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">line</span><span class="p">)</span> <span class="ow">or</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">expand_env_variables</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">env_variables</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">env_variables</span></div>
+    
 
 <span class="k">def</span> <span class="nf">_get_install_options</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">:</span> <span class="s1">&#39;Path&#39;</span><span class="p">,</span> <span class="n">excludes</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;jina&#39;</span><span class="p">,)):</span>
-    <span class="kn">from</span> <span class="nn">.requirements</span> <span class="kn">import</span> <span class="n">parse_requirement</span>
-
     <span class="k">with</span> <span class="n">requirements_file</span><span class="o">.</span><span class="n">open</span><span class="p">()</span> <span class="k">as</span> <span class="n">requirements</span><span class="p">:</span>
         <span class="n">install_options</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">install_reqs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -851,13 +891,14 @@
             <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">req</span><span class="p">)</span> <span class="ow">or</span> <span class="n">req</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">):</span>
                 <span class="k">continue</span>
             <span class="k">elif</span> <span class="n">req</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">):</span>
-                <span class="n">install_options</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)):</span>
+                    <span class="n">install_options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">expand_env_variables</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">req_spec</span> <span class="o">=</span> <span class="n">parse_requirement</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+                <span class="n">expand_req</span> <span class="o">=</span> <span class="n">expand_env_variables</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+                <span class="n">req_spec</span> <span class="o">=</span> <span class="n">parse_requirement</span><span class="p">(</span><span class="n">expand_req</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">req_spec</span><span class="o">.</span><span class="n">project_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">excludes</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">req_spec</span><span class="o">.</span><span class="n">extras</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">install_reqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
-
+                    <span class="n">install_reqs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">expand_req</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">install_reqs</span><span class="p">,</span> <span class="n">install_options</span>
 
 

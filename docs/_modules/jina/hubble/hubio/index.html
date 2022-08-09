@@ -124,13 +124,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://www.meetup.com/jina-community-meetup/events/287432899/">Learn more about how Neural Search Powered my Application with Ovidiu Ursachi on August 9th at 18:00 CET</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -378,6 +372,8 @@
     <span class="n">get_request_header</span><span class="p">,</span>
     <span class="n">parse_hub_uri</span><span class="p">,</span>
     <span class="n">upload_file</span><span class="p">,</span>
+    <span class="n">get_requirements_env_variables</span><span class="p">,</span>
+    <span class="n">check_requirements_env_variable</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">jina.hubble.hubapi</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">dump_secret</span><span class="p">,</span>
@@ -700,6 +696,44 @@
                 <span class="p">)</span>
 
             <span class="n">dockerfile</span> <span class="o">=</span> <span class="n">dockerfile</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">work_path</span><span class="p">)</span>
+        
+        <span class="n">build_env</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">build_env</span><span class="p">:</span>
+            <span class="n">build_envs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">build_env</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">build_env_dict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">env</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">build_envs</span><span class="p">):</span>
+                <span class="n">env_list</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">env_list</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span> <span class="sa">f</span><span class="s1">&#39;The --build-env parameter: `</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s1">` is wrong format. you can use: `--build-env </span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s1">=YOUR_VALUE`.&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">check_requirements_env_variable</span><span class="p">(</span><span class="n">env_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span> <span class="sa">f</span><span class="s1">&#39;The --build-env parameter key:`</span><span class="si">{</span><span class="n">env_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">` can only consist of uppercase letter and number and underline.&#39;</span><span class="p">)</span>
+                <span class="n">build_env_dict</span><span class="p">[</span><span class="n">env_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">env_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">build_env</span> <span class="o">=</span> <span class="n">build_env_dict</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">build_env_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span><span class="o">&gt;</span><span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="n">requirements_file</span> <span class="o">=</span> <span class="n">work_path</span> <span class="o">/</span> <span class="s1">&#39;requirements.txt&#39;</span>
+
+        <span class="n">requirements_env_variables</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">requirements_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span> 
+            <span class="n">requirements_env_variables</span> <span class="o">=</span> <span class="n">get_requirements_env_variables</span><span class="p">(</span><span class="n">requirements_file</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">env</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">requirements_env_variables</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">check_requirements_env_variable</span><span class="p">(</span><span class="n">env</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                   <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span> <span class="sa">f</span><span class="s1">&#39;The requirements.txt environment variables:`$</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s1">` can only consist of uppercase letter and number and underline.&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">requirements_env_variables</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">build_env</span><span class="p">:</span>
+            <span class="n">env_variables_str</span> <span class="o">=</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">requirements_env_variables</span><span class="p">);</span>
+            <span class="n">error_str</span><span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;The requirements.txt set environment variables as follows:`</span><span class="si">{</span><span class="n">env_variables_str</span><span class="si">}</span><span class="s1">` should use `--build-env&#39;</span><span class="p">;</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">requirements_env_variables</span><span class="p">:</span>
+                <span class="n">error_str</span><span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">=YOUR_VALUE&#39;</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">error_str</span><span class="si">}</span><span class="s1">` to add it.&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">requirements_env_variables</span><span class="p">)</span> <span class="ow">and</span> <span class="n">build_env</span><span class="p">:</span>
+            <span class="n">build_env_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">build_env</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">diff_env_variables</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">requirements_env_variables</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">build_env_keys</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">diff_env_variables</span><span class="p">):</span>
+                <span class="n">diff_env_variables_str</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">diff_env_variables</span><span class="p">)</span>
+                <span class="n">error_str</span><span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;The requirements.txt set environment variables as follows:`</span><span class="si">{</span><span class="n">diff_env_variables_str</span><span class="si">}</span><span class="s1">` should use `--build-env&#39;</span><span class="p">;</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">diff_env_variables</span><span class="p">:</span>
+                    <span class="n">error_str</span><span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">=YOUR_VALUE&#39;</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">error_str</span><span class="si">}</span><span class="s1">` to add it.&#39;</span><span class="p">)</span>
 
         <span class="n">console</span> <span class="o">=</span> <span class="n">get_rich_console</span><span class="p">()</span>
         <span class="k">with</span> <span class="n">console</span><span class="o">.</span><span class="n">status</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Pushing `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">` ...&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">st</span><span class="p">:</span>
@@ -735,6 +769,9 @@
 
                 <span class="k">if</span> <span class="n">dockerfile</span><span class="p">:</span>
                     <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;dockerfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dockerfile</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">build_env</span><span class="p">:</span> 
+                    <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;buildEnv&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">build_env</span><span class="p">)</span>
 
                 <span class="n">uuid8</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">load_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force_update</span> <span class="ow">or</span> <span class="n">uuid8</span><span class="p">:</span>
@@ -918,6 +955,27 @@
 
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">Panel</span><span class="p">(</span><span class="n">param_str</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Usage&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">100</span><span class="p">))</span>
 
+    
+    <span class="k">def</span> <span class="nf">_prettyprint_build_env_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">console</span><span class="p">,</span> <span class="n">build_env</span><span class="p">,</span> <span class="n">usage_kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">box</span>
+        <span class="kn">from</span> <span class="nn">rich.panel</span> <span class="kn">import</span> <span class="n">Panel</span>
+        <span class="kn">from</span> <span class="nn">rich.syntax</span> <span class="kn">import</span> <span class="n">Syntax</span>
+        <span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
+
+        <span class="n">param_str</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
+            <span class="n">box</span><span class="o">=</span><span class="n">box</span><span class="o">.</span><span class="n">SIMPLE</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">param_str</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">&#39;Environment variable&#39;</span><span class="p">)</span>
+        <span class="n">param_str</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">&#39;Your value&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">build_env</span><span class="p">):</span>
+            <span class="n">param_str</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;your value&#39;</span>
+            <span class="p">)</span>
+
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">Panel</span><span class="p">(</span><span class="n">param_str</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;build_env&#39;</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="s1">&#39;You have to set the above environment variables&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">100</span><span class="p">))</span>
+
 <div class="viewcode-block" id="HubIO.fetch_meta"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.fetch_meta">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@disk_cache_offline</span><span class="p">(</span><span class="n">cache_file</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">get_cache_db</span><span class="p">()))</span>
     <span class="k">def</span> <span class="nf">fetch_meta</span><span class="p">(</span>
@@ -979,7 +1037,7 @@
                 <span class="sa">f</span><span class="s1">&#39;tag: </span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">, commit: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;commit&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">, &#39;</span>
                 <span class="sa">f</span><span class="s1">&#39;session_id: </span><span class="si">{</span><span class="n">req_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;jinameta-session-id&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="p">)</span>
-
+        <span class="n">buildEnv</span> <span class="o">=</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;commit&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;commitParams&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;buildEnv&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">HubExecutor</span><span class="p">(</span>
             <span class="n">uuid</span><span class="o">=</span><span class="n">resp</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
             <span class="n">name</span><span class="o">=</span><span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
@@ -989,6 +1047,7 @@
             <span class="n">image_name</span><span class="o">=</span><span class="n">image_name</span><span class="p">,</span>
             <span class="n">archive_url</span><span class="o">=</span><span class="n">resp</span><span class="p">[</span><span class="s1">&#39;package&#39;</span><span class="p">][</span><span class="s1">&#39;download&#39;</span><span class="p">],</span>
             <span class="n">md5sum</span><span class="o">=</span><span class="n">resp</span><span class="p">[</span><span class="s1">&#39;package&#39;</span><span class="p">][</span><span class="s1">&#39;md5&#39;</span><span class="p">],</span>
+            <span class="n">build_env</span><span class="o">=</span><span class="n">buildEnv</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">buildEnv</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="HubIO.deploy_public_sandbox"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.deploy_public_sandbox">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -1126,6 +1185,7 @@
         <span class="n">cached_zip_file</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">executor_name</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">usage_kind</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">build_env</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">need_pull</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force_update</span>
@@ -1142,6 +1202,8 @@
                     <span class="n">force</span><span class="o">=</span><span class="n">need_pull</span><span class="p">,</span>
                 <span class="p">)</span>
 
+                <span class="n">build_env</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">build_env</span>
+   
                 <span class="n">presented_id</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">executor</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="n">executor</span><span class="o">.</span><span class="n">uuid</span>
                 <span class="n">executor_name</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">presented_id</span><span class="si">}</span><span class="s1">&#39;</span>
@@ -1173,6 +1235,9 @@
                 <span class="k">elif</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">&#39;jinahub&#39;</span><span class="p">:</span>
                     <span class="kn">import</span> <span class="nn">filelock</span>
 
+                    <span class="k">if</span> <span class="n">build_env</span><span class="p">:</span>
+                       <span class="bp">self</span><span class="o">.</span><span class="n">_prettyprint_build_env_usage</span><span class="p">(</span><span class="n">console</span><span class="p">,</span><span class="n">build_env</span><span class="p">)</span>
+                   
                     <span class="k">with</span> <span class="n">filelock</span><span class="o">.</span><span class="n">FileLock</span><span class="p">(</span><span class="n">get_lockfile</span><span class="p">(),</span> <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
                         <span class="k">try</span><span class="p">:</span>
                             <span class="n">pkg_path</span><span class="p">,</span> <span class="n">pkg_dist_path</span> <span class="o">=</span> <span class="n">get_dist_path_of_executor</span><span class="p">(</span>
