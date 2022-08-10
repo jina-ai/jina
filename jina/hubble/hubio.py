@@ -698,7 +698,7 @@ metas:
             image_name=image_name,
             archive_url=resp['package']['download'],
             md5sum=resp['package']['md5'],
-            build_env=buildEnv.keys() if buildEnv else []
+            build_env=list(buildEnv.keys()) if buildEnv and isinstance(buildEnv, dict) else []
         )
 
     @staticmethod
