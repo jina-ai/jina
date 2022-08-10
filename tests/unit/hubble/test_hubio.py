@@ -90,11 +90,12 @@ class PostMockResponse:
 
 
 class FetchMetaMockResponse:
-    def __init__(self, response_code: int = 200, no_image=False, fail_count=0):
+    def __init__(self, response_code: int = 200, no_image=False, fail_count=0, build_env=None):
         self.response_code = response_code
         self.no_image = no_image
         self._tried_count = 0
         self._fail_count = fail_count
+        self.build_env = build_env
 
     def json(self):
         if self._tried_count <= self._fail_count:
@@ -106,7 +107,7 @@ class FetchMetaMockResponse:
                 'id': 'dummy_mwu_encoder',
                 'name': 'alias_dummy',
                 'visibility': 'public',
-                'commit': {'_id': 'commit_id', 'tags': ['v0']},
+                'commit': {'_id': 'commit_id', 'tags': ['v0'], 'commitParams': { 'buildEnv': self.build_env } } if self.build_env  else {'_id': 'commit_id', 'tags': ['v0']},
                 'package': {
                     'containers': []
                     if self.no_image
@@ -456,6 +457,33 @@ def test_fetch_with_no_image(mocker, monkeypatch):
 
     assert executor.image_name is None
     assert mock.call_count == 2
+
+
+@pytest.mark.parametrize('build_env', [ { 'TOKEN': 'TEST' }])
+def test_fetch_with_buildEnv(mocker, monkeypatch, build_env):
+    mock = mocker.Mock()
+
+    def _mock_post(url, json, headers=None):
+        mock(url=url, json=json)
+        return FetchMetaMockResponse(response_code=200, no_image=False, fail_count=0, build_env=build_env)
+
+    monkeypatch.setattr(requests, 'post', _mock_post)
+    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
+
+    executor, _ = HubIO(args).fetch_meta(
+        'dummy_mwu_encoder', None, force=True
+    )
+
+    assert executor.uuid == 'dummy_mwu_encoder'
+    assert executor.name == 'alias_dummy'
+    assert executor.tag == 'v0'
+    assert executor.image_name == 'jinahub/pod.dummy_mwu_encoder'
+    assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'
+
+    executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', '', force=True)
+    assert executor.tag == 'v0'
+
+    assert executor.build_env == ['TOKEN'];
 
 
 def test_fetch_with_retry(mocker, monkeypatch):
