@@ -215,6 +215,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14559,4 +14560,32 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```a51b42cc```](https://github.com/jina-ai/jina/commit/a51b42cc74a57427282ef5d0f6933b7791a1b3a4)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
  - [[```ecb95829```](https://github.com/jina-ai/jina/commit/ecb95829f67d594616d5650086cbfaea1c598e97)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```286bdce8```](https://github.com/jina-ai/jina/commit/286bdce8b2c3afcb3b65a76c49dd6343bb28e171)] __-__ __version__: the next version will be 3.7.4 (*Jina Dev Bot*)
+
+<a name=release-note-3-7-5></a>
+## Release Note (`3.7.5`)
+
+> Release time: 2022-08-10 10:19:23
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Jina Dev Bot,  zhangkai,  samsja,  Deepankar Mahapatro,  tarrantro,  🙇
+
+
+### 🆕 New Features
+
+ - [[```6cc4497a```](https://github.com/jina-ai/jina/commit/6cc4497a02a69613c0ed22558d8bced855871a88)] __-__ hubble support env variables (#5023) (*zhangkai*)
+ - [[```12404535```](https://github.com/jina-ai/jina/commit/124045351137d80d118f9692de4295d50561f1e1)] __-__ add dryrun to cli (#5050) (*samsja*)
+
+### 📗 Documentation
+
+ - [[```1d60655d```](https://github.com/jina-ai/jina/commit/1d60655df9ba770e232d575f1e589f7a8054393f)] __-__ __jcloud__: fix formatting (#5048) (*Deepankar Mahapatro*)
+ - [[```6df83cf1```](https://github.com/jina-ai/jina/commit/6df83cf1b1c8621fdbd749352dd9c589c086ad50)] __-__ improve grpc third party client documentation (#5047) (*samsja*)
+ - [[```8c6321ac```](https://github.com/jina-ai/jina/commit/8c6321ac1732b0dae2c44f9cc76c18e095b67f00)] __-__ refactor resources, add gpu, kong  (#5027) (*tarrantro*)
+
+### 🍹 Other Improvements
+
+ - [[```d6d4c30a```](https://github.com/jina-ai/jina/commit/d6d4c30ab4ba0c8b14593d31218beca11315e616)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```9fee2dff```](https://github.com/jina-ai/jina/commit/9fee2dff341fc5ef3a93f7fdda208ddc9457dd85)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```fe7b8894```](https://github.com/jina-ai/jina/commit/fe7b8894bc91a4d0d5ec9c255884d89c754189cb)] __-__ __version__: the next version will be 3.7.5 (*Jina Dev Bot*)
 
