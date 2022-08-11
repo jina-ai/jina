@@ -5,6 +5,7 @@ import shutil
 from pathlib import Path
 from typing import Tuple
 
+from jina import __cache_path__
 from jina.helper import random_identity
 from jina.hubble import HubExecutor
 from jina.hubble.helper import (
@@ -58,15 +59,14 @@ def get_lockfile() -> str:
     return str(get_hub_packages_dir() / 'LOCK')
 
 
-def load_secret(work_path: 'Path') -> Tuple[str, str]:
+def load_secret() -> Tuple[str, str]:
     """Get the UUID and Secret from local
 
-    :param work_path: the local package directory
     :return: the UUID and secret
     """
     from cryptography.fernet import Fernet
 
-    config = work_path / '.jina'
+    config = Path(__cache_path__)
     config.mkdir(parents=True, exist_ok=True)
 
     local_id_file = config / 'secret.key'
@@ -88,16 +88,15 @@ def load_secret(work_path: 'Path') -> Tuple[str, str]:
     return uuid8, secret
 
 
-def dump_secret(work_path: 'Path', uuid8: str, secret: str):
+def dump_secret(uuid8: str, secret: str):
     """Dump the UUID and Secret into local file
 
-    :param work_path: the local package directory
     :param uuid8: the ID of the executor
     :param secret: the access secret
     """
     from cryptography.fernet import Fernet
 
-    config = work_path / '.jina'
+    config = __cache_path__
     config.mkdir(parents=True, exist_ok=True)
 
     local_id_file = config / 'secret.key'
