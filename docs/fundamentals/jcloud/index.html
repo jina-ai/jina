@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/jcloud/index/" />
   
-<meta property="og:site_name" content="Jina 3.7.5 Documentation" />
+<meta property="og:site_name" content="Jina 3.7.6 Documentation" />
   
-<meta property="og:description" content="After building a Jina project, the next step is to deploy and host it on Cloud. JCloud simplifies deploying and hosting your Jina projects on Jina Cloud. It provides a simple CLI with five commands to manage the lifecycle of your Jina projects." />
+<meta property="og:description" content="After building a Jina project, the next step is to deploy and host it on Cloud. JCloud simplifies deploying and hosting your Jina projects on Jina Cloud. It provides a simple CLI with five commands to manage the lifecycle of your Jina projects. Basic: Install: Login: You can use a Google/GitHub a..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_images/jcloud-banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.7.5 Documentation" />
+<meta property="og:image:alt" content="Jina 3.7.6 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -35,11 +35,11 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Basic" href="basic/" /><link rel="prev" title="Best practices" href="../executor/hub/executor-best-practices/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Resources" href="resources/" /><link rel="prev" title="Best practices" href="../executor/hub/executor-best-practices/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/jcloud/index.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>JCloud - Jina 3.7.5 documentation</title>
+        <title>JCloud - Jina 3.7.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -173,7 +173,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.7.5 documentation</div>
+                <div class="brand">Jina 3.7.6 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -191,7 +191,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -272,8 +272,8 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">JCloud</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="basic/">Basic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="resources/">Resources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="autoscale/">Autoscaling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="advanced/">Advanced</a></li>
 <li class="toctree-l2"><a class="reference internal" href="faq/">FAQ</a></li>
 </ul>
@@ -368,7 +368,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon no-toc"
+                    <label class="toc-overlay-icon toc-content-icon"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -380,7 +380,7 @@
                 </div>
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="jcloud">
-<h1>JCloud<a class="headerlink" href="#jcloud" title="Permalink to this headline">#</a></h1>
+<span id="id1"></span><h1>JCloud<a class="headerlink" href="#jcloud" title="Permalink to this headline">#</a></h1>
 <figure class="align-default">
 <a class="reference internal image-reference" href="https://docs.jina.ai/_images/jcloud-banner.png"><img alt="https://docs.jina.ai/_images/jcloud-banner.png" src="https://docs.jina.ai/_images/jcloud-banner.png" style="width: 0.0%;" /></a>
 </figure>
@@ -392,8 +392,165 @@
 <p class="admonition-title">Tip</p>
 <p>At this point, Jina Cloud hosts all your Jina projects and offers computational/storage resources <strong>for free</strong>!</p>
 </div>
+<section id="basic">
+<h2>Basic<a class="headerlink" href="#basic" title="Permalink to this headline">#</a></h2>
+<section id="install">
+<h3>Install<a class="headerlink" href="#install" title="Permalink to this headline">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install jcloud
+jc -h
+</pre></div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>In case <code class="docutils literal notranslate"><span class="pre">jc</span></code> is already occupied by another tool, please use <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> instead. If your pip install doesn’t register bash commands for you, you can run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">jcloud</span> <span class="pre">-h</span></code>.</p>
+</div>
+</section>
+<section id="login">
+<h3>Login<a class="headerlink" href="#login" title="Permalink to this headline">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc login
+</pre></div>
+</div>
+<p>You can use a Google/GitHub account to register and login. For all the next steps, logging in is mandatory.</p>
+<p>If you have no access to the web browser in your integration environment, you can set the Environment Variable <code class="docutils literal notranslate"><span class="pre">JINA_AUTH_TOKEN</span></code> using auth token before working with JCloud. Auth token can be generated by user login or Personal Access Token (PAT) creation, please visit <a class="reference external" href="https://github.com/jina-ai/auth">jina-auth</a> for more information (<code class="docutils literal notranslate"><span class="pre">jc</span></code> includes <code class="docutils literal notranslate"><span class="pre">jina-auth</span></code> already).</p>
+</section>
+<section id="deploy">
+<h3>Deploy<a class="headerlink" href="#deploy" title="Permalink to this headline">#</a></h3>
+<p>In Jina’s idiom, a project is a <a class="reference external" href="https://docs.jina.ai/fundamentals/flow/">Flow</a>, which represents an end-to-end task such as indexing, searching or recommending. In this README, we will use “project” and “Flow” interchangeably.</p>
+<p>A Flow can have two types of file structure: a single YAML file or a project folder.</p>
+<section id="a-single-yaml-file">
+<h4>A single YAML file<a class="headerlink" href="#a-single-yaml-file" title="Permalink to this headline">#</a></h4>
+<p>A self-contained YAML file, consisting of all configs at the <a class="reference external" href="https://docs.jina.ai/fundamentals/flow/">Flow</a>-level and <a class="reference external" href="https://docs.jina.ai/fundamentals/executor/">Executor</a>-level.</p>
+<blockquote>
+<div><p>All Executors’ <code class="docutils literal notranslate"><span class="pre">uses</span></code> must follow the format <code class="docutils literal notranslate"><span class="pre">jinahub+docker://MyExecutor</span></code> (from <a class="reference external" href="https://hub.jina.ai">Jina Hub</a>) to avoid any local file dependencies.</p>
+</div></blockquote>
+<p>e.g.-</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># flow.yml</span><span class="w"></span>
+<span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
+<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sentencizer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Sentencizer</span><span class="w"></span>
+</pre></div>
+</div>
+<p>To deploy,</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc deploy flow.yml
+</pre></div>
+</div>
+</section>
+<section id="a-project-folder">
+<h4>A project folder<a class="headerlink" href="#a-project-folder" title="Permalink to this headline">#</a></h4>
+<p>Just like a regular Python project, you can have sub-folders of Executor implementations; and a <code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> on the top-level to connect all Executors together.</p>
+<p>You can create an example local project using <code class="docutils literal notranslate"><span class="pre">jc</span> <span class="pre">new</span></code>. The default structure looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
+├── .env
+├── executor1
+│   ├── config.yml
+│   ├── executor.py
+│   └── requirements.txt
+└── flow.yml
+</pre></div>
+</div>
+<p>where,</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">executor1</span></code> directory has all Executor related code/config. You can read the best practices for <a class="reference external" href="https://docs.jina.ai/fundamentals/executor/executor-files/">file structures</a>. Multiple such Executor directories can be created.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> Your Flow YAML.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.env</span></code> All environment variables used during deployment.</p></li>
+</ul>
+<p>To deploy,</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc deploy ./hello
+</pre></div>
+</div>
+<p>The Flow is successfully deployed when you see:</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/deploy.png"><img alt="../../_images/deploy.png" src="../../_images/deploy.png" style="width: 70%;" /></a>
+</figure>
+<p>You will get a Flow ID, say <code class="docutils literal notranslate"><span class="pre">173503c192</span></code>. This ID is required to manage, view logs and remove the Flow.</p>
+<p>As this Flow is deployed with default gRPC gateway (feel free to change it to <code class="docutils literal notranslate"><span class="pre">http</span></code> or <code class="docutils literal notranslate"><span class="pre">websocket</span></code>), you can use <code class="docutils literal notranslate"><span class="pre">jina.Client</span></code> to access it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;https://173503c192.wolf.jina.ai&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">)))</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="view-logs">
+<h3>View logs<a class="headerlink" href="#view-logs" title="Permalink to this headline">#</a></h3>
+<p>To watch the logs in realtime:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc logs 173503c192
+</pre></div>
+</div>
+<p>You can also stream logs for a particular Executor by passing its name:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc logs 173503c192 --executor sentencizer
+</pre></div>
+</div>
+</section>
+<section id="remove-flows">
+<h3>Remove Flows<a class="headerlink" href="#remove-flows" title="Permalink to this headline">#</a></h3>
+<p>You can either remove a single Flow, multiple selected Flows or even all Flows by passing different kind of identifiers.</p>
+<p>To remove a single Flow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc remove 173503c192
+</pre></div>
+</div>
+<p>To remove multiple selected Flows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc remove 173503c192 887f6313e5 ddb8a2c4ef
+</pre></div>
+</div>
+<p>To remove all Flows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc remove all
+</pre></div>
+</div>
+<p>By default, removing multiple selected / all Flows would be in interactive mode where confirmation will be sent prior to
+the deletion, to make it non-interactive to better suit your use case, set below environment variable before running the command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">JCLOUD_NO_INTERACTIVE</span><span class="o">=</span><span class="m">1</span>
+</pre></div>
+</div>
+</section>
+<section id="get-status">
+<h3>Get status<a class="headerlink" href="#get-status" title="Permalink to this headline">#</a></h3>
+<p>To get the status of a Flow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc status 15937a10bd
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/status.png"><img alt="../../_images/status.png" src="../../_images/status.png" style="width: 70%;" /></a>
+</figure>
+</section>
+<section id="monitoring">
+<h3>Monitoring<a class="headerlink" href="#monitoring" title="Permalink to this headline">#</a></h3>
+<p>To enable monitoring with the Flow, you can set <code class="docutils literal notranslate"><span class="pre">monitoring:</span> <span class="pre">true</span></code> in the Flow yaml and you’d be given access to a <a class="reference external" href="https://grafana.com/">Grafana</a> dashboard.</p>
+<p>To access the dashboard, get the status of the Flow first (see above section), at the bottom of the pane you should see the <code class="docutils literal notranslate"><span class="pre">dashboards</span></code> link. Visit the URL and you will find some basic metrics such as ‘Number of Request Gateway Received’ and ‘Time elapsed between receiving a request and sending back the response’:</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/monitoring.png"><img alt="../../_images/monitoring.png" src="../../_images/monitoring.png" style="width: 70%;" /></a>
+</figure>
+</section>
+<section id="list-flows">
+<h3>List Flows<a class="headerlink" href="#list-flows" title="Permalink to this headline">#</a></h3>
+<p>To list all the Flows you have:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc list
+</pre></div>
+</div>
+<p>You can see the ALIVE Flows deployed by you.</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/list.png"><img alt="../../_images/list.png" src="../../_images/list.png" style="width: 70%;" /></a>
+</figure>
+<p>You can also filter your Flows by passing a status:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc list --status FAILED
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/list_failed.png"><img alt="../../_images/list_failed.png" src="../../_images/list_failed.png" style="width: 70%;" /></a>
+</figure>
+<p>Or see all the flows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc list --status ALL
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/list_all.png"><img alt="../../_images/list_all.png" src="../../_images/list_all.png" style="width: 70%;" /></a>
+</figure>
 <div class="toctree-wrapper compound">
 </div>
+</section>
+</section>
 </section>
 
                 </article>
@@ -401,12 +558,12 @@
             <footer>
                 
                 <div class="related-pages">
-                    <a class="next-page" href="basic/">
+                    <a class="next-page" href="resources/">
                         <div class="page-info">
                             <div class="context">
                                 <span>Next</span>
                             </div>
-                            <div class="title">Basic</div>
+                            <div class="title">Resources</div>
                         </div>
                         <svg>
                             <use href="#svg-arrow-right"></use>
@@ -431,7 +588,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 10, 2022</div>
+                            Last updated on Aug 11, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -451,8 +608,41 @@
                 
             </footer>
         </div>
-        <aside class="toc-drawer no-toc">
+        <aside class="toc-drawer">
             
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">JCloud</a><ul>
+<li><a class="reference internal" href="#basic">Basic</a><ul>
+<li><a class="reference internal" href="#install">Install</a></li>
+<li><a class="reference internal" href="#login">Login</a></li>
+<li><a class="reference internal" href="#deploy">Deploy</a><ul>
+<li><a class="reference internal" href="#a-single-yaml-file">A single YAML file</a></li>
+<li><a class="reference internal" href="#a-project-folder">A project folder</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#view-logs">View logs</a></li>
+<li><a class="reference internal" href="#remove-flows">Remove Flows</a></li>
+<li><a class="reference internal" href="#get-status">Get status</a></li>
+<li><a class="reference internal" href="#monitoring">Monitoring</a></li>
+<li><a class="reference internal" href="#list-flows">List Flows</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
             
             
         </aside>

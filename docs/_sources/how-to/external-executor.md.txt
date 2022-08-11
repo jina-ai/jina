@@ -10,7 +10,9 @@ Executor be used by different Flows.
 ````{admonition} Where can external Executors run?
 :class: hint
 External Executors can run anywhere from the same environment as the Flow, to a Docker container, or even a remote
-machine.
+environment, such as {ref}`JCloud <jcloud>`.
+
+To deploy external Exectuors on JCloud, please follow {ref}`this documentation <external-executors>`.
 ````
 
 As the first step in this tutorial, you will learn how to add already running external Executors to your Flow.
