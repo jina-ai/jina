@@ -459,7 +459,7 @@ def test_fetch_with_no_image(mocker, monkeypatch):
     assert mock.call_count == 2
 
 
-@pytest.mark.parametrize('build_env', [ { 'TOKEN': 'TEST' }])
+@pytest.mark.parametrize('build_env', [ { 'TOKEN': 'TEST' }, None])
 def test_fetch_with_buildEnv(mocker, monkeypatch, build_env):
     mock = mocker.Mock()
 
@@ -483,8 +483,10 @@ def test_fetch_with_buildEnv(mocker, monkeypatch, build_env):
     executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', '', force=True)
     assert executor.tag == 'v0'
 
-    assert executor.build_env == ['TOKEN'];
-
+    if build_env: 
+        assert executor.build_env == ['TOKEN'];
+    else:
+        assert executor.build_env == [];
 
 def test_fetch_with_retry(mocker, monkeypatch):
     mock = mocker.Mock()
