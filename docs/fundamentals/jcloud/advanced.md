@@ -42,6 +42,7 @@ executors:
       capacity: on-demand
 ```
 
+(external-executors)=
 ## External executors
 
 You can also expose only the Executors by setting `expose_gateway` to `False`. Read more about {ref}`External Executors <external-executors>`

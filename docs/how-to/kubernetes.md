@@ -14,6 +14,10 @@ always see them as just a starting point to get you off the ground.
 In this how-to you will go through how to deploy a simple Flow using Kubernetes, how to customize the Kubernetes configuration
 to your needs, and how to scale Executors using replicas and shards.
 
+```{note}
+Do you know {ref}`JCloud <jcloud>` simplifies Flow deployment and hosting? It saves all the trouble for you so you can focus on what really matters!
+```
+
 ## Preliminaries
 
 To follow along with this how-to, you will need access to a Kubernetes cluster.
