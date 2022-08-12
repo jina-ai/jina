@@ -26,6 +26,8 @@ executors:
 
 By default, `0.1 (1/10 of a core)` CPU is allocated to each Executor. You can use `cpu` arg under `resources` to customise it.
 
+Jcloud provides general Intel Xeon processer (Skylake 8175M or Cascade Lake 8259CL) by default. 
+
 ```{note}
 Maximum of 16 cores is allowed per Executor.
 ```
@@ -83,7 +85,9 @@ executors:
 
 #### GPU
 
-JCloud supports GPU workloads with two different usages - `shared` & `dedicated`.
+JCloud supports GPU workloads with two different usages - `shared` & `dedicated`. 
+
+If GPU is enabled, Jcloud will provision NVIDIA A10G Tensor Core GPUs for workloads in both usage type.
 
 ```{note}
 When using GPU resources, it may take few extra mins until all Executors ready to serve traffic.
