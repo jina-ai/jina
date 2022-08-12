@@ -96,7 +96,7 @@ def dump_secret(uuid8: str, secret: str):
     """
     from cryptography.fernet import Fernet
 
-    config = __cache_path__
+    config = Path(__cache_path__)
     config.mkdir(parents=True, exist_ok=True)
 
     local_id_file = config / 'secret.key'
