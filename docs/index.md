@@ -60,9 +60,10 @@ If you'd like to opt out of usage statistics, make sure to add the `--optout-tel
 :caption: Get Started
 :hidden:
 
+get-started/what-is
+fundamentals/architecture-overview
 get-started/install/index
 get-started/create-app
-fundamentals/architecture-overview
 ```
 
 ```{toctree}
