@@ -224,6 +224,8 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
     <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is/">What is Cross-Modal &amp; Multi-Modal?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Glossary</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/windows/">On Windows</a></li>
@@ -231,7 +233,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/create-app/">Create Project</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Glossary</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
@@ -403,6 +404,7 @@
 <section id="cpu">
 <h2>CPU<a class="headerlink" href="#cpu" title="Permalink to this headline">#</a></h2>
 <p>By default, <code class="docutils literal notranslate"><span class="pre">0.1</span> <span class="pre">(1/10</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">core)</span></code> CPU is allocated to each Executor. You can use <code class="docutils literal notranslate"><span class="pre">cpu</span></code> arg under <code class="docutils literal notranslate"><span class="pre">resources</span></code> to customise it.</p>
+<p>JCloud offers the general Intel Xeon processor (Skylake 8175M or Cascade Lake 8259CL) by default.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Maximum of 16 cores is allowed per Executor.</p>
@@ -457,7 +459,8 @@
 </section>
 <section id="gpu">
 <h2>GPU<a class="headerlink" href="#gpu" title="Permalink to this headline">#</a></h2>
-<p>JCloud supports GPU workloads with two different usages - <code class="docutils literal notranslate"><span class="pre">shared</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">dedicated</span></code>.</p>
+<p>JCloud supports GPU workloads with two different usages: <code class="docutils literal notranslate"><span class="pre">shared</span></code> or <code class="docutils literal notranslate"><span class="pre">dedicated</span></code>.</p>
+<p>If GPU is enabled, JCloud will provide NVIDIA A10G Tensor Core GPUs for workloads in both usage types.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>When using GPU resources, it may take few extra mins until all Executors ready to serve traffic.</p>
@@ -553,7 +556,7 @@ This enables a time-slicing, which allows workloads that land on oversubscribed 
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 11, 2022</div>
+                            Last updated on Aug 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -35,7 +35,7 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="genindex/" /><link rel="search" title="Search" href="search/" /><link rel="next" title="Install" href="get-started/install/" />
+    <link rel="index" title="Index" href="genindex/" /><link rel="search" title="Search" href="search/" /><link rel="next" title="What is Cross-Modal &amp; Multi-Modal?" href="get-started/what-is/" />
         <link rel="canonical" href="https://docs.jina.ai/index.html" />
 
     <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
@@ -224,6 +224,8 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
     <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="get-started/what-is/">What is Cross-Modal &amp; Multi-Modal?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fundamentals/architecture-overview/">Glossary</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="get-started/install/windows/">On Windows</a></li>
@@ -231,7 +233,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="get-started/create-app/">Create Project</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fundamentals/architecture-overview/">Glossary</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
@@ -451,21 +452,23 @@ and <a class="reference external" href="https://youtube.com/c/jina-ai">live stre
 <h2>Join Us<a class="headerlink" href="#join-us" title="Permalink to this headline">#</a></h2>
 <p>Jina is backed by <a class="reference external" href="https://jina.ai">Jina AI</a> and licensed under <span class="xref myst">Apache-2.0</span>.
 <a class="reference external" href="https://jobs.jina.ai">We are actively hiring</a> AI engineers, solution engineers to build the next neural search ecosystem in open source.</p>
-</section>
-<section id="telemetry">
-<h2>Telemetry<a class="headerlink" href="#telemetry" title="Permalink to this headline">#</a></h2>
-<p>In order to help Jina build better solutions for the community, Jina collects some usage statistics when using it. It is impossible for Jina or any other party to identify users with the data collected,
-you can see easily in the code which data is being collected by checking the code in <code class="xref py py-meth docutils literal notranslate"><span class="pre">_telemetry_run_in_thread()</span></code>.</p>
-<p>The data collected is:</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Telemetry is the process of collecting data about the usage of a system. This data can be used to improve the system by understanding how it is being used and what areas need improvement.</p>
+<p>Jina uses telemetry to collect data about how the software is being used. This data is then used to improve the software. For example, if Jina sees that a lot of users are having trouble with a certain feature, they can improve that feature to make it easier to use.</p>
+<p>Telemetry is important for Jina because it allows the team to understand how the software is being used and what areas need improvement. Without telemetry, Jina would not be able to improve as quickly or as effectively.</p>
+<p>The data collected include:</p>
 <ul class="simple">
-<li><p>Jina version</p></li>
-<li><p>DocArray version</p></li>
-<li><p>Other packages versions</p></li>
-<li><p>A random unique user identifier</p></li>
-<li><p>A random unique session identifier</p></li>
-<li><p>Event emitting the statistics. Flow start or Runtime start</p></li>
+<li><p>Jina and its dependencies versions;</p></li>
+<li><p>A hashed unique user identifier;</p></li>
+<li><p>A hashed unique session identifie;r</p></li>
+<li><p>Boolean events: start of a Flow, Gateway and Runtime.</p></li>
 </ul>
-<p>If you’d like to opt out of usage statistics, make sure to add the <code class="docutils literal notranslate"><span class="pre">optout-telemetry</span></code> argument to the different Flows and Executors or set the <code class="docutils literal notranslate"><span class="pre">JINA_OPTOUT_TELEMETRY</span></code> environment variable.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you’d like to opt out of usage statistics, make sure to add the <code class="docutils literal notranslate"><span class="pre">--optout-telemetry</span></code> argument to the different Flows and Executors or set the <code class="docutils literal notranslate"><span class="pre">JINA_OPTOUT_TELEMETRY=1</span></code> environment variable.</p>
+</div>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
@@ -484,12 +487,12 @@ you can see easily in the code which data is being collected by checking the cod
             <footer>
                 
                 <div class="related-pages">
-                    <a class="next-page" href="get-started/install/">
+                    <a class="next-page" href="get-started/what-is/">
                         <div class="page-info">
                             <div class="context">
                                 <span>Next</span>
                             </div>
-                            <div class="title">Install</div>
+                            <div class="title">What is Cross-Modal &amp; Multi-Modal?</div>
                         </div>
                         <svg>
                             <use href="#svg-arrow-right"></use>
@@ -502,7 +505,7 @@ you can see easily in the code which data is being collected by checking the cod
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 11, 2022</div>
+                            Last updated on Aug 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -537,8 +540,7 @@ you can see easily in the code which data is being collected by checking the cod
 <li><a class="reference internal" href="#">Welcome to Jina!</a><ul>
 <li><a class="reference internal" href="#install">Install</a></li>
 <li><a class="reference internal" href="#support">Support</a></li>
-<li><a class="reference internal" href="#join-us">Join Us</a></li>
-<li><a class="reference internal" href="#telemetry">Telemetry</a><ul>
+<li><a class="reference internal" href="#join-us">Join Us</a><ul>
 </ul>
 </li>
 </ul>

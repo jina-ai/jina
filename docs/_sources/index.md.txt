@@ -33,31 +33,37 @@ Now that you’re set up, let’s dive into more of how Jina works and how to bu
 :end-before: <!-- end support-pitch -->
 ```
 
-## Telemetry
+```{important}
 
-In order to help Jina build better solutions for the community, Jina collects some usage statistics when using it. It is impossible for Jina or any other party to identify users with the data collected,
-you can see easily in the code which data is being collected by checking the code in {meth}`~jina.serve.helper._telemetry_run_in_thread`.
+Telemetry is the process of collecting data about the usage of a system. This data can be used to improve the system by understanding how it is being used and what areas need improvement.
 
-The data collected is:
+Jina uses telemetry to collect data about how the software is being used. This data is then used to improve the software. For example, if Jina sees that a lot of users are having trouble with a certain feature, they can improve that feature to make it easier to use.
 
-- Jina version
-- DocArray version
-- Other packages versions
-- A random unique user identifier
-- A random unique session identifier
-- Event emitting the statistics. Flow start or Runtime start
+Telemetry is important for Jina because it allows the team to understand how the software is being used and what areas need improvement. Without telemetry, Jina would not be able to improve as quickly or as effectively.
 
-If you'd like to opt out of usage statistics, make sure to add the `optout-telemetry` argument to the different Flows and Executors or set the `JINA_OPTOUT_TELEMETRY` environment variable.
+The data collected include:
 
+- Jina and its dependencies versions;
+- A hashed unique user identifier;
+- A hashed unique session identifie;r
+- Boolean events: start of a Flow, Gateway and Runtime.
+
+```
+
+```{tip}
+If you'd like to opt out of usage statistics, make sure to add the `--optout-telemetry` argument to the different Flows and Executors or set the `JINA_OPTOUT_TELEMETRY=1` environment variable.
+
+```
 
 
 ```{toctree}
 :caption: Get Started
 :hidden:
 
+get-started/what-is
+fundamentals/architecture-overview
 get-started/install/index
 get-started/create-app
-fundamentals/architecture-overview
 ```
 
 ```{toctree}

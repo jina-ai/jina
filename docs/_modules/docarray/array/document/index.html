@@ -191,6 +191,8 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
     <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../get-started/what-is/">What is Cross-Modal &amp; Multi-Modal?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fundamentals/architecture-overview/">Glossary</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/windows/">On Windows</a></li>
@@ -198,7 +200,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../get-started/create-app/">Create Project</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../fundamentals/architecture-overview/">Glossary</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
@@ -424,7 +425,10 @@
 
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span> <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">subindex_configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;None&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayInMemory&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create an in-memory DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
@@ -435,6 +439,7 @@
         <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;sqlite&#39;</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;SqliteConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">subindex_configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArraySqlite&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create a SQLite-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
@@ -445,6 +450,7 @@
         <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;weaviate&#39;</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;WeaviateConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">subindex_configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayWeaviate&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create a Weaviate-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
@@ -455,6 +461,7 @@
         <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;annlite&#39;</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;AnnliteConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">subindex_configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayAnnlite&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create a AnnLite-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
@@ -465,6 +472,7 @@
         <span class="n">_docs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;DocumentArraySourceType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">storage</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;elasticsearch&#39;</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;ElasticConfig&#39;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">subindex_configs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DocumentArrayElastic&#39;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create a Elastic-powered DocumentArray object.&quot;&quot;&quot;</span>
         <span class="o">...</span>
@@ -525,7 +533,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 11, 2022</div>
+                            Last updated on Aug 12, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
