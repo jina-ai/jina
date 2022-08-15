@@ -169,7 +169,7 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
 
     result = HubIO(args).push()
 
-    exec_config_path = get_secret_path(path)
+    exec_config_path = get_secret_path(os.stat(path).st_ino)
     shutil.rmtree(exec_config_path)
 
     _, mock_kwargs = mock.call_args_list[0]

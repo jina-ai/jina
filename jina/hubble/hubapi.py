@@ -15,6 +15,8 @@ from jina.hubble.helper import (
     unpack_package,
 )
 
+import os
+
 SECRET_PATH = 'secrets'
 
 
@@ -65,20 +67,30 @@ def get_secret_path(name: str) ->Path:
     :param name: the name of the executor
     :return: the path of secrets
     """
-    return Path( f'{__cache_path__}/{SECRET_PATH}/{name}')
+
+    pre_path = Path( f'{__cache_path__}/{SECRET_PATH}/{name}')
+
+    return pre_path
 
 
-def load_secret(name: str) -> Tuple[str, str]:
+def load_secret(work_path: 'Path') -> Tuple[str, str]:
     """Get the UUID and Secret from local
     :param name: the name of the executor
     :return: the UUID and secret
     """
     
     from cryptography.fernet import Fernet
-    config = get_secret_path(name);
+
+    preConfig = work_path / '.jina'
+    config = get_secret_path(os.stat(work_path).st_ino)
     config.mkdir(parents=True, exist_ok=True)
 
     local_id_file = config / 'secret.key'
+    pre_secret_file = preConfig / 'secret.key'
+
+    if pre_secret_file.exists() and not local_id_file.exists():
+        shutil.copyfile(pre_secret_file, local_id_file)
+
     uuid8 = None
     secret = None
     if local_id_file.exists():
@@ -97,7 +109,7 @@ def load_secret(name: str) -> Tuple[str, str]:
     return uuid8, secret
 
 
-def dump_secret(name: str, uuid8: str, secret: str):
+def dump_secret(work_path: 'Path', uuid8: str, secret: str):
     """Dump the UUID and Secret into local file
     :param name: the name of the executor
     :param uuid8: the ID of the executor
@@ -105,7 +117,7 @@ def dump_secret(name: str, uuid8: str, secret: str):
     """
     from cryptography.fernet import Fernet
 
-    config = get_secret_path(name);
+    config = get_secret_path(os.stat(work_path).st_ino);
     config.mkdir(parents=True, exist_ok=True)
 
     local_id_file = config / 'secret.key'
