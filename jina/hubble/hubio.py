@@ -356,7 +356,7 @@ metas:
                 env_list = env.split('=')
                 if len(env_list) != 2:
                     raise Exception(
-                        f'The --build-env parameter: `{env}` is wrong format. you can use: `--build-env {env}=YOUR_VALUE`.'
+                        f'The `--build-env` parameter: `{env}` is wrong format. you can use: `--build-env {env}=YOUR_VALUE`.'
                     )
                 if check_requirements_env_variable(env_list[0]) is False:
                     raise Exception(
@@ -433,7 +433,7 @@ metas:
 
                 if build_env:
                     form_data['buildEnv'] = json.dumps(build_env)
-                
+
                 uuid8, secret = load_secret(work_path)
                 if self.args.force_update or uuid8:
                     form_data['id'] = self.args.force_update or uuid8

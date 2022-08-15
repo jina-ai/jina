@@ -21,14 +21,12 @@ from jina.hubble.helper import (
     disk_cache_offline,
     get_requirements_env_variables,
 )
+from jina.hubble.hubapi import get_secret_path
 from jina.hubble.hubio import HubExecutor, HubIO
 from jina.parsers.hubble import (
     set_hub_new_parser,
     set_hub_pull_parser,
     set_hub_push_parser,
-)
-from jina.hubble.hubapi import (
-    get_secret_path
 )
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -180,7 +178,6 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
 
     result = HubIO(args).push()
 
-    
     exec_config_path = get_secret_path(os.stat(exec_path).st_ino)
     shutil.rmtree(exec_config_path)
 
@@ -230,13 +227,13 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
 @pytest.mark.parametrize(
     'env_variable_consist_error',
     [
-        'The --build-env parameter key:`{build_env_key}` can only consist of uppercase letter and number and underline.'
+        'The `--build-env` parameter key:`{build_env_key}` can only consist of uppercase letter and number and underline.'
     ],
 )
 @pytest.mark.parametrize(
     'env_variable_format_error',
     [
-        'The --build-env parameter: `{build_env}` is wrong format. you can use: `--build-env {build_env}=YOUR_VALUE`.'
+        'The `--build-env` parameter: `{build_env}` is wrong format. you can use: `--build-env {build_env}=YOUR_VALUE`.'
     ],
 )
 @pytest.mark.parametrize('path', ['dummy_executor_fail'])
@@ -411,7 +408,6 @@ def test_push_wrong_dockerfile(
 
     with pytest.raises(Exception) as info:
         HubIO(args).push()
-        
 
     assert expected_error.format(dockerfile=dockerfile, work_path=args.path) in str(
         info.value
