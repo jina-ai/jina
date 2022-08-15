@@ -17,22 +17,22 @@ from pathlib import Path
 from typing import Dict, Optional, Tuple
 from urllib.parse import urljoin, urlparse
 
-from jina import __resources_path__
+from jina import __cache_path__, __resources_path__
 from jina.enums import BetterEnum
 from jina.helper import get_request_header as _get_request_header_main
+from jina.hubble.requirements import (
+    check_env_variable,
+    expand_env_variables,
+    get_env_variables,
+    parse_requirement,
+)
 from jina.importer import ImportExtensions
 from jina.logging.predefined import default_logger
-from jina.hubble.requirements import (
-    get_env_variables,
-    check_env_variable,
-    parse_requirement,
-    expand_env_variables
-)
 
 
 @lru_cache()
 def _get_hub_root() -> Path:
-    hub_root = Path(os.environ.get('JINA_HUB_ROOT', Path.home().joinpath('.jina')))
+    hub_root = Path(os.environ.get('JINA_HUB_ROOT', __cache_path__))
 
     if not hub_root.exists():
         hub_root.mkdir(parents=True, exist_ok=True)
@@ -490,6 +490,7 @@ def is_requirements_installed(
         return isinstance(ex, VersionConflict)
     return True
 
+
 def get_requirements_env_variables(requirements_file: 'Path') -> list:
     """get the env variables in requirements.txt
     :param requirements_file: the requirements.txt file
@@ -507,14 +508,16 @@ def get_requirements_env_variables(requirements_file: 'Path') -> list:
 
     return env_variables
 
+
 def check_requirements_env_variable(env_variable: str) -> bool:
-    """ 
+    """
     check the environment variables is limited
     to uppercase letter and number and the `_` (underscore).
     :param env_variable: env_variable in the requirements.txt file
     :return: True or False if not satisfied
     """
     return check_env_variable(env_variable)
+
 
 def replace_requirements_env_variables(requirements_file: 'Path') -> list:
     """replace the environment variables in requirements.txt
@@ -531,7 +534,7 @@ def replace_requirements_env_variables(requirements_file: 'Path') -> list:
                 line = expand_env_variables(line)
                 env_variables.append(line)
     return env_variables
-    
+
 
 def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jina',)):
     with requirements_file.open() as requirements:
