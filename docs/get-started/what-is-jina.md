@@ -60,9 +60,9 @@ _"Is this service prone to attack?"_
 
 At this point, you are burnt out. It goes too far from your expertise. You decided to hand over the project to a senior backend engineer, who is a new hire but has a lot of experience in infrastructure engineering and cloud services. He knows what he is doing and is willing to help you.
 
-So you sit down with him, scrolling over your glued code and justifying all your tricks, design decisions and caveats. He kept nodding. Soon after he took a slow and thoughtful sip of his coffee, he said: 
+So you sit down with him, scrolling over your glued code and justifying all your tricks, design decisions and explaining the caveats. He kept nodding and you see it as some kind of recognition. Soon after he took a slow and thoughtful sip of his coffee, he said: 
 
-"Why don't we start to rewrite it?"
+_"Why don't we start to rewrite it?"_
 
 ## Problems and Jina's solution
 
@@ -74,7 +74,7 @@ The above example is quite real, and it reveals some gaps when developing a cros
 
 **Third is the long go-to-market time**. If a company chooses a wrong tech stack, it will take longer to bring the product to market. This is because the company will have to spend more time and resources on developing the product, refactoring it, going back and forth. In addition, a wrong stack can cause problems with the product itself, raising the risk of the product being unsuccessful.
 
-Jina is a solution to address above problems by providing a consistent design pattern for cross-modal/multi-modal systems with latest cloud native technologies.
+Jina is a solution to address above problems by providing a consistent design pattern for cross-modal/multi-modal systems with the latest cloud native technologies.
 
 ### Why cloud native?
 
@@ -164,7 +164,7 @@ It is a pretty straightforward program. It abstracts away the complexity of a re
 
 In fact, one can achieve the same in 14 lines of code (`black`ed) with pure Python.
 
-So does using Jina means some special design pattern that needs one extra line of code to achieve the same result with pure Python? What's the deal?
+So does using Jina mean some special design pattern that needs one extra line of code to achieve the same result with pure Python? What's the deal?
 
 Here is the deal. The features below come out of the box with the above 15 lines of code:
 
