@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<meta property="og:title" content="Why Jina and Cloud-Native?" />
+<meta property="og:title" content="What is Jina?" />
   
 <meta property="og:type" content="website" />
   
@@ -12,7 +12,9 @@
   
 <meta property="og:site_name" content="Jina 3.7.6 Documentation" />
   
-<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+<meta property="og:description" content="Jina is the framework for helping you build cross-modal and multi-modal applications on the cloud. With Jina, developers can easily build high performant cloud native applications or services in production. But at this point, you are not buying those campaign words. That’s okay and that’s what th..." />
+  
+<meta property="og:image" content="https://docs.jina.ai/_images/7-layers.png" />
   
 <meta property="og:image:alt" content="Jina 3.7.6 Documentation" />
   
@@ -33,11 +35,11 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Basic Concepts" href="../../fundamentals/architecture-overview/" /><link rel="prev" title="What is Cross-Modal &amp; Multi-Modal?" href="../what-is/" />
         <link rel="canonical" href="https://docs.jina.ai/get-started/why-jina.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Why Jina and Cloud-Native? - Jina 3.7.6 documentation</title>
+        <title>What is Jina? - Jina 3.7.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -189,7 +191,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -221,9 +223,10 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
     <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../what-is/">What is Cross-Modal &amp; Multi-Modal?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Glossary</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">What is Jina?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../install/windows/">On Windows</a></li>
@@ -367,7 +370,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon no-toc"
+                    <label class="toc-overlay-icon toc-content-icon"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -378,8 +381,197 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="why-jina-and-cloud-native">
-<h1>Why Jina and Cloud-Native?<a class="headerlink" href="#why-jina-and-cloud-native" title="Permalink to this headline">#</a></h1>
+                    <section class="tex2jax_ignore mathjax_ignore" id="what-is-jina">
+<span id="id1"></span><h1>What is Jina?<a class="headerlink" href="#what-is-jina" title="Permalink to this headline">#</a></h1>
+<p>Jina is the framework for helping you build cross-modal and multi-modal applications on the cloud. With Jina, developers can easily build high performant cloud native applications or services in production. But at this point, you are not buying those campaign words. That’s okay and that’s what this chapter is about: to tell you what Jina is and to convince you about it.</p>
+<p>In the <a class="reference internal" href="../what-is/#intro-cm"><span class="std std-ref">last chapter</span></a>, you already learned cross-modal and multi-modal from the machine learning perspective. This chapter will talk more from the system and engineering side. Let’s start with an example and understand why Jina is needed.</p>
+<section id="motivation-example">
+<span id="motivate-example"></span><h2>Motivation example<a class="headerlink" href="#motivation-example" title="Permalink to this headline">#</a></h2>
+<p>Why do we need Jina? Let’s first see an example: an example that describes a life without Jina.</p>
+<p>Imagine you are a <strong>machine learning engineer</strong> whose task is to build a shop-the-look service for an e-commerce company, i.e. allowing users to upload a photo and search visually similar items from the stock. Sounds cool and deep learning related, exactly what your expertise is, so let’s get started.</p>
+<section id="prototype">
+<h3>Prototype<a class="headerlink" href="#prototype" title="Permalink to this headline">#</a></h3>
+<p>There are two mode of the system, one is <strong>indexing</strong>, which is to create the visual representation of all stock items, the other is <strong>search</strong>, which is to take a user-uploaded photo and find the visually similar items from stock.</p>
+<p>The indexing part is to create a visual representation of all the stock items. In order to do this, you need to first extract features from the images to create the visual representation. The features could be extracted using a convolutional neural network, and then be stored in a database.</p>
+<p>The search part is to take a user-uploaded photo and find the visually similar items from stock. You first need to extract features from the user-uploaded photo using a convolutional neural network. Then, you can use the similarity metric to find the visually similar items from the stock. The similarity metric could be cosine similarity.</p>
+<p>At this point, you need a deep learning framework such as PyTorch, some key-value database such as MongoDB, and possibly some vector search engine such as FAISS or Elasticsearch. As a machine learning engineer, you are probably most familiar with PyTorch. But you are smart and full of energy so nothing you can’t learn. You easily glue them together.</p>
+</section>
+<section id="as-a-service">
+<h3>As a service<a class="headerlink" href="#as-a-service" title="Permalink to this headline">#</a></h3>
+<p>Are we done? Not quite yet. Instead of some Python functions, your goal is to make it as a web service so that its IO goes through network. To do that, you need to <em>refactor</em> the above logic in some web framework with some API so that it can be called by other services.</p>
+<p>There are many ways to do this, one example would be to use the Django web framework. You would create an endpoint that accepts user-uploaded photos, then use the above logic to find the visually similar items from stock. Finally, you would return the results to the user in the form of a JSON object.</p>
+<p>At this point, you learned few new things such as REST API, web service, web framework, which seems to go beyond your scope of a “machine learning engineer”. You started to wonder whether it is worth it to learn them. But you are a machine learning <strong>engineer</strong> after all, so you decided to learn. But deep down you feel that your engineering may not be sufficient to make it into production. After some time, you managed to glue everything together.</p>
+</section>
+<section id="deployment">
+<h3>Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">#</a></h3>
+<p>Product team is impressed by the progress and asks you to deploy it on AWS to serve some real traffic. You encountered many problems while migrating from local to the cloud, mostly because of dependencies issues, CUDA driver and GPU issues. You finally solved all of them by wrapping everything in a 30GB Docker image. It is a <em>big</em> monolith container, but it is easy to deploy and manage for you.</p>
+</section>
+<section id="scalability-and-performance">
+<h3>Scalability and performance<a class="headerlink" href="#scalability-and-performance" title="Permalink to this headline">#</a></h3>
+<p>Are we done now? Still not quite yet. The product team wants to ensure certain scalability of the service in practice, meaning that the feature extraction should be parallelized and concurrent user requests should be handled without lagging. Certain QPS (query per second) is required from the product team.</p>
+<p>You tried with straightforward <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> or <code class="docutils literal notranslate"><span class="pre">threading</span></code>, but nothing works out of the box with your deep learning stacks. You decided to learn more high-performance computing frameworks such as Dask or Ray and try to adopt them. After some trial and error, you finally glued everything together and made them work. At this point you feel exhausted as it diverges too far from your expertise.</p>
+</section>
+<section id="availability-and-downtime">
+<h3>Availability and downtime<a class="headerlink" href="#availability-and-downtime" title="Permalink to this headline">#</a></h3>
+<p><em>“What if our database is down (due to update) for a short-time?”</em></p>
+<p>So you designed some naive failsafe mechanism that you just learned from a blog post. You also picked up some AWS service in a rush to ensure the availability of the service, hoping it can be fire-and-forget.</p>
+</section>
+<section id="observability">
+<h3>Observability<a class="headerlink" href="#observability" title="Permalink to this headline">#</a></h3>
+<p><em>“How can I see the incoming traffic?”</em></p>
+<p>You changed all <code class="docutils literal notranslate"><span class="pre">print</span></code> to <code class="docutils literal notranslate"><span class="pre">logger.info</span></code> and impatiently spin up a dashboard.</p>
+</section>
+<section id="security">
+<h3>Security<a class="headerlink" href="#security" title="Permalink to this headline">#</a></h3>
+<p><em>“Can we add some authentication header to it?”</em></p>
+<p><em>“Is this service prone to attack?”</em></p>
+<p>At this point, you are burnt out. It goes too far from your expertise. You decided to hand over the project to a senior backend engineer, who is a new hire but has a lot of experience in infrastructure engineering and cloud services. He knows what he is doing and is willing to help you.</p>
+<p>So you sit down with him, scrolling over your glued code and justifying all your tricks, design decisions and caveats. He kept nodding. Soon after he took a slow and thoughtful sip of his coffee, he said:</p>
+<p>“Why don’t we start to rewrite it?”</p>
+</section>
+</section>
+<section id="problems-and-jina-s-solution">
+<h2>Problems and Jina’s solution<a class="headerlink" href="#problems-and-jina-s-solution" title="Permalink to this headline">#</a></h2>
+<p>The above example is quite real, and it reveals some gaps when developing a cross-modal/multi-modal system in production:</p>
+<p><strong>First is the lack of design pattern for such system.</strong> It is unclear how should one represent, compute, store, and transit the data with different modalities in a consistent way; and how can one switch between different tools and avoid glue code.</p>
+<p><strong>Second is the large gap of between a proof-of-concept and a production system.</strong> For a production system, cloud native techniques are often required to ensure the professionalism and scalability of the system. In particular, microservices, orchestration, containerization and observability are four pillars of such system. However, the learning curve is too steep for many machine learning engineers.</p>
+<p><strong>Third is the long go-to-market time</strong>. If a company chooses a wrong tech stack, it will take longer to bring the product to market. This is because the company will have to spend more time and resources on developing the product, refactoring it, going back and forth. In addition, a wrong stack can cause problems with the product itself, raising the risk of the product being unsuccessful.</p>
+<p>Jina is a solution to address above problems by providing a consistent design pattern for cross-modal/multi-modal systems with latest cloud native technologies.</p>
+<section id="why-cloud-native">
+<h3>Why cloud native?<a class="headerlink" href="#why-cloud-native" title="Permalink to this headline">#</a></h3>
+<p>Cloud native is a term that refers to a system that is designed to run on the cloud. It consists of a group of concepts:</p>
+<ul class="simple">
+<li><p><strong>Microservices</strong>: Microservices are the core of a cloud-native system. They are the building blocks of a cloud-native system.</p></li>
+<li><p><strong>Orchestration</strong>: Orchestration is the process of managing the microservices.</p></li>
+<li><p><strong>Containerization</strong>: Containerization is the process of packaging the microservices into containers.</p></li>
+<li><p><strong>Observability</strong>: Observability is the process of monitoring the system.</p></li>
+<li><p><strong>DevOps and CI/CD</strong>: DevOps and CI/CD are the process of automating the system.</p></li>
+</ul>
+<p>Sounds cool, But do we really need them?</p>
+<p>Yes!</p>
+<table border="1" class="docutils">
+<thead>
+<tr>
+<th>Characteristics of a cross-modal/multi-modal system</th>
+<th>How would Cloud-native help</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cross-modal/multi-modal system is not a single task, it usually consists of multiple components and forms a workflow or multiple workflows (e.g. indexing and search)</td>
+<td><strong>Microservice</strong> each task, then <strong>orchestrate</strong> them into workflows.</td>
+</tr>
+<tr>
+<td>Cross-modal/multi-modal system involves complicated package dependencies.</td>
+<td><strong>Containerization</strong> comes to help to ensure the reproducibility and isolation.</td>
+</tr>
+<tr>
+<td>Cross-modal/multi-modal system is often a backend/infrastructure service that requires extra stablilty.</td>
+<td><strong>DevOps and CI/CD</strong> guarantees the integration and <strong>Observability</strong> provides the health information of the system.</td>
+</tr>
+</tbody>
+</table>
+<p>With that, let me reiterate what Jina is: Jina is a framework that provides a unified, cloud native solution for building cross-modal/multi-modal systems from day one. It provides the best developer experience from day one POC to production. It smooths your journey by resolving every subsection mentioned in <a class="reference internal" href="#motivate-example"><span class="std std-ref">Motivation example</span></a>. No more tech debt, no more refactoring and back and forth between different systems.</p>
+<p>Now it starts to make sense, right? Let’s get our first taste on how Jina project looks like and how does it work.</p>
+</section>
+</section>
+<section id="taste-of-jina">
+<h2>Taste of Jina<a class="headerlink" href="#taste-of-jina" title="Permalink to this headline">#</a></h2>
+<p>Let’s look at a simple Jina hello world example. We write a function that appends <code class="docutils literal notranslate"><span class="pre">&quot;hello,</span> <span class="pre">world&quot;</span></code> to a Document, we apply the function twice for the two Documents, then return and print their texts.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">With Jina</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span>
+
+
+<span class="k">class</span> <span class="nc">MyExec</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39;hello, world!&#39;</span>
+
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExec</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExec</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────</span>
+<span class="go">╭────────────── 🔗 Endpoint ───────────────╮</span>
+<span class="go">│  ⛓     Protocol                    GRPC  │</span>
+<span class="go">│  🏠       Local           0.0.0.0:52570  │</span>
+<span class="go">│  🔒     Private     192.168.1.126:52570  │</span>
+<span class="go">│  🌍      Public    87.191.159.105:52570  │</span>
+<span class="go">╰──────────────────────────────────────────╯</span>
+
+<span class="go">[&#39;hello, world!hello, world!&#39;, &#39;hello, world!hello, world!&#39;]</span>
+</pre></div>
+</div>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Plain Python</label><div class="tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Document</span><span class="p">:</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+
+<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s1">&#39;hello, world!&#39;</span>
+
+
+<span class="n">docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Document</span><span class="p">(),</span> <span class="n">Document</span><span class="p">()]</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+<span class="n">foo</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[&#39;hello, world!hello, world!&#39;, &#39;hello, world!hello, world!&#39;]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>It is a pretty straightforward program. It abstracts away the complexity of a real cross-modal &amp; multi-modal system, leaving only the basic logics: make a data structure, operate on it, and return the result.</p>
+<p>In fact, one can achieve the same in 14 lines of code (<code class="docutils literal notranslate"><span class="pre">black</span></code>ed) with pure Python.</p>
+<p>So does using Jina means some special design pattern that needs one extra line of code to achieve the same result with pure Python? What’s the deal?</p>
+<p>Here is the deal. The features below come out of the box with the above 15 lines of code:</p>
+<ul class="simple">
+<li><p>Replicas, sharding, scalability in just one line of code;</p></li>
+<li><p>Client/server architecture with duplex streaming;</p></li>
+<li><p>Async non-blocking data workflow;</p></li>
+<li><p>gRPC, Websockets, HTTP, GraphQL gateway support;</p></li>
+<li><p>Microservice from day one, Docker containerization seamlessly;</p></li>
+<li><p>Explicit version and dependency control;</p></li>
+<li><p>Reuse building blocks from Hub marketplace;</p></li>
+<li><p>Immediate observability via Prometheus and Grafana;</p></li>
+<li><p>Kubernetes seamless integration.</p></li>
+</ul>
+<p>If you think that’s a lot of over-promises, it is not. In fact, they barely scratch the surface of Jina’s capability.</p>
+</section>
+<section id="design-principles">
+<h2>Design principles<a class="headerlink" href="#design-principles" title="Permalink to this headline">#</a></h2>
+<p>With so many powerful features, the learning curve of Jina must be very steep, you might think. But it is not. In fact, you only need to know three concepts to master Jina. They are Document, Executor and Flow, which are introduced in <a class="reference internal" href="../../fundamentals/architecture-overview/#architecture-overview"><span class="std std-ref">Basic Concepts</span></a>.</p>
+<p>A full-fledged cross-model/multi-model system is a combination of the following seven layers:</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/7-layers.png"><img alt="../../_images/7-layers.png" src="../../_images/7-layers.png" style="width: 387.0px; height: 707.5px;" /></a>
+</figure>
+<p>This illustration is not exaggerating, it is a real-world example of a cross-modal/multi-modal system in production.</p>
+<p>Fortunately, as a Jina developer, you don’t need to understand all of them. You only need to know what are relevant to your product logic and let Jina handles the rest. In particular,</p>
+<ul class="simple">
+<li><p><strong>The data type</strong>: represents the common data structure across the system; this corresponds to “<strong>Document</strong>” in Jina.</p></li>
+<li><p><strong>The logics</strong>: represents the product logic of each component; this corresponds to “<strong>Executor</strong>” in Jina.</p></li>
+<li><p><strong>The orchestration</strong>: represents the workflow of all components; this corresponds to “<strong>Flow</strong>” in Jina.</p></li>
+</ul>
+<p>are all you need.</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../_images/3-layers.png"><img alt="../../_images/3-layers.png" src="../../_images/3-layers.png" style="width: 747.5px; height: 419.5px;" /></a>
+</figure>
+<p>Patterns are nice, cloud native features are awesome. But what’s the point if you need to spend months to learn them? Jina’s design principles are simple and clear: flatten the learning curve for Python developers and make all awesome production-level features easily accessible.</p>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">#</a></h2>
+<p>Before Jina, building a cross-modal/multi-modal system was a tedious and time-consuming process. It involved a lot of glue code, back and forth refactoring and after months you eventually end up with a fragile system that is unsustainable. With Jina, you are doing it professionally from day one: from POC to production; from deployment to scaling; from monitoring to analytics; everything is taken care of by Jina. We know the pain, we have the lessons learned and that’s why we build Jina: to make developing cross-modal and multi-modal system an easier, productive and enjoyable experience for you.</p>
+</section>
 </section>
 
                 </article>
@@ -387,15 +579,37 @@
             <footer>
                 
                 <div class="related-pages">
-                    
-                    
+                    <a class="next-page" href="../../fundamentals/architecture-overview/">
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Next</span>
+                            </div>
+                            <div class="title">Basic Concepts</div>
+                        </div>
+                        <svg>
+                            <use href="#svg-arrow-right"></use>
+                        </svg>
+                    </a>
+                    <a class="prev-page" href="../what-is/">
+                        <svg>
+                            <use href="#svg-arrow-right"></use>
+                        </svg>
+                        <div class="page-info">
+                            <div class="context">
+                                <span>Previous</span>
+                            </div>
+                            
+                            <div class="title">What is Cross-Modal &amp; Multi-Modal?</div>
+                            
+                        </div>
+                    </a>
                 </div>
                 <div class="bottom-of-page">
                     <div class="left-details">
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 12, 2022</div>
+                            Last updated on Aug 15, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -415,8 +629,43 @@
                 
             </footer>
         </div>
-        <aside class="toc-drawer no-toc">
+        <aside class="toc-drawer">
             
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">What is Jina?</a><ul>
+<li><a class="reference internal" href="#motivation-example">Motivation example</a><ul>
+<li><a class="reference internal" href="#prototype">Prototype</a></li>
+<li><a class="reference internal" href="#as-a-service">As a service</a></li>
+<li><a class="reference internal" href="#deployment">Deployment</a></li>
+<li><a class="reference internal" href="#scalability-and-performance">Scalability and performance</a></li>
+<li><a class="reference internal" href="#availability-and-downtime">Availability and downtime</a></li>
+<li><a class="reference internal" href="#observability">Observability</a></li>
+<li><a class="reference internal" href="#security">Security</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#problems-and-jina-s-solution">Problems and Jina’s solution</a><ul>
+<li><a class="reference internal" href="#why-cloud-native">Why cloud native?</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#taste-of-jina">Taste of Jina</a></li>
+<li><a class="reference internal" href="#design-principles">Design principles</a></li>
+<li><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
             
             
         </aside>

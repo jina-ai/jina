@@ -192,7 +192,8 @@
     <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../get-started/what-is/">What is Cross-Modal &amp; Multi-Modal?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../fundamentals/architecture-overview/">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../get-started/why-jina/">What is Jina?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/windows/">On Windows</a></li>
@@ -351,6 +352,8 @@
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__cache_path__</span>
+
 
 <div class="viewcode-block" id="generate_default_volume_and_workspace"><a class="viewcode-back" href="../../../../api/jina.orchestrate.helper/#jina.orchestrate.helper.generate_default_volume_and_workspace">[docs]</a><span class="k">def</span> <span class="nf">generate_default_volume_and_workspace</span><span class="p">(</span><span class="n">workspace_id</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;automatically generate a docker volume, and an Executor workspace inside it</span>
@@ -367,7 +370,7 @@
             <span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">default_workspace</span><span class="p">),</span> <span class="n">start</span><span class="o">=</span><span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>  <span class="c1"># fallback if no custom volume and no default workspace</span>
-        <span class="n">workspace</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.jina&#39;</span><span class="p">,</span> <span class="s1">&#39;executor-workspace&#39;</span><span class="p">)</span>
+        <span class="n">workspace</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__cache_path__</span><span class="p">,</span> <span class="s1">&#39;executor-workspace&#39;</span><span class="p">)</span>
         <span class="n">host_addr</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
             <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">(),</span>
             <span class="n">workspace</span><span class="p">,</span>
@@ -390,7 +393,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 12, 2022</div>
+                            Last updated on Aug 15, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

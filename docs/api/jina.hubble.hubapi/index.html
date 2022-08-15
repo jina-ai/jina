@@ -225,7 +225,8 @@
     <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is/">What is Cross-Modal &amp; Multi-Modal?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/why-jina/">What is Jina?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
@@ -431,35 +432,35 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="jina.hubble.hubapi.get_secret_path">
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></span><span class="sig-name descname"><span class="pre">get_secret_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#get_secret_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.get_secret_path" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the path of secrets
+:type inode: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param inode: the inode of the executor path
+:rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>
+:return: the path of secrets</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="jina.hubble.hubapi.load_secret">
 <span class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></span><span class="sig-name descname"><span class="pre">load_secret</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">work_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#load_secret"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.load_secret" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the UUID and Secret from local</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>work_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – the local package directory</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the UUID and secret</p>
-</dd>
-</dl>
+<dd><p>Get the UUID and Secret from local
+:type work_path: <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>
+:param work_path: the work path of the executor
+:rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
+:return: the UUID and secret</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.hubble.hubapi.dump_secret">
 <span class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></span><span class="sig-name descname"><span class="pre">dump_secret</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">work_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uuid8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#dump_secret"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.dump_secret" title="Permalink to this definition">#</a></dt>
-<dd><p>Dump the UUID and Secret into local file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>work_path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>) – the local package directory</p></li>
-<li><p><strong>uuid8</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the ID of the executor</p></li>
-<li><p><strong>secret</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the access secret</p></li>
-</ul>
-</dd>
-</dl>
+<dd><p>Dump the UUID and Secret into local file
+:type work_path: <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>
+:param work_path: the work path of the executor
+:type uuid8: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param uuid8: the ID of the executor
+:type secret: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param secret: the access secret</p>
 </dd></dl>
 
 <dl class="py function">
@@ -551,7 +552,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 12, 2022</div>
+                            Last updated on Aug 15, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

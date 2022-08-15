@@ -192,7 +192,8 @@
     <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../get-started/what-is/">What is Cross-Modal &amp; Multi-Modal?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../fundamentals/architecture-overview/">Glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../get-started/why-jina/">What is Jina?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/windows/">On Windows</a></li>
@@ -355,6 +356,7 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__cache_path__</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">random_identity</span>
 <span class="kn">from</span> <span class="nn">jina.hubble</span> <span class="kn">import</span> <span class="n">HubExecutor</span>
 <span class="kn">from</span> <span class="nn">jina.hubble.helper</span> <span class="kn">import</span> <span class="p">(</span>
@@ -363,6 +365,10 @@
     <span class="n">is_requirements_installed</span><span class="p">,</span>
     <span class="n">unpack_package</span><span class="p">,</span>
 <span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">SECRET_PATH</span> <span class="o">=</span> <span class="s1">&#39;secrets&#39;</span>
 
 
 <div class="viewcode-block" id="get_dist_path"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.get_dist_path">[docs]</a><span class="k">def</span> <span class="nf">get_dist_path</span><span class="p">(</span><span class="n">uuid</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">Path</span><span class="p">]:</span>
@@ -407,19 +413,35 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_hub_packages_dir</span><span class="p">()</span> <span class="o">/</span> <span class="s1">&#39;LOCK&#39;</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="get_secret_path"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.get_secret_path">[docs]</a><span class="k">def</span> <span class="nf">get_secret_path</span><span class="p">(</span><span class="n">inode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Path&#39;</span><span class="p">:</span> 
+    <span class="sd">&quot;&quot;&quot;Get the path of secrets</span>
+<span class="sd">    :param inode: the inode of the executor path</span>
+<span class="sd">    :return: the path of secrets</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">pre_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">__cache_path__</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">SECRET_PATH</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">inode</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pre_path</span></div>
+
 
 <div class="viewcode-block" id="load_secret"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.load_secret">[docs]</a><span class="k">def</span> <span class="nf">load_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">:</span> <span class="s1">&#39;Path&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Get the UUID and Secret from local</span>
-
-<span class="sd">    :param work_path: the local package directory</span>
+<span class="sd">    :param work_path: the work path of the executor</span>
 <span class="sd">    :return: the UUID and secret</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    
     <span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="kn">import</span> <span class="n">Fernet</span>
 
-    <span class="n">config</span> <span class="o">=</span> <span class="n">work_path</span> <span class="o">/</span> <span class="s1">&#39;.jina&#39;</span>
+    <span class="n">preConfig</span> <span class="o">=</span> <span class="n">work_path</span> <span class="o">/</span> <span class="s1">&#39;.jina&#39;</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">get_secret_path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">work_path</span><span class="p">)</span><span class="o">.</span><span class="n">st_ino</span><span class="p">)</span>
     <span class="n">config</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">local_id_file</span> <span class="o">=</span> <span class="n">config</span> <span class="o">/</span> <span class="s1">&#39;secret.key&#39;</span>
+    <span class="n">pre_secret_file</span> <span class="o">=</span> <span class="n">preConfig</span> <span class="o">/</span> <span class="s1">&#39;secret.key&#39;</span>
+
+    <span class="k">if</span> <span class="n">pre_secret_file</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">local_id_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">pre_secret_file</span><span class="p">,</span> <span class="n">local_id_file</span><span class="p">)</span>
+
     <span class="n">uuid8</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">secret</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">local_id_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -440,14 +462,13 @@
 
 <div class="viewcode-block" id="dump_secret"><a class="viewcode-back" href="../../../../api/jina.hubble.hubapi/#jina.hubble.hubapi.dump_secret">[docs]</a><span class="k">def</span> <span class="nf">dump_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">:</span> <span class="s1">&#39;Path&#39;</span><span class="p">,</span> <span class="n">uuid8</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">secret</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Dump the UUID and Secret into local file</span>
-
-<span class="sd">    :param work_path: the local package directory</span>
+<span class="sd">    :param work_path: the work path of the executor</span>
 <span class="sd">    :param uuid8: the ID of the executor</span>
 <span class="sd">    :param secret: the access secret</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">cryptography.fernet</span> <span class="kn">import</span> <span class="n">Fernet</span>
 
-    <span class="n">config</span> <span class="o">=</span> <span class="n">work_path</span> <span class="o">/</span> <span class="s1">&#39;.jina&#39;</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">get_secret_path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">work_path</span><span class="p">)</span><span class="o">.</span><span class="n">st_ino</span><span class="p">);</span>
     <span class="n">config</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">local_id_file</span> <span class="o">=</span> <span class="n">config</span> <span class="o">/</span> <span class="s1">&#39;secret.key&#39;</span>
@@ -586,7 +607,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 12, 2022</div>
+                            Last updated on Aug 15, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
