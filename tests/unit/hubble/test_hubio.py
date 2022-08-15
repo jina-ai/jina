@@ -21,14 +21,12 @@ from jina.hubble.helper import (
     disk_cache_offline,
     get_requirements_env_variables,
 )
+from jina.hubble.hubapi import get_secret_path
 from jina.hubble.hubio import HubExecutor, HubIO
 from jina.parsers.hubble import (
     set_hub_new_parser,
     set_hub_pull_parser,
     set_hub_push_parser,
-)
-from jina.hubble.hubapi import (
-    get_secret_path
 )
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -93,15 +91,26 @@ class PostMockResponse:
 
 
 class FetchMetaMockResponse:
-    def __init__(self, response_code: int = 200, no_image=False, fail_count=0):
+    def __init__(
+        self,
+        response_code: int = 200,
+        no_image=False,
+        fail_count=0,
+        add_build_env=False,
+    ):
         self.response_code = response_code
         self.no_image = no_image
         self._tried_count = 0
         self._fail_count = fail_count
+        self._build_env = add_build_env
 
     def json(self):
         if self._tried_count <= self._fail_count:
             return {'message': 'Internal server error'}
+
+        commit_val = {'_id': 'commit_id', 'tags': ['v0']}
+        if self._build_env:
+            commit_val['commitParams'] = {'buildEnv': {'key1': 'val1', 'key2': 'val2'}}
 
         return {
             'data': {
@@ -109,7 +118,7 @@ class FetchMetaMockResponse:
                 'id': 'dummy_mwu_encoder',
                 'name': 'alias_dummy',
                 'visibility': 'public',
-                'commit': {'_id': 'commit_id', 'tags': ['v0']},
+                'commit': commit_val,
                 'package': {
                     'containers': []
                     if self.no_image
@@ -169,7 +178,6 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
 
     result = HubIO(args).push()
 
-    
     exec_config_path = get_secret_path(os.stat(exec_path).st_ino)
     shutil.rmtree(exec_config_path)
 
@@ -219,13 +227,13 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
 @pytest.mark.parametrize(
     'env_variable_consist_error',
     [
-        'The --build-env parameter key:`{build_env_key}` can only consist of uppercase letter and number and underline.'
+        'The `--build-env` parameter key:`{build_env_key}` can only consist of uppercase letter and number and underline.'
     ],
 )
 @pytest.mark.parametrize(
     'env_variable_format_error',
     [
-        'The --build-env parameter: `{build_env}` is wrong format. you can use: `--build-env {build_env}=YOUR_VALUE`.'
+        'The `--build-env` parameter: `{build_env}` is wrong format. you can use: `--build-env {build_env}=YOUR_VALUE`.'
     ],
 )
 @pytest.mark.parametrize('path', ['dummy_executor_fail'])
@@ -313,7 +321,7 @@ def test_push_requirements_file_require_set_env_variables(
 
     with pytest.raises(Exception) as info:
         result = HubIO(args).push()
-        
+
     assert requirements_file_need_build_env_error.format(
         env_variables_str=','.join(requirements_file_env_variables)
     ) in str(info.value)
@@ -400,7 +408,6 @@ def test_push_wrong_dockerfile(
 
     with pytest.raises(Exception) as info:
         HubIO(args).push()
-        
 
     assert expected_error.format(dockerfile=dockerfile, work_path=args.path) in str(
         info.value
@@ -452,6 +459,41 @@ def test_fetch(mocker, monkeypatch, rebuild_image):
     assert executor.tag == 'v0'
     assert executor.image_name == 'jinahub/pod.dummy_mwu_encoder'
     assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'
+
+    _, mock_kwargs = mock.call_args_list[0]
+    assert mock_kwargs['json']['rebuildImage'] is rebuild_image
+
+    executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', '', force=True)
+    assert executor.tag == 'v0'
+
+    _, mock_kwargs = mock.call_args_list[1]
+    assert mock_kwargs['json']['rebuildImage'] is True  # default value must be True
+
+    executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', 'v0.1', force=True)
+    assert executor.tag == 'v0.1'
+
+
+@pytest.mark.parametrize('rebuild_image', [True, False])
+def test_fetch_with_buildenv(mocker, monkeypatch, rebuild_image):
+    mock = mocker.Mock()
+
+    def _mock_post(url, json, headers=None):
+        mock(url=url, json=json)
+        return FetchMetaMockResponse(response_code=200, add_build_env=True)
+
+    monkeypatch.setattr(requests, 'post', _mock_post)
+    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
+
+    executor, _ = HubIO(args).fetch_meta(
+        'dummy_mwu_encoder', None, rebuild_image=rebuild_image, force=True
+    )
+
+    assert executor.uuid == 'dummy_mwu_encoder'
+    assert executor.name == 'alias_dummy'
+    assert executor.tag == 'v0'
+    assert executor.image_name == 'jinahub/pod.dummy_mwu_encoder'
+    assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'
+    assert executor.build_env == ['key1', 'key2']
 
     _, mock_kwargs = mock.call_args_list[0]
     assert mock_kwargs['json']['rebuildImage'] is rebuild_image

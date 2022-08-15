@@ -356,14 +356,14 @@ metas:
                 env_list = env.split('=')
                 if len(env_list) != 2:
                     raise Exception(
-                        f'The --build-env parameter: `{env}` is wrong format. you can use: `--build-env {env}=YOUR_VALUE`.'
+                        f'The `--build-env` parameter: `{env}` is wrong format. you can use: `--build-env {env}=YOUR_VALUE`.'
                     )
                 if check_requirements_env_variable(env_list[0]) is False:
                     raise Exception(
-                        f'The --build-env parameter key:`{env_list[0]}` can only consist of uppercase letter and number and underline.'
+                        f'The `--build-env` parameter key:`{env_list[0]}` can only consist of uppercase letter and number and underline.'
                     )
                 build_env_dict[env_list[0]] = env_list[1]
-            build_env = build_env_dict if len(list(build_env_dict.keys())) > 0 else None
+            build_env = build_env_dict if build_env_dict else None
 
         requirements_file = work_path / 'requirements.txt'
 
@@ -433,7 +433,7 @@ metas:
 
                 if build_env:
                     form_data['buildEnv'] = json.dumps(build_env)
-                
+
                 uuid8, secret = load_secret(work_path)
                 if self.args.force_update or uuid8:
                     form_data['id'] = self.args.force_update or uuid8
@@ -712,7 +712,7 @@ metas:
             image_name=image_name,
             archive_url=resp['package']['download'],
             md5sum=resp['package']['md5'],
-            build_env=buildEnv.keys() if buildEnv else [],
+            build_env=list(buildEnv.keys()) if buildEnv else [],
         )
 
     @staticmethod
