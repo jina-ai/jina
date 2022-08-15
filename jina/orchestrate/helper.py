@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+from jina import __cache_path__
+
 
 def generate_default_volume_and_workspace(workspace_id=''):
     """automatically generate a docker volume, and an Executor workspace inside it
@@ -17,7 +19,7 @@ def generate_default_volume_and_workspace(workspace_id=''):
             path=os.path.abspath(default_workspace), start=Path.home()
         )
     else:  # fallback if no custom volume and no default workspace
-        workspace = os.path.join('.jina', 'executor-workspace')
+        workspace = os.path.join(__cache_path__, 'executor-workspace')
         host_addr = os.path.join(
             Path.home(),
             workspace,

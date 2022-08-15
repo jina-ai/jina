@@ -5,6 +5,7 @@ import shutil
 from pathlib import Path
 from typing import Tuple
 
+from jina import __cache_path__
 from jina.helper import random_identity
 from jina.hubble import HubExecutor
 from jina.hubble.helper import (
@@ -13,6 +14,10 @@ from jina.hubble.helper import (
     is_requirements_installed,
     unpack_package,
 )
+
+import os
+
+SECRET_PATH = 'secrets'
 
 
 def get_dist_path(uuid: str, tag: str) -> Tuple[Path, Path]:
@@ -57,19 +62,35 @@ def get_lockfile() -> str:
     """
     return str(get_hub_packages_dir() / 'LOCK')
 
+def get_secret_path(inode: str) -> 'Path': 
+    """Get the path of secrets
+    :param inode: the inode of the executor path
+    :return: the path of secrets
+    """
+
+    pre_path = Path(f'{__cache_path__}/{SECRET_PATH}/{inode}')
+
+    return pre_path
+
 
 def load_secret(work_path: 'Path') -> Tuple[str, str]:
     """Get the UUID and Secret from local
-
-    :param work_path: the local package directory
+    :param work_path: the work path of the executor
     :return: the UUID and secret
     """
+    
     from cryptography.fernet import Fernet
 
-    config = work_path / '.jina'
+    preConfig = work_path / '.jina'
+    config = get_secret_path(os.stat(work_path).st_ino)
     config.mkdir(parents=True, exist_ok=True)
 
     local_id_file = config / 'secret.key'
+    pre_secret_file = preConfig / 'secret.key'
+
+    if pre_secret_file.exists() and not local_id_file.exists():
+        shutil.copyfile(pre_secret_file, local_id_file)
+
     uuid8 = None
     secret = None
     if local_id_file.exists():
@@ -90,14 +111,13 @@ def load_secret(work_path: 'Path') -> Tuple[str, str]:
 
 def dump_secret(work_path: 'Path', uuid8: str, secret: str):
     """Dump the UUID and Secret into local file
-
-    :param work_path: the local package directory
+    :param work_path: the work path of the executor
     :param uuid8: the ID of the executor
     :param secret: the access secret
     """
     from cryptography.fernet import Fernet
 
-    config = work_path / '.jina'
+    config = get_secret_path(os.stat(work_path).st_ino);
     config.mkdir(parents=True, exist_ok=True)
 
     local_id_file = config / 'secret.key'
