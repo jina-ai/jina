@@ -360,7 +360,7 @@ metas:
                     )
                 if check_requirements_env_variable(env_list[0]) is False:
                     raise Exception(
-                        f'The --build-env parameter key:`{env_list[0]}` can only consist of uppercase letter and number and underline.'
+                        f'The `--build-env` parameter key:`{env_list[0]}` can only consist of uppercase letter and number and underline.'
                     )
                 build_env_dict[env_list[0]] = env_list[1]
             build_env = build_env_dict if build_env_dict else None
