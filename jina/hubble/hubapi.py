@@ -108,7 +108,6 @@ def dump_secret(name: str, uuid8: str, secret: str):
     config = get_secret_path(name);
     config.mkdir(parents=True, exist_ok=True)
 
-    print('----dump_secret----',config)
     local_id_file = config / 'secret.key'
     if local_id_file.exists():
         try:
