@@ -217,6 +217,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14618,4 +14619,24 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```23914a81```](https://github.com/jina-ai/jina/commit/23914a81120f73f0b807b70767fbe68a636f0903)] __-__ add what is cross multi modal (*Han Xiao*)
  - [[```0c78b993```](https://github.com/jina-ai/jina/commit/0c78b993475292987e7ae26f58ba2779377d38f1)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```102bc6de```](https://github.com/jina-ai/jina/commit/102bc6defef4c163c145563a343841e667f9f953)] __-__ __version__: the next version will be 3.7.6 (*Jina Dev Bot*)
+
+<a name=release-note-3-7-7></a>
+## Release Note (`3.7.7`)
+
+> Release time: 2022-08-15 18:14:16
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Johannes Messner,  Han Xiao,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```22563074```](https://github.com/jina-ai/jina/commit/22563074bb02779d31258ea57da42d515be0bdbf)] __-__ cache hub pull with build env (#5061) (*Johannes Messner*)
+
+### 🍹 Other Improvements
+
+ - [[```e7377947```](https://github.com/jina-ai/jina/commit/e7377947482c8d32b1aed0aee24a8efa14b33826)] __-__ __docs__: fix typos (*Han Xiao*)
+ - [[```6d218fbf```](https://github.com/jina-ai/jina/commit/6d218fbfa060226487174208ded10844b0ed28d2)] __-__ __version__: the next version will be 3.7.7 (*Jina Dev Bot*)
 
