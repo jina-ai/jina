@@ -433,8 +433,8 @@ metas:
 
                 if build_env:
                     form_data['buildEnv'] = json.dumps(build_env)
-
-                uuid8, secret = load_secret()
+                
+                uuid8, secret = load_secret(os.path.basename(work_path))
                 if self.args.force_update or uuid8:
                     form_data['id'] = self.args.force_update or uuid8
                 if self.args.secret or secret:
@@ -513,7 +513,7 @@ metas:
                         console, image, warning=warning
                     )
                     if new_uuid8 != uuid8 or new_secret != secret:
-                        dump_secret(new_uuid8, new_secret or '')
+                        dump_secret(os.path.basename(work_path) ,new_uuid8, new_secret or '')
                 else:
                     raise Exception(f'Unknown Error, session_id: {session_id}')
 

@@ -27,6 +27,9 @@ from jina.parsers.hubble import (
     set_hub_pull_parser,
     set_hub_push_parser,
 )
+from jina.hubble.hubapi import (
+    get_secret_path
+)
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -165,6 +168,9 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
     args = set_hub_push_parser().parse_args(_args_list)
 
     result = HubIO(args).push()
+
+    exec_config_path = get_secret_path(path)
+    shutil.rmtree(exec_config_path)
 
     _, mock_kwargs = mock.call_args_list[0]
 
@@ -306,6 +312,7 @@ def test_push_requirements_file_require_set_env_variables(
 
     with pytest.raises(Exception) as info:
         result = HubIO(args).push()
+        
     assert requirements_file_need_build_env_error.format(
         env_variables_str=','.join(requirements_file_env_variables)
     ) in str(info.value)
@@ -389,8 +396,10 @@ def test_push_wrong_dockerfile(
 
     args = set_hub_push_parser().parse_args(_args_list)
     args.dockerfile = dockerfile
+
     with pytest.raises(Exception) as info:
         HubIO(args).push()
+        
 
     assert expected_error.format(dockerfile=dockerfile, work_path=args.path) in str(
         info.value

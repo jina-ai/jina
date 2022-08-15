@@ -15,6 +15,8 @@ from jina.hubble.helper import (
     unpack_package,
 )
 
+SECRET_PATH = 'secrets'
+
 
 def get_dist_path(uuid: str, tag: str) -> Tuple[Path, Path]:
     """Get the package path according ID and TAG
@@ -58,15 +60,22 @@ def get_lockfile() -> str:
     """
     return str(get_hub_packages_dir() / 'LOCK')
 
+def get_secret_path(name: str) ->Path: 
+    """Get the path of secrets
+    :param name: the name of the executor
+    :return: the path of secrets
+    """
+    return Path( f'{__cache_path__}/{SECRET_PATH}/{name}')
 
-def load_secret() -> Tuple[str, str]:
+
+def load_secret(name: str) -> Tuple[str, str]:
     """Get the UUID and Secret from local
-
+    :param name: the name of the executor
     :return: the UUID and secret
     """
+    
     from cryptography.fernet import Fernet
-
-    config = Path(__cache_path__)
+    config = get_secret_path(name);
     config.mkdir(parents=True, exist_ok=True)
 
     local_id_file = config / 'secret.key'
@@ -88,17 +97,18 @@ def load_secret() -> Tuple[str, str]:
     return uuid8, secret
 
 
-def dump_secret(uuid8: str, secret: str):
+def dump_secret(name: str, uuid8: str, secret: str):
     """Dump the UUID and Secret into local file
-
+    :param name: the name of the executor
     :param uuid8: the ID of the executor
     :param secret: the access secret
     """
     from cryptography.fernet import Fernet
 
-    config = Path(__cache_path__)
+    config = get_secret_path(name);
     config.mkdir(parents=True, exist_ok=True)
 
+    print('----dump_secret----',config)
     local_id_file = config / 'secret.key'
     if local_id_file.exists():
         try:
