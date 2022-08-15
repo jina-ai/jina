@@ -62,20 +62,20 @@ def get_lockfile() -> str:
     """
     return str(get_hub_packages_dir() / 'LOCK')
 
-def get_secret_path(name: str) ->Path: 
+def get_secret_path(inode: str) -> 'Path': 
     """Get the path of secrets
-    :param name: the name of the executor
+    :param inode: the inode of the executor path
     :return: the path of secrets
     """
 
-    pre_path = Path( f'{__cache_path__}/{SECRET_PATH}/{name}')
+    pre_path = Path(f'{__cache_path__}/{SECRET_PATH}/{inode}')
 
     return pre_path
 
 
 def load_secret(work_path: 'Path') -> Tuple[str, str]:
     """Get the UUID and Secret from local
-    :param name: the name of the executor
+    :param work_path: the work path of the executor
     :return: the UUID and secret
     """
     
@@ -111,7 +111,7 @@ def load_secret(work_path: 'Path') -> Tuple[str, str]:
 
 def dump_secret(work_path: 'Path', uuid8: str, secret: str):
     """Dump the UUID and Secret into local file
-    :param name: the name of the executor
+    :param work_path: the work path of the executor
     :param uuid8: the ID of the executor
     :param secret: the access secret
     """
