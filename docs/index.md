@@ -61,6 +61,7 @@ If you'd like to opt out of usage statistics, make sure to add the `--optout-tel
 :hidden:
 
 get-started/what-is
+get-started/why-jina
 fundamentals/architecture-overview
 get-started/install/index
 get-started/create-app

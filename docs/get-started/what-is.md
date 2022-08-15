@@ -1,3 +1,4 @@
+(intro-cm)=
 # What is Cross-Modal & Multi-Modal?
 
 Jina is the framework for helping you build cross-modal and multi-modal applications on the cloud. But first, what is cross-modal and multi-modal? And what are the applications? This chapter will answer these preliminary questions.
@@ -136,6 +137,6 @@ Don't underestimate the power of this relationship. It is the foundation of neur
 
 In summary, the key of cross-modal and multi-modal application is to understand the relationship between modalities. With the relationship, one can use it to **find existing data**, which is **neural search**; or use it to **make new data**, which is **creative AI**.
 
-In the next chapter, we will see how Jina is the proper tool for building cross-modal and multi-modal applications on the cloud.
+In the {ref}`next chapter<what-is-jina>`, we will see how Jina is the proper tool for building cross-modal and multi-modal applications on the cloud.
 
 

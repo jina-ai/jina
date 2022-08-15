@@ -1,7 +1,7 @@
 (architecture-overview)=
-# Glossary
+# Basic Concepts
 
-This chapter introduces the terminologies you will encounter in the docs. But first, let's look at the code below:
+This chapter introduces the basic terminologies you will encounter in the docs. But first, let's look at the code below:
 
 ````{tab} Server
 ```python
@@ -85,3 +85,16 @@ The following concepts will be covered in the user guide:
 **TLS**
     TLS is a security protocol designed to facilitate privacy and data security for communications over the Internet. The communication between {term}`Client` and {term}`Gateway` is protected by TLS.
 ```
+
+## Relationship between Jina and DocArray
+
+[DocArray](https://docarray.jina.ai/) is a crucial upstream dependency of Jina. It is the data structure behind Jina. Without DocArray, Jina can not run.
+
+DocArray contains a set of rich API for on the local & monolith development. Jina scales DocArray to the cloud. The picture below shows their relationship.
+
+```{figure} docarray-jina.svg
+```
+
+In a common development journey, a brand-new project first moves horizontally left with DocArray, leveraging all machine learning stacks to improve quality and completing logics in a local environment. At this point, a POC is built. Then move vertically up with Jina, enhancing the POC with service endpoint, scalability and cloud-native features. Finally, you reach to the point where your service is ready for production.
+
+
