@@ -12,14 +12,14 @@ import docker
 import pytest
 import requests
 import yaml
-from jina.hubble import hubio
 
+from jina.hubble import hubio
 from jina.hubble.helper import (
     _get_auth_token,
     _get_hub_config,
     _get_hub_root,
     disk_cache_offline,
-    get_requirements_env_variables
+    get_requirements_env_variables,
 )
 from jina.hubble.hubio import HubExecutor, HubIO
 from jina.parsers.hubble import (
@@ -90,15 +90,26 @@ class PostMockResponse:
 
 
 class FetchMetaMockResponse:
-    def __init__(self, response_code: int = 200, no_image=False, fail_count=0):
+    def __init__(
+        self,
+        response_code: int = 200,
+        no_image=False,
+        fail_count=0,
+        add_build_env=False,
+    ):
         self.response_code = response_code
         self.no_image = no_image
         self._tried_count = 0
         self._fail_count = fail_count
+        self._build_env = add_build_env
 
     def json(self):
         if self._tried_count <= self._fail_count:
             return {'message': 'Internal server error'}
+
+        commit_val = {'_id': 'commit_id', 'tags': ['v0']}
+        if self._build_env:
+            commit_val['commitParams'] = {'buildEnv': {'key1': 'val1', 'key2': 'val2'}}
 
         return {
             'data': {
@@ -106,7 +117,7 @@ class FetchMetaMockResponse:
                 'id': 'dummy_mwu_encoder',
                 'name': 'alias_dummy',
                 'visibility': 'public',
-                'commit': {'_id': 'commit_id', 'tags': ['v0']},
+                'commit': commit_val,
                 'package': {
                     'containers': []
                     if self.no_image
@@ -164,8 +175,7 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
 
     args = set_hub_push_parser().parse_args(_args_list)
 
-    result =  HubIO(args).push()
-    
+    result = HubIO(args).push()
 
     # remove .jina
     exec_config_path = os.path.join(exec_path, '.jina')
@@ -187,10 +197,12 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
         assert form_data['id'] == ['UUID8']
     else:
         assert form_data.get('id') is None
-    
+
     if build_env:
         print(form_data['buildEnv'])
-        assert form_data['buildEnv'] == ['{"DOMAIN": "github.com", "DOWNLOAD": "download"}']
+        assert form_data['buildEnv'] == [
+            '{"DOMAIN": "github.com", "DOWNLOAD": "download"}'
+        ]
     else:
         assert form_data.get('buildEnv') is None
 
@@ -228,7 +240,14 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
 @pytest.mark.parametrize('mode', ['--public', '--private'])
 @pytest.mark.parametrize('build_env', ['TEST_TOKEN_ccc=ghp_I1cCzUY', 'NO123123'])
 def test_push_wrong_build_env(
-    mocker, monkeypatch, path, mode, tmpdir, env_variable_format_error, env_variable_consist_error, build_env
+    mocker,
+    monkeypatch,
+    path,
+    mode,
+    tmpdir,
+    env_variable_format_error,
+    env_variable_consist_error,
+    build_env,
 ):
     mock = mocker.Mock()
 
@@ -246,15 +265,19 @@ def test_push_wrong_build_env(
 
     if build_env:
         _args_list.extend(['--build-env', build_env])
-    
+
     args = set_hub_push_parser().parse_args(_args_list)
 
     with pytest.raises(Exception) as info:
-         result = HubIO(args).push()
-    
-    assert (
-        env_variable_format_error.format(build_env=build_env) in str( info.value ) 
-        or env_variable_consist_error.format(build_env_key=build_env.split('=')[0]) in str( info.value ))
+        result = HubIO(args).push()
+
+    assert env_variable_format_error.format(build_env=build_env) in str(
+        info.value
+    ) or env_variable_consist_error.format(
+        build_env_key=build_env.split('=')[0]
+    ) in str(
+        info.value
+    )
 
 
 @pytest.mark.parametrize(
@@ -267,7 +290,13 @@ def test_push_wrong_build_env(
 @pytest.mark.parametrize('mode', ['--public', '--private'])
 @pytest.mark.parametrize('requirements_file', ['requirements.txt'])
 def test_push_requirements_file_require_set_env_variables(
-    mocker, monkeypatch, path, mode, tmpdir, requirements_file_need_build_env_error, requirements_file
+    mocker,
+    monkeypatch,
+    path,
+    mode,
+    tmpdir,
+    requirements_file_need_build_env_error,
+    requirements_file,
 ):
     mock = mocker.Mock()
 
@@ -285,12 +314,16 @@ def test_push_requirements_file_require_set_env_variables(
 
     args = set_hub_push_parser().parse_args(_args_list)
 
-    requirements_file = os.path.join(exec_path,requirements_file)
-    requirements_file_env_variables = get_requirements_env_variables(Path(requirements_file))
-    
+    requirements_file = os.path.join(exec_path, requirements_file)
+    requirements_file_env_variables = get_requirements_env_variables(
+        Path(requirements_file)
+    )
+
     with pytest.raises(Exception) as info:
-         result = HubIO(args).push()
-    assert requirements_file_need_build_env_error.format(env_variables_str=','.join(requirements_file_env_variables)) in str( info.value ) 
+        result = HubIO(args).push()
+    assert requirements_file_need_build_env_error.format(
+        env_variables_str=','.join(requirements_file_env_variables)
+    ) in str(info.value)
 
 
 @pytest.mark.parametrize(
@@ -323,14 +356,20 @@ def test_push_diff_env_variables(
 
     args = set_hub_push_parser().parse_args(_args_list)
 
-    requirements_file = os.path.join(exec_path,'requirements.txt')
-    requirements_file_env_variables = get_requirements_env_variables(Path(requirements_file))
-    diff_env_variables = list(set(requirements_file_env_variables).difference(set([build_env])))
+    requirements_file = os.path.join(exec_path, 'requirements.txt')
+    requirements_file_env_variables = get_requirements_env_variables(
+        Path(requirements_file)
+    )
+    diff_env_variables = list(
+        set(requirements_file_env_variables).difference(set([build_env]))
+    )
 
     with pytest.raises(Exception) as info:
-         result = HubIO(args).push()
+        result = HubIO(args).push()
 
-    assert diff_env_variables_error.format(env_variables_str=','.join(diff_env_variables)) in str( info.value ) 
+    assert diff_env_variables_error.format(
+        env_variables_str=','.join(diff_env_variables)
+    ) in str(info.value)
 
 
 @pytest.mark.parametrize(
@@ -436,6 +475,41 @@ def test_fetch(mocker, monkeypatch, rebuild_image):
     assert executor.tag == 'v0.1'
 
 
+@pytest.mark.parametrize('rebuild_image', [True, False])
+def test_fetch_with_buildenv(mocker, monkeypatch, rebuild_image):
+    mock = mocker.Mock()
+
+    def _mock_post(url, json, headers=None):
+        mock(url=url, json=json)
+        return FetchMetaMockResponse(response_code=200, add_build_env=True)
+
+    monkeypatch.setattr(requests, 'post', _mock_post)
+    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
+
+    executor, _ = HubIO(args).fetch_meta(
+        'dummy_mwu_encoder', None, rebuild_image=rebuild_image, force=True
+    )
+
+    assert executor.uuid == 'dummy_mwu_encoder'
+    assert executor.name == 'alias_dummy'
+    assert executor.tag == 'v0'
+    assert executor.image_name == 'jinahub/pod.dummy_mwu_encoder'
+    assert executor.md5sum == 'ecbe3fdd9cbe25dbb85abaaf6c54ec4f'
+    assert executor.build_env == ['key1', 'key2']
+
+    _, mock_kwargs = mock.call_args_list[0]
+    assert mock_kwargs['json']['rebuildImage'] is rebuild_image
+
+    executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', '', force=True)
+    assert executor.tag == 'v0'
+
+    _, mock_kwargs = mock.call_args_list[1]
+    assert mock_kwargs['json']['rebuildImage'] is True  # default value must be True
+
+    executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', 'v0.1', force=True)
+    assert executor.tag == 'v0.1'
+
+
 def test_fetch_with_no_image(mocker, monkeypatch):
     mock = mocker.Mock()
 
@@ -514,8 +588,9 @@ class DownloadMockResponse:
     def status_code(self):
         return self.response_code
 
+
 @pytest.mark.parametrize('executor_name', ['alias_dummy', None])
-@pytest.mark.parametrize('build_env', [['DOWNLOAD','DOMAIN'], None])
+@pytest.mark.parametrize('build_env', [['DOWNLOAD', 'DOMAIN'], None])
 def test_pull(test_envs, mocker, monkeypatch, executor_name, build_env):
     mock = mocker.Mock()
 
@@ -538,7 +613,7 @@ def test_pull(test_envs, mocker, monkeypatch, executor_name, build_env):
                 md5sum=None,
                 visibility=True,
                 archive_url=None,
-                build_env=build_env
+                build_env=build_env,
             ),
             False,
         )
@@ -558,7 +633,7 @@ def test_pull(test_envs, mocker, monkeypatch, executor_name, build_env):
     monkeypatch.setattr(requests, 'get', _mock_download)
     monkeypatch.setattr(requests, 'head', _mock_head)
 
-    def _mock_get_prettyprint_usage(self,console, executor_name, usage_kind=None):
+    def _mock_get_prettyprint_usage(self, console, executor_name, usage_kind=None):
         mock(console=console)
         mock(usage_kind=usage_kind)
         print('_mock_get_prettyprint_usage executor_name:', executor_name)
@@ -898,4 +973,3 @@ def test_deploy_public_sandbox_create_new(mocker, monkeypatch):
     host, port = HubIO.deploy_public_sandbox(args)
     assert host == 'http://test_new_deployment.com'
     assert port == 4322
-
