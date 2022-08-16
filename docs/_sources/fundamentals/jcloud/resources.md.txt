@@ -149,3 +149,20 @@ executors:
         memory: 8G
         gpu: 2
 ```
+
+### Resources in Gateway
+
+If in special conditions you'd like to customize the Gateway's CPU or memory, that's possible too. Similarly, `memory` / `cpu` arg needs to be specificed under `resources` from `gateway`.
+
+```yaml
+jtype: Flow
+jcloud:
+  gateway:
+    resources:
+      requests:
+        memory: 800M
+        cpu: 0.4
+executors:
+  - name: encoder
+    uses: jinahub+docker://Encoder
+```

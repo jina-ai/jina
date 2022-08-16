@@ -157,7 +157,13 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-
+<div class="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/287738538/?isFirstPublish=true">Join our Office Hours Special Edition on August 25th at 19:00 CET to talk about Career Development at Jina AI</a>
+     
+    </aside>
+</div>
 
 <div class="page">
     <header class="mobile-header">
@@ -520,6 +526,22 @@ This enables a time-slicing, which allows workloads that land on oversubscribed 
 </pre></div>
 </div>
 </section>
+<section id="resources-in-gateway">
+<h2>Resources in Gateway<a class="headerlink" href="#resources-in-gateway" title="Permalink to this headline">#</a></h2>
+<p>If in special conditions you’d like to customize the Gateway’s CPU or memory, that’s possible too. Similarly, <code class="docutils literal notranslate"><span class="pre">memory</span></code> / <code class="docutils literal notranslate"><span class="pre">cpu</span></code> arg needs to be specificed under <code class="docutils literal notranslate"><span class="pre">resources</span></code> from <code class="docutils literal notranslate"><span class="pre">gateway</span></code>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
+<span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">requests</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">800M</span><span class="w"></span>
+<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.4</span><span class="w"></span>
+<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Encoder</span><span class="w"></span>
+</pre></div>
+</div>
+</section>
 </section>
 
                 </article>
@@ -557,7 +579,7 @@ This enables a time-slicing, which allows workloads that land on oversubscribed 
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 15, 2022</div>
+                            Last updated on Aug 16, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -599,6 +621,7 @@ This enables a time-slicing, which allows workloads that land on oversubscribed 
 </ul>
 </li>
 <li><a class="reference internal" href="#example">Example</a></li>
+<li><a class="reference internal" href="#resources-in-gateway">Resources in Gateway</a></li>
 </ul>
 </li>
 </ul>

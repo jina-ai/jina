@@ -91,13 +91,13 @@ Currently ALB is the default gateway for backward compatibility. We use AWS prov
 
 ### Kong
 
-Kong is the recommended gateway in JCloud. We use [Let's Encrypt](https://letsencrypt.org/) for TLS with Kong. To enable Kong Gateway instead of ALB, specify the gateway kind as `kong` in your JCloud YAML:
+Kong is the recommended gateway in JCloud. We use [Let's Encrypt](https://letsencrypt.org/) for TLS with Kong. To enable Kong Gateway instead of ALB, specify the gateway ingress kind as `kong` in your JCloud YAML:
 
 ```yaml
 jtype: Flow
 jcloud:
   gateway:
-    kind: kong
+    ingress: kong
 executors:
   - name: executor1
     uses: jinahub+docker://Executor1
