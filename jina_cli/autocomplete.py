@@ -15,6 +15,7 @@ ac_table = {
         'pod',
         'deployment',
         'client',
+        'auth',
     ],
     'completions': {
         'executor': [
@@ -305,5 +306,12 @@ ac_table = {
             '--return-responses',
             '--protocol',
         ],
+        'auth login': ['--help', '--force'],
+        'auth logout': ['--help'],
+        'auth token create': ['--help', '--expire'],
+        'auth token delete': ['--help'],
+        'auth token list': ['--help'],
+        'auth token': ['--help', 'create', 'delete', 'list'],
+        'auth': ['--help', 'login', 'logout', 'token'],
     },
 }
