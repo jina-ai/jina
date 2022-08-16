@@ -20,7 +20,7 @@ def test_executor():
 
 
 @pytest.mark.parametrize('install_deps', [True, False])
-def test_install_local(test_envs, executor_zip_file, test_executor, install_deps):
+def test_install_local(executor_zip_file, test_executor, install_deps):
     assert not hubapi.exist_local(test_executor.uuid, test_executor.tag)
     hubapi.install_local(executor_zip_file, test_executor, install_deps=install_deps)
     assert hubapi.exist_local(test_executor.uuid, test_executor.tag)
@@ -35,7 +35,7 @@ def test_install_local(test_envs, executor_zip_file, test_executor, install_deps
     assert not hubapi.exist_local(test_executor.uuid, test_executor.tag)
 
 
-def test_load_dump_secret(test_envs):
+def test_load_dump_secret():
     import tempfile
 
     uuid8 = 'hello'
@@ -47,7 +47,7 @@ def test_load_dump_secret(test_envs):
     assert new_secret == secret
 
 
-def test_load_dump_secret_existing_encryption_key(test_envs):
+def test_load_dump_secret_existing_encryption_key():
     import tempfile
 
     uuid8 = 'hello'
