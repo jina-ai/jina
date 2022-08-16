@@ -13,14 +13,7 @@ import pytest
 import requests
 import yaml
 
-from jina.hubble import hubio
-from jina.hubble.helper import (
-    _get_auth_token,
-    _get_hub_config,
-    _get_hub_root,
-    disk_cache_offline,
-    get_requirements_env_variables,
-)
+from jina.hubble.helper import disk_cache_offline, get_requirements_env_variables
 from jina.hubble.hubapi import get_secret_path
 from jina.hubble.hubio import HubExecutor, HubIO
 from jina.parsers.hubble import (
@@ -32,25 +25,15 @@ from jina.parsers.hubble import (
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def clear_function_caches():
-    _get_auth_token.cache_clear()
-    _get_hub_root.cache_clear()
-    _get_hub_config.cache_clear()
-
-
 @pytest.fixture(scope='function')
 def auth_token(tmpdir):
-    clear_function_caches()
-    os.environ['JINA_HUB_ROOT'] = str(tmpdir)
+    from hubble.utils.config import Config
 
+    c = Config()
     token = 'test-auth-token'
-    with open(tmpdir / 'config.json', 'w') as f:
-        json.dump({'auth_token': token}, f)
-
+    c.set('auth_token', token)
     yield token
-
-    clear_function_caches()
-    del os.environ['JINA_HUB_ROOT']
+    c.delete('auth_token')
 
 
 class PostMockResponse:

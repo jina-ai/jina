@@ -23,7 +23,6 @@ from jina.helper import (
     retry,
     run_async,
 )
-from jina.hubble.helper import _get_hubble_base_url
 from jina.jaml.helper import complete_path
 from jina.logging.predefined import default_logger
 from jina.proto import jina_pb2
@@ -300,11 +299,6 @@ def test_find_request_binding():
 )
 def test_ci_vendor():
     assert get_ci_vendor() == 'GITHUB_ACTIONS'
-
-
-def test_get_hubble_base_url():
-    for j in range(2):
-        assert _get_hubble_base_url().startswith('http')
 
 
 def test_retry():
