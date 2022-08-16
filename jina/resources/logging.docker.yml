@@ -17,7 +17,7 @@ configs:
     formatter: PlainFormatter
   RichHandler:
     format: '🐳 %(message)s'
-    markup: true
+    markup: false
     show_path: false
     show_level: false
     show_time: false
