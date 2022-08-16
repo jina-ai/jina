@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.7.8 Documentation" />
   
-<meta property="og:description" content="Command-Line Interface: Positional Arguments: cli,, Possible choices: executor, flow, ping, dryrun, export, new, gateway, hub, help, pod, deployment, client,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-commands:: executo..." />
+<meta property="og:description" content="Command-Line Interface: Positional Arguments: cli,, Possible choices: executor, flow, ping, dryrun, export, new, gateway, hub, help, pod, deployment, client, auth,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-commands:: e..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -390,14 +390,14 @@
                     <section id="svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-terminal-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m0-2-75c0-1-784-784-1-1-75-1h12-5c-966-0-1-75-784-1-75-1-75v10-5a1-75-1-75-0-0114-25-15h1-75a1-75-1-75-0-010-13-25v2-75zm1-75-25a-25-25-0-00-25-25v10-5c0-138-112-25-25-25h12-5a-25-25-0-00-25-25v2-75a-25-25-0-00-25-25h1-75zm7-25-8a-75-75-0-01-22-53l-2-25-2-25a-75-75-0-11-1-06-1-06l5-44-8-3-72-6-28a-75-75-0-111-06-1-06l2-25-2-25c-141-14-22-331-22-53zm1-5-1-5a-75-75-0-000-1-5h3a-75-75-0-000-1-5h-3z-path-svg-command-line-interface">
 <h1><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-terminal" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z"></path></svg> Command-Line Interface<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-terminal-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m0-2-75c0-1-784-784-1-1-75-1h12-5c-966-0-1-75-784-1-75-1-75v10-5a1-75-1-75-0-0114-25-15h1-75a1-75-1-75-0-010-13-25v2-75zm1-75-25a-25-25-0-00-25-25v10-5c0-138-112-25-25-25h12-5a-25-25-0-00-25-25v2-75a-25-25-0-00-25-25h1-75zm7-25-8a-75-75-0-01-22-53l-2-25-2-25a-75-75-0-11-1-06-1-06l5-44-8-3-72-6-28a-75-75-0-111-06-1-06l2-25-2-25c-141-14-22-331-22-53zm1-5-1-5a-75-75-0-000-1-5h3a-75-75-0-000-1-5h-3z-path-svg-command-line-interface" title="Permalink to this headline">#</a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">jina</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">vf</span><span class="p">]</span>
-            <span class="p">{</span><span class="n">executor</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">ping</span><span class="p">,</span> <span class="n">dryrun</span> <span class="o">...</span> <span class="mi">8</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
+            <span class="p">{</span><span class="n">executor</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">ping</span><span class="p">,</span> <span class="n">dryrun</span> <span class="o">...</span> <span class="mi">9</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
 </pre></div>
 </div>
 <section id="Positional Arguments">
 <h2>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">#</a></h2>
 <dl class="option-list">
 <dt><kbd>cli</kbd></dt>
-<dd><p>Possible choices: executor, flow, ping, dryrun, export, new, gateway, hub, help, pod, deployment, client</p>
+<dd><p>Possible choices: executor, flow, ping, dryrun, export, new, gateway, hub, help, pod, deployment, client, auth</p>
 </dd>
 </dl>
 </section>
@@ -535,7 +535,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 60505</p>
+<p>Default: 63657</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -640,7 +640,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 63331</p>
+<p>Default: 58150</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -648,7 +648,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: 62285</p>
+<p>Default: 64700</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1106,7 +1106,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 65331</p>
+<p>Default: 49411</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1210,7 +1210,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 60818</p>
+<p>Default: 64970</p>
 </dd>
 <dt><kbd>--compression</kbd></dt>
 <dd><p>Possible choices: NoCompression, Deflate, Gzip</p>
@@ -1245,7 +1245,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 50600</p>
+<p>Default: 62717</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1253,7 +1253,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: 54008</p>
+<p>Default: 58396</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1558,7 +1558,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 54822</p>
+<p>Default: 59476</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1663,7 +1663,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 49476</p>
+<p>Default: 55749</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1671,7 +1671,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: 63217</p>
+<p>Default: 64355</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1846,7 +1846,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 57524</p>
+<p>Default: 54531</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1951,7 +1951,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 55639</p>
+<p>Default: 49158</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2027,7 +2027,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “49492”</p>
+<p>Default: “52461”</p>
 </dd>
 </dl>
 </section>
@@ -2076,6 +2076,111 @@ Python files, data files.</p>
 <p>Default: False</p>
 </dd>
 </dl>
+</section>
+</section>
+<section id="auth">
+<h3>auth<a class="headerlink" href="#auth" title="Permalink to this headline">#</a></h3>
+<p>Login to Jina AI with your GitHub/Google/Email account</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">login</span><span class="p">,</span> <span class="n">logout</span><span class="p">,</span> <span class="n">token</span><span class="p">}</span> <span class="o">...</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat9">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat9" title="Permalink to this headline">#</a></h4>
+<dl class="option-list">
+<dt><kbd>cli</kbd></dt>
+<dd><p>Possible choices: login, logout, token</p>
+</dd>
+</dl>
+</section>
+<section id="Sub-commands:_repeat3">
+<h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat3" title="Permalink to this headline">#</a></h4>
+<section id="login">
+<h5>login<a class="headerlink" href="#login" title="Permalink to this headline">#</a></h5>
+<p>Login to Jina AI Ecosystem</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">login</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="Named Arguments_repeat11">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this headline">#</a></h6>
+<dl class="option-list">
+<dt><kbd>-f, --force</kbd></dt>
+<dd><p>Force to login</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="logout">
+<h5>logout<a class="headerlink" href="#logout" title="Permalink to this headline">#</a></h5>
+<p>Logout from Jina AI Ecosystem</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">logout</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="token">
+<h5>token<a class="headerlink" href="#token" title="Permalink to this headline">#</a></h5>
+<p>Commands for Personal Access Token</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">token</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">create</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="nb">list</span><span class="p">}</span> <span class="o">...</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat10">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat10" title="Permalink to this headline">#</a></h6>
+<dl class="option-list">
+<dt><kbd>operation</kbd></dt>
+<dd><p>Possible choices: create, delete, list</p>
+</dd>
+</dl>
+</section>
+<section id="Sub-commands:_repeat4">
+<h6>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat4" title="Permalink to this headline">#</a></h6>
+<section id="create">
+<h7>create<a class="headerlink" href="#create" title="Permalink to this headline">#</a></h7>
+<p>Create a Personal Access Token</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">token</span> <span class="n">create</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span><span class="p">]</span> <span class="n">name</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat11">
+<h8>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat11" title="Permalink to this headline">#</a></h8>
+<dl class="option-list">
+<dt><kbd>name</kbd></dt>
+<dd><p>Name of Personal Access Token</p>
+</dd>
+</dl>
+</section>
+<section id="Named Arguments_repeat12">
+<h8>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this headline">#</a></h8>
+<dl class="option-list">
+<dt><kbd>-e, --expire</kbd></dt>
+<dd><p>Validity period (days)</p>
+<p>Default: 7</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="delete">
+<h7>delete<a class="headerlink" href="#delete" title="Permalink to this headline">#</a></h7>
+<p>Revoke a Personal Access Token</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">token</span> <span class="n">delete</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">name</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat12">
+<h8>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat12" title="Permalink to this headline">#</a></h8>
+<dl class="option-list">
+<dt><kbd>name</kbd></dt>
+<dd><p>Name of Personal Access Token which you want to delete</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="list">
+<h7>list<a class="headerlink" href="#list" title="Permalink to this headline">#</a></h7>
+<p>List all Personal Access Tokens</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">token</span> <span class="nb">list</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
 </section>
 </section>
 </section>
@@ -2276,6 +2381,35 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#client">client</a><ul>
 <li><a class="reference internal" href="#Named Arguments_repeat10">Named Arguments</a></li>
 <li><a class="reference internal" href="#ClientGateway arguments">ClientGateway arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#auth">auth</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat9">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Sub-commands:_repeat3">Sub-commands:</a><ul>
+<li><a class="reference internal" href="#login">login</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat11">Named Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#logout">logout</a></li>
+<li><a class="reference internal" href="#token">token</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat10">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Sub-commands:_repeat4">Sub-commands:</a><ul>
+<li><a class="reference internal" href="#create">create</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat11">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat12">Named Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#delete">delete</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat12">Positional Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#list">list</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

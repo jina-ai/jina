@@ -636,6 +636,17 @@
         <span class="p">)</span>
     <span class="p">)</span>
 
+    <span class="kn">from</span> <span class="nn">hubble.parsers</span> <span class="kn">import</span> <span class="n">get_main_parser</span> <span class="k">as</span> <span class="n">get_hubble_parser</span>
+
+    <span class="n">get_hubble_parser</span><span class="p">(</span>
+        <span class="n">sp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+            <span class="s1">&#39;auth&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Login to Jina AI with your GitHub/Google/Email account&#39;</span><span class="p">,</span>
+            <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Login to Jina AI&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
     <span class="k">return</span> <span class="n">parser</span></div>
 </pre></div>
                 </article>

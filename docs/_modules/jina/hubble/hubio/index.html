@@ -365,6 +365,9 @@
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urljoin</span>
+
+<span class="kn">import</span> <span class="nn">hubble</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__resources_path__</span><span class="p">,</span> <span class="n">__version__</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">ArgNamespace</span><span class="p">,</span> <span class="n">get_rich_console</span><span class="p">,</span> <span class="n">retry</span>
@@ -377,7 +380,6 @@
     <span class="n">get_cache_db</span><span class="p">,</span>
     <span class="n">get_download_cache_dir</span><span class="p">,</span>
     <span class="n">get_hubble_error_message</span><span class="p">,</span>
-    <span class="n">get_hubble_url_v2</span><span class="p">,</span>
     <span class="n">get_request_header</span><span class="p">,</span>
     <span class="n">get_requirements_env_variables</span><span class="p">,</span>
     <span class="n">parse_hub_uri</span><span class="p">,</span>
@@ -799,9 +801,9 @@
 
                 <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Connecting to Jina Hub ...&#39;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">form_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">):</span>
-                    <span class="n">hubble_url</span> <span class="o">=</span> <span class="n">get_hubble_url_v2</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;/rpc/executor.update&#39;</span>
+                    <span class="n">hubble_url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">hubble</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_base_url</span><span class="p">(),</span> <span class="s1">&#39;executor.update&#39;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">hubble_url</span> <span class="o">=</span> <span class="n">get_hubble_url_v2</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;/rpc/executor.create&#39;</span>
+                    <span class="n">hubble_url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">hubble</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_base_url</span><span class="p">(),</span> <span class="s1">&#39;executor.create&#39;</span><span class="p">)</span>
 
                 <span class="c1"># upload the archived executor to Jina Hub</span>
                 <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Uploading...&#39;</span><span class="p">)</span>
@@ -976,7 +978,6 @@
     <span class="k">def</span> <span class="nf">_prettyprint_build_env_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">console</span><span class="p">,</span> <span class="n">build_env</span><span class="p">,</span> <span class="n">usage_kind</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">box</span>
         <span class="kn">from</span> <span class="nn">rich.panel</span> <span class="kn">import</span> <span class="n">Panel</span>
-        <span class="kn">from</span> <span class="nn">rich.syntax</span> <span class="kn">import</span> <span class="n">Syntax</span>
         <span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
 
         <span class="n">param_str</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
@@ -1036,7 +1037,7 @@
 
             <span class="k">return</span> <span class="n">resp</span>
 
-        <span class="n">pull_url</span> <span class="o">=</span> <span class="n">get_hubble_url_v2</span><span class="p">()</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;/rpc/executor.getPackage&#39;</span>
+        <span class="n">pull_url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">hubble</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_base_url</span><span class="p">(),</span> <span class="s1">&#39;executor.getPackage&#39;</span><span class="p">)</span>
 
         <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;include&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">],</span> <span class="s1">&#39;rebuildImage&#39;</span><span class="p">:</span> <span class="n">rebuild_image</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">image_required</span><span class="p">:</span>
@@ -1101,7 +1102,7 @@
         <span class="n">port</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">json_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="n">get_hubble_url_v2</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;/rpc/sandbox.get&#39;</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">hubble</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_base_url</span><span class="p">(),</span> <span class="s1">&#39;sandbox.get&#39;</span><span class="p">),</span>
             <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
             <span class="n">headers</span><span class="o">=</span><span class="n">get_request_header</span><span class="p">(),</span>
         <span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
@@ -1118,7 +1119,7 @@
         <span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">json_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-                    <span class="n">url</span><span class="o">=</span><span class="n">get_hubble_url_v2</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;/rpc/sandbox.create&#39;</span><span class="p">,</span>
+                    <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">hubble</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_base_url</span><span class="p">(),</span> <span class="s1">&#39;sandbox.create&#39;</span><span class="p">),</span>
                     <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span>
                     <span class="n">headers</span><span class="o">=</span><span class="n">get_request_header</span><span class="p">(),</span>
                 <span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>

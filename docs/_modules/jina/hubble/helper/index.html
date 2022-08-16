@@ -359,7 +359,6 @@
 
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">io</span>
-<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shelve</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
@@ -372,7 +371,7 @@
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span><span class="p">,</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urljoin</span><span class="p">,</span> <span class="n">urlparse</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__cache_path__</span><span class="p">,</span> <span class="n">__resources_path__</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">BetterEnum</span>
@@ -387,33 +386,13 @@
 <span class="kn">from</span> <span class="nn">jina.logging.predefined</span> <span class="kn">import</span> <span class="n">default_logger</span>
 
 
-<span class="nd">@lru_cache</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">_get_hub_root</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-    <span class="n">hub_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;JINA_HUB_ROOT&#39;</span><span class="p">,</span> <span class="n">__cache_path__</span><span class="p">))</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">hub_root</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="n">hub_root</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">hub_root</span>
-
-
-<span class="nd">@lru_cache</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">_get_hub_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
-    <span class="n">hub_root</span> <span class="o">=</span> <span class="n">_get_hub_root</span><span class="p">()</span>
-
-    <span class="n">config_file</span> <span class="o">=</span> <span class="n">hub_root</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;config.json&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">config_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-
-
 <div class="viewcode-block" id="get_hub_packages_dir"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.get_hub_packages_dir">[docs]</a><span class="nd">@lru_cache</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">get_hub_packages_dir</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Get the path of folder where the hub packages are stored</span>
 
 <span class="sd">    :return: the path of folder where the hub packages are stored</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">root</span> <span class="o">=</span> <span class="n">_get_hub_root</span><span class="p">()</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">__cache_path__</span><span class="p">)</span>
     <span class="n">hub_packages</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;hub-package&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">hub_packages</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -428,7 +407,7 @@
 
 <span class="sd">    :return: the path of cache db of hub Executors</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">root</span> <span class="o">=</span> <span class="n">_get_hub_root</span><span class="p">()</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">__cache_path__</span><span class="p">)</span>
     <span class="n">cache_db</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;disk_cache.db&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">cache_db</span></div>
@@ -440,44 +419,12 @@
 
 <span class="sd">    :return: the path of cache folder where the downloading cache is stored</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">root</span> <span class="o">=</span> <span class="n">_get_hub_root</span><span class="p">()</span>
-    <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="s1">&#39;JINA_HUB_CACHE_DIR&#39;</span><span class="p">,</span>
-            <span class="n">root</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;.cache&#39;</span><span class="p">),</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
+    <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">__cache_path__</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">cache_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="n">cache_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">cache_dir</span></div>
-
-
-<span class="nd">@lru_cache</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">_get_hubble_base_url</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Get base Hubble Url from os.environ or constants</span>
-
-<span class="sd">    :return: base Hubble Url</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;JINA_HUBBLE_REGISTRY&#39;</span><span class="p">,</span> <span class="s1">&#39;https://api.hubble.jina.ai&#39;</span><span class="p">)</span>
-
-
-<span class="nd">@lru_cache</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">_get_auth_token</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Get user auth token.</span>
-<span class="sd">    .. note:: We first check `JINA_AUTH_TOKEN` environment variable.</span>
-<span class="sd">        if token is not None, use env token. Otherwise, we get token from config.</span>
-
-<span class="sd">    :return: user auth token</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">token_from_env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;JINA_AUTH_TOKEN&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">token_from_env</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">token_from_env</span>
-
-    <span class="n">config</span> <span class="o">=</span> <span class="n">_get_hub_config</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">config</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;auth_token&#39;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_request_header"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.get_request_header">[docs]</a><span class="k">def</span> <span class="nf">get_request_header</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
@@ -486,30 +433,13 @@
 <span class="sd">    :return: request header</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="n">_get_request_header_main</span><span class="p">()</span>
+    <span class="kn">import</span> <span class="nn">hubble</span>
 
-    <span class="n">auth_token</span> <span class="o">=</span> <span class="n">_get_auth_token</span><span class="p">()</span>
+    <span class="n">auth_token</span> <span class="o">=</span> <span class="n">hubble</span><span class="o">.</span><span class="n">get_token</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">auth_token</span><span class="p">:</span>
         <span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Authorization&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;token </span><span class="si">{</span><span class="n">auth_token</span><span class="si">}</span><span class="s1">&#39;</span>
 
     <span class="k">return</span> <span class="n">headers</span></div>
-
-
-<div class="viewcode-block" id="get_hubble_url_v1"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.get_hubble_url_v1">[docs]</a><span class="k">def</span> <span class="nf">get_hubble_url_v1</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Get v1 Hubble Url</span>
-
-<span class="sd">    :return: v1 Hubble url</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">u</span> <span class="o">=</span> <span class="n">_get_hubble_base_url</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="s1">&#39;/v1&#39;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="get_hubble_url_v2"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.get_hubble_url_v2">[docs]</a><span class="k">def</span> <span class="nf">get_hubble_url_v2</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Get v2 Hubble Url</span>
-
-<span class="sd">    :return: v2 Hubble url</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">u</span> <span class="o">=</span> <span class="n">_get_hubble_base_url</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="s1">&#39;/v2&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="parse_hub_uri"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.parse_hub_uri">[docs]</a><span class="k">def</span> <span class="nf">parse_hub_uri</span><span class="p">(</span><span class="n">uri_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
