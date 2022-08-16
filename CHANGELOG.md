@@ -219,6 +219,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14668,4 +14669,27 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```f3bcdaa8```](https://github.com/jina-ai/jina/commit/f3bcdaa8e6cebccd995a6fc627d38f36f64cb380)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```dfd1e07d```](https://github.com/jina-ai/jina/commit/dfd1e07dcce56f2b7d7de6310d120337a9e9b58c)] __-__ __docs__: fix typos (*Han Xiao*)
  - [[```d579cb63```](https://github.com/jina-ai/jina/commit/d579cb63f7ee5d49952c8e77491ff30b5f74a6d8)] __-__ __version__: the next version will be 3.7.8 (*Jina Dev Bot*)
+
+<a name=release-note-3-7-9></a>
+## Release Note (`3.7.9`)
+
+> Release time: 2022-08-16 16:25:11
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  AlaeddineAbdessalem,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```26d24d03```](https://github.com/jina-ai/jina/commit/26d24d0374eaad95d16f949cf05b3be95916395a)] __-__ #5055 (#5066) (*Han Xiao*)
+
+### 🧼 Code Refactoring
+
+ - [[```c1c500aa```](https://github.com/jina-ai/jina/commit/c1c500aadd9a33f64b19cd881740cc9c5ee6e6a5)] __-__ remove unused hub environment variables (#5067) (*AlaeddineAbdessalem*)
+
+### 🍹 Other Improvements
+
+ - [[```442a86cd```](https://github.com/jina-ai/jina/commit/442a86cdc6c942cb9f42a828b920d6cca70cf320)] __-__ __version__: the next version will be 3.7.9 (*Jina Dev Bot*)
 
