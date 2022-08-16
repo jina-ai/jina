@@ -1098,8 +1098,8 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         """
         # implementation_stub_inject_end_add
 
-        needs = kwargs.get('needs', None)
-        copy_flow = kwargs.get('copy_flow', True)
+        needs = kwargs.pop('needs', None)
+        copy_flow = kwargs.pop('copy_flow', True)
         deployment_role = kwargs.get('deployment_role', DeploymentRoleType.DEPLOYMENT)
 
         op_flow = copy.deepcopy(self) if copy_flow else self
