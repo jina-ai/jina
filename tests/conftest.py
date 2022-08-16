@@ -54,15 +54,6 @@ def port_generator():
     return random_port
 
 
-@pytest.fixture(scope='function')
-def test_envs(tmpdir):
-    os.environ['JINA_HUB_ROOT'] = str(tmpdir)
-    os.environ['JINA_HUB_CACHE_DIR'] = str(tmpdir)
-    yield None
-    del os.environ['JINA_HUB_ROOT']
-    del os.environ['JINA_HUB_CACHE_DIR']
-
-
 @pytest.fixture(autouse=True)
 def test_log_level(monkeypatch):
     monkeypatch.setenv('JINA_LOG_LEVEL', 'DEBUG')

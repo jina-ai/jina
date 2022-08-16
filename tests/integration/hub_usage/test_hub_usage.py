@@ -49,10 +49,8 @@ def test_use_from_local_dir_flow_level():
 
 
 @pytest.fixture
-def local_hub_executor(tmpdir, test_envs):
+def local_hub_executor(tmpdir):
     from jina.hubble import HubExecutor, helper, hubapi
-
-    hubapi._hub_root = Path(os.environ.get('JINA_HUB_ROOT'))
 
     pkg_path = Path(__file__).parent / 'dummyhub'
     stream_data = helper.archive_package(pkg_path)
@@ -65,7 +63,7 @@ def local_hub_executor(tmpdir, test_envs):
 
 
 def test_use_from_local_hub_deployment_level(
-    test_envs, mocker, monkeypatch, local_hub_executor
+    mocker, monkeypatch, local_hub_executor
 ):
     from jina.hubble.hubio import HubExecutor, HubIO
 
@@ -100,7 +98,7 @@ def test_use_from_local_hub_deployment_level(
 
 
 def test_use_from_local_hub_flow_level(
-    test_envs, mocker, monkeypatch, local_hub_executor
+    mocker, monkeypatch, local_hub_executor
 ):
     from jina.hubble.hubio import HubExecutor, HubIO
 

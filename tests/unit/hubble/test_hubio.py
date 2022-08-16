@@ -572,7 +572,7 @@ class DownloadMockResponse:
 
 @pytest.mark.parametrize('executor_name', ['alias_dummy', None])
 @pytest.mark.parametrize('build_env', [['DOWNLOAD', 'DOMAIN'], None])
-def test_pull(test_envs, mocker, monkeypatch, executor_name, build_env):
+def test_pull(mocker, monkeypatch, executor_name, build_env):
     mock = mocker.Mock()
 
     def _mock_fetch(
@@ -644,7 +644,7 @@ class MockDockerClient:
             yield {}
 
 
-def test_offline_pull(test_envs, mocker, monkeypatch, tmpfile):
+def test_offline_pull(mocker, monkeypatch, tmpfile):
     mock = mocker.Mock()
 
     fail_meta_fetch = True
