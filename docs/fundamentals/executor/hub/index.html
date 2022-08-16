@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/fundamentals/executor/hub/index/" />
   
-<meta property="og:site_name" content="Jina 3.7.8 Documentation" />
+<meta property="og:site_name" content="Jina 3.7.9 Documentation" />
   
 <meta property="og:description" content="Now that you understand that Executor is a building block in Jina, the following questions may arise: Can I reuse my Executor in another project?, Can I share my Executor with my colleagues?, Can I just use someone else’s Executor instead of building it myself?. Basically, something like the foll..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_images/hub-banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.7.8 Documentation" />
+<meta property="og:image:alt" content="Jina 3.7.9 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/executor/hub/index.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Hub - Jina 3.7.8 documentation</title>
+        <title>Hub - Jina 3.7.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -179,7 +179,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.7.8 documentation</div>
+                <div class="brand">Jina 3.7.9 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -421,24 +421,8 @@ Executors to share privately or publicly.</p>
 <p>The Hub architecture looks like the following:</p>
 <figure class="align-center">
 <img alt="../../../_images/hub-system.svg" src="../../../_images/hub-system.svg" /></figure>
-</section>
-<section id="environment-variables">
-<h2>Environment Variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">#</a></h2>
-<p>A list of environment variables which takes effects during Jina Hub operations. e.g. <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">push</span></code></p>
-<section id="jina-hub-root">
-<h3><code class="docutils literal notranslate"><span class="pre">JINA_HUB_ROOT</span></code><a class="headerlink" href="#jina-hub-root" title="Permalink to this headline">#</a></h3>
-<p><strong>Define the place where the Executor package cache lives.</strong> Default value is <code class="docutils literal notranslate"><span class="pre">~/.jina/hub-packages</span></code></p>
-<div class="hint admonition">
-<p class="admonition-title">Hint</p>
-<p>You don’t have permissions to create a directory in the home folder sometime. This is the right time to change the value.</p>
-</div>
-</section>
-<section id="jina-hub-cache-dir">
-<h3><code class="docutils literal notranslate"><span class="pre">JINA_HUB_CACHE_DIR</span></code><a class="headerlink" href="#jina-hub-cache-dir" title="Permalink to this headline">#</a></h3>
-<p><strong>Define the place where the cache is stored during the downloading.</strong> The cache will be deleted after downloading. Default value is <code class="docutils literal notranslate"><span class="pre">${JINA_HUB_ROOT}/.cache</span></code>.</p>
 <div class="toctree-wrapper compound">
 </div>
-</section>
 </section>
 </section>
 
@@ -511,11 +495,6 @@ Executors to share privately or publicly.</p>
                         <ul>
 <li><a class="reference internal" href="#">Hub</a><ul>
 <li><a class="reference internal" href="#hub-architecture">Hub architecture</a></li>
-<li><a class="reference internal" href="#environment-variables">Environment Variables</a><ul>
-<li><a class="reference internal" href="#jina-hub-root"><code class="docutils literal notranslate"><span class="pre">JINA_HUB_ROOT</span></code></a></li>
-<li><a class="reference internal" href="#jina-hub-cache-dir"><code class="docutils literal notranslate"><span class="pre">JINA_HUB_CACHE_DIR</span></code></a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>

@@ -61,8 +61,6 @@ The following environment variables are used internally in Jina:
 | `JINA_GRPC_RECV_BYTES`          | Set by the grpc service to keep track of the received bytes                                                    |
 | `JINA_GRPC_SEND_BYTES`          | Set by the grpc service to keep track of the sent bytes                                                        |
 | `JINA_HUBBLE_REGISTRY`          | Set it to point to a different Jina Hub registry                                                               |
-| `JINA_HUB_CACHE_DIR`            | The directory where hub will cache its executors inside JINA_HUB_ROOT                                          |
-| `JINA_HUB_ROOT`                 | The base directory for HubIO to store and read files                                                           |
 | `JINA_LOG_CONFIG`               | The configuration used for the logger                                                                          |
 | `JINA_LOG_LEVEL`                | The logging level used: INFO, DEBUG, WARNING                                                                   |
 | `JINA_LOG_NO_COLOR`             | If set, disables color from rich console                                                                       |
