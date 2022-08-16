@@ -16,8 +16,8 @@ configs:
     port: # when not given then record it locally,  /dev/log on linux /var/run/syslog on mac
     formatter: PlainFormatter
   RichHandler:
-    format: '[dim]{name}@%(process)2d[/dim] %(message)s'
-    markup: true
+    format: '{name}@%(process)2d %(message)s'
+    markup: false
     rich_tracebacks: true
     show_path: false
     log_time_format: '[%x %X]'
