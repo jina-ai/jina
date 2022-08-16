@@ -8,6 +8,7 @@ import os
 import random
 from pathlib import Path
 from typing import Dict, Optional, Union
+from urllib.parse import urljoin
 
 import hubble
 
@@ -443,9 +444,9 @@ metas:
 
                 st.update(f'Connecting to Jina Hub ...')
                 if form_data.get('id'):
-                    hubble_url = hubble.utils.get_base_url() + '/executor.update'
+                    hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.update')
                 else:
-                    hubble_url = hubble.utils.get_base_url() + '/executor.create'
+                    hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.create')
 
                 # upload the archived executor to Jina Hub
                 st.update(f'Uploading...')
@@ -679,7 +680,7 @@ metas:
 
             return resp
 
-        pull_url = hubble.utils.get_base_url() + f'/executor.getPackage'
+        pull_url = urljoin(hubble.utils.get_base_url(), 'executor.getPackage')
 
         payload = {'id': name, 'include': ['code'], 'rebuildImage': rebuild_image}
         if image_required:
@@ -744,7 +745,7 @@ metas:
         port = None
 
         json_response = requests.post(
-            url=hubble.utils.get_base_url() + '/sandbox.get',
+            url=urljoin(hubble.utils.get_base_url(), 'sandbox.get'),
             json=payload,
             headers=get_request_header(),
         ).json()
@@ -761,7 +762,7 @@ metas:
         ):
             try:
                 json_response = requests.post(
-                    url=hubble.utils.get_base_url() + '/sandbox.create',
+                    url=urljoin(hubble.utils.get_base_url(), 'sandbox.create'),
                     json=payload,
                     headers=get_request_header(),
                 ).json()
