@@ -8,6 +8,9 @@ import os
 import random
 from pathlib import Path
 from typing import Dict, Optional, Union
+from urllib.parse import urljoin
+
+import hubble
 
 from jina import __resources_path__, __version__
 from jina.helper import ArgNamespace, get_rich_console, retry
@@ -20,7 +23,6 @@ from jina.hubble.helper import (
     get_cache_db,
     get_download_cache_dir,
     get_hubble_error_message,
-    get_hubble_url_v2,
     get_request_header,
     get_requirements_env_variables,
     parse_hub_uri,
@@ -442,9 +444,9 @@ metas:
 
                 st.update(f'Connecting to Jina Hub ...')
                 if form_data.get('id'):
-                    hubble_url = get_hubble_url_v2() + '/rpc/executor.update'
+                    hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.update')
                 else:
-                    hubble_url = get_hubble_url_v2() + '/rpc/executor.create'
+                    hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.create')
 
                 # upload the archived executor to Jina Hub
                 st.update(f'Uploading...')
@@ -619,7 +621,6 @@ metas:
     def _prettyprint_build_env_usage(self, console, build_env, usage_kind=None):
         from rich import box
         from rich.panel import Panel
-        from rich.syntax import Syntax
         from rich.table import Table
 
         param_str = Table(
@@ -679,7 +680,7 @@ metas:
 
             return resp
 
-        pull_url = get_hubble_url_v2() + f'/rpc/executor.getPackage'
+        pull_url = urljoin(hubble.utils.get_base_url(), 'executor.getPackage')
 
         payload = {'id': name, 'include': ['code'], 'rebuildImage': rebuild_image}
         if image_required:
@@ -744,7 +745,7 @@ metas:
         port = None
 
         json_response = requests.post(
-            url=get_hubble_url_v2() + '/rpc/sandbox.get',
+            url=urljoin(hubble.utils.get_base_url(), 'sandbox.get'),
             json=payload,
             headers=get_request_header(),
         ).json()
@@ -761,7 +762,7 @@ metas:
         ):
             try:
                 json_response = requests.post(
-                    url=get_hubble_url_v2() + '/rpc/sandbox.create',
+                    url=urljoin(hubble.utils.get_base_url(), 'sandbox.create'),
                     json=payload,
                     headers=get_request_header(),
                 ).json()

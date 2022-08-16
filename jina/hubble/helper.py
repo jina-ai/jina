@@ -2,7 +2,6 @@
 
 import hashlib
 import io
-import json
 import os
 import shelve
 import subprocess
@@ -15,7 +14,7 @@ from contextlib import nullcontext
 from functools import lru_cache, wraps
 from pathlib import Path
 from typing import Dict, Optional, Tuple
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 
 from jina import __cache_path__, __resources_path__
 from jina.enums import BetterEnum
@@ -31,32 +30,12 @@ from jina.logging.predefined import default_logger
 
 
 @lru_cache()
-def _get_hub_root() -> Path:
-    hub_root = Path(os.environ.get('JINA_HUB_ROOT', __cache_path__))
-
-    if not hub_root.exists():
-        hub_root.mkdir(parents=True, exist_ok=True)
-
-    return hub_root
-
-
-@lru_cache()
-def _get_hub_config() -> Optional[Dict]:
-    hub_root = _get_hub_root()
-
-    config_file = hub_root.joinpath('config.json')
-    if config_file.exists():
-        with open(config_file) as f:
-            return json.load(f)
-
-
-@lru_cache()
 def get_hub_packages_dir() -> Path:
     """Get the path of folder where the hub packages are stored
 
     :return: the path of folder where the hub packages are stored
     """
-    root = _get_hub_root()
+    root = Path(__cache_path__)
     hub_packages = root.joinpath('hub-package')
 
     if not hub_packages.exists():
@@ -71,7 +50,7 @@ def get_cache_db() -> Path:
 
     :return: the path of cache db of hub Executors
     """
-    root = _get_hub_root()
+    root = Path(__cache_path__)
     cache_db = root.joinpath('disk_cache.db')
 
     return cache_db
@@ -83,44 +62,12 @@ def get_download_cache_dir() -> Path:
 
     :return: the path of cache folder where the downloading cache is stored
     """
-    root = _get_hub_root()
-    cache_dir = Path(
-        os.environ.get(
-            'JINA_HUB_CACHE_DIR',
-            root.joinpath('.cache'),
-        )
-    )
+    cache_dir = Path(__cache_path__)
 
     if not cache_dir.exists():
         cache_dir.mkdir(parents=True, exist_ok=True)
 
     return cache_dir
-
-
-@lru_cache()
-def _get_hubble_base_url() -> str:
-    """Get base Hubble Url from os.environ or constants
-
-    :return: base Hubble Url
-    """
-    return os.environ.get('JINA_HUBBLE_REGISTRY', 'https://api.hubble.jina.ai')
-
-
-@lru_cache()
-def _get_auth_token() -> Optional[str]:
-    """Get user auth token.
-    .. note:: We first check `JINA_AUTH_TOKEN` environment variable.
-        if token is not None, use env token. Otherwise, we get token from config.
-
-    :return: user auth token
-    """
-    token_from_env = os.environ.get('JINA_AUTH_TOKEN')
-    if token_from_env:
-        return token_from_env
-
-    config = _get_hub_config()
-    if config:
-        return config.get('auth_token')
 
 
 def get_request_header() -> Dict:
@@ -129,30 +76,13 @@ def get_request_header() -> Dict:
     :return: request header
     """
     headers = _get_request_header_main()
+    import hubble
 
-    auth_token = _get_auth_token()
+    auth_token = hubble.get_token()
     if auth_token:
         headers['Authorization'] = f'token {auth_token}'
 
     return headers
-
-
-def get_hubble_url_v1() -> str:
-    """Get v1 Hubble Url
-
-    :return: v1 Hubble url
-    """
-    u = _get_hubble_base_url()
-    return urljoin(u, '/v1')
-
-
-def get_hubble_url_v2() -> str:
-    """Get v2 Hubble Url
-
-    :return: v2 Hubble url
-    """
-    u = _get_hubble_base_url()
-    return urljoin(u, '/v2')
 
 
 def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
