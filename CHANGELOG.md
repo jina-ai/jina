@@ -218,6 +218,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14641,4 +14642,30 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```e7377947```](https://github.com/jina-ai/jina/commit/e7377947482c8d32b1aed0aee24a8efa14b33826)] __-__ __docs__: fix typos (*Han Xiao*)
  - [[```6d218fbf```](https://github.com/jina-ai/jina/commit/6d218fbfa060226487174208ded10844b0ed28d2)] __-__ __version__: the next version will be 3.7.7 (*Jina Dev Bot*)
+
+<a name=release-note-3-7-8></a>
+## Release Note (`3.7.8`)
+
+> Release time: 2022-08-16 15:18:50
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Jina Dev Bot,  Zac Li,  🙇
+
+
+### 🧼 Code Refactoring
+
+ - [[```bf864748```](https://github.com/jina-ai/jina/commit/bf86474887ec0540c2d314a9f5b5aff514bbf04c)] __-__ __hub__: use hubble sdk (#5064) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```317e9ce1```](https://github.com/jina-ai/jina/commit/317e9ce167025da15f11e34fc3694f5aa7cf1a0e)] __-__ __jcloud__: doc for gateway customization (#5065) (*Zac Li*)
+
+### 🍹 Other Improvements
+
+ - [[```a6be9481```](https://github.com/jina-ai/jina/commit/a6be9481ffee3e2a23015ec17b3da0d725667120)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```f3bcdaa8```](https://github.com/jina-ai/jina/commit/f3bcdaa8e6cebccd995a6fc627d38f36f64cb380)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```dfd1e07d```](https://github.com/jina-ai/jina/commit/dfd1e07dcce56f2b7d7de6310d120337a9e9b58c)] __-__ __docs__: fix typos (*Han Xiao*)
+ - [[```d579cb63```](https://github.com/jina-ai/jina/commit/d579cb63f7ee5d49952c8e77491ff30b5f74a6d8)] __-__ __version__: the next version will be 3.7.8 (*Jina Dev Bot*)
 
