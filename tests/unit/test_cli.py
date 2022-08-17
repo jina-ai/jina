@@ -28,7 +28,7 @@ def test_help_lookup(cli, capsys):
         assert cli in nkw2kw
         lookup_and_print(cli)
         captured = capsys.readouterr()
-        assert captured.out
+        assert 'Traceback (most recent call last)' not in captured.out
 
 
 def test_main_cli():

@@ -14,10 +14,10 @@ def set_base_parser():
 
     # create the top-level parser
     urls = {
-        'Code': ('💻', 'https://github.com/jina-ai/jina'),
+        'Code': ('💻', 'https://oss.jina.ai'),
         'Docs': ('📖', 'https://docs.jina.ai'),
         'Help': ('💬', 'https://slack.jina.ai'),
-        'Hiring!': ('🙌', 'https://career.jina.ai'),
+        'Hiring!': ('🙌', 'https://jobs.jina.ai'),
     }
     url_str = '\n'.join(
         f'- {v[0]:<10} {k:10.10}\t{colored(v[1], "cyan", attrs=["underline"])}'
@@ -26,7 +26,7 @@ def set_base_parser():
 
     parser = argparse.ArgumentParser(
         epilog=f'''
-Jina (v{colored(__version__, "green")}) is the cloud-native neural search framework powered by deep learning.
+Jina v{colored(__version__, "green")}: build cross-modal and multimodal applications on the cloud.
 
 {url_str}
 
