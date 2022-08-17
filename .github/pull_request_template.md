@@ -5,7 +5,7 @@
 **Goals:**
 <!---https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword--->
 
-- resolved #ISSUE-NUMBER
+- resolves #ISSUE-NUMBER
 - ...
 - ...
 
