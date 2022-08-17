@@ -238,6 +238,17 @@ def get_main_parser():
         )
     )
 
+    from hubble.parsers import get_main_parser as get_hubble_parser
+
+    get_hubble_parser(
+        sp.add_parser(
+            'auth',
+            description='Login to Jina AI with your GitHub/Google/Email account',
+            formatter_class=_chf,
+            help='Login to Jina AI',
+        )
+    )
+
     set_help_parser(
         sp.add_parser(
             'help',
@@ -276,17 +287,6 @@ def get_main_parser():
             description='Start a Python client that connects to a Jina gateway',
             formatter_class=_chf,
             **(dict(help='Start a Client')) if _SHOW_ALL_ARGS else {},
-        )
-    )
-
-    from hubble.parsers import get_main_parser as get_hubble_parser
-
-    get_hubble_parser(
-        sp.add_parser(
-            'auth',
-            description='Login to Jina AI with your GitHub/Google/Email account',
-            formatter_class=_chf,
-            help='Login to Jina AI',
         )
     )
 
