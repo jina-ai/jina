@@ -34,6 +34,7 @@ pyyaml>=5.3.1:              core
 packaging>=20.0:            core
 docarray>=0.13.14:          core
 jina-hubble-sdk>=0.12.2:    core
+jcloud>=0.0.34:             core
 uvloop:                     perf,standard,devel
 prometheus_client:          perf,standard,devel
 fastapi>=0.76.0:            standard,devel
