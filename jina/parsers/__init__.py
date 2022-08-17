@@ -254,9 +254,9 @@ def get_main_parser():
     get_jcloud_parser(
         sp.add_parser(
             'cloud',
-            description='Use Jina Cloud (jcloud) commands to manage Jina Flows',
+            description='Use jcloud (Jina Cloud) commands to manage Jina Flows',
             formatter_class=_chf,
-            help='Use Jina Cloud (jcloud) commands',
+            help='Use jcloud (Jina Cloud) commands',
         )
     )
 
