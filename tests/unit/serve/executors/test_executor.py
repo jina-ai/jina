@@ -9,8 +9,8 @@ from unittest import mock
 
 import pytest
 import yaml
-
 from docarray import Document, DocumentArray
+
 from jina import Client, Executor, Flow, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_pod_parser
@@ -370,6 +370,12 @@ def test_set_workspace(tmpdir):
     with Flow().add(uses=WorkspaceExec, uses_metas={'workspace': str(tmpdir)}) as f:
         resp = f.post(on='/foo', inputs=Document())
     assert resp[0].text == complete_workspace
+    complete_workspace_no_replicas = os.path.abspath(
+        os.path.join(tmpdir, 'WorkspaceExec')
+    )
+    assert (
+        WorkspaceExec(workspace=str(tmpdir)).workspace == complete_workspace_no_replicas
+    )
 
 
 def test_default_workspace(tmpdir):
