@@ -220,6 +220,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14694,4 +14695,28 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 ### 🍹 Other Improvements
 
  - [[```442a86cd```](https://github.com/jina-ai/jina/commit/442a86cdc6c942cb9f42a828b920d6cca70cf320)] __-__ __version__: the next version will be 3.7.9 (*Jina Dev Bot*)
+
+<a name=release-note-3-7-10></a>
+## Release Note (`3.7.10`)
+
+> Release time: 2022-08-17 12:22:49
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  tarrantro,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```b9bddd22```](https://github.com/jina-ai/jina/commit/b9bddd223b96c6f55de32b13dde1e3be3abab5dd)] __-__ __cli__: jina auth cli error (#5070) (*Han Xiao*)
+
+### 📗 Documentation
+
+ - [[```840c221f```](https://github.com/jina-ai/jina/commit/840c221feaeaa0ea19c10d410dd39a7991c71372)] __-__ add gateway timeout and update shared gpu (#5069) (*tarrantro*)
+
+### 🍹 Other Improvements
+
+ - [[```bffe263c```](https://github.com/jina-ai/jina/commit/bffe263c40fa56a0e2b124296e3578cbd0173471)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```94c83cdb```](https://github.com/jina-ai/jina/commit/94c83cdb15110b05ba6c6bf1458927fd1e21b925)] __-__ __version__: the next version will be 3.7.10 (*Jina Dev Bot*)
 
