@@ -95,7 +95,7 @@ When using GPU resources, it may take few extra mins until all Executors ready t
 
 ##### Shared
 
-An executor using a `shared` GPU shares this GPU with up to 10 other Executors.
+An executor using a `shared` GPU shares this GPU with up to 4 other Executors.
 This enables a time-slicing, which allows workloads that land on oversubscribed GPUs to interleave with one another.
 
 ```yaml
@@ -106,6 +106,10 @@ executors:
     jcloud:
       resources:
         gpu: shared
+```
+
+```{note}
+When using shared GPU resources, it will share the GPU memory across pods(24G memory total). If your application is memory consuming, we suggest using a dedicated GPU.
 ```
 
 ```{caution}

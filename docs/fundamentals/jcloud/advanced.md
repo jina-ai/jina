@@ -103,6 +103,21 @@ executors:
     uses: jinahub+docker://Executor1
 ```
 
+### Timeout
+
+By default, JCloud gateway will close connections that have been idle for over `600` seconds. If you want longer connection timeout threshold, you can consider changing the `timeout` parameter in `gateway`.
+
+```yaml
+jtype: Flow
+jcloud:
+  gateway:
+    ingress: kong
+    timeout: 600
+executors:
+  - name: executor1
+    uses: jinahub+docker://Executor1
+```
+
 (retention-days)=
 ## Retention days
 
