@@ -33,7 +33,6 @@ grpcio-health-checking>=1.46.0:  core
 pyyaml>=5.3.1:              core
 packaging>=20.0:            core
 docarray>=0.13.14:          core
-git+https://github.com/jina-ai/jcloud.git@feat-allow-extending-cli:             core
 jina-hubble-sdk==0.12.4:    core
 uvloop:                     perf,standard,devel
 prometheus_client:          perf,standard,devel
