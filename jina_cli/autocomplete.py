@@ -191,7 +191,7 @@ ac_table = {
         'auth token list': ['--help'],
         'auth token': ['--help', 'create', 'delete', 'list'],
         'auth': ['--help', 'login', 'logout', 'token'],
-        'cloud login': ['--help', '--force'],
+        'cloud login': ['--help'],
         'cloud deploy': ['--help', '--name', '--workspace', '--env-file'],
         'cloud list': ['--help', '--status'],
         'cloud logs': ['--help', '--executor'],
