@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/cli/index/" />
   
-<meta property="og:site_name" content="Jina 3.7.11 Documentation" />
+<meta property="og:site_name" content="Jina 3.7.12 Documentation" />
   
-<meta property="og:description" content="Command-Line Interface: Positional Arguments: cli,, Possible choices: executor, flow, ping, dryrun, export, new, gateway, hub, auth, help, pod, deployment, client,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-commands:: e..." />
+<meta property="og:description" content="Command-Line Interface: Positional Arguments: cli,, Possible choices: executor, flow, ping, dryrun, export, new, gateway, auth, hub, cloud, help, pod, deployment, client,. Named Arguments:-v, --version,, Show Jina version,,-vf, --version-full,, Show Jina and all dependencies’ versions,. Sub-comma..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.7.11 Documentation" />
+<meta property="og:image:alt" content="Jina 3.7.12 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/cli/index.html" />
 
     <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Command-Line Interface - Jina 3.7.11 documentation</title>
+        <title>Command-Line Interface - Jina 3.7.12 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -179,7 +179,7 @@
         </div>
         <div class="header-center">
             <a href="../">
-                <div class="brand">Jina 3.7.11 documentation</div>
+                <div class="brand">Jina 3.7.12 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -390,14 +390,14 @@
                     <section id="svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-terminal-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m0-2-75c0-1-784-784-1-1-75-1h12-5c-966-0-1-75-784-1-75-1-75v10-5a1-75-1-75-0-0114-25-15h1-75a1-75-1-75-0-010-13-25v2-75zm1-75-25a-25-25-0-00-25-25v10-5c0-138-112-25-25-25h12-5a-25-25-0-00-25-25v2-75a-25-25-0-00-25-25h1-75zm7-25-8a-75-75-0-01-22-53l-2-25-2-25a-75-75-0-11-1-06-1-06l5-44-8-3-72-6-28a-75-75-0-111-06-1-06l2-25-2-25c-141-14-22-331-22-53zm1-5-1-5a-75-75-0-000-1-5h3a-75-75-0-000-1-5h-3z-path-svg-command-line-interface">
 <h1><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-terminal" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z"></path></svg> Command-Line Interface<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-terminal-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m0-2-75c0-1-784-784-1-1-75-1h12-5c-966-0-1-75-784-1-75-1-75v10-5a1-75-1-75-0-0114-25-15h1-75a1-75-1-75-0-010-13-25v2-75zm1-75-25a-25-25-0-00-25-25v10-5c0-138-112-25-25-25h12-5a-25-25-0-00-25-25v2-75a-25-25-0-00-25-25h1-75zm7-25-8a-75-75-0-01-22-53l-2-25-2-25a-75-75-0-11-1-06-1-06l5-44-8-3-72-6-28a-75-75-0-111-06-1-06l2-25-2-25c-141-14-22-331-22-53zm1-5-1-5a-75-75-0-000-1-5h3a-75-75-0-000-1-5h-3z-path-svg-command-line-interface" title="Permalink to this headline">#</a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">jina</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">vf</span><span class="p">]</span>
-            <span class="p">{</span><span class="n">executor</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">ping</span><span class="p">,</span> <span class="n">dryrun</span> <span class="o">...</span> <span class="mi">9</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
+            <span class="p">{</span><span class="n">executor</span><span class="p">,</span> <span class="n">flow</span><span class="p">,</span> <span class="n">ping</span><span class="p">,</span> <span class="n">dryrun</span> <span class="o">...</span> <span class="mi">10</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
 </pre></div>
 </div>
 <section id="Positional Arguments">
 <h2>Positional Arguments<a class="headerlink" href="#Positional Arguments" title="Permalink to this headline">#</a></h2>
 <dl class="option-list">
 <dt><kbd>cli</kbd></dt>
-<dd><p>Possible choices: executor, flow, ping, dryrun, export, new, gateway, hub, auth, help, pod, deployment, client</p>
+<dd><p>Possible choices: executor, flow, ping, dryrun, export, new, gateway, auth, hub, cloud, help, pod, deployment, client</p>
 </dd>
 </dl>
 </section>
@@ -535,7 +535,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 56211</p>
+<p>Default: 64632</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -640,7 +640,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 51618</p>
+<p>Default: 60726</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -648,7 +648,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: 55555</p>
+<p>Default: 49749</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1106,7 +1106,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 61698</p>
+<p>Default: 58764</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1210,7 +1210,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 54617</p>
+<p>Default: 55351</p>
 </dd>
 <dt><kbd>--compression</kbd></dt>
 <dd><p>Possible choices: NoCompression, Deflate, Gzip</p>
@@ -1245,7 +1245,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 52622</p>
+<p>Default: 54234</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1253,7 +1253,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: 54714</p>
+<p>Default: 51617</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1264,6 +1264,111 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 <p>Default: False</p>
 </dd>
 </dl>
+</section>
+</section>
+<section id="auth">
+<h3>auth<a class="headerlink" href="#auth" title="Permalink to this headline">#</a></h3>
+<p>Login to Jina AI with your GitHub/Google/Email account</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">login</span><span class="p">,</span> <span class="n">logout</span><span class="p">,</span> <span class="n">token</span><span class="p">}</span> <span class="o">...</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat7">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat7" title="Permalink to this headline">#</a></h4>
+<dl class="option-list">
+<dt><kbd>auth_cli</kbd></dt>
+<dd><p>Possible choices: login, logout, token</p>
+</dd>
+</dl>
+</section>
+<section id="Sub-commands:_repeat2">
+<h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat2" title="Permalink to this headline">#</a></h4>
+<section id="login">
+<h5>login<a class="headerlink" href="#login" title="Permalink to this headline">#</a></h5>
+<p>Login to Jina AI Ecosystem</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">login</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="Named Arguments_repeat8">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this headline">#</a></h6>
+<dl class="option-list">
+<dt><kbd>-f, --force</kbd></dt>
+<dd><p>Force to login</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="logout">
+<h5>logout<a class="headerlink" href="#logout" title="Permalink to this headline">#</a></h5>
+<p>Logout from Jina AI Ecosystem</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">logout</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="token">
+<h5>token<a class="headerlink" href="#token" title="Permalink to this headline">#</a></h5>
+<p>Commands for Personal Access Token</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">token</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">create</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="nb">list</span><span class="p">}</span> <span class="o">...</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat8">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat8" title="Permalink to this headline">#</a></h6>
+<dl class="option-list">
+<dt><kbd>operation</kbd></dt>
+<dd><p>Possible choices: create, delete, list</p>
+</dd>
+</dl>
+</section>
+<section id="Sub-commands:_repeat3">
+<h6>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat3" title="Permalink to this headline">#</a></h6>
+<section id="create">
+<h7>create<a class="headerlink" href="#create" title="Permalink to this headline">#</a></h7>
+<p>Create a Personal Access Token</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">token</span> <span class="n">create</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span><span class="p">]</span> <span class="n">name</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat9">
+<h8>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat9" title="Permalink to this headline">#</a></h8>
+<dl class="option-list">
+<dt><kbd>name</kbd></dt>
+<dd><p>Name of Personal Access Token</p>
+</dd>
+</dl>
+</section>
+<section id="Named Arguments_repeat9">
+<h8>Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this headline">#</a></h8>
+<dl class="option-list">
+<dt><kbd>-e, --expire</kbd></dt>
+<dd><p>Validity period (days)</p>
+<p>Default: 7</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="delete">
+<h7>delete<a class="headerlink" href="#delete" title="Permalink to this headline">#</a></h7>
+<p>Revoke a Personal Access Token</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">token</span> <span class="n">delete</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">name</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat10">
+<h8>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat10" title="Permalink to this headline">#</a></h8>
+<dl class="option-list">
+<dt><kbd>name</kbd></dt>
+<dd><p>Name of Personal Access Token which you want to delete</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="list">
+<h7>list<a class="headerlink" href="#list" title="Permalink to this headline">#</a></h7>
+<p>List all Personal Access Tokens</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">token</span> <span class="nb">list</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
 </section>
 </section>
 <section id="hub">
@@ -1281,8 +1386,8 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 </dl>
 </section>
-<section id="Sub-commands:_repeat2">
-<h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat2" title="Permalink to this headline">#</a></h4>
+<section id="Sub-commands:_repeat4">
+<h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat4" title="Permalink to this headline">#</a></h4>
 <section id="new_repeat1">
 <h5>new<a class="headerlink" href="#new_repeat1" title="Permalink to this headline">#</a></h5>
 <p>Create a new executor using the template</p>
@@ -1328,8 +1433,8 @@ Defaults to retaining whatever type is returned by the Executor.</p>
               <span class="n">path</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat8">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat8" title="Permalink to this headline">#</a></h6>
+<section id="Named Arguments_repeat10">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this headline">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--no-usage</kbd></dt>
 <dd><p>If set, Hub executor usage will not be printed.</p>
@@ -1390,16 +1495,16 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">hub</span> <span class="n">pull</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">usage</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">install</span><span class="o">-</span><span class="n">requirements</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">force</span><span class="o">-</span><span class="n">update</span><span class="p">]</span> <span class="n">uri</span>
 </pre></div>
 </div>
-<section id="Positional Arguments_repeat7">
-<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat7" title="Permalink to this headline">#</a></h6>
+<section id="Positional Arguments_repeat11">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat11" title="Permalink to this headline">#</a></h6>
 <dl class="option-list">
 <dt><kbd>uri</kbd></dt>
 <dd><p>The URI of the executor to pull (e.g., jinahub[+docker]://NAME)</p>
 </dd>
 </dl>
 </section>
-<section id="Named Arguments_repeat9">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat9" title="Permalink to this headline">#</a></h6>
+<section id="Named Arguments_repeat11">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this headline">#</a></h6>
 <dl class="option-list">
 <dt><kbd>--no-usage</kbd></dt>
 <dd><p>If set, Hub executor usage will not be printed.</p>
@@ -1423,108 +1528,165 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </section>
 </section>
 </section>
-<section id="auth">
-<h3>auth<a class="headerlink" href="#auth" title="Permalink to this headline">#</a></h3>
-<p>Login to Jina AI with your GitHub/Google/Email account</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">login</span><span class="p">,</span> <span class="n">logout</span><span class="p">,</span> <span class="n">token</span><span class="p">}</span> <span class="o">...</span>
+<section id="cloud">
+<h3>cloud<a class="headerlink" href="#cloud" title="Permalink to this headline">#</a></h3>
+<p>Manage Flows on Jina Cloud</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">loglevel</span> <span class="p">{</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">INFO</span><span class="p">,</span> <span class="n">CRITICAL</span><span class="p">,</span> <span class="n">NOTSET</span><span class="p">}]</span>
+           <span class="p">{</span><span class="n">login</span><span class="p">,</span> <span class="n">deploy</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">logs</span> <span class="o">...</span> <span class="mi">4</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}</span> <span class="o">...</span>
 </pre></div>
 </div>
-<section id="Positional Arguments_repeat8">
-<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat8" title="Permalink to this headline">#</a></h4>
+<section id="Positional Arguments_repeat12">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat12" title="Permalink to this headline">#</a></h4>
 <dl class="option-list">
-<dt><kbd>auth_cli</kbd></dt>
-<dd><p>Possible choices: login, logout, token</p>
+<dt><kbd>jc_cli</kbd></dt>
+<dd><p>Possible choices: login, deploy, list, logs, status, remove, new, survey</p>
 </dd>
 </dl>
 </section>
-<section id="Sub-commands:_repeat3">
-<h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat3" title="Permalink to this headline">#</a></h4>
-<section id="login">
-<h5>login<a class="headerlink" href="#login" title="Permalink to this headline">#</a></h5>
-<p>Login to Jina AI Ecosystem</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">login</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span><span class="p">]</span>
-</pre></div>
-</div>
-<section id="Named Arguments_repeat10">
-<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat10" title="Permalink to this headline">#</a></h6>
+<section id="Named Arguments_repeat12">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this headline">#</a></h4>
 <dl class="option-list">
-<dt><kbd>-f, --force</kbd></dt>
-<dd><p>Force to login</p>
-<p>Default: False</p>
+<dt><kbd>-v, --version</kbd></dt>
+<dd><p>Show version.</p>
+</dd>
+<dt><kbd>--loglevel</kbd></dt>
+<dd><p>Possible choices: DEBUG, INFO, CRITICAL, NOTSET</p>
+<p>Set the loglevel of the logger</p>
+<p>Default: “INFO”</p>
 </dd>
 </dl>
 </section>
-</section>
-<section id="logout">
-<h5>logout<a class="headerlink" href="#logout" title="Permalink to this headline">#</a></h5>
-<p>Logout from Jina AI Ecosystem</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">logout</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+<section id="Sub-commands:_repeat5">
+<h4>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat5" title="Permalink to this headline">#</a></h4>
+<section id="login_repeat1">
+<h5>login<a class="headerlink" href="#login_repeat1" title="Permalink to this headline">#</a></h5>
+<p>Login to Jina Cloud / Ecosystem.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="n">login</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
 </pre></div>
 </div>
 </section>
-<section id="token">
-<h5>token<a class="headerlink" href="#token" title="Permalink to this headline">#</a></h5>
-<p>Commands for Personal Access Token</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">token</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">{</span><span class="n">create</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="nb">list</span><span class="p">}</span> <span class="o">...</span>
+<section id="deploy">
+<h5>deploy<a class="headerlink" href="#deploy" title="Permalink to this headline">#</a></h5>
+<p>Deploy a Flow.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="n">deploy</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">env</span><span class="o">-</span><span class="n">file</span><span class="p">]</span> <span class="n">path</span>
 </pre></div>
 </div>
-<section id="Positional Arguments_repeat9">
-<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat9" title="Permalink to this headline">#</a></h6>
+<section id="Positional Arguments_repeat13">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat13" title="Permalink to this headline">#</a></h6>
 <dl class="option-list">
-<dt><kbd>operation</kbd></dt>
-<dd><p>Possible choices: create, delete, list</p>
+<dt><kbd>path</kbd></dt>
+<dd><p>The local path to a Jina flow project.</p>
 </dd>
 </dl>
 </section>
-<section id="Sub-commands:_repeat4">
-<h6>Sub-commands:<a class="headerlink" href="#Sub-commands:_repeat4" title="Permalink to this headline">#</a></h6>
-<section id="create">
-<h7>create<a class="headerlink" href="#create" title="Permalink to this headline">#</a></h7>
-<p>Create a Personal Access Token</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">token</span> <span class="n">create</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">e</span><span class="p">]</span> <span class="n">name</span>
-</pre></div>
-</div>
-<section id="Positional Arguments_repeat10">
-<h8>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat10" title="Permalink to this headline">#</a></h8>
+<section id="Named Arguments_repeat13">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat13" title="Permalink to this headline">#</a></h6>
 <dl class="option-list">
-<dt><kbd>name</kbd></dt>
-<dd><p>Name of Personal Access Token</p>
+<dt><kbd>--name</kbd></dt>
+<dd><p>If set, the URL of the flow will be prepended with this name.</p>
 </dd>
-</dl>
-</section>
-<section id="Named Arguments_repeat11">
-<h8>Named Arguments<a class="headerlink" href="#Named Arguments_repeat11" title="Permalink to this headline">#</a></h8>
-<dl class="option-list">
-<dt><kbd>-e, --expire</kbd></dt>
-<dd><p>Validity period (days)</p>
-<p>Default: 7</p>
+<dt><kbd>--workspace</kbd></dt>
+<dd><p>The string ID of a workspace. If set, re-use the given workspace instead of creating a new one.</p>
+</dd>
+<dt><kbd>--env-file</kbd></dt>
+<dd><p>Pass the path to the local .env file.</p>
 </dd>
 </dl>
 </section>
 </section>
-<section id="delete">
-<h7>delete<a class="headerlink" href="#delete" title="Permalink to this headline">#</a></h7>
-<p>Revoke a Personal Access Token</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">token</span> <span class="n">delete</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">name</span>
+<section id="list_repeat1">
+<h5>list<a class="headerlink" href="#list_repeat1" title="Permalink to this headline">#</a></h5>
+<p>List all Flows.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="nb">list</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+                <span class="p">[</span><span class="o">--</span><span class="n">status</span> <span class="p">{</span><span class="n">SUBMITTED</span><span class="p">,</span> <span class="n">NORMALIZING</span><span class="p">,</span> <span class="n">NORMALIZED</span><span class="p">,</span> <span class="n">STARTING</span> <span class="o">...</span> <span class="mi">6</span> <span class="n">more</span> <span class="n">choices</span><span class="p">}]</span>
 </pre></div>
 </div>
-<section id="Positional Arguments_repeat11">
-<h8>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat11" title="Permalink to this headline">#</a></h8>
+<section id="Named Arguments_repeat14">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat14" title="Permalink to this headline">#</a></h6>
 <dl class="option-list">
-<dt><kbd>name</kbd></dt>
-<dd><p>Name of Personal Access Token which you want to delete</p>
+<dt><kbd>--status</kbd></dt>
+<dd><p>Possible choices: SUBMITTED, NORMALIZING, NORMALIZED, STARTING, FAILED, ALIVE, UPDATING, DELETING, DELETED, ALL</p>
+<p>Pass the status of Flows to be listed.</p>
+<p>Default: ALIVE</p>
 </dd>
 </dl>
 </section>
 </section>
-<section id="list">
-<h7>list<a class="headerlink" href="#list" title="Permalink to this headline">#</a></h7>
-<p>List all Personal Access Tokens</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">auth</span> <span class="n">token</span> <span class="nb">list</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+<section id="logs">
+<h5>logs<a class="headerlink" href="#logs" title="Permalink to this headline">#</a></h5>
+<p>Stream logs for a Flow.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="n">logs</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">executor</span><span class="p">]</span> <span class="n">flow</span>
 </pre></div>
 </div>
+<section id="Positional Arguments_repeat14">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat14" title="Permalink to this headline">#</a></h6>
+<dl class="option-list">
+<dt><kbd>flow</kbd></dt>
+<dd><p>The string ID of a flow.</p>
+</dd>
+</dl>
+</section>
+<section id="Named Arguments_repeat15">
+<h6>Named Arguments<a class="headerlink" href="#Named Arguments_repeat15" title="Permalink to this headline">#</a></h6>
+<dl class="option-list">
+<dt><kbd>--executor</kbd></dt>
+<dd><p>Pass name of the Executor to stream logs from.</p>
+</dd>
+</dl>
 </section>
 </section>
+<section id="status">
+<h5>status<a class="headerlink" href="#status" title="Permalink to this headline">#</a></h5>
+<p>Get the status of a Flow.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="n">status</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">flow</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat15">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat15" title="Permalink to this headline">#</a></h6>
+<dl class="option-list">
+<dt><kbd>flow</kbd></dt>
+<dd><p>The string ID of a flow.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="remove">
+<h5>remove<a class="headerlink" href="#remove" title="Permalink to this headline">#</a></h5>
+<p>Remove Flow(s).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="n">remove</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">flows</span> <span class="p">[</span><span class="n">flows</span> <span class="o">...</span><span class="p">]]</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat16">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat16" title="Permalink to this headline">#</a></h6>
+<dl class="option-list">
+<dt><kbd>flows</kbd></dt>
+<dd><p>The string ID of a flow for single removal, or a list of space seperated string IDs for multiple removal, or string ‘all’ for deleting ALL ALIVE flows.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="new_repeat2">
+<h5>new<a class="headerlink" href="#new_repeat2" title="Permalink to this headline">#</a></h5>
+<p>Create a new Jina project via template.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="n">new</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">path</span>
+</pre></div>
+</div>
+<section id="Positional Arguments_repeat17">
+<h6>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat17" title="Permalink to this headline">#</a></h6>
+<dl class="option-list">
+<dt><kbd>path</kbd></dt>
+<dd><p>The new project will be created at this path.</p>
+<p>Default: “helloworld”</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="survey">
+<h5>survey<a class="headerlink" href="#survey" title="Permalink to this headline">#</a></h5>
+<p>Tell us your experience and help us improve.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">cloud</span> <span class="n">survey</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
 </section>
 </section>
 </section>
@@ -1534,8 +1696,8 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">help</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">query</span>
 </pre></div>
 </div>
-<section id="Positional Arguments_repeat12">
-<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat12" title="Permalink to this headline">#</a></h4>
+<section id="Positional Arguments_repeat18">
+<h4>Positional Arguments<a class="headerlink" href="#Positional Arguments_repeat18" title="Permalink to this headline">#</a></h4>
 <dl class="option-list">
 <dt><kbd>query</kbd></dt>
 <dd><p>Lookup the usage &amp; mention of the argument name in Jina API. The name can be fuzzy</p>
@@ -1663,7 +1825,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 60213</p>
+<p>Default: 56437</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1768,7 +1930,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 61576</p>
+<p>Default: 54204</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1776,7 +1938,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: 53400</p>
+<p>Default: 49789</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1951,7 +2113,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 49488</p>
+<p>Default: 60619</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -2056,7 +2218,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
 <dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 58596</p>
+<p>Default: 63324</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2132,7 +2294,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “60394”</p>
+<p>Default: “63257”</p>
 </dd>
 </dl>
 </section>
@@ -2144,8 +2306,8 @@ Python files, data files.</p>
             <span class="p">[</span><span class="o">--</span><span class="k">return</span><span class="o">-</span><span class="n">responses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span>
 </pre></div>
 </div>
-<section id="Named Arguments_repeat12">
-<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat12" title="Permalink to this headline">#</a></h4>
+<section id="Named Arguments_repeat16">
+<h4>Named Arguments<a class="headerlink" href="#Named Arguments_repeat16" title="Permalink to this headline">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--asyncio</kbd></dt>
 <dd><p>If set, then the input and output of this Client work in an asynchronous manner.</p>
@@ -2221,7 +2383,7 @@ Python files, data files.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 17, 2022</div>
+                            Last updated on Aug 18, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -2326,47 +2488,24 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#Pod arguments_repeat1">Pod arguments</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#hub">hub</a><ul>
-<li><a class="reference internal" href="#subcommands_repeat1">subcommands</a></li>
-<li><a class="reference internal" href="#Sub-commands:_repeat2">Sub-commands:</a><ul>
-<li><a class="reference internal" href="#new_repeat1">new</a><ul>
-<li><a class="reference internal" href="#Create Executor arguments">Create Executor arguments</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#push">push</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat8">Named Arguments</a></li>
-<li><a class="reference internal" href="#Push arguments">Push arguments</a></li>
-<li><a class="reference internal" href="#Visibility arguments">Visibility arguments</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#pull">pull</a><ul>
-<li><a class="reference internal" href="#Positional Arguments_repeat7">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat9">Named Arguments</a></li>
-<li><a class="reference internal" href="#Pull arguments_repeat1">Pull arguments</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
 <li><a class="reference internal" href="#auth">auth</a><ul>
-<li><a class="reference internal" href="#Positional Arguments_repeat8">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Sub-commands:_repeat3">Sub-commands:</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat7">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Sub-commands:_repeat2">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#login">login</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat10">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat8">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#logout">logout</a></li>
 <li><a class="reference internal" href="#token">token</a><ul>
-<li><a class="reference internal" href="#Positional Arguments_repeat9">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Sub-commands:_repeat4">Sub-commands:</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat8">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Sub-commands:_repeat3">Sub-commands:</a><ul>
 <li><a class="reference internal" href="#create">create</a><ul>
-<li><a class="reference internal" href="#Positional Arguments_repeat10">Positional Arguments</a></li>
-<li><a class="reference internal" href="#Named Arguments_repeat11">Named Arguments</a></li>
+<li><a class="reference internal" href="#Positional Arguments_repeat9">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat9">Named Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#delete">delete</a><ul>
-<li><a class="reference internal" href="#Positional Arguments_repeat11">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Positional Arguments_repeat10">Positional Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#list">list</a></li>
@@ -2378,8 +2517,67 @@ Python files, data files.</p>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#help">help</a><ul>
+<li><a class="reference internal" href="#hub">hub</a><ul>
+<li><a class="reference internal" href="#subcommands_repeat1">subcommands</a></li>
+<li><a class="reference internal" href="#Sub-commands:_repeat4">Sub-commands:</a><ul>
+<li><a class="reference internal" href="#new_repeat1">new</a><ul>
+<li><a class="reference internal" href="#Create Executor arguments">Create Executor arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#push">push</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat10">Named Arguments</a></li>
+<li><a class="reference internal" href="#Push arguments">Push arguments</a></li>
+<li><a class="reference internal" href="#Visibility arguments">Visibility arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pull">pull</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat11">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat11">Named Arguments</a></li>
+<li><a class="reference internal" href="#Pull arguments_repeat1">Pull arguments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cloud">cloud</a><ul>
 <li><a class="reference internal" href="#Positional Arguments_repeat12">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat12">Named Arguments</a></li>
+<li><a class="reference internal" href="#Sub-commands:_repeat5">Sub-commands:</a><ul>
+<li><a class="reference internal" href="#login_repeat1">login</a></li>
+<li><a class="reference internal" href="#deploy">deploy</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat13">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat13">Named Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#list_repeat1">list</a><ul>
+<li><a class="reference internal" href="#Named Arguments_repeat14">Named Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#logs">logs</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat14">Positional Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat15">Named Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#status">status</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat15">Positional Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#remove">remove</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat16">Positional Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#new_repeat2">new</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat17">Positional Arguments</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#survey">survey</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#help">help</a><ul>
+<li><a class="reference internal" href="#Positional Arguments_repeat18">Positional Arguments</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#pod">pod</a><ul>
@@ -2408,7 +2606,7 @@ Python files, data files.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#client">client</a><ul>
-<li><a class="reference internal" href="#Named Arguments_repeat12">Named Arguments</a></li>
+<li><a class="reference internal" href="#Named Arguments_repeat16">Named Arguments</a></li>
 <li><a class="reference internal" href="#ClientGateway arguments">ClientGateway arguments</a></li>
 </ul>
 </li>
