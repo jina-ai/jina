@@ -155,8 +155,7 @@ setup(
     long_description_content_type='text/markdown',
     zip_safe=False,
     setup_requires=['setuptools>=18.0', 'wheel'],
-    install_requires=list(final_deps)
-    + ['jcloud @ git+https://github.com/jina-ai/jcloud.git@feat-allow-extending-cli'],
+    install_requires=list(final_deps),
     extras_require=all_deps,
     entry_points={
         'console_scripts': [
