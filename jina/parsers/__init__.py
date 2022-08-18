@@ -229,15 +229,6 @@ def get_main_parser():
         )
     )
 
-    set_hub_parser(
-        sp.add_parser(
-            'hub',
-            help='Push/pull an Executor to/from Jina Hub',
-            description='Push/Pull an Executor to/from Jina Hub',
-            formatter_class=_chf,
-        )
-    )
-
     from hubble.parsers import get_main_parser as get_hubble_parser
 
     get_hubble_parser(
@@ -246,6 +237,26 @@ def get_main_parser():
             description='Login to Jina AI with your GitHub/Google/Email account',
             formatter_class=_chf,
             help='Login to Jina AI',
+        )
+    )
+
+    set_hub_parser(
+        sp.add_parser(
+            'hub',
+            help='Manage Executor on Jina Hub',
+            description='Push/Pull an Executor to/from Jina Hub',
+            formatter_class=_chf,
+        )
+    )
+
+    from jcloud.parsers import get_main_parser as get_jcloud_parser
+
+    get_jcloud_parser(
+        sp.add_parser(
+            'cloud',
+            description='Manage Flows on Jina Cloud',
+            formatter_class=_chf,
+            help='Manage Flows on Jina Cloud',
         )
     )
 
