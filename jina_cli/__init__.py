@@ -10,7 +10,7 @@ def _get_run_args(print_args: bool = True):
 
     console = get_rich_console()
 
-    silent_print = {'help', 'hub', 'export', 'auth'}
+    silent_print = {'help', 'hub', 'export', 'auth', 'cloud'}
 
     parser = get_main_parser()
     if len(sys.argv) > 1:

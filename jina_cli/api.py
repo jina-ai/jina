@@ -219,7 +219,7 @@ def auth(args: 'Namespace'):
     """
     from hubble import api
 
-    getattr(api, args.cli2.replace('-', '_'))(args)
+    getattr(api, args.auth_cli.replace('-', '_'))(args)
 
 
 def cloud(args: 'Namespace'):
@@ -229,4 +229,4 @@ def cloud(args: 'Namespace'):
     """
     from jcloud import api
 
-    getattr(api, args.cli2.replace('-', '_'))(args)
+    getattr(api, args.jc_cli.replace('-', '_'))(args)
