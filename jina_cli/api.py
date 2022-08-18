@@ -224,7 +224,7 @@ def auth(args: 'Namespace'):
 
 def cloud(args: 'Namespace'):
     """
-    Use jcloud commands
+    Use jcloud (Jina Cloud) commands
     :param args: arguments coming from the CLI.
     """
     from jcloud import api

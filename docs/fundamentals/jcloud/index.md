@@ -20,7 +20,8 @@ At this point, Jina Cloud hosts all your Jina projects and offers computational/
 
 ## Basic
 ### Install
-
+If you have {ref}`installed jina <swagger-ui>`, there is no need to install `jcloud` CLI. However, you still can 
+install the CLI individually:
 ```bash
 pip install jcloud
 jc -h
@@ -28,6 +29,14 @@ jc -h
 
 ```{hint}
 In case `jc` is already occupied by another tool, please use `jcloud` instead. If your pip install doesn't register bash commands for you, you can run `python -m jcloud -h`.
+```
+
+```{important}
+You can use the `jcloud` CLI in 2 ways:
+* If you installed it with `jina`, all of its commands come under the `jina cloud` command. Try `jina cloud --help` for 
+more info.
+* If you installed it individually, all of its commands come under the `jc` or `jcloud` executable.
+For the rest of this section, we will be using `jc` command rather than `jina cloud`.
 ```
 
 ### Login
