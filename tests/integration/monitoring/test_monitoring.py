@@ -46,6 +46,8 @@ def test_enable_monitoring_deployment(port_generator, executor):
                 f'process_request_seconds_created{{executor="DummyExecutor",executor_endpoint="/{meth}",runtime_name="executor1/rep-0"}}'
                 in str(resp.content)
             )
+            assert f'jina_number_of_successful_requests' in str(resp.content)
+            assert f'jina_number_of_failed_requests' in str(resp.content)
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
@@ -65,6 +67,8 @@ def test_enable_monitoring_gateway(protocol, port_generator, executor):
         resp = req.get(f'http://localhost:{port0}/')
         assert f'jina_receiving_request_seconds' in str(resp.content)
         assert f'jina_sending_request_seconds' in str(resp.content)
+        assert f'jina_number_of_successful_requests' in str(resp.content)
+        assert f'jina_number_of_failed_requests' in str(resp.content)
 
 
 def test_monitoring_head(port_generator, executor):
@@ -97,6 +101,8 @@ def test_monitoring_head(port_generator, executor):
         resp = req.get(f'http://localhost:{port_head}/')
         assert f'jina_receiving_request_seconds' in str(resp.content)
         assert f'jina_sending_request_seconds' in str(resp.content)
+        assert f'jina_number_of_successful_requests' in str(resp.content)
+        assert f'jina_number_of_failed_requests' in str(resp.content)
 
 
 def test_monitoring_head_few_port(port_generator, executor):
