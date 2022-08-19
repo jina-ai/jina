@@ -233,3 +233,19 @@ autoscale
 advanced
 faq
 ```
+
+## Troubleshooting
+
+If your deployment failed, please enable verbose logging and redeploy it. You can add `--loglevel DEBUG` _before_ each CLI subcommand, e.g.
+
+```bash
+jc --loglevel DEBUG deploy flow.yml
+```
+
+Alternatively, you can configure it by using environment variable `JCLOUD_LOGLEVEL`, e.g.
+
+```bash
+JCLOUD_LOGLEVEL=DEBUG jc deploy flow.yml
+```
+
+If you don't see any obvious errors, please raise an issue in [JCloud](https://github.com/jina-ai/jcloud/issues/new/choose)
