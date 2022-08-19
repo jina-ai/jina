@@ -119,6 +119,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         metas: Optional[Dict] = None,
         requests: Optional[Dict] = None,
         runtime_args: Optional[Dict] = None,
+        workspace: Optional[str] = None,
         **kwargs,
     ):
         """`metas` and `requests` are always auto-filled with values from YAML config.
@@ -127,11 +128,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         :param requests: a dict of endpoint-function mapping
         :param runtime_args: a dict of arguments injected from :class:`Runtime` during runtime
         :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected
+        :param workspace: the workspace of the executor. Only used if a workspace is not already provided in `metas` or `runtime_args`
         """
         self._add_metas(metas)
         self._add_requests(requests)
         self._add_runtime_args(runtime_args)
         self._init_monitoring()
+        self._init_workspace = workspace
         self.logger = JinaLogger(self.__class__.__name__)
         if __dry_run_endpoint__ not in self.requests:
             self.requests[__dry_run_endpoint__] = self._dry_run_func
@@ -321,6 +324,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         workspace = (
             getattr(self.runtime_args, 'workspace', None)
             or getattr(self.metas, 'workspace')
+            or self._init_workspace
             or os.environ.get('JINA_DEFAULT_WORKSPACE_BASE')
         )
         if workspace:
