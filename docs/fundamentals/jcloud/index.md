@@ -19,25 +19,26 @@ At this point, Jina Cloud hosts all your Jina projects and offers computational/
 ```
 
 ## Basic
-### Install
-If you have {ref}`installed jina <swagger-ui>`, there is no need to install `jcloud` CLI. However, you still can 
-install the CLI individually:
+
+Jina Cloud provides a CLI and you can use it simply via `jina cloud` from the terminal, or `jcloud` or simply `jc` for minimalists. 
+
+
+````{hint}
+You can also only install Jina Cloud CLI without install `jina` package.
+
 ```bash
 pip install jcloud
 jc -h
 ```
 
-```{hint}
-In case `jc` is already occupied by another tool, please use `jcloud` instead. If your pip install doesn't register bash commands for you, you can run `python -m jcloud -h`.
-```
+If you installed it individually, all of its commands come under the `jc` or `jcloud` executable.
 
-```{important}
-You can use the `jcloud` CLI in 2 ways:
-* If you installed it with `jina`, all of its commands come under the `jina cloud` command. Try `jina cloud --help` for 
-more info.
-* If you installed it individually, all of its commands come under the `jc` or `jcloud` executable.
-For the rest of this section, we will be using `jc` command rather than `jina cloud`.
-```
+
+In case `jc` is already occupied by another tool, please use `jcloud` instead. If your pip install doesn't register bash commands for you, you can run `python -m jcloud -h`.
+````
+
+For the rest of this section, we will be using `jc` or `jcloud`. But again they are interchangable to `jina cloud`.
+
 
 ### Login
 
@@ -81,10 +82,10 @@ jc deploy flow.yml
 
 Just like a regular Python project, you can have sub-folders of Executor implementations; and a `flow.yml` on the top-level to connect all Executors together.
 
-You can create an example local project using `jc new`. The default structure looks like:
+You can create an example local project using `jc new hello`. The default structure looks like:
 
 ```
-.
+hello/
 ├── .env
 ├── executor1
 │   ├── config.yml
@@ -95,6 +96,7 @@ You can create an example local project using `jc new`. The default structure lo
 
 where,
 
+- `hello/` is your top-level project folder.
 - `executor1` directory has all Executor related code/config. You can read the best practices for [file structures](https://docs.jina.ai/fundamentals/executor/executor-files/). Multiple such Executor directories can be created.
 - `flow.yml` Your Flow YAML.
 - `.env` All environment variables used during deployment.
@@ -102,7 +104,7 @@ where,
 To deploy,
 
 ```bash
-jc deploy ./hello
+jc deploy hello
 ```
 
 
