@@ -155,8 +155,17 @@ def test_monitoring_replicas_and_shards(port_generator, executor):
     )
 
     assert unique_port_exposed == set(port_shards_list)
+
     with f:
-        for port in [port_head, port1] + port_shards_list:
+
+        for port in port_shards_list:
+            resp = req.get(f'http://localhost:{port}/')
+            assert resp.status_code == 200
+            assert f'process_request_seconds' in str(resp.content)
+            assert f'jina_number_of_successful_requests' in str(resp.content)
+            assert f'jina_number_of_failed_requests' in str(resp.content)
+
+        for port in [port_head, port1]:
             resp = req.get(f'http://localhost:{port}/')
             assert resp.status_code == 200
 
@@ -177,12 +186,12 @@ def test_document_processed_total(port_generator, executor):
         assert resp.status_code == 200
 
         f.post(
-            f'/foo', inputs=DocumentArray.empty(size=4)
-        )  # process 4 documents on foo
+            f'/foo', inputs=DocumentArray.empty(size=10), request_size=2
+        )  # process 10 documents on foo
 
         resp = req.get(f'http://localhost:{port1}/')
         assert (
-            f'jina_document_processed_total{{executor="DummyExecutor",executor_endpoint="/foo",runtime_name="executor0/rep-0"}} 4.0'  # check that we count 4 documents on foo
+            f'jina_document_processed_total{{executor="DummyExecutor",executor_endpoint="/foo",runtime_name="executor0/rep-0"}} 10.0'  # check that we count 10 documents on foo
             in str(resp.content)
         )
 
@@ -191,17 +200,29 @@ def test_document_processed_total(port_generator, executor):
             in str(resp.content)
         )
 
+        assert (
+            f'jina_number_of_successful_requests_total{{runtime_name="executor0/rep-0"}} 5.0'  # check that 5 requests were successful (10/2=5)
+            in str(resp.content)
+        )
+
         f.post(
-            f'/bar', inputs=DocumentArray.empty(size=5)
+            f'/bar', inputs=DocumentArray.empty(size=5), request_size=1
         )  # process 5 documents on bar
 
-        assert not (
-            f'jina_document_processed_total{{executor="DummyExecutor",executor_endpoint="/bar",runtime_name="executor0/rep-0"}} 5.0'  # check that we count 5 documents on foo
+        resp = req.get(f'http://localhost:{port1}/')
+
+        assert (
+            f'jina_document_processed_total{{executor="DummyExecutor",executor_endpoint="/bar",runtime_name="executor0/rep-0"}} 5.0'  # check that we count 5 documents on bar
             in str(resp.content)
         )
 
         assert (
-            f'jina_document_processed_total{{executor="DummyExecutor",executor_endpoint="/foo",runtime_name="executor0/rep-0"}} 4.0'  # check that we nothing change on bar count
+            f'jina_document_processed_total{{executor="DummyExecutor",executor_endpoint="/foo",runtime_name="executor0/rep-0"}} 10.0'  # check that nothing change on foo count
+            in str(resp.content)
+        )
+
+        assert (
+            f'jina_number_of_successful_requests_total{{runtime_name="executor0/rep-0"}} 10.0'  # check that 7 requests were successful so far (5/1 + 5 = 10)
             in str(resp.content)
         )
 
