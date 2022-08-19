@@ -16,19 +16,3 @@
 - **How long do you persist my service?**
 
   Flows are terminated if they are not serving requests for the last 24hrs. But this is configurable by passing {ref}`retention-days <retention-days>` argument.
-
-- **My Flow deployment failed. How I do to fix it?**
-
-  As a first step, please enable verbose logs while deploying the Flow. You can add `--loglevel DEBUG` _before_ each CLI subcommand, e.g.
-
-  ```bash
-  jc --loglevel DEBUG deploy flow.yml
-  ```
-
-  Alternatively, you can also configure it by using Environment Variable `JCLOUD_LOGLEVEL`, e.g.
-
-  ```bash
-  export JCLOUD_LOGLEVEL=DEBUG && jc deploy flow.yml
-  ```
-
-  If you don't see any obvious errors, please raise an issue in [JCloud](https://github.com/jina-ai/jcloud/issues/new/choose)
