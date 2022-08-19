@@ -78,6 +78,15 @@ To deploy,
 jc deploy flow.yml
 ```
 
+````{tip}
+Testing locally before deploying is recommended. You can use 
+
+```bash
+jina flow --uses flow.yml
+```
+````
+
+
 #### A project folder
 
 Just like a regular Python project, you can have sub-folders of Executor implementations; and a `flow.yml` on the top-level to connect all Executors together.
