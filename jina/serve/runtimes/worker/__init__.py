@@ -72,6 +72,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         else:
             self._summary_time = contextlib.nullcontext()
             self._failed_requests_metrics = None
+            self._successful_requests_metrics = None
         # Keep this initialization order
         # otherwise readiness check is not valid
         # The DataRequestHandler needs to be started BEFORE the grpc server
