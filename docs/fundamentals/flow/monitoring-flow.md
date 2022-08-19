@@ -8,8 +8,13 @@ of your Flow, detect bottlenecks, or alert your team when some component of your
 Jina Flows expose metrics in the [Prometheus format](https://prometheus.io/docs/instrumenting/exposition_formats/). This is a plain text format that is understandable by both humans and machines. These metrics are intended to be scraped by
 [Prometheus](https://prometheus.io/), an industry-standard tool for collecting and monitoring metrics.
 
-To visualize your metrics through a dashboard, we recommend [Grafana](https://grafana.com/)
+To visualize your metrics through a dashboard, we recommend [Grafana](https://grafana.com/).
 
+```{hint}
+Depending on your deployment type (local, kubernetes or jcloud), you need to ensure a running Prometheus/Grafana stack.
+Check the {ref}`Flow and monitoring stack deployment section <deploy-flow-monitoring>` to find out how to provision 
+your monitoring stack.
+```
 
 ## Enable monitoring
 
