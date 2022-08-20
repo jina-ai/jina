@@ -1,10 +1,5 @@
 (flow-switch)=
-# Add selection control to a Flow
-
-````{admonition} Requirements
-:class: hint
-To follow along with this How-To, you need Jina 3.2.2 or higher.
-````
+# Conditional route traffic inside a Flow
 
 In this tutorial you will gain a deeper insight into the {class}`~jina.Flow` 's {ref}`filter condition feature<flow-filter>`.
 

@@ -4,19 +4,19 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<meta property="og:title" content="Create Project" />
+<meta property="og:title" content="Build real-time streaming service" />
   
 <meta property="og:type" content="website" />
   
-<meta property="og:url" content="https://docs.jina.ai/get-started/create-app/" />
+<meta property="og:url" content="https://docs.jina.ai/how-to/realtime-streaming/" />
   
 <meta property="og:site_name" content="Jina 3.7.13 Documentation" />
   
-<meta property="og:description" content="Let’s write a small application with our new Jina development environment. To start, we’ll use Jina CLI to make a new project for us. In your terminal of choice run: This will generate a new directory called hello-jina with the following files: app.py is the entrypoint of your Jina project. You c..." />
+<meta property="og:description" content="In this example, we will build a real-time video streaming service, like Zoom. It allows multiple users to video chat via webcam. The whole solution is in 20 lines of code, showcasing how to powerful and easy to use Jina is. The source code can be found here. Basic idea: Idea is straightforward: ..." />
   
-<meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
+<meta property="og:image" content="https://user-images.githubusercontent.com/2041322/185625220-40c1f887-3be4-49df-9318-c49e0fb7365e.gif" />
   
-<meta property="og:image:alt" content="Jina 3.7.13 Documentation" />
+<meta property="og:image:alt" content="" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -35,11 +35,11 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Executor" href="../../fundamentals/executor/" /><link rel="prev" title="Troubleshooting" href="../install/troubleshooting/" />
-        <link rel="canonical" href="https://docs.jina.ai/get-started/create-app.html" />
+    <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Conditional route traffic inside a Flow" href="../flow-switch/" /><link rel="prev" title="How-To" href="../" />
+        <link rel="canonical" href="https://docs.jina.ai/how-to/realtime-streaming.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Create Project - Jina 3.7.13 documentation</title>
+        <title>Build real-time streaming service - Jina 3.7.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -229,20 +229,20 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
     <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../what-is-jina/">What is Jina?</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../install/docker/">Docker image</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../install/windows/">On Windows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../install/troubleshooting/">Troubleshooting</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../get-started/install/troubleshooting/">Troubleshooting</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Create Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/create-app/">Create Project</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -277,8 +277,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/debug-executor/">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sandbox/">Sandbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../debug-executor/">Debug</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/executor-best-practices/">Best practices</a></li>
 </ul>
 </li>
@@ -289,15 +289,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/jcloud/faq/">FAQ</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/realtime-streaming/">Build real-time streaming service</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/flow-switch/">Conditional route traffic inside a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/scale-out/">Scale out with replicas and shards</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/gpu-executor/">Run Executors on GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/external-executor/">Include external Executors in a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/kubernetes/">Deploy with Kubernetes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/monitoring/">Monitor via Prometheus and Grafana</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Build real-time streaming service</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../flow-switch/">Conditional route traffic inside a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../scale-out/">Scale out with replicas and shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../gpu-executor/">Run Executors on GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../external-executor/">Include external Executors in a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../docker-compose/">Deploy with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../kubernetes/">Deploy with Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../monitoring/">Monitor via Prometheus and Grafana</a></li>
 </ul>
 </li>
 </ul>
@@ -311,7 +311,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../migrate/">Migrate Jina 2 to Jina 3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../get-started/migrate/">Migrate Jina 2 to Jina 3</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://docs2.jina.ai/">Jina 2 Documentation</a></li>
 </ul>
 
@@ -389,101 +389,112 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="create-project">
-<h1>Create Project<a class="headerlink" href="#create-project" title="Permalink to this headline">#</a></h1>
-<p>Let’s write a small application with our new Jina development environment. To start, we’ll use Jina CLI to make a new project for us. In your terminal of choice run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina new hello-jina
-</pre></div>
-</div>
-<p>This will generate a new directory called <code class="docutils literal notranslate"><span class="pre">hello-jina</span></code> with the following files:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>hello-jina
-|- app.py
-|- executor1/
-        |- config.yml
-        |- executor.py
-</pre></div>
-</div>
+                    <section class="tex2jax_ignore mathjax_ignore" id="build-real-time-streaming-service">
+<h1>Build real-time streaming service<a class="headerlink" href="#build-real-time-streaming-service" title="Permalink to this headline">#</a></h1>
+<p>In this example, we will build a real-time video streaming service, like Zoom. It allows multiple users to video chat via webcam. The whole solution is in 20 lines of code, showcasing how to powerful and easy to use Jina is.</p>
+<p><img alt="" src="https://user-images.githubusercontent.com/2041322/185625220-40c1f887-3be4-49df-9318-c49e0fb7365e.gif" /></p>
+<p>The source code <a class="reference external" href="https://github.com/jina-ai/jina-video-chat">can be found here</a>.</p>
+<section id="basic-idea">
+<h2>Basic idea<a class="headerlink" href="#basic-idea" title="Permalink to this headline">#</a></h2>
+<p>Idea is straightforward:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">app.py</span></code> is the entrypoint of your Jina project. You can run it via <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">app.py</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">executor1/</span></code> is where we’ll write our <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> code.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">config.yml</span></code> is the config file for the <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>. It’s where you keep metadata for your Executor, as well as dependencies.</p></li>
+<li><p>It is a client-server architecture;</p></li>
+<li><p>Client uses webcam and collects frames and sends them to the server;</p></li>
+<li><p>Server aggregates the all frames from different users and sends back to the client;</p></li>
+<li><p>Client displays the received frames.</p></li>
 </ul>
-<p>There may be some other files like <code class="docutils literal notranslate"><span class="pre">README.md</span></code>, <code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code>  <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> to provide extra metadata about that <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>. More information <a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/#create-executor"><span class="std std-ref">can be found here</span></a>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> hello-jina
-python app.py
+</section>
+<section id="client">
+<h2>Client<a class="headerlink" href="#client" title="Permalink to this headline">#</a></h2>
+<p>The more technical and interesting part is actually on the client side. The key is to set <code class="docutils literal notranslate"><span class="pre">request_size=1</span></code> and use callback to handle response (instead of return).</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You will need <code class="docutils literal notranslate"><span class="pre">opencv-python</span></code>, please install it via <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">opencv-python</span></code>.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+    <span class="n">server_address</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Usage: ./client.py &lt;server_address&gt; &lt;user&gt;&#39;</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">render_recv</span><span class="p">(</span><span class="n">resp</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">docs</span><span class="p">:</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">tensor</span><span class="p">)</span>
+
+
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Document</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">server_address</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+    <span class="s1">&#39;/&#39;</span><span class="p">,</span>
+    <span class="n">Document</span><span class="o">.</span><span class="n">generator_from_webcam</span><span class="p">(</span>
+        <span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;user&#39;</span><span class="p">:</span> <span class="n">user</span><span class="p">},</span> <span class="n">show_window</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">height_width</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
+    <span class="p">),</span>
+    <span class="n">on_done</span><span class="o">=</span><span class="n">render_recv</span><span class="p">,</span>
+    <span class="n">request_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p>You should see this in your terminal:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>           Flow@99300<span class="o">[</span>I<span class="o">]</span>:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	<span class="m">0</span>.0.0.0:52971
-	🔒 Private network:	<span class="m">192</span>.168.0.102:52971
-	🌐 Public address:	<span class="m">84</span>.172.88.250:52971
-<span class="o">[</span><span class="s1">&#39;hello, world!&#39;</span>, <span class="s1">&#39;goodbye, world!&#39;</span><span class="o">]</span>
-</pre></div>
-</div>
-<section id="adding-dependencies">
-<h2>Adding dependencies<a class="headerlink" href="#adding-dependencies" title="Permalink to this headline">#</a></h2>
-<p>You can use any third-party Python library in <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>. Let’s create <code class="docutils literal notranslate"><span class="pre">executor1/requirements.txt</span></code> and add <code class="docutils literal notranslate"><span class="pre">pytorch</span></code> to it.</p>
-<p>Then in <code class="docutils literal notranslate"><span class="pre">executor.py</span></code>, let’s add another endpoint <code class="docutils literal notranslate"><span class="pre">/get-tensor</span></code> as follows:</p>
+<p>Here we use <a class="reference external" href="https://docarray.jina.ai/datatypes/video/#create-document-from-webcam">DocArray API <code class="docutils literal notranslate"><span class="pre">generator_from_webcam</span></code></a> to create a Document generator from webcam, where each frame is a <code class="docutils literal notranslate"><span class="pre">Document</span></code> with a <code class="docutils literal notranslate"><span class="pre">tensor</span></code> field.</p>
+<p>The input hence has infinite length, until you hit <code class="docutils literal notranslate"><span class="pre">ESC</span></code> key.</p>
+<p>To achieve real-time streaming, you need to set <code class="docutils literal notranslate"><span class="pre">request_size</span></code> to 1. This means that the client will not do any batching and directly send each Document as a request. You also need to use <a class="reference internal" href="../../fundamentals/client/client/#callback-functions"><span class="std std-ref">Callbacks</span></a> to handle the response. This is different from using the return in many other examples. Callback ensures the user can see the response as soon as it is received.</p>
+</section>
+<section id="server">
+<h2>Server<a class="headerlink" href="#server" title="Permalink to this headline">#</a></h2>
+<p>Server is super simple. Concat all frames from different users and send back to the client.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">torch</span>
-
-<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">requests</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
 
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/get-tensor&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
-            <span class="n">doc</span><span class="o">.</span><span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+<span class="k">class</span> <span class="nc">VideoChatExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="n">last_user_frames</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_user_frames</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">tensor</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_user_frames</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">d</span><span class="o">.</span><span class="n">tensor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_user_frames</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Save it as <code class="docutils literal notranslate"><span class="pre">executor.py</span></code> and create <code class="docutils literal notranslate"><span class="pre">executor.yml</span></code> with the following content:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">VideoChatExecutor</span><span class="w"></span>
+<span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor.py</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Put both under <code class="docutils literal notranslate"><span class="pre">executor/</span></code> folder and now the Flow YAML looks like the following:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
+<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor/config.yml</span><span class="w"></span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frameAggregator</span><span class="w"></span>
+</pre></div>
+</div>
+<p>The whole file structure is illustrated below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">flow</span><span class="o">.</span><span class="n">yml</span>
+<span class="n">executor</span><span class="o">/</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">yml</span>
+    <span class="n">executor</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
 </section>
-<section id="a-dummy-jina-application">
-<h2>A dummy Jina application<a class="headerlink" href="#a-dummy-jina-application" title="Permalink to this headline">#</a></h2>
-<p>Now let’s write a dummy application with our new dependency. In our <code class="docutils literal notranslate"><span class="pre">app.py</span></code>, add the following code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span>
-
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;executor1/config.yml&#39;</span><span class="p">)</span>
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">da</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/get-tensor&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">Document</span><span class="p">(),</span> <span class="n">Document</span><span class="p">()])</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">tensors</span><span class="p">)</span>
+<section id="run">
+<h2>Run<a class="headerlink" href="#run" title="Permalink to this headline">#</a></h2>
+<p>First run the server:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yml
 </pre></div>
 </div>
-<p>Once we save that, we can run our application by typing:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python app.py
-</pre></div>
-</div>
-<p>Assuming everything went well, you should see your application print this to the screen:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>       Flow@301<span class="o">[</span>I<span class="o">]</span>:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	<span class="m">0</span>.0.0.0:59667
-	🔒 Private network:	<span class="m">192</span>.168.0.102:59667
-	🌐 Public address:	<span class="m">84</span>.172.88.250:59667
-tensor<span class="o">([[[</span><span class="m">0</span>.9594, <span class="m">0</span>.9373<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.4729, <span class="m">0</span>.2012<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.7907, <span class="m">0</span>.3546<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.6961, <span class="m">0</span>.7463<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.3487, <span class="m">0</span>.7837<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.7825, <span class="m">0</span>.0556<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.3296, <span class="m">0</span>.2153<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.2207, <span class="m">0</span>.0220<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.9547, <span class="m">0</span>.9519<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.6703, <span class="m">0</span>.4601<span class="o">]]</span>,
-
-        <span class="o">[[</span><span class="m">0</span>.9684, <span class="m">0</span>.6781<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.7906, <span class="m">0</span>.8454<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.2136, <span class="m">0</span>.9147<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.3999, <span class="m">0</span>.7443<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.2564, <span class="m">0</span>.0629<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.4713, <span class="m">0</span>.1018<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.3626, <span class="m">0</span>.0963<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.7562, <span class="m">0</span>.2183<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.9239, <span class="m">0</span>.3294<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.2457, <span class="m">0</span>.9189<span class="o">]]]</span>, <span class="nv">dtype</span><span class="o">=</span>torch.float64
+<p>Note down the server address:</p>
+<p><img alt="" src="https://github.com/jina-ai/jina-video-chat/raw/main/.github/server.png" /></p>
+<p>Now run the client from different laptops:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python client.py grpcs://your-server-address-from-last-image johannes
+python client.py grpcs://your-server-address-from-last-image han
+python client.py grpcs://your-server-address-from-last-image kalim
 </pre></div>
 </div>
 </section>
@@ -494,18 +505,18 @@ tensor<span class="o">([[[</span><span class="m">0</span>.9594, <span class="m">
             <footer>
                 
                 <div class="related-pages">
-                    <a class="next-page" href="../../fundamentals/executor/">
+                    <a class="next-page" href="../flow-switch/">
                         <div class="page-info">
                             <div class="context">
                                 <span>Next</span>
                             </div>
-                            <div class="title">Executor</div>
+                            <div class="title">Conditional route traffic inside a Flow</div>
                         </div>
                         <svg>
                             <use href="#svg-arrow-right"></use>
                         </svg>
                     </a>
-                    <a class="prev-page" href="../install/troubleshooting/">
+                    <a class="prev-page" href="../">
                         <svg>
                             <use href="#svg-arrow-right"></use>
                         </svg>
@@ -514,7 +525,7 @@ tensor<span class="o">([[[</span><span class="m">0</span>.9594, <span class="m">
                                 <span>Previous</span>
                             </div>
                             
-                            <div class="title">Troubleshooting</div>
+                            <div class="title"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-book" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z"></path></svg> How-To</div>
                             
                         </div>
                     </a>
@@ -556,9 +567,11 @@ tensor<span class="o">([[[</span><span class="m">0</span>.9594, <span class="m">
                 <div class="toc-tree-container">
                     <div class="toc-tree">
                         <ul>
-<li><a class="reference internal" href="#">Create Project</a><ul>
-<li><a class="reference internal" href="#adding-dependencies">Adding dependencies</a></li>
-<li><a class="reference internal" href="#a-dummy-jina-application">A dummy Jina application</a></li>
+<li><a class="reference internal" href="#">Build real-time streaming service</a><ul>
+<li><a class="reference internal" href="#basic-idea">Basic idea</a></li>
+<li><a class="reference internal" href="#client">Client</a></li>
+<li><a class="reference internal" href="#server">Server</a></li>
+<li><a class="reference internal" href="#run">Run</a></li>
 </ul>
 </li>
 </ul>

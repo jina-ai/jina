@@ -40,8 +40,7 @@ But you need to chain them together in order to bring real value and to build an
 
 
 ```python
-from docarray import Document
-from jina import Flow, Executor, requests
+from jina import Flow, Executor, requests, Document
 
 
 class MyExecutor(Executor):
@@ -82,8 +81,7 @@ with f:
 Client:
 
 ```python
-from docarray import Document
-from jina import Client
+from jina import Client, Document
 
 c = Client(port=12345)
 c.post(on='/bar', inputs=Document(), on_done=print)
@@ -104,9 +102,7 @@ executors:
 
 `exec.py`:
 ```python
-from docarray import Document, DocumentArray
-
-from jina import Executor, requests
+from jina import Executor, requests, Document, DocumentArray
 
 
 class FooExecutor(Executor):
@@ -116,8 +112,7 @@ class FooExecutor(Executor):
 ```
 
 ```python
-from docarray import Document
-from jina import Flow
+from jina import Flow, Document
 
 f = Flow.load_config('my.yml')
 

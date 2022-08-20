@@ -14,8 +14,7 @@ An {class}`~jina.Executor` can be served using the {meth}`~jina.serve.executors.
 ````{tab} Serve Executor
 
 ```python
-from jina import Executor, requests
-from docarray import DocumentArray, Document
+from docarray import DocumentArray, Document, Executor, requests
 
 
 class MyExec(Executor):

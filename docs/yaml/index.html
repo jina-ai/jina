@@ -4,15 +4,15 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<meta property="og:title" content=" How-To" />
+<meta property="og:title" content=" YAML specification" />
   
 <meta property="og:type" content="website" />
   
-<meta property="og:url" content="https://docs.jina.ai/how-to/index/" />
+<meta property="og:url" content="https://docs.jina.ai/yaml/" />
   
 <meta property="og:site_name" content="Jina 3.7.13 Documentation" />
   
-<meta property="og:description" content="How-To: Jina is a very powerful framework that can help you build distributed multi-modal and cross-modal applications, from start to finish. In order to get you started on your more ambitious projects, we compiled a list of how-to tutorials that guide you through some of Jina’s more advanced fea..." />
+<meta property="og:description" content="YAML specification: YAML is widely used in Jina to define an Executor, Flow, Gateway, Hub manifest and JCloud. This page helps you navigate different YAML specifications. Executor YAML Define the argument of__init__, Python module dependencies and other settings of an Executor. Flow YAML Define t..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -35,11 +35,11 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Build real-time streaming service" href="realtime-streaming/" /><link rel="prev" title="FAQ" href="../fundamentals/jcloud/faq/" />
-        <link rel="canonical" href="https://docs.jina.ai/how-to/index.html" />
+    <link rel="index" title="Index" href="../genindex/" /><link rel="search" title="Search" href="../search/" /><link rel="next" title="Protocol Documentation" href="../proto/docs/" /><link rel="prev" title="Command-Line Interface" href="../cli/" />
+        <link rel="canonical" href="https://docs.jina.ai/yaml.html" />
 
     <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>How-To - Jina 3.7.13 documentation</title>
+        <title>YAML specification - Jina 3.7.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -197,7 +197,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -242,7 +242,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../get-started/create-app/">Create Project</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -277,8 +277,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="debug-executor/">Debug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/sandbox/">Sandbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/debug-executor/">Debug</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/hub/executor-best-practices/">Best practices</a></li>
 </ul>
 </li>
@@ -289,23 +289,23 @@
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/jcloud/faq/">FAQ</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="realtime-streaming/">Build real-time streaming service</a></li>
-<li class="toctree-l2"><a class="reference internal" href="flow-switch/">Conditional route traffic inside a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="scale-out/">Scale out with replicas and shards</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gpu-executor/">Run Executors on GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="external-executor/">Include external Executors in a Flow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="docker-compose/">Deploy with Docker Compose</a></li>
-<li class="toctree-l2"><a class="reference internal" href="kubernetes/">Deploy with Kubernetes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="monitoring/">Monitor via Prometheus and Grafana</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/realtime-streaming/">Build real-time streaming service</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/flow-switch/">Conditional route traffic inside a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/scale-out/">Scale out with replicas and shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/gpu-executor/">Run Executors on GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/external-executor/">Include external Executors in a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/docker-compose/">Deploy with Docker Compose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/kubernetes/">Deploy with Kubernetes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/monitoring/">Monitor via Prometheus and Grafana</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../yaml/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../proto/docs/">Protocol Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../envs/">Environment Variables</a></li>
 </ul>
@@ -378,7 +378,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon"
+                    <label class="toc-overlay-icon toc-content-icon no-toc"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -389,44 +389,58 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-book-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m0-1-75a-75-75-0-01-75-1h4-253c1-227-0-2-317-59-3-1-501a3-744-3-744-0-0111-006-1h4-245a-75-75-0-01-75-75v10-5a-75-75-0-01-75-75h-4-507a2-25-2-25-0-00-1-591-659l-622-621a-75-75-0-01-1-06-0l-622-621a2-25-2-25-0-005-258-13h-75a-75-75-0-01-75-75v1-75zm8-755-3a2-25-2-25-0-012-25-2-25h14-5v9h-3-757c-71-0-1-4-201-1-992-572l-004-7-322zm-1-504-7-324l-004-5-073-002-2-253a2-25-2-25-0-005-003-2-5h1-5v9h3-757a3-75-3-75-0-011-994-574z-path-svg-how-to">
-<h1><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-book" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z"></path></svg> How-To<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-book-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m0-1-75a-75-75-0-01-75-1h4-253c1-227-0-2-317-59-3-1-501a3-744-3-744-0-0111-006-1h4-245a-75-75-0-01-75-75v10-5a-75-75-0-01-75-75h-4-507a2-25-2-25-0-00-1-591-659l-622-621a-75-75-0-01-1-06-0l-622-621a2-25-2-25-0-005-258-13h-75a-75-75-0-01-75-75v1-75zm8-755-3a2-25-2-25-0-012-25-2-25h14-5v9h-3-757c-71-0-1-4-201-1-992-572l-004-7-322zm-1-504-7-324l-004-5-073-002-2-253a2-25-2-25-0-005-003-2-5h1-5v9h3-757a3-75-3-75-0-011-994-574z-path-svg-how-to" title="Permalink to this headline">#</a></h1>
-<p>Jina is a very powerful framework that can help you build distributed multi-modal and cross-modal applications, from start to finish.</p>
-<div class="seealso admonition">
-<p class="admonition-title">See Also</p>
-<p>If you are completely new to Jina, you should check out its <a class="reference internal" href="../fundamentals/architecture-overview/#architecture-overview"><span class="std std-ref">overview</span></a> first.
-You may also find the <a class="reference external" href="https://learn.jina.ai/">learning portal</a> useful to get off the ground.</p>
+                    <section class="tex2jax_ignore mathjax_ignore" id="svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-file-code-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m4-1-75c4-784-4-784-0-5-75-0h5-586c-464-0-909-184-1-237-513l2-914-2-914c-329-328-513-773-513-1-237v8-586a1-75-1-75-0-0114-25-15h-9a-75-75-0-010-1-5h9a-25-25-0-00-25-25v6h-2-75a1-75-1-75-0-0110-4-25v1-5h5-75a-25-25-0-00-25-25v2-5a-75-75-0-01-1-5-0v-2-5zm7-5-188v4-25c0-138-112-25-25-25h2-688a-252-252-0-00-011-013l-2-914-2-914a-272-272-0-00-013-011zm5-72-6-72a-75-75-0-000-1-06l1-47-1-47-1-47-1-47a-75-75-0-101-06-1-06l2-2a-75-75-0-000-1-06l-2-2a-75-75-0-00-1-06-0zm3-28-7-78a-75-75-0-00-1-06-1-06l-2-2a-75-75-0-000-1-06l2-2a-75-75-0-001-06-1-06l1-81-9-25l1-47-1-47z-path-svg-yaml-specification">
+<h1><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-file-code" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z"></path></svg> YAML specification<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-file-code-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m4-1-75c4-784-4-784-0-5-75-0h5-586c-464-0-909-184-1-237-513l2-914-2-914c-329-328-513-773-513-1-237v8-586a1-75-1-75-0-0114-25-15h-9a-75-75-0-010-1-5h9a-25-25-0-00-25-25v6h-2-75a1-75-1-75-0-0110-4-25v1-5h5-75a-25-25-0-00-25-25v2-5a-75-75-0-01-1-5-0v-2-5zm7-5-188v4-25c0-138-112-25-25-25h2-688a-252-252-0-00-011-013l-2-914-2-914a-272-272-0-00-013-011zm5-72-6-72a-75-75-0-000-1-06l1-47-1-47-1-47-1-47a-75-75-0-101-06-1-06l2-2a-75-75-0-000-1-06l-2-2a-75-75-0-00-1-06-0zm3-28-7-78a-75-75-0-00-1-06-1-06l-2-2a-75-75-0-000-1-06l2-2a-75-75-0-001-06-1-06l1-81-9-25l1-47-1-47z-path-svg-yaml-specification" title="Permalink to this headline">#</a></h1>
+<p>YAML is widely used in Jina to define an Executor, Flow, Gateway, Hub manifest and JCloud. This page helps you navigate different YAML specifications.</p>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Executor YAML</div>
+<p class="sd-card-text">Define the argument of <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, Python module dependencies and other settings of an Executor.</p>
 </div>
-<p>In order to get you started on your more ambitious projects, we compiled a list of how-to tutorials that guide you through some of Jina’s more advanced features. Happy coding!</p>
-<section id="executor">
-<h2>Executor<a class="headerlink" href="#executor" title="Permalink to this headline">#</a></h2>
-<p>On top of the <a class="reference internal" href="../fundamentals/executor/#executor-cookbook"><span class="std std-ref">basics</span></a>, the <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> has a few more tricks up its sleeve.</p>
-<p><br />
-<strong>Scaling out</strong>: In many scenarios, running a single Executor for a given task is just not enough. Whether you need more
-throughput or to partition your data, we’ve got you covered. <a class="reference internal" href="scale-out/#scale-out"><span class="std std-ref">This tutorial</span></a> will show you how to
-easily scale out using Jina.</p>
-<p><br />
-<strong>Executors on GPU</strong>: Machine Learning models are only as fast as the metal they run on, and for maximum performance you
-want that metal to be a GPU. For a guide on how to run Executors on GPU and accelerate your code, see
-<a class="reference internal" href="gpu-executor/#gpu-executor"><span class="std std-ref">this tutorial</span></a>.</p>
-<p><br />
-<strong>External Executors</strong>: Executors need not be tied to a specific Flow. If you want to learn how to spawn Executors on
-their own, use them in various Flows, even from a different machine or from inside a Docker container, then follow along
-<a class="reference internal" href="external-executor/#external-executor"><span class="std std-ref">here</span></a>.</p>
-</section>
-<section id="deployment">
-<h2>Deployment<a class="headerlink" href="#deployment" title="Permalink to this headline">#</a></h2>
-<p>Once you have built your search app using Jina, naturally you want to deploy it. Luckily, Jina plays nice with your
-favorite tools for the job.</p>
-<p><br />
-<strong>Docker Compose</strong>: If you want to learn about Jina’s native support for Docker Compose, including deployment, look no
-further than <a class="reference internal" href="docker-compose/#docker-compose"><span class="std std-ref">this guide</span></a>.</p>
-<p><br />
-<strong>Kubernetes</strong>: If your weapon of choice is Kubernetes then fear not, because it is supported by Jina natively. How you
-can put that into practice you can find <a class="reference internal" href="kubernetes/#kubernetes"><span class="std std-ref">here</span></a>.</p>
-<div class="toctree-wrapper compound">
+<a class="sd-stretched-link reference internal" href="../fundamentals/executor/yaml-spec/"><span class="doc"></span></a></div>
 </div>
-</section>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Flow YAML</div>
+<p class="sd-card-text">Define the Executors, the topology and the Gateway settings of a Flow.</p>
+</div>
+<a class="sd-stretched-link reference internal" href="../fundamentals/flow/yaml-spec/"><span class="doc"></span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Gateway YAML</div>
+<p class="sd-card-text">Define the protocol, TLS, authentication and other settings of a Gateway.</p>
+</div>
+<a class="sd-stretched-link reference internal" href="../fundamentals/gateway/yaml-spec/"><span class="doc"></span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Hub Manifest YAML</div>
+<p class="sd-card-text">Define how the Executor appears in the Hub.</p>
+</div>
+<a class="sd-stretched-link reference internal" href="../fundamentals/executor/hub/create-hub-executor/"><span class="doc"></span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+JCloud YAML</div>
+<p class="sd-card-text">Define the resources and autoscaling settings on Jina Cloud</p>
+</div>
+<a class="sd-stretched-link reference internal" href="../fundamentals/jcloud/resources/"><span class="doc"></span></a></div>
+</div>
+</div>
+</div>
 </section>
 
                 </article>
@@ -434,18 +448,18 @@ can put that into practice you can find <a class="reference internal" href="kube
             <footer>
                 
                 <div class="related-pages">
-                    <a class="next-page" href="realtime-streaming/">
+                    <a class="next-page" href="../proto/docs/">
                         <div class="page-info">
                             <div class="context">
                                 <span>Next</span>
                             </div>
-                            <div class="title">Build real-time streaming service</div>
+                            <div class="title">Protocol Documentation</div>
                         </div>
                         <svg>
                             <use href="#svg-arrow-right"></use>
                         </svg>
                     </a>
-                    <a class="prev-page" href="../fundamentals/jcloud/faq/">
+                    <a class="prev-page" href="../cli/">
                         <svg>
                             <use href="#svg-arrow-right"></use>
                         </svg>
@@ -454,7 +468,7 @@ can put that into practice you can find <a class="reference internal" href="kube
                                 <span>Previous</span>
                             </div>
                             
-                            <div class="title">FAQ</div>
+                            <div class="title"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-terminal" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z"></path></svg> Command-Line Interface</div>
                             
                         </div>
                     </a>
@@ -484,28 +498,8 @@ can put that into practice you can find <a class="reference internal" href="kube
                 
             </footer>
         </div>
-        <aside class="toc-drawer">
+        <aside class="toc-drawer no-toc">
             
-            
-            <div class="toc-sticky toc-scroll">
-                <div class="toc-title-container">
-          <span class="toc-title">
-            Contents
-          </span>
-                </div>
-                <div class="toc-tree-container">
-                    <div class="toc-tree">
-                        <ul>
-<li><a class="reference internal" href="#"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-book" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z"></path></svg> How-To</a><ul>
-<li><a class="reference internal" href="#executor">Executor</a></li>
-<li><a class="reference internal" href="#deployment">Deployment</a></li>
-</ul>
-</li>
-</ul>
-
-                    </div>
-                </div>
-            </div>
             
             
         </aside>

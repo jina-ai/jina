@@ -8,11 +8,11 @@
   
 <meta property="og:type" content="website" />
   
-<meta property="og:url" content="https://docs.jina.ai/fundamentals/flow/yaml-spec/" />
+<meta property="og:url" content="https://docs.jina.ai/fundamentals/gateway/yaml-spec/" />
   
 <meta property="og:site_name" content="Jina 3.7.13 Documentation" />
   
-<meta property="og:description" content="YAML specification: This page outlines the specification for valid Executor YAML files. Such YAML configurations can be used to generate a Executor object via load_config(). To generate a YAML configuration from a Flow Python object, use save_config(). YAML completion in IDE: We provide a JSON Sc..." />
+<meta property="og:description" content="YAML specification: This page outlines the specification for Gateway. Gateway config is nested under with key of a Flow YAML. For example, Defines a Gateway that uses HTTP protocol. Fields: The following fields are defined for Gateway and can be set under with key of a Flow YAML.,,,, Name, Descri..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -35,8 +35,8 @@
 </script>
 
 <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Gateway" href="../../gateway/" /><link rel="prev" title="Handle exceptions" href="../when-things-go-wrong/" />
-        <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/yaml-spec.html" />
+    <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Client" href="../../client/client/" /><link rel="prev" title="Gateway" href="../" />
+        <link rel="canonical" href="https://docs.jina.ai/fundamentals/gateway/yaml-spec.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
         <title>YAML specification - Jina 3.7.13 documentation</title>
@@ -254,18 +254,18 @@
 <li class="toctree-l2"><a class="reference internal" href="../../executor/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../">Flow</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../create-flow/">Basic</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../add-executors/">Add Executors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../topologies/">Topology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../monitoring-flow/">Monitor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../health-check/">Readiness &amp; health check</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../when-things-go-wrong/">Handle exceptions</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/add-executors/">Add Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/topologies/">Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/monitoring-flow/">Monitor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/health-check/">Readiness &amp; health check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/when-things-go-wrong/">Handle exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../gateway/">Gateway</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../gateway/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../">Gateway</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../client/client/">Client</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -390,136 +390,19 @@
                 </div>
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-file-code-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m4-1-75c4-784-4-784-0-5-75-0h5-586c-464-0-909-184-1-237-513l2-914-2-914c-329-328-513-773-513-1-237v8-586a1-75-1-75-0-0114-25-15h-9a-75-75-0-010-1-5h9a-25-25-0-00-25-25v6h-2-75a1-75-1-75-0-0110-4-25v1-5h5-75a-25-25-0-00-25-25v2-5a-75-75-0-01-1-5-0v-2-5zm7-5-188v4-25c0-138-112-25-25-25h2-688a-252-252-0-00-011-013l-2-914-2-914a-272-272-0-00-013-011zm5-72-6-72a-75-75-0-000-1-06l1-47-1-47-1-47-1-47a-75-75-0-101-06-1-06l2-2a-75-75-0-000-1-06l-2-2a-75-75-0-00-1-06-0zm3-28-7-78a-75-75-0-00-1-06-1-06l-2-2a-75-75-0-000-1-06l2-2a-75-75-0-001-06-1-06l1-81-9-25l1-47-1-47z-path-svg-yaml-specification">
-<span id="flow-yaml-spec"></span><h1><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-file-code" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z"></path></svg> YAML specification<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-file-code-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m4-1-75c4-784-4-784-0-5-75-0h5-586c-464-0-909-184-1-237-513l2-914-2-914c-329-328-513-773-513-1-237v8-586a1-75-1-75-0-0114-25-15h-9a-75-75-0-010-1-5h9a-25-25-0-00-25-25v6h-2-75a1-75-1-75-0-0110-4-25v1-5h5-75a-25-25-0-00-25-25v2-5a-75-75-0-01-1-5-0v-2-5zm7-5-188v4-25c0-138-112-25-25-25h2-688a-252-252-0-00-011-013l-2-914-2-914a-272-272-0-00-013-011zm5-72-6-72a-75-75-0-000-1-06l1-47-1-47-1-47-1-47a-75-75-0-101-06-1-06l2-2a-75-75-0-000-1-06l-2-2a-75-75-0-00-1-06-0zm3-28-7-78a-75-75-0-00-1-06-1-06l-2-2a-75-75-0-000-1-06l2-2a-75-75-0-001-06-1-06l1-81-9-25l1-47-1-47z-path-svg-yaml-specification" title="Permalink to this headline">#</a></h1>
-<p>This page outlines the specification for valid <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> YAML files.</p>
-<p>Such YAML configurations can be used to generate a <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> object via <code class="xref py py-meth docutils literal notranslate"><span class="pre">load_config()</span></code>.</p>
-<p>To generate a YAML configuration from a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> Python object, use <code class="xref py py-meth docutils literal notranslate"><span class="pre">save_config()</span></code>.</p>
-<section id="yaml-completion-in-ide">
-<h2>YAML completion in IDE<a class="headerlink" href="#yaml-completion-in-ide" title="Permalink to this headline">#</a></h2>
-<p>We provide a <a class="reference external" href="https://json-schema.org/">JSON Schema</a> for your IDE to enable code completion, syntax validation, members listing and displaying help text. Here is a <a class="reference external" href="https://youtu.be/qOD-6mihUzQ">video tutorial</a> to walk you through the setup.</p>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/qOD-6mihUzQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-<section id="pycharm-users">
-<h3>PyCharm users<a class="headerlink" href="#pycharm-users" title="Permalink to this headline">#</a></h3>
-<ol class="simple">
-<li><p>Click menu <code class="docutils literal notranslate"><span class="pre">Preferences</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">JSON</span> <span class="pre">Schema</span> <span class="pre">mappings</span></code>;</p></li>
-<li><p>Add a new schema, in the <code class="docutils literal notranslate"><span class="pre">Schema</span> <span class="pre">File</span> <span class="pre">or</span> <span class="pre">URL</span></code> write <code class="docutils literal notranslate"><span class="pre">https://api.jina.ai/schemas/latest.json</span></code>; select <code class="docutils literal notranslate"><span class="pre">JSON</span> <span class="pre">Schema</span> <span class="pre">Version</span> <span class="pre">7</span></code>;</p></li>
-<li><p>Add a file path pattern and link it to <code class="docutils literal notranslate"><span class="pre">*.jaml</span></code> or <code class="docutils literal notranslate"><span class="pre">*.jina.yml</span></code> or any suffix you commonly used for Jina Flow’s YAML.</p></li>
-</ol>
-</section>
-<section id="vscode-users">
-<h3>VSCode users<a class="headerlink" href="#vscode-users" title="Permalink to this headline">#</a></h3>
-<ol class="simple">
-<li><p>Install the extension: <code class="docutils literal notranslate"><span class="pre">YAML</span> <span class="pre">Language</span> <span class="pre">Support</span> <span class="pre">by</span> <span class="pre">Red</span> <span class="pre">Hat</span></code>;</p></li>
-<li><p>In IDE-level <code class="docutils literal notranslate"><span class="pre">settings.json</span></code> add:</p></li>
-</ol>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;yaml.schemas&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;https://api.jina.ai/schemas/latest.json&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/*.jina.yml&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;/*.jaml&quot;</span><span class="p">],</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
-</pre></div>
-</div>
-<p>You can bind Schema to any file suffix you commonly used for Jina Flow’s YAML.</p>
-</section>
-</section>
-<section id="example-yaml">
-<h2>Example YAML<a class="headerlink" href="#example-yaml" title="Permalink to this headline">#</a></h2>
-<p>The following constitutes an example Flow YAML:</p>
+<span id="gateway-yaml-spec"></span><h1><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-file-code" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z"></path></svg> YAML specification<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-file-code-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m4-1-75c4-784-4-784-0-5-75-0h5-586c-464-0-909-184-1-237-513l2-914-2-914c-329-328-513-773-513-1-237v8-586a1-75-1-75-0-0114-25-15h-9a-75-75-0-010-1-5h9a-25-25-0-00-25-25v6h-2-75a1-75-1-75-0-0110-4-25v1-5h5-75a-25-25-0-00-25-25v2-5a-75-75-0-01-1-5-0v-2-5zm7-5-188v4-25c0-138-112-25-25-25h2-688a-252-252-0-00-011-013l-2-914-2-914a-272-272-0-00-013-011zm5-72-6-72a-75-75-0-000-1-06l1-47-1-47-1-47-1-47a-75-75-0-101-06-1-06l2-2a-75-75-0-000-1-06l-2-2a-75-75-0-00-1-06-0zm3-28-7-78a-75-75-0-00-1-06-1-06l-2-2a-75-75-0-000-1-06l2-2a-75-75-0-001-06-1-06l1-81-9-25l1-47-1-47z-path-svg-yaml-specification" title="Permalink to this headline">#</a></h1>
+<p>This page outlines the specification for Gateway.</p>
+<p>Gateway config is nested under <code class="docutils literal notranslate"><span class="pre">with</span></code> key of a Flow YAML. For example,</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1&#39;</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="c1"># inline Executor YAML</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">firstexec</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExec</span><span class="w"></span>
-<span class="w">    </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor.py</span><span class="w"></span>
-<span class="c1"># reference to Executor YAML</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secondexec</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer.yml</span><span class="w"></span>
-<span class="w">  </span><span class="nt">workspace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/home/my/workspace</span><span class="w"></span>
-<span class="c1"># reference to Executor Python class</span><span class="w"></span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">thirdexec</span><span class="w"></span>
-<span class="w">  </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CustomExec</span><span class="w">  </span><span class="c1"># located in executor.py</span><span class="w"></span>
-</pre></div>
+<span class="hll"><span class="nt">with</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">  </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http</span><span class="w"></span>
+</span></pre></div>
 </div>
-</section>
+<p>Defines a Gateway that uses HTTP protocol.</p>
 <section id="fields">
 <h2>Fields<a class="headerlink" href="#fields" title="Permalink to this headline">#</a></h2>
-<section id="jtype">
-<h3><code class="docutils literal notranslate"><span class="pre">jtype</span></code><a class="headerlink" href="#jtype" title="Permalink to this headline">#</a></h3>
-<p>String that is always set to “Flow”, indicating the corresponding Python class.</p>
-</section>
-<section id="version">
-<h3><code class="docutils literal notranslate"><span class="pre">version</span></code><a class="headerlink" href="#version" title="Permalink to this headline">#</a></h3>
-<p>String indicating the version of the Flow.</p>
-</section>
-<section id="with">
-<h3><code class="docutils literal notranslate"><span class="pre">with</span></code><a class="headerlink" href="#with" title="Permalink to this headline">#</a></h3>
-<p>Keyword arguments passed to Flow <code class="docutils literal notranslate"><span class="pre">__init__()</span></code> method. You can set Flow-specific arguments and Gateway-specific arguments here:</p>
-<section id="flow-arguments">
-<h4>Flow arguments<a class="headerlink" href="#flow-arguments" title="Permalink to this headline">#</a></h4>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="colwidths-auto docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Default</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
-<td><p>The name of this object.<br><br>    This will be used in the following places:<br>    - how you refer to this object in Python/YAML/CLI<br>    - visualization<br>    - log message header<br>    - …<br><br>    When not given, then the default naming strategy will apply.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code></p></td>
-<td><p>The working directory for any IO operations in this object. If not set, then derive from its parent <code class="docutils literal notranslate"><span class="pre">workspace</span></code>.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">log_config</span></code></p></td>
-<td><p>The YAML config of the logger used in this object.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">default</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">quiet</span></code></p></td>
-<td><p>If set, then no log will be emitted from this object.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">quiet_error</span></code></p></td>
-<td><p>If set, then exception stack information will not be added to the log</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">optout_telemetry</span></code></p></td>
-<td><p>If set, disables telemetry during the Flow/Pod/Runtime start.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uses</span></code></p></td>
-<td><p>The YAML path represents a flow. It can be either a local file path or a URL.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">env</span></code></p></td>
-<td><p>The map of environment variables that are available inside runtime</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">inspect</span></code></p></td>
-<td><p>The strategy on those inspect deployments in the flow.<br><br>    If <code class="docutils literal notranslate"><span class="pre">REMOVE</span></code> is given then all inspect deployments are removed when building the flow.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">COLLECT</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section id="gateway-arguments">
-<h4>Gateway arguments<a class="headerlink" href="#gateway-arguments" title="Permalink to this headline">#</a></h4>
+<p>The following fields are defined for Gateway and can be set under <code class="docutils literal notranslate"><span class="pre">with</span></code> key of a Flow YAML.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="colwidths-auto docutils align-default">
 <thead>
@@ -770,274 +653,24 @@
 </div>
 </section>
 </section>
-<section id="executors">
-<h3><code class="docutils literal notranslate"><span class="pre">executors</span></code><a class="headerlink" href="#executors" title="Permalink to this headline">#</a></h3>
-<p>Collection of Executors used in the Flow.
-Each item in the collection corresponds to on <code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code> call and specifies one Executor.</p>
-<p>All keyword arguments passed to the Flow <code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code> method can be used here.</p>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="colwidths-auto docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Default</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
-<td><p>The name of this object.<br><br>    This will be used in the following places:<br>    - how you refer to this object in Python/YAML/CLI<br>    - visualization<br>    - log message header<br>    - …<br><br>    When not given, then the default naming strategy will apply.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code></p></td>
-<td><p>The working directory for any IO operations in this object. If not set, then derive from its parent <code class="docutils literal notranslate"><span class="pre">workspace</span></code>.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">log_config</span></code></p></td>
-<td><p>The YAML config of the logger used in this object.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">default</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">quiet</span></code></p></td>
-<td><p>If set, then no log will be emitted from this object.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">quiet_error</span></code></p></td>
-<td><p>If set, then exception stack information will not be added to the log</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">optout_telemetry</span></code></p></td>
-<td><p>If set, disables telemetry during the Flow/Pod/Runtime start.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timeout_ctrl</span></code></p></td>
-<td><p>The timeout in milliseconds of the control request, -1 for waiting forever</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">60</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">polling</span></code></p></td>
-<td><p>The polling strategy of the Deployment and its endpoints (when <code class="docutils literal notranslate"><span class="pre">shards&gt;1</span></code>).<br>    Can be defined for all endpoints of a Deployment or by endpoint.<br>    Define per Deployment:<br>    - ANY: only one (whoever is idle) Pod polls the message<br>    - ALL: all Pods poll the message (like a broadcast)<br>    Define per Endpoint:<br>    JSON dict, {endpoint: PollingType}<br>    {‘/custom’: ‘ALL’, ‘/search’: ‘ANY’, ‘*’: ‘ANY’}</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">ANY</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uses</span></code></p></td>
-<td><p>The config of the executor, it could be one of the followings:<br>        * an Executor YAML file (.yml, .yaml, .jaml)<br>        * a Jina Hub Executor (must start with <code class="docutils literal notranslate"><span class="pre">jinahub://</span></code> or <code class="docutils literal notranslate"><span class="pre">jinahub+docker://</span></code>)<br>        * a docker image (must start with <code class="docutils literal notranslate"><span class="pre">docker://</span></code>)<br>        * the string literal of a YAML config (must start with <code class="docutils literal notranslate"><span class="pre">!</span></code> or <code class="docutils literal notranslate"><span class="pre">jtype:</span> </code>)<br>        * the string literal of a JSON config<br><br>        When use it under Python, one can use the following values additionally:<br>        - a Python dict that represents the config<br>        - a text file stream has <code class="docutils literal notranslate"><span class="pre">.read()</span></code> interface</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">BaseExecutor</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uses_with</span></code></p></td>
-<td><p>Dictionary of keyword arguments that will override the <code class="docutils literal notranslate"><span class="pre">with</span></code> configuration in <code class="docutils literal notranslate"><span class="pre">uses</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uses_metas</span></code></p></td>
-<td><p>Dictionary of keyword arguments that will override the <code class="docutils literal notranslate"><span class="pre">metas</span></code> configuration in <code class="docutils literal notranslate"><span class="pre">uses</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uses_requests</span></code></p></td>
-<td><p>Dictionary of keyword arguments that will override the <code class="docutils literal notranslate"><span class="pre">requests</span></code> configuration in <code class="docutils literal notranslate"><span class="pre">uses</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code></p></td>
-<td><p>The customized python modules need to be imported before loading the executor<br><br>Note that the recommended way is to only import a single module - a simple python file, if your<br>executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,<br>which should be structured as a python package. For more details, please see the<br><code class="docutils literal notranslate"><span class="pre">Executor</span> <span class="pre">cookbook</span> <span class="pre">&lt;https://docs.jina.ai/fundamentals/executor/executor-files/&gt;</span></code>__</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">array</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">port</span></code></p></td>
-<td><p>The port for input data to bind to, default is a random port between [49152, 65535]</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">random</span> <span class="pre">in</span> <span class="pre">[49152,</span> <span class="pre">65535]</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">host_in</span></code></p></td>
-<td><p>The host address for binding to, by default it is 0.0.0.0</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">native</span></code></p></td>
-<td><p>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">output_array_type</span></code></p></td>
-<td><p>The type of array <code class="docutils literal notranslate"><span class="pre">tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">embedding</span></code> will be serialized to.<br><br>Supports the same types as <code class="docutils literal notranslate"><span class="pre">docarray.to_protobuf(..,</span> <span class="pre">ndarray_type=...)</span></code>, which can be found <br><code class="docutils literal notranslate"><span class="pre">here</span> <span class="pre">&lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;</span></code>.<br>Defaults to retaining whatever type is returned by the Executor.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">entrypoint</span></code></p></td>
-<td><p>The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">docker_kwargs</span></code></p></td>
-<td><p>Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker ‘<br>container. <br><br>More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">volumes</span></code></p></td>
-<td><p>The path on the host to be mounted inside the container. <br><br>Note, <br>- If separated by <code class="docutils literal notranslate"><span class="pre">:</span></code>, then the first part will be considered as the local host path and the second part is the path in the container system. <br>- If no split provided, then the basename of that directory will be mounted into container’s root path, e.g. <code class="docutils literal notranslate"><span class="pre">--volumes=&quot;/user/test/my-workspace&quot;</span></code> will be mounted into <code class="docutils literal notranslate"><span class="pre">/my-workspace</span></code> inside the container. <br>- All volumes are mounted with read-write mode.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">array</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gpus</span></code></p></td>
-<td><p>This argument allows dockerized Jina executor discover local gpu devices.<br><br>    Note, <br>    - To access all gpus, use <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">all</span></code>.<br>    - To access multiple gpus, e.g. make use of 2 gpus, use <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">2</span></code>.<br>    - To access specified gpus based on device id, use <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">device=[YOUR-GPU-DEVICE-ID]</span></code><br>    - To access specified gpus based on multiple device id, use <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]</span></code><br>    - To specify more parameters, use `–gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">disable_auto_volume</span></code></p></td>
-<td><p>Do not automatically mount a volume for dockerized Executors.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">host</span></code></p></td>
-<td><p>The host address of the runtime, by default it is 0.0.0.0.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0.0.0.0</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">quiet_remote_logs</span></code></p></td>
-<td><p>Do not display the streaming of remote logs on local console</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">upload_files</span></code></p></td>
-<td><p>The files on the host to be uploaded to the remote<br>workspace. This can be useful when your Deployment has more<br>file dependencies beyond a single YAML file, e.g.<br>Python files, data files.<br><br>Note,<br>- currently only flatten structure is supported, which means if you upload <code class="docutils literal notranslate"><span class="pre">[./foo/a.py,</span> <span class="pre">./foo/b.pp,</span> <span class="pre">./bar/c.yml]</span></code>, then they will be put under the <em>same</em> workspace on the remote, losing all hierarchies.<br>- by default, <code class="docutils literal notranslate"><span class="pre">--uses</span></code> YAML file is always uploaded.<br>- uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use <code class="docutils literal notranslate"><span class="pre">--workspace-id</span></code> to specify the workspace.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">array</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">runtime_cls</span></code></p></td>
-<td><p>The runtime class to run inside the Pod</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">WorkerRuntime</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timeout_ready</span></code></p></td>
-<td><p>The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">600000</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">env</span></code></p></td>
-<td><p>The map of environment variables that are available inside runtime</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">shards</span></code></p></td>
-<td><p>The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">replicas</span></code></p></td>
-<td><p>The number of replicas in the deployment</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">monitoring</span></code></p></td>
-<td><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code></p></td>
-<td><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">random</span> <span class="pre">in</span> <span class="pre">[49152,</span> <span class="pre">65535]</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">retries</span></code></p></td>
-<td><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">-1</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">floating</span></code></p></td>
-<td><p>If set, the current Pod/Deployment can not be further chained, and the next <code class="docutils literal notranslate"><span class="pre">.add()</span></code> will chain after the last Pod/Deployment not this current one.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">install_requirements</span></code></p></td>
-<td><p>If set, install <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> in the Hub Executor bundle to local</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">force_update</span></code></p></td>
-<td><p>If set, always pull the latest Hub Executor bundle even it exists on local</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compression</span></code></p></td>
-<td><p>The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uses_before_address</span></code></p></td>
-<td><p>The address of the uses-before runtime</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uses_after_address</span></code></p></td>
-<td><p>The address of the uses-before runtime</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">connection_list</span></code></p></td>
-<td><p>dictionary JSON with a list of connections to configure</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">disable_reduce</span></code></p></td>
-<td><p>Disable the built-in reduce mechanism, set this if the reduction is to be handled by the Executor connected to this Head</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">timeout_send</span></code></p></td>
-<td><p>The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-</section>
-<section id="variables">
-<h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">#</a></h2>
-<p>Jina Flow YAMLs support variables and variable substitution according to the <a class="reference external" href="https://docs.github.com/en/actions/learn-github-actions/environment-variables">Github Actions syntax</a>.</p>
-<p>This means that the following variable substitutions are supported:</p>
-<section id="environment-variables">
-<h3>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">#</a></h3>
-<p>Use <code class="docutils literal notranslate"><span class="pre">${{</span> <span class="pre">ENV.VAR</span> <span class="pre">}}</span></code> to refer to the environment variable <code class="docutils literal notranslate"><span class="pre">VAR</span></code>. You can find all <a class="reference internal" href="../../../envs/#jina-env-vars"><span class="std std-ref">Jina environment variables here</span></a>.</p>
-</section>
-<section id="context-variables">
-<h3>Context variables<a class="headerlink" href="#context-variables" title="Permalink to this headline">#</a></h3>
-<p>Use <code class="docutils literal notranslate"><span class="pre">${{</span> <span class="pre">CONTEXT.VAR</span> <span class="pre">}}</span></code> to refer to the context variable <code class="docutils literal notranslate"><span class="pre">VAR</span></code>.
-Context variables can be passed to <code class="docutils literal notranslate"><span class="pre">f.load_config(...,</span> <span class="pre">context=...)</span></code> in the form of a Python dictionary.</p>
-</section>
-<section id="relative-paths">
-<h3>Relative paths<a class="headerlink" href="#relative-paths" title="Permalink to this headline">#</a></h3>
-<p>Use <code class="docutils literal notranslate"><span class="pre">${{root.path.to.var}}</span></code> to refer to the variable <code class="docutils literal notranslate"><span class="pre">var</span></code> within the same YAML file, found at the provided path in the file’s structure.
-Note that the only difference between environment variable syntax and relative path syntax is the omission of spaces in the latter.</p>
-</section>
-</section>
-</section>
 
                 </article>
             </div>
             <footer>
                 
                 <div class="related-pages">
-                    <a class="next-page" href="../../gateway/">
+                    <a class="next-page" href="../../client/client/">
                         <div class="page-info">
                             <div class="context">
                                 <span>Next</span>
                             </div>
-                            <div class="title">Gateway</div>
+                            <div class="title">Client</div>
                         </div>
                         <svg>
                             <use href="#svg-arrow-right"></use>
                         </svg>
                     </a>
-                    <a class="prev-page" href="../when-things-go-wrong/">
+                    <a class="prev-page" href="../">
                         <svg>
                             <use href="#svg-arrow-right"></use>
                         </svg>
@@ -1046,7 +679,7 @@ Note that the only difference between environment variable syntax and relative p
                                 <span>Previous</span>
                             </div>
                             
-                            <div class="title">Handle exceptions</div>
+                            <div class="title">Gateway</div>
                             
                         </div>
                     </a>
@@ -1089,29 +722,7 @@ Note that the only difference between environment variable syntax and relative p
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-file-code" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z"></path></svg> YAML specification</a><ul>
-<li><a class="reference internal" href="#yaml-completion-in-ide">YAML completion in IDE</a><ul>
-<li><a class="reference internal" href="#pycharm-users">PyCharm users</a></li>
-<li><a class="reference internal" href="#vscode-users">VSCode users</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#example-yaml">Example YAML</a></li>
-<li><a class="reference internal" href="#fields">Fields</a><ul>
-<li><a class="reference internal" href="#jtype"><code class="docutils literal notranslate"><span class="pre">jtype</span></code></a></li>
-<li><a class="reference internal" href="#version"><code class="docutils literal notranslate"><span class="pre">version</span></code></a></li>
-<li><a class="reference internal" href="#with"><code class="docutils literal notranslate"><span class="pre">with</span></code></a><ul>
-<li><a class="reference internal" href="#flow-arguments">Flow arguments</a></li>
-<li><a class="reference internal" href="#gateway-arguments">Gateway arguments</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#executors"><code class="docutils literal notranslate"><span class="pre">executors</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#variables">Variables</a><ul>
-<li><a class="reference internal" href="#environment-variables">Environment variables</a></li>
-<li><a class="reference internal" href="#context-variables">Context variables</a></li>
-<li><a class="reference internal" href="#relative-paths">Relative paths</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#fields">Fields</a></li>
 </ul>
 </li>
 </ul>
