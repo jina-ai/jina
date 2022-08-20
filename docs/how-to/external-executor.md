@@ -1,19 +1,15 @@
 (external-executor)=
-# Use external Executors
+# Include external Executors in a Flow
 
-Normally, we have seen how {class}`~jina.Flow` ties up {class}`~jina.Executor`s together, and how an Executor lives in the context of a Flow.
-
-However, this is not always the case, and sometimes you may want to launch an Executor on its own, and perhaps have the same
-Executor be used by different Flows.
+We have seen how {class}`~jina.Flow` ties up {class}`~jina.Executor`s together, and how an Executor lives in the context of a Flow. Sometimes you may want to launch an Executor on its own, and then share it to different Flows. We call this kind of Executor *external*, as its lifecycle is not tied to the Flow.
 
 
-````{admonition} Where can external Executors run?
-:class: hint
 External Executors can run anywhere from the same environment as the Flow, to a Docker container, or even a remote
 environment, such as {ref}`JCloud <jcloud>`.
 
-To deploy external Exectuors on JCloud, please follow {ref}`this documentation <external-executors>`.
-````
+```{tip}
+To deploy external Executors on JCloud, please follow {ref}`this documentation <external-executors>`.
+```
 
 As the first step in this tutorial, you will learn how to add already running external Executors to your Flow.
 After that, you will see how to create and use an external Executor yourself.
@@ -151,7 +147,7 @@ We do this using a YAML file.
 In a new file called `my-exec.yml` we type:
 
 ```yaml
-!MyExecutor
+jtype: MyExecutor
 metas:
   py_modules:
     - exec.py

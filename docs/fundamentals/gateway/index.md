@@ -4,18 +4,14 @@
 
 Every {class}`~jina.Flow` provides an API Gateway to receive requests over the network. Supported protocols are gRPC, HTTP and WebSocket with TLS.
 
-There are two ways of defining a Gateway, either directly from the Python API or using yaml files. For each section we will show you both possibles way of configuring your Gateway.
+There are two ways of defining a Gateway, either directly from the Python or using YAML. The full YAML specification of Gateway can be {ref}`found here<yaml-spec>`.
 
-```{admonition} Jina Client
-:class: caution
+```{toctree}
+:hidden:
 
-To showcase the workings of Flow, the examples below use a Client connecting to it, all from withing the same Python script.
-
-In most cases, this is not how a real user would access a Flow. Rather, they would use one of {ref}`several ways of connecting over a network<access-flow-api>`.
-This does not affect how you have to configure your Flow API, so the examples here should translate seamlessly.
-
-For more proper use of the Client, and more information about the Client itself, see the {ref}`Client documentation <client>`.
+yaml-spec
 ```
+
 
 (flow-protocol)=
 ## Supported protocols
