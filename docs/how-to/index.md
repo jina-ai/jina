@@ -48,12 +48,12 @@ can put that into practice you can find {ref}`here <kubernetes>`.
 ```{toctree}
 :hidden:
 
-google-colab
-../fundamentals/clean-code
+realtime-streaming
+flow-switch
 scale-out
+../fundamentals/clean-codegoogle-colab
 gpu-executor
 external-executor
-flow-switch
 docker-compose
 kubernetes
 monitoring

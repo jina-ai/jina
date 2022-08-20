@@ -4,65 +4,70 @@
 
 {class}`~jina.Flow` defines how your Executors are connected together and how your data *flows* through them.
 
-Every {class}`~jina.Flow` can be defined either purely in Python, or be loaded from a YAML file.
-
-````{admonition} Best practice
-:class: hint
-
-For production use we recommend YAML files to configure your Flows. This is because YAML files are:
-
-- independent of Python source code
-- easy to edit, maintain and extend
-- human-readable
-
-````
 
 ## Create
 
-The most trivial {class}`~jina.Flow` is the empty Flow and, like any other Flow, it can be instantiated purely in Python, or from a
-YAML file:
+The most trivial {class}`~jina.Flow` is the empty Flow. It can be defined purely in Python or from a YAML file:
 
 ````{tab} Python
 
 ```python
 from jina import Flow
 
-f = Flow()  # Create the empty Flow
-with f:  # Using it as a Context Manager will start the Flow
-    f.post(on='/search')  # This sends a request to the /search endpoint of the Flow
+f = Flow()
 ```
 ````
 
 `````{tab} YAML
-`flow.yml`:
-
 ```yaml
 jtype: Flow
 ```
+`````
+
+```{tip}
+An empty Flow contains only {ref}`the Gateway<flow>`.
+```
+
+For production, we recommend YAML files to define the Flows. This is because YAML files are independent of Python logic code and easy to maintain.
+
+
+
+
+### Conversion between Python and YAML
+
+Python Flow definition can be easily converted to/from YAML definition.
+
+To load a Flow from a YAML file, use the {meth}`~jina.Flow.load_config`:
 
 ```python
 from jina import Flow
 
-f = Flow.load_config('flow.yml')  # Load the Flow definition from Yaml file
-
-with f:  # Using it as a Context Manager will start the Flow
-    f.post(on='/search')  # This sends a request to the /search endpoint of the Flow
+f = Flow.load_config('flow.yml')
 ```
 
-````{admonition} Hint: Dump Flow configuration
-:class: hint
+To export an existing Flow definition to a YAML file use {meth}`~jina.Flow.save_config`:
 
-In addition to loading a Flow from a YAML file, you can also save an existing Flow configuration to YAML. To do so, execute `f.save_config('path/to/flow.yml')`.
-````
-`````
+```python
+from jina import Flow
 
+f = Flow().add().add()  # Create a Flow with two Executors
+
+f.save_config('flow.yml')
+```
 
 ## Start and stop
 
 When a {class}`~jina.Flow` starts, all its {ref}`added Executors <flow-add-executors>` will start as well, making it possible to {ref}`reach the service through its API <access-flow-api>`.
 
-Jina Flows are context managers and can be started and stopped using Pythons `with` notation:
+There are three ways to start a Flow. Depending on the use case, you can start a Flow either in Python, or from a YAML file, or from the terminal.
 
+- Generally in Python: use Flow as a context manager in Python.
+- As an entrypoint from terminal: use Jina CLI and a Flow YAML.
+- As an entrypoint from Python code: use Flow as a context manager inside `if __name__ == '__main__'`
+- No context manager: manually call {meth}`~jina.Flow.start`  and {meth}`~jina.Flow.close`.
+
+
+````{tab} General in Python
 ```python
 from jina import Flow
 
@@ -71,69 +76,49 @@ f = Flow()
 with f:
     pass
 ```
+````
+
+````{tab} Jina CLI entrypoint
+```bash
+jina flow --uses flow.yml
+```
+````
+
+````{tab} Python entrypoint
+```python
+from jina import Flow
+
+f = Flow()
+
+if __name__ == '__main__':
+    with f:
+        pass
+```
+````
+
+````{tab} Python no context manager
+```python
+from jina import Flow
+
+f = Flow()
+
+f.start()
+
+f.close()
+```
+````
 
 The statement `with f:` starts the Flow, and exiting the indented `with` block stops the Flow, including all Executors defined in it.
 
 
-### Start inside `__main__`
+A successful start of a Flow looks like this:
 
-If applicable, always start the Flow inside `if __name__ == '__main__'`. For example:
-
-````{tab} ✅ Do
-```{code-block} python
----
-emphasize-lines: 13, 14
----
-
-from jina import Flow, Executor, requests
-
-class CustomExecutor(Executor):
-    @requests
-    async def foo(self, **kwargs):
-        ...
-
-f = Flow().add(uses=CustomExecutor)
-
-if __name__ == '__main__':
-    with f:
-        ...
-```
-````
-
-````{tab} 😔 Don't
-```{code-block} python
----
-emphasize-lines: 2
----
-
-from jina import Flow, Executor, requests
-
-class CustomExecutor(Executor):
-    @requests
-    def foo(self, **kwargs):
-        ...
-
-f = Flow().add(uses=CustomExecutor)
-with f:
-    ...
-
-"""
-# error
-This probably means that you are not using fork to start your
-child processes and you have forgotten to use the proper idiom
-in the main module:
-
-    if _name_ == '_main_':
-        freeze_support()
-        ...
-
-The "freeze_support()" line can be omitted if the program
-is not going to be frozen to produce an executable.
-
-"""
+```{figure} success-flow.png
+:scale: 70%
 ```
 
-````
+Your addresses and entrypoints can be found in the output. When enabling more features such as monitoring, HTTP gateway, TLS encryption, this display will also expand to contain more information.
+
 
 ### Set multiprocessing `spawn` 
 
@@ -152,19 +137,27 @@ There's no need to set this for Windows, as it only supports spawn method for mu
 ## Serve forever
 
 In most scenarios, a Flow should remain reachable for prolonged periods of time.
-This can be achieved by *blocking* the execution:
+This can be achieved by `jina flow --uses flow.yml` from terminal.
+
+
+Or if you are serving a Flow from Python:
 
 ```python
 from jina import Flow
 
 f = Flow()
+
 with f:
     f.block()
 ```
 
 The `.block()` method blocks the execution of the current thread or process, which enables external clients to access the Flow.
 
-In this case, the Flow can be stopped by interrupting the thread or process. Alternatively, a `multiprocessing` or `threading` `Event` object can be passed to `.block()`, which stops the Flow once set.
+In this case, the Flow can be stopped by interrupting the thread or process. 
+
+### Server until an event
+
+Alternatively, a `multiprocessing` or `threading` `Event` object can be passed to `.block()`, which stops the Flow once set.
 
 ```python
 from jina import Flow
@@ -220,6 +213,8 @@ One can also do it in the terminal via:
 ```bash
 jina export flowchart flow.yml flow.svg 
 ```
+
+One can also visualize a remote Flow by passing the URL to `jina export flowchart`.
 
 ## Export
 

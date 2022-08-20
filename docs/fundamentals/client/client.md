@@ -219,7 +219,7 @@ This feature is intended for the case where there are multiple Executors that ta
 This is often the case for Executors from the Hub, since they tend to share a common interface for parameters.
 
 
-(callback-functions)=
+
 ## Async send
 
 There also exists an async version of the Python Client which works with {meth}`~jina.clients.mixin.PostMixin.post` and {meth}`~jina.clients.mixin.MutateMixin.mutate`.
@@ -316,7 +316,7 @@ with f:  # Using it as a Context Manager will start the Flow
 This will send the request to all Executors whose names start with 'bar', such as 'barExecutor'.
 In the simplest case, you can specify a precise Executor name, and the request will be sent only to that single Executor.
 
-
+(callback-functions)=
 ## Callbacks
 
 After performing {meth}`~jina.clients.mixin.PostMixin.post`, you may want to further process the obtained results.

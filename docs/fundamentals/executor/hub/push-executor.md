@@ -132,7 +132,7 @@ For example:
     ```
 ````
 
-For multiple enviroment variables, we can pass it in this way:
+For multiple environment variables, we can pass it in this way:
 
 ```bash
 jina hub push --build-env FIRST=foo --build-env SECOND=bar
