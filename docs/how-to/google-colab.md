@@ -1,4 +1,4 @@
-# Use Jina on Colab with GPU/TPU
+# Run on Google Colab with GPU/TPU
 
 ```{figure} https://docs.jina.ai/_images/jina-on-colab.png
 :width: 0 %

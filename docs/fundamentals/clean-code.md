@@ -212,8 +212,8 @@ with f:
 ---
 emphasize-lines: 12
 ---
-from docarray import Document
-from jina import Executor, Flow, requests
+
+from jina import Executor, Flow, requests, Document
 
 class MyExecutor(Executor):
 
@@ -239,8 +239,7 @@ It also reduces the network overhead.
 ```python
 import glob
 
-from docarray import Document
-from jina import Executor, Flow, requests
+from jina import Executor, Flow, requests, Document
 
 
 class MyExecutor(Executor):
@@ -268,8 +267,7 @@ with f:
 ```python
 import glob
 
-from docarray import Document
-from jina import Executor
+from jina import Executor, Document
 
 
 def my_input():
@@ -325,20 +323,19 @@ class SecondExecutor(Executor):
 ````{tab} 😔 Don't
 
 ```python
-
 from jina import Executor, requests
 
-class FirstExecutor(Executor):
 
+class FirstExecutor(Executor):
     @requests
     def foo(self, docs, **kwargs):
-        # some process on docs
+        pass  # some process on docs
+
 
 class SecondExecutor(Executor):
-
     @requests
     def bar(self, docs, **kwargs):
-        # do follow up processing, even though `.embedding` and `.blob` are never used 
+        pass  # do follow up processing, even though `.embedding` and `.blob` are never used
 ```
 
 ````

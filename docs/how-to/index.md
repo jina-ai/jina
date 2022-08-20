@@ -50,7 +50,6 @@ can put that into practice you can find {ref}`here <kubernetes>`.
 
 google-colab
 ../fundamentals/clean-code
-async-executors
 scale-out
 gpu-executor
 external-executor

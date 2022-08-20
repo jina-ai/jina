@@ -8,8 +8,7 @@ There are two ways of instantiating an Executor object: From a local Python clas
 `Executor` objects can be used directly, just like a regular Python object. For example:
 
 ```python
-from docarray import DocumentArray, Document
-from jina import Executor, requests
+from jina import Executor, requests, DocumentArray, Document
 
 
 class MyExec(Executor):
@@ -36,8 +35,7 @@ Text: hello world
 You can pull an `Executor` from the Jina Hub and use it directly as a Python object. The [hub](https://hub.jina.ai/) is our marketplace for `Executor`s.
 
 ```python
-from jina import Executor
-from docarray import Document, DocumentArray
+from docarray import Document, DocumentArray, Executor
 
 executor = Executor.from_hub(uri='jinahub://CLIPTextEncoder', install_requirements=True)
 

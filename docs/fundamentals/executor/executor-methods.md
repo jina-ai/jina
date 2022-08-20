@@ -220,6 +220,126 @@ MergeExec processing pairs of Documents "Exec1" and "Exec2"
 Resulting documents Document merging from "Exec1" and "Exec2"
 ```
 
+(async-executors)=
+## Async coroutines
+
+
+You can naturally call async coroutines within {class}`~jina.Executor`'s, allowing you to leverage the power of asynchronous
+Python to write concurrent code. 
+
+
+```python
+from jina import Executor, requests, Flow
+
+
+class MyExecutor(Executor):
+    @requests
+    async def encode(self, docs, *kwargs):
+        await some_coroutines()
+```
+
+
+
+In this example we have a heavy lifting API for which we want to call several times, and we want to leverage the
+async Python features to speed up the {class}`~jina.Executor`'s call by calling the API multiples times concurrently. As a counterpart, in an example without using `coroutines`, all of the 50 API calls will be queued and nothing will be done 
+concurrently.
+
+
+
+````{tab} Async coroutines
+```python
+import asyncio
+
+from jina import Flow, Executor, requests, Document, DocumentArray
+
+
+class DummyAsyncExecutor(Executor):
+    @requests
+    async def process(self, docs: DocumentArray, **kwargs):
+        await asyncio.sleep(1)
+        for doc in docs:
+            doc.text = doc.text.upper()
+
+
+f = Flow().add(uses=DummyAsyncExecutor)
+
+with f:
+    f.index(
+        inputs=DocumentArray([Document(text="hello") for _ in range(50)]),
+        request_size=1,
+        show_progress=True,
+    )
+```
+
+```console
+           Flow@20588[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:62598
+	🔒 Private network:	192.168.1.187:62598
+	🌐 Public address:	212.231.186.65:62598
+⠙       DONE ━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0:00:01 100% ETA: 0 seconds 41 steps done in 1 second
+```
+
+````
+
+````{tab} Sync version
+```python
+import time
+
+from jina import Flow, Executor, requests, DocumentArray, Document
+
+
+class DummyExecutor(Executor):
+    @requests
+    def process(self, docs: DocumentArray, **kwargs):
+        time.sleep(1)
+        for doc in docs:
+            doc.text = doc.text.upper()
+
+
+f = Flow().add(uses=DummyExecutor)
+
+with f:
+    f.index(
+        inputs=DocumentArray([Document(text="hello") for _ in range(50)]),
+        request_size=1,
+        show_progress=True,
+    )
+```
+
+```console
+           Flow@20394[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:52592
+	🔒 Private network:	192.168.1.187:52592
+	🌐 Public address:	212.231.186.65:52592
+⠏       DONE ━╸━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 0:00:50 100% ETA: 0 seconds 41 steps done in 50 seconds
+```
+````
+
+The processing of the data is 50 faster when using `coroutines` because it happens concurrently.
+
+
+### Call another Jina Flow 
+To call other another Jina Flow using `Client` from an `Executor`, you will also need to use `async def` and async Client.
+
+
+```python
+from jina import Client, Executor, requests, DocumentArray
+
+
+class DummyExecutor(Executor):
+
+    c = Client(host='grpc://0.0.0.0:51234', asyncio=True)
+
+    @requests
+    async def process(self, docs: DocumentArray, **kwargs):
+        self.c.post('/', docs)
+```
+
+
+
+
 
 ## Returns
 
@@ -300,9 +420,8 @@ NotImplementedError('no time for it')
 Let's understand how Executor's process DocumentArray's inside a Flow, and how the changes are chained and applied, affecting downstream Executors in the Flow.
 
 
-```python
-from docarray import DocumentArray, Document
-from jina import Executor, requests, Flow
+```python 
+from jina import Executor, requests, Flow, DocumentArray, Document
 
 
 class PrintDocuments(Executor):

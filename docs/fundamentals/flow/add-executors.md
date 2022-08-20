@@ -6,8 +6,7 @@ A {class}`~jina.Flow` orchestrates its {class}`~jina.Executor`s as a graph and w
 ````{tab} Python
 
 ```python
-from docarray import Document, DocumentArray
-from jina import Executor, Flow, requests
+from jina import Executor, Flow, requests, Document, DocumentArray
 
 
 class FooExecutor(Executor):
@@ -51,9 +50,7 @@ executors:
 
 `exec.py`
 ```python
-from docarray import Document, DocumentArray
-
-from jina import Executor, requests
+from jina import Executor, requests, Document, DocumentArray
 
 
 class FooExecutor(Executor):

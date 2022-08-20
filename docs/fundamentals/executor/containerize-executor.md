@@ -168,8 +168,7 @@ my_containerized_executor        latest             5cead0161cb5   13 seconds ag
 The containerized Executor can be used like any other, the only difference being the 'docker' prefix in the `uses`
  parameter:
 ```python
-from docarray import DocumentArray, Document
-from jina import Flow
+from jina import Flow, DocumentArray, Document
 
 f = Flow().add(uses='docker://my_containerized_executor')
 

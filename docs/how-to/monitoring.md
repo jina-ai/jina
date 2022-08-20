@@ -1,5 +1,5 @@
 (monitoring)=
-# Use monitoring with Jina in Kubernetes
+# Monitor via Prometheus and Grafana
 
 First, let's have some context on the monitoring stack that we will be using during this guide.
 To leverage the {ref}`metrics <monitoring-flow>` that Jina exposes, we recommend using the Prometheus/Grafana stack. In this setup, Jina will expose different {ref}`metrics endpoint <monitoring-flow>`, and Prometheus will then be in charge of scraping these endpoints, as well as

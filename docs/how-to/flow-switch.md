@@ -1,5 +1,5 @@
 (flow-switch)=
-# Add selection control to a Flow
+# Add filter logic to Flow
 
 ````{admonition} Requirements
 :class: hint

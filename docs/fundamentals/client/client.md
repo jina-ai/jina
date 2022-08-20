@@ -164,8 +164,8 @@ The {class}`~jina.Client` can also send parameters to the {class}`~jina.Executor
 ---
 emphasize-lines: 14
 ---
-from docarray import Document
-from jina import Client, Executor, Flow, requests
+
+from jina import Client, Executor, Flow, requests, Document
 
 class MyExecutor(Executor):
 
@@ -203,8 +203,7 @@ and none of the other Executors will receive it.
 For instance in the following Flow:
 
 ```python
-from jina import Flow
-from docarray import DocumentArray
+from jina import Flow, DocumentArray
 
 with Flow().add(name='exec1').add(name='exec2') as flow:
 
@@ -232,8 +231,7 @@ This means you can iterate over Responses one by one, as they come in.
 ```python
 import asyncio
 
-from docarray import Document
-from jina import Client, Flow
+from jina import Client, Flow, Document
 
 
 async def async_inputs():
@@ -252,6 +250,21 @@ with Flow() as f:  # Using it as a Context Manager will start the Flow
     asyncio.run(run_client(f.port))
 ```
 
+Async send is useful when calling a Flow from an Executor, as described in {ref}`async-executors`.
+
+```python
+from jina import Client, Executor, requests, DocumentArray
+
+
+class DummyExecutor(Executor):
+
+    c = Client(host='grpc://0.0.0.0:51234', asyncio=True)
+
+    @requests
+    async def process(self, docs: DocumentArray, **kwargs):
+        self.c.post('/', docs)
+```
+
 
 ## Batch data
 
@@ -262,8 +275,7 @@ to {ref}`callback functions <callback-functions>`.
 The size of these batches can be controlled with the `request_size` keyword.
 The default `request_size` is 100 Documents. The optimal size will depend on your use case.
 ```python
-from docarray import Document, DocumentArray
-from jina import Flow, Client
+from jina import Flow, Client, Document, DocumentArray
 
 with Flow() as f:
     client = Client(port=f.port)
@@ -419,8 +431,7 @@ This may not only be slower, but also require more memory.
 ````{tab} Returning DocumentArray
 
 ```python
-from jina import Flow, Client
-from docarray import Document
+from jina import Flow, Client, Document
 
 with Flow() as f:
     client = Client(port=f.port)
@@ -437,8 +448,7 @@ with Flow() as f:
 ````{tab} Returning Responses
 
 ```python
-from jina import Flow, Client
-from docarray import Document
+from jina import Flow, Client, Document
 
 with Flow() as f:
     client = Client(port=f.port)
@@ -455,8 +465,7 @@ with Flow() as f:
 ````{tab} Using callback function
 
 ```python
-from jina import Flow, Client
-from docarray import Document
+from jina import Flow, Client, Document
 
 with Flow() as f:
     client = Client(port=f.port)
