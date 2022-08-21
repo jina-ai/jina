@@ -18,9 +18,9 @@ The data collected include:
 - Boolean events: start of a Flow, Gateway, Runtime, Client.
 
 
-## Example telemetry payload
+## Example payload
 
-Here is an example of telemetry payloads when running the following code:
+Here is an example payload when running the following code:
 
 ```python
 from jina import Flow
