@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.7.13 Documentation" />
   
-<meta property="og:description" content="YAML specification: YAML is widely used in Jina to define an Executor, Flow, Gateway, Hub manifest and JCloud. This page helps you navigate different YAML specifications. Executor YAML Define the argument of__init__, Python module dependencies and other settings of an Executor. Flow YAML Define t..." />
+<meta property="og:description" content="YAML specification: YAML is widely used in Jina to define an Executor, Flow. This page helps you quickly navigate different YAML specifications. Executor-level YAML: Executor level YAML is placed inside the Executor directory, as a part of Executor file structure. Executor YAML Define the argumen..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -197,7 +197,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -239,7 +239,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../get-started/install/troubleshooting/">Troubleshooting</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../get-started/create-app/">Create Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get-started/create-app/">Create First Project</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
@@ -305,6 +305,7 @@
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../proto/docs/">Protocol Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../envs/">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../telemetry/">Telemetry</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -375,7 +376,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon no-toc"
+                    <label class="toc-overlay-icon toc-content-icon"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -388,7 +389,10 @@
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-file-code-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m4-1-75c4-784-4-784-0-5-75-0h5-586c-464-0-909-184-1-237-513l2-914-2-914c-329-328-513-773-513-1-237v8-586a1-75-1-75-0-0114-25-15h-9a-75-75-0-010-1-5h9a-25-25-0-00-25-25v6h-2-75a1-75-1-75-0-0110-4-25v1-5h5-75a-25-25-0-00-25-25v2-5a-75-75-0-01-1-5-0v-2-5zm7-5-188v4-25c0-138-112-25-25-25h2-688a-252-252-0-00-011-013l-2-914-2-914a-272-272-0-00-013-011zm5-72-6-72a-75-75-0-000-1-06l1-47-1-47-1-47-1-47a-75-75-0-101-06-1-06l2-2a-75-75-0-000-1-06l-2-2a-75-75-0-00-1-06-0zm3-28-7-78a-75-75-0-00-1-06-1-06l-2-2a-75-75-0-000-1-06l2-2a-75-75-0-001-06-1-06l1-81-9-25l1-47-1-47z-path-svg-yaml-specification">
 <h1><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-file-code" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z"></path></svg> YAML specification<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-file-code-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m4-1-75c4-784-4-784-0-5-75-0h5-586c-464-0-909-184-1-237-513l2-914-2-914c-329-328-513-773-513-1-237v8-586a1-75-1-75-0-0114-25-15h-9a-75-75-0-010-1-5h9a-25-25-0-00-25-25v6h-2-75a1-75-1-75-0-0110-4-25v1-5h5-75a-25-25-0-00-25-25v2-5a-75-75-0-01-1-5-0v-2-5zm7-5-188v4-25c0-138-112-25-25-25h2-688a-252-252-0-00-011-013l-2-914-2-914a-272-272-0-00-013-011zm5-72-6-72a-75-75-0-000-1-06l1-47-1-47-1-47-1-47a-75-75-0-101-06-1-06l2-2a-75-75-0-000-1-06l-2-2a-75-75-0-00-1-06-0zm3-28-7-78a-75-75-0-00-1-06-1-06l-2-2a-75-75-0-000-1-06l2-2a-75-75-0-001-06-1-06l1-81-9-25l1-47-1-47z-path-svg-yaml-specification" title="Permalink to this headline">#</a></h1>
-<p>YAML is widely used in Jina to define an Executor, Flow, Gateway, Hub manifest and JCloud. This page helps you navigate different YAML specifications.</p>
+<p>YAML is widely used in Jina to define an Executor, Flow. This page helps you quickly navigate different YAML specifications.</p>
+<section id="executor-level-yaml">
+<h2>Executor-level YAML<a class="headerlink" href="#executor-level-yaml" title="Permalink to this headline">#</a></h2>
+<p>Executor level YAML is placed inside the Executor directory, as a part of Executor file structure.</p>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
 <div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
 <div class="sd-col sd-d-flex-row docutils">
@@ -400,6 +404,23 @@ Executor YAML</div>
 </div>
 <a class="sd-stretched-link reference internal" href="../fundamentals/executor/yaml-spec/"><span class="doc"></span></a></div>
 </div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Hub Manifest YAML</div>
+<p class="sd-card-text">Define meta information about how the Executor appears in Jina Hub.</p>
+</div>
+<a class="sd-stretched-link reference internal" href="../fundamentals/executor/hub/yaml-spec/"><span class="doc"></span></a></div>
+</div>
+</div>
+</div>
+</section>
+<section id="flow-level-yaml">
+<h2>Flow-level YAML<a class="headerlink" href="#flow-level-yaml" title="Permalink to this headline">#</a></h2>
+<p>Flow level YAML is placed inside the Flow directory, as a part of Flow file structure. It defines the Executors that will be used in the Flow, the Gateway and the JCloud hosting specifications.</p>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
 <div class="sd-card-body docutils">
@@ -416,16 +437,10 @@ Flow YAML</div>
 Gateway YAML</div>
 <p class="sd-card-text">Define the protocol, TLS, authentication and other settings of a Gateway.</p>
 </div>
+<div class="sd-card-footer docutils">
+<p class="sd-card-text">Gateway specification is nested under the Flow YAML via <code class="docutils literal notranslate"><span class="pre">with:</span></code> keywords.</p>
+</div>
 <a class="sd-stretched-link reference internal" href="../fundamentals/gateway/yaml-spec/"><span class="doc"></span></a></div>
-</div>
-<div class="sd-col sd-d-flex-row docutils">
-<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
-<div class="sd-card-body docutils">
-<div class="sd-card-title sd-font-weight-bold docutils">
-Hub Manifest YAML</div>
-<p class="sd-card-text">Define how the Executor appears in the Hub.</p>
-</div>
-<a class="sd-stretched-link reference internal" href="../fundamentals/executor/hub/yaml-spec/"><span class="doc"></span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -434,10 +449,14 @@ Hub Manifest YAML</div>
 JCloud YAML</div>
 <p class="sd-card-text">Define the resources and autoscaling settings on Jina Cloud</p>
 </div>
+<div class="sd-card-footer docutils">
+<p class="sd-card-text">JCloud specification is nested under the Flow YAML via <code class="docutils literal notranslate"><span class="pre">jcloud:</span></code> keywords.</p>
+</div>
 <a class="sd-stretched-link reference internal" href="../fundamentals/jcloud/yaml-spec/"><span class="doc"></span></a></div>
 </div>
 </div>
 </div>
+</section>
 </section>
 
                 </article>
@@ -495,8 +514,28 @@ JCloud YAML</div>
                 
             </footer>
         </div>
-        <aside class="toc-drawer no-toc">
+        <aside class="toc-drawer">
             
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-file-code" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z"></path></svg> YAML specification</a><ul>
+<li><a class="reference internal" href="#executor-level-yaml">Executor-level YAML</a></li>
+<li><a class="reference internal" href="#flow-level-yaml">Flow-level YAML</a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
             
             
         </aside>

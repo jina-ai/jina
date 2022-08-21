@@ -239,7 +239,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/troubleshooting/">Troubleshooting</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../get-started/create-app/">Create Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get-started/create-app/">Create First Project</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
@@ -305,6 +305,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../envs/">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../telemetry/">Telemetry</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -394,22 +395,22 @@
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer</span><span class="w"></span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Indexer</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span>
-<span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ebs</span><span class="w"></span>
-<span class="w">          </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10G</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span><span class="w"></span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">        </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span>
+</span><span class="hll"><span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ebs</span><span class="w"></span>
+</span><span class="hll"><span class="w">          </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10G</span><span class="w"></span>
+</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span><span class="w"></span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Encoder</span><span class="w"></span>
-<span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-<span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8G</span><span class="w"></span>
-<span class="w">        </span><span class="nt">gpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
-</pre></div>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+</span><span class="hll"><span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8G</span><span class="w"></span>
+</span><span class="hll"><span class="w">        </span><span class="nt">gpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+</span></pre></div>
 </div>
-<section id="control-resources-of-executors">
-<h2>Control resources of Executors<a class="headerlink" href="#control-resources-of-executors" title="Permalink to this headline">#</a></h2>
+<section id="allocate-resources-for-executors">
+<h2>Allocate resources for Executors<a class="headerlink" href="#allocate-resources-for-executors" title="Permalink to this headline">#</a></h2>
 <p>Since each Executor has its own business logic, it might require different Cloud resources. One might need a higher RAM, whereas another might need a bigger disk.</p>
 <p>In JCloud, we allow users to pass highly customizable, fine-grained resource requests for each Executor using <code class="docutils literal notranslate"><span class="pre">jcloud.resources</span></code> argument in your Flow YAML.</p>
 <section id="cpu">
@@ -700,8 +701,8 @@ to handle the initial requests since it may need to scale the deployments behind
 </figure>
 </section>
 </section>
-<section id="other-deployment-options">
-<h2>Other Deployment Options<a class="headerlink" href="#other-deployment-options" title="Permalink to this headline">#</a></h2>
+<section id="other-deployment-pptions">
+<h2>Other deployment pptions<a class="headerlink" href="#other-deployment-pptions" title="Permalink to this headline">#</a></h2>
 <section id="specify-jina-version">
 <h3>Specify Jina version<a class="headerlink" href="#specify-jina-version" title="Permalink to this headline">#</a></h3>
 <p>To control Jina’s version while deploying a Flow to <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>, you can pass <code class="docutils literal notranslate"><span class="pre">version</span></code> arg in the Flow yaml.</p>
@@ -797,7 +798,7 @@ to handle the initial requests since it may need to scale the deployments behind
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-file-code" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z"></path></svg> YAML specification</a><ul>
-<li><a class="reference internal" href="#control-resources-of-executors">Control resources of Executors</a><ul>
+<li><a class="reference internal" href="#allocate-resources-for-executors">Allocate resources for Executors</a><ul>
 <li><a class="reference internal" href="#cpu">CPU</a></li>
 <li><a class="reference internal" href="#gpu">GPU</a><ul>
 <li><a class="reference internal" href="#shared-gpu">Shared GPU</a></li>
@@ -822,7 +823,7 @@ to handle the initial requests since it may need to scale the deployments behind
 <li><a class="reference internal" href="#disable-gateway">Disable Gateway</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#other-deployment-options">Other Deployment Options</a><ul>
+<li><a class="reference internal" href="#other-deployment-pptions">Other deployment pptions</a><ul>
 <li><a class="reference internal" href="#specify-jina-version">Specify Jina version</a></li>
 <li><a class="reference internal" href="#retention-days">Retention days</a></li>
 </ul>

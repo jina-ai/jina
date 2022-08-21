@@ -158,7 +158,7 @@ docker build -t my_containerized_executor .
 
 Once the build is successful, this is what you should see under `docker images`:
 
-```console
+```shell
 REPOSITORY                       TAG                IMAGE ID       CREATED          SIZE
 my_containerized_executor        latest             5cead0161cb5   13 seconds ago   2.21GB
 ```
@@ -180,7 +180,7 @@ for doc in returned_docs:
     print(f'Document embedding of shape {doc.embedding.shape}')
 ```
 
-```console
+```shell
 Document returned with text: "This Document is embedded by ContainerizedEncoder"
 Document embedding of shape torch.Size([10])
 ```

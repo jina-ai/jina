@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-<meta property="og:title" content="Create Project" />
+<meta property="og:title" content="Create First Project" />
   
 <meta property="og:type" content="website" />
   
@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.7.13 Documentation" />
   
-<meta property="og:description" content="Let’s write a small application with our new Jina development environment. To start, we’ll use Jina CLI to make a new project for us. In your terminal of choice run: This will generate a new directory called hello-jina with the following files: app.py is the entrypoint of your Jina project. You c..." />
+<meta property="og:description" content="Let’s build a toy application with Jina. To start, we use Jina CLI to make a new project for us: This will create a new project folder called hello-jina with the following file structure: flow.yml is the configuration file for the Jina Flow., executor1/ is where we’ll write our Executor code., co..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -39,7 +39,7 @@
         <link rel="canonical" href="https://docs.jina.ai/get-started/create-app.html" />
 
     <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
-        <title>Create Project - Jina 3.7.13 documentation</title>
+        <title>Create First Project - Jina 3.7.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -239,7 +239,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../install/troubleshooting/">Troubleshooting</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Create Project</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Create First Project</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
@@ -305,6 +305,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../proto/docs/">Protocol Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../envs/">Environment Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../telemetry/">Telemetry</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Legacy Support</span></p>
 <ul>
@@ -386,43 +387,57 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="create-project">
-<h1>Create Project<a class="headerlink" href="#create-project" title="Permalink to this headline">#</a></h1>
-<p>Let’s write a small application with our new Jina development environment. To start, we’ll use Jina CLI to make a new project for us. In your terminal of choice run:</p>
+                    <section class="tex2jax_ignore mathjax_ignore" id="create-first-project">
+<h1>Create First Project<a class="headerlink" href="#create-first-project" title="Permalink to this headline">#</a></h1>
+<p>Let’s build a toy application with Jina. To start, we use Jina CLI to make a new project for us:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina new hello-jina
 </pre></div>
 </div>
-<p>This will generate a new directory called <code class="docutils literal notranslate"><span class="pre">hello-jina</span></code> with the following files:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>hello-jina
-|- app.py
-|- executor1/
-        |- config.yml
-        |- executor.py
+<p>This will create a new project folder called <code class="docutils literal notranslate"><span class="pre">hello-jina</span></code> with the following file structure:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>hello-jina/
+    |- client.py
+    |- flow.yml
+    |- executor1/
+            |- config.yml
+            |- executor.py
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">app.py</span></code> is the entrypoint of your Jina project. You can run it via <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">app.py</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> is the configuration file for the Jina Flow.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">executor1/</span></code> is where we’ll write our <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> code.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">config.yml</span></code> is the config file for the <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. It’s where you keep metadata for your Executor, as well as dependencies.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">client.py</span></code> is the entrypoint of your Jina project. You can run it via <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">app.py</span></code>.</p></li>
 </ul>
 <p>There may be some other files like <code class="docutils literal notranslate"><span class="pre">README.md</span></code>, <code class="docutils literal notranslate"><span class="pre">manifest.yml</span></code>  <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> to provide extra metadata about that <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. More information <a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/#create-executor"><span class="std std-ref">can be found here</span></a>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> hello-jina
-python app.py
+<p>Now run it and observe the output of the server and client.</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Run server</label><div class="tab-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yml
 </pre></div>
 </div>
-<p>You should see this in your terminal:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>           Flow@99300<span class="o">[</span>I<span class="o">]</span>:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	<span class="m">0</span>.0.0.0:52971
-	🔒 Private network:	<span class="m">192</span>.168.0.102:52971
-	🌐 Public address:	<span class="m">84</span>.172.88.250:52971
-<span class="o">[</span><span class="s1">&#39;hello, world!&#39;</span>, <span class="s1">&#39;goodbye, world!&#39;</span><span class="o">]</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>──── 🎉 Flow is ready to serve! ────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           <span class="m">0</span>.0.0.0:54321  │
+│  🔒     Private    <span class="m">192</span>.168.200.56:54321  │
+│  🌍      Public    <span class="m">81</span>.223.121.124:54321  │
+╰──────────────────────────────────────────╯
 </pre></div>
 </div>
-<section id="adding-dependencies">
-<h2>Adding dependencies<a class="headerlink" href="#adding-dependencies" title="Permalink to this headline">#</a></h2>
-<p>You can use any third-party Python library in <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. Let’s create <code class="docutils literal notranslate"><span class="pre">executor1/requirements.txt</span></code> and add <code class="docutils literal notranslate"><span class="pre">pytorch</span></code> to it.</p>
-<p>Then in <code class="docutils literal notranslate"><span class="pre">executor.py</span></code>, let’s add another endpoint <code class="docutils literal notranslate"><span class="pre">/get-tensor</span></code> as follows:</p>
+</div>
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Run client</label><div class="tab-content docutils">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python client.py
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="s1">&#39;hello, world!&#39;</span>, <span class="s1">&#39;goodbye, world!&#39;</span><span class="o">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="add-logics">
+<h2>Add logics<a class="headerlink" href="#add-logics" title="Permalink to this headline">#</a></h2>
+<p>You can use any Python library in <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. For example, let’s add <code class="docutils literal notranslate"><span class="pre">pytorch</span></code> to <code class="docutils literal notranslate"><span class="pre">executor1/requirements.txt</span></code> and crunch some numbers.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">executor.py</span></code>, let’s add another endpoint <code class="docutils literal notranslate"><span class="pre">/get-tensor</span></code> as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 
@@ -430,57 +445,50 @@ python app.py
 
 
 <span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/get-tensor&#39;</span><span class="p">)</span>
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/crunch-numbers&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
 </pre></div>
 </div>
+<p>Kill the last server by <code class="docutils literal notranslate"><span class="pre">ctrl-C</span></code> and restart the server by <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">flow</span> <span class="pre">--uses</span> <span class="pre">flow.yml</span></code>.</p>
 </section>
-<section id="a-dummy-jina-application">
-<h2>A dummy Jina application<a class="headerlink" href="#a-dummy-jina-application" title="Permalink to this headline">#</a></h2>
-<p>Now let’s write a dummy application with our new dependency. In our <code class="docutils literal notranslate"><span class="pre">app.py</span></code>, add the following code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span>
-
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;executor1/config.yml&#39;</span><span class="p">)</span>
+<section id="call-crunch-number-endpoint">
+<h2>Call <code class="docutils literal notranslate"><span class="pre">/crunch-number</span></code> endpoint<a class="headerlink" href="#call-crunch-number-endpoint" title="Permalink to this headline">#</a></h2>
+<p>Modify <code class="docutils literal notranslate"><span class="pre">client.py</span></code> to call <code class="docutils literal notranslate"><span class="pre">/crunch-numbers</span></code> endpoint:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">da</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/get-tensor&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">Document</span><span class="p">(),</span> <span class="n">Document</span><span class="p">()])</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">tensors</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;grpc://0.0.0.0:54321&#39;</span><span class="p">)</span>
+    <span class="n">da</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/crunch-numbers&#39;</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">tensors</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Once we save that, we can run our application by typing:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python app.py
+<p>Once we save that, we can run our new client:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python client.py
 </pre></div>
 </div>
-<p>Assuming everything went well, you should see your application print this to the screen:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>       Flow@301<span class="o">[</span>I<span class="o">]</span>:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	<span class="m">0</span>.0.0.0:59667
-	🔒 Private network:	<span class="m">192</span>.168.0.102:59667
-	🌐 Public address:	<span class="m">84</span>.172.88.250:59667
-tensor<span class="o">([[[</span><span class="m">0</span>.9594, <span class="m">0</span>.9373<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.4729, <span class="m">0</span>.2012<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.7907, <span class="m">0</span>.3546<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.6961, <span class="m">0</span>.7463<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.3487, <span class="m">0</span>.7837<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.7825, <span class="m">0</span>.0556<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.3296, <span class="m">0</span>.2153<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.2207, <span class="m">0</span>.0220<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.9547, <span class="m">0</span>.9519<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.6703, <span class="m">0</span>.4601<span class="o">]]</span>,
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>tensor([[[0.9594, 0.9373],
+         [0.4729, 0.2012],
+         [0.7907, 0.3546],
+         [0.6961, 0.7463],
+         [0.3487, 0.7837],
+         [0.7825, 0.0556],
+         [0.3296, 0.2153],
+         [0.2207, 0.0220],
+         [0.9547, 0.9519],
+         [0.6703, 0.4601]],
 
-        <span class="o">[[</span><span class="m">0</span>.9684, <span class="m">0</span>.6781<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.7906, <span class="m">0</span>.8454<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.2136, <span class="m">0</span>.9147<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.3999, <span class="m">0</span>.7443<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.2564, <span class="m">0</span>.0629<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.4713, <span class="m">0</span>.1018<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.3626, <span class="m">0</span>.0963<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.7562, <span class="m">0</span>.2183<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.9239, <span class="m">0</span>.3294<span class="o">]</span>,
-         <span class="o">[</span><span class="m">0</span>.2457, <span class="m">0</span>.9189<span class="o">]]]</span>, <span class="nv">dtype</span><span class="o">=</span>torch.float64
+        [[0.9684, 0.6781],
+         [0.7906, 0.8454],
+         [0.2136, 0.9147],
+         [0.3999, 0.7443],
+         [0.2564, 0.0629],
+         [0.4713, 0.1018],
+         [0.3626, 0.0963],
+         [0.7562, 0.2183],
+         [0.9239, 0.3294],
+         [0.2457, 0.9189]]], dtype=torch.float64)
 </pre></div>
 </div>
 </section>
@@ -553,9 +561,9 @@ tensor<span class="o">([[[</span><span class="m">0</span>.9594, <span class="m">
                 <div class="toc-tree-container">
                     <div class="toc-tree">
                         <ul>
-<li><a class="reference internal" href="#">Create Project</a><ul>
-<li><a class="reference internal" href="#adding-dependencies">Adding dependencies</a></li>
-<li><a class="reference internal" href="#a-dummy-jina-application">A dummy Jina application</a></li>
+<li><a class="reference internal" href="#">Create First Project</a><ul>
+<li><a class="reference internal" href="#add-logics">Add logics</a></li>
+<li><a class="reference internal" href="#call-crunch-number-endpoint">Call <code class="docutils literal notranslate"><span class="pre">/crunch-number</span></code> endpoint</a></li>
 </ul>
 </li>
 </ul>

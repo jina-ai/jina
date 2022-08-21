@@ -220,7 +220,7 @@ print(
 )  # only the Document fullfilling the condition is processed and therefore returned.
 ```
 
-```console
+```shell
 [{'key': 5.0}]
 ```
 
@@ -258,7 +258,7 @@ print(
 )  # only the Document fullfilling the condition is processed and therefore returned.
 ```
 
-```console
+```shell
 [{'key': 5.0}]
 ```
 ````
@@ -302,7 +302,7 @@ with f:
 print(ret[:, 'tags'])  # Each Document satisfies one parallel branch/filter
 ```
 
-```console
+```shell
 [{'key': 5.0}, {'key': 4.0}]
 ```
 
@@ -334,7 +334,7 @@ with f:
 print(ret[:, 'tags'])  # No Document satisfies both sequential filters
 ```
 
-```console
+```shell
 []
 ```
 ````

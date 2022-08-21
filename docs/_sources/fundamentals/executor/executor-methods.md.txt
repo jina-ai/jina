@@ -49,7 +49,7 @@ with f:
     f.post(on='/search', inputs=[])
 ```
 
-```console
+```shell
            Flow@18048[I]:🎉 Flow is ready to use!                                                   
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:52255
@@ -210,7 +210,7 @@ print(f'Resulting documents {returned_docs[0].text}')
 ```
 
 
-```console
+```shell
            Flow@1244[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:54550
@@ -271,7 +271,7 @@ with f:
     )
 ```
 
-```console
+```shell
            Flow@20588[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:62598
@@ -307,7 +307,7 @@ with f:
     )
 ```
 
-```console
+```shell
            Flow@20394[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:52592
@@ -400,7 +400,7 @@ with f:
     f.post('', on_error=print_why)
 ```
 
-```console
+```shell
 [...]
 executor0/rep-0@28271[E]:NotImplementedError('no time for it')
  add "--quiet-error" to suppress the exception details
@@ -459,7 +459,7 @@ with f:
 ```
 
 
-```console
+```shell
            Flow@23300[I]:🎉 Flow is ready to use!                                                   
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:61855

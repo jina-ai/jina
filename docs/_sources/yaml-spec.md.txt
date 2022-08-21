@@ -1,6 +1,10 @@
 # {octicon}`file-code` YAML specification
 
-YAML is widely used in Jina to define an Executor, Flow, Gateway, Hub manifest and JCloud. This page helps you navigate different YAML specifications.
+YAML is widely used in Jina to define an Executor, Flow. This page helps you quickly navigate different YAML specifications.
+
+## Executor-level YAML
+
+Executor level YAML is placed inside the Executor directory, as a part of Executor file structure.
 
 :::::{grid} 2
 :gutter: 3
@@ -12,6 +16,25 @@ YAML is widely used in Jina to define an Executor, Flow, Gateway, Hub manifest a
 
 Define the argument of `__init__`, Python module dependencies and other settings of an Executor. 
 ::::
+
+::::{grid-item-card} Hub Manifest YAML
+:link: fundamentals/executor/hub/yaml-spec
+:link-type: doc
+
+Define meta information about how the Executor appears in Jina Hub.
+
+::::
+
+
+:::::
+
+## Flow-level YAML
+
+Flow level YAML is placed inside the Flow directory, as a part of Flow file structure. It defines the Executors that will be used in the Flow, the Gateway and the JCloud hosting specifications.
+
+
+:::::{grid} 2
+:gutter: 3
 
 ::::{grid-item-card} Flow YAML
 :link: fundamentals/flow/yaml-spec
@@ -25,17 +48,9 @@ Define the Executors, the topology and the Gateway settings of a Flow.
 :link-type: doc
 
 Define the protocol, TLS, authentication and other settings of a Gateway.
-
++++
+Gateway specification is nested under the Flow YAML via `with:` keywords.
 ::::
-
-::::{grid-item-card} Hub Manifest YAML
-:link: fundamentals/executor/hub/yaml-spec
-:link-type: doc
-
-Define how the Executor appears in the Hub.
-
-::::
-
 
 ::::{grid-item-card} JCloud YAML
 :link: fundamentals/jcloud/yaml-spec
@@ -43,8 +58,9 @@ Define how the Executor appears in the Hub.
 
 Define the resources and autoscaling settings on Jina Cloud
 
++++
+JCloud specification is nested under the Flow YAML via `jcloud:` keywords.
+
 ::::
-
-
 
 :::::
