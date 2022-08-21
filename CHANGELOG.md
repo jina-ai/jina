@@ -223,6 +223,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14764,4 +14765,37 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```10c63db2```](https://github.com/jina-ai/jina/commit/10c63db2067bd7f9512e16aadc3f6a41e25ede9f)] __-__ update pr template with reminder to add a description (#5062) (*Johannes Messner*)
  - [[```6fbd2be9```](https://github.com/jina-ai/jina/commit/6fbd2be9214339997d880c200a5a6a7b58418123)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```7d82fdc3```](https://github.com/jina-ai/jina/commit/7d82fdc3dc52b23305a23b155272108f57d26243)] __-__ __version__: the next version will be 3.7.12 (*Jina Dev Bot*)
+
+<a name=release-note-3-7-13></a>
+## Release Note (`3.7.13`)
+
+> Release time: 2022-08-21 21:03:25
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  Johannes Messner,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```b7bf0ee1```](https://github.com/jina-ai/jina/commit/b7bf0ee119131ac794b6abae10a9e4344adb5834)] __-__ set workspace in executor init method (#5072) (*Johannes Messner*)
+
+### 🧼 Code Refactoring
+
+ - [[```f6dcde38```](https://github.com/jina-ai/jina/commit/f6dcde38f9ed4a85b25b4a31ec796abaad520add)] __-__ telemetry (#5078) (*Han Xiao*)
+
+### 🍹 Other Improvements
+
+ - [[```8ad0ead5```](https://github.com/jina-ai/jina/commit/8ad0ead55482f222bacc0687005f079df47cf2f4)] __-__ __docs__: refactor create project docs (*Han Xiao*)
+ - [[```c7e19841```](https://github.com/jina-ai/jina/commit/c7e198414e71a28ce0a9b43e411885a5eeff100e)] __-__ update readme (*Han Xiao*)
+ - [[```7b034d34```](https://github.com/jina-ai/jina/commit/7b034d34775787f535605cefdca8f2f08b84c4cd)] __-__ __docs__: refactor telemetry docs (*Han Xiao*)
+ - [[```76f48f8f```](https://github.com/jina-ai/jina/commit/76f48f8f818a38c1b03be2866c3063181eced912)] __-__ __docs__: refactor jcloud docs (*Han Xiao*)
+ - [[```e506da44```](https://github.com/jina-ai/jina/commit/e506da443944c23f8af417ec88dd9b525087b6cd)] __-__ __docs__: refactor hub docs (*Han Xiao*)
+ - [[```b91f2084```](https://github.com/jina-ai/jina/commit/b91f20844bc29346f2d5c0b2c849fee6cc29404e)] __-__ __docs__: refactor executors docs (*Han Xiao*)
+ - [[```f8a63ccf```](https://github.com/jina-ai/jina/commit/f8a63ccf813fbd9d31ce4c3f1625cb675d1d529d)] __-__ __docs__: refactor flow basic docs (*Han Xiao*)
+ - [[```885914ad```](https://github.com/jina-ai/jina/commit/885914ad3e24817ad23fd65bc9f634c45a89339a)] __-__ __docs__: restructure docs (*Han Xiao*)
+ - [[```36fdebe2```](https://github.com/jina-ai/jina/commit/36fdebe2778ad53da62bad40d273e6028d1bd527)] __-__ __docs__: fix docs in jcloud (*Han Xiao*)
+ - [[```4673e7ab```](https://github.com/jina-ai/jina/commit/4673e7abaaee91c7c9143288866bf139e5cce0a0)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```a4c48d1b```](https://github.com/jina-ai/jina/commit/a4c48d1b4a6b680c61d8a681ac7e2a3a26fa3cee)] __-__ __version__: the next version will be 3.7.13 (*Jina Dev Bot*)
 
