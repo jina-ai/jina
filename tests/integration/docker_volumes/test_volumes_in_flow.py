@@ -1,11 +1,10 @@
 import os
 import time
-from unittest import mock
 
 import pytest
-from docarray import Document, DocumentArray
+from docarray import Document
 
-from jina import Executor, Flow, requests
+from jina import Flow, __cache_path__
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -32,13 +31,12 @@ def filewriter_exec_docker_image_built():
 def test_volumes_in_flow(
     tmpdir, source, destination, workspace, filewriter_exec_docker_image_built
 ):
-
     if source:  # test manually set volume and workspace
         source = os.path.join(tmpdir, source)
-        volumes = [str(source) + ':' + destination]
     else:  # test auto volume and workspace
-        volumes = None
-        source = os.path.join(tmpdir, 'default')
+        source = __cache_path__
+
+    volumes = [str(source) + ':' + destination]
 
     f = Flow().add(
         uses='docker://filewriter-exec', volumes=volumes, workspace=workspace

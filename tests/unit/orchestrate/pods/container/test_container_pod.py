@@ -1,10 +1,9 @@
 import os
 import time
-from pathlib import Path
-from unittest import mock
 
 import pytest
 
+from jina import __cache_path__
 from jina.excepts import RuntimeFailToStart
 from jina.orchestrate.pods.container import ContainerPod
 from jina.parsers import set_gateway_parser, set_pod_parser
@@ -95,7 +94,7 @@ def test_container_pod_volume_setting(
         volume_arg = str(expected_source) + ':' + expected_destination
         pod_args.append(volume_arg)
 
-    default_workspace = os.path.join(Path.home(), 'mock-workspace')
+    default_workspace = __cache_path__
 
     with ContainerPod(set_pod_parser().parse_args(pod_args)) as pod:
         container = pod._container
