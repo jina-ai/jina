@@ -90,7 +90,7 @@ how-to/index
 
 api-rst
 cli/index
-yaml
+yaml-spec
 proto/docs
 envs/index
 ```

@@ -1,5 +1,5 @@
 (flow-switch)=
-# Conditional route traffic inside a Flow
+# Conditional route request inside a Flow
 
 In this tutorial you will gain a deeper insight into the {class}`~jina.Flow` 's {ref}`filter condition feature<flow-filter>`.
 

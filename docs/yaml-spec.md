@@ -29,7 +29,7 @@ Define the protocol, TLS, authentication and other settings of a Gateway.
 ::::
 
 ::::{grid-item-card} Hub Manifest YAML
-:link: fundamentals/executor/hub/create-hub-executor
+:link: fundamentals/executor/hub/yaml-spec
 :link-type: doc
 
 Define how the Executor appears in the Hub.

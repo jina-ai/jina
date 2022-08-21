@@ -1,5 +1,5 @@
 (gpu-executor)=
-# Run Executors on GPU
+# Build a GPU Executor
 
 This document will show you how to use an {class}`~jina.Executor` on a GPU, both locally and in a
 Docker container. You will also learn how to use GPU with pre-built Hub executors.
