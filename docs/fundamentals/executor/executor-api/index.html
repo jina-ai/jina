@@ -279,7 +279,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../hub/use-hub-executor/">Use</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/sandbox/">Sandbox</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/debug-executor/">Debug</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../hub/executor-best-practices/">Best practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hub/yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -291,9 +291,9 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../how-to/"><svg aria-hidden="true" class="sd-octicon sd-octicon-book" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z" fill-rule="evenodd"></path></svg> How-To</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/realtime-streaming/">Build real-time streaming service</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/flow-switch/">Conditional route traffic inside a Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/scale-out/">Scale out with replicas and shards</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/gpu-executor/">Run Executors on GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/gpu-executor/">Build a GPU Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/kubernetes/">Deploy with Kubernetes</a></li>
@@ -305,7 +305,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../yaml/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../proto/docs/">Protocol Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../envs/">Environment Variables</a></li>
 </ul>
@@ -395,19 +395,19 @@
 <p class="admonition-title">Tip</p>
 <p>Executor uses <code class="docutils literal notranslate"><span class="pre">docarray.DocumentArray</span></code> as input and output data structure. Please first <a class="reference external" href="https://docarray.jina.ai">read DocArray’s docs</a> to get an impression how does it work.</p>
 </div>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code> is a self-contained component and performs a group of tasks on a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.
+<p><a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> is a self-contained component and performs a group of tasks on a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.
 It encapsulates functions that process <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>s. Inside the Executor, these functions are decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>. To create an Executor, you only need to follow three principles:</p>
 <ol class="simple">
 <li><p>An Executor should subclass directly from the <code class="docutils literal notranslate"><span class="pre">jina.Executor</span></code> class. Executor can also be a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code></p></li>
 <li><p>An Executor class is a bag of functions with shared state or configuration (via <code class="docutils literal notranslate"><span class="pre">self</span></code>); it can contain an arbitrary number of
 functions with arbitrary names.</p></li>
-<li><p>Functions decorated by <code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code> will be invoked according to their <code class="docutils literal notranslate"><span class="pre">on=</span></code> endpoint. These functions can be coroutines (<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code>) or regular functions.</p></li>
+<li><p>Functions decorated by <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> will be invoked according to their <code class="docutils literal notranslate"><span class="pre">on=</span></code> endpoint. These functions can be coroutines (<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code>) or regular functions.</p></li>
 </ol>
 <section id="constructor">
 <h2>Constructor<a class="headerlink" href="#constructor" title="Permalink to this headline">#</a></h2>
 <section id="subclass">
 <h3>Subclass<a class="headerlink" href="#subclass" title="Permalink to this headline">#</a></h3>
-<p>Every new executor should be a subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code>.</p>
+<p>Every new executor should be a subclass of <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>.</p>
 <p>You can name your executor class freely.</p>
 </section>
 <section id="init">
@@ -453,9 +453,9 @@ or modify their values before passing them to <code class="docutils literal notr
 <h2>Destructor<a class="headerlink" href="#destructor" title="Permalink to this headline">#</a></h2>
 <p>You might need to execute some logic when your Executor’s destructor is called.</p>
 <p>For example, you want to persist data to the disk (e.g. in-memory indexed data, fine-tuned model,…).
-To do so, you can overwrite the <code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code> method and add your logic.</p>
-<p>Jina will make sure that the <code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code> method is executed when the Executor is terminated inside a <code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code> or when deployed in any cloud-native environment.</p>
-<p>You can think of this as Jina using the Executor as a context manager, making sure that the <code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code> method is always executed.</p>
+To do so, you can overwrite the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close" title="jina.serve.executors.BaseExecutor.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method and add your logic.</p>
+<p>Jina will make sure that the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close" title="jina.serve.executors.BaseExecutor.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method is executed when the Executor is terminated inside a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> or when deployed in any cloud-native environment.</p>
+<p>You can think of this as Jina using the Executor as a context manager, making sure that the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close" title="jina.serve.executors.BaseExecutor.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method is always executed.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
 
 
@@ -539,7 +539,7 @@ you install jina on your system.</p>
 <section id="runtime-args">
 <h3><code class="docutils literal notranslate"><span class="pre">runtime_args</span></code><a class="headerlink" href="#runtime-args" title="Permalink to this headline">#</a></h3>
 <p>By default, an Executor object contains <code class="xref py py-attr docutils literal notranslate"><span class="pre">runtime_args</span></code> as an attribute when loaded from the Flow. It is of <a class="reference external" href="https://docs.python.org/3/library/types.html#types.SimpleNamespace"><code class="docutils literal notranslate"><span class="pre">SimpleNamespace</span></code></a> type and contains information in key-value format.
-As the name suggests, <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code> are dynamically determined during runtime, meaning that you don’t know the value before running the Executor. These values are often related to the system/network environment around the Executor, and less about the Executor itself, like <code class="docutils literal notranslate"><span class="pre">shard_id</span></code> and <code class="docutils literal notranslate"><span class="pre">replicas</span></code>. They are usually set with the <code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code> method.</p>
+As the name suggests, <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code> are dynamically determined during runtime, meaning that you don’t know the value before running the Executor. These values are often related to the system/network environment around the Executor, and less about the Executor itself, like <code class="docutils literal notranslate"><span class="pre">shard_id</span></code> and <code class="docutils literal notranslate"><span class="pre">replicas</span></code>. They are usually set with the <a class="reference internal" href="../../../api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.add" title="jina.orchestrate.flow.base.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> method.</p>
 <p>The list of the <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code> is:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name given to the Executor. This is dynamically adapted from the <code class="docutils literal notranslate"><span class="pre">name</span></code> in <code class="docutils literal notranslate"><span class="pre">metas</span></code> and depends on some additional arguments like <code class="docutils literal notranslate"><span class="pre">shard_id</span></code>.</p></li>
@@ -598,7 +598,7 @@ As the name suggests, <code class="docutils literal notranslate"><span class="pr
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 20, 2022</div>
+                            Last updated on Aug 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

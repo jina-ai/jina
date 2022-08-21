@@ -73,6 +73,10 @@ with f:
 ```
 ````
 
+
+When `jinahub+docker://` executors are not loading properly or are having issues during initialization, please ensure sufficient Docker resources are allocated.
+
+
 ### Mount local volumes
 
 You can mount volumes into your dockerized Executor by passing a list of volumes to the `volumes` argument:

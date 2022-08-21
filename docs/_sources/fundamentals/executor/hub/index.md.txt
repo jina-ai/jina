@@ -55,5 +55,5 @@ push-executor
 use-hub-executor
 ../../../how-to/sandbox
 ../../../how-to/debug-executor
-executor-best-practices
+yaml-spec
 ```
