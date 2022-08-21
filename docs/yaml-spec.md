@@ -38,7 +38,7 @@ Define how the Executor appears in the Hub.
 
 
 ::::{grid-item-card} JCloud YAML
-:link: fundamentals/jcloud/resources
+:link: fundamentals/jcloud/yaml-spec
 :link-type: doc
 
 Define the resources and autoscaling settings on Jina Cloud
