@@ -1,6 +1,6 @@
 <p align="center">
 <br><br><br>
-<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Build cross-modal and multi-modal applications on the cloud" width="150px"></a>
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/docs/_static/logo-light.svg?raw=true" alt="Jina logo: Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native" width="150px"></a>
 <br><br><br>
 </p>
 
