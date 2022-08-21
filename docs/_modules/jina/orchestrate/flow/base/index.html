@@ -269,7 +269,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML Specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../proto/docs/">Protocol Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../envs/">Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../telemetry/">Telemetry</a></li>
@@ -415,6 +415,7 @@
     <span class="n">get_internal_ip</span><span class="p">,</span>
     <span class="n">get_public_ip</span><span class="p">,</span>
     <span class="n">is_port_free</span><span class="p">,</span>
+    <span class="n">send_telemetry_event</span><span class="p">,</span>
     <span class="n">typename</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">jina.jaml</span> <span class="kn">import</span> <span class="n">JAMLCompatible</span>
@@ -513,7 +514,6 @@
         <span class="n">native</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">no_crud_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">optout_telemetry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span>
         <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -574,7 +574,6 @@
 
 <span class="sd">                  Any executor that has `@requests(on=...)` bind with those values will receive data requests.</span>
 <span class="sd">        :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.</span>
-<span class="sd">        :param optout_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.</span>
 <span class="sd">        :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.</span>
 
 <span class="sd">          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found</span>
@@ -646,7 +645,6 @@
         <span class="n">inspect</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;COLLECT&#39;</span><span class="p">,</span>
         <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">optout_telemetry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -669,7 +667,6 @@
 <span class="sd">              - ...</span>
 
 <span class="sd">              When not given, then the default naming strategy will apply.</span>
-<span class="sd">        :param optout_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.</span>
 <span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
 <span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
 <span class="sd">        :param uses: The YAML path represents a flow. It can be either a local file path or a URL.</span>
@@ -751,7 +748,6 @@
 
 <span class="sd">                  Any executor that has `@requests(on=...)` bind with those values will receive data requests.</span>
 <span class="sd">        :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.</span>
-<span class="sd">        :param optout_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.</span>
 <span class="sd">        :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.</span>
 
 <span class="sd">          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found</span>
@@ -821,7 +817,6 @@
 <span class="sd">              - ...</span>
 
 <span class="sd">              When not given, then the default naming strategy will apply.</span>
-<span class="sd">        :param optout_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.</span>
 <span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
 <span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
 <span class="sd">        :param uses: The YAML path represents a flow. It can be either a local file path or a URL.</span>
@@ -1158,7 +1153,6 @@
         <span class="n">monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">native</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">optout_telemetry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span>
         <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1227,7 +1221,6 @@
 
 <span class="sd">              When not given, then the default naming strategy will apply.</span>
 <span class="sd">        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</span>
-<span class="sd">        :param optout_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.</span>
 <span class="sd">        :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.</span>
 
 <span class="sd">          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found</span>
@@ -1374,7 +1367,6 @@
 
 <span class="sd">              When not given, then the default naming strategy will apply.</span>
 <span class="sd">        :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</span>
-<span class="sd">        :param optout_telemetry: If set, disables telemetry during the Flow/Pod/Runtime start.</span>
 <span class="sd">        :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.</span>
 
 <span class="sd">          Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found</span>
@@ -1827,10 +1819,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_level</span> <span class="o">=</span> <span class="n">FlowBuildLevel</span><span class="o">.</span><span class="n">RUNNING</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">optout_telemetry</span> <span class="ow">and</span> <span class="s1">&#39;JINA_OPTOUT_TELEMETRY&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">jina.serve.helper</span> <span class="kn">import</span> <span class="n">_telemetry_run_in_thread</span>
-
-            <span class="n">_telemetry_run_in_thread</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s1">&#39;flow.start&#39;</span><span class="p">)</span>
+        <span class="n">send_telemetry_event</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
 

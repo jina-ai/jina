@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.7.13 Documentation" />
   
-<meta property="og:description" content="Jina uses a number of environment variables to determine different behaviours. If you use containerized Executors (including Kubernetes and Docker Compose), you can pass separate environment variables to each Executor in the following way: YAML Python The following environment variables are used ..." />
+<meta property="og:description" content="Jina uses a number of environment variables to determine different behaviours. To see all supported environment variables and their current values, run If you use containerized Executors (including Kubernetes and Docker Compose), you can pass separate environment variables to each Executor in the..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -302,7 +302,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../yaml-spec/"><svg aria-hidden="true" class="sd-octicon sd-octicon-file-code" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z" fill-rule="evenodd"></path></svg> YAML Specification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../proto/docs/">Protocol Documentation</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Environment Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../telemetry/">Telemetry</a></li>
@@ -389,10 +389,13 @@
                 <article role="main">
                     <section class="tex2jax_ignore mathjax_ignore" id="environment-variables">
 <span id="jina-env-vars"></span><h1>Environment Variables<a class="headerlink" href="#environment-variables" title="Permalink to this headline">#</a></h1>
-<p>Jina uses a number of environment variables to determine different behaviours.</p>
+<p>Jina uses a number of environment variables to determine different behaviours. To see all supported environment variables and their current values, run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina -vf
+</pre></div>
+</div>
 <p>If you use containerized Executors (including <a class="reference internal" href="../how-to/kubernetes/#kubernetes"><span class="std std-ref">Kubernetes</span></a> and <a class="reference internal" href="../how-to/docker-compose/#docker-compose"><span class="std std-ref">Docker Compose</span></a>), you can pass separate environment variables to each Executor in the following way:</p>
 <div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">YAML</label><div class="tab-content docutils">
+<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Include env vars in YAML</label><div class="tab-content docutils">
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1&#39;</span><span class="w"></span>
 <span class="nt">with</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>
@@ -410,7 +413,7 @@
 </pre></div>
 </div>
 </div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Python</label><div class="tab-content docutils">
+<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">Include env vars in Python</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
@@ -440,7 +443,7 @@
 <tbody>
 <tr>
 <td><code>JINA_AUTH_TOKEN</code></td>
-<td>If provided, <code>jina hub push</code> pushes this Executor to specific account</td>
+<td>Authentication token of Jina Cloud</td>
 </tr>
 <tr>
 <td><code>JINA_DEFAULT_HOST</code></td>
@@ -449,10 +452,6 @@
 <tr>
 <td><code>JINA_DEFAULT_TIMEOUT_CTRL</code></td>
 <td>The default timeout time used by Flow to check the readiness of Executors</td>
-</tr>
-<tr>
-<td><code>JINA_DEFAULT_WORKSPACE_BASE</code></td>
-<td>The default workspace folder used by an Executor if none provided through arguments</td>
 </tr>
 <tr>
 <td><code>JINA_DEPLOYMENT_NAME</code></td>
@@ -479,10 +478,6 @@
 <td>Set by the grpc service to keep track of the sent bytes</td>
 </tr>
 <tr>
-<td><code>JINA_HUBBLE_REGISTRY</code></td>
-<td>Set it to point to a different Jina Hub registry</td>
-</tr>
-<tr>
 <td><code>JINA_LOG_CONFIG</code></td>
 <td>The configuration used for the logger</td>
 </tr>
@@ -505,10 +500,6 @@
 <tr>
 <td><code>JINA_RANDOM_PORT_MIN</code></td>
 <td>The min port number used when selecting random ports to apply for Executors or gateway</td>
-</tr>
-<tr>
-<td><code>JINA_DISABLE_HEALTHCHECK_LOGS</code></td>
-<td>If set, disables the logs when processing health check requests</td>
 </tr>
 <tr>
 <td><code>JINA_LOCKS_ROOT</code></td>
