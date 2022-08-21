@@ -5,7 +5,10 @@ Built on top of {ref}`Flow YAML specification<flow-yaml-spec>`, JCloud YAML exte
 
 Here's a Flow with 2 Executors with specific resource needs. `indexer` demands for 10G `ebs` disk, whereas `encoder` demands for 2 cores, 8G RAM & 2 dedicated GPUs. 
 
-```yaml
+```{code-block} yaml
+---
+emphasize-lines: 5-9,12-16
+---
 jtype: Flow
 executors:
   - name: indexer
@@ -24,7 +27,7 @@ executors:
         gpu: 2
 ```
 
-## Control resources of Executors
+## Allocate resources for Executors
 
 Since each Executor has its own business logic, it might require different Cloud resources. One might need a higher RAM, whereas another might need a bigger disk. 
 
@@ -330,7 +333,7 @@ executors:
 :width: 70%
 ```
 
-## Other Deployment Options
+## Other deployment pptions
 
 ### Specify Jina version
 
