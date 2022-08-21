@@ -6,7 +6,7 @@ from unittest import mock
 import pytest
 import yaml
 
-from jina import Flow
+from jina import Flow, __cache_path__
 
 
 @pytest.mark.parametrize('protocol', ['http', 'grpc'])
@@ -312,7 +312,7 @@ def test_raise_exception_invalid_executor():
 
 
 def test_docker_compose_set_volume(tmpdir):
-    default_workspace = os.path.join(Path.home(), 'mock-workspace')
+    default_workspace = __cache_path__
 
     custom_workspace = '/my/worki'
     custom_volume = 'my/cool:custom/volume'

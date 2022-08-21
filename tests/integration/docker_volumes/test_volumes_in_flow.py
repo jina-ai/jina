@@ -26,17 +26,16 @@ def filewriter_exec_docker_image_built():
 
 @pytest.mark.parametrize(
     'source,destination,workspace',
-    [('test/dir', '/custom/app', '/custom/app'), (None, None, '/app')],
+    [('test/dir', '/custom/app', '/custom/app')],
 )
 def test_volumes_in_flow(
     tmpdir, source, destination, workspace, filewriter_exec_docker_image_built
 ):
     if source:  # test manually set volume and workspace
         source = os.path.join(tmpdir, source)
+        volumes = [str(source) + ':' + destination]
     else:  # test auto volume and workspace
         source = __cache_path__
-
-    volumes = [str(source) + ':' + destination]
 
     f = Flow().add(
         uses='docker://filewriter-exec', volumes=volumes, workspace=workspace
