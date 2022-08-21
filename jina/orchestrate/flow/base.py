@@ -58,6 +58,7 @@ from jina.helper import (
     get_internal_ip,
     get_public_ip,
     is_port_free,
+    send_telemetry_event,
     typename,
 )
 from jina.jaml import JAMLCompatible
@@ -1470,10 +1471,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
 
         self._build_level = FlowBuildLevel.RUNNING
 
-        if not self.args.optout_telemetry and 'JINA_OPTOUT_TELEMETRY' not in os.environ:
-            from jina.serve.helper import _telemetry_run_in_thread
-
-            _telemetry_run_in_thread(event='flow.start')
+        send_telemetry_event(event='start', obj=self)
 
         return self
 

@@ -333,7 +333,6 @@ The error-free output below signifies a correctly running Gateway:
     "JINA_AUTH_TOKEN": "(unset)",
     "JINA_DEFAULT_HOST": "(unset)",
     "JINA_DEFAULT_TIMEOUT_CTRL": "(unset)",
-    "JINA_DEFAULT_WORKSPACE_BASE": "#####",
     "JINA_DEPLOYMENT_NAME": "(unset)",
     "JINA_DISABLE_HEALTHCHECK_LOGS": "(unset)",
     "JINA_DISABLE_UVLOOP": "(unset)",
@@ -368,7 +367,7 @@ curl http://localhost:12345/status
 ```
 
 ```json
-{"jina":{"jina":"######","docarray":"######","jina-proto":"######","jina-vcs-tag":"(unset)","protobuf":"######","proto-backend":"######","grpcio":"######","pyyaml":"######","python":"######","platform":"######","platform-release":"######","platform-version":"######","architecture":"######","processor":"######","uid":"######","session-id":"######","uptime":"######","ci-vendor":"(unset)"},"envs":{"JINA_AUTH_TOKEN":"(unset)","JINA_DEFAULT_HOST":"(unset)","JINA_DEFAULT_TIMEOUT_CTRL":"(unset)","JINA_DEFAULT_WORKSPACE_BASE":"######","JINA_DEPLOYMENT_NAME":"(unset)","JINA_DISABLE_UVLOOP":"(unset)","JINA_EARLY_STOP":"(unset)","JINA_FULL_CLI":"(unset)","JINA_GATEWAY_IMAGE":"(unset)","JINA_GRPC_RECV_BYTES":"(unset)","JINA_GRPC_SEND_BYTES":"(unset)","JINA_HUBBLE_REGISTRY":"(unset)","JINA_HUB_NO_IMAGE_REBUILD":"(unset)","JINA_LOG_CONFIG":"(unset)","JINA_LOG_LEVEL":"(unset)","JINA_LOG_NO_COLOR":"(unset)","JINA_MP_START_METHOD":"(unset)","JINA_RANDOM_PORT_MAX":"(unset)","JINA_RANDOM_PORT_MIN":"(unset)","JINA_DISABLE_HEALTHCHECK_LOGS":"(unset)","JINA_LOCKS_ROOT":"(unset)"}}
+{"jina":{"jina":"######","docarray":"######","jina-proto":"######","jina-vcs-tag":"(unset)","protobuf":"######","proto-backend":"######","grpcio":"######","pyyaml":"######","python":"######","platform":"######","platform-release":"######","platform-version":"######","architecture":"######","processor":"######","uid":"######","session-id":"######","uptime":"######","ci-vendor":"(unset)"},"envs":{"JINA_AUTH_TOKEN":"(unset)","JINA_DEFAULT_HOST":"(unset)","JINA_DEFAULT_TIMEOUT_CTRL":"(unset)","JINA_DEPLOYMENT_NAME":"(unset)","JINA_DISABLE_UVLOOP":"(unset)","JINA_EARLY_STOP":"(unset)","JINA_FULL_CLI":"(unset)","JINA_GATEWAY_IMAGE":"(unset)","JINA_GRPC_RECV_BYTES":"(unset)","JINA_GRPC_SEND_BYTES":"(unset)","JINA_HUBBLE_REGISTRY":"(unset)","JINA_HUB_NO_IMAGE_REBUILD":"(unset)","JINA_LOG_CONFIG":"(unset)","JINA_LOG_LEVEL":"(unset)","JINA_LOG_NO_COLOR":"(unset)","JINA_MP_START_METHOD":"(unset)","JINA_RANDOM_PORT_MAX":"(unset)","JINA_RANDOM_PORT_MIN":"(unset)","JINA_DISABLE_HEALTHCHECK_LOGS":"(unset)","JINA_LOCKS_ROOT":"(unset)"}}
 ```
 
 (server-compress)=

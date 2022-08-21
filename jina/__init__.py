@@ -85,10 +85,8 @@ __uptime__ = _datetime.datetime.now().isoformat()
 # 2. grep -rohEI --exclude-dir=jina/hub --exclude-dir=tests --include \*.py "\'JINA_.*?\'" jina  | sort -u | sed "s/$/,/g"
 # 3. copy all lines EXCEPT the first (which is the grep command in the last line)
 __jina_env__ = (
-    'JINA_AUTH_TOKEN',
     'JINA_DEFAULT_HOST',
     'JINA_DEFAULT_TIMEOUT_CTRL',
-    'JINA_DEFAULT_WORKSPACE_BASE',
     'JINA_DEPLOYMENT_NAME',
     'JINA_DISABLE_UVLOOP',
     'JINA_EARLY_STOP',
@@ -96,17 +94,14 @@ __jina_env__ = (
     'JINA_GATEWAY_IMAGE',
     'JINA_GRPC_RECV_BYTES',
     'JINA_GRPC_SEND_BYTES',
-    'JINA_HUBBLE_REGISTRY',
     'JINA_HUB_NO_IMAGE_REBUILD',
     'JINA_LOG_CONFIG',
     'JINA_LOG_LEVEL',
     'JINA_LOG_NO_COLOR',
     'JINA_MP_START_METHOD',
+    'JINA_OPTOUT_TELEMETRY',
     'JINA_RANDOM_PORT_MAX',
     'JINA_RANDOM_PORT_MIN',
-    'JINA_DISABLE_HEALTHCHECK_LOGS',
-    'JINA_LOCKS_ROOT',
-    'JINA_OPTOUT_TELEMETRY',
 )
 
 __default_host__ = _os.environ.get(

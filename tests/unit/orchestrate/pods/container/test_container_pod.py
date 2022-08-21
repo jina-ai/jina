@@ -97,29 +97,25 @@ def test_container_pod_volume_setting(
 
     default_workspace = os.path.join(Path.home(), 'mock-workspace')
 
-    with mock.patch.dict(
-        os.environ,
-        {'JINA_DEFAULT_WORKSPACE_BASE': str(os.path.join(tmpdir, default_workspace))},
-    ):
-        with ContainerPod(set_pod_parser().parse_args(pod_args)) as pod:
-            container = pod._container
-            source = container.attrs['Mounts'][0]['Source']
-            destination = container.attrs['Mounts'][0]['Destination']
-            time.sleep(
-                2
-            )  # to avoid desync between the start and close process which could lead to container never get terminated
+    with ContainerPod(set_pod_parser().parse_args(pod_args)) as pod:
+        container = pod._container
+        source = container.attrs['Mounts'][0]['Source']
+        destination = container.attrs['Mounts'][0]['Destination']
+        time.sleep(
+            2
+        )  # to avoid desync between the start and close process which could lead to container never get terminated
 
-        expected_source = (
-            os.path.abspath(expected_source)
-            if expected_source
-            else os.path.abspath(default_workspace)
-        )
-        expected_destination = expected_destination if expected_destination else '/app'
+    expected_source = (
+        os.path.abspath(expected_source)
+        if expected_source
+        else os.path.abspath(default_workspace)
+    )
+    expected_destination = expected_destination if expected_destination else '/app'
 
-        assert source.startswith(
-            expected_source
-        )  # there is a random workspace id at the end!
-        assert destination == expected_destination
+    assert source.startswith(
+        expected_source
+    )  # there is a random workspace id at the end!
+    assert destination == expected_destination
 
 
 @pytest.fixture(scope='module')

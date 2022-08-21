@@ -1,4 +1,5 @@
 import asyncio
+import base64
 import functools
 import inspect
 import json
@@ -9,12 +10,14 @@ import re
 import sys
 import threading
 import time
+import urllib
 import uuid
 import warnings
 from argparse import ArgumentParser, Namespace
 from collections.abc import MutableMapping
 from datetime import datetime
 from itertools import islice
+from pprint import pprint
 from socket import AF_INET, SOCK_STREAM, socket
 from types import SimpleNamespace
 from typing import (
@@ -929,6 +932,8 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     import yaml
     from google.protobuf.internal import api_implementation
     from grpc import _grpcio_metadata
+    from hubble import __version__ as __hubble_version__
+    from jcloud import __version__ as __jcloud_version__
 
     from jina import (
         __docarray_version__,
@@ -945,6 +950,8 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
         info = {
             'jina': __version__,
             'docarray': __docarray_version__,
+            'jcloud': __jcloud_version__,
+            'jina-hubble-sdk': __hubble_version__,
             'jina-proto': __proto_version__,
             'protobuf': google.protobuf.__version__,
             'proto-backend': api_implementation._default_implementation_type,
@@ -1645,3 +1652,36 @@ def _parse_ports(port: str) -> Union[int, List]:
         else:
             raise e
     return port
+
+
+def send_telemetry_event(event: str, obj: Any) -> None:
+    """Sends in a thread a request with telemetry for a given event
+    :param event: Event leading to the telemetry entry
+    :param obj: Object to be tracked
+    """
+
+    if 'JINA_OPTOUT_TELEMETRY' in os.environ:
+        return
+
+    def _telemetry():
+        url = 'https://telemetry.jina.ai/'
+        try:
+            from jina.helper import get_full_version
+
+            metas, _ = get_full_version()
+            data = base64.urlsafe_b64encode(
+                json.dumps(
+                    {**metas, 'event': f'{obj.__class__.__name__}.{event}'}
+                ).encode('utf-8')
+            )
+
+            pprint({**metas, 'event': f'{obj.__class__.__name__}.{event}'})
+            req = urllib.request.Request(
+                url, data=data, headers={'User-Agent': 'Mozilla/5.0'}
+            )
+            urllib.request.urlopen(req)
+
+        except:
+            pass
+
+    threading.Thread(target=_telemetry, daemon=True).start()

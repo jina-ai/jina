@@ -1,6 +1,5 @@
 import warnings
-from functools import partialmethod, wraps
-from inspect import signature
+from functools import partialmethod
 from typing import TYPE_CHECKING, AsyncGenerator, Dict, List, Optional, Union
 
 from jina.helper import get_or_reuse_loop, run_async
