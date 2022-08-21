@@ -11,7 +11,7 @@ import pytest
 import yaml
 from docarray import Document, DocumentArray
 
-from jina import Client, Executor, Flow, requests
+from jina import Client, Executor, Flow, __cache_path__, requests
 from jina.clients.request import request_generator
 from jina.parsers import set_pod_parser
 from jina.serve.executors.metas import get_default_metas
@@ -379,19 +379,13 @@ def test_set_workspace(tmpdir):
 
 
 def test_default_workspace(tmpdir):
-    with mock.patch.dict(
-        os.environ,
-        {'JINA_DEFAULT_WORKSPACE_BASE': str(os.path.join(tmpdir, 'mock-workspace'))},
-    ):
-        with Flow().add(uses=WorkspaceExec) as f:
-            resp = f.post(on='/foo', inputs=Document())
-        assert resp[0].text
+    with Flow().add(uses=WorkspaceExec) as f:
+        resp = f.post(on='/foo', inputs=Document())
+    assert resp[0].text
 
-        result_workspace = resp[0].text
+    result_workspace = resp[0].text
 
-        assert result_workspace == os.path.join(
-            os.environ['JINA_DEFAULT_WORKSPACE_BASE'], 'WorkspaceExec', '0'
-        )
+    assert result_workspace == os.path.join(__cache_path__, 'WorkspaceExec', '0')
 
 
 @pytest.mark.parametrize(

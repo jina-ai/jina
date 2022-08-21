@@ -11,7 +11,7 @@ def generate_default_volume_and_workspace(workspace_id=''):
     :return: List of volumes and a workspace string
     """
 
-    default_workspace = os.environ.get('JINA_DEFAULT_WORKSPACE_BASE')
+    default_workspace = __cache_path__
     container_addr = '/app'
     if default_workspace:  # use default workspace provided in env var
         host_addr = default_workspace

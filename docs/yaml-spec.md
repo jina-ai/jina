@@ -1,4 +1,4 @@
-# {octicon}`file-code` YAML specification
+# {octicon}`file-code` YAML Specification
 
 YAML is widely used in Jina to define an Executor, Flow. This page helps you quickly navigate different YAML specifications.
 
