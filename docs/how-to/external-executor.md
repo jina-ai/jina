@@ -118,7 +118,7 @@ with f:
     f.index(inputs=docs, on_done=print_embedding)
 ```
 
-```console
+```shell
 "Embed me please!" has been embedded to shape (512,)
 ```
 
@@ -177,7 +177,7 @@ with f1:
     )
 ```
 
-```console
+```shell
 Received: "Greetings from Flow1"
 Received: "Greetings from Flow2"
 ```

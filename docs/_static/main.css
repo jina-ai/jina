@@ -134,8 +134,17 @@ body[data-theme="auto"] .only-dark-line {
     display: none !important;
 }
 
-.color-gradient-card {
+.color-gradient-card-1 {
     background: linear-gradient(270deg, #22c1c3, #fdbb2d);
+    background-size: 200% 200%;
+
+    -webkit-animation: AnimationName 30s ease infinite;
+    -moz-animation: AnimationName 30s ease infinite;
+    animation: AnimationName 30s ease infinite;
+}
+
+.color-gradient-card-2 {
+    background: linear-gradient(270deg, #7060d9, #ff83b6);
     background-size: 200% 200%;
 
     -webkit-animation: AnimationName 30s ease infinite;

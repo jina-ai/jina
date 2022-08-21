@@ -36,7 +36,7 @@ from jina import Client, DocumentArray, Document
 print(Client(port=12345).post(inputs=DocumentArray.empty(1), on='/foo').texts)
 ```
 
-```console
+```shell
 ['executed MyExec']
 ```
 

@@ -111,7 +111,7 @@ class ImageIndexer(Executor):
 ```
 ````
 
-```console
+```shell
 [{'embedded_by': 'textIndexer'}, {'embedded_by': 'textIndexer'}]
 [[0.37511057 0.14902827 0.31666838]
  [0.18466062 0.17823904 0.20046065]]
@@ -173,7 +173,7 @@ print(filtered_text_data.texts)  # print text
 print('---')
 print(filtered_image_data.tensors)
 ```
-```console
+```shell
 ['hey there!', 'hey there!']
 ---
 [[[0.50535537 0.50538128]
@@ -269,7 +269,7 @@ for embedded_by, text, image in list(zip(embedded_by, texts, tensors)):
     print(f'Embedded by: {embedded_by}; Text: {text}, Image: {image}')
 ```
 
-```console
+```shell
 Embedded by: textIndexer; Text: hey there!, Image: None
 Embedded by: textIndexer; Text: hey there!, Image: None
 Embedded by: imageIndexer; Text: , Image: [[0.60863086 0.39863197], [0.78668579 0.66100752]]
