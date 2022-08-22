@@ -11,7 +11,7 @@ Jina Flows expose metrics in the [Prometheus format](https://prometheus.io/docs/
 To visualize your metrics through a dashboard, we recommend [Grafana](https://grafana.com/).
 
 ```{hint}
-Depending on your deployment type (local, kubernetes or jcloud), you need to ensure a running Prometheus/Grafana stack.
+Depending on your deployment type (local, Kubernetes or JCloud), you need to ensure a running Prometheus/Grafana stack.
 Check the {ref}`Flow and monitoring stack deployment section <deploy-flow-monitoring>` to find out how to provision 
 your monitoring stack.
 ```
