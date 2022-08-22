@@ -35,11 +35,15 @@ def failing_executor():
             super(FailingExecutor, self).__init__(*args, **kwargs)
             self.cnt = 0
 
-        @requests(on='/')
-        def foo(self, docs, **kwargs):
+        @requests(on='/fail')
+        def fail(self, docs, **kwargs):
             self.cnt += 1
             if self.cnt % 2 == 1:
                 raise Exception()
+
+        @requests(on='/timeout')
+        def timeout(self, docs, **kwargs):
+            time.sleep(3)
 
     return FailingExecutor
 
@@ -472,7 +476,7 @@ def test_failed_successful_request_count(port_generator, failing_executor):
         assert resp.status_code == 200
 
         f.post(
-            '/',
+            '/fail',
             inputs=DocumentArray.empty(size=10),
             request_size=1,
             continue_on_error=True,
@@ -499,5 +503,36 @@ def test_failed_successful_request_count(port_generator, failing_executor):
 
         assert (
             f'jina_number_of_failed_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 5.0'
+            in str(resp.content)
+        )
+
+
+def test_timeout_send(port_generator, failing_executor):
+    port0 = port_generator()
+    port1 = port_generator()
+
+    with Flow(monitoring=True, port_monitoring=port0, timeout_send=1).add(
+        uses=failing_executor, port_monitoring=port1
+    ) as f:
+        resp = req.get(f'http://localhost:{port1}/')
+        assert resp.status_code == 200
+
+        # try sending Document, this should timeout
+        try:
+            f.post('/timeout', inputs=DocumentArray.empty(size=1))
+        # ignore timeout
+        except ConnectionError:
+            pass
+
+        # test that timeout was detected in gateway
+        resp = req.get(f'http://localhost:{port0}/')
+
+        assert (
+            f'jina_number_of_successful_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 0.0'
+            in str(resp.content)
+        )
+
+        assert (
+            f'jina_number_of_failed_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 1.0'
             in str(resp.content)
         )
