@@ -168,8 +168,8 @@ ports by modifying this [file](https://github.com/jina-ai/example-grafana-promet
 ```
 
 ### Deploying on Jcloud
-In case your Flow is deployed on Jcloud, there is no need to provision a monitoring stack. Prometheus and Grafana are 
-handled by Jcloud and you can find a dashboard URL using the command `jc status <flow_id>`
+In case your Flow is deployed on JCloud, there is no need to provision a monitoring stack yourself. Prometheus and Grafana are 
+handled by JCloud and you can find a dashboard URL using the command `jc status <flow_id>`
 
 ## Using Grafana to visualize metrics
 
