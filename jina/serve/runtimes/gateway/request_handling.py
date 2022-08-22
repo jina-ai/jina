@@ -8,6 +8,7 @@ from docarray import DocumentArray
 
 from jina.excepts import InternalNetworkError
 from jina.importer import ImportExtensions
+from jina.proto import jina_pb2
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.runtimes.helper import _is_param_for_specific_executor
@@ -43,7 +44,7 @@ class RequestHandler:
                 required=True,
                 help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
-                from prometheus_client import Counter, Gauge, Summary
+                from prometheus_client import Gauge, Summary
 
             self._receiving_request_metrics = Summary(
                 'receiving_request_seconds',
@@ -61,7 +62,7 @@ class RequestHandler:
                 labelnames=('runtime_name',),
             ).labels(runtime_name)
 
-            self._failed_requests_metrics = Counter(
+            self._failed_requests_metrics = Gauge(
                 'number_of_failed_requests',
                 'Number of failed requests',
                 registry=metrics_registry,
@@ -69,7 +70,7 @@ class RequestHandler:
                 labelnames=('runtime_name',),
             ).labels(runtime_name)
 
-            self._successful_requests_metrics = Counter(
+            self._successful_requests_metrics = Gauge(
                 'number_of_successful_requests',
                 'Number of successful requests',
                 registry=metrics_registry,
@@ -98,9 +99,14 @@ class RequestHandler:
 
         if self._pending_requests_metrics:
             self._pending_requests_metrics.dec()
-        if e and self._failed_requests_metrics:
+        if (
+            e or result.status.code == jina_pb2.StatusProto.ERROR
+        ) and self._failed_requests_metrics:
             self._failed_requests_metrics.inc()
-        if not e and self._successful_requests_metrics:
+        if (
+            not (e or result.status.code == jina_pb2.StatusProto.ERROR)
+            and self._successful_requests_metrics
+        ):
             self._successful_requests_metrics.inc()
 
     def handle_request(
