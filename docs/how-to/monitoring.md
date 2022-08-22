@@ -167,6 +167,10 @@ in contrast with deploying on Kubernetes, you need to tell Prometheus which port
 ports by modifying this [file](https://github.com/jina-ai/example-grafana-prometheus/blob/8baf519f7258da68cfe224775fc90537a749c305/prometheus-grafana-local/prometheus/prometheus.yml#L64)
 ```
 
+### Deploying on Jcloud
+In case your Flow is deployed on Jcloud, there is no need to provision a monitoring stack. Prometheus and Grafana are 
+handled by Jcloud and you can find a dashboard URL using the command `jc status <flow_id>`
+
 ## Using Grafana to visualize metrics
 
 Once you can access the Grafana homepage then go to `Browse` then `import` and copy and paste the [JSON file](https://github.com/jina-ai/example-grafana-prometheus/blob/main/grafana-dashboards/flow.json) 
