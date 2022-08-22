@@ -166,7 +166,7 @@ recipe_object = {
         'license': 'Apache-2.0',
         'license_family': 'Apache',
         'license_file': 'LICENSE',
-        'summary': 'Build cross-modal and multi-modal applications on the cloud',
+        'summary': 'Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native',
         'doc_url': 'https://docs.jina.ai',
     },
     'extra': {

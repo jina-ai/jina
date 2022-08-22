@@ -9,8 +9,7 @@ We provide three ways of using Hub {class}`~jina.Executor`s in your project. Eac
 You can use a Hub Executor as-is via `Executor.from_hub()`:
 
 ```python
-from docarray import Document, DocumentArray
-from jina import Executor
+from jina import Executor, Document, DocumentArray
 
 exec = Executor.from_hub('jinahub://DummyHubExecutor')
 da = DocumentArray([Document()])
@@ -62,8 +61,7 @@ For example: [PostgreSQLStorage](https://hub.jina.ai/executor/d45rawx6)
 will connect PostgreSQL server which was started locally. Then you must use it with:
 
 ```python
-from docarray import Document
-from jina import Flow
+from jina import Flow, Document
 
 f = Flow().add(
     uses='jinahub+docker://PostgreSQLStorage',
@@ -74,6 +72,10 @@ with f:
     print(f'{resp}')
 ```
 ````
+
+
+When `jinahub+docker://` executors are not loading properly or are having issues during initialization, please ensure sufficient Docker resources are allocated.
+
 
 ### Mount local volumes
 

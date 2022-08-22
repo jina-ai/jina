@@ -1,6 +1,13 @@
 (jcloud)=
 # JCloud
 
+
+```{toctree}
+:hidden:
+
+yaml-spec
+```
+
 ```{figure} https://docs.jina.ai/_images/jcloud-banner.png
 :width: 0 %
 :scale: 0 %
@@ -19,16 +26,26 @@ At this point, Jina Cloud hosts all your Jina projects and offers computational/
 ```
 
 ## Basic
-### Install
+
+Jina Cloud provides a CLI and you can use it simply via `jina cloud` from the terminal, or `jcloud` or simply `jc` for minimalists. 
+
+
+````{hint}
+You can also only install Jina Cloud CLI without install `jina` package.
 
 ```bash
 pip install jcloud
 jc -h
 ```
 
-```{hint}
+If you installed it individually, all of its commands come under the `jc` or `jcloud` executable.
+
+
 In case `jc` is already occupied by another tool, please use `jcloud` instead. If your pip install doesn't register bash commands for you, you can run `python -m jcloud -h`.
-```
+````
+
+For the rest of this section, we will be using `jc` or `jcloud`. But again they are interchangable to `jina cloud`.
+
 
 ### Login
 
@@ -68,14 +85,23 @@ To deploy,
 jc deploy flow.yml
 ```
 
+````{tip}
+Testing locally before deploying is recommended. You can use 
+
+```bash
+jina flow --uses flow.yml
+```
+````
+
+
 #### A project folder
 
 Just like a regular Python project, you can have sub-folders of Executor implementations; and a `flow.yml` on the top-level to connect all Executors together.
 
-You can create an example local project using `jc new`. The default structure looks like:
+You can create an example local project using `jc new hello`. The default structure looks like:
 
 ```
-.
+hello/
 ├── .env
 ├── executor1
 │   ├── config.yml
@@ -86,6 +112,7 @@ You can create an example local project using `jc new`. The default structure lo
 
 where,
 
+- `hello/` is your top-level project folder.
 - `executor1` directory has all Executor related code/config. You can read the best practices for [file structures](https://docs.jina.ai/fundamentals/executor/executor-files/). Multiple such Executor directories can be created.
 - `flow.yml` Your Flow YAML.
 - `.env` All environment variables used during deployment.
@@ -93,7 +120,7 @@ where,
 To deploy,
 
 ```bash
-jc deploy ./hello
+jc deploy hello
 ```
 
 
@@ -214,11 +241,55 @@ jc list --status ALL
 :width: 70%
 ```
 
-```{toctree}
-:hidden:
 
-resources
-autoscale
-advanced
-faq
+
+### Pass environment variables
+
+#### A single YAML
+
+```bash
+jc deploy flow.yml --env-file flow.env
 ```
+
+#### A project folder
+
+- You can include your environment variables in the `.env` file in the local project and JCloud will take care of managing them.
+- You can optionally pass a `custom.env`.
+  ```bash
+  jc deploy ./hello --env-file ./hello/custom.env
+  ```
+  
+## Troubleshooting
+
+If your deployment failed, please enable verbose logging and redeploy it. You can add `--loglevel DEBUG` _before_ each CLI subcommand, e.g.
+
+```bash
+jc --loglevel DEBUG deploy flow.yml
+```
+
+Alternatively, you can configure it by using environment variable `JCLOUD_LOGLEVEL`, e.g.
+
+```bash
+JCLOUD_LOGLEVEL=DEBUG jc deploy flow.yml
+```
+
+If you don't see any obvious errors, please raise an issue in [JCloud](https://github.com/jina-ai/jcloud/issues/new/choose)
+
+## FAQ
+
+- **Is everything free?**
+
+  Yes! We just need your feedback - use `jc survey` to help us understand your needs.
+
+- **How powerful is JCloud?**
+
+  JCloud scales according to your need. You can demand all the resources (GPU / RAM / CPU / Storage / instance-capacity) your Flows & Executors need. If there's anything particular you'd be looking for, you can contact us [on Slack](https://slack.jina.ai) or let us know via `jc survey`.
+
+- **What restrictions are there on JCloud?**
+
+  - Deployments are only supported in `us-east` region.
+  - Each Executor is allowed a maximum of 4 GPUs, 16G RAM, 16 CPU cores & 10GB of block storage.
+
+- **How long do you persist my service?**
+
+  Flows are terminated if they are not serving requests for the last 24hrs. But this is configurable by passing {ref}`retention-days <retention-days>` argument.

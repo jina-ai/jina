@@ -5,8 +5,8 @@ from tempfile import NamedTemporaryFile
 import aiohttp
 import pytest
 import requests as req
-
 from docarray import Document, DocumentArray
+
 from jina import Client, Executor, Flow, requests
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
@@ -260,10 +260,10 @@ def test_app_models_acceptance(docs_input):
 def health_check_env():
     _prev_loglevel = os.environ.get('JINA_LOG_LEVEL', None)
     os.environ['JINA_LOG_LEVEL'] = 'INFO'
-    os.environ['JINA_DISABLE_HEALTHCHECK_LOGS'] = '1'
+    os.environ['CICD_JINA_DISABLE_HEALTHCHECK_LOGS'] = '1'
     yield
     os.environ['JINA_LOG_LEVEL'] = _prev_loglevel
-    os.environ.pop('JINA_DISABLE_HEALTHCHECK_LOGS')
+    os.environ.pop('CICD_JINA_DISABLE_HEALTHCHECK_LOGS')
 
 
 @pytest.fixture

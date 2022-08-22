@@ -135,21 +135,7 @@ This can be provided to the Executor via the {ref}`Python or YAML API <executor-
 
 `````{dropdown} Default workspace
 
-If the user hasn't provided a workspace, the Executor uses a default workspace, which is defined in the `JINA_DEFAULT_WORKSPACE_BASE`
-environment variable.
-
-````{admonition} Caution
-:class: caution
-After you install jina, the `JINA_DEFAULT_WORKSPACE_BASE` environment variable will be set in your `.bashrc`, `.zshrc`, or
-`.fish` file.
-
-To change the default Executor workspace on your system, you can change the value of this environment variable.
-However, if you directly edit the corresponding command in your `.bashrc` (or `.zshrc`/`.fish`) file, your changes will be reverted the next time
-you install jina on your system.
-
-Instead, you can add `export JINA_DEFAULT_WORKSPACE_BASE=$YOUR_WOKSPACE` after the `# JINA_CLI_END` comment.
-````
-
+If the user hasn't provided a workspace, the Executor uses a default workspace, which is defined in the `~/.cache/jina/`.
 `````
 
 (executor-requests)=

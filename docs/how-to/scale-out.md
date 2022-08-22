@@ -1,7 +1,5 @@
 (scale-out)=
-# Scale out your Executor
-
-## Overview
+# Scale out with replicas and shards
 
 A Jina {class}`~jina.Flow` orchestrates multiple {class}`~jina.Executor`s.
 By default, a Jina Executor runs with a single `replica` and `shard`.
@@ -12,7 +10,7 @@ To solve this, Jina Flow allows you to config the number of `replicas` and `shar
 `replica` is used to increase Executor throughput and availability.
 `shard` is used for data partitioning.
 
-In this document, we'll dive into these two concepts and see how you can make use of `replicas` and `shards` to scale out your Executor.
+In this chapter, we'll dive into these two concepts and see how you can make use of `replicas` and `shards` to scale out your Executor.
 
 ## Before you start
 <!-- Delete this section if your readers can go to the steps without requiring any prerequisite knowledge. -->
@@ -22,12 +20,6 @@ Before you begin, make sure you meet these prerequisites:
 * You have a good understanding of Jina [Executor](../fundamentals/executor/index.md)
 * Please install the following dependencies if you haven't:
 
-
-```shell
-pip install jina
-pip install sklearn==1.0.2
-pip install pqlite==0.2.3
-```
 
 ## Speed up a slow Executor: Replicas
 

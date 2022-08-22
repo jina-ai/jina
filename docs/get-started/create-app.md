@@ -1,48 +1,66 @@
-# Create Project
+# Create First Project
 
-Let’s write a small application with our new Jina development environment. To start, we'll use Jina CLI to make a new project for us. In your terminal of choice run:
+Let's build a toy application with Jina. To start, we use Jina CLI to make a new project for us:
 
 ```bash
 jina new hello-jina
 ```
 
-This will generate a new directory called `hello-jina` with the following files:
+This will create a new project folder called `hello-jina` with the following file structure:
 
 ```text
-hello-jina
-|- app.py
-|- executor1/
-        |- config.yml
-        |- executor.py
+hello-jina/
+    |- client.py
+    |- flow.yml
+    |- executor1/
+            |- config.yml
+            |- executor.py
 ```
 
-- `app.py` is the entrypoint of your Jina project. You can run it via `python app.py`. 
+- `flow.yml` is the configuration file for the Jina Flow.
 - `executor1/` is where we'll write our {class}`~jina.Executor` code.
 - `config.yml` is the config file for the {class}`~jina.Executor`. It’s where you keep metadata for your Executor, as well as dependencies.
+- `client.py` is the entrypoint of your Jina project. You can run it via `python app.py`.
 
 There may be some other files like `README.md`, `manifest.yml`  `requirements.txt` to provide extra metadata about that {class}`~jina.Executor`. More information {ref}`can be found here<create-executor>`.
 
-```bash
-cd hello-jina
-python app.py
+
+Now run it and observe the output of the server and client.
+
+
+````{tab} Run server
+```shell
+jina flow --uses flow.yml
 ```
 
-You should see this in your terminal:
+```shell
 
+──── 🎉 Flow is ready to serve! ────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓     Protocol                    GRPC  │
+│  🏠       Local           0.0.0.0:54321  │
+│  🔒     Private    192.168.200.56:54321  │
+│  🌍      Public    81.223.121.124:54321  │
+╰──────────────────────────────────────────╯
+```
+````
+
+````{tab} Run client
 ```bash
-           Flow@99300[I]:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:52971
-	🔒 Private network:	192.168.0.102:52971
-	🌐 Public address:	84.172.88.250:52971
+python client.py
+```
+
+```shell
 ['hello, world!', 'goodbye, world!']
 ```
+````
 
-## Adding dependencies
 
-You can use any third-party Python library in {class}`~jina.Executor`. Let's create `executor1/requirements.txt` and add `pytorch` to it.
+## Add logics
 
-Then in `executor.py`, let's add another endpoint `/get-tensor` as follows:
+You can use any Python library in {class}`~jina.Executor`. For example, let's add `pytorch` to `executor1/requirements.txt` and crunch some numbers. 
+
+In `executor.py`, let's add another endpoint `/get-tensor` as follows:
 
 ```python
 import numpy as np
@@ -52,42 +70,34 @@ from jina import Executor, DocumentArray, requests
 
 
 class MyExecutor(Executor):
-    @requests(on='/get-tensor')
+    @requests(on='/crunch-numbers')
     def bar(self, docs: DocumentArray, **kwargs):
         for doc in docs:
             doc.tensor = torch.tensor(np.random.random([10, 2]))
 ```
 
-## A dummy Jina application
+Kill the last server by `ctrl-C` and restart the server by `jina flow --uses flow.yml`.
 
+## Call `/crunch-number` endpoint
 
-Now let's write a dummy application with our new dependency. In our `app.py`, add the following code:
+Modify `client.py` to call `/crunch-numbers` endpoint:
 
 ```python
-from jina import Flow, Document
-
-f = Flow().add(uses='executor1/config.yml')
+from jina import Client, DocumentArray
 
 if __name__ == '__main__':
-    with f:
-        da = f.post('/get-tensor', [Document(), Document()])
-        print(da.tensors)
+    c = Client(host='grpc://0.0.0.0:54321')
+    da = c.post('/crunch-numbers', DocumentArray.empty(2))
+    print(da.tensors)
 ```
 
-Once we save that, we can run our application by typing:
+Once we save that, we can run our new client:
 
 ```bash
-python app.py
+python client.py
 ```
 
-Assuming everything went well, you should see your application print this to the screen:
-
-```bash
-       Flow@301[I]:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:59667
-	🔒 Private network:	192.168.0.102:59667
-	🌐 Public address:	84.172.88.250:59667
+```text
 tensor([[[0.9594, 0.9373],
          [0.4729, 0.2012],
          [0.7907, 0.3546],
@@ -108,5 +118,5 @@ tensor([[[0.9594, 0.9373],
          [0.3626, 0.0963],
          [0.7562, 0.2183],
          [0.9239, 0.3294],
-         [0.2457, 0.9189]]], dtype=torch.float64
+         [0.2457, 0.9189]]], dtype=torch.float64)
 ```

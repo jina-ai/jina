@@ -7,7 +7,7 @@ from abc import ABC
 from typing import TYPE_CHECKING, AsyncIterator, Callable, Iterator, Optional, Union
 
 from jina.excepts import BadClientInput
-from jina.helper import T, parse_client, typename
+from jina.helper import T, parse_client, send_telemetry_event, typename
 from jina.logging.logger import JinaLogger
 from jina.logging.predefined import default_logger
 
@@ -46,6 +46,7 @@ class BaseClient(ABC):
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
         self._inputs = None
+        send_telemetry_event(event='start', obj=self)
 
     @staticmethod
     def check_input(inputs: Optional['InputType'] = None, **kwargs) -> None:

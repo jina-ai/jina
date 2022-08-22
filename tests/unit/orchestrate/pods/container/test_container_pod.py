@@ -1,10 +1,9 @@
 import os
 import time
-from pathlib import Path
-from unittest import mock
 
 import pytest
 
+from jina import __cache_path__
 from jina.excepts import RuntimeFailToStart
 from jina.orchestrate.pods.container import ContainerPod
 from jina.parsers import set_gateway_parser, set_pod_parser
@@ -95,31 +94,27 @@ def test_container_pod_volume_setting(
         volume_arg = str(expected_source) + ':' + expected_destination
         pod_args.append(volume_arg)
 
-    default_workspace = os.path.join(Path.home(), 'mock-workspace')
+    default_workspace = __cache_path__
 
-    with mock.patch.dict(
-        os.environ,
-        {'JINA_DEFAULT_WORKSPACE_BASE': str(os.path.join(tmpdir, default_workspace))},
-    ):
-        with ContainerPod(set_pod_parser().parse_args(pod_args)) as pod:
-            container = pod._container
-            source = container.attrs['Mounts'][0]['Source']
-            destination = container.attrs['Mounts'][0]['Destination']
-            time.sleep(
-                2
-            )  # to avoid desync between the start and close process which could lead to container never get terminated
+    with ContainerPod(set_pod_parser().parse_args(pod_args)) as pod:
+        container = pod._container
+        source = container.attrs['Mounts'][0]['Source']
+        destination = container.attrs['Mounts'][0]['Destination']
+        time.sleep(
+            2
+        )  # to avoid desync between the start and close process which could lead to container never get terminated
 
-        expected_source = (
-            os.path.abspath(expected_source)
-            if expected_source
-            else os.path.abspath(default_workspace)
-        )
-        expected_destination = expected_destination if expected_destination else '/app'
+    expected_source = (
+        os.path.abspath(expected_source)
+        if expected_source
+        else os.path.abspath(default_workspace)
+    )
+    expected_destination = expected_destination if expected_destination else '/app'
 
-        assert source.startswith(
-            expected_source
-        )  # there is a random workspace id at the end!
-        assert destination == expected_destination
+    assert source.startswith(
+        expected_source
+    )  # there is a random workspace id at the end!
+    assert destination == expected_destination
 
 
 @pytest.fixture(scope='module')
