@@ -201,7 +201,7 @@ jc status 15937a10bd
 ### Monitoring
 To enable monitoring with the Flow, you can set `monitoring: true` in the Flow yaml and you'd be given access to a [Grafana](https://grafana.com/) dashboard.
 
-To access the dashboard, get `ref the status of the Flow <jcloud-flow-status>` first, at the bottom of the pane you should see the `dashboards` link. Visit the URL and you will find some basic metrics such as 'Number of Request Gateway Received' and 'Time elapsed between receiving a request and sending back the response':
+To access the dashboard, get `{ref} the status of the Flow <jcloud-flow-status>` first, at the bottom of the pane you should see the `dashboards` link. Visit the URL and you will find some basic metrics such as 'Number of Request Gateway Received' and 'Time elapsed between receiving a request and sending back the response':
 
 ```{figure} monitoring.png
 :width: 70%
