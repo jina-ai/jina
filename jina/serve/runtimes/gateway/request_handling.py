@@ -215,7 +215,7 @@ class RequestHandler:
                     partial_responses = await asyncio.gather(*tasks)
                 except Exception as e:
                     # update here failed request
-                    self._update_end_request_metrics(request, e=e)
+                    self._update_end_request_metrics(request, exc=e)
                     raise
                 partial_responses, metadatas = zip(*partial_responses)
                 filtered_partial_responses = list(
