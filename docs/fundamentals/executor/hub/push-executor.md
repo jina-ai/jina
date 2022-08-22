@@ -120,20 +120,19 @@ There are limitations if you push Executors via `--build-env` and pull/use it as
 - When you use `.add(uses='jinahub://YOUR_EXECUTOR')` in Flow, you must set the corresponding environment variable also. 
 For example:
 
-  ```python
-  from docarray import Document
-  from jina import Flow, Executor, requests
-  import os
-  
-  os.environ["YOUR_TOKEN"] = 'foo'
-  f = Flow().add(uses='jinahub://YOUR_EXECUTOR')
-  
-  with f:
-  f.post(on='/', inputs=Document(), on_done=print)
-  ```
+    ```python
+    from jina import Flow, Executor, requests, Document
+    import os
+
+    os.environ["YOUR_TOKEN"] = 'foo'
+    f = Flow().add(uses='jinahub://YOUR_EXECUTOR')
+
+    with f:
+        f.post(on='/', inputs=Document(), on_done=print)
+    ```
 ````
 
-For multiple enviroment variables, we can pass it in this way:
+For multiple environment variables, we can pass it in this way:
 
 ```bash
 jina hub push --build-env FIRST=foo --build-env SECOND=bar

@@ -145,7 +145,7 @@ setup(
     packages=find_packages(),
     version=__version__,
     include_package_data=True,
-    description='Build cross-modal and multi-modal applications on the cloud',
+    description='Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native',
     author='Jina AI',
     author_email='hello@jina.ai',
     license='Apache 2.0',

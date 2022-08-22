@@ -220,3 +220,13 @@ def auth(args: 'Namespace'):
     from hubble import api
 
     getattr(api, args.auth_cli.replace('-', '_'))(args)
+
+
+def cloud(args: 'Namespace'):
+    """
+    Use jcloud (Jina Cloud) commands
+    :param args: arguments coming from the CLI.
+    """
+    from jcloud import api
+
+    getattr(api, args.jc_cli.replace('-', '_'))(args)

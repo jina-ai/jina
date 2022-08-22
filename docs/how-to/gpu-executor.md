@@ -1,5 +1,5 @@
 (gpu-executor)=
-# Run Executors on GPU
+# Build a GPU Executor
 
 This document will show you how to use an {class}`~jina.Executor` on a GPU, both locally and in a
 Docker container. You will also learn how to use GPU with pre-built Hub executors.
@@ -67,7 +67,7 @@ print(f'Document embedding: {docs.embeddings}')
 print(docs.texts)
 ```
 
-```console
+```shell
            Flow@80[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:49618
@@ -94,7 +94,7 @@ print(f'Document embedding: {docs.embeddings}')
 print(docs.texts)
 ```
 
-```console
+```shell
            Flow@80[I]:🎉 Flow is ready to use!
 	🔗 Protocol: 		GRPC
 	🏠 Local access:	0.0.0.0:56276
@@ -336,7 +336,7 @@ And compare the results
 
 ````{tab} CPU 
 
-```console
+```shell
       executor0@26554[L]:ready and listening
         gateway@26554[L]:ready and listening
            Flow@26554[I]:🎉 Flow is ready to use!
@@ -351,7 +351,7 @@ Working... ━━━━━━━━━━━━━━━━━━━━━━━
 
 ````{tab} GPU 
 
-```console
+```shell
       executor0@21032[L]:ready and listening
         gateway@21032[L]:ready and listening
            Flow@21032[I]:🎉 Flow is ready to use!

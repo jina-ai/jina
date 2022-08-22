@@ -27,29 +27,37 @@ MyExecutor/
 └── executor.py
 ```
 
-- `manifest.yml` should contain the Executor's annotations for getting better exposure on Jina Hub.
+- `manifest.yml` should contain the Executor's annotations for getting better exposure on Jina Hub. {ref}`Its specification can be found here<manifest-yaml>`.
 - `config.yml` is the Executor's configuration file, where you can define **__init__** arguments using **with** keyword.
 - `requirements.txt` describes the Executor's Python dependencies.
 - `executor.py` should contain your Executor's main logic.
 - `README.md` should describe how to use your Executor.
 
 
-## Fields of `manifest.yml`
 
-`manifest.yml` is optional.
+## Tips
 
-`manifest.yml` annotates your image so that it can be better managed by the Hub portal. To get better exposure on Jina Hub, you may want to 
-carefully set `manifest.yml` to the correct values:
 
-| Key                | Description                                                                                | Default |
-| ---                | ---                                                                                        | ---     |
-| `manifest_version` | The version of the manifest protocol                                                       | `1`     |
-| `name`             | Human-readable title of the Executor                                                       | None    |
-| `description`      | Human-readable description of the Executor                                                 | None    |
-| `url`              | URL to find more information about the Executor, normally the GitHub repo URL              | None    |
-| `keywords`         | A list of strings to help users filter and locate your package                             | None    |
+When developing Hub {class}`~jina.Executor`s, make sure to follow these tips:
 
-```{admonition} See Also
-:class: seealso
-{ref}`Hub Executor best practices <hub-executor-best-practices>`
-```
+* Use `jina hub new` CLI to create an Executor
+
+  To get started, always use the command and follow the instructions. This will ensure you follow the right file 
+structure.
+
+* No need to write Dockerfile manually 
+
+  Most of the time, you do not need to create `Dockerfile` manually, {abbr}`Hubble (Hubble is the Jina Hub building system)` will generate a well-optimized Dockerfile according to your Executor 
+    package.
+
+
+* No need to bump Jina version
+
+  Hub executors are version-agnostic. When you pull an Executor from Hub, Hubble will always select the right Jina 
+version for you. No worries about Jina version upgrade!
+
+
+* Fill in `manifest.yml` correctly. 
+
+  Information you include in `manifest.yml` will be displayed on our website.
+Want to make your Executor eye-catching on our website? Fill all fields in `manifest.yml` with heart & love! {ref}`Its specification can be found here<manifest-yaml>`.

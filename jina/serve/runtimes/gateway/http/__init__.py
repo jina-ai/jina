@@ -48,7 +48,7 @@ class HTTPGatewayRuntime(GatewayRuntime):
                 """
                 await self.main_loop()
 
-        if 'JINA_DISABLE_HEALTHCHECK_LOGS' in os.environ:
+        if 'CICD_JINA_DISABLE_HEALTHCHECK_LOGS' in os.environ:
 
             class _EndpointFilter(logging.Filter):
                 def filter(self, record: logging.LogRecord) -> bool:

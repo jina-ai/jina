@@ -17,9 +17,7 @@ if TYPE_CHECKING:
 
 @functools.lru_cache()
 def _get_locks_root() -> Path:
-    locks_root = Path(
-        os.environ.get('JINA_LOCKS_ROOT', os.path.join(__cache_path__, 'locks'))
-    )
+    locks_root = Path(os.path.join(__cache_path__, 'locks'))
 
     if not locks_root.exists():
         locks_root.mkdir(parents=True, exist_ok=True)

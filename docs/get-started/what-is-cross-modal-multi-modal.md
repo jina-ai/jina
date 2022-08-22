@@ -56,7 +56,7 @@ for d in db:
         print(d.uri, m.uri, m.scores['cosine'].value)
 ```
 
-```console
+```shell
 left/02262.jpg right/03459.jpg 0.21102
 left/02262.jpg right/02964.jpg 0.13871843
 left/02262.jpg right/02103.jpg 0.18265384

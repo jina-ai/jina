@@ -1,5 +1,5 @@
 (flow-yaml-spec)=
-# YAML specification
+# {octicon}`file-code` YAML specification
 
 This page outlines the specification for valid {class}`~jina.Executor` YAML files.
 
