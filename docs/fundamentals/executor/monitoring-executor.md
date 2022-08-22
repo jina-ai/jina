@@ -16,7 +16,7 @@ When the monitoring is enabled each Executor will expose its
 own metrics. This means that in practice each of the Executors will expose a Prometheus endpoint using the [Prometheus Client](https://github.com/prometheus/client_python).
 
 ```{hint}
-Depending on your deployment type (local, kubernetes or jcloud), you need to ensure a running Prometheus/Grafana stack.
+Depending on your deployment type (local, Kubernetes or JCloud), you need to ensure a running Prometheus/Grafana stack.
 Check the {ref}`Flow and monitoring stack deployment section <deploy-flow-monitoring>` to find out how to provision 
 your monitoring stack.
 ```
