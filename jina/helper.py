@@ -1675,7 +1675,6 @@ def send_telemetry_event(event: str, obj: Any) -> None:
                 ).encode('utf-8')
             )
 
-            pprint({**metas, 'event': f'{obj.__class__.__name__}.{event}'})
             req = urllib.request.Request(
                 url, data=data, headers={'User-Agent': 'Mozilla/5.0'}
             )
