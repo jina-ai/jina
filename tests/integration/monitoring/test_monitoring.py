@@ -28,6 +28,22 @@ def executor():
     return DummyExecutor
 
 
+@pytest.fixture()
+def failing_executor():
+    class FailingExecutor(Executor):
+        def __init__(self, *args, **kwargs):
+            super(FailingExecutor, self).__init__(*args, **kwargs)
+            self.cnt = 0
+
+        @requests(on='/')
+        def foo(self, docs, **kwargs):
+            self.cnt += 1
+            if self.cnt % 2 == 1:
+                raise Exception()
+
+    return FailingExecutor
+
+
 def test_enable_monitoring_deployment(port_generator, executor):
     port1 = port_generator()
     port2 = port_generator()
@@ -196,12 +212,12 @@ def test_document_processed_total(port_generator, executor):
         )
 
         assert not (
-            f'jina_document_processed_total{{executor="DummyExecutor",executor_endpoint="/bar",runtime_name="executor0/rep-0"}}'  # check that we does not start counting documents on bar as it has not been called yet
+            f'jina_document_processed{{executor="DummyExecutor",executor_endpoint="/bar",runtime_name="executor0/rep-0"}}'  # check that we does not start counting documents on bar as it has not been called yet
             in str(resp.content)
         )
 
         assert (
-            f'jina_number_of_successful_requests_total{{runtime_name="executor0/rep-0"}} 5.0'  # check that 5 requests were successful (10/2=5)
+            f'jina_number_of_successful_requests{{runtime_name="executor0/rep-0"}} 5.0'  # check that 5 requests were successful (10/2=5)
             in str(resp.content)
         )
 
@@ -222,7 +238,7 @@ def test_document_processed_total(port_generator, executor):
         )
 
         assert (
-            f'jina_number_of_successful_requests_total{{runtime_name="executor0/rep-0"}} 10.0'  # check that 7 requests were successful so far (5/1 + 5 = 10)
+            f'jina_number_of_successful_requests{{runtime_name="executor0/rep-0"}} 10.0'  # check that 7 requests were successful so far (5/1 + 5 = 10)
             in str(resp.content)
         )
 
@@ -445,3 +461,45 @@ def test_pending_requests_with_connection_error(port_generator, protocol):
     finally:  # clean up runtimes
         gateway_process.terminate()
         gateway_process.join()
+
+
+def test_failed_successful_request_count(port_generator, failing_executor):
+    port0 = port_generator()
+    port1 = port_generator()
+
+    with Flow(monitoring=True, port_monitoring=port0).add(
+        uses=failing_executor, port_monitoring=port1
+    ) as f:
+        resp = req.get(f'http://localhost:{port1}/')
+        assert resp.status_code == 200
+
+        f.post(
+            '/',
+            inputs=DocumentArray.empty(size=10),
+            request_size=1,
+            continue_on_error=True,
+        )  # send 10 requests, 5 should fail and 5 should succeed
+
+        resp = req.get(f'http://localhost:{port1}/')
+
+        assert (
+            f'jina_number_of_successful_requests{{runtime_name="executor0/rep-0"}} 5.0'
+            in str(resp.content)
+        )
+
+        assert (
+            f'jina_number_of_failed_requests{{runtime_name="executor0/rep-0"}} 5.0'
+            in str(resp.content)
+        )
+
+        resp = req.get(f'http://localhost:{port0}/')
+
+        assert (
+            f'jina_number_of_successful_requests{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 5.0'
+            in str(resp.content)
+        )
+
+        assert (
+            f'jina_number_of_failed_requests{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 5.0'
+            in str(resp.content)
+        )
