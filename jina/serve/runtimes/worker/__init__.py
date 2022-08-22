@@ -39,7 +39,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 required=True,
                 help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
-                from prometheus_client import Gauge, Summary
+                from prometheus_client import Counter, Summary
 
             self._summary_time = (
                 Summary(
@@ -53,7 +53,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 .time()
             )
 
-            self._failed_requests_metrics = Gauge(
+            self._failed_requests_metrics = Counter(
                 'number_of_failed_requests',
                 'Number of failed requests',
                 registry=self.metrics_registry,
@@ -61,7 +61,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 labelnames=('runtime_name',),
             ).labels(self.args.name)
 
-            self._successful_requests_metrics = Gauge(
+            self._successful_requests_metrics = Counter(
                 'number_of_successful_requests',
                 'Number of successful requests',
                 registry=self.metrics_registry,

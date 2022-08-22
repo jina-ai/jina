@@ -152,7 +152,6 @@ class DataRequestHandler:
         )
 
         # executor logic
-        # somehow exception not raised here and skips directly to counter, should be caught in jina/serve/runtimes/worker/__init__.py instead
         return_data = await self._executor.__acall__(
             req_endpoint=requests[0].header.exec_endpoint,
             docs=docs,
