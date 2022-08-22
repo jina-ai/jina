@@ -117,8 +117,6 @@ def test_monitoring_head(port_generator, executor):
         resp = req.get(f'http://localhost:{port_head}/')
         assert f'jina_receiving_request_seconds' in str(resp.content)
         assert f'jina_sending_request_seconds' in str(resp.content)
-        assert f'jina_number_of_successful_requests' in str(resp.content)
-        assert f'jina_number_of_failed_requests' in str(resp.content)
 
 
 def test_monitoring_head_few_port(port_generator, executor):
