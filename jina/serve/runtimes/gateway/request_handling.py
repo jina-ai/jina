@@ -90,7 +90,7 @@ class RequestHandler:
         if self._pending_requests_metrics:
             self._pending_requests_metrics.inc()
 
-    def _update_end_request_metrics(self, result: 'Request', e: Exception = None):
+    def _update_end_request_metrics(self, result: 'Request', exc: Exception = None):
         if self._receiving_request_metrics:
             init_time = self._request_init_time.pop(
                 result.request_id
@@ -100,11 +100,11 @@ class RequestHandler:
         if self._pending_requests_metrics:
             self._pending_requests_metrics.dec()
         if (
-            e or result.status.code == jina_pb2.StatusProto.ERROR
+            exc or result.status.code == jina_pb2.StatusProto.ERROR
         ) and self._failed_requests_metrics:
             self._failed_requests_metrics.inc()
         if (
-            not (e or result.status.code == jina_pb2.StatusProto.ERROR)
+            not (exc or result.status.code == jina_pb2.StatusProto.ERROR)
             and self._successful_requests_metrics
         ):
             self._successful_requests_metrics.inc()
