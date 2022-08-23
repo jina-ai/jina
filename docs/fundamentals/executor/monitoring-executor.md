@@ -15,6 +15,12 @@ sub-method of your Executor.
 When the monitoring is enabled each Executor will expose its 
 own metrics. This means that in practice each of the Executors will expose a Prometheus endpoint using the [Prometheus Client](https://github.com/prometheus/client_python).
 
+```{hint}
+Depending on your deployment type (local, Kubernetes or JCloud), you need to ensure a running Prometheus/Grafana stack.
+Check the {ref}`Flow and monitoring stack deployment section <deploy-flow-monitoring>` to find out how to provision 
+your monitoring stack.
+```
+
 ```{admonition} Full detail on monitoring
 :class: seealso
 This section describes how to define and use **custom** metrics. To use the default metrics exposed by the Executor 

@@ -28,6 +28,26 @@ def executor():
     return DummyExecutor
 
 
+@pytest.fixture()
+def failing_executor():
+    class FailingExecutor(Executor):
+        def __init__(self, *args, **kwargs):
+            super(FailingExecutor, self).__init__(*args, **kwargs)
+            self.cnt = 0
+
+        @requests(on='/fail')
+        def fail(self, docs, **kwargs):
+            self.cnt += 1
+            if self.cnt % 2 == 1:
+                raise Exception()
+
+        @requests(on='/timeout')
+        def timeout(self, docs, **kwargs):
+            time.sleep(3)
+
+    return FailingExecutor
+
+
 def test_enable_monitoring_deployment(port_generator, executor):
     port1 = port_generator()
     port2 = port_generator()
@@ -46,6 +66,8 @@ def test_enable_monitoring_deployment(port_generator, executor):
                 f'process_request_seconds_created{{executor="DummyExecutor",executor_endpoint="/{meth}",runtime_name="executor1/rep-0"}}'
                 in str(resp.content)
             )
+            assert f'jina_successful_requests_total' in str(resp.content)
+            assert f'jina_failed_requests_total' in str(resp.content)
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
@@ -65,6 +87,8 @@ def test_enable_monitoring_gateway(protocol, port_generator, executor):
         resp = req.get(f'http://localhost:{port0}/')
         assert f'jina_receiving_request_seconds' in str(resp.content)
         assert f'jina_sending_request_seconds' in str(resp.content)
+        assert f'jina_successful_requests_total' in str(resp.content)
+        assert f'jina_failed_requests_total' in str(resp.content)
 
 
 def test_monitoring_head(port_generator, executor):
@@ -149,8 +173,17 @@ def test_monitoring_replicas_and_shards(port_generator, executor):
     )
 
     assert unique_port_exposed == set(port_shards_list)
+
     with f:
-        for port in [port_head, port1] + port_shards_list:
+
+        for port in port_shards_list:
+            resp = req.get(f'http://localhost:{port}/')
+            assert resp.status_code == 200
+            assert f'process_request_seconds' in str(resp.content)
+            assert f'jina_successful_requests_total' in str(resp.content)
+            assert f'jina_failed_requests_total' in str(resp.content)
+
+        for port in [port_head, port1]:
             resp = req.get(f'http://localhost:{port}/')
             assert resp.status_code == 200
 
@@ -171,31 +204,43 @@ def test_document_processed_total(port_generator, executor):
         assert resp.status_code == 200
 
         f.post(
-            f'/foo', inputs=DocumentArray.empty(size=4)
-        )  # process 4 documents on foo
+            f'/foo', inputs=DocumentArray.empty(size=10), request_size=2
+        )  # process 10 documents on foo
 
         resp = req.get(f'http://localhost:{port1}/')
         assert (
-            f'jina_document_processed_total{{executor="DummyExecutor",executor_endpoint="/foo",runtime_name="executor0/rep-0"}} 4.0'  # check that we count 4 documents on foo
+            f'jina_document_processed_total{{executor="DummyExecutor",executor_endpoint="/foo",runtime_name="executor0/rep-0"}} 10.0'  # check that we count 10 documents on foo
             in str(resp.content)
         )
 
         assert not (
-            f'jina_document_processed_total{{executor="DummyExecutor",executor_endpoint="/bar",runtime_name="executor0/rep-0"}}'  # check that we does not start counting documents on bar as it has not been called yet
+            f'jina_document_processed{{executor="DummyExecutor",executor_endpoint="/bar",runtime_name="executor0/rep-0"}}'  # check that we does not start counting documents on bar as it has not been called yet
+            in str(resp.content)
+        )
+
+        assert (
+            f'jina_successful_requests_total{{runtime_name="executor0/rep-0"}} 5.0'  # check that 5 requests were successful (10/2=5)
             in str(resp.content)
         )
 
         f.post(
-            f'/bar', inputs=DocumentArray.empty(size=5)
+            f'/bar', inputs=DocumentArray.empty(size=5), request_size=1
         )  # process 5 documents on bar
 
-        assert not (
-            f'jina_document_processed_total{{executor="DummyExecutor",executor_endpoint="/bar",runtime_name="executor0/rep-0"}} 5.0'  # check that we count 5 documents on foo
+        resp = req.get(f'http://localhost:{port1}/')
+
+        assert (
+            f'jina_document_processed_total{{executor="DummyExecutor",executor_endpoint="/bar",runtime_name="executor0/rep-0"}} 5.0'  # check that we count 5 documents on bar
             in str(resp.content)
         )
 
         assert (
-            f'jina_document_processed_total{{executor="DummyExecutor",executor_endpoint="/foo",runtime_name="executor0/rep-0"}} 4.0'  # check that we nothing change on bar count
+            f'jina_document_processed_total{{executor="DummyExecutor",executor_endpoint="/foo",runtime_name="executor0/rep-0"}} 10.0'  # check that nothing change on foo count
+            in str(resp.content)
+        )
+
+        assert (
+            f'jina_successful_requests_total{{runtime_name="executor0/rep-0"}} 10.0'  # check that 7 requests were successful so far (5/1 + 5 = 10)
             in str(resp.content)
         )
 
@@ -313,12 +358,18 @@ def test_pending_request(port_generator, failure_in_executor, protocol):
         _assert_pending_value('0.0', runtime_name, port0)
 
 
-def _create_worker_runtime(port, name='', executor=None):
+def _create_worker_runtime(port, name='', executor=None, port_monitoring=None):
     args = set_pod_parser().parse_args([])
     args.port = port
     args.name = name
+
+    if port_monitoring:
+        args.monitoring = True
+        args.port_monitoring = port_monitoring
+
     if executor:
         args.uses = executor
+
     with WorkerRuntime(args) as runtime:
         runtime.run_forever()
 
@@ -352,9 +403,13 @@ def _create_gateway_runtime(
         runtime.run_forever()
 
 
-def _create_worker(port):
+def _create_worker(port, port_monitoring=None):
     # create a single worker runtime
-    p = multiprocessing.Process(target=_create_worker_runtime, args=(port,))
+    p = multiprocessing.Process(
+        target=_create_worker_runtime,
+        args=(port,),
+        kwargs={'port_monitoring': port_monitoring},
+    )
     p.start()
     time.sleep(0.1)
     return p
@@ -372,14 +427,14 @@ def _create_gateway(port, port_monitoring, graph, pod_addr, protocol, retries=-1
     return p
 
 
-def _send_request(gateway_port, protocol):
+def _send_request(gateway_port, protocol, n_docs=2):
     """send request to gateway and see what happens"""
     from jina.clients import Client
 
     c = Client(host='localhost', port=gateway_port, protocol=protocol)
     return c.post(
         '/foo',
-        inputs=[Document(text='hi') for _ in range(2)],
+        inputs=[Document(text='hi') for _ in range(n_docs)],
         request_size=1,
         return_responses=True,
         continue_on_error=True,
@@ -415,6 +470,149 @@ def test_pending_requests_with_connection_error(port_generator, protocol):
         _assert_pending_value('0.0', runtime_name, port_monitoring)
     except Exception:
         assert False
+    finally:  # clean up runtimes
+        gateway_process.terminate()
+        gateway_process.join()
+
+
+def test_failed_successful_request_count(port_generator, failing_executor):
+    port0 = port_generator()
+    port1 = port_generator()
+
+    with Flow(monitoring=True, port_monitoring=port0).add(
+        uses=failing_executor, port_monitoring=port1
+    ) as f:
+        resp = req.get(f'http://localhost:{port1}/')
+        assert resp.status_code == 200
+
+        f.post(
+            '/fail',
+            inputs=DocumentArray.empty(size=10),
+            request_size=1,
+            continue_on_error=True,
+        )  # send 10 requests, 5 should fail and 5 should succeed
+
+        resp = req.get(f'http://localhost:{port1}/')
+
+        assert (
+            f'jina_successful_requests_total{{runtime_name="executor0/rep-0"}} 5.0'
+            in str(resp.content)
+        )
+
+        assert (
+            f'jina_failed_requests_total{{runtime_name="executor0/rep-0"}} 5.0'
+            in str(resp.content)
+        )
+
+        resp = req.get(f'http://localhost:{port0}/')
+
+        assert (
+            f'jina_successful_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 5.0'
+            in str(resp.content)
+        )
+
+        assert (
+            f'jina_failed_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 5.0'
+            in str(resp.content)
+        )
+
+
+def test_timeout_send(port_generator, failing_executor):
+    port0 = port_generator()
+    port1 = port_generator()
+
+    with Flow(monitoring=True, port_monitoring=port0, timeout_send=1).add(
+        uses=failing_executor, port_monitoring=port1
+    ) as f:
+        resp = req.get(f'http://localhost:{port1}/')
+        assert resp.status_code == 200
+
+        # try sending Document, this should timeout
+        try:
+            f.post('/timeout', inputs=DocumentArray.empty(size=1))
+        # ignore timeout
+        except ConnectionError:
+            pass
+
+        # test that timeout was detected in gateway
+        resp = req.get(f'http://localhost:{port0}/')
+
+        assert (
+            f'jina_successful_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 0.0'
+            in str(resp.content)
+        )
+
+        assert (
+            f'jina_failed_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 1.0'
+            in str(resp.content)
+        )
+
+
+@pytest.mark.asyncio
+async def test_kill_worker(port_generator):
+    # create gateway and workers manually, then terminate worker process to provoke an error
+    worker_port = port_generator()
+    worker_monitoring_port = port_generator()
+    gateway_port = port_generator()
+    gateway_monitoring_port = port_generator()
+
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
+
+    worker_process = _create_worker(worker_port, port_monitoring=worker_monitoring_port)
+    time.sleep(0.1)
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{worker_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    gateway_process = _create_gateway(
+        gateway_port, gateway_monitoring_port, graph_description, pod_addresses, 'grpc'
+    )
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{gateway_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    try:
+        # send first successful request
+        p = multiprocessing.Process(
+            target=_send_request, args=(gateway_port, 'grpc'), kwargs={'n_docs': 1}
+        )
+        p.start()
+        p.join()
+
+        assert p.exitcode == 0
+
+        worker_process.terminate()  # kill worker
+        worker_process.join()
+
+        # send second request, should fail
+        p = multiprocessing.Process(
+            target=_send_request, args=(gateway_port, 'grpc'), kwargs={'n_docs': 1}
+        )
+        p.start()
+        p.join()
+
+        assert p.exitcode != 0
+
+        # 1 request failed, 1 request successful
+        resp = req.get(f'http://localhost:{gateway_monitoring_port}/')
+        assert (
+            f'jina_successful_requests_total{{runtime_name="gateway/GRPCGatewayRuntime"}} 1.0'
+            in str(resp.content)
+        )
+
+        assert (
+            f'jina_failed_requests_total{{runtime_name="gateway/GRPCGatewayRuntime"}} 1.0'
+            in str(resp.content)
+        )
+
+    except Exception:
+        raise
     finally:  # clean up runtimes
         gateway_process.terminate()
         gateway_process.join()

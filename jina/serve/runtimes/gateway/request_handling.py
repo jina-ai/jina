@@ -4,10 +4,11 @@ import time
 from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
 
 import grpc.aio
-
 from docarray import DocumentArray
+
 from jina.excepts import InternalNetworkError
 from jina.importer import ImportExtensions
+from jina.proto import jina_pb2
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.runtimes.helper import _is_param_for_specific_executor
@@ -30,9 +31,9 @@ class RequestHandler:
     """
 
     def __init__(
-            self,
-            metrics_registry: Optional['CollectorRegistry'] = None,
-            runtime_name: Optional[str] = None,
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        runtime_name: Optional[str] = None,
     ):
         self._request_init_time = {} if metrics_registry else None
         self._executor_endpoint_mapping = None
@@ -40,10 +41,10 @@ class RequestHandler:
 
         if metrics_registry:
             with ImportExtensions(
-                    required=True,
-                    help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
+                required=True,
+                help_text='You need to install the `prometheus_client` to use the montitoring functionality of jina',
             ):
-                from prometheus_client import Gauge, Summary
+                from prometheus_client import Counter, Gauge, Summary
 
             self._receiving_request_metrics = Summary(
                 'receiving_request_seconds',
@@ -61,9 +62,27 @@ class RequestHandler:
                 labelnames=('runtime_name',),
             ).labels(runtime_name)
 
+            self._failed_requests_metrics = Counter(
+                'failed_requests',
+                'Number of failed requests',
+                registry=metrics_registry,
+                namespace='jina',
+                labelnames=('runtime_name',),
+            ).labels(runtime_name)
+
+            self._successful_requests_metrics = Counter(
+                'successful_requests',
+                'Number of successful requests',
+                registry=metrics_registry,
+                namespace='jina',
+                labelnames=('runtime_name',),
+            ).labels(runtime_name)
+
         else:
             self._receiving_request_metrics = None
             self._pending_requests_metrics = None
+            self._failed_requests_metrics = None
+            self._successful_requests_metrics = None
 
     def _update_start_request_metrics(self, request: 'Request'):
         if self._receiving_request_metrics:
@@ -71,7 +90,7 @@ class RequestHandler:
         if self._pending_requests_metrics:
             self._pending_requests_metrics.inc()
 
-    def _update_end_request_metrics(self, result: 'Request'):
+    def _update_end_request_metrics(self, result: 'Request', exc: Exception = None):
         if self._receiving_request_metrics:
             init_time = self._request_init_time.pop(
                 result.request_id
@@ -80,9 +99,18 @@ class RequestHandler:
 
         if self._pending_requests_metrics:
             self._pending_requests_metrics.dec()
+        if (
+            exc or result.status.code == jina_pb2.StatusProto.ERROR
+        ) and self._failed_requests_metrics:
+            self._failed_requests_metrics.inc()
+        if (
+            not (exc or result.status.code == jina_pb2.StatusProto.ERROR)
+            and self._successful_requests_metrics
+        ):
+            self._successful_requests_metrics.inc()
 
     def handle_request(
-            self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
+        self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
     ) -> Callable[['Request'], 'Tuple[Future, Optional[Future]]']:
         """
         Function that handles the requests arriving to the gateway. This will be passed to the streamer.
@@ -103,8 +131,8 @@ class RequestHandler:
                 err_code = err.code()
                 if err_code == grpc.StatusCode.UNAVAILABLE:
                     err._details = (
-                            err.details()
-                            + f' |Gateway: Communication error with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
+                        err.details()
+                        + f' |Gateway: Communication error with deployment at address(es) {err.dest_addr}. Head or worker(s) may be down.'
                     )
                     raise err
                 else:
@@ -122,8 +150,8 @@ class RequestHandler:
 
             if graph.has_filter_conditions:
                 request_doc_ids = request.data.docs[
-                                  :, 'id'
-                                  ]  # used to maintain order of docs that are filtered by executors
+                    :, 'id'
+                ]  # used to maintain order of docs that are filtered by executors
             responding_tasks = []
             floating_tasks = []
             endpoint = request.header.exec_endpoint
@@ -154,7 +182,7 @@ class RequestHandler:
                     target_executor_pattern=target_executor or None,
                     request_input_parameters=request_input_parameters,
                     request_input_has_specific_params=has_specific_params,
-                    copy_request_at_send=num_outgoing_nodes > 1 and has_specific_params
+                    copy_request_at_send=num_outgoing_nodes > 1 and has_specific_params,
                 )
                 # Every origin node returns a set of tasks that are the ones corresponding to the leafs of each of their
                 # subtrees that unwrap all the previous tasks. It starts like a chain of waiting for tasks from previous
@@ -174,19 +202,20 @@ class RequestHandler:
                 response.data.docs = DocumentArray(sorted_docs)
 
             async def _process_results_at_end_gateway(
-                    tasks: List[asyncio.Task], request_graph: TopologyGraph
+                tasks: List[asyncio.Task], request_graph: TopologyGraph
             ) -> asyncio.Future:
                 try:
                     if (
-                            self._executor_endpoint_mapping is None
-                            and not self._gathering_endpoints
+                        self._executor_endpoint_mapping is None
+                        and not self._gathering_endpoints
                     ):
                         self._gathering_endpoints = True
                         asyncio.create_task(gather_endpoints(request_graph))
 
                     partial_responses = await asyncio.gather(*tasks)
-                except:
-                    self._update_end_request_metrics(request)
+                except Exception as e:
+                    # update here failed request
+                    self._update_end_request_metrics(request, exc=e)
                     raise
                 partial_responses, metadatas = zip(*partial_responses)
                 filtered_partial_responses = list(
