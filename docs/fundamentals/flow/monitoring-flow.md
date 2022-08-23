@@ -182,8 +182,8 @@ You can find more information on the different type of metrics in Prometheus [he
 | `jina_receiving_request_seconds`     | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measure the time elapsed between receiving a request from the gateway (or the head) and sending back the response.    |
 | `jina_process_request_seconds`       | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measure the time spend calling the requested method                                                                   |
 | `jina_document_processed_total`      | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter) | Counts the number of Documents processed by an Executor                                                               |
-| `jina_successful_requests` | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter) | Total count of successful requests returned by the Executor across all endpoints                                      |
-| `jina_failed_requests`     | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter) | Total count of failed requests returned by the Executor across all endpoints                                          |
+| `jina_successful_requests_total`     | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter) | Total count of successful requests returned by the Executor across all endpoints                                      |
+| `jina_failed_requests_total`         | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter) | Total count of failed requests returned by the Executor across all endpoints                                          |
 | `request_size_bytes`                 | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measures the size of the requests in Bytes                                                                            |
 
 
