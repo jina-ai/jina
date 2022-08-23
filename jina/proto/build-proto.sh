@@ -44,7 +44,7 @@ printf "using linux sed syntax, if you are running this on mac, you may want to 
 # sed -i '' -e 's/import\ jina_pb2\ as\ jina__pb2/from\ \.\ import\ jina_pb2\ as\ jina__pb2/' ${SRC_DIR}jina_pb2_grpc.py
 # for linux
 sed -i 's/import\ docarray_pb2/import\ docarray.proto.docarray_pb2/' ${SRC_DIR}jina_pb2.py
-sed -i 's/import\ jina_pb2\ as\ jina__pb2/from\ \.\ import\ serializer\ as\ jina__pb2/' ${SRC_DIR}jina_pb2_grpc.py
+sed -i 's/import\ jina_pb2\ as\ jina__pb2/from\ \.\.\ import\ serializer\ as\ jina__pb2/' ${SRC_DIR}jina_pb2_grpc.py
 
 OLDVER=$(sed -n 's/^__proto_version__ = '\''\(.*\)'\''$/\1/p' $VER_FILE)
 printf "current proto version:\t\e[1;33m$OLDVER\e[0m\n"
