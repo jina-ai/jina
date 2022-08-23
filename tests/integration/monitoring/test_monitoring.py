@@ -358,12 +358,18 @@ def test_pending_request(port_generator, failure_in_executor, protocol):
         _assert_pending_value('0.0', runtime_name, port0)
 
 
-def _create_worker_runtime(port, name='', executor=None):
+def _create_worker_runtime(port, name='', executor=None, port_monitoring=None):
     args = set_pod_parser().parse_args([])
     args.port = port
     args.name = name
+
+    if port_monitoring:
+        args.monitoring = True
+        args.port_monitoring = port_monitoring
+
     if executor:
         args.uses = executor
+
     with WorkerRuntime(args) as runtime:
         runtime.run_forever()
 
@@ -397,9 +403,13 @@ def _create_gateway_runtime(
         runtime.run_forever()
 
 
-def _create_worker(port):
+def _create_worker(port, port_monitoring=None):
     # create a single worker runtime
-    p = multiprocessing.Process(target=_create_worker_runtime, args=(port,))
+    p = multiprocessing.Process(
+        target=_create_worker_runtime,
+        args=(port,),
+        kwargs={'port_monitoring': port_monitoring},
+    )
     p.start()
     time.sleep(0.1)
     return p
@@ -417,14 +427,14 @@ def _create_gateway(port, port_monitoring, graph, pod_addr, protocol, retries=-1
     return p
 
 
-def _send_request(gateway_port, protocol):
+def _send_request(gateway_port, protocol, n_docs=2):
     """send request to gateway and see what happens"""
     from jina.clients import Client
 
     c = Client(host='localhost', port=gateway_port, protocol=protocol)
     return c.post(
         '/foo',
-        inputs=[Document(text='hi') for _ in range(2)],
+        inputs=[Document(text='hi') for _ in range(n_docs)],
         request_size=1,
         return_responses=True,
         continue_on_error=True,
@@ -536,3 +546,73 @@ def test_timeout_send(port_generator, failing_executor):
             f'jina_number_of_failed_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 1.0'
             in str(resp.content)
         )
+
+
+@pytest.mark.asyncio
+async def test_kill_worker(port_generator):
+    # create gateway and workers manually, then terminate worker process to provoke an error
+    worker_port = port_generator()
+    worker_monitoring_port = port_generator()
+    gateway_port = port_generator()
+    gateway_monitoring_port = port_generator()
+
+    graph_description = '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}'
+    pod_addresses = f'{{"pod0": ["0.0.0.0:{worker_port}"]}}'
+
+    worker_process = _create_worker(worker_port, port_monitoring=worker_monitoring_port)
+    time.sleep(0.1)
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{worker_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    gateway_process = _create_gateway(
+        gateway_port, gateway_monitoring_port, graph_description, pod_addresses, 'grpc'
+    )
+
+    AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'0.0.0.0:{gateway_port}',
+        ready_or_shutdown_event=multiprocessing.Event(),
+    )
+
+    try:
+        # send first successful request
+        p = multiprocessing.Process(
+            target=_send_request, args=(gateway_port, 'grpc'), kwargs={'n_docs': 1}
+        )
+        p.start()
+        p.join()
+
+        assert p.exitcode == 0
+
+        worker_process.terminate()  # kill worker
+        worker_process.join()
+
+        # send second request, should fail
+        p = multiprocessing.Process(
+            target=_send_request, args=(gateway_port, 'grpc'), kwargs={'n_docs': 1}
+        )
+        p.start()
+        p.join()
+
+        assert p.exitcode != 0
+
+        # 1 request failed, 1 request successful
+        resp = req.get(f'http://localhost:{gateway_monitoring_port}/')
+        assert (
+            f'jina_number_of_successful_requests_total{{runtime_name="gateway/GRPCGatewayRuntime"}} 1.0'
+            in str(resp.content)
+        )
+
+        assert (
+            f'jina_number_of_failed_requests_total{{runtime_name="gateway/GRPCGatewayRuntime"}} 1.0'
+            in str(resp.content)
+        )
+
+    except Exception:
+        raise
+    finally:  # clean up runtimes
+        gateway_process.terminate()
+        gateway_process.join()
