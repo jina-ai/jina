@@ -54,7 +54,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             )
 
             self._failed_requests_metrics = Counter(
-                'number_of_failed_requests',
+                'failed_requests',
                 'Number of failed requests',
                 registry=self.metrics_registry,
                 namespace='jina',
@@ -62,7 +62,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             ).labels(self.args.name)
 
             self._successful_requests_metrics = Counter(
-                'number_of_successful_requests',
+                'successful_requests',
                 'Number of successful requests',
                 registry=self.metrics_registry,
                 namespace='jina',

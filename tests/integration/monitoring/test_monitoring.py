@@ -66,8 +66,8 @@ def test_enable_monitoring_deployment(port_generator, executor):
                 f'process_request_seconds_created{{executor="DummyExecutor",executor_endpoint="/{meth}",runtime_name="executor1/rep-0"}}'
                 in str(resp.content)
             )
-            assert f'jina_number_of_successful_requests_total' in str(resp.content)
-            assert f'jina_number_of_failed_requests_total' in str(resp.content)
+            assert f'jina_successful_requests_total' in str(resp.content)
+            assert f'jina_failed_requests_total' in str(resp.content)
 
 
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
@@ -87,8 +87,8 @@ def test_enable_monitoring_gateway(protocol, port_generator, executor):
         resp = req.get(f'http://localhost:{port0}/')
         assert f'jina_receiving_request_seconds' in str(resp.content)
         assert f'jina_sending_request_seconds' in str(resp.content)
-        assert f'jina_number_of_successful_requests_total' in str(resp.content)
-        assert f'jina_number_of_failed_requests_total' in str(resp.content)
+        assert f'jina_successful_requests_total' in str(resp.content)
+        assert f'jina_failed_requests_total' in str(resp.content)
 
 
 def test_monitoring_head(port_generator, executor):
@@ -180,8 +180,8 @@ def test_monitoring_replicas_and_shards(port_generator, executor):
             resp = req.get(f'http://localhost:{port}/')
             assert resp.status_code == 200
             assert f'process_request_seconds' in str(resp.content)
-            assert f'jina_number_of_successful_requests_total' in str(resp.content)
-            assert f'jina_number_of_failed_requests_total' in str(resp.content)
+            assert f'jina_successful_requests_total' in str(resp.content)
+            assert f'jina_failed_requests_total' in str(resp.content)
 
         for port in [port_head, port1]:
             resp = req.get(f'http://localhost:{port}/')
@@ -219,7 +219,7 @@ def test_document_processed_total(port_generator, executor):
         )
 
         assert (
-            f'jina_number_of_successful_requests_total{{runtime_name="executor0/rep-0"}} 5.0'  # check that 5 requests were successful (10/2=5)
+            f'jina_successful_requests_total{{runtime_name="executor0/rep-0"}} 5.0'  # check that 5 requests were successful (10/2=5)
             in str(resp.content)
         )
 
@@ -240,7 +240,7 @@ def test_document_processed_total(port_generator, executor):
         )
 
         assert (
-            f'jina_number_of_successful_requests_total{{runtime_name="executor0/rep-0"}} 10.0'  # check that 7 requests were successful so far (5/1 + 5 = 10)
+            f'jina_successful_requests_total{{runtime_name="executor0/rep-0"}} 10.0'  # check that 7 requests were successful so far (5/1 + 5 = 10)
             in str(resp.content)
         )
 
@@ -495,24 +495,24 @@ def test_failed_successful_request_count(port_generator, failing_executor):
         resp = req.get(f'http://localhost:{port1}/')
 
         assert (
-            f'jina_number_of_successful_requests_total{{runtime_name="executor0/rep-0"}} 5.0'
+            f'jina_successful_requests_total{{runtime_name="executor0/rep-0"}} 5.0'
             in str(resp.content)
         )
 
         assert (
-            f'jina_number_of_failed_requests_total{{runtime_name="executor0/rep-0"}} 5.0'
+            f'jina_failed_requests_total{{runtime_name="executor0/rep-0"}} 5.0'
             in str(resp.content)
         )
 
         resp = req.get(f'http://localhost:{port0}/')
 
         assert (
-            f'jina_number_of_successful_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 5.0'
+            f'jina_successful_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 5.0'
             in str(resp.content)
         )
 
         assert (
-            f'jina_number_of_failed_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 5.0'
+            f'jina_failed_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 5.0'
             in str(resp.content)
         )
 
@@ -538,12 +538,12 @@ def test_timeout_send(port_generator, failing_executor):
         resp = req.get(f'http://localhost:{port0}/')
 
         assert (
-            f'jina_number_of_successful_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 0.0'
+            f'jina_successful_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 0.0'
             in str(resp.content)
         )
 
         assert (
-            f'jina_number_of_failed_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 1.0'
+            f'jina_failed_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 1.0'
             in str(resp.content)
         )
 
@@ -602,12 +602,12 @@ async def test_kill_worker(port_generator):
         # 1 request failed, 1 request successful
         resp = req.get(f'http://localhost:{gateway_monitoring_port}/')
         assert (
-            f'jina_number_of_successful_requests_total{{runtime_name="gateway/GRPCGatewayRuntime"}} 1.0'
+            f'jina_successful_requests_total{{runtime_name="gateway/GRPCGatewayRuntime"}} 1.0'
             in str(resp.content)
         )
 
         assert (
-            f'jina_number_of_failed_requests_total{{runtime_name="gateway/GRPCGatewayRuntime"}} 1.0'
+            f'jina_failed_requests_total{{runtime_name="gateway/GRPCGatewayRuntime"}} 1.0'
             in str(resp.content)
         )
 

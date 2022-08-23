@@ -63,7 +63,7 @@ class RequestHandler:
             ).labels(runtime_name)
 
             self._failed_requests_metrics = Counter(
-                'number_of_failed_requests',
+                'failed_requests',
                 'Number of failed requests',
                 registry=metrics_registry,
                 namespace='jina',
@@ -71,7 +71,7 @@ class RequestHandler:
             ).labels(runtime_name)
 
             self._successful_requests_metrics = Counter(
-                'number_of_successful_requests',
+                'successful_requests',
                 'Number of successful requests',
                 registry=metrics_registry,
                 namespace='jina',
