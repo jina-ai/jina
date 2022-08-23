@@ -2,16 +2,26 @@
 set -e
 
 # Do NOT use this directly, use jinaai/protogen image
+# use jinaai/protogen:3.21 in order to use compiler version == 21 (creates pb/docarray_pb2.py)
+# and use jinaai/protogen:latest to use compiler version <= 20 (creates pb2/docarray_pb2.py)
+# make sure to use jinaai/protogen:3.21 to avoid overriting the module
 #
 # current dir: jina root (the one with README.md)
 # run the following in bash:
-# docker run -v $(pwd)/jina/:/jina/ jinaai/protogen
+# docker run -v $(pwd)/jina/proto:/jina/proto jinaai/protogen
+# finally, set back owner of the generated files using: sudo chown -R $(id -u ${USER}):$(id -g ${USER}) ./jina/proto
 
 SRC_DIR=./
-SRC_NAME=jina.proto
+MODULE=jina
+SRC_NAME="${MODULE}.proto"
+
+COMP_PROTO_OUT_NAME="${MODULE}_pb2.py"
+COMP_GRPC_OUT_NAME="${MODULE}_pb2_grpc.py"
+OUT_FOLDER=${2:-pb2}
+
 VER_FILE=../__init__.py
 
-if [ "$#" -ne 1 ]; then
+if [ "$#" -ne 1 ] && [ "$#" -ne 2 ]; then
     echo "Error: Please specify the [PATH_TO_GRPC_PYTHON_PLUGIN], refer more details at " \
       "https://docs.jina.ai/"
     printf "\n"
@@ -46,6 +56,10 @@ printf "bump proto version to:\t\e[1;32m$NEWVER\e[0m\n"
 # sed -i '' -e 's/^__proto_version__ = '\''\(.*\)'\''/__proto_version__ = '\'"$NEWVER"\''/' $VER_FILE
 # for linux
 sed -i 's/^__proto_version__ = '\''\(.*\)'\''/__proto_version__ = '\'"$NEWVER"\''/' $VER_FILE
+
+mv ${COMP_PROTO_OUT_NAME} "${OUT_FOLDER}/${COMP_PROTO_OUT_NAME}"
+mv ${COMP_GRPC_OUT_NAME} "${OUT_FOLDER}/${COMP_GRPC_OUT_NAME}"
+
 
 printf "\e[1;32mAll done!\e[0m\n"
 printf "if you are running this inside Docker container, you may manually bump proto version to:\t\e[1;32m$NEWVER\e[0m\n"
