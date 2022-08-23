@@ -60,7 +60,7 @@ executors:
 
 JCloud supports GPU workloads with two different usages: `shared` or `dedicated`. 
 
-If GPU is enabled, JCloud will provide NVIDIA A10G Tensor Core GPUs for workloads in both usage types.
+If GPU is enabled, JCloud will provide NVIDIA A10G Tensor Core GPUs with 24G memory for workloads in both usage types.
 
 ```{note}
 When using GPU resources, it may take few extra mins until all Executors ready to serve traffic.
@@ -81,12 +81,8 @@ executors:
         gpu: shared
 ```
 
-```{note}
-When using shared GPU resources, it will share the GPU memory across pods(24G memory total). If your application is memory consuming, we suggest using a dedicated GPU.
-```
-
 ```{caution}
-There are no special provisions in place to isolate replicas that run on the same underlying GPU. Each workload has access to the GPU memory and runs in the same fault-domain as of all the others. Therefore, if one workload crashes, they all do. 
+The tradeoffs with `shared` GPU are increased latency, jitter, and potential out-of-memory (OOM) conditions when many different applications are time-slicing on the GPU. If your application is memory consuming, we suggest using a dedicated GPU.
 ```
 
 #### Dedicated GPU
@@ -237,28 +233,12 @@ to handle the initial requests since it may need to scale the deployments behind
 
 ## Config Gateway
 
-To expose users' Flows to the public Internet with TLS, JCloud provides support for 2 Gateways [ALB](https://aws.amazon.com/elasticloadbalancing/application-load-balancer/) & [Kong API Gateway](https://konghq.com/products/api-gateway-platform). 
+To expose users' Flows to the public Internet with TLS, JCloud provides support Ingress Gateways.
+
+In JCloud. We use [Let's Encrypt](https://letsencrypt.org/) for TLS.
 
 ```{note}
 The JCloud gateway is different from Jina's Gateway. In JCloud, a gateway works as a proxy to distribute internet traffic between Flows, each of which has a Jina Gateway (which is responsible to manage external gRPC/HTTP/Websocket traffic to your Executors)
-```
-
-### Use ALB as API Gateway
-
-Currently, ALB is the default gateway for backward compatibility. We use AWS provided public certificates for TLS with the ALB.
-
-### Use Kong as API Gateway
-
-Kong is the recommended gateway in JCloud. We use [Let's Encrypt](https://letsencrypt.org/) for TLS with Kong. To enable Kong Gateway instead of ALB, specify the gateway ingress kind as `kong` in your JCloud YAML:
-
-```yaml
-jtype: Flow
-jcloud:
-  gateway:
-    ingress: kong
-executors:
-  - name: executor1
-    uses: jinahub+docker://Executor1
 ```
 
 ### Set timeout
@@ -269,7 +249,6 @@ By default, JCloud gateway will close connections that have been idle for over `
 jtype: Flow
 jcloud:
   gateway:
-    ingress: kong
     timeout: 600
 executors:
   - name: executor1
@@ -333,7 +312,7 @@ executors:
 :width: 70%
 ```
 
-## Other deployment pptions
+## Other deployment options
 
 ### Specify Jina version
 
