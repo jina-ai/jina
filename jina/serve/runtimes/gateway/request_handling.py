@@ -52,6 +52,7 @@ class RequestHandler:
                 registry=metrics_registry,
                 namespace='jina',
                 labelnames=('runtime_name',),
+                # labelnames=('runtime_name','routes'),
             ).labels(runtime_name)
 
             self._pending_requests_metrics = Gauge(
@@ -90,8 +91,10 @@ class RequestHandler:
         if self._pending_requests_metrics:
             self._pending_requests_metrics.inc()
 
-    def _update_end_request_metrics(self, result: 'Request', exc: Exception = None):
-        if self._receiving_request_metrics:
+    def _update_end_successful_requests_metrics(self, result: 'Request'):
+        if (
+            self._receiving_request_metrics
+        ):  # this one should only be observed when the metrics is succesful
             init_time = self._request_init_time.pop(
                 result.request_id
             )  # need to pop otherwise it stays in memory forever
@@ -99,15 +102,23 @@ class RequestHandler:
 
         if self._pending_requests_metrics:
             self._pending_requests_metrics.dec()
-        if (
-            exc or result.status.code == jina_pb2.StatusProto.ERROR
-        ) and self._failed_requests_metrics:
-            self._failed_requests_metrics.inc()
-        if (
-            not (exc or result.status.code == jina_pb2.StatusProto.ERROR)
-            and self._successful_requests_metrics
-        ):
+
+        if self._successful_requests_metrics:
             self._successful_requests_metrics.inc()
+
+    def _update_end_failed_requests_metrics(self, result: 'Request'):
+        if self._pending_requests_metrics:
+            self._pending_requests_metrics.dec()
+
+        if self._failed_requests_metrics:
+            self._failed_requests_metrics.inc()
+
+    def _update_end_request_metrics(self, result: 'Request'):
+
+        if result.status.code != jina_pb2.StatusProto.ERROR:
+            self._update_end_successful_requests_metrics(result)
+        else:
+            self._update_end_failed_requests_metrics(result)
 
     def handle_request(
         self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
@@ -215,7 +226,7 @@ class RequestHandler:
                     partial_responses = await asyncio.gather(*tasks)
                 except Exception as e:
                     # update here failed request
-                    self._update_end_request_metrics(request, exc=e)
+                    self._update_end_failed_requests_metrics(request)
                     raise
                 partial_responses, metadatas = zip(*partial_responses)
                 filtered_partial_responses = list(
