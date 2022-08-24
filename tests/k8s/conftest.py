@@ -25,6 +25,13 @@ class KindClusterWrapper:
         self._loaded_images = set()
 
     def _install_linkderd(self, kind_cluster):
+        self._log.info('Installing Linkerd CRDs to Cluster...')
+        proc = subprocess.Popen(
+            [f'{Path.home()}/.linkerd2/bin/linkerd', 'install', '--crds'],
+            stdout=subprocess.PIPE,
+            env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
+        )
+
         self._log.info('Installing Linkerd to Cluster...')
         proc = subprocess.Popen(
             [f'{Path.home()}/.linkerd2/bin/linkerd', 'install'],
