@@ -48,7 +48,7 @@ class RequestHandler:
 
             self._receiving_request_metrics = Summary(
                 'receiving_request_seconds',
-                'Time spent processing request',
+                'Time spent processing successful request',
                 registry=metrics_registry,
                 namespace='jina',
                 labelnames=('runtime_name',),
