@@ -17,7 +17,7 @@ SRC_NAME="${MODULE}.proto"
 
 COMP_PROTO_OUT_NAME="${MODULE}_pb2.py"
 COMP_GRPC_OUT_NAME="${MODULE}_pb2_grpc.py"
-OUT_FOLDER=${2:-pb2}
+OUT_FOLDER="${2:-pb2}/"
 
 VER_FILE=../__init__.py
 
@@ -35,7 +35,7 @@ PLUGIN_PATH=${1}  # /Volumes/TOSHIBA-4T/Documents/grpc/bins/opt/grpc_python_plug
 
 printf "\e[1;33mgenerating protobuf and grpc python interface\e[0m\n"
 
-protoc -I ${SRC_DIR} --python_out=${SRC_DIR} --grpc_python_out=${SRC_DIR} --plugin=protoc-gen-grpc_python=${PLUGIN_PATH} ${SRC_DIR}${SRC_NAME}
+protoc -I ${SRC_DIR} --python_out="${SRC_DIR}${OUT_FOLDER}" --grpc_python_out="${SRC_DIR}${OUT_FOLDER}" --plugin=protoc-gen-grpc_python=${PLUGIN_PATH} ${SRC_DIR}${SRC_NAME}
 
 printf "\e[1;33mfixing grpc import\e[0m\n"
 printf "using linux sed syntax, if you are running this on mac, you may want to comment out the sed for linux"
@@ -43,8 +43,8 @@ printf "using linux sed syntax, if you are running this on mac, you may want to 
 # for mac
 # sed -i '' -e 's/import\ jina_pb2\ as\ jina__pb2/from\ \.\ import\ jina_pb2\ as\ jina__pb2/' ${SRC_DIR}jina_pb2_grpc.py
 # for linux
-sed -i 's/import\ docarray_pb2/import\ docarray.proto.docarray_pb2/' ${SRC_DIR}jina_pb2.py
-sed -i 's/import\ jina_pb2\ as\ jina__pb2/from\ \.\.\ import\ serializer\ as\ jina__pb2/' ${SRC_DIR}jina_pb2_grpc.py
+sed -i 's/import\ docarray_pb2/import\ docarray.proto.docarray_pb2/' "${SRC_DIR}${OUT_FOLDER}jina_pb2.py"
+sed -i 's/import\ jina_pb2\ as\ jina__pb2/from\ \.\.\ import\ serializer\ as\ jina__pb2/' "${SRC_DIR}${OUT_FOLDER}jina_pb2_grpc.py"
 
 OLDVER=$(sed -n 's/^__proto_version__ = '\''\(.*\)'\''$/\1/p' $VER_FILE)
 printf "current proto version:\t\e[1;33m$OLDVER\e[0m\n"
@@ -57,8 +57,6 @@ printf "bump proto version to:\t\e[1;32m$NEWVER\e[0m\n"
 # for linux
 sed -i 's/^__proto_version__ = '\''\(.*\)'\''/__proto_version__ = '\'"$NEWVER"\''/' $VER_FILE
 
-mv ${COMP_PROTO_OUT_NAME} "${OUT_FOLDER}/${COMP_PROTO_OUT_NAME}"
-mv ${COMP_GRPC_OUT_NAME} "${OUT_FOLDER}/${COMP_GRPC_OUT_NAME}"
 
 
 printf "\e[1;32mAll done!\e[0m\n"
