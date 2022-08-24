@@ -183,6 +183,7 @@ jobs:
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
+          pip install git+https://github.com/jina-ai/docarray.git@bump-protobuf
           pip install ".[all]" --no-cache-dir
           jina
           export JINA_LOG_LEVEL="ERROR"
@@ -223,6 +224,7 @@ jobs:
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
+          pip install git+https://github.com/jina-ai/docarray.git@bump-protobuf
           pip install ".[all]" --no-cache-dir
           jina
           export JINA_LOG_LEVEL="ERROR"
@@ -264,6 +266,7 @@ jobs:
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
+          pip install git+https://github.com/jina-ai/docarray.git@bump-protobuf
           pip install ".[all]" --no-cache-dir
           jina
           export JINA_LOG_LEVEL="ERROR"
@@ -320,6 +323,7 @@ jobs:
           docker build -f Dockerfiles/test-pip.Dockerfile -t jinaai/jina:test-pip .
           python -m pip install --upgrade pip
           python -m pip install wheel
+          pip install git+https://github.com/jina-ai/docarray.git@bump-protobuf
           pip install ".[all]" --no-cache-dir
           jina
           export JINA_LOG_LEVEL="ERROR"
@@ -366,6 +370,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install wheel
+          pip install git+https://github.com/jina-ai/docarray.git@bump-protobuf
           pip install --no-cache-dir .
         env:
           JINA_PIP_INSTALL_CORE: ${{ matrix.core }}
