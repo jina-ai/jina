@@ -22,9 +22,9 @@ if TYPE_CHECKING:
     from jina.types.request import Request
 
 
-class RequestHandler:
+class MonitoringRequestMixin:
     """
-    Class that handles the requests arriving to the gateway and the result extracted from the requests future.
+    Mixin for the request handling monitoring
 
     :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler
     :param runtime_name: optional runtime_name that will be registered during monitoring
@@ -35,9 +35,8 @@ class RequestHandler:
         metrics_registry: Optional['CollectorRegistry'] = None,
         runtime_name: Optional[str] = None,
     ):
+
         self._request_init_time = {} if metrics_registry else None
-        self._executor_endpoint_mapping = None
-        self._gathering_endpoints = False
 
         if metrics_registry:
             with ImportExtensions(
@@ -52,7 +51,6 @@ class RequestHandler:
                 registry=metrics_registry,
                 namespace='jina',
                 labelnames=('runtime_name',),
-                # labelnames=('runtime_name','routes'),
             ).labels(runtime_name)
 
             self._pending_requests_metrics = Gauge(
@@ -119,6 +117,24 @@ class RequestHandler:
             self._update_end_successful_requests_metrics(result)
         else:
             self._update_end_failed_requests_metrics(result)
+
+
+class RequestHandler(MonitoringRequestMixin):
+    """
+    Class that handles the requests arriving to the gateway and the result extracted from the requests future.
+
+    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler
+    :param runtime_name: optional runtime_name that will be registered during monitoring
+    """
+
+    def __init__(
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        runtime_name: Optional[str] = None,
+    ):
+        super(RequestHandler, self).__init__(metrics_registry, runtime_name)
+        self._executor_endpoint_mapping = None
+        self._gathering_endpoints = False
 
     def handle_request(
         self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
