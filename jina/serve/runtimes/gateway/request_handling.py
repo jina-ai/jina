@@ -1,6 +1,7 @@
 import asyncio
 import copy
 import time
+from collections import namedtuple
 from typing import TYPE_CHECKING, Callable, List, Optional, Tuple
 
 import grpc.aio
@@ -22,6 +23,9 @@ if TYPE_CHECKING:
     from jina.types.request import Request
 
 
+_RequestInfo = namedtuple('_RequestInfo', ['init_time', 'init_exec_endpoint'])
+
+
 class RequestHandler:
     """
     Class that handles the requests arriving to the gateway and the result extracted from the requests future.
@@ -35,7 +39,7 @@ class RequestHandler:
         metrics_registry: Optional['CollectorRegistry'] = None,
         runtime_name: Optional[str] = None,
     ):
-        self._request_init_time = {} if metrics_registry else None
+        self._requests_information = {} if metrics_registry else None
         self._executor_endpoint_mapping = None
         self._gathering_endpoints = False
 
@@ -87,7 +91,9 @@ class RequestHandler:
 
     def _update_start_request_metrics(self, request: 'Request'):
         if self._receiving_request_metrics:
-            self._request_init_time[request.request_id] = time.time()
+            self._requests_information[request.request_id] = _RequestInfo(
+                init_time=time.time(), init_exec_endpoint=request.header.exec_endpoint
+            )
         if self._pending_requests_metrics:
             self._pending_requests_metrics.inc()
 
@@ -95,9 +101,9 @@ class RequestHandler:
         if (
             self._receiving_request_metrics
         ):  # this one should only be observed when the metrics is succesful
-            init_time = self._request_init_time.pop(
+            init_time = self._requests_information.pop(
                 result.request_id
-            )  # need to pop otherwise it stays in memory forever
+            ).init_time  # need to pop otherwise it stays in memory forever
             self._receiving_request_metrics.observe(time.time() - init_time)
 
         if self._pending_requests_metrics:
