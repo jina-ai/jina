@@ -113,6 +113,7 @@ Check out more in-depth tutorials on the advanced usages of Jina.
 get-started/what-is-cross-modal-multi-modal
 get-started/what-is-jina
 fundamentals/architecture-overview
+get-started/comparing-alternatives
 get-started/install/index
 get-started/create-app
 ```

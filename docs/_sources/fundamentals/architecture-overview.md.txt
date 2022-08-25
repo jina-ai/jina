@@ -3,6 +3,7 @@
 
 This chapter introduces the basic terminologies you will encounter in the docs. But first, let's look at the code below:
 
+(dummy-example)=
 ````{tab} Server
 ```python
 from jina import DocumentArray, Executor, Flow, requests
@@ -64,7 +65,7 @@ The following concepts will be covered in the user guide:
 **DocumentArray**
     DocumentArray is a list-like container of multiple Documents. More information can be found in [DocArray's Docs](https://docarray.jina.ai/fundamentals/documentarray/). 
     
-**Executor** 
+**Executor**
     {class}`~jina.Executor` is a Python class that has a group of functions using {term}`DocumentArray` as IO. Loosely speaking, each Executor is a microservice. 
 
 **Flow**
@@ -85,6 +86,88 @@ The following concepts will be covered in the user guide:
 **TLS**
     TLS is a security protocol designed to facilitate privacy and data security for communications over the Internet. The communication between {term}`Client` and {term}`Gateway` is protected by TLS.
 ```
+
+## Two coding styles
+
+In the documentation, you often see two coding styles when describing a Jina project: 
+
+```{glossary}
+
+**Pythonic**
+    The Flow and Executors are all written in Python files, and the entrypoint is via Python.
+    
+**YAMLish** 
+    The Executors are written in Python files, and the Flow is defined in a YAML file. The entrypoint is via Jina CLI `jina flow --uses flow.yml`.
+```
+
+For example, {ref}`the serve-side code<dummy-example>` above follows {term}`Pythonic` style. It can be written as {term}`YAMLish` style as follows:
+
+````{tab} executor.py
+```python
+from jina import DocumentArray, Executor, requests
+
+
+class FooExec(Executor):
+    @requests
+    async def add_text(self, docs: DocumentArray, **kwargs):
+        for d in docs:
+            d.text += 'hello, world!'
+
+
+class BarExec(Executor):
+    @requests
+    async def add_text(self, docs: DocumentArray, **kwargs):
+        for d in docs:
+            d.text += 'goodbye!'
+```
+````
+
+````{tab} flow.yml
+```yaml
+jtype: Flow
+with:
+  port: 12345
+executors:
+- uses: FooExec
+  replicas: 3
+  uses_metas:
+    py_modules: executor.py
+- uses: BarExec
+  replicas: 2
+  uses_metas:
+    py_modules: executor.py
+```
+````
+
+````{tab} Entrypoint
+```bash
+jina flow --uses flow.yml
+```
+````
+
+The YAMLish style separates the Flow representation from the logic code. It is more flexible to config and should be used for more complex projects in production. In many integrations such as JCloud, Kubernetes, YAMLish is more preferred. 
+
+Note that the two coding styles can be converted to each other easily. To load a Flow YAML into Python and run it:
+
+```python
+from jina import Flow
+
+f = Flow.load_config('flow.yml')
+
+with f:
+    f.block()
+```
+
+To dump a Flow into YAML:
+
+```python
+from jina import Flow
+
+Flow().add(uses=FooExec, replicas=3).add(uses=BarExec, replicas=2).save_config(
+    'flow.yml'
+)
+```
+
 
 ## Relationship between Jina and DocArray
 

@@ -208,6 +208,17 @@ are all you need.
 
 Patterns are nice, cloud native features are cool. But what's the point if you need to spend months to learn them? Jina's design principles are simple and clear: flatten the learning curve of cloud native techniques and make all awesome production-level features easily accessible.
 
+## Relation to MLOps
+
+So is Jina a MLOps framework? In some sense, it is, but it goes far beyond. MLOps, or DevOps for machine learning, is the practice of combining DevOps practices and tools with machine learning workflows. The aim is to automate and improve the process of building, training, and deploying machine learning models, which shares the similar principles as Jina.
+
+Same as MLOps, the benefits of using Jina include:
+- Faster and more reliable machine learning model development: Automating machine learning workflows ({term}`Flow` in Jina) can help to speed up the process of model development, as well as make it more reliable.
+- Increased collaboration between ML scientists and engineers: Using Jina can help to improve communication and collaboration between ML scientists and engineers, as the latter can be more involved in the machine learning model development process.
+- Improved model ({term}`Executor` in Jina) quality: Automating machine learning workflows can help to ensure that models are of a high quality, as well as improve the process of model testing and validation.
+- Infrastructure as code (Flow YAML in Jina): Infrastructure as code is another key DevOps practice that can be applied to machine learning. It involves using code to provision and manage infrastructure, in order to make it more flexible and scalable.
+- Monitoring and logging: Monitoring and logging are important for ensuring the quality of machine learning models. They can help to identify errors and issues early on, so that they can be fixed quickly.
+- Model management (Jina Hub): Model management is a process that helps to keep track of different versions of machine learning models, in order to ensure that the correct model is being used for each task.
 
 ## Summary
 
