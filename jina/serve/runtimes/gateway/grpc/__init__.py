@@ -9,8 +9,8 @@ from jina import __default_host__
 from jina.excepts import PortAlreadyUsed
 from jina.helper import get_full_version, is_port_free
 from jina.proto import jina_pb2, jina_pb2_grpc
-from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.bff import GatewayBFF
+from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.types.request.status import StatusMessage
 
 __all__ = ['GRPCGatewayRuntime']
@@ -20,9 +20,9 @@ class GRPCGatewayRuntime(GatewayRuntime):
     """Gateway Runtime for gRPC."""
 
     def __init__(
-            self,
-            args: argparse.Namespace,
-            **kwargs,
+        self,
+        args: argparse.Namespace,
+        **kwargs,
     ):
         """Initialize the runtime
         :param args: args from CLI
@@ -48,6 +48,19 @@ class GRPCGatewayRuntime(GatewayRuntime):
             options=[
                 ('grpc.max_send_message_length', -1),
                 ('grpc.max_receive_message_length', -1),
+                # for the following see this blog post for the choice of default value https://cs.mcgill.ca/~mxia3/2019/02/23/Using-gRPC-in-Production/
+                ('grpc.keepalive_time_ms', 10000),
+                # send keepalive ping every 10 second, default is 2 hours.
+                ('grpc.keepalive_timeout_ms', 5000),
+                # keepalive ping time out after 5 seconds, default is 20 seconds
+                ('grpc.keepalive_permit_without_calls', True),
+                # allow keepalive pings when there's no gRPC calls
+                ('grpc.http2.max_pings_without_data', 0),
+                # allow unlimited amount of keepalive pings without data
+                ('grpc.http2.min_time_between_pings_ms', 10000),
+                # allow grpc pings from client every 10 seconds
+                ('grpc.http2.min_ping_interval_without_data_ms', 5000),
+                # allow grpc pings from client without data every 5 seconds
             ]
         )
 
@@ -62,19 +75,23 @@ class GRPCGatewayRuntime(GatewayRuntime):
         deployments_addresses = json.loads(self.args.deployments_addresses)
         deployments_disable_reduce = json.loads(self.args.deployments_disable_reduce)
 
-        self.gateway_bff = GatewayBFF(graph_representation=graph_description,
-                                      executor_addresses=deployments_addresses,
-                                      graph_conditions=graph_conditions,
-                                      deployments_disable_reduce=deployments_disable_reduce,
-                                      timeout_send=self.timeout_send,
-                                      retries=self.args.retries,
-                                      compression=self.args.compression,
-                                      runtime_name=self.name,
-                                      prefetch=self.args.prefetch,
-                                      logger=self.logger,
-                                      metrics_registry=self.metrics_registry)
+        self.gateway_bff = GatewayBFF(
+            graph_representation=graph_description,
+            executor_addresses=deployments_addresses,
+            graph_conditions=graph_conditions,
+            deployments_disable_reduce=deployments_disable_reduce,
+            timeout_send=self.timeout_send,
+            retries=self.args.retries,
+            compression=self.args.compression,
+            runtime_name=self.name,
+            prefetch=self.args.prefetch,
+            logger=self.logger,
+            metrics_registry=self.metrics_registry,
+        )
 
-        jina_pb2_grpc.add_JinaRPCServicer_to_server(self.gateway_bff._streamer, self.server)
+        jina_pb2_grpc.add_JinaRPCServicer_to_server(
+            self.gateway_bff._streamer, self.server
+        )
         jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self, self.server)
         jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self.server)
 
@@ -109,7 +126,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
             )
             self.server.add_secure_port(bind_addr, server_credentials)
         elif (
-                self.args.ssl_keyfile != self.args.ssl_certfile
+            self.args.ssl_keyfile != self.args.ssl_certfile
         ):  # if we have only ssl_keyfile and not ssl_certfile or vice versa
             raise ValueError(
                 f"you can't pass a ssl_keyfile without a ssl_certfile and vice versa"
@@ -144,6 +161,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
         :returns: the response request
         """
         from docarray import DocumentArray
+
         from jina.clients.request import request_generator
         from jina.enums import DataInputType
         from jina.serve.executors import __dry_run_endpoint__
