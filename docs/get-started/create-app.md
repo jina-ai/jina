@@ -1,4 +1,4 @@
-# Create First Project
+# {octicon}`milestone` Create First Project
 
 Let's build a toy application with Jina. To start, we use Jina CLI to make a new project for us:
 
@@ -64,7 +64,7 @@ In `executor.py`, let's add another endpoint `/get-tensor` as follows:
 
 ```{code-block} python
 ---
-emphasize-lines: 12-15
+emphasize-lines: 13-16
 ---
 import numpy as np
 import torch
@@ -205,6 +205,15 @@ tensor([[[0.4254, 0.4305],
 
 ## Delete the deployed project
 
+Don't forget to delete a Flow if you are not using it anymore.
+
 ```bash
 jina cloud remove 1655d050ad
 ```
+
+
+```text
+Successfully removed Flow 1655d050ad.
+```
+
+You just finished your first Jina toy project, congrats! You can now start your own project.
