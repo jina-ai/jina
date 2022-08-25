@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="@requests methods" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Monitor" href="../monitoring-executor/" /><link rel="prev" title="Basics" href="../executor-api/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/executor/executor-methods.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>@requests methods - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Executor</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../executor-api/">Basics</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,12 +391,12 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="requests-methods">
-<span id="exec-endpoint"></span><h1><code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> methods<a class="headerlink" href="#requests-methods" title="Permalink to this headline">#</a></h1>
+                    <section id="requests-methods">
+<span id="exec-endpoint"></span><h1><code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> methods<a class="headerlink" href="#requests-methods" title="Permalink to this heading">#</a></h1>
 <p>Methods of <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> can be named and written freely.</p>
 <p>Methods decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> are mapped to network endpoints while serving.</p>
 <section id="decorator">
-<span id="executor-requests"></span><h2>Decorator<a class="headerlink" href="#decorator" title="Permalink to this headline">#</a></h2>
+<span id="executor-requests"></span><h2>Decorator<a class="headerlink" href="#decorator" title="Permalink to this heading">#</a></h2>
 <p>Executor methods decorated with <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> are bound to specific network requests, and respond to network queries.</p>
 <p>Both <code class="docutils literal notranslate"><span class="pre">def</span></code> or <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> function can be decorated with <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a>.</p>
 <p>You can import the <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> decorator via</p>
@@ -439,7 +442,7 @@ Calling foo
 </pre></div>
 </div>
 <section id="default-binding">
-<h3>Default binding<a class="headerlink" href="#default-binding" title="Permalink to this headline">#</a></h3>
+<h3>Default binding<a class="headerlink" href="#default-binding" title="Permalink to this heading">#</a></h3>
 <p>A class method decorated with plain <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> (without <code class="docutils literal notranslate"><span class="pre">on=</span></code>) is the default handler for all endpoints.
 That means it is the fallback handler for endpoints that are not found. <code class="docutils literal notranslate"><span class="pre">f.post(on='/blah',</span> <span class="pre">...)</span></code> will invoke <code class="docutils literal notranslate"><span class="pre">MyExecutor.foo</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
@@ -459,13 +462,13 @@ That means it is the fallback handler for endpoints that are not found. <code cl
 </div>
 </section>
 <section id="no-binding">
-<h3>No binding<a class="headerlink" href="#no-binding" title="Permalink to this headline">#</a></h3>
+<h3>No binding<a class="headerlink" href="#no-binding" title="Permalink to this heading">#</a></h3>
 <p>A class with no <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> binding plays no part in the Flow.
 The request will simply pass through without any processing.</p>
 </section>
 </section>
 <section id="arguments">
-<h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">#</a></h2>
+<h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this heading">#</a></h2>
 <p>All Executor methods decorated by <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> need to follow the signature below in order to be usable as a microservice inside a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>.
 The <code class="docutils literal notranslate"><span class="pre">async</span></code> definition is optional.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
@@ -518,7 +521,7 @@ any other <code class="docutils literal notranslate"><span class="pre">list</spa
 </div>
 </div>
 <section id="multiple-documentarrays-as-input-argument">
-<h3>Multiple DocumentArrays as input argument<a class="headerlink" href="#multiple-documentarrays-as-input-argument" title="Permalink to this headline">#</a></h3>
+<h3>Multiple DocumentArrays as input argument<a class="headerlink" href="#multiple-documentarrays-as-input-argument" title="Permalink to this heading">#</a></h3>
 <p>You have seen that <code class="docutils literal notranslate"><span class="pre">Executor</span></code> methods can receive three types of parameters: <code class="docutils literal notranslate"><span class="pre">docs</span></code>, <code class="docutils literal notranslate"><span class="pre">parameters</span></code> and <code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code> is a parameter that is only used in some special cases.</p>
 <p>One case is when an Executor receives messages from more than one upstream Executor in the Flow.</p>
@@ -579,7 +582,7 @@ Resulting documents Document merging from <span class="s2">&quot;Exec1&quot;</sp
 </section>
 </section>
 <section id="async-coroutines">
-<span id="async-executors"></span><h2>Async coroutines<a class="headerlink" href="#async-coroutines" title="Permalink to this headline">#</a></h2>
+<span id="async-executors"></span><h2>Async coroutines<a class="headerlink" href="#async-coroutines" title="Permalink to this heading">#</a></h2>
 <p>You can naturally call async coroutines within <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>’s, allowing you to leverage the power of asynchronous
 Python to write concurrent code.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
@@ -664,7 +667,7 @@ concurrently.</p>
 </div>
 <p>The processing of the data is 50 faster when using <code class="docutils literal notranslate"><span class="pre">coroutines</span></code> because it happens concurrently.</p>
 <section id="call-another-jina-flow">
-<h3>Call another Jina Flow<a class="headerlink" href="#call-another-jina-flow" title="Permalink to this headline">#</a></h3>
+<h3>Call another Jina Flow<a class="headerlink" href="#call-another-jina-flow" title="Permalink to this heading">#</a></h3>
 <p>To call other another Jina Flow using <code class="docutils literal notranslate"><span class="pre">Client</span></code> from an <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, you will also need to use <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> and async Client.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
@@ -681,7 +684,7 @@ concurrently.</p>
 </section>
 </section>
 <section id="returns">
-<h2>Returns<a class="headerlink" href="#returns" title="Permalink to this headline">#</a></h2>
+<h2>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h2>
 <p>Every Executor method can <code class="docutils literal notranslate"><span class="pre">return</span></code> in 3 ways:</p>
 <ul class="simple">
 <li><p>If you return a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object, then it will be sent over to the next Executor.</p></li>
@@ -708,7 +711,7 @@ concurrently.</p>
 </div>
 </section>
 <section id="exception-handling">
-<h2>Exception handling<a class="headerlink" href="#exception-handling" title="Permalink to this headline">#</a></h2>
+<h2>Exception handling<a class="headerlink" href="#exception-handling" title="Permalink to this heading">#</a></h2>
 <p>Exceptions raised inside <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>-decorated functions can simply be raised. The Flow will handle it.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
@@ -754,7 +757,7 @@ NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&
 </div>
 </details></section>
 <section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">#</a></h2>
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h2>
 <p>Let’s understand how Executor’s process DocumentArray’s inside a Flow, and how the changes are chained and applied, affecting downstream Executors in the Flow.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 
@@ -920,6 +923,7 @@ NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>

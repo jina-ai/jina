@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="jina.serve.runtimes.gateway.http.models module" />
   
@@ -19,8 +19,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.runtimes.gateway.http.models.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>jina.serve.runtimes.gateway.http.models module - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -226,12 +226,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
@@ -242,6 +244,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -387,11 +390,11 @@
                 </div>
                 <article role="main">
                     <section id="module-jina.serve.runtimes.gateway.http.models">
-<span id="jina-serve-runtimes-gateway-http-models-module"></span><h1>jina.serve.runtimes.gateway.http.models module<a class="headerlink" href="#module-jina.serve.runtimes.gateway.http.models" title="Permalink to this headline">#</a></h1>
+<span id="jina-serve-runtimes-gateway-http-models-module"></span><h1>jina.serve.runtimes.gateway.http.models module<a class="headerlink" href="#module-jina.serve.runtimes.gateway.http.models" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.CustomConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.http.models.</span></span><span class="sig-name descname"><span class="pre">CustomConfig</span></span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/models/#CustomConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.CustomConfig" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.config.BaseConfig</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseConfig</span></code></p>
 <p>Pydantic config for Camel case and enum handling</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.CustomConfig.use_enum_values">
@@ -458,7 +461,7 @@
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_field_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.CustomConfig.get_field_info" title="Permalink to this definition">#</a></dt>
 <dd><p>Get properties of FieldInfo from the <cite>fields</cite> property of the config class.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</p>
 </dd>
 </dl>
@@ -467,7 +470,7 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.CustomConfig.getter_dict">
 <span class="sig-name descname"><span class="pre">getter_dict</span></span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.CustomConfig.getter_dict" title="Permalink to this definition">#</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.utils.GetterDict</span></code></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">GetterDict</span></code></p>
 </dd></dl>
 
 <dl class="py method">
@@ -565,7 +568,7 @@ kwarg; otherwise <code class="docutils literal notranslate"><span class="pre">JS
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prepare_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.CustomConfig.prepare_field" title="Permalink to this definition">#</a></dt>
 <dd><p>Optional hook to check or modify fields during model creation.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -609,13 +612,13 @@ kwarg; otherwise <code class="docutils literal notranslate"><span class="pre">JS
 <dd><p>Converts Protobuf messages to Pydantic model for jsonschema creation/validattion</p>
 <p>..note:: Model gets assigned in the global Namespace :<a class="reference external" href="data:PROTO_TO_PYDANTIC_MODELS">data:PROTO_TO_PYDANTIC_MODELS</a></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>protobuf_model</strong> (<em>Union</em><em>[</em><em>Descriptor</em><em>, </em><em>GeneratedProtocolMessageType</em><em>]</em>) – message from jina.proto file</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
 </dd>
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Pydantic model</p>
 </dd>
 </dl>
@@ -624,14 +627,14 @@ kwarg; otherwise <code class="docutils literal notranslate"><span class="pre">JS
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaHealthModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.http.models.</span></span><span class="sig-name descname"><span class="pre">JinaHealthModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/models/#JinaHealthModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaHealthModel" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
 <p>Pydantic BaseModel for Jina health check, used as the response model in REST app.</p>
 <p>Create a new model by parsing and validating input data from keyword arguments.</p>
 <p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaHealthModel.Config">
 <span class="sig-name descname"><span class="pre">Config</span></span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaHealthModel.Config" title="Permalink to this definition">#</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.config.BaseConfig</span></code></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseConfig</span></code></p>
 </dd></dl>
 
 <dl class="py method">
@@ -641,7 +644,7 @@ kwarg; otherwise <code class="docutils literal notranslate"><span class="pre">JS
 Default values are respected, but no other validation is performed.
 Behaves as if <cite>Config.extra = ‘allow’</cite> was set since it adds all passed values</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -652,7 +655,7 @@ Behaves as if <cite>Config.extra = ‘allow’</cite> was set since it adds all 
 <span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaHealthModel.copy" title="Permalink to this definition">#</a></dt>
 <dd><p>Duplicate a model, optionally choose which fields to include, exclude and change.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>include</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to include in new model</p></li>
 <li><p><strong>exclude</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to exclude from new model, as with values this takes precedence over include</p></li>
@@ -661,10 +664,10 @@ the new model: you should trust this data</p></li>
 <li><p><strong>deep</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – set to <cite>True</cite> to make a deep copy of the model</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Model</p>
 </dd>
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>new model instance</p>
 </dd>
 </dl>
@@ -675,7 +678,7 @@ the new model: you should trust this data</p></li>
 <span class="sig-name descname"><span class="pre">dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_unset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaHealthModel.dict" title="Permalink to this definition">#</a></dt>
 <dd><p>Generate a dictionary representation of the model, optionally specifying which fields to include or exclude.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>DictStrAny</p>
 </dd>
 </dl>
@@ -685,7 +688,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaHealthModel.from_orm">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_orm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaHealthModel.from_orm" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -697,7 +700,7 @@ the new model: you should trust this data</p></li>
 <dd><p>Generate a JSON representation of the model, <cite>include</cite> and <cite>exclude</cite> arguments as per <cite>dict()</cite>.</p>
 <p><cite>encoder</cite> is an optional function to supply as <cite>default</cite> to json.dumps(), other arguments as per <cite>json.dumps()</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>unicode</p>
 </dd>
 </dl>
@@ -707,7 +710,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaHealthModel.parse_file">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_pickle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaHealthModel.parse_file" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -717,7 +720,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaHealthModel.parse_obj">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_obj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaHealthModel.parse_obj" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -727,7 +730,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaHealthModel.parse_raw">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_pickle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaHealthModel.parse_raw" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -737,7 +740,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaHealthModel.schema">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#/definitions/{model}'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaHealthModel.schema" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>DictStrAny</p>
 </dd>
 </dl>
@@ -747,7 +750,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaHealthModel.schema_json">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#/definitions/{model}'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">dumps_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaHealthModel.schema_json" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>unicode</p>
 </dd>
 </dl>
@@ -758,7 +761,7 @@ the new model: you should trust this data</p></li>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_forward_refs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">localns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaHealthModel.update_forward_refs" title="Permalink to this definition">#</a></dt>
 <dd><p>Try to update ForwardRefs on fields based on this Model, globalns and localns.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -768,7 +771,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaHealthModel.validate">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaHealthModel.validate" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -779,7 +782,7 @@ the new model: you should trust this data</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaInfoModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.http.models.</span></span><span class="sig-name descname"><span class="pre">JinaInfoModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/models/#JinaInfoModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaInfoModel" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
 <p>Pydantic BaseModel for Jina status, used as the response model in REST app.</p>
 <p>Create a new model by parsing and validating input data from keyword arguments.</p>
 <p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
@@ -801,7 +804,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaInfoModel.Config.alias_generator">
 <span class="sig-name descname"><span class="pre">alias_generator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaInfoModel.Config.alias_generator" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -821,7 +824,7 @@ the new model: you should trust this data</p></li>
 Default values are respected, but no other validation is performed.
 Behaves as if <cite>Config.extra = ‘allow’</cite> was set since it adds all passed values</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -832,7 +835,7 @@ Behaves as if <cite>Config.extra = ‘allow’</cite> was set since it adds all 
 <span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaInfoModel.copy" title="Permalink to this definition">#</a></dt>
 <dd><p>Duplicate a model, optionally choose which fields to include, exclude and change.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>include</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to include in new model</p></li>
 <li><p><strong>exclude</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to exclude from new model, as with values this takes precedence over include</p></li>
@@ -841,10 +844,10 @@ the new model: you should trust this data</p></li>
 <li><p><strong>deep</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – set to <cite>True</cite> to make a deep copy of the model</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Model</p>
 </dd>
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>new model instance</p>
 </dd>
 </dl>
@@ -855,7 +858,7 @@ the new model: you should trust this data</p></li>
 <span class="sig-name descname"><span class="pre">dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_unset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaInfoModel.dict" title="Permalink to this definition">#</a></dt>
 <dd><p>Generate a dictionary representation of the model, optionally specifying which fields to include or exclude.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>DictStrAny</p>
 </dd>
 </dl>
@@ -865,7 +868,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaInfoModel.from_orm">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_orm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaInfoModel.from_orm" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -877,7 +880,7 @@ the new model: you should trust this data</p></li>
 <dd><p>Generate a JSON representation of the model, <cite>include</cite> and <cite>exclude</cite> arguments as per <cite>dict()</cite>.</p>
 <p><cite>encoder</cite> is an optional function to supply as <cite>default</cite> to json.dumps(), other arguments as per <cite>json.dumps()</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>unicode</p>
 </dd>
 </dl>
@@ -887,7 +890,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaInfoModel.parse_file">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_pickle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaInfoModel.parse_file" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -897,7 +900,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaInfoModel.parse_obj">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_obj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaInfoModel.parse_obj" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -907,7 +910,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaInfoModel.parse_raw">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_pickle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaInfoModel.parse_raw" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -917,7 +920,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaInfoModel.schema">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#/definitions/{model}'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaInfoModel.schema" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>DictStrAny</p>
 </dd>
 </dl>
@@ -927,7 +930,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaInfoModel.schema_json">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#/definitions/{model}'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">dumps_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaInfoModel.schema_json" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>unicode</p>
 </dd>
 </dl>
@@ -938,7 +941,7 @@ the new model: you should trust this data</p></li>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_forward_refs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">localns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaInfoModel.update_forward_refs" title="Permalink to this definition">#</a></dt>
 <dd><p>Try to update ForwardRefs on fields based on this Model, globalns and localns.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -948,7 +951,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaInfoModel.validate">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaInfoModel.validate" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -959,13 +962,13 @@ the new model: you should trust this data</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.http.models.</span></span><span class="sig-name descname"><span class="pre">JinaRequestModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/models/#JinaRequestModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
 <p>Jina HTTP request model.</p>
 <p>Create a new model by parsing and validating input data from keyword arguments.</p>
 <p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel.data">
-<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">docarray.document.pydantic_model.PydanticDocument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">docarray.document.pydantic_model.PydanticDocument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.data" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">PydanticDocument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">PydanticDocument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.data" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -986,7 +989,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config.alias_generator">
 <span class="sig-name descname"><span class="pre">alias_generator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config.alias_generator" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -1006,7 +1009,7 @@ the new model: you should trust this data</p></li>
 Default values are respected, but no other validation is performed.
 Behaves as if <cite>Config.extra = ‘allow’</cite> was set since it adds all passed values</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1017,7 +1020,7 @@ Behaves as if <cite>Config.extra = ‘allow’</cite> was set since it adds all 
 <span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.copy" title="Permalink to this definition">#</a></dt>
 <dd><p>Duplicate a model, optionally choose which fields to include, exclude and change.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>include</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to include in new model</p></li>
 <li><p><strong>exclude</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to exclude from new model, as with values this takes precedence over include</p></li>
@@ -1026,10 +1029,10 @@ the new model: you should trust this data</p></li>
 <li><p><strong>deep</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – set to <cite>True</cite> to make a deep copy of the model</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Model</p>
 </dd>
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>new model instance</p>
 </dd>
 </dl>
@@ -1040,7 +1043,7 @@ the new model: you should trust this data</p></li>
 <span class="sig-name descname"><span class="pre">dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_unset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.dict" title="Permalink to this definition">#</a></dt>
 <dd><p>Generate a dictionary representation of the model, optionally specifying which fields to include or exclude.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>DictStrAny</p>
 </dd>
 </dl>
@@ -1050,7 +1053,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel.from_orm">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_orm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.from_orm" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1062,7 +1065,7 @@ the new model: you should trust this data</p></li>
 <dd><p>Generate a JSON representation of the model, <cite>include</cite> and <cite>exclude</cite> arguments as per <cite>dict()</cite>.</p>
 <p><cite>encoder</cite> is an optional function to supply as <cite>default</cite> to json.dumps(), other arguments as per <cite>json.dumps()</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>unicode</p>
 </dd>
 </dl>
@@ -1072,7 +1075,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel.parse_file">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_pickle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.parse_file" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1082,7 +1085,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel.parse_obj">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_obj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.parse_obj" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1092,7 +1095,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel.parse_raw">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_pickle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.parse_raw" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1102,7 +1105,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel.schema">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#/definitions/{model}'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.schema" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>DictStrAny</p>
 </dd>
 </dl>
@@ -1112,7 +1115,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel.schema_json">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#/definitions/{model}'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">dumps_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.schema_json" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>unicode</p>
 </dd>
 </dl>
@@ -1123,7 +1126,7 @@ the new model: you should trust this data</p></li>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_forward_refs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">localns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.update_forward_refs" title="Permalink to this definition">#</a></dt>
 <dd><p>Try to update ForwardRefs on fields based on this Model, globalns and localns.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -1133,7 +1136,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaRequestModel.validate">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel.validate" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1144,13 +1147,13 @@ the new model: you should trust this data</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.http.models.</span></span><span class="sig-name descname"><span class="pre">JinaResponseModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/models/#JinaResponseModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.main.BaseModel</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
 <p>Jina HTTP Response model. Only <cite>request_id</cite> and <cite>data</cite> are preserved.</p>
 <p>Create a new model by parsing and validating input data from keyword arguments.</p>
 <p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.header">
-<span class="sig-name descname"><span class="pre">header</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">pydantic.main.HeaderProto</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.header" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">header</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">HeaderProto</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.header" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1160,12 +1163,12 @@ the new model: you should trust this data</p></li>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.routes">
-<span class="sig-name descname"><span class="pre">routes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">pydantic.main.RouteProto</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.routes" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">routes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">RouteProto</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.routes" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.data">
-<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">docarray.document.pydantic_model.PydanticDocument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.data" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">PydanticDocument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.data" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
@@ -1176,7 +1179,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config.alias_generator">
 <span class="sig-name descname"><span class="pre">alias_generator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config.alias_generator" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -1196,7 +1199,7 @@ the new model: you should trust this data</p></li>
 Default values are respected, but no other validation is performed.
 Behaves as if <cite>Config.extra = ‘allow’</cite> was set since it adds all passed values</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1207,7 +1210,7 @@ Behaves as if <cite>Config.extra = ‘allow’</cite> was set since it adds all 
 <span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.copy" title="Permalink to this definition">#</a></dt>
 <dd><p>Duplicate a model, optionally choose which fields to include, exclude and change.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>include</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to include in new model</p></li>
 <li><p><strong>exclude</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to exclude from new model, as with values this takes precedence over include</p></li>
@@ -1216,10 +1219,10 @@ the new model: you should trust this data</p></li>
 <li><p><strong>deep</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – set to <cite>True</cite> to make a deep copy of the model</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Model</p>
 </dd>
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>new model instance</p>
 </dd>
 </dl>
@@ -1230,7 +1233,7 @@ the new model: you should trust this data</p></li>
 <span class="sig-name descname"><span class="pre">dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_unset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.dict" title="Permalink to this definition">#</a></dt>
 <dd><p>Generate a dictionary representation of the model, optionally specifying which fields to include or exclude.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>DictStrAny</p>
 </dd>
 </dl>
@@ -1240,7 +1243,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.from_orm">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_orm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.from_orm" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1252,7 +1255,7 @@ the new model: you should trust this data</p></li>
 <dd><p>Generate a JSON representation of the model, <cite>include</cite> and <cite>exclude</cite> arguments as per <cite>dict()</cite>.</p>
 <p><cite>encoder</cite> is an optional function to supply as <cite>default</cite> to json.dumps(), other arguments as per <cite>json.dumps()</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>unicode</p>
 </dd>
 </dl>
@@ -1262,7 +1265,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.parse_file">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_pickle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.parse_file" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1272,7 +1275,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.parse_obj">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_obj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.parse_obj" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1282,7 +1285,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.parse_raw">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_pickle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.parse_raw" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1292,7 +1295,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.schema">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#/definitions/{model}'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.schema" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>DictStrAny</p>
 </dd>
 </dl>
@@ -1302,7 +1305,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.schema_json">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#/definitions/{model}'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">dumps_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.schema_json" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>unicode</p>
 </dd>
 </dl>
@@ -1313,7 +1316,7 @@ the new model: you should trust this data</p></li>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_forward_refs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">localns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.update_forward_refs" title="Permalink to this definition">#</a></dt>
 <dd><p>Try to update ForwardRefs on fields based on this Model, globalns and localns.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -1323,7 +1326,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaResponseModel.validate">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaResponseModel.validate" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1334,7 +1337,7 @@ the new model: you should trust this data</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.http.models.</span></span><span class="sig-name descname"><span class="pre">JinaEndpointRequestModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/http/models/#JinaEndpointRequestModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel" title="jina.serve.runtimes.gateway.http.models.JinaRequestModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.serve.runtimes.gateway.http.models.JinaRequestModel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#jina.serve.runtimes.gateway.http.models.JinaRequestModel" title="jina.serve.runtimes.gateway.http.models.JinaRequestModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">JinaRequestModel</span></code></a></p>
 <p>Jina HTTP request model that allows customized endpoint.</p>
 <p>Create a new model by parsing and validating input data from keyword arguments.</p>
 <p>Raises ValidationError if the input data cannot be parsed to form a valid model.</p>
@@ -1351,7 +1354,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.Config.alias_generator">
 <span class="sig-name descname"><span class="pre">alias_generator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.Config.alias_generator" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
 </dl>
@@ -1371,7 +1374,7 @@ the new model: you should trust this data</p></li>
 Default values are respected, but no other validation is performed.
 Behaves as if <cite>Config.extra = ‘allow’</cite> was set since it adds all passed values</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1382,7 +1385,7 @@ Behaves as if <cite>Config.extra = ‘allow’</cite> was set since it adds all 
 <span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.copy" title="Permalink to this definition">#</a></dt>
 <dd><p>Duplicate a model, optionally choose which fields to include, exclude and change.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>include</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to include in new model</p></li>
 <li><p><strong>exclude</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to exclude from new model, as with values this takes precedence over include</p></li>
@@ -1391,10 +1394,10 @@ the new model: you should trust this data</p></li>
 <li><p><strong>deep</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – set to <cite>True</cite> to make a deep copy of the model</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Model</p>
 </dd>
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>new model instance</p>
 </dd>
 </dl>
@@ -1405,7 +1408,7 @@ the new model: you should trust this data</p></li>
 <span class="sig-name descname"><span class="pre">dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_unset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.dict" title="Permalink to this definition">#</a></dt>
 <dd><p>Generate a dictionary representation of the model, optionally specifying which fields to include or exclude.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>DictStrAny</p>
 </dd>
 </dl>
@@ -1415,7 +1418,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.from_orm">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_orm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.from_orm" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1427,7 +1430,7 @@ the new model: you should trust this data</p></li>
 <dd><p>Generate a JSON representation of the model, <cite>include</cite> and <cite>exclude</cite> arguments as per <cite>dict()</cite>.</p>
 <p><cite>encoder</cite> is an optional function to supply as <cite>default</cite> to json.dumps(), other arguments as per <cite>json.dumps()</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>unicode</p>
 </dd>
 </dl>
@@ -1437,7 +1440,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.parse_file">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_pickle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.parse_file" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1447,7 +1450,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.parse_obj">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_obj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.parse_obj" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1457,7 +1460,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.parse_raw">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_pickle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.parse_raw" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1467,7 +1470,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.schema">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#/definitions/{model}'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.schema" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>DictStrAny</p>
 </dd>
 </dl>
@@ -1477,7 +1480,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.schema_json">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">by_alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#/definitions/{model}'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">dumps_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.schema_json" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>unicode</p>
 </dd>
 </dl>
@@ -1488,7 +1491,7 @@ the new model: you should trust this data</p></li>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_forward_refs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">localns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.update_forward_refs" title="Permalink to this definition">#</a></dt>
 <dd><p>Try to update ForwardRefs on fields based on this Model, globalns and localns.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -1498,7 +1501,7 @@ the new model: you should trust this data</p></li>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.validate">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.validate" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Model</p>
 </dd>
 </dl>
@@ -1506,7 +1509,7 @@ the new model: you should trust this data</p></li>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.data">
-<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">docarray.document.pydantic_model.PydanticDocument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">docarray.document.pydantic_model.PydanticDocument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.data" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">PydanticDocument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">PydanticDocument</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.data" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1580,6 +1583,7 @@ the new model: you should trust this data</p></li>
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>

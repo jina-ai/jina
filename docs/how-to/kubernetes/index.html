@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Deploy with Kubernetes" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Monitor via Prometheus and Grafana" href="../monitoring/" /><link rel="prev" title="Deploy with Docker Compose" href="../docker-compose/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/kubernetes.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Deploy with Kubernetes - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,8 +391,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="deploy-with-kubernetes">
-<span id="kubernetes"></span><h1>Deploy with Kubernetes<a class="headerlink" href="#deploy-with-kubernetes" title="Permalink to this headline">#</a></h1>
+                    <section id="deploy-with-kubernetes">
+<span id="kubernetes"></span><h1>Deploy with Kubernetes<a class="headerlink" href="#deploy-with-kubernetes" title="Permalink to this heading">#</a></h1>
 <p>Deploying a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> in Kubernetes is the recommended way of using Jina in production.</p>
 <p>Since a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is composed of <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s which can run in different runtimes depending on how you want to deploy
 your Flow, Kubernetes can easily take over the lifetime management of Executors.</p>
@@ -404,7 +407,7 @@ to your needs, and how to scale Executors using replicas and shards.</p>
 <p>Do you know <a class="reference internal" href="../../fundamentals/jcloud/#jcloud"><span class="std std-ref">JCloud</span></a> simplifies Flow deployment and hosting? It saves all the trouble for you so you can focus on what really matters!</p>
 </div>
 <section id="preliminaries">
-<h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this headline">#</a></h2>
+<h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this heading">#</a></h2>
 <p>To follow along with this how-to, you will need access to a Kubernetes cluster.</p>
 <p>You can either set up <a class="reference external" href="https://minikube.sigs.k8s.io/docs/start/"><code class="docutils literal notranslate"><span class="pre">minikube</span></code></a>, or use one of many managed Kubernetes
 solutions in the cloud:</p>
@@ -416,7 +419,7 @@ solutions in the cloud:</p>
 </ul>
 </section>
 <section id="deploy-a-simple-flow">
-<span id="kubernetes-deploy"></span><h2>Deploy a simple Flow<a class="headerlink" href="#deploy-a-simple-flow" title="Permalink to this headline">#</a></h2>
+<span id="kubernetes-deploy"></span><h2>Deploy a simple Flow<a class="headerlink" href="#deploy-a-simple-flow" title="Permalink to this heading">#</a></h2>
 <p>By <em>simple</em> in this context we mean a Flow without replicated or sharded Executors - you will see how to use those in
 Kubernetes <a class="reference internal" href="#kubernetes-replicas"><span class="std std-ref">later on</span></a>.</p>
 <p>For now, define a Flow.
@@ -431,7 +434,7 @@ You can either do this through the Flow <a class="reference internal" href="../.
 </pre></div>
 </div>
 <p>Here you can essentially define any Flow of your liking.
-Just make sure that all Executors are containerized, either by using <em>‘jinahub+docker’</em>, or by {ref}<code class="docutils literal notranslate"><span class="pre">containerizing</span> <span class="pre">your</span> <span class="pre">local</span> <span class="pre">Executors</span> <span class="pre">&lt;dockerize-exec&gt;</span></code>.</p>
+Just make sure that all Executors are containerized, either by using <em>‘jinahub+docker’</em>, or by <a class="reference internal" href="../../fundamentals/executor/containerize-executor/#dockerize-exec"><span class="std std-ref">containerizing your local Executors</span></a>.</p>
 <p>The example Flow here simply encodes and indexes text or image data using two Executors from the <a class="reference external" href="https://hub.jina.ai/">Jina Hub</a>.</p>
 <p>Next, you can generate Kubernetes YAML configs from the Flow.
 It is good practice to define a new Kubernetes namespace for that purpose:</p>
@@ -507,7 +510,7 @@ indexer-head-6fcc679d95-8mrm6     1/1     Running   0          60m
 </div>
 </section>
 <section id="scaling-executors-flow-with-replicas-and-shards">
-<span id="kubernetes-replicas"></span><h2>Scaling Executors: Flow with replicas and shards<a class="headerlink" href="#scaling-executors-flow-with-replicas-and-shards" title="Permalink to this headline">#</a></h2>
+<span id="kubernetes-replicas"></span><h2>Scaling Executors: Flow with replicas and shards<a class="headerlink" href="#scaling-executors-flow-with-replicas-and-shards" title="Permalink to this heading">#</a></h2>
 <p>Jina supports two ways of scaling:</p>
 <ul class="simple">
 <li><p><strong>Replicas</strong> can be used with any Executor type and is typically used for performance and availability.</p></li>
@@ -524,7 +527,7 @@ Without a service mesh installed in your Kubernetes cluster, all the traffic wil
 If you want to learn more about this limitation, see <a class="reference external" href="https://kubernetes.io/blog/2018/11/07/grpc-load-balancing-on-kubernetes-without-tears/">this</a> Kubernetes Blog post.</p>
 </div>
 <section id="install-a-service-mesh">
-<h3>Install a service mesh<a class="headerlink" href="#install-a-service-mesh" title="Permalink to this headline">#</a></h3>
+<h3>Install a service mesh<a class="headerlink" href="#install-a-service-mesh" title="Permalink to this heading">#</a></h3>
 <p>Service meshes work by attaching a tiny proxy to each of your Kubernetes pods, allowing for smart rerouting, load balancing,
 request retrying, and host of other <a class="reference external" href="https://linkerd.io/2.11/features/">features</a>.</p>
 <p>Jina relies on a service mesh to load balance request between replicas of the same Executor.
@@ -549,7 +552,7 @@ YAML <code class="docutils literal notranslate"><span class="pre">with</span></c
 </div>
 </section>
 <section id="deploy-your-flow-with-shards-and-replicas">
-<h3>Deploy your Flow with shards and replicas<a class="headerlink" href="#deploy-your-flow-with-shards-and-replicas" title="Permalink to this headline">#</a></h3>
+<h3>Deploy your Flow with shards and replicas<a class="headerlink" href="#deploy-your-flow-with-shards-and-replicas" title="Permalink to this heading">#</a></h3>
 <p>After your service mesh is installed, your cluster is ready to run a Flow with scaled Executors.
 You can adapt your Flow from above to work with two replicas for the encoder, and two shards for the indexer:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -594,7 +597,7 @@ You can adapt your Flow from above to work with two replicas for the encoder, an
 </section>
 </section>
 <section id="scaling-the-gateway">
-<h2>Scaling the Gateway<a class="headerlink" href="#scaling-the-gateway" title="Permalink to this headline">#</a></h2>
+<h2>Scaling the Gateway<a class="headerlink" href="#scaling-the-gateway" title="Permalink to this heading">#</a></h2>
 <p>The Gateway is responsible for providing the API of the <a class="reference internal" href="../../fundamentals/gateway/#flow"><span class="std std-ref">Flow</span></a>.
 If you have a large Flow with many Clients and many replicated Executors, the Gateway can become the bottleneck.
 In this case you can also scale up the Gateway deployment to be backed by multiple Kubernetes Pods.
@@ -606,7 +609,7 @@ To expose your Gateway replicas outside Kubernetes, you can add a load balancer 
 </div>
 </section>
 <section id="extra-kubernetes-options">
-<h2>Extra Kubernetes options<a class="headerlink" href="#extra-kubernetes-options" title="Permalink to this headline">#</a></h2>
+<h2>Extra Kubernetes options<a class="headerlink" href="#extra-kubernetes-options" title="Permalink to this heading">#</a></h2>
 <p>One could see that you can’t add basic Kubernetes feature like <code class="docutils literal notranslate"><span class="pre">Secrets</span></code>, <code class="docutils literal notranslate"><span class="pre">ConfigMap</span></code> or <code class="docutils literal notranslate"><span class="pre">Lables</span></code> via the pythonic interface. That is intended
 and it does not mean that we don’t support these features. On the contrary we allow you to fully express your Kubernetes configuration by using the Kubernetes API so that you can add you own Kubernetes standard to jina.</p>
 <div class="hint admonition">
@@ -624,7 +627,7 @@ and it does not mean that we don’t support these features. On the contrary we 
 </ul>
 </section>
 <section id="exposing-your-flow">
-<span id="kubernetes-expose"></span><h2>Exposing your Flow<a class="headerlink" href="#exposing-your-flow" title="Permalink to this headline">#</a></h2>
+<span id="kubernetes-expose"></span><h2>Exposing your Flow<a class="headerlink" href="#exposing-your-flow" title="Permalink to this heading">#</a></h2>
 <p>The previous examples use port-forwarding to index documents to the Flow.
 Thinking about real world applications,
 you might want to expose your service to make it reachable by the users, so that you can serve search requests</p>
@@ -642,7 +645,7 @@ sleep <span class="m">60</span> <span class="c1"># wait until the external ip is
 </pre></div>
 </div>
 <section id="client">
-<h3>Client<a class="headerlink" href="#client" title="Permalink to this headline">#</a></h3>
+<h3>Client<a class="headerlink" href="#client" title="Permalink to this heading">#</a></h3>
 <p>The client sends an image to the exposed <code class="docutils literal notranslate"><span class="pre">Flow</span></code> on <code class="docutils literal notranslate"><span class="pre">$EXTERNAL_IP</span></code> and retrieves the matches retrieved from the Flow.
 Finally, it prints the uri of the closest matches.</p>
 <p>You will need to configure your Client to connect to the Flow via the external IP by doing:</p>
@@ -667,16 +670,16 @@ Finally, it prints the uri of the closest matches.</p>
 </section>
 </section>
 <section id="key-takeaways">
-<h2>Key takeaways<a class="headerlink" href="#key-takeaways" title="Permalink to this headline">#</a></h2>
+<h2>Key takeaways<a class="headerlink" href="#key-takeaways" title="Permalink to this heading">#</a></h2>
 <p>To put it succinctly, there are just three key takeaways about deploying a Jina Flow using Kubernetes:</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">f.to_kubernetes_yaml()</span></code> to generate Kubernetes configuration files from a Jina Flow object</p></li>
 <li><p>Modify the generated files freely - you know better what you need than we do!</p></li>
 <li><p>To enable replicated Executors, use a service mesh</p></li>
 </ol>
 </section>
 <section id="see-also">
-<h2>See also<a class="headerlink" href="#see-also" title="Permalink to this headline">#</a></h2>
+<h2>See also<a class="headerlink" href="#see-also" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../monitoring/#monitoring"><span class="std std-ref">Monitor your Flow once it is deployed</span></a></p></li>
 <li><p><a class="reference internal" href="../../fundamentals/flow/when-things-go-wrong/#flow-error-handling"><span class="std std-ref">See how failures and retries are handled</span></a></p></li>
@@ -797,6 +800,7 @@ Finally, it prints the uri of the closest matches.</p>
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>

@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="On Windows" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Troubleshooting" href="../troubleshooting/" /><link rel="prev" title="Docker image" href="../docker/" />
         <link rel="canonical" href="https://docs.jina.ai/get-started/install/windows.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>On Windows - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
-<ul class="current">
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Install</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../docker/">Docker image</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,8 +391,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="on-windows">
-<span id="jina-on-windows"></span><h1>On Windows<a class="headerlink" href="#on-windows" title="Permalink to this headline">#</a></h1>
+                    <section id="on-windows">
+<span id="jina-on-windows"></span><h1>On Windows<a class="headerlink" href="#on-windows" title="Permalink to this heading">#</a></h1>
 <p>You can install and use Jina on Windows.</p>
 <p>However, Jina is built keeping *nix-based platforms in mind, and the upstream libraries that Jina depends on also follow the similar ideology. Hence, there are some caveats when running Jina on Windows. <a class="reference external" href="https://github.com/jina-ai/jina/issues/">If you face additional issues, please let us know.</a></p>
 <div class="admonition caution">
@@ -403,13 +406,13 @@ Make sure you install WSL<strong>2</strong>.
 Once done, you can install Jina as on a native *nix platform.</p>
 </div>
 <section id="known-issues">
-<h2>Known issues<a class="headerlink" href="#known-issues" title="Permalink to this headline">#</a></h2>
+<h2>Known issues<a class="headerlink" href="#known-issues" title="Permalink to this heading">#</a></h2>
 <section id="multiprocessing-spawn">
-<h3><code class="docutils literal notranslate"><span class="pre">multiprocessing</span> <span class="pre">spawn</span></code><a class="headerlink" href="#multiprocessing-spawn" title="Permalink to this headline">#</a></h3>
-<p>Jina relies heavily on <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> to enable scaling &amp; distribution. Windows only supports <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#the-spawn-and-forkserver-start-methods">spawn start method for multiprocessing</a>, which has a few caveats. <a class="reference external" href="../../../fundamentals/flow/remarks#multiprocessing-spawn">Please follow the guidelines here.</a></p>
+<h3><code class="docutils literal notranslate"><span class="pre">multiprocessing</span> <span class="pre">spawn</span></code><a class="headerlink" href="#multiprocessing-spawn" title="Permalink to this heading">#</a></h3>
+<p>Jina relies heavily on <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> to enable scaling &amp; distribution. Windows only supports <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#the-spawn-and-forkserver-start-methods">spawn start method for multiprocessing</a>, which has a few caveats. <span class="xref myst">Please follow the guidelines here.</span></p>
 </section>
 <section id="compatibility-of-executors-in-the-hub">
-<h3>Compatibility of Executors in the Hub<a class="headerlink" href="#compatibility-of-executors-in-the-hub" title="Permalink to this headline">#</a></h3>
+<h3>Compatibility of Executors in the Hub<a class="headerlink" href="#compatibility-of-executors-in-the-hub" title="Permalink to this heading">#</a></h3>
 <p>We’ve added preliminary support for using Executors listed in the Hub portal. Note that, these Executors are based on *nix OS and might not be compatible to run natively on Windows. Containers that are built on Windows are not yet supported.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -417,7 +420,7 @@ Once done, you can install Jina as on a native *nix platform.</p>
 </div>
 </section>
 <section id="unicodeencodeerror-on-jina-cli">
-<h3><code class="docutils literal notranslate"><span class="pre">UnicodeEncodeError</span></code> on Jina CLI<a class="headerlink" href="#unicodeencodeerror-on-jina-cli" title="Permalink to this headline">#</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">UnicodeEncodeError</span></code> on Jina CLI<a class="headerlink" href="#unicodeencodeerror-on-jina-cli" title="Permalink to this heading">#</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>UnicodeEncodeError: &#39;charmap&#39; codec can&#39;t encode character &#39;\u25ae&#39; in position : character maps to &lt;undefined&gt;
 </pre></div>
 </div>
@@ -529,6 +532,7 @@ Once done, you can install Jina as on a native *nix platform.</p>
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>

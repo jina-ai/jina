@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Debug" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="YAML specification" href="../../fundamentals/executor/hub/yaml-spec/" /><link rel="prev" title="Sandbox" href="../sandbox/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/debug-executor.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Debug - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,15 +391,15 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="debug">
-<span id="debug-executor"></span><h1>Debug<a class="headerlink" href="#debug" title="Permalink to this headline">#</a></h1>
+                    <section id="debug">
+<span id="debug-executor"></span><h1>Debug<a class="headerlink" href="#debug" title="Permalink to this heading">#</a></h1>
 <div class="caution admonition">
 <p class="admonition-title">Not applicable to Containerized Executor</p>
 <p>This does not work for containerized Executors.</p>
 </div>
 <p>It’s very easy to debug Jina Executors. In this How-To, you will learn how to debug <a class="reference external" href="https://hub.jina.ai/executor/9o9yjq1q">Hello Executor</a> step by step.</p>
 <section id="pull-the-executor">
-<h2>Pull the Executor<a class="headerlink" href="#pull-the-executor" title="Permalink to this headline">#</a></h2>
+<h2>Pull the Executor<a class="headerlink" href="#pull-the-executor" title="Permalink to this heading">#</a></h2>
 <p>Pull the source code of the Executor you want to debug. There are two ways to do that.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">via Command Line Interface</label><div class="tab-content docutils">
@@ -414,12 +417,12 @@
 </div>
 </section>
 <section id="set-the-breakpoints">
-<h2>Set the breakpoints<a class="headerlink" href="#set-the-breakpoints" title="Permalink to this headline">#</a></h2>
+<h2>Set the breakpoints<a class="headerlink" href="#set-the-breakpoints" title="Permalink to this heading">#</a></h2>
 <p>Go to <code class="docutils literal notranslate"><span class="pre">~/.jina/hub-package</span></code> directory. In this folder, there will be one subdirectory for each Executor that you pulled, named by the Executor id. You can find the source files of the Executor in this directory.</p>
 <p>Once you locate the source, you can set the breakpoints as you always do.</p>
 </section>
 <section id="debug-your-code">
-<h2>Debug your code<a class="headerlink" href="#debug-your-code" title="Permalink to this headline">#</a></h2>
+<h2>Debug your code<a class="headerlink" href="#debug-your-code" title="Permalink to this heading">#</a></h2>
 <p>Now you can debug your Executor like any Python code. You can either use the Executor on its own or use it inside a Flow.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Executor on its own</label><div class="tab-content docutils">
@@ -548,6 +551,7 @@
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>

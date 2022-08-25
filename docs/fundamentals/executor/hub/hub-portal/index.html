@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Portal" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" /><link rel="next" title="Create" href="../create-hub-executor/" /><link rel="prev" title="Hub" href="../" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/executor/hub/hub-portal.html" />
 
-    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Portal - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../get-started/install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,12 +391,12 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="portal">
-<h1>Portal<a class="headerlink" href="#portal" title="Permalink to this headline">#</a></h1>
+                    <section id="portal">
+<h1>Portal<a class="headerlink" href="#portal" title="Permalink to this heading">#</a></h1>
 <p>Jina Hub is a marketplace for <a class="reference internal" href="../../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s. Here you can upload the Executors you have created or use the ones already developed by the community. If it’s the first time you’re developing your Executor you can start by checking our <span class="xref std std-ref">tutorials</span> that will guide you through the process.</p>
 <p>Let’s see the <a class="reference external" href="https://hub.jina.ai">Hub portal</a> in detail.</p>
 <section id="catalog-page">
-<h2>Catalog page<a class="headerlink" href="#catalog-page" title="Permalink to this headline">#</a></h2>
+<h2>Catalog page<a class="headerlink" href="#catalog-page" title="Permalink to this heading">#</a></h2>
 <p>The main page contains a list of all Executors created by Jina developers all over the world. You will see the Editor’s Pick at the top of the list. Those are the Executors highlighted by the Jina team.</p>
 <figure class="align-center">
 <img alt="../../../../_images/hub-website-list.png" src="../../../../_images/hub-website-list.png" />
@@ -404,7 +407,7 @@
 </figure>
 </section>
 <section id="detail-page">
-<h2>Detail page<a class="headerlink" href="#detail-page" title="Permalink to this headline">#</a></h2>
+<h2>Detail page<a class="headerlink" href="#detail-page" title="Permalink to this heading">#</a></h2>
 <p>After you find an Executor that interests you, you can get more detail by clicking on it. You will see a description of the Executor with basic information, usage, parameters, etc. If you need more details, click “More” and you will be directed to a page with all the information about that Executor.</p>
 <figure class="align-center">
 <img alt="../../../../_images/hub-website-detail.png" src="../../../../_images/hub-website-detail.png" />
@@ -413,7 +416,7 @@
 <figure class="align-center">
 <img alt="../../../../_images/hub-website-detail-arguments.png" src="../../../../_images/hub-website-detail-arguments.png" />
 </figure>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p><strong>Readme</strong> introduces basic information about the Executor, how it works internally, and basic usage.</p></li>
 <li><p><strong>Arguments</strong> describe the detailed API of this Executor. This is generated automatically from the Python docstrings of the Executor so it’s always in sync with the code base, and Executor developers don’t need to write it themselves.</p></li>
 <li><p><strong>Tags</strong> will show you the possible tags available for this Executor. For example, <code class="docutils literal notranslate"><span class="pre">latest</span></code>, <code class="docutils literal notranslate"><span class="pre">latest-gpu</span></code> and so on. It also gives a code snippet to simplify your usage.</p></li>
@@ -421,7 +424,7 @@
 <figure class="align-center">
 <img alt="../../../../_images/hub-website-detail-tag.png" src="../../../../_images/hub-website-detail-tag.png" />
 </figure>
-<ol class="simple">
+<ol class="arabic simple" start="4">
 <li><p><strong>Dependencies</strong> lists all the required Python dependencies to use this Executor</p></li>
 </ol>
 <p>On the right side, you will see two possible ways to use this Executor. Either via Docker image or source code</p>
@@ -531,6 +534,7 @@
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/scripts/furo.js"></script>
     <script src="../../../../_static/clipboard.min.js"></script>

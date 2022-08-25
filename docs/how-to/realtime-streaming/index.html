@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Build real-time streaming service" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Conditional route request inside a Flow" href="../flow-switch/" /><link rel="prev" title="How-To" href="../" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/realtime-streaming.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Build real-time streaming service - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,13 +391,13 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="build-real-time-streaming-service">
-<h1>Build real-time streaming service<a class="headerlink" href="#build-real-time-streaming-service" title="Permalink to this headline">#</a></h1>
+                    <section id="build-real-time-streaming-service">
+<h1>Build real-time streaming service<a class="headerlink" href="#build-real-time-streaming-service" title="Permalink to this heading">#</a></h1>
 <p>In this example, we will build a real-time video streaming service, like Zoom. It allows multiple users to video chat via webcam. The whole solution is in 20 lines of code, showcasing how to powerful and easy to use Jina is.</p>
 <p><img alt="" src="https://user-images.githubusercontent.com/2041322/185625220-40c1f887-3be4-49df-9318-c49e0fb7365e.gif" /></p>
 <p>The source code <a class="reference external" href="https://github.com/jina-ai/jina-video-chat">can be found here</a>.</p>
 <section id="basic-idea">
-<h2>Basic idea<a class="headerlink" href="#basic-idea" title="Permalink to this headline">#</a></h2>
+<h2>Basic idea<a class="headerlink" href="#basic-idea" title="Permalink to this heading">#</a></h2>
 <p>Idea is straightforward:</p>
 <ul class="simple">
 <li><p>It is a client-server architecture;</p></li>
@@ -404,7 +407,7 @@
 </ul>
 </section>
 <section id="client">
-<h2>Client<a class="headerlink" href="#client" title="Permalink to this headline">#</a></h2>
+<h2>Client<a class="headerlink" href="#client" title="Permalink to this heading">#</a></h2>
 <p>The more technical and interesting part is actually on the client side. The key is to set <code class="docutils literal notranslate"><span class="pre">request_size=1</span></code> and use callback to handle response (instead of return).</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -444,7 +447,7 @@
 <p>To achieve real-time streaming, you need to set <code class="docutils literal notranslate"><span class="pre">request_size</span></code> to 1. This means that the client will not do any batching and directly send each Document as a request. You also need to use <a class="reference internal" href="../../fundamentals/client/client/#callback-functions"><span class="std std-ref">Callbacks</span></a> to handle the response. This is different from using the return in many other examples. Callback ensures the user can see the response as soon as it is received.</p>
 </section>
 <section id="server">
-<h2>Server<a class="headerlink" href="#server" title="Permalink to this headline">#</a></h2>
+<h2>Server<a class="headerlink" href="#server" title="Permalink to this heading">#</a></h2>
 <p>Server is super simple. Concat all frames from different users and send back to the client.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
@@ -483,7 +486,7 @@
 </div>
 </section>
 <section id="run">
-<h2>Run<a class="headerlink" href="#run" title="Permalink to this headline">#</a></h2>
+<h2>Run<a class="headerlink" href="#run" title="Permalink to this heading">#</a></h2>
 <p>First run the server:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yml
 </pre></div>
@@ -600,6 +603,7 @@ python client.py grpcs://your-server-address-from-last-image kalim
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>

@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Conditional route request inside a Flow" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Scale out with replicas and shards" href="../scale-out/" /><link rel="prev" title="Build real-time streaming service" href="../realtime-streaming/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/flow-switch.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Conditional route request inside a Flow - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,8 +391,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="conditional-route-request-inside-a-flow">
-<span id="flow-switch"></span><h1>Conditional route request inside a Flow<a class="headerlink" href="#conditional-route-request-inside-a-flow" title="Permalink to this headline">#</a></h1>
+                    <section id="conditional-route-request-inside-a-flow">
+<span id="flow-switch"></span><h1>Conditional route request inside a Flow<a class="headerlink" href="#conditional-route-request-inside-a-flow" title="Permalink to this heading">#</a></h1>
 <p>In this tutorial you will gain a deeper insight into the <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> ‘s <a class="reference internal" href="../../fundamentals/flow/topologies/#flow-filter"><span class="std std-ref">filter condition feature</span></a>.</p>
 <p>In a nutshell, this feature allows every <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> in a Flow do define a filter that can only be passed by Documents that
 fulfill a specified <code class="docutils literal notranslate"><span class="pre">condition</span></code>.</p>
@@ -400,7 +403,7 @@ fulfill a specified <code class="docutils literal notranslate"><span class="pre"
 </div>
 <p>Here you will learn where and how to use this feature, and how you can build <em>selection control</em> into your Flow.</p>
 <section id="why-do-you-need-a-selection-control">
-<h2>Why do you need a selection control?<a class="headerlink" href="#why-do-you-need-a-selection-control" title="Permalink to this headline">#</a></h2>
+<h2>Why do you need a selection control?<a class="headerlink" href="#why-do-you-need-a-selection-control" title="Permalink to this heading">#</a></h2>
 <p><a class="reference internal" href="../../fundamentals/flow/topologies/#flow-complex-topologies"><span class="std std-ref">As you know</span></a>, Jina Flows can define complex topologies that include multiple Executors,
 both in sequence and on parallel branches.</p>
 <p>A simple Flow with parallel branches could be defined like so:</p>
@@ -496,7 +499,7 @@ Sometimes you can’t easily control the endpoints of all Executors, for example
 <p>To solve that problem, you can leverage filter condition to easily add selection control into your Flow.</p>
 </section>
 <section id="define-the-filter-conditions">
-<h2>Define the filter conditions<a class="headerlink" href="#define-the-filter-conditions" title="Permalink to this headline">#</a></h2>
+<h2>Define the filter conditions<a class="headerlink" href="#define-the-filter-conditions" title="Permalink to this heading">#</a></h2>
 <p>In a Jina Flow, you can use the <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions">DocArray query language</a> to specify a filter condition for every
 Executor.</p>
 <p>To do this, you pass a condition to the <code class="docutils literal notranslate"><span class="pre">when</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">flow.add()</span></code>:</p>
@@ -520,7 +523,7 @@ a condition accordingly.</p>
 </div>
 <p>These conditions specify that only Documents that hold data of a specific modality can pass the filter.</p>
 <section id="try-the-filters-outside-the-flow">
-<h3>Try the filters outside the Flow<a class="headerlink" href="#try-the-filters-outside-the-flow" title="Permalink to this headline">#</a></h3>
+<h3>Try the filters outside the Flow<a class="headerlink" href="#try-the-filters-outside-the-flow" title="Permalink to this heading">#</a></h3>
 <p>You can try the conditions directly on your data, outside the Flow:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">filtered_text_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">text_condition</span><span class="p">)</span>
 <span class="n">filtered_image_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">tensor_condition</span><span class="p">)</span>
@@ -544,7 +547,7 @@ That’s exactly what you want for your filter!</p>
 </section>
 </section>
 <section id="build-the-flow">
-<h2>Build the Flow<a class="headerlink" href="#build-the-flow" title="Permalink to this headline">#</a></h2>
+<h2>Build the Flow<a class="headerlink" href="#build-the-flow" title="Permalink to this heading">#</a></h2>
 <p>Finally, you can assemble your Flow using these conditions and the Indexers from above.
 This time there is no need to choose different Executor endpoints for the Indexers, since the filters take care of the
 selection control logic.</p>
@@ -600,7 +603,7 @@ selection control logic.</p>
 Text and image data should be treated separately.</p>
 </section>
 <section id="index-the-data">
-<h2>Index the data<a class="headerlink" href="#index-the-data" title="Permalink to this headline">#</a></h2>
+<h2>Index the data<a class="headerlink" href="#index-the-data" title="Permalink to this heading">#</a></h2>
 <p>If you now send your data to the Flow, you expect that only your image data will be sent to <code class="docutils literal notranslate"><span class="pre">ImageIndexer</span></code>, and only your
 text data will be sent to <code class="docutils literal notranslate"><span class="pre">TextIndexer</span></code>.</p>
 <p>Let’s take a look:</p>
@@ -625,14 +628,14 @@ Embedded by: imageIndexer<span class="p">;</span> Text: , Image: <span class="o"
 And remember, with this solution the Documents don’t even get <em>sent</em> to the incorrect Executor.</p>
 </section>
 <section id="what-s-next">
-<h2>What’s next<a class="headerlink" href="#what-s-next" title="Permalink to this headline">#</a></h2>
+<h2>What’s next<a class="headerlink" href="#what-s-next" title="Permalink to this heading">#</a></h2>
 <p>Now that you know how to use filter conditions to add selection control, you can leverage this feature to build all kinds of business logic.</p>
 <p>You could differentiate between more than just two different data modalities, you could direct requests based on the Client they come from,
 ignore Documents that don’t meet certain quality criteria, or route data to specialized Executors based on what the data
 itself looks like. Your imagination is the limit!</p>
 </section>
 <section id="see-also">
-<h2>See also<a class="headerlink" href="#see-also" title="Permalink to this headline">#</a></h2>
+<h2>See also<a class="headerlink" href="#see-also" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../docker-compose/#docker-compose"><span class="std std-ref">How to run your Flow with Docker Compose</span></a></p></li>
 <li><p><a class="reference internal" href="../kubernetes/#kubernetes"><span class="std std-ref">How to deploy your Flow on Kubernetes</span></a></p></li>
@@ -747,6 +750,7 @@ itself looks like. Your imagination is the limit!</p>
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>

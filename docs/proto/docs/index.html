@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Protocol Documentation" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Environment Variables" href="../../envs/" /><link rel="prev" title="YAML Specification" href="../../yaml-spec/" />
         <link rel="canonical" href="https://docs.jina.ai/proto/docs.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Protocol Documentation - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,211 +391,205 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="protocol-documentation">
-<h1>Protocol Documentation<a class="headerlink" href="#protocol-documentation" title="Permalink to this headline">#</a></h1>
+                    <section id="protocol-documentation">
+<h1>Protocol Documentation<a class="headerlink" href="#protocol-documentation" title="Permalink to this heading">#</a></h1>
 <p><a name="top"></a></p>
 <section id="table-of-contents">
-<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">#</a></h2>
+<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p><a class="reference external" href="#docarray-proto">docarray.proto</a></p>
+<li><p><span class="xref myst">docarray.proto</span></p>
 <ul>
-<li><p><a class="reference external" href="#docarray-DocumentArrayProto">DocumentArrayProto</a></p></li>
+<li><p><span class="xref myst">DocumentArrayProto</span></p></li>
 </ul>
 </li>
-<li><p><a class="reference external" href="#jina-proto">jina.proto</a></p>
+<li><p><span class="xref myst">jina.proto</span></p>
 <ul>
-<li><p><a class="reference external" href="#jina-DataRequestListProto">DataRequestListProto</a></p></li>
-<li><p><a class="reference external" href="#jina-DataRequestProto">DataRequestProto</a></p></li>
-<li><p><a class="reference external" href="#jina-DataRequestProto-DataContentProto">DataRequestProto.DataContentProto</a></p></li>
-<li><p><a class="reference external" href="#jina-DataRequestProtoWoData">DataRequestProtoWoData</a></p></li>
-<li><p><a class="reference external" href="#jina-EndpointsProto">EndpointsProto</a></p></li>
-<li><p><a class="reference external" href="#jina-HeaderProto">HeaderProto</a></p></li>
-<li><p><a class="reference external" href="#jina-JinaInfoProto">JinaInfoProto</a></p></li>
-<li><p><a class="reference external" href="#jina-JinaInfoProto-EnvsEntry">JinaInfoProto.EnvsEntry</a></p></li>
-<li><p><a class="reference external" href="#jina-JinaInfoProto-JinaEntry">JinaInfoProto.JinaEntry</a></p></li>
-<li><p><a class="reference external" href="#jina-RelatedEntity">RelatedEntity</a></p></li>
-<li><p><a class="reference external" href="#jina-RouteProto">RouteProto</a></p></li>
-<li><p><a class="reference external" href="#jina-StatusProto">StatusProto</a></p></li>
-<li><p><a class="reference external" href="#jina-StatusProto-ExceptionProto">StatusProto.ExceptionProto</a></p></li>
-<li><p><a class="reference external" href="#jina-StatusProto-StatusCode">StatusProto.StatusCode</a></p></li>
-<li><p><a class="reference external" href="#jina-JinaDataRequestRPC">JinaDataRequestRPC</a></p></li>
-<li><p><a class="reference external" href="#jina-JinaDiscoverEndpointsRPC">JinaDiscoverEndpointsRPC</a></p></li>
-<li><p><a class="reference external" href="#jina-JinaGatewayDryRunRPC">JinaGatewayDryRunRPC</a></p></li>
-<li><p><a class="reference external" href="#jina-JinaInfoRPC">JinaInfoRPC</a></p></li>
-<li><p><a class="reference external" href="#jina-JinaRPC">JinaRPC</a></p></li>
-<li><p><a class="reference external" href="#jina-JinaSingleDataRequestRPC">JinaSingleDataRequestRPC</a></p></li>
+<li><p><span class="xref myst">DataRequestListProto</span></p></li>
+<li><p><span class="xref myst">DataRequestProto</span></p></li>
+<li><p><span class="xref myst">DataRequestProto.DataContentProto</span></p></li>
+<li><p><span class="xref myst">DataRequestProtoWoData</span></p></li>
+<li><p><span class="xref myst">EndpointsProto</span></p></li>
+<li><p><span class="xref myst">HeaderProto</span></p></li>
+<li><p><span class="xref myst">JinaInfoProto</span></p></li>
+<li><p><span class="xref myst">JinaInfoProto.EnvsEntry</span></p></li>
+<li><p><span class="xref myst">JinaInfoProto.JinaEntry</span></p></li>
+<li><p><span class="xref myst">RelatedEntity</span></p></li>
+<li><p><span class="xref myst">RouteProto</span></p></li>
+<li><p><span class="xref myst">StatusProto</span></p></li>
+<li><p><span class="xref myst">StatusProto.ExceptionProto</span></p></li>
+<li><p><span class="xref myst">StatusProto.StatusCode</span></p></li>
+<li><p><span class="xref myst">JinaDataRequestRPC</span></p></li>
+<li><p><span class="xref myst">JinaDiscoverEndpointsRPC</span></p></li>
+<li><p><span class="xref myst">JinaGatewayDryRunRPC</span></p></li>
+<li><p><span class="xref myst">JinaInfoRPC</span></p></li>
+<li><p><span class="xref myst">JinaRPC</span></p></li>
+<li><p><span class="xref myst">JinaSingleDataRequestRPC</span></p></li>
 </ul>
 </li>
-<li><p><a class="reference external" href="#scalar-value-types">Scalar Value Types</a></p></li>
+<li><p><span class="xref myst">Scalar Value Types</span></p></li>
 </ul>
 <p><a name="docarray-proto"></a></p>
 <p align="right"><a href="#top">Top</a></p>
 </section>
 <section id="docarray-proto">
-<h2>docarray.proto<a class="headerlink" href="#docarray-proto" title="Permalink to this headline">#</a></h2>
+<h2>docarray.proto<a class="headerlink" href="#docarray-proto" title="Permalink to this heading">#</a></h2>
 <p><a name="docarray-DocumentArrayProto"></a></p>
 <section id="documentarrayproto">
-<h3>DocumentArrayProto<a class="headerlink" href="#documentarrayproto" title="Permalink to this headline">#</a></h3>
+<h3>DocumentArrayProto<a class="headerlink" href="#documentarrayproto" title="Permalink to this heading">#</a></h3>
 <p>this file is just a place holder for the DA coming from docarray dependency</p>
 <p><a name="jina-proto"></a></p>
 <p align="right"><a href="#top">Top</a></p>
 </section>
 </section>
 <section id="jina-proto">
-<h2>jina.proto<a class="headerlink" href="#jina-proto" title="Permalink to this headline">#</a></h2>
+<h2>jina.proto<a class="headerlink" href="#jina-proto" title="Permalink to this heading">#</a></h2>
 <p><a name="jina-DataRequestListProto"></a></p>
 <section id="datarequestlistproto">
-<h3>DataRequestListProto<a class="headerlink" href="#datarequestlistproto" title="Permalink to this headline">#</a></h3>
+<h3>DataRequestListProto<a class="headerlink" href="#datarequestlistproto" title="Permalink to this heading">#</a></h3>
 <p>Represents a list of data requests
 This should be replaced by streaming</p>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Label</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>requests</td>
-<td><a href="#jina-DataRequestProto">DataRequestProto</a></td>
-<td>repeated</td>
-<td>requests in this list</td>
+<tr class="row-even"><td><p>requests</p></td>
+<td><p><span class="xref myst">DataRequestProto</span></p></td>
+<td><p>repeated</p></td>
+<td><p>requests in this list</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-DataRequestProto"></a></p>
 </section>
 <section id="datarequestproto">
-<h3>DataRequestProto<a class="headerlink" href="#datarequestproto" title="Permalink to this headline">#</a></h3>
+<h3>DataRequestProto<a class="headerlink" href="#datarequestproto" title="Permalink to this heading">#</a></h3>
 <p>Represents a DataRequest</p>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Label</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>header</td>
-<td><a href="#jina-HeaderProto">HeaderProto</a></td>
-<td></td>
-<td>header contains meta info defined by the user</td>
+<tr class="row-even"><td><p>header</p></td>
+<td><p><span class="xref myst">HeaderProto</span></p></td>
+<td><p></p></td>
+<td><p>header contains meta info defined by the user</p></td>
 </tr>
-<tr>
-<td>parameters</td>
-<td><a href="#google-protobuf-Struct">google.protobuf.Struct</a></td>
-<td></td>
-<td>extra kwargs that will be used in executor</td>
+<tr class="row-odd"><td><p>parameters</p></td>
+<td><p><span class="xref myst">google.protobuf.Struct</span></p></td>
+<td><p></p></td>
+<td><p>extra kwargs that will be used in executor</p></td>
 </tr>
-<tr>
-<td>routes</td>
-<td><a href="#jina-RouteProto">RouteProto</a></td>
-<td>repeated</td>
-<td>status info on every routes</td>
+<tr class="row-even"><td><p>routes</p></td>
+<td><p><span class="xref myst">RouteProto</span></p></td>
+<td><p>repeated</p></td>
+<td><p>status info on every routes</p></td>
 </tr>
-<tr>
-<td>data</td>
-<td><a href="#jina-DataRequestProto-DataContentProto">DataRequestProto.DataContentProto</a></td>
-<td></td>
-<td>container for docs and groundtruths</td>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p><span class="xref myst">DataRequestProto.DataContentProto</span></p></td>
+<td><p></p></td>
+<td><p>container for docs and groundtruths</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-DataRequestProto-DataContentProto"></a></p>
 </section>
 <section id="datarequestproto-datacontentproto">
-<h3>DataRequestProto.DataContentProto<a class="headerlink" href="#datarequestproto-datacontentproto" title="Permalink to this headline">#</a></h3>
-<table border="1" class="docutils">
+<h3>DataRequestProto.DataContentProto<a class="headerlink" href="#datarequestproto-datacontentproto" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Label</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>docs</td>
-<td><a href="#docarray-DocumentArrayProto">docarray.DocumentArrayProto</a></td>
-<td></td>
-<td>the docs in this request</td>
+<tr class="row-even"><td><p>docs</p></td>
+<td><p><span class="xref myst">docarray.DocumentArrayProto</span></p></td>
+<td><p></p></td>
+<td><p>the docs in this request</p></td>
 </tr>
-<tr>
-<td>docs_bytes</td>
-<td><a href="#bytes">bytes</a></td>
-<td></td>
-<td>the docs in this request as bytes</td>
+<tr class="row-odd"><td><p>docs_bytes</p></td>
+<td><p><span class="xref myst">bytes</span></p></td>
+<td><p></p></td>
+<td><p>the docs in this request as bytes</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-DataRequestProtoWoData"></a></p>
 </section>
 <section id="datarequestprotowodata">
-<h3>DataRequestProtoWoData<a class="headerlink" href="#datarequestprotowodata" title="Permalink to this headline">#</a></h3>
-<table border="1" class="docutils">
+<h3>DataRequestProtoWoData<a class="headerlink" href="#datarequestprotowodata" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Label</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>header</td>
-<td><a href="#jina-HeaderProto">HeaderProto</a></td>
-<td></td>
-<td>header contains meta info defined by the user</td>
+<tr class="row-even"><td><p>header</p></td>
+<td><p><span class="xref myst">HeaderProto</span></p></td>
+<td><p></p></td>
+<td><p>header contains meta info defined by the user</p></td>
 </tr>
-<tr>
-<td>parameters</td>
-<td><a href="#google-protobuf-Struct">google.protobuf.Struct</a></td>
-<td></td>
-<td>extra kwargs that will be used in executor</td>
+<tr class="row-odd"><td><p>parameters</p></td>
+<td><p><span class="xref myst">google.protobuf.Struct</span></p></td>
+<td><p></p></td>
+<td><p>extra kwargs that will be used in executor</p></td>
 </tr>
-<tr>
-<td>routes</td>
-<td><a href="#jina-RouteProto">RouteProto</a></td>
-<td>repeated</td>
-<td>status info on every routes</td>
+<tr class="row-even"><td><p>routes</p></td>
+<td><p><span class="xref myst">RouteProto</span></p></td>
+<td><p>repeated</p></td>
+<td><p>status info on every routes</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-EndpointsProto"></a></p>
 </section>
 <section id="endpointsproto">
-<h3>EndpointsProto<a class="headerlink" href="#endpointsproto" title="Permalink to this headline">#</a></h3>
+<h3>EndpointsProto<a class="headerlink" href="#endpointsproto" title="Permalink to this heading">#</a></h3>
 <p>Represents the set of Endpoints exposed by an Executor</p>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Label</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>endpoints</td>
-<td><a href="#string">string</a></td>
-<td>repeated</td>
-<td>list of endpoints exposed by an Executor</td>
+<tr class="row-even"><td><p>endpoints</p></td>
+<td><p><span class="xref myst">string</span></p></td>
+<td><p>repeated</p></td>
+<td><p>list of endpoints exposed by an Executor</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-HeaderProto"></a></p>
 </section>
 <section id="headerproto">
-<h3>HeaderProto<a class="headerlink" href="#headerproto" title="Permalink to this headline">#</a></h3>
+<h3>HeaderProto<a class="headerlink" href="#headerproto" title="Permalink to this heading">#</a></h3>
 <p>Represents a Header.</p>
 <ul class="simple">
 <li><p>The header’s content will be defined by the user request.</p></li>
@@ -600,642 +597,609 @@ This should be replaced by streaming</p>
 <li><p>In-flow operations will modify the envelope.header</p></li>
 <li><p>While returning, copy envelope.header back to request.header</p></li>
 </ul>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Label</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>request_id</td>
-<td><a href="#string">string</a></td>
-<td></td>
-<td>the unique ID of this request. Multiple requests with the same ID will be gathered</td>
+<tr class="row-even"><td><p>request_id</p></td>
+<td><p><span class="xref myst">string</span></p></td>
+<td><p></p></td>
+<td><p>the unique ID of this request. Multiple requests with the same ID will be gathered</p></td>
 </tr>
-<tr>
-<td>status</td>
-<td><a href="#jina-StatusProto">StatusProto</a></td>
-<td></td>
-<td>status info</td>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p><span class="xref myst">StatusProto</span></p></td>
+<td><p></p></td>
+<td><p>status info</p></td>
 </tr>
-<tr>
-<td>exec_endpoint</td>
-<td><a href="#string">string</a></td>
-<td>optional</td>
-<td>the endpoint specified by <code>@requests(on=&amp;#39;/abc&amp;#39;)</code></td>
+<tr class="row-even"><td><p>exec_endpoint</p></td>
+<td><p><span class="xref myst">string</span></p></td>
+<td><p>optional</p></td>
+<td><p>the endpoint specified by <code class="docutils literal notranslate"><span class="pre">&#64;requests(on=&amp;#39;/abc&amp;#39;)</span></code></p></td>
 </tr>
-<tr>
-<td>target_executor</td>
-<td><a href="#string">string</a></td>
-<td>optional</td>
-<td>if set, the request is targeted to certain executor, regex strings</td>
+<tr class="row-odd"><td><p>target_executor</p></td>
+<td><p><span class="xref myst">string</span></p></td>
+<td><p>optional</p></td>
+<td><p>if set, the request is targeted to certain executor, regex strings</p></td>
 </tr>
-<tr>
-<td>timeout</td>
-<td><a href="#uint32">uint32</a></td>
-<td>optional</td>
-<td>epoch time in seconds after which the request should be dropped</td>
+<tr class="row-even"><td><p>timeout</p></td>
+<td><p><span class="xref myst">uint32</span></p></td>
+<td><p>optional</p></td>
+<td><p>epoch time in seconds after which the request should be dropped</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-JinaInfoProto"></a></p>
 </section>
 <section id="jinainfoproto">
-<h3>JinaInfoProto<a class="headerlink" href="#jinainfoproto" title="Permalink to this headline">#</a></h3>
-<table border="1" class="docutils">
+<h3>JinaInfoProto<a class="headerlink" href="#jinainfoproto" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Label</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>jina</td>
-<td><a href="#jina-JinaInfoProto-JinaEntry">JinaInfoProto.JinaEntry</a></td>
-<td>repeated</td>
-<td>information about the system running and package version information including jina</td>
+<tr class="row-even"><td><p>jina</p></td>
+<td><p><span class="xref myst">JinaInfoProto.JinaEntry</span></p></td>
+<td><p>repeated</p></td>
+<td><p>information about the system running and package version information including jina</p></td>
 </tr>
-<tr>
-<td>envs</td>
-<td><a href="#jina-JinaInfoProto-EnvsEntry">JinaInfoProto.EnvsEntry</a></td>
-<td>repeated</td>
-<td>the environment variable setting</td>
+<tr class="row-odd"><td><p>envs</p></td>
+<td><p><span class="xref myst">JinaInfoProto.EnvsEntry</span></p></td>
+<td><p>repeated</p></td>
+<td><p>the environment variable setting</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-JinaInfoProto-EnvsEntry"></a></p>
 </section>
 <section id="jinainfoproto-envsentry">
-<h3>JinaInfoProto.EnvsEntry<a class="headerlink" href="#jinainfoproto-envsentry" title="Permalink to this headline">#</a></h3>
-<table border="1" class="docutils">
+<h3>JinaInfoProto.EnvsEntry<a class="headerlink" href="#jinainfoproto-envsentry" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Label</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>key</td>
-<td><a href="#string">string</a></td>
-<td></td>
-<td></td>
+<tr class="row-even"><td><p>key</p></td>
+<td><p><span class="xref myst">string</span></p></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr>
-<td>value</td>
-<td><a href="#string">string</a></td>
-<td></td>
-<td></td>
+<tr class="row-odd"><td><p>value</p></td>
+<td><p><span class="xref myst">string</span></p></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-JinaInfoProto-JinaEntry"></a></p>
 </section>
 <section id="jinainfoproto-jinaentry">
-<h3>JinaInfoProto.JinaEntry<a class="headerlink" href="#jinainfoproto-jinaentry" title="Permalink to this headline">#</a></h3>
-<table border="1" class="docutils">
+<h3>JinaInfoProto.JinaEntry<a class="headerlink" href="#jinainfoproto-jinaentry" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Label</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>key</td>
-<td><a href="#string">string</a></td>
-<td></td>
-<td></td>
+<tr class="row-even"><td><p>key</p></td>
+<td><p><span class="xref myst">string</span></p></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr>
-<td>value</td>
-<td><a href="#string">string</a></td>
-<td></td>
-<td></td>
+<tr class="row-odd"><td><p>value</p></td>
+<td><p><span class="xref myst">string</span></p></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-RelatedEntity"></a></p>
 </section>
 <section id="relatedentity">
-<h3>RelatedEntity<a class="headerlink" href="#relatedentity" title="Permalink to this headline">#</a></h3>
+<h3>RelatedEntity<a class="headerlink" href="#relatedentity" title="Permalink to this heading">#</a></h3>
 <p>Represents an entity (like an ExecutorRuntime)</p>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Label</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>id</td>
-<td><a href="#string">string</a></td>
-<td></td>
-<td>unique id of the entity, like the name of a pod</td>
+<tr class="row-even"><td><p>id</p></td>
+<td><p><span class="xref myst">string</span></p></td>
+<td><p></p></td>
+<td><p>unique id of the entity, like the name of a pod</p></td>
 </tr>
-<tr>
-<td>address</td>
-<td><a href="#string">string</a></td>
-<td></td>
-<td>address of the entity, could be an IP address, domain name etc, does not include port</td>
+<tr class="row-odd"><td><p>address</p></td>
+<td><p><span class="xref myst">string</span></p></td>
+<td><p></p></td>
+<td><p>address of the entity, could be an IP address, domain name etc, does not include port</p></td>
 </tr>
-<tr>
-<td>port</td>
-<td><a href="#uint32">uint32</a></td>
-<td></td>
-<td>port this entity is listening on</td>
+<tr class="row-even"><td><p>port</p></td>
+<td><p><span class="xref myst">uint32</span></p></td>
+<td><p></p></td>
+<td><p>port this entity is listening on</p></td>
 </tr>
-<tr>
-<td>shard_id</td>
-<td><a href="#uint32">uint32</a></td>
-<td>optional</td>
-<td>the id of the shard it belongs to, if it is a shard</td>
+<tr class="row-odd"><td><p>shard_id</p></td>
+<td><p><span class="xref myst">uint32</span></p></td>
+<td><p>optional</p></td>
+<td><p>the id of the shard it belongs to, if it is a shard</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-RouteProto"></a></p>
 </section>
 <section id="routeproto">
-<h3>RouteProto<a class="headerlink" href="#routeproto" title="Permalink to this headline">#</a></h3>
+<h3>RouteProto<a class="headerlink" href="#routeproto" title="Permalink to this heading">#</a></h3>
 <p>Represents a the route paths of this message as perceived by the Gateway
 start_time is set when the Gateway sends a message to a Pod
 end_time is set when the Gateway receives a message from a Pod
 thus end_time - start_time includes Executor computation, runtime overhead, serialization and network</p>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Label</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>executor</td>
-<td><a href="#string">string</a></td>
-<td></td>
-<td>the name of the BasePod</td>
+<tr class="row-even"><td><p>executor</p></td>
+<td><p><span class="xref myst">string</span></p></td>
+<td><p></p></td>
+<td><p>the name of the BasePod</p></td>
 </tr>
-<tr>
-<td>start_time</td>
-<td><a href="#google-protobuf-Timestamp">google.protobuf.Timestamp</a></td>
-<td></td>
-<td>time when the Gateway starts sending to the Pod</td>
+<tr class="row-odd"><td><p>start_time</p></td>
+<td><p><span class="xref myst">google.protobuf.Timestamp</span></p></td>
+<td><p></p></td>
+<td><p>time when the Gateway starts sending to the Pod</p></td>
 </tr>
-<tr>
-<td>end_time</td>
-<td><a href="#google-protobuf-Timestamp">google.protobuf.Timestamp</a></td>
-<td></td>
-<td>time when the Gateway received it from the Pod</td>
+<tr class="row-even"><td><p>end_time</p></td>
+<td><p><span class="xref myst">google.protobuf.Timestamp</span></p></td>
+<td><p></p></td>
+<td><p>time when the Gateway received it from the Pod</p></td>
 </tr>
-<tr>
-<td>status</td>
-<td><a href="#jina-StatusProto">StatusProto</a></td>
-<td></td>
-<td>the status of the execution</td>
+<tr class="row-odd"><td><p>status</p></td>
+<td><p><span class="xref myst">StatusProto</span></p></td>
+<td><p></p></td>
+<td><p>the status of the execution</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-StatusProto"></a></p>
 </section>
 <section id="statusproto">
-<h3>StatusProto<a class="headerlink" href="#statusproto" title="Permalink to this headline">#</a></h3>
+<h3>StatusProto<a class="headerlink" href="#statusproto" title="Permalink to this heading">#</a></h3>
 <p>Represents a Status</p>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Label</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>code</td>
-<td><a href="#jina-StatusProto-StatusCode">StatusProto.StatusCode</a></td>
-<td></td>
-<td>status code</td>
+<tr class="row-even"><td><p>code</p></td>
+<td><p><span class="xref myst">StatusProto.StatusCode</span></p></td>
+<td><p></p></td>
+<td><p>status code</p></td>
 </tr>
-<tr>
-<td>description</td>
-<td><a href="#string">string</a></td>
-<td></td>
-<td>error description of the very first exception</td>
+<tr class="row-odd"><td><p>description</p></td>
+<td><p><span class="xref myst">string</span></p></td>
+<td><p></p></td>
+<td><p>error description of the very first exception</p></td>
 </tr>
-<tr>
-<td>exception</td>
-<td><a href="#jina-StatusProto-ExceptionProto">StatusProto.ExceptionProto</a></td>
-<td></td>
-<td>the details of the error</td>
+<tr class="row-even"><td><p>exception</p></td>
+<td><p><span class="xref myst">StatusProto.ExceptionProto</span></p></td>
+<td><p></p></td>
+<td><p>the details of the error</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-StatusProto-ExceptionProto"></a></p>
 </section>
 <section id="statusproto-exceptionproto">
-<h3>StatusProto.ExceptionProto<a class="headerlink" href="#statusproto-exceptionproto" title="Permalink to this headline">#</a></h3>
-<table border="1" class="docutils">
+<h3>StatusProto.ExceptionProto<a class="headerlink" href="#statusproto-exceptionproto" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Label</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Label</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>name</td>
-<td><a href="#string">string</a></td>
-<td></td>
-<td>the class name of the exception</td>
+<tr class="row-even"><td><p>name</p></td>
+<td><p><span class="xref myst">string</span></p></td>
+<td><p></p></td>
+<td><p>the class name of the exception</p></td>
 </tr>
-<tr>
-<td>args</td>
-<td><a href="#string">string</a></td>
-<td>repeated</td>
-<td>the list of arguments given to the exception constructor.</td>
+<tr class="row-odd"><td><p>args</p></td>
+<td><p><span class="xref myst">string</span></p></td>
+<td><p>repeated</p></td>
+<td><p>the list of arguments given to the exception constructor.</p></td>
 </tr>
-<tr>
-<td>stacks</td>
-<td><a href="#string">string</a></td>
-<td>repeated</td>
-<td>the exception traceback stacks</td>
+<tr class="row-even"><td><p>stacks</p></td>
+<td><p><span class="xref myst">string</span></p></td>
+<td><p>repeated</p></td>
+<td><p>the exception traceback stacks</p></td>
 </tr>
-<tr>
-<td>executor</td>
-<td><a href="#string">string</a></td>
-<td></td>
-<td>the name of the executor bind to that Executor (if applicable)</td>
+<tr class="row-odd"><td><p>executor</p></td>
+<td><p><span class="xref myst">string</span></p></td>
+<td><p></p></td>
+<td><p>the name of the executor bind to that Executor (if applicable)</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-StatusProto-StatusCode"></a></p>
 </section>
 <section id="statusproto-statuscode">
-<h3>StatusProto.StatusCode<a class="headerlink" href="#statusproto-statuscode" title="Permalink to this headline">#</a></h3>
-<table border="1" class="docutils">
+<h3>StatusProto.StatusCode<a class="headerlink" href="#statusproto-statuscode" title="Permalink to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Name</th>
-<th>Number</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Number</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>SUCCESS</td>
-<td>0</td>
-<td>success</td>
+<tr class="row-even"><td><p>SUCCESS</p></td>
+<td><p>0</p></td>
+<td><p>success</p></td>
 </tr>
-<tr>
-<td>ERROR</td>
-<td>1</td>
-<td>error</td>
+<tr class="row-odd"><td><p>ERROR</p></td>
+<td><p>1</p></td>
+<td><p>error</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-JinaDataRequestRPC"></a></p>
 </section>
 <section id="jinadatarequestrpc">
-<h3>JinaDataRequestRPC<a class="headerlink" href="#jinadatarequestrpc" title="Permalink to this headline">#</a></h3>
+<h3>JinaDataRequestRPC<a class="headerlink" href="#jinadatarequestrpc" title="Permalink to this heading">#</a></h3>
 <p>jina gRPC service for DataRequests.</p>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Method Name</th>
-<th>Request Type</th>
-<th>Response Type</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Method Name</p></th>
+<th class="head"><p>Request Type</p></th>
+<th class="head"><p>Response Type</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>process_data</td>
-<td><a href="#jina-DataRequestListProto">DataRequestListProto</a></td>
-<td><a href="#jina-DataRequestProto">DataRequestProto</a></td>
-<td>Used for passing DataRequests to the Executors</td>
+<tr class="row-even"><td><p>process_data</p></td>
+<td><p><span class="xref myst">DataRequestListProto</span></p></td>
+<td><p><span class="xref myst">DataRequestProto</span></p></td>
+<td><p>Used for passing DataRequests to the Executors</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-JinaDiscoverEndpointsRPC"></a></p>
 </section>
 <section id="jinadiscoverendpointsrpc">
-<h3>JinaDiscoverEndpointsRPC<a class="headerlink" href="#jinadiscoverendpointsrpc" title="Permalink to this headline">#</a></h3>
+<h3>JinaDiscoverEndpointsRPC<a class="headerlink" href="#jinadiscoverendpointsrpc" title="Permalink to this heading">#</a></h3>
 <p>jina gRPC service to expose Endpoints from Executors.</p>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Method Name</th>
-<th>Request Type</th>
-<th>Response Type</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Method Name</p></th>
+<th class="head"><p>Request Type</p></th>
+<th class="head"><p>Response Type</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>endpoint_discovery</td>
-<td><a href="#google-protobuf-Empty">.google.protobuf.Empty</a></td>
-<td><a href="#jina-EndpointsProto">EndpointsProto</a></td>
-<td></td>
+<tr class="row-even"><td><p>endpoint_discovery</p></td>
+<td><p><span class="xref myst">.google.protobuf.Empty</span></p></td>
+<td><p><span class="xref myst">EndpointsProto</span></p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-JinaGatewayDryRunRPC"></a></p>
 </section>
 <section id="jinagatewaydryrunrpc">
-<h3>JinaGatewayDryRunRPC<a class="headerlink" href="#jinagatewaydryrunrpc" title="Permalink to this headline">#</a></h3>
+<h3>JinaGatewayDryRunRPC<a class="headerlink" href="#jinagatewaydryrunrpc" title="Permalink to this heading">#</a></h3>
 <p>jina gRPC service to expose Endpoints from Executors.</p>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Method Name</th>
-<th>Request Type</th>
-<th>Response Type</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Method Name</p></th>
+<th class="head"><p>Request Type</p></th>
+<th class="head"><p>Response Type</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>dry_run</td>
-<td><a href="#google-protobuf-Empty">.google.protobuf.Empty</a></td>
-<td><a href="#jina-StatusProto">StatusProto</a></td>
-<td></td>
+<tr class="row-even"><td><p>dry_run</p></td>
+<td><p><span class="xref myst">.google.protobuf.Empty</span></p></td>
+<td><p><span class="xref myst">StatusProto</span></p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-JinaInfoRPC"></a></p>
 </section>
 <section id="jinainforpc">
-<h3>JinaInfoRPC<a class="headerlink" href="#jinainforpc" title="Permalink to this headline">#</a></h3>
+<h3>JinaInfoRPC<a class="headerlink" href="#jinainforpc" title="Permalink to this heading">#</a></h3>
 <p>jina gRPC service to expose information about running jina version and environment.</p>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Method Name</th>
-<th>Request Type</th>
-<th>Response Type</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Method Name</p></th>
+<th class="head"><p>Request Type</p></th>
+<th class="head"><p>Response Type</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>_status</td>
-<td><a href="#google-protobuf-Empty">.google.protobuf.Empty</a></td>
-<td><a href="#jina-JinaInfoProto">JinaInfoProto</a></td>
-<td></td>
+<tr class="row-even"><td><p>_status</p></td>
+<td><p><span class="xref myst">.google.protobuf.Empty</span></p></td>
+<td><p><span class="xref myst">JinaInfoProto</span></p></td>
+<td><p></p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-JinaRPC"></a></p>
 </section>
 <section id="jinarpc">
-<h3>JinaRPC<a class="headerlink" href="#jinarpc" title="Permalink to this headline">#</a></h3>
+<h3>JinaRPC<a class="headerlink" href="#jinarpc" title="Permalink to this heading">#</a></h3>
 <p>jina Gateway gRPC service.</p>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Method Name</th>
-<th>Request Type</th>
-<th>Response Type</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Method Name</p></th>
+<th class="head"><p>Request Type</p></th>
+<th class="head"><p>Response Type</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>Call</td>
-<td><a href="#jina-DataRequestProto">DataRequestProto</a> stream</td>
-<td><a href="#jina-DataRequestProto">DataRequestProto</a> stream</td>
-<td>Pass in a Request and a filled Request with matches will be returned.</td>
+<tr class="row-even"><td><p>Call</p></td>
+<td><p><span class="xref myst">DataRequestProto</span> stream</p></td>
+<td><p><span class="xref myst">DataRequestProto</span> stream</p></td>
+<td><p>Pass in a Request and a filled Request with matches will be returned.</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p><a name="jina-JinaSingleDataRequestRPC"></a></p>
 </section>
 <section id="jinasingledatarequestrpc">
-<h3>JinaSingleDataRequestRPC<a class="headerlink" href="#jinasingledatarequestrpc" title="Permalink to this headline">#</a></h3>
+<h3>JinaSingleDataRequestRPC<a class="headerlink" href="#jinasingledatarequestrpc" title="Permalink to this heading">#</a></h3>
 <p>jina gRPC service for DataRequests.
 This is used to send requests to Executors when a list of requests is not needed</p>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Method Name</th>
-<th>Request Type</th>
-<th>Response Type</th>
-<th>Description</th>
+<tr class="row-odd"><th class="head"><p>Method Name</p></th>
+<th class="head"><p>Request Type</p></th>
+<th class="head"><p>Response Type</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>process_single_data</td>
-<td><a href="#jina-DataRequestProto">DataRequestProto</a></td>
-<td><a href="#jina-DataRequestProto">DataRequestProto</a></td>
-<td>Used for passing DataRequests to the Executors</td>
+<tr class="row-even"><td><p>process_single_data</p></td>
+<td><p><span class="xref myst">DataRequestProto</span></p></td>
+<td><p><span class="xref myst">DataRequestProto</span></p></td>
+<td><p>Used for passing DataRequests to the Executors</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 </section>
 </section>
 <section id="scalar-value-types">
-<h2>Scalar Value Types<a class="headerlink" href="#scalar-value-types" title="Permalink to this headline">#</a></h2>
-<table border="1" class="docutils">
+<h2>Scalar Value Types<a class="headerlink" href="#scalar-value-types" title="Permalink to this heading">#</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>.proto Type</th>
-<th>Notes</th>
-<th>C++</th>
-<th>Java</th>
-<th>Python</th>
-<th>Go</th>
-<th>C#</th>
-<th>PHP</th>
-<th>Ruby</th>
+<tr class="row-odd"><th class="head"><p>.proto Type</p></th>
+<th class="head"><p>Notes</p></th>
+<th class="head"><p>C++</p></th>
+<th class="head"><p>Java</p></th>
+<th class="head"><p>Python</p></th>
+<th class="head"><p>Go</p></th>
+<th class="head"><p>C#</p></th>
+<th class="head"><p>PHP</p></th>
+<th class="head"><p>Ruby</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><a name="double" /> double</td>
-<td></td>
-<td>double</td>
-<td>double</td>
-<td>float</td>
-<td>float64</td>
-<td>double</td>
-<td>float</td>
-<td>Float</td>
+<tr class="row-even"><td><p><a name="double" /> double</p></td>
+<td><p></p></td>
+<td><p>double</p></td>
+<td><p>double</p></td>
+<td><p>float</p></td>
+<td><p>float64</p></td>
+<td><p>double</p></td>
+<td><p>float</p></td>
+<td><p>Float</p></td>
 </tr>
-<tr>
-<td><a name="float" /> float</td>
-<td></td>
-<td>float</td>
-<td>float</td>
-<td>float</td>
-<td>float32</td>
-<td>float</td>
-<td>float</td>
-<td>Float</td>
+<tr class="row-odd"><td><p><a name="float" /> float</p></td>
+<td><p></p></td>
+<td><p>float</p></td>
+<td><p>float</p></td>
+<td><p>float</p></td>
+<td><p>float32</p></td>
+<td><p>float</p></td>
+<td><p>float</p></td>
+<td><p>Float</p></td>
 </tr>
-<tr>
-<td><a name="int32" /> int32</td>
-<td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead.</td>
-<td>int32</td>
-<td>int</td>
-<td>int</td>
-<td>int32</td>
-<td>int</td>
-<td>integer</td>
-<td>Bignum or Fixnum (as required)</td>
+<tr class="row-even"><td><p><a name="int32" /> int32</p></td>
+<td><p>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead.</p></td>
+<td><p>int32</p></td>
+<td><p>int</p></td>
+<td><p>int</p></td>
+<td><p>int32</p></td>
+<td><p>int</p></td>
+<td><p>integer</p></td>
+<td><p>Bignum or Fixnum (as required)</p></td>
 </tr>
-<tr>
-<td><a name="int64" /> int64</td>
-<td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.</td>
-<td>int64</td>
-<td>long</td>
-<td>int/long</td>
-<td>int64</td>
-<td>long</td>
-<td>integer/string</td>
-<td>Bignum</td>
+<tr class="row-odd"><td><p><a name="int64" /> int64</p></td>
+<td><p>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.</p></td>
+<td><p>int64</p></td>
+<td><p>long</p></td>
+<td><p>int/long</p></td>
+<td><p>int64</p></td>
+<td><p>long</p></td>
+<td><p>integer/string</p></td>
+<td><p>Bignum</p></td>
 </tr>
-<tr>
-<td><a name="uint32" /> uint32</td>
-<td>Uses variable-length encoding.</td>
-<td>uint32</td>
-<td>int</td>
-<td>int/long</td>
-<td>uint32</td>
-<td>uint</td>
-<td>integer</td>
-<td>Bignum or Fixnum (as required)</td>
+<tr class="row-even"><td><p><a name="uint32" /> uint32</p></td>
+<td><p>Uses variable-length encoding.</p></td>
+<td><p>uint32</p></td>
+<td><p>int</p></td>
+<td><p>int/long</p></td>
+<td><p>uint32</p></td>
+<td><p>uint</p></td>
+<td><p>integer</p></td>
+<td><p>Bignum or Fixnum (as required)</p></td>
 </tr>
-<tr>
-<td><a name="uint64" /> uint64</td>
-<td>Uses variable-length encoding.</td>
-<td>uint64</td>
-<td>long</td>
-<td>int/long</td>
-<td>uint64</td>
-<td>ulong</td>
-<td>integer/string</td>
-<td>Bignum or Fixnum (as required)</td>
+<tr class="row-odd"><td><p><a name="uint64" /> uint64</p></td>
+<td><p>Uses variable-length encoding.</p></td>
+<td><p>uint64</p></td>
+<td><p>long</p></td>
+<td><p>int/long</p></td>
+<td><p>uint64</p></td>
+<td><p>ulong</p></td>
+<td><p>integer/string</p></td>
+<td><p>Bignum or Fixnum (as required)</p></td>
 </tr>
-<tr>
-<td><a name="sint32" /> sint32</td>
-<td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.</td>
-<td>int32</td>
-<td>int</td>
-<td>int</td>
-<td>int32</td>
-<td>int</td>
-<td>integer</td>
-<td>Bignum or Fixnum (as required)</td>
+<tr class="row-even"><td><p><a name="sint32" /> sint32</p></td>
+<td><p>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.</p></td>
+<td><p>int32</p></td>
+<td><p>int</p></td>
+<td><p>int</p></td>
+<td><p>int32</p></td>
+<td><p>int</p></td>
+<td><p>integer</p></td>
+<td><p>Bignum or Fixnum (as required)</p></td>
 </tr>
-<tr>
-<td><a name="sint64" /> sint64</td>
-<td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.</td>
-<td>int64</td>
-<td>long</td>
-<td>int/long</td>
-<td>int64</td>
-<td>long</td>
-<td>integer/string</td>
-<td>Bignum</td>
+<tr class="row-odd"><td><p><a name="sint64" /> sint64</p></td>
+<td><p>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.</p></td>
+<td><p>int64</p></td>
+<td><p>long</p></td>
+<td><p>int/long</p></td>
+<td><p>int64</p></td>
+<td><p>long</p></td>
+<td><p>integer/string</p></td>
+<td><p>Bignum</p></td>
 </tr>
-<tr>
-<td><a name="fixed32" /> fixed32</td>
-<td>Always four bytes. More efficient than uint32 if values are often greater than 2^28.</td>
-<td>uint32</td>
-<td>int</td>
-<td>int</td>
-<td>uint32</td>
-<td>uint</td>
-<td>integer</td>
-<td>Bignum or Fixnum (as required)</td>
+<tr class="row-even"><td><p><a name="fixed32" /> fixed32</p></td>
+<td><p>Always four bytes. More efficient than uint32 if values are often greater than 2^28.</p></td>
+<td><p>uint32</p></td>
+<td><p>int</p></td>
+<td><p>int</p></td>
+<td><p>uint32</p></td>
+<td><p>uint</p></td>
+<td><p>integer</p></td>
+<td><p>Bignum or Fixnum (as required)</p></td>
 </tr>
-<tr>
-<td><a name="fixed64" /> fixed64</td>
-<td>Always eight bytes. More efficient than uint64 if values are often greater than 2^56.</td>
-<td>uint64</td>
-<td>long</td>
-<td>int/long</td>
-<td>uint64</td>
-<td>ulong</td>
-<td>integer/string</td>
-<td>Bignum</td>
+<tr class="row-odd"><td><p><a name="fixed64" /> fixed64</p></td>
+<td><p>Always eight bytes. More efficient than uint64 if values are often greater than 2^56.</p></td>
+<td><p>uint64</p></td>
+<td><p>long</p></td>
+<td><p>int/long</p></td>
+<td><p>uint64</p></td>
+<td><p>ulong</p></td>
+<td><p>integer/string</p></td>
+<td><p>Bignum</p></td>
 </tr>
-<tr>
-<td><a name="sfixed32" /> sfixed32</td>
-<td>Always four bytes.</td>
-<td>int32</td>
-<td>int</td>
-<td>int</td>
-<td>int32</td>
-<td>int</td>
-<td>integer</td>
-<td>Bignum or Fixnum (as required)</td>
+<tr class="row-even"><td><p><a name="sfixed32" /> sfixed32</p></td>
+<td><p>Always four bytes.</p></td>
+<td><p>int32</p></td>
+<td><p>int</p></td>
+<td><p>int</p></td>
+<td><p>int32</p></td>
+<td><p>int</p></td>
+<td><p>integer</p></td>
+<td><p>Bignum or Fixnum (as required)</p></td>
 </tr>
-<tr>
-<td><a name="sfixed64" /> sfixed64</td>
-<td>Always eight bytes.</td>
-<td>int64</td>
-<td>long</td>
-<td>int/long</td>
-<td>int64</td>
-<td>long</td>
-<td>integer/string</td>
-<td>Bignum</td>
+<tr class="row-odd"><td><p><a name="sfixed64" /> sfixed64</p></td>
+<td><p>Always eight bytes.</p></td>
+<td><p>int64</p></td>
+<td><p>long</p></td>
+<td><p>int/long</p></td>
+<td><p>int64</p></td>
+<td><p>long</p></td>
+<td><p>integer/string</p></td>
+<td><p>Bignum</p></td>
 </tr>
-<tr>
-<td><a name="bool" /> bool</td>
-<td></td>
-<td>bool</td>
-<td>boolean</td>
-<td>boolean</td>
-<td>bool</td>
-<td>bool</td>
-<td>boolean</td>
-<td>TrueClass/FalseClass</td>
+<tr class="row-even"><td><p><a name="bool" /> bool</p></td>
+<td><p></p></td>
+<td><p>bool</p></td>
+<td><p>boolean</p></td>
+<td><p>boolean</p></td>
+<td><p>bool</p></td>
+<td><p>bool</p></td>
+<td><p>boolean</p></td>
+<td><p>TrueClass/FalseClass</p></td>
 </tr>
-<tr>
-<td><a name="string" /> string</td>
-<td>A string must always contain UTF-8 encoded or 7-bit ASCII text.</td>
-<td>string</td>
-<td>String</td>
-<td>str/unicode</td>
-<td>string</td>
-<td>string</td>
-<td>string</td>
-<td>String (UTF-8)</td>
+<tr class="row-odd"><td><p><a name="string" /> string</p></td>
+<td><p>A string must always contain UTF-8 encoded or 7-bit ASCII text.</p></td>
+<td><p>string</p></td>
+<td><p>String</p></td>
+<td><p>str/unicode</p></td>
+<td><p>string</p></td>
+<td><p>string</p></td>
+<td><p>string</p></td>
+<td><p>String (UTF-8)</p></td>
 </tr>
-<tr>
-<td><a name="bytes" /> bytes</td>
-<td>May contain any arbitrary sequence of bytes.</td>
-<td>string</td>
-<td>ByteString</td>
-<td>str</td>
-<td>[]byte</td>
-<td>ByteString</td>
-<td>string</td>
-<td>String (ASCII-8BIT)</td>
+<tr class="row-even"><td><p><a name="bytes" /> bytes</p></td>
+<td><p>May contain any arbitrary sequence of bytes.</p></td>
+<td><p>string</p></td>
+<td><p>ByteString</p></td>
+<td><p>str</p></td>
+<td><p>[]byte</p></td>
+<td><p>ByteString</p></td>
+<td><p>string</p></td>
+<td><p>String (ASCII-8BIT)</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 </section>
 </section>
 
@@ -1365,6 +1329,7 @@ This is used to send requests to Executors when a list of requests is not needed
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>

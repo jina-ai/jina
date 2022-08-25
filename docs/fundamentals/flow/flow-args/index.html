@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="<no title>" />
   
@@ -12,6 +12,8 @@
   
 <meta property="og:site_name" content="Jina 3.7.15 Documentation" />
   
+<meta property="og:description" content=",,,, Name, Description, Type, Default,,, name, The name of this object. This will be used in the following places:- how you refer to this object in Python/YAML/CLI- visualization- log message header- … When not given, then the default naming strategy will apply., string, None,, workspace, The wor..." />
+  
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
 <meta property="og:image:alt" content="Jina 3.7.15 Documentation" />
@@ -19,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -36,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/flow-args.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>&lt;no title&gt; - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -226,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/windows/">On Windows</a></li>
@@ -242,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -386,66 +391,60 @@
                     </label>
                 </div>
                 <article role="main">
-                    <table border="1" class="docutils">
+                    <div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Name</th>
-<th>Description</th>
-<th>Type</th>
-<th>Default</th>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><code>name</code></td>
-<td>The name of this object.<br><br>    This will be used in the following places:<br>    - how you refer to this object in Python/YAML/CLI<br>    - visualization<br>    - log message header<br>    - ...<br><br>    When not given, then the default naming strategy will apply.</td>
-<td><code>string</code></td>
-<td><code>None</code></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>The name of this object.<br><br>    This will be used in the following places:<br>    - how you refer to this object in Python/YAML/CLI<br>    - visualization<br>    - log message header<br>    - …<br><br>    When not given, then the default naming strategy will apply.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
-<tr>
-<td><code>workspace</code></td>
-<td>The working directory for any IO operations in this object. If not set, then derive from its parent <code>workspace</code>.</td>
-<td><code>string</code></td>
-<td><code>None</code></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code></p></td>
+<td><p>The working directory for any IO operations in this object. If not set, then derive from its parent <code class="docutils literal notranslate"><span class="pre">workspace</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
-<tr>
-<td><code>log_config</code></td>
-<td>The YAML config of the logger used in this object.</td>
-<td><code>string</code></td>
-<td><code>default</code></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">log_config</span></code></p></td>
+<td><p>The YAML config of the logger used in this object.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">default</span></code></p></td>
 </tr>
-<tr>
-<td><code>quiet</code></td>
-<td>If set, then no log will be emitted from this object.</td>
-<td><code>boolean</code></td>
-<td><code>False</code></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">quiet</span></code></p></td>
+<td><p>If set, then no log will be emitted from this object.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
-<tr>
-<td><code>quiet_error</code></td>
-<td>If set, then exception stack information will not be added to the log</td>
-<td><code>boolean</code></td>
-<td><code>False</code></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">quiet_error</span></code></p></td>
+<td><p>If set, then exception stack information will not be added to the log</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
-<tr>
-<td><code>uses</code></td>
-<td>The YAML path represents a flow. It can be either a local file path or a URL.</td>
-<td><code>string</code></td>
-<td><code>None</code></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uses</span></code></p></td>
+<td><p>The YAML path represents a flow. It can be either a local file path or a URL.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
-<tr>
-<td><code>env</code></td>
-<td>The map of environment variables that are available inside runtime</td>
-<td><code>object</code></td>
-<td><code>None</code></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">env</span></code></p></td>
+<td><p>The map of environment variables that are available inside runtime</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
-<tr>
-<td><code>inspect</code></td>
-<td>The strategy on those inspect deployments in the flow.<br><br>    If <code>REMOVE</code> is given then all inspect deployments are removed when building the flow.</td>
-<td><code>string</code></td>
-<td><code>COLLECT</code></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">inspect</span></code></p></td>
+<td><p>The strategy on those inspect deployments in the flow.<br><br>    If <code class="docutils literal notranslate"><span class="pre">REMOVE</span></code> is given then all inspect deployments are removed when building the flow.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">COLLECT</span></code></p></td>
 </tr>
 </tbody>
 </table>
+</div>
+
                 </article>
             </div>
             <footer>
@@ -503,6 +502,7 @@
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>

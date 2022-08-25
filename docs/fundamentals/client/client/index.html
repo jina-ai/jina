@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Client" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Third-party clients" href="../third-party-client/" /><link rel="prev" title="YAML specification" href="../../gateway/yaml-spec/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/client/client.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Client - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,8 +391,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="client">
-<span id="id1"></span><h1>Client<a class="headerlink" href="#client" title="Permalink to this headline">#</a></h1>
+                    <section id="client">
+<span id="id1"></span><h1>Client<a class="headerlink" href="#client" title="Permalink to this heading">#</a></h1>
 <p><a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> enables you to send Documents to a running <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> in a number of different ways, as shown below.</p>
 <p>Clients support four different networking protocols: <strong>HTTP</strong>, <strong>gRPC</strong>, <strong>WebSocket</strong> and <strong>GraphQL</strong></p>
 <p>For each of them, you first connect your Client to the API Gateway, before you can send requests to it.</p>
@@ -399,7 +402,7 @@
 client <a class="reference internal" href="../third-party-client/#third-party-client"><span class="std std-ref">documentation</span></a>.</p>
 </div>
 <section id="connect">
-<h2>Connect<a class="headerlink" href="#connect" title="Permalink to this headline">#</a></h2>
+<h2>Connect<a class="headerlink" href="#connect" title="Permalink to this heading">#</a></h2>
 <p>If there is not already a Flow running in the background or on the network, you can start one:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -484,7 +487,7 @@ This is particularly useful when debugging or accessing a Flow on your local mac
 </div>
 </section>
 <section id="send-data">
-<h2>Send data<a class="headerlink" href="#send-data" title="Permalink to this headline">#</a></h2>
+<h2>Send data<a class="headerlink" href="#send-data" title="Permalink to this heading">#</a></h2>
 <p>After a <a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> has connected to a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>, it can send requests to the Flow using its <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> method.
 This expects as inputs the <a class="reference internal" href="../../executor/executor-methods/#exec-endpoint"><span class="std std-ref">Executor endpoint</span></a> that you want to target, as well as a Document or Iterable of Documents:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
@@ -520,7 +523,7 @@ Hence, <code class="docutils literal notranslate"><span class="pre">flow.post()<
 </div>
 </section>
 <section id="send-parameters">
-<h2>Send parameters<a class="headerlink" href="#send-parameters" title="Permalink to this headline">#</a></h2>
+<h2>Send parameters<a class="headerlink" href="#send-parameters" title="Permalink to this heading">#</a></h2>
 <p>The <a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> can also send parameters to the <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s as shown below:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span>
 
@@ -548,7 +551,7 @@ Hence, <code class="docutils literal notranslate"><span class="pre">flow.post()<
 <p>This might be useful to control <code class="docutils literal notranslate"><span class="pre">Executor</span></code> objects during their lifetime.</p>
 </div>
 <section id="send-specific-parameters-to-each-executors">
-<span id="specific-params"></span><h3>Send specific parameters to each Executors<a class="headerlink" href="#send-specific-parameters-to-each-executors" title="Permalink to this headline">#</a></h3>
+<span id="specific-params"></span><h3>Send specific parameters to each Executors<a class="headerlink" href="#send-specific-parameters-to-each-executors" title="Permalink to this heading">#</a></h3>
 <p>You can send specific parameters to each Executor by using the <code class="docutils literal notranslate"><span class="pre">executorname__paramname</span></code> syntax.
 The Executor named <code class="docutils literal notranslate"><span class="pre">executorname</span></code> will receive the parameter <code class="docutils literal notranslate"><span class="pre">paramname</span></code> (without the <code class="docutils literal notranslate"><span class="pre">executorname__</span></code> in the key name)
 and none of the other Executors will receive it.</p>
@@ -569,7 +572,7 @@ This is often the case for Executors from the Hub, since they tend to share a co
 </section>
 </section>
 <section id="async-send">
-<h2>Async send<a class="headerlink" href="#async-send" title="Permalink to this headline">#</a></h2>
+<h2>Async send<a class="headerlink" href="#async-send" title="Permalink to this heading">#</a></h2>
 <p>There also exists an async version of the Python Client which works with <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> and <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.MutateMixin.mutate" title="jina.clients.mixin.MutateMixin.mutate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mutate()</span></code></a>.</p>
 <p>While the standard <code class="docutils literal notranslate"><span class="pre">Client</span></code> is also asynchronous under the hood, its async version exposes this fact to the outside world,
 by allowing <em>coroutines</em> as input, and returning an <em>asynchronous iterator</em>.
@@ -610,7 +613,7 @@ This means you can iterate over Responses one by one, as they come in.</p>
 </div>
 </section>
 <section id="batch-data">
-<h2>Batch data<a class="headerlink" href="#batch-data" title="Permalink to this headline">#</a></h2>
+<h2>Batch data<a class="headerlink" href="#batch-data" title="Permalink to this heading">#</a></h2>
 <p>Especially during indexing, a Client can send up to thousands or millions of Documents to a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>.
 Those Documents are internally batched into a <code class="docutils literal notranslate"><span class="pre">Request</span></code>, providing a smaller memory footprint and faster response times thanks
 to <a class="reference internal" href="#callback-functions"><span class="std std-ref">callback functions</span></a>.</p>
@@ -625,7 +628,7 @@ The default <code class="docutils literal notranslate"><span class="pre">request
 </div>
 </section>
 <section id="bypass-executor">
-<h2>Bypass Executor<a class="headerlink" href="#bypass-executor" title="Permalink to this headline">#</a></h2>
+<h2>Bypass Executor<a class="headerlink" href="#bypass-executor" title="Permalink to this heading">#</a></h2>
 <p>Usually a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> will send each request to all <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s with matching endpoints as configured. But the <a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> also allows you to only target specific Executors in a Flow using the <code class="docutils literal notranslate"><span class="pre">target_executor</span></code> keyword. The request will then only be processed by the Executors which match the provided target_executor regex. Its usage is shown in the listing below.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
@@ -658,7 +661,7 @@ The default <code class="docutils literal notranslate"><span class="pre">request
 In the simplest case, you can specify a precise Executor name, and the request will be sent only to that single Executor.</p>
 </section>
 <section id="callbacks">
-<span id="callback-functions"></span><h2>Callbacks<a class="headerlink" href="#callbacks" title="Permalink to this headline">#</a></h2>
+<span id="callback-functions"></span><h2>Callbacks<a class="headerlink" href="#callbacks" title="Permalink to this heading">#</a></h2>
 <p>After performing <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a>, you may want to further process the obtained results.</p>
 <p>For this purpose, Jina implements a promise-like interface, letting you specify three kinds of callback functions:</p>
 <ul class="simple">
@@ -739,7 +742,7 @@ If something goes wrong, it beeps. Finally, the result is written to output.txt.
 </div>
 </section>
 <section id="returns">
-<h2>Returns<a class="headerlink" href="#returns" title="Permalink to this headline">#</a></h2>
+<h2>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">client.post()</span></code> returns a flattened <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> containing all Documents of all Requests.</p>
 <p>By setting <code class="docutils literal notranslate"><span class="pre">return_responses=True</span></code> as an argument to <code class="docutils literal notranslate"><span class="pre">client.post(return_responses=True)</span></code>, this behavior can be modified to return a list of Responses
 (<code class="docutils literal notranslate"><span class="pre">DataRequest</span></code>s) instead.</p>
@@ -804,7 +807,7 @@ This may not only be slower, but also require more memory.</p>
 </div>
 </section>
 <section id="enable-compression">
-<span id="client-compress"></span><h2>Enable compression<a class="headerlink" href="#enable-compression" title="Permalink to this headline">#</a></h2>
+<span id="client-compress"></span><h2>Enable compression<a class="headerlink" href="#enable-compression" title="Permalink to this heading">#</a></h2>
 <p>If the communication to the Gateway is via gRPC, you can pass <code class="docutils literal notranslate"><span class="pre">compression</span></code> parameter to  <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> to benefit from <a class="reference external" href="https://grpc.github.io/grpc/python/grpc.html#compression">gRPC compression</a> methods.</p>
 <p>The supported choices are: None, <code class="docutils literal notranslate"><span class="pre">gzip</span></code> and <code class="docutils literal notranslate"><span class="pre">deflate</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
@@ -817,7 +820,7 @@ This may not only be slower, but also require more memory.</p>
 <p>One can also specify the compression of the internal communication <span class="xref std std-ref">as described here</span>.</p>
 </section>
 <section id="enable-tls">
-<h2>Enable TLS<a class="headerlink" href="#enable-tls" title="Permalink to this headline">#</a></h2>
+<h2>Enable TLS<a class="headerlink" href="#enable-tls" title="Permalink to this heading">#</a></h2>
 <p>To connect to a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> that has been <a class="reference internal" href="../../gateway/#flow-tls"><span class="std std-ref">configured to use TLS</span></a> in combination with gRPC, http, or websocket,
 set the Client’s <code class="docutils literal notranslate"><span class="pre">tls</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">True</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">c_http</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">host</span><span class="o">=...</span><span class="p">,</span> <span class="n">port</span><span class="o">=...</span><span class="p">)</span>
@@ -833,7 +836,7 @@ set the Client’s <code class="docutils literal notranslate"><span class="pre">
 </div>
 </section>
 <section id="use-graphql">
-<h2>Use GraphQL<a class="headerlink" href="#use-graphql" title="Permalink to this headline">#</a></h2>
+<h2>Use GraphQL<a class="headerlink" href="#use-graphql" title="Permalink to this heading">#</a></h2>
 <p>The Jina <a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> additionally supports fetching data via GraphQL mutations using <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.MutateMixin.mutate" title="jina.clients.mixin.MutateMixin.mutate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mutate()</span></code></a>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
 
@@ -969,6 +972,7 @@ set the Client’s <code class="docutils literal notranslate"><span class="pre">
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>

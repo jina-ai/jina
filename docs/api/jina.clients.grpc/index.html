@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="jina.clients.grpc module" />
   
@@ -19,8 +19,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.clients.grpc.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>jina.clients.grpc module - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -226,12 +226,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
@@ -242,6 +244,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -387,11 +390,11 @@
                 </div>
                 <article role="main">
                     <section id="module-jina.clients.grpc">
-<span id="jina-clients-grpc-module"></span><h1>jina.clients.grpc module<a class="headerlink" href="#module-jina.clients.grpc" title="Permalink to this headline">#</a></h1>
+<span id="jina-clients-grpc-module"></span><h1>jina.clients.grpc module<a class="headerlink" href="#module-jina.clients.grpc" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.clients.grpc.GRPCClient">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.grpc.</span></span><span class="sig-name descname"><span class="pre">GRPCClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/grpc/#GRPCClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.grpc.GRPCClient" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient" title="jina.clients.base.grpc.GRPCBaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.base.grpc.GRPCBaseClient</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.PostMixin" title="jina.clients.mixin.PostMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.mixin.PostMixin</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin" title="jina.clients.mixin.HealthCheckMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.mixin.HealthCheckMixin</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient" title="jina.clients.base.grpc.GRPCBaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">GRPCBaseClient</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.PostMixin" title="jina.clients.mixin.PostMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">PostMixin</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin" title="jina.clients.mixin.HealthCheckMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">HealthCheckMixin</span></code></a></p>
 <p>A client connecting to a Gateway using gRPC protocol.</p>
 <p>Instantiate this class through the <a class="reference internal" href="../jina/#jina.Client" title="jina.Client"><code class="xref py py-meth docutils literal notranslate"><span class="pre">jina.Client()</span></code></a> convenience method.</p>
 <p>EXAMPLE USAGE</p>
@@ -410,13 +413,13 @@
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.grpc.GRPCClient.check_input" title="Permalink to this definition">#</a></dt>
 <dd><p>Validate the inputs and print the first request if success.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>inputs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[InputType]) – the inputs</p></li>
 <li><p><strong>kwargs</strong> – keyword arguments</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -424,13 +427,13 @@
 
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.clients.grpc.GRPCClient.client">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">jina.helper.T</span></em><a class="headerlink" href="#jina.clients.grpc.GRPCClient.client" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T</span></em><a class="headerlink" href="#jina.clients.grpc.GRPCClient.client" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the client object itself</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the Client object</p>
 </dd>
 </dl>
@@ -446,13 +449,13 @@
 <span class="sig-name descname"><span class="pre">dry_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.grpc.GRPCClient.dry_run" title="Permalink to this definition">#</a></dt>
 <dd><p>Sends a dry run to the Flow to validate if the Flow is ready to receive requests</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>kwargs</strong> – potential kwargs received passed from the public interface</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>boolean indicating the health/readiness of the Flow</p>
 </dd>
 </dl>
@@ -469,10 +472,10 @@
 <dd><p>An iterator of bytes, each element represents a Document’s raw content.</p>
 <p><code class="docutils literal notranslate"><span class="pre">inputs</span></code> defined in the protobuf</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>InputType</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>inputs</p>
 </dd>
 </dl>
@@ -483,7 +486,7 @@
 <span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.grpc.GRPCClient.post" title="Permalink to this definition">#</a></dt>
 <dd><p>Post a general data request to the Flow.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>inputs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[InputType]) – input data which can be an Iterable, a function which returns an Iterable, or a single Document.</p></li>
 <li><p><strong>on</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the endpoint which is invoked. All the functions in the executors decorated by <cite>&#64;requests(on=…)</cite> with the same endpoint are invoked.</p></li>
@@ -499,10 +502,10 @@
 <li><p><strong>kwargs</strong> – additional parameters</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[Response], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</p>
 </dd>
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None or DocumentArray containing all response Documents</p>
 </dd>
 </dl>
@@ -527,7 +530,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.clients.grpc.AsyncGRPCClient">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.grpc.</span></span><span class="sig-name descname"><span class="pre">AsyncGRPCClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/grpc/#AsyncGRPCClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.grpc.AsyncGRPCClient" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient" title="jina.clients.base.grpc.GRPCBaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.base.grpc.GRPCBaseClient</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin" title="jina.clients.mixin.AsyncPostMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.mixin.AsyncPostMixin</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncHealthCheckMixin" title="jina.clients.mixin.AsyncHealthCheckMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.clients.mixin.AsyncHealthCheckMixin</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient" title="jina.clients.base.grpc.GRPCBaseClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">GRPCBaseClient</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin" title="jina.clients.mixin.AsyncPostMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncPostMixin</span></code></a>, <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncHealthCheckMixin" title="jina.clients.mixin.AsyncHealthCheckMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncHealthCheckMixin</span></code></a></p>
 <p>Asynchronous client connecting to a Gateway using gRPC protocol.</p>
 <p>Instantiate this class through the <a class="reference internal" href="../jina/#jina.Client" title="jina.Client"><code class="xref py py-meth docutils literal notranslate"><span class="pre">jina.Client()</span></code></a> convenience method.</p>
 <p>Unlike <a class="reference internal" href="#jina.clients.grpc.GRPCClient" title="jina.clients.grpc.GRPCClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">GRPCClient</span></code></a>, here <a class="reference internal" href="#jina.clients.grpc.AsyncGRPCClient.post" title="jina.clients.grpc.AsyncGRPCClient.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> is a coroutine (i.e. declared with the async/await syntax),
@@ -563,13 +566,13 @@ is controlling and wrapping the event loop internally, making the Client looks s
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.grpc.AsyncGRPCClient.check_input" title="Permalink to this definition">#</a></dt>
 <dd><p>Validate the inputs and print the first request if success.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>inputs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[InputType]) – the inputs</p></li>
 <li><p><strong>kwargs</strong> – keyword arguments</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -577,13 +580,13 @@ is controlling and wrapping the event loop internally, making the Client looks s
 
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.clients.grpc.AsyncGRPCClient.client">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">jina.helper.T</span></em><a class="headerlink" href="#jina.clients.grpc.AsyncGRPCClient.client" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T</span></em><a class="headerlink" href="#jina.clients.grpc.AsyncGRPCClient.client" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the client object itself</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the Client object</p>
 </dd>
 </dl>
@@ -599,13 +602,13 @@ is controlling and wrapping the event loop internally, making the Client looks s
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dry_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.grpc.AsyncGRPCClient.dry_run" title="Permalink to this definition">#</a></dt>
 <dd><p>Sends a dry run to the Flow to validate if the Flow is ready to receive requests</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>kwargs</strong> – potential kwargs received passed from the public interface</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>boolean indicating the health/readiness of the Flow</p>
 </dd>
 </dl>
@@ -622,10 +625,10 @@ is controlling and wrapping the event loop internally, making the Client looks s
 <dd><p>An iterator of bytes, each element represents a Document’s raw content.</p>
 <p><code class="docutils literal notranslate"><span class="pre">inputs</span></code> defined in the protobuf</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>InputType</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>inputs</p>
 </dd>
 </dl>
@@ -636,7 +639,7 @@ is controlling and wrapping the event loop internally, making the Client looks s
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_done</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_always</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_executor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continue_on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_responses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.clients.grpc.AsyncGRPCClient.post" title="Permalink to this definition">#</a></dt>
 <dd><p>Async Post a general data request to the Flow.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>inputs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[InputType]) – input data which can be an Iterable, a function which returns an Iterable, or a single Document.</p></li>
 <li><p><strong>on</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the endpoint which is invoked. All the functions in the executors decorated by <cite>&#64;requests(on=…)</cite> with the same endpoint are invoked.</p></li>
@@ -652,7 +655,7 @@ is controlling and wrapping the event loop internally, making the Client looks s
 <li><p><strong>kwargs</strong> – additional parameters, can be used to pass metadata or authentication information in the server call</p></li>
 </ul>
 </dd>
-<dt class="field-even">Yield</dt>
+<dt class="field-even">Yield<span class="colon">:</span></dt>
 <dd class="field-even"><p>Response object</p>
 </dd>
 </dl>
@@ -661,7 +664,7 @@ is controlling and wrapping the event loop internally, making the Client looks s
 <p><code class="docutils literal notranslate"><span class="pre">target_executor</span></code> uses <code class="docutils literal notranslate"><span class="pre">re.match</span></code> for checking if the pattern is matched. <code class="docutils literal notranslate"><span class="pre">target_executor=='foo'</span></code> will match both deployments with the name <code class="docutils literal notranslate"><span class="pre">foo</span></code> and <code class="docutils literal notranslate"><span class="pre">foo_what_ever_suffix</span></code>.</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncGenerator</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a>, Response]]</p>
 </dd>
 </dl>
@@ -738,6 +741,7 @@ is controlling and wrapping the event loop internally, making the Client looks s
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>

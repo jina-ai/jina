@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Docker image" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="On Windows" href="../windows/" /><link rel="prev" title="Install" href="../" />
         <link rel="canonical" href="https://docs.jina.ai/get-started/install/docker.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Docker image - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
-<ul class="current">
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Install</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,8 +391,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="docker-image">
-<h1>Docker image<a class="headerlink" href="#docker-image" title="Permalink to this headline">#</a></h1>
+                    <section id="docker-image">
+<h1>Docker image<a class="headerlink" href="#docker-image" title="Permalink to this heading">#</a></h1>
 <p>Our universal Docker image is ready-to-use on linux/amd64 and linux/arm64. The Docker image name always starts with <code class="docutils literal notranslate"><span class="pre">jinaai/jina</span></code> followed by a tag composed of three parts:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>jinaai/jina:{version}{python_version}{extra}
 </pre></div>
@@ -426,28 +429,27 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">jinaai/jina:master</span></code>: the master with Python 3.7 and the entrypoint of <code class="docutils literal notranslate"><span class="pre">jina</span></code></p></li>
 </ul>
 <section id="image-alias-and-updates">
-<h2>Image alias and updates<a class="headerlink" href="#image-alias-and-updates" title="Permalink to this headline">#</a></h2>
-<table border="1" class="docutils">
+<h2>Image alias and updates<a class="headerlink" href="#image-alias-and-updates" title="Permalink to this heading">#</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Event</th>
-<th>Updated images</th>
-<th>Aliases</th>
+<tr class="row-odd"><th class="head"><p>Event</p></th>
+<th class="head"><p>Updated images</p></th>
+<th class="head"><p>Aliases</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>On Master Merge</td>
-<td><code>jinaai/jina:master{python_version}{extra}</code></td>
-<td></td>
+<tr class="row-even"><td><p>On Master Merge</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">jinaai/jina:master{python_version}{extra}</span></code></p></td>
+<td><p></p></td>
 </tr>
-<tr>
-<td>On <code>x.y.z</code> release</td>
-<td><code>jinaai/jina:x.y.z{python_version}{extra}</code></td>
-<td><code>jinaai/jina:latest{python_version}{extra}</code>, <code>jinaai/jina:x.y{python_version}{extra}</code></td>
+<tr class="row-odd"><td><p>On <code class="docutils literal notranslate"><span class="pre">x.y.z</span></code> release</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">jinaai/jina:x.y.z{python_version}{extra}</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">jinaai/jina:latest{python_version}{extra}</span></code>, <code class="docutils literal notranslate"><span class="pre">jinaai/jina:x.y{python_version}{extra}</span></code></p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p>12 images are built, i.e. taking the combination of:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">{python_version}</span> <span class="pre">=</span> <span class="pre">[&quot;-py37&quot;,</span> <span class="pre">&quot;-py38&quot;,</span> <span class="pre">&quot;-py39&quot;]</span></code></p></li>
@@ -455,13 +457,13 @@
 </ul>
 </section>
 <section id="image-size-on-different-tags">
-<h2>Image size on different tags<a class="headerlink" href="#image-size-on-different-tags" title="Permalink to this headline">#</a></h2>
+<h2>Image size on different tags<a class="headerlink" href="#image-size-on-different-tags" title="Permalink to this heading">#</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p><a class="reference external" href="https://github.com/badges/shields/issues/7583">Due to a known bug in shields.io/Docker Hub API</a>, the following badge may show “invalid” status randomly.</p>
 </div>
 <div class="table-wrapper colwidths-auto docutils container">
-<table class="colwidths-auto docutils align-default">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Image Size</p></th>
 </tr>
@@ -620,6 +622,7 @@
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>

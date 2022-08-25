@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Monitor" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Run" href="../executor-run/" /><link rel="prev" title="@requests methods" href="../executor-methods/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/executor/monitoring-executor.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Monitor - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Executor</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,8 +391,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="monitor">
-<span id="monitoring-executor"></span><h1>Monitor<a class="headerlink" href="#monitor" title="Permalink to this headline">#</a></h1>
+                    <section id="monitor">
+<span id="monitoring-executor"></span><h1>Monitor<a class="headerlink" href="#monitor" title="Permalink to this heading">#</a></h1>
 <p>By default, every method which is decorated by the <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> decorator will be monitored, it will create a
 <a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Prometheus Summary</a> which will keep track of the time of
 the execution of the method.</p>
@@ -412,14 +415,14 @@ your monitoring stack.</p>
 please refer to <a class="reference internal" href="../../flow/monitoring-flow/#monitoring-flow"><span class="std std-ref">this</span></a> section.</p>
 </div>
 <section id="define-custom-metrics">
-<h2>Define custom metrics<a class="headerlink" href="#define-custom-metrics" title="Permalink to this headline">#</a></h2>
+<h2>Define custom metrics<a class="headerlink" href="#define-custom-metrics" title="Permalink to this heading">#</a></h2>
 <p>Sometimes monitoring the <code class="docutils literal notranslate"><span class="pre">encoding</span></code> method is not enough, you need to break it up into multiple parts that you want to
 monitor one by one.</p>
 <p>It could be useful if your encoding phase is composed of two tasks: image processing and
 image embedding. By using custom metrics on these two tasks you can identify potential bottlenecks.</p>
 <p>Overall the ability to add custom metrics allows you to have the full flexibility on the monitoring of your Executor.</p>
 <section id="use-context-manager">
-<h3>Use context manager<a class="headerlink" href="#use-context-manager" title="Permalink to this headline">#</a></h3>
+<h3>Use context manager<a class="headerlink" href="#use-context-manager" title="Permalink to this heading">#</a></h3>
 <p>You can use <code class="docutils literal notranslate"><span class="pre">self.monitor</span></code> to monitor the internal blocks of your function:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
@@ -436,7 +439,7 @@ image embedding. By using custom metrics on these two tasks you can identify pot
 </div>
 </section>
 <section id="use-monitor-decorator">
-<h3>Use <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> decorator<a class="headerlink" href="#use-monitor-decorator" title="Permalink to this headline">#</a></h3>
+<h3>Use <code class="docutils literal notranslate"><span class="pre">&#64;monitor</span></code> decorator<a class="headerlink" href="#use-monitor-decorator" title="Permalink to this heading">#</a></h3>
 <p>Adding the custom monitoring on a method is as straightforward as decorating the method with <a class="reference internal" href="../../../api/jina/#jina.monitor" title="jina.monitor"><code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">monitor</span>
 
@@ -466,7 +469,7 @@ your metrics name should finish with <code class="docutils literal notranslate">
 </div>
 </section>
 <section id="use-prometheus-client">
-<h3>Use Prometheus client<a class="headerlink" href="#use-prometheus-client" title="Permalink to this headline">#</a></h3>
+<h3>Use Prometheus client<a class="headerlink" href="#use-prometheus-client" title="Permalink to this heading">#</a></h3>
 <p>Under the hood, the monitoring feature of the Executor is handled by the
 Python <a class="reference external" href="https://github.com/prometheus/client_python">Prometheus-client</a>. The <a class="reference internal" href="../../../api/jina/#jina.monitor" title="jina.monitor"><code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code></a> decorator is a convenient tool
 to monitor sub-methods of an Executor, but you might need more flexibility and that is why you can access the Prometheus
@@ -499,7 +502,7 @@ client directly from the Executor to define every kind of metric supported by Pr
 </section>
 </section>
 <section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">#</a></h2>
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h2>
 <p>Let’s take an example to illustrate custom metrics:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
@@ -567,7 +570,7 @@ client directly from the Executor to define every kind of metric supported by Pr
 </div>
 </section>
 <section id="see-further">
-<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this headline">#</a></h2>
+<h2>See further<a class="headerlink" href="#see-further" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../flow/monitoring-flow/#monitoring-flow"><span class="std std-ref">List of available metrics</span></a></p></li>
 <li><p><a class="reference internal" href="../../../how-to/monitoring/#monitoring"><span class="std std-ref">How to deploy and use the monitoring with Jina</span></a></p></li>
@@ -680,6 +683,7 @@ client directly from the Executor to define every kind of metric supported by Pr
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>

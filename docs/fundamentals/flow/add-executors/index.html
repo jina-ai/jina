@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Add Executors" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Topology" href="../topologies/" /><link rel="prev" title="Basic" href="../create-flow/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/add-executors.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Add Executors - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,8 +391,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="add-executors">
-<span id="flow-add-executors"></span><h1>Add Executors<a class="headerlink" href="#add-executors" title="Permalink to this headline">#</a></h1>
+                    <section id="add-executors">
+<span id="flow-add-executors"></span><h1>Add Executors<a class="headerlink" href="#add-executors" title="Permalink to this heading">#</a></h1>
 <p>A <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> orchestrates its <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s as a graph and will send requests to all Executors in the desired order. Executors can be added with the <a class="reference internal" href="../../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> method of the Flow or be listed in the yaml configuration of a Flow. When you start a Flow, it will check the configured Executors and starts instances of these Executors accordingly. When adding Executors you have to define its type with the <code class="docutils literal notranslate"><span class="pre">uses</span></code> keyword. Executors can be used from various sources like code, docker images and the Hub:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Python</label><div class="tab-content docutils">
@@ -480,7 +483,7 @@ from which you can then load all of your Executors, without having to specify th
 </div>
 <p>The response of the Flow defined above is <code class="docutils literal notranslate"><span class="pre">['foo</span> <span class="pre">was</span> <span class="pre">here',</span> <span class="pre">'bar</span> <span class="pre">was</span> <span class="pre">here']</span></code>, because the request was first sent to FooExecutor and then to BarExecutor.</p>
 <section id="supported-executors">
-<h2>Supported Executors<a class="headerlink" href="#supported-executors" title="Permalink to this headline">#</a></h2>
+<h2>Supported Executors<a class="headerlink" href="#supported-executors" title="Permalink to this heading">#</a></h2>
 <p>As explained above, the type of <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> is defined by providing the <code class="docutils literal notranslate"><span class="pre">uses</span></code> keyword. The source of an Executor can be code, docker images or Hub images.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ExecutorClass</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span>
@@ -527,7 +530,7 @@ Instead, you can configure a common search path for all Executors:</p>
 </div>
 </div>
 <section id="external-executors">
-<span id="id1"></span><h3>External Executors<a class="headerlink" href="#external-executors" title="Permalink to this headline">#</a></h3>
+<span id="id1"></span><h3>External Executors<a class="headerlink" href="#external-executors" title="Permalink to this heading">#</a></h3>
 <p>Usually a Flow will manage all of its Executors. External Executors are not managed by the current Flow object but by others. For example, one may want to share expensive Executors between Flows. Often these Executors are stateless, GPU based Encoders.</p>
 <p>Those Executors are marked with the <code class="docutils literal notranslate"><span class="pre">external</span></code> keyword when added to a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -549,7 +552,7 @@ for further details</p>
 </div>
 </section>
 <section id="floating-executors">
-<span id="id2"></span><h3>Floating Executors<a class="headerlink" href="#floating-executors" title="Permalink to this headline">#</a></h3>
+<span id="id2"></span><h3>Floating Executors<a class="headerlink" href="#floating-executors" title="Permalink to this heading">#</a></h3>
 <p>Some Executors in your Flow may be used for asynchronous background tasks that can take some time and that do not generate a needed output. For instance,
 logging specific information in external services, storing partial results, etc.</p>
 <p>You can unblock your Flow from such tasks by using <em>floating Executors</em>.</p>
@@ -647,7 +650,7 @@ the request has been handled also by it.</p>
 </section>
 </section>
 <section id="set-configs">
-<h2>Set configs<a class="headerlink" href="#set-configs" title="Permalink to this headline">#</a></h2>
+<h2>Set configs<a class="headerlink" href="#set-configs" title="Permalink to this heading">#</a></h2>
 <p>You can set and override <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> configs when adding them into a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>.</p>
 <p>This example shows how to start a Flow with an Executor via the Python API:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -679,7 +682,7 @@ the request has been handled also by it.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code> is a string value that defines the <a class="reference internal" href="../../executor/executor-api/#executor-workspace"><span class="std std-ref">workspace</span></a>.</p></li>
 </ul>
 <section id="set-metas-via-uses-metas">
-<h3>Set <code class="docutils literal notranslate"><span class="pre">metas</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code><a class="headerlink" href="#set-metas-via-uses-metas" title="Permalink to this headline">#</a></h3>
+<h3>Set <code class="docutils literal notranslate"><span class="pre">metas</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code><a class="headerlink" href="#set-metas-via-uses-metas" title="Permalink to this heading">#</a></h3>
 <p>To set/override the <code class="docutils literal notranslate"><span class="pre">metas</span></code> configuration of an executor, use <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
 
@@ -709,7 +712,7 @@ different_name
 </div>
 </section>
 <section id="set-with-via-uses-with">
-<h3>Set <code class="docutils literal notranslate"><span class="pre">with</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_with</span></code><a class="headerlink" href="#set-with-via-uses-with" title="Permalink to this headline">#</a></h3>
+<h3>Set <code class="docutils literal notranslate"><span class="pre">with</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_with</span></code><a class="headerlink" href="#set-with-via-uses-with" title="Permalink to this heading">#</a></h3>
 <p>To set/override the <code class="docutils literal notranslate"><span class="pre">with</span></code> configs of an executor, use <code class="docutils literal notranslate"><span class="pre">uses_with</span></code>. The <code class="docutils literal notranslate"><span class="pre">with</span></code> configuration refers to user-defined
 constructor kwargs.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
@@ -748,7 +751,7 @@ param3: 30
 </div>
 </section>
 <section id="set-requests-via-uses-requests">
-<h3>Set <code class="docutils literal notranslate"><span class="pre">requests</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_requests</span></code><a class="headerlink" href="#set-requests-via-uses-requests" title="Permalink to this headline">#</a></h3>
+<h3>Set <code class="docutils literal notranslate"><span class="pre">requests</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_requests</span></code><a class="headerlink" href="#set-requests-via-uses-requests" title="Permalink to this heading">#</a></h3>
 <p>You can set/override the <code class="docutils literal notranslate"><span class="pre">requests</span></code> configuration of an executor and bind methods to endpoints that you provide.
 In the following codes, we replace the endpoint <code class="docutils literal notranslate"><span class="pre">/foo</span></code> binded to the <code class="docutils literal notranslate"><span class="pre">foo()</span></code> function with both <code class="docutils literal notranslate"><span class="pre">/non_foo</span></code> and <code class="docutils literal notranslate"><span class="pre">/alias_foo</span></code>.
 And add a new endpoint <code class="docutils literal notranslate"><span class="pre">/bar</span></code> for binding <code class="docutils literal notranslate"><span class="pre">bar()</span></code>. Note the <code class="docutils literal notranslate"><span class="pre">all_req()</span></code> function is binded to <strong>all</strong> the endpoints except those explicitly bound to other functions, i.e. <code class="docutils literal notranslate"><span class="pre">/non_foo</span></code>, <code class="docutils literal notranslate"><span class="pre">/alias_foo</span></code> and <code class="docutils literal notranslate"><span class="pre">/bar</span></code>.</p>
@@ -799,7 +802,7 @@ foo foo()
 </section>
 </section>
 <section id="unify-ndarray-types">
-<h2>Unify NDArray types<a class="headerlink" href="#unify-ndarray-types" title="Permalink to this headline">#</a></h2>
+<h2>Unify NDArray types<a class="headerlink" href="#unify-ndarray-types" title="Permalink to this heading">#</a></h2>
 <p>Different <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s in a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> may depend on slightly different <code class="docutils literal notranslate"><span class="pre">types</span></code> for array-like data such as <code class="docutils literal notranslate"><span class="pre">doc.tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">doc.embedding</span></code>,
 for example because they were written using different machine learning frameworks.
 As the builder of a Flow you don’t always have control over this, for example when using Executors from the Jina Hub.</p>
@@ -930,6 +933,7 @@ documentation about <a class="reference external" href="https://docarray.jina.ai
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>

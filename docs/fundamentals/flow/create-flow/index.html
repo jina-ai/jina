@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Basic" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Add Executors" href="../add-executors/" /><link rel="prev" title="Flow" href="../" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/create-flow.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Basic - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,11 +391,11 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="basic">
-<span id="flow"></span><h1>Basic<a class="headerlink" href="#basic" title="Permalink to this headline">#</a></h1>
+                    <section id="basic">
+<span id="flow"></span><h1>Basic<a class="headerlink" href="#basic" title="Permalink to this heading">#</a></h1>
 <p><a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> defines how your Executors are connected together and how your data <em>flows</em> through them.</p>
 <section id="create">
-<h2>Create<a class="headerlink" href="#create" title="Permalink to this headline">#</a></h2>
+<h2>Create<a class="headerlink" href="#create" title="Permalink to this heading">#</a></h2>
 <p>The most trivial <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is the empty Flow. It can be defined purely in Python or from a YAML file:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Python</label><div class="tab-content docutils">
@@ -414,7 +417,7 @@
 </div>
 <p>For production, we recommend YAML files to define the Flows. This is because YAML files are independent of Python logic code and easy to maintain.</p>
 <section id="conversion-between-python-and-yaml">
-<h3>Conversion between Python and YAML<a class="headerlink" href="#conversion-between-python-and-yaml" title="Permalink to this headline">#</a></h3>
+<h3>Conversion between Python and YAML<a class="headerlink" href="#conversion-between-python-and-yaml" title="Permalink to this heading">#</a></h3>
 <p>Python Flow definition can be easily converted to/from YAML definition.</p>
 <p>To load a Flow from a YAML file, use the <a class="reference internal" href="../../../api/jina/#jina.Flow.load_config" title="jina.Flow.load_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_config()</span></code></a>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -433,7 +436,7 @@
 </section>
 </section>
 <section id="start-and-stop">
-<h2>Start and stop<a class="headerlink" href="#start-and-stop" title="Permalink to this headline">#</a></h2>
+<h2>Start and stop<a class="headerlink" href="#start-and-stop" title="Permalink to this heading">#</a></h2>
 <p>When a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> starts, all its <a class="reference internal" href="../add-executors/#flow-add-executors"><span class="std std-ref">added Executors</span></a> will start as well, making it possible to <span class="xref std std-ref">reach the service through its API</span>.</p>
 <p>There are three ways to start a Flow. Depending on the use case, you can start a Flow either in Python, or from a YAML file, or from the terminal.</p>
 <ul class="simple">
@@ -488,7 +491,7 @@
 </figure>
 <p>Your addresses and entrypoints can be found in the output. When enabling more features such as monitoring, HTTP gateway, TLS encryption, this display will also expand to contain more information.</p>
 <section id="set-multiprocessing-spawn">
-<h3>Set multiprocessing <code class="docutils literal notranslate"><span class="pre">spawn</span></code><a class="headerlink" href="#set-multiprocessing-spawn" title="Permalink to this headline">#</a></h3>
+<h3>Set multiprocessing <code class="docutils literal notranslate"><span class="pre">spawn</span></code><a class="headerlink" href="#set-multiprocessing-spawn" title="Permalink to this heading">#</a></h3>
 <p>Some cornet cases require to force <code class="docutils literal notranslate"><span class="pre">spawn</span></code> start method for multiprocessing, e.g. if you encounter “Cannot re-initialize CUDA in forked subprocess”.</p>
 <p>You may try <code class="docutils literal notranslate"><span class="pre">JINA_MP_START_METHOD=spawn</span></code> before starting the Python script to enable this.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">JINA_MP_START_METHOD</span><span class="o">=</span>spawn python app.py
@@ -501,7 +504,7 @@
 </section>
 </section>
 <section id="serve-forever">
-<h2>Serve forever<a class="headerlink" href="#serve-forever" title="Permalink to this headline">#</a></h2>
+<h2>Serve forever<a class="headerlink" href="#serve-forever" title="Permalink to this heading">#</a></h2>
 <p>In most scenarios, a Flow should remain reachable for prolonged periods of time.
 This can be achieved by <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">flow</span> <span class="pre">--uses</span> <span class="pre">flow.yml</span></code> from terminal.</p>
 <p>Or if you are serving a Flow from Python:</p>
@@ -516,7 +519,7 @@ This can be achieved by <code class="docutils literal notranslate"><span class="
 <p>The <code class="docutils literal notranslate"><span class="pre">.block()</span></code> method blocks the execution of the current thread or process, which enables external clients to access the Flow.</p>
 <p>In this case, the Flow can be stopped by interrupting the thread or process.</p>
 <section id="server-until-an-event">
-<h3>Server until an event<a class="headerlink" href="#server-until-an-event" title="Permalink to this headline">#</a></h3>
+<h3>Server until an event<a class="headerlink" href="#server-until-an-event" title="Permalink to this heading">#</a></h3>
 <p>Alternatively, a <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> or <code class="docutils literal notranslate"><span class="pre">threading</span></code> <code class="docutils literal notranslate"><span class="pre">Event</span></code> object can be passed to <code class="docutils literal notranslate"><span class="pre">.block()</span></code>, which stops the Flow once set.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 <span class="kn">import</span> <span class="nn">threading</span>
@@ -541,7 +544,7 @@ This can be achieved by <code class="docutils literal notranslate"><span class="
 </section>
 </section>
 <section id="visualize">
-<h2>Visualize<a class="headerlink" href="#visualize" title="Permalink to this headline">#</a></h2>
+<h2>Visualize<a class="headerlink" href="#visualize" title="Permalink to this heading">#</a></h2>
 <p>A <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> has a built-in <code class="docutils literal notranslate"><span class="pre">.plot()</span></code> function which can be used to visualize a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -568,10 +571,10 @@ This can be achieved by <code class="docutils literal notranslate"><span class="
 <p>One can also visualize a remote Flow by passing the URL to <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">export</span> <span class="pre">flowchart</span></code>.</p>
 </section>
 <section id="export">
-<h2>Export<a class="headerlink" href="#export" title="Permalink to this headline">#</a></h2>
+<h2>Export<a class="headerlink" href="#export" title="Permalink to this heading">#</a></h2>
 <p>A <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> YAML can be exported as a Docker Compose YAML or a Kubernetes YAML bundle.</p>
 <section id="docker-compose">
-<h3>Docker Compose<a class="headerlink" href="#docker-compose" title="Permalink to this headline">#</a></h3>
+<h3>Docker Compose<a class="headerlink" href="#docker-compose" title="Permalink to this heading">#</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
@@ -586,7 +589,7 @@ This can be achieved by <code class="docutils literal notranslate"><span class="
 <p>For an advance utilisation of Docker Compose with jina please refer to this <a class="reference internal" href="../../../how-to/docker-compose/#docker-compose"><span class="std std-ref">How to</span></a></p>
 </section>
 <section id="kubernetes">
-<h3>Kubernetes<a class="headerlink" href="#kubernetes" title="Permalink to this headline">#</a></h3>
+<h3>Kubernetes<a class="headerlink" href="#kubernetes" title="Permalink to this heading">#</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
@@ -729,6 +732,7 @@ If you do not wish to rebuild the image, set the environment variable <code clas
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>

@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Deploy with Docker Compose" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Deploy with Kubernetes" href="../kubernetes/" /><link rel="prev" title="Include external Executors in a Flow" href="../external-executor/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/docker-compose.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Deploy with Docker Compose - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,8 +391,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="deploy-with-docker-compose">
-<span id="docker-compose"></span><h1>Deploy with Docker Compose<a class="headerlink" href="#deploy-with-docker-compose" title="Permalink to this headline">#</a></h1>
+                    <section id="deploy-with-docker-compose">
+<span id="docker-compose"></span><h1>Deploy with Docker Compose<a class="headerlink" href="#deploy-with-docker-compose" title="Permalink to this heading">#</a></h1>
 <p>One of the simplest ways of either prototyping or serving in
 production is to run your <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> with <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code>.</p>
 <p>A <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is composed of <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s which run Python code
@@ -417,13 +420,13 @@ health check from the dump yaml file as they are only compatible with 3.1.3+ oth
 always be <code class="docutils literal notranslate"><span class="pre">unhealthy</span></code></p>
 </div>
 <section id="example-indexing-and-searching-images-using-clipencoder-and-annliteindexer">
-<h2>Example: Indexing and searching images using CLIPEncoder and ANNLiteIndexer<a class="headerlink" href="#example-indexing-and-searching-images-using-clipencoder-and-annliteindexer" title="Permalink to this headline">#</a></h2>
+<h2>Example: Indexing and searching images using CLIPEncoder and ANNLiteIndexer<a class="headerlink" href="#example-indexing-and-searching-images-using-clipencoder-and-annliteindexer" title="Permalink to this heading">#</a></h2>
 <p>To follow this how-to, you should first ensure that <a class="reference external" href="https://docs.docker.com/compose/install/"><code class="docutils literal notranslate"><span class="pre">Docker</span> <span class="pre">Compose</span></code></a> is installed locally.</p>
 <p>This example shows how to build and deploy a Flow with Docker Compose, using <a class="reference external" href="https://hub.jina.ai/executor/0hnlmu3q"><code class="docutils literal notranslate"><span class="pre">CLIPImageEncoder</span></code></a>
 as an image encoder and <a class="reference external" href="https://hub.jina.ai/executor/7yypg8qk"><code class="docutils literal notranslate"><span class="pre">ANNLiteIndexer</span></code></a> as an indexer to perform fast nearest
 neighbor retrieval on image embeddings.</p>
 <section id="deploy-your-flow">
-<h3>Deploy your Flow<a class="headerlink" href="#deploy-your-flow" title="Permalink to this headline">#</a></h3>
+<h3>Deploy your Flow<a class="headerlink" href="#deploy-your-flow" title="Permalink to this heading">#</a></h3>
 <p>First let’s define the Flow and generate the Docker Compose YAML configuration from it</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">YAML</label><div class="tab-content docutils">
@@ -508,7 +511,7 @@ adapt it to your own needs.</p>
 </div>
 </section>
 <section id="query-your-flow">
-<h3>Query your Flow<a class="headerlink" href="#query-your-flow" title="Permalink to this headline">#</a></h3>
+<h3>Query your Flow<a class="headerlink" href="#query-your-flow" title="Permalink to this heading">#</a></h3>
 <p>Once we see that all the services in the Flow are ready, we can start sending index and search requests.</p>
 <p>First let’s define a client:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
@@ -649,6 +652,7 @@ adapt it to your own needs.</p>
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>

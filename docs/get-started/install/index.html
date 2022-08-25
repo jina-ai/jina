@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Install" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Docker image" href="docker/" /><link rel="prev" title="Comparing to Alternatives" href="../comparing-alternatives/" />
         <link rel="canonical" href="https://docs.jina.ai/get-started/install/index.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Install - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
-<ul class="current">
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul class="current">
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Install</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,8 +391,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="install">
-<span id="id1"></span><h1>Install<a class="headerlink" href="#install" title="Permalink to this headline">#</a></h1>
+                    <section id="install">
+<span id="id1"></span><h1>Install<a class="headerlink" href="#install" title="Permalink to this heading">#</a></h1>
 <p>Jina comes with multiple installation options, enabling different feature sets.
 Standard install enables all major features of Jina and is the recommended installation for most users.</p>
 <div class="tab-set docutils">
@@ -410,10 +413,10 @@ Standard install enables all major features of Jina and is the recommended insta
 </div>
 </div>
 <section id="more-install-options">
-<h2>More install options<a class="headerlink" href="#more-install-options" title="Permalink to this headline">#</a></h2>
+<h2>More install options<a class="headerlink" href="#more-install-options" title="Permalink to this heading">#</a></h2>
 <p>Version identifiers <a class="reference external" href="https://github.com/jina-ai/jina/blob/master/RELEASE.md">are explained here</a>.</p>
 <section id="minimum">
-<h3>Minimum<a class="headerlink" href="#minimum" title="Permalink to this headline">#</a></h3>
+<h3>Minimum<a class="headerlink" href="#minimum" title="Permalink to this heading">#</a></h3>
 <p>Minimum install enables basic features of Jina, but without support for HTTP, WebSocket, Docker and Hub.</p>
 <p>Minimum install is often used when building and deploying an Executor.</p>
 <div class="tab-set docutils">
@@ -435,7 +438,7 @@ Standard install enables all major features of Jina and is the recommended insta
 </div>
 </section>
 <section id="minimum-but-more-performant">
-<h3>Minimum but more performant<a class="headerlink" href="#minimum-but-more-performant" title="Permalink to this headline">#</a></h3>
+<h3>Minimum but more performant<a class="headerlink" href="#minimum-but-more-performant" title="Permalink to this heading">#</a></h3>
 <p>Same as minimum install, but also install <code class="docutils literal notranslate"><span class="pre">uvloop</span></code> and <code class="docutils literal notranslate"><span class="pre">lz4</span></code>.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">via PyPI</label><div class="tab-content docutils">
@@ -456,7 +459,7 @@ Standard install enables all major features of Jina and is the recommended insta
 </div>
 </section>
 <section id="full-development-dependencies">
-<h3>Full development dependencies<a class="headerlink" href="#full-development-dependencies" title="Permalink to this headline">#</a></h3>
+<h3>Full development dependencies<a class="headerlink" href="#full-development-dependencies" title="Permalink to this heading">#</a></h3>
 <p>This installs additional dependencies, useful for developing Jina itself. This includes Pytest, CI components etc.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--1">via PyPI</label><div class="tab-content docutils">
@@ -472,7 +475,7 @@ Standard install enables all major features of Jina and is the recommended insta
 </div>
 </section>
 <section id="prerelease">
-<h3>Prerelease<a class="headerlink" href="#prerelease" title="Permalink to this headline">#</a></h3>
+<h3>Prerelease<a class="headerlink" href="#prerelease" title="Permalink to this heading">#</a></h3>
 <p>Prerelease is the version always synced with the <code class="docutils literal notranslate"><span class="pre">master</span></code> branch of Jina’s GitHub repository.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--4-input--1" name="tab-set--4" type="radio"><label class="tab-label" for="tab-set--4-input--1">via PyPI</label><div class="tab-content docutils">
@@ -489,7 +492,7 @@ Standard install enables all major features of Jina and is the recommended insta
 </section>
 </section>
 <section id="autocomplete-commands-on-bash-zsh-and-fish">
-<h2>Autocomplete commands on Bash, Zsh and Fish<a class="headerlink" href="#autocomplete-commands-on-bash-zsh-and-fish" title="Permalink to this headline">#</a></h2>
+<h2>Autocomplete commands on Bash, Zsh and Fish<a class="headerlink" href="#autocomplete-commands-on-bash-zsh-and-fish" title="Permalink to this heading">#</a></h2>
 <p>After installing Jina via <code class="docutils literal notranslate"><span class="pre">pip</span></code>, you should be able to use your shell’s autocomplete feature while using Jina’s CLI. For example, typing <code class="docutils literal notranslate"><span class="pre">jina</span></code> then hitting your Tab key will provide the following suggestions:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina 
 
@@ -504,7 +507,7 @@ Standard install enables all major features of Jina and is the recommended insta
 </div>
 <p>Currently, the feature is enabled automatically on Bash, Zsh and Fish. It requires you to have a standard shell path as follows:</p>
 <div class="table-wrapper colwidths-auto docutils container">
-<table class="colwidths-auto docutils align-default">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Shell</p></th>
 <th class="head"><p>Configuration file path</p></th>
@@ -633,6 +636,7 @@ Standard install enables all major features of Jina and is the recommended insta
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>

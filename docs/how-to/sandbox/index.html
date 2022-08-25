@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Sandbox" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Debug" href="../debug-executor/" /><link rel="prev" title="Use" href="../../fundamentals/executor/hub/use-hub-executor/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/sandbox.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Sandbox - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,8 +391,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="sandbox">
-<span id="id1"></span><h1>Sandbox<a class="headerlink" href="#sandbox" title="Permalink to this headline">#</a></h1>
+                    <section id="sandbox">
+<span id="id1"></span><h1>Sandbox<a class="headerlink" href="#sandbox" title="Permalink to this heading">#</a></h1>
 <p>Sandbox provides a way to run in a cloud environment without any downloading to local. Sandbox will give you a host and port to connect with. Jina automatically takes care of this connection.</p>
 <p>Sandbox saves a lot of time when you just want to try out one Executor. It also saves a lot of computing resources for your local machine.</p>
 <p>Here is a graph to show the difference between using and not using Sandbox.</p>
@@ -397,7 +400,7 @@
 <img alt="../../_images/sandbox-advantage.png" src="../../_images/sandbox-advantage.png" />
 </figure>
 <section id="use">
-<h2>Use<a class="headerlink" href="#use" title="Permalink to this headline">#</a></h2>
+<h2>Use<a class="headerlink" href="#use" title="Permalink to this heading">#</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Document</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinahub+sandbox://Hello&#39;</span><span class="p">)</span>
@@ -409,7 +412,7 @@
 </div>
 <p>This starts a Flow that only has one Executor, and sends a Document to it. The Document is processed by the Executor and the result is returned.</p>
 <section id="use-with-other-executors">
-<h3>Use with other Executors<a class="headerlink" href="#use-with-other-executors" title="Permalink to this headline">#</a></h3>
+<h3>Use with other Executors<a class="headerlink" href="#use-with-other-executors" title="Permalink to this heading">#</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span>
 
 
@@ -430,7 +433,7 @@
 </section>
 </section>
 <section id="lifecycle">
-<h2>Lifecycle<a class="headerlink" href="#lifecycle" title="Permalink to this headline">#</a></h2>
+<h2>Lifecycle<a class="headerlink" href="#lifecycle" title="Permalink to this heading">#</a></h2>
 <p>Sandbox is serverless. It will not be removed immediately after the Flow is closed but kept alive for several minutes. If there is no traffic, it will automatically scale down to 0 to save resources, but it will restart again and give the response whenever a new request is sent to the same Sandbox.</p>
 <p><strong>Sandbox will be shared with other users</strong>. Sometimes you will start the sandbox very quickly because the other users already started it.</p>
 <p>It will find the existing sandbox by three factors:</p>
@@ -446,20 +449,20 @@
 </div>
 </section>
 <section id="version-consistency">
-<h2>Version consistency<a class="headerlink" href="#version-consistency" title="Permalink to this headline">#</a></h2>
+<h2>Version consistency<a class="headerlink" href="#version-consistency" title="Permalink to this heading">#</a></h2>
 <p>The Jina version inside the Sandbox will be the same as the one in the place where the Flow was run. For example, if you run the Flow in your local machine, then it’s the version of Jina in your local pip packages.</p>
 </section>
 <section id="caveats">
-<h2>Caveats<a class="headerlink" href="#caveats" title="Permalink to this headline">#</a></h2>
+<h2>Caveats<a class="headerlink" href="#caveats" title="Permalink to this heading">#</a></h2>
 <p>There are some caveats when using Sandbox Executors with respect to other Executors.</p>
 <section id="un-managed-lifetime">
-<h3>Un-managed lifetime<a class="headerlink" href="#un-managed-lifetime" title="Permalink to this headline">#</a></h3>
+<h3>Un-managed lifetime<a class="headerlink" href="#un-managed-lifetime" title="Permalink to this heading">#</a></h3>
 <p>Since the lifetime of these Executors is not handled by the Flow and is handled by the Hub infrastructure, there is no way
 to override its default configurations, therefore <code class="docutils literal notranslate"><span class="pre">uses_with</span></code>, <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code>, etc … will not apply.</p>
 <p>You can consider a Sandbox Executor as an external Executor where you have no control over its initialization or configuration.</p>
 </section>
 <section id="no-gpu-support">
-<h3>No GPU support<a class="headerlink" href="#no-gpu-support" title="Permalink to this headline">#</a></h3>
+<h3>No GPU support<a class="headerlink" href="#no-gpu-support" title="Permalink to this heading">#</a></h3>
 <p>Computation using GPU is most likely several times faster than using CPU in many use cases. However we don’t yet support using a GPU for computation in Sandbox containers.</p>
 </section>
 </section>
@@ -573,6 +576,7 @@ to override its default configurations, therefore <code class="docutils literal 
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>

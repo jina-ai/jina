@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="jina.enums module" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.enums.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>jina.enums module - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -389,7 +392,7 @@
                 </div>
                 <article role="main">
                     <section id="module-jina.enums">
-<span id="jina-enums-module"></span><h1>jina.enums module<a class="headerlink" href="#module-jina.enums" title="Permalink to this headline">#</a></h1>
+<span id="jina-enums-module"></span><h1>jina.enums module<a class="headerlink" href="#module-jina.enums" title="Permalink to this heading">#</a></h1>
 <p>Miscellaneous enums used in Jina.</p>
 <p>To use these enums in YAML config, following the example below:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">chunk_idx</span><span class="p">:</span><span class="w"></span>
@@ -405,17 +408,17 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.EnumType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">EnumType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#EnumType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.EnumType" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.EnumMeta</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">EnumMeta</span></code></p>
 <p>The metaclass for BetterEnum.</p>
 <p>Register a new EnumType</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>args</strong> – args passed to super()</p></li>
 <li><p><strong>kwargs</strong> – kwargs passed to super()</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>the registry class</p>
 </dd>
 </dl>
@@ -424,10 +427,10 @@
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">register_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#EnumType.register_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.EnumType.register_class" title="Permalink to this definition">#</a></dt>
 <dd><p>Register the class for dumping loading.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cls</strong> – Target class.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Registered class.</p>
 </dd>
 </dl>
@@ -444,17 +447,17 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.BetterEnum">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">BetterEnum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#BetterEnum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.BetterEnum" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></p>
 <p>The base class of Enum used in Jina.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.enums.BetterEnum.from_string">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#BetterEnum.from_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.BetterEnum.from_string" title="Permalink to this definition">#</a></dt>
 <dd><p>Parse the enum from a string.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>s</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – string representation of the enum value</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>enum value</p>
 </dd>
 </dl>
@@ -465,7 +468,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.PollingType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">PollingType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#PollingType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.PollingType" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
 <p>The enum for representing the parallel type of pods in a deployment.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.PollingType.ANY">
@@ -490,10 +493,10 @@
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_push</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.PollingType.is_push" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if <a class="reference internal" href="#jina.enums.PollingType" title="jina.enums.PollingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollingType</span></code></a> is using <cite>push</cite> protocol.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if this <a class="reference internal" href="#jina.enums.PollingType" title="jina.enums.PollingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollingType</span></code></a> is using <cite>push</cite> protocol else False.</p>
 </dd>
 </dl>
@@ -504,10 +507,10 @@
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_block</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.PollingType.is_block" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if <a class="reference internal" href="#jina.enums.PollingType" title="jina.enums.PollingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollingType</span></code></a> is using <cite>block</cite> protocol.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if this <a class="reference internal" href="#jina.enums.PollingType" title="jina.enums.PollingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">PollingType</span></code></a> is requiring <cite>block</cite> protocol else False.</p>
 </dd>
 </dl>
@@ -518,7 +521,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.LogVerbosity">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">LogVerbosity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#LogVerbosity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.LogVerbosity" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
 <p>Verbosity level of the logger.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.LogVerbosity.DEBUG">
@@ -555,7 +558,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.FlowBuildLevel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">FlowBuildLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#FlowBuildLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.FlowBuildLevel" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
 <p>The enum for representing a flow’s build level.</p>
 <p>Some <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.orchestrate.flow.Flow</span></code> class functions require certain build level to run.</p>
 <dl class="py attribute">
@@ -581,7 +584,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.GatewayProtocolType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">GatewayProtocolType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#GatewayProtocolType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.GatewayProtocolType" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
 <p>Gateway communication protocol</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.GatewayProtocolType.GRPC">
@@ -603,7 +606,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.PodRoleType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">PodRoleType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#PodRoleType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.PodRoleType" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
 <p>The enum of a Pod role.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.PodRoleType.HEAD">
@@ -625,7 +628,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.DeploymentRoleType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">DeploymentRoleType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#DeploymentRoleType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.DeploymentRoleType" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
 <p>The enum of a Deploymen role for visualization.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.DeploymentRoleType.DEPLOYMENT">
@@ -662,10 +665,10 @@
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_inspect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.DeploymentRoleType.is_inspect" title="Permalink to this definition">#</a></dt>
 <dd><p>If the role is inspect deployment related.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the Deployment role is inspect related else False.</p>
 </dd>
 </dl>
@@ -676,7 +679,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.FlowInspectType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">FlowInspectType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#FlowInspectType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.FlowInspectType" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
 <p>Inspect strategy in the flow.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.FlowInspectType.HANG">
@@ -698,10 +701,10 @@
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_keep</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.enums.FlowInspectType.is_keep" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if the target is inspected.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the target is inspected else False.</p>
 </dd>
 </dl>
@@ -712,7 +715,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.DataInputType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">DataInputType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#DataInputType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.DataInputType" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.enums.BetterEnum</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#jina.enums.BetterEnum" title="jina.enums.BetterEnum"><code class="xref py py-class docutils literal notranslate"><span class="pre">BetterEnum</span></code></a></p>
 <p>Data input type in the request generator.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.DataInputType.AUTO">
@@ -739,7 +742,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.enums.WebsocketSubProtocols">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">WebsocketSubProtocols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#WebsocketSubProtocols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.WebsocketSubProtocols" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
 <p>Subprotocol supported with Websocket Gateway</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.enums.WebsocketSubProtocols.JSON">
@@ -758,10 +761,10 @@
 <span class="sig-prename descclassname"><span class="pre">jina.enums.</span></span><span class="sig-name descname"><span class="pre">replace_enum_to_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/enums/#replace_enum_to_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.enums.replace_enum_to_str" title="Permalink to this definition">#</a></dt>
 <dd><p>Transform BetterEnum type into string.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>obj</strong> – Target obj.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Transformed obj with string type values.</p>
 </dd>
 </dl>
@@ -826,6 +829,7 @@
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>

@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Build a GPU Executor" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Include external Executors in a Flow" href="../external-executor/" /><link rel="prev" title="Scale out with replicas and shards" href="../scale-out/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/gpu-executor.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Build a GPU Executor - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,8 +391,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="build-a-gpu-executor">
-<span id="gpu-executor"></span><h1>Build a GPU Executor<a class="headerlink" href="#build-a-gpu-executor" title="Permalink to this headline">#</a></h1>
+                    <section id="build-a-gpu-executor">
+<span id="gpu-executor"></span><h1>Build a GPU Executor<a class="headerlink" href="#build-a-gpu-executor" title="Permalink to this heading">#</a></h1>
 <p>This document will show you how to use an <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> on a GPU, both locally and in a
 Docker container. You will also learn how to use GPU with pre-built Hub executors.</p>
 <p>Using a GPU allows you to significantly speed up encoding for most deep learning models,
@@ -400,9 +403,9 @@ reducing response latency by anything from 5 to 100 times, depending on the mode
 <p>If you’re not yet familiar with these concepts, first read the <a class="reference internal" href="../../fundamentals/executor/"><span class="doc std std-doc">Executor</span></a> and <a class="reference internal" href="../../fundamentals/executor/"><span class="doc std std-doc">Flow</span></a> documentation, and return to this tutorial once you feel comfortable performing basic operations in Jina.</p>
 </div>
 <section id="jina-gpus-in-a-nutshell">
-<h2>Jina &amp; GPUs in a nutshell<a class="headerlink" href="#jina-gpus-in-a-nutshell" title="Permalink to this headline">#</a></h2>
+<h2>Jina &amp; GPUs in a nutshell<a class="headerlink" href="#jina-gpus-in-a-nutshell" title="Permalink to this heading">#</a></h2>
 <p>If you want a thorough walk-through of how to use GPU resources in your code, the full tutorial in the
-<a class="reference external" href="#Prerequisites">next section</a> is exactly what you are looking for.</p>
+<span class="xref myst">next section</span> is exactly what you are looking for.</p>
 <p>But if you already know how to use your GPU and have come here just to find out how to make it play nice with Jina,
 then we have good news for you:</p>
 <p>You just use your GPU like you usually would in your machine learning framework of choice, and you are off to the races.
@@ -481,7 +484,7 @@ Document embedding: tensor<span class="o">([[</span><span class="m">0</span>.688
 documents - all on GPU, and thus blazingly fast.</p>
 </section>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">#</a></h2>
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">#</a></h2>
 <p>For this tutorial, you will need to work on a machine with an NVIDIA graphics card. You
 can use various free cloud platforms (like Google Colab or Kaggle kernels), if you do
 not have such a machine at home.</p>
@@ -496,7 +499,7 @@ the deep learning framework that you use, that might be required (for local exec
 </div>
 </section>
 <section id="setting-up-the-executor">
-<h2>Setting up the Executor<a class="headerlink" href="#setting-up-the-executor" title="Permalink to this headline">#</a></h2>
+<h2>Setting up the Executor<a class="headerlink" href="#setting-up-the-executor" title="Permalink to this heading">#</a></h2>
 <div class="hint admonition">
 <p class="admonition-title">Jina Hub</p>
 <p>In this section we create an executor using <a class="reference external" href="https://hub.jina.ai/">Jina Hub</a>. This still creates your executor locally
@@ -649,7 +652,7 @@ encoder by encoding 10 thousand text documents.</p>
 </div>
 </section>
 <section id="running-on-gpu-and-cpu-locally">
-<h2>Running on GPU and CPU locally<a class="headerlink" href="#running-on-gpu-and-cpu-locally" title="Permalink to this headline">#</a></h2>
+<h2>Running on GPU and CPU locally<a class="headerlink" href="#running-on-gpu-and-cpu-locally" title="Permalink to this heading">#</a></h2>
 <p>Let’s try it out by running the same code on CPU and GPU, so we can observe the speedup we can achieve.</p>
 <p>To toggle between the two, simply set your device type to <code class="docutils literal notranslate"><span class="pre">'cuda'</span></code>, and your GPU will take over the work:</p>
 <div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="gi">+ f = Flow().add(uses=SentenceEncoder, uses_with={&#39;device&#39;: &#39;cuda&#39;})</span><span class="w"></span>
@@ -699,7 +702,7 @@ so for most use cases this is not something we would worry about.</p>
 </div>
 </section>
 <section id="using-gpu-in-a-container">
-<h2>Using GPU in a container<a class="headerlink" href="#using-gpu-in-a-container" title="Permalink to this headline">#</a></h2>
+<h2>Using GPU in a container<a class="headerlink" href="#using-gpu-in-a-container" title="Permalink to this heading">#</a></h2>
 <div class="caution admonition">
 <p class="admonition-title">Using your GPU inside a container</p>
 <p>For this part of the tutorial, you need <code class="docutils literal notranslate"><span class="pre">nvidia-container-toolkit</span></code> installed on your machine.
@@ -755,7 +758,7 @@ If you haven’t installed that already, you can find an installation guide <a c
 <p>Now, if we run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code> again you can see that no downloading happens inside the container, and that the encoding starts faster.</p>
 </section>
 <section id="using-gpu-with-hub-executors">
-<h2>Using GPU with Hub Executors<a class="headerlink" href="#using-gpu-with-hub-executors" title="Permalink to this headline">#</a></h2>
+<h2>Using GPU with Hub Executors<a class="headerlink" href="#using-gpu-with-hub-executors" title="Permalink to this heading">#</a></h2>
 <p>We now saw how to use GPU with our Executor locally, and when using it in a Docker container. What about when we use Executors from Jina Hub, is there any difference?</p>
 <p>Nope! Not only that, many of the Executors on Jina Hub already come with a GPU-enabled version pre-built, usually under the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> tag (see <a class="reference internal" href="../../fundamentals/executor/hub/push-executor/#hub-tags"><span class="std std-ref">Jina Hub tags</span></a>). Let’s modify our example to use the pre-built <code class="docutils literal notranslate"><span class="pre">TransformerTorchEncoder</span></code> from Jina Hub</p>
 <div class="highlight-diff notranslate"><div class="highlight"><pre><span></span><span class="w">f = Flow().add(</span>
@@ -775,9 +778,9 @@ If you haven’t installed that already, you can find an installation guide <a c
 </div>
 </section>
 <section id="conclusion">
-<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">#</a></h2>
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this heading">#</a></h2>
 <p>Let’s recap what we saw in this tutorial:</p>
-<ol class="simple">
+<ol class="arabic simple">
 <li><p>Using Executors on a GPU locally is no different than using GPU in a standalone script. You can pass the device you want your Executor to use in the initialization.</p></li>
 <li><p>To use an Executor on a GPU inside a Docker container, make sure to pass <code class="docutils literal notranslate"><span class="pre">gpus='all'</span></code></p></li>
 <li><p>Use volumes (bind mounts), so you don’t have to download large files each time you start the Executor</p></li>
@@ -891,6 +894,7 @@ If you haven’t installed that already, you can find an installation guide <a c
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>

@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="jina.types.request.data module" />
   
@@ -19,8 +19,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.types.request.data.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>jina.types.request.data module - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -226,12 +226,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../get-started/install/windows/">On Windows</a></li>
@@ -242,6 +244,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -387,11 +390,11 @@
                 </div>
                 <article role="main">
                     <section id="module-jina.types.request.data">
-<span id="jina-types-request-data-module"></span><h1>jina.types.request.data module<a class="headerlink" href="#module-jina.types.request.data" title="Permalink to this headline">#</a></h1>
+<span id="jina-types-request-data-module"></span><h1>jina.types.request.data module<a class="headerlink" href="#module-jina.types.request.data" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.types.request.data.DataRequest">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.request.data.</span></span><span class="sig-name descname"><span class="pre">DataRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/data/#DataRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.data.DataRequest" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.request.Request</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a></p>
 <p>Represents a DataRequest used for exchanging <code class="xref py py-class docutils literal notranslate"><span class="pre">docarray.DocumentArray</span></code> with and within a Flow.</p>
 <p>When calling <a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.PostMixin.post" title="jina.clients.mixin.PostMixin.post"><code class="xref py py-meth docutils literal notranslate"><span class="pre">post()</span></code></a> on any Jina client,
 the provided input <code class="xref py py-class docutils literal notranslate"><span class="pre">docarray.DocumentArray</span></code> will be
@@ -403,13 +406,13 @@ converted to a <a class="reference internal" href="#jina.types.request.data.Data
 <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.proto.jina_pb2.DataRequestProtoWoData</span></code>. This does not necessarily mean that the data (docs) inside the request is also decompressed.</p>
 <blockquote>
 <div><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True if the proto was deserialized before</p>
 </dd>
 </dl>
 </div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -420,14 +423,14 @@ converted to a <a class="reference internal" href="#jina.types.request.data.Data
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_decompressed_with_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.is_decompressed_with_data" title="Permalink to this definition">#</a></dt>
 <dd><dl class="simple">
 <dt>Checks if the underlying proto object was already deserialized into a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.proto.jina_pb2.DataRequestProto</span></code>. In this case the full proto is decompressed, including the data (docs).</dt><dd><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True if the proto was deserialized before, including the data (docs)</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -438,10 +441,10 @@ converted to a <a class="reference internal" href="#jina.types.request.data.Data
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_decompressed_wo_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.is_decompressed_wo_data" title="Permalink to this definition">#</a></dt>
 <dd><p>Checks if the underlying proto object was already deserialized into a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.proto.jina_pb2.DataRequestProtoWoData</span></code>. It means that the proto is loaded without the data ( docs ).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the proto was deserialized before into a DataRequest without docs</p>
 </dd>
 </dl>
@@ -449,7 +452,7 @@ converted to a <a class="reference internal" href="#jina.types.request.data.Data
 
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.request.data.DataRequest.proto_wo_data">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto_wo_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">jina_pb2.DataRequestProtoWoData</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">jina_pb2.DataRequestProto</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.proto_wo_data" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto_wo_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DataRequestProtoWoData</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataRequestProto</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.proto_wo_data" title="Permalink to this definition">#</a></dt>
 <dd><p>Transform the current buffer to a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.DataRequestProtoWoData</span></code> unless the full proto has already
 been initialized or . Laziness will be broken and serialization will be recomputed when
 calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">SerializeToString()</span></code>.
@@ -459,7 +462,7 @@ calling <code class="xref py py-meth docutils literal notranslate"><span class="
 
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.request.data.DataRequest.proto">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">jina_pb2.DataRequestProto</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">jina_pb2.DataRequestProtoWoData</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.proto" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DataRequestProto</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataRequestProtoWoData</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.proto" title="Permalink to this definition">#</a></dt>
 <dd><p>Cast <code class="docutils literal notranslate"><span class="pre">self</span></code> to a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.DataRequestProto</span></code> or a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.DataRequestProto</span></code>. Laziness will be broken and serialization will be recomputed when calling.
 it returns the underlying proto if it already exists (even if he is loaded without data) or creates a new one.
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">SerializeToString()</span></code>.
@@ -469,7 +472,7 @@ it returns the underlying proto if it already exists (even if he is loaded witho
 
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.request.data.DataRequest.proto_with_data">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto_with_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">jina_pb2.DataRequestProto</span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.proto_with_data" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto_with_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataRequestProto</span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.proto_with_data" title="Permalink to this definition">#</a></dt>
 <dd><p>Cast <code class="docutils literal notranslate"><span class="pre">self</span></code> to a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.DataRequestProto</span></code>. Laziness will be broken and serialization will be recomputed when calling.
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">SerializeToString()</span></code>.
 :rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequestProto</span></code>
@@ -486,10 +489,10 @@ it returns the underlying proto if it already exists (even if he is loaded witho
 will be converted to Python list.</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>dict representation of the object</p>
 </dd>
 </dl>
@@ -497,10 +500,10 @@ will be converted to Python list.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.request.data.DataRequest.docs">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">docs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><span class="pre">docarray.array.document.DocumentArray</span></a></em><a class="headerlink" href="#jina.types.request.data.DataRequest.docs" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">docs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><span class="pre">DocumentArray</span></a></em><a class="headerlink" href="#jina.types.request.data.DataRequest.docs" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the :class: <cite>DocumentArray</cite> with sequence <cite>data.docs</cite> as content.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a></p>
 </dd>
 </dl>
@@ -517,10 +520,10 @@ will be converted to Python list.</p>
 <span class="sig-name descname"><span class="pre">CopyFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.data.DataRequest.CopyFrom" title="Permalink to this definition">#</a></dt>
 <dd><p>Copy the content of target</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>other</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)) – the document to copy from</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -531,10 +534,10 @@ will be converted to Python list.</p>
 <span class="sig-name descname"><span class="pre">MergeFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.data.DataRequest.MergeFrom" title="Permalink to this definition">#</a></dt>
 <dd><p>Merge the content of target</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>other</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)) – the document to merge from</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -549,7 +552,7 @@ will be converted to Python list.</p>
 :type executor: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="../jina.serve.executors/#jina.serve.executors.BaseExecutor" title="jina.serve.executors.BaseExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code></a>]
 :param executor: Executor related to the exception</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -565,7 +568,7 @@ will be converted to Python list.</p>
 <span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.data.DataRequest.clear" title="Permalink to this definition">#</a></dt>
 <dd><p>Remove all values from all fields of this Document.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -586,10 +589,10 @@ will be converted to Python list.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nbytes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#jina.types.request.data.DataRequest.nbytes" title="Permalink to this definition">#</a></dt>
 <dd><p>Return total bytes consumed by protobuf.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>number of bytes</p>
 </dd>
 </dl>
@@ -608,10 +611,10 @@ will be converted to Python list.</p>
 <span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.data.DataRequest.pop" title="Permalink to this definition">#</a></dt>
 <dd><p>Remove the values from the given fields of this Document.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>fields</strong> – field names</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -623,10 +626,10 @@ will be converted to Python list.</p>
 <dd><p>Return the serialized the message to a string.</p>
 <p>For more Pythonic code, please use <code class="docutils literal notranslate"><span class="pre">bytes(...)</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>binary string representation of the object</p>
 </dd>
 </dl>
@@ -637,10 +640,10 @@ will be converted to Python list.</p>
 <span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.data.DataRequest.to_json" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the object in JSON string</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>JSON string of the object</p>
 </dd>
 </dl>
@@ -651,7 +654,7 @@ will be converted to Python list.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">response</span></span><a class="headerlink" href="#jina.types.request.data.DataRequest.response" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns the response of this request.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>the response of this request (self) as an instance of Response</p>
 </dd>
 </dl>
@@ -662,7 +665,7 @@ will be converted to Python list.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#jina.types.request.data.DataRequest.status" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns the status from the header field</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>the status object of this request</p>
 </dd>
 </dl>
@@ -673,7 +676,7 @@ will be converted to Python list.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">request_id</span></span><a class="headerlink" href="#jina.types.request.data.DataRequest.request_id" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns the request_id from the header field</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>the request_id object of this request</p>
 </dd>
 </dl>
@@ -693,7 +696,7 @@ will be converted to Python list.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.types.request.data.Response">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.types.request.data.</span></span><span class="sig-name descname"><span class="pre">Response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/types/request/data/#Response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.types.request.data.Response" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">jina.types.request.data.DataRequest</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#jina.types.request.data.DataRequest" title="jina.types.request.data.DataRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequest</span></code></a></p>
 <p>Response is the <a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> object returned by the flow.</p>
 <p>At the moment it is an alias for <a class="reference internal" href="../jina.types.request/#jina.types.request.Request" title="jina.types.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a>,
 and therefore shares an identical representation.
@@ -704,10 +707,10 @@ the client API: send a <a class="reference internal" href="#jina.types.request.d
 <span class="sig-name descname"><span class="pre">CopyFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.data.Response.CopyFrom" title="Permalink to this definition">#</a></dt>
 <dd><p>Copy the content of target</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>other</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)) – the document to copy from</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -718,10 +721,10 @@ the client API: send a <a class="reference internal" href="#jina.types.request.d
 <span class="sig-name descname"><span class="pre">MergeFrom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.data.Response.MergeFrom" title="Permalink to this definition">#</a></dt>
 <dd><p>Merge the content of target</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>other</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)) – the document to merge from</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -736,7 +739,7 @@ the client API: send a <a class="reference internal" href="#jina.types.request.d
 :type executor: <code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="../jina.serve.executors/#jina.serve.executors.BaseExecutor" title="jina.serve.executors.BaseExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code></a>]
 :param executor: Executor related to the exception</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -752,7 +755,7 @@ the client API: send a <a class="reference internal" href="#jina.types.request.d
 <span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.data.Response.clear" title="Permalink to this definition">#</a></dt>
 <dd><p>Remove all values from all fields of this Document.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -765,10 +768,10 @@ the client API: send a <a class="reference internal" href="#jina.types.request.d
 
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.request.data.Response.docs">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">docs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><span class="pre">docarray.array.document.DocumentArray</span></a></em><a class="headerlink" href="#jina.types.request.data.Response.docs" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">docs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><span class="pre">DocumentArray</span></a></em><a class="headerlink" href="#jina.types.request.data.Response.docs" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the :class: <cite>DocumentArray</cite> with sequence <cite>data.docs</cite> as content.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../jina/#jina.DocumentArray" title="docarray.array.document.DocumentArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocumentArray</span></code></a></p>
 </dd>
 </dl>
@@ -790,13 +793,13 @@ the client API: send a <a class="reference internal" href="#jina.types.request.d
 <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.proto.jina_pb2.DataRequestProtoWoData</span></code>. This does not necessarily mean that the data (docs) inside the request is also decompressed.</p>
 <blockquote>
 <div><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True if the proto was deserialized before</p>
 </dd>
 </dl>
 </div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -807,14 +810,14 @@ the client API: send a <a class="reference internal" href="#jina.types.request.d
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_decompressed_with_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.types.request.data.Response.is_decompressed_with_data" title="Permalink to this definition">#</a></dt>
 <dd><dl class="simple">
 <dt>Checks if the underlying proto object was already deserialized into a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.proto.jina_pb2.DataRequestProto</span></code>. In this case the full proto is decompressed, including the data (docs).</dt><dd><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>True if the proto was deserialized before, including the data (docs)</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -825,10 +828,10 @@ the client API: send a <a class="reference internal" href="#jina.types.request.d
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_decompressed_wo_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#jina.types.request.data.Response.is_decompressed_wo_data" title="Permalink to this definition">#</a></dt>
 <dd><p>Checks if the underlying proto object was already deserialized into a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina.proto.jina_pb2.DataRequestProtoWoData</span></code>. It means that the proto is loaded without the data ( docs ).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the proto was deserialized before into a DataRequest without docs</p>
 </dd>
 </dl>
@@ -844,10 +847,10 @@ the client API: send a <a class="reference internal" href="#jina.types.request.d
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nbytes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#jina.types.request.data.Response.nbytes" title="Permalink to this definition">#</a></dt>
 <dd><p>Return total bytes consumed by protobuf.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>number of bytes</p>
 </dd>
 </dl>
@@ -866,10 +869,10 @@ the client API: send a <a class="reference internal" href="#jina.types.request.d
 <span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">fields</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.data.Response.pop" title="Permalink to this definition">#</a></dt>
 <dd><p>Remove the values from the given fields of this Document.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>fields</strong> – field names</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -877,7 +880,7 @@ the client API: send a <a class="reference internal" href="#jina.types.request.d
 
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.request.data.Response.proto">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">jina_pb2.DataRequestProto</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">jina_pb2.DataRequestProtoWoData</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.request.data.Response.proto" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DataRequestProto</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataRequestProtoWoData</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.request.data.Response.proto" title="Permalink to this definition">#</a></dt>
 <dd><p>Cast <code class="docutils literal notranslate"><span class="pre">self</span></code> to a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.DataRequestProto</span></code> or a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.DataRequestProto</span></code>. Laziness will be broken and serialization will be recomputed when calling.
 it returns the underlying proto if it already exists (even if he is loaded without data) or creates a new one.
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">SerializeToString()</span></code>.
@@ -887,7 +890,7 @@ it returns the underlying proto if it already exists (even if he is loaded witho
 
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.request.data.Response.proto_with_data">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto_with_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">jina_pb2.DataRequestProto</span></em><a class="headerlink" href="#jina.types.request.data.Response.proto_with_data" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto_with_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataRequestProto</span></em><a class="headerlink" href="#jina.types.request.data.Response.proto_with_data" title="Permalink to this definition">#</a></dt>
 <dd><p>Cast <code class="docutils literal notranslate"><span class="pre">self</span></code> to a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.DataRequestProto</span></code>. Laziness will be broken and serialization will be recomputed when calling.
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">SerializeToString()</span></code>.
 :rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataRequestProto</span></code>
@@ -896,7 +899,7 @@ it returns the underlying proto if it already exists (even if he is loaded witho
 
 <dl class="py property">
 <dt class="sig sig-object py" id="jina.types.request.data.Response.proto_wo_data">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto_wo_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">jina_pb2.DataRequestProtoWoData</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">jina_pb2.DataRequestProto</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.request.data.Response.proto_wo_data" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">proto_wo_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">DataRequestProtoWoData</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataRequestProto</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#jina.types.request.data.Response.proto_wo_data" title="Permalink to this definition">#</a></dt>
 <dd><p>Transform the current buffer to a <code class="xref py py-class docutils literal notranslate"><span class="pre">jina_pb2.DataRequestProtoWoData</span></code> unless the full proto has already
 been initialized or . Laziness will be broken and serialization will be recomputed when
 calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">SerializeToString()</span></code>.
@@ -909,7 +912,7 @@ calling <code class="xref py py-meth docutils literal notranslate"><span class="
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">request_id</span></span><a class="headerlink" href="#jina.types.request.data.Response.request_id" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns the request_id from the header field</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>the request_id object of this request</p>
 </dd>
 </dl>
@@ -920,7 +923,7 @@ calling <code class="xref py py-meth docutils literal notranslate"><span class="
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">response</span></span><a class="headerlink" href="#jina.types.request.data.Response.response" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns the response of this request.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>the response of this request (self) as an instance of Response</p>
 </dd>
 </dl>
@@ -931,7 +934,7 @@ calling <code class="xref py py-meth docutils literal notranslate"><span class="
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#jina.types.request.data.Response.status" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns the status from the header field</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>the status object of this request</p>
 </dd>
 </dl>
@@ -943,10 +946,10 @@ calling <code class="xref py py-meth docutils literal notranslate"><span class="
 <dd><p>Return the serialized the message to a string.</p>
 <p>For more Pythonic code, please use <code class="docutils literal notranslate"><span class="pre">bytes(...)</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>binary string representation of the object</p>
 </dd>
 </dl>
@@ -962,10 +965,10 @@ calling <code class="xref py py-meth docutils literal notranslate"><span class="
 will be converted to Python list.</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>dict representation of the object</p>
 </dd>
 </dl>
@@ -976,10 +979,10 @@ will be converted to Python list.</p>
 <span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.types.request.data.Response.to_json" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the object in JSON string</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>JSON string of the object</p>
 </dd>
 </dl>
@@ -1046,6 +1049,7 @@ will be converted to Python list.</p>
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>

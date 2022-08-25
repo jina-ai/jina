@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Migrate Jina 2 to Jina 3" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="prev" title="Telemetry" href="../../telemetry/" />
         <link rel="canonical" href="https://docs.jina.ai/get-started/migrate.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Migrate Jina 2 to Jina 3 - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../fundamentals/architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,8 +391,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="migrate-jina-2-to-jina-3">
-<h1>Migrate Jina 2 to Jina 3<a class="headerlink" href="#migrate-jina-2-to-jina-3" title="Permalink to this headline">#</a></h1>
+                    <section id="migrate-jina-2-to-jina-3">
+<h1>Migrate Jina 2 to Jina 3<a class="headerlink" href="#migrate-jina-2-to-jina-3" title="Permalink to this heading">#</a></h1>
 <p>Jina 3 comes with many improvements but to be able to enjoy them, you will also have to make some
 tweaks to your existing Jina 2 code.</p>
 <p>One of the major changes in Jina 3 is <a class="reference external" href="https://docarray.jina.ai/">DocArray</a> being an external dependency:
@@ -406,60 +409,52 @@ underpin neural search apps as well as the Jina ecosystem, including <a class="r
 <p>In general, the breaking changes are aiming for increased simplicity and consistency, making your life easier in the
 long run. Here you can find out what exactly you will have to adapt.</p>
 <section id="simple-changes-at-a-glance">
-<h2>Simple changes at a glance<a class="headerlink" href="#simple-changes-at-a-glance" title="Permalink to this headline">#</a></h2>
+<h2>Simple changes at a glance<a class="headerlink" href="#simple-changes-at-a-glance" title="Permalink to this heading">#</a></h2>
 <p>Many of the changes introduced in Jina 3 are easily adapted to a Jina 2 codebase.
 The modifications in the following table should, in most cases, be safe to perform without further thought or effort.</p>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>Jina 2</th>
-<th>Jina 3</th>
+<tr class="row-odd"><th class="head"><p>Jina 2</p></th>
+<th class="head"><p>Jina 3</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><code>doc.blob</code></td>
-<td><code>doc.tensor</code></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">doc.blob</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">doc.tensor</span></code></p></td>
 </tr>
-<tr>
-<td><code>doc.buffer</code></td>
-<td><code>doc.blob</code></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">doc.buffer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">doc.blob</span></code></p></td>
 </tr>
-<tr>
-<td><code>docs.get_attributes('attribute')</code></td>
-<td><code>docs[:, 'attribute']</code></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">docs.get_attributes('attribute')</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">docs[:,</span> <span class="pre">'attribute']</span></code></p></td>
 </tr>
-<tr>
-<td><code>['path1', 'path2']</code></td>
-<td><code>'path1,path2'</code></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">['path1',</span> <span class="pre">'path2']</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'path1,path2'</span></code></p></td>
 </tr>
-<tr>
-<td><code>docs.traverse_flat(paths)</code></td>
-<td><code>docs['@paths']</code></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">docs.traverse_flat(paths)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">docs['&#64;paths']</span></code></p></td>
 </tr>
-<tr>
-<td><code>docs.flatten()</code></td>
-<td><code>docs[...]</code></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">docs.flatten()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">docs[...]</span></code></p></td>
 </tr>
-<tr>
-<td><code>doc.SerializeToString()</code></td>
-<td><code>doc.to_bytes()</code></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">doc.SerializeToString()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">doc.to_bytes()</span></code></p></td>
 </tr>
-<tr>
-<td><code>Document(bytes)</code></td>
-<td><code>Document.from_bytes()</code></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Document(bytes)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Document.from_bytes()</span></code></p></td>
 </tr>
-<tr>
-<td><code>from jina import Document, DocumentArray</code></td>
-<td><code>from docarray import Document, DocumentArray</code></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">jina</span> <span class="pre">import</span> <span class="pre">Document,</span> <span class="pre">DocumentArray</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">docarray</span> <span class="pre">import</span> <span class="pre">Document,</span> <span class="pre">DocumentArray</span></code></p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p>There are, however, some more nuanced changes in Jina 3 as well.
 These are outlined below.</p>
 </section>
 <section id="document-more-natural-attribute-names-and-pythonic-serialization">
-<h2>Document: More natural attribute names and Pythonic serialization<a class="headerlink" href="#document-more-natural-attribute-names-and-pythonic-serialization" title="Permalink to this headline">#</a></h2>
+<h2>Document: More natural attribute names and Pythonic serialization<a class="headerlink" href="#document-more-natural-attribute-names-and-pythonic-serialization" title="Permalink to this heading">#</a></h2>
 <p>Docarray introduces more natural naming conventions for <code class="docutils literal notranslate"><span class="pre">Document</span></code> and <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> attributes.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">doc.blob</span></code> is renamed to <code class="docutils literal notranslate"><span class="pre">doc.tensor</span></code>, to align with external libraries like PyTorch and Tensorflow</p></li>
@@ -470,7 +465,7 @@ These are outlined below.</p>
 </ul>
 </section>
 <section id="documentarray-simplified-attribute-element-access-and-new-storage-options">
-<h2>DocumentArray: Simplified attribute, element access and new storage options<a class="headerlink" href="#documentarray-simplified-attribute-element-access-and-new-storage-options" title="Permalink to this headline">#</a></h2>
+<h2>DocumentArray: Simplified attribute, element access and new storage options<a class="headerlink" href="#documentarray-simplified-attribute-element-access-and-new-storage-options" title="Permalink to this heading">#</a></h2>
 <div class="seealso admonition">
 <p class="admonition-title">DocArray library</p>
 <p>Take a look at the <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/access-attributes/">DocArray documentation</a>
@@ -664,14 +659,14 @@ in-memory storage. Furthermore, some Document Stores offer fast Nearest Neighbor
 production.</p>
 </section>
 <section id="flow-and-client-simplified-post-behavior">
-<h2>Flow and Client: Simplified <code class="docutils literal notranslate"><span class="pre">.post()</span></code> behavior<a class="headerlink" href="#flow-and-client-simplified-post-behavior" title="Permalink to this headline">#</a></h2>
+<h2>Flow and Client: Simplified <code class="docutils literal notranslate"><span class="pre">.post()</span></code> behavior<a class="headerlink" href="#flow-and-client-simplified-post-behavior" title="Permalink to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">client.post()</span></code> and <code class="docutils literal notranslate"><span class="pre">flow.post()</span></code> now return a flattened <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> instead of a list of <code class="docutils literal notranslate"><span class="pre">Response</span></code>s when no
 callback function is specified.</p>
 <p><code class="docutils literal notranslate"><span class="pre">.post()</span></code> can still be configured to return a list of Responses, by passing <code class="docutils literal notranslate"><span class="pre">return_responses=True</span></code> to the Client or Flow
 constructors.</p>
 </section>
 <section id="consistent-yaml-parsing-syntax">
-<span id="migration-env-var"></span><h2>Consistent YAML parsing syntax<a class="headerlink" href="#consistent-yaml-parsing-syntax" title="Permalink to this headline">#</a></h2>
+<span id="migration-env-var"></span><h2>Consistent YAML parsing syntax<a class="headerlink" href="#consistent-yaml-parsing-syntax" title="Permalink to this heading">#</a></h2>
 <p>In Jina 3, YAML syntax is aligned with <a class="reference external" href="https://docs.github.com/en/actions/learn-github-actions/environment-variables">Github Actions notation</a>,
 which leads to the following changes:</p>
 <ul class="simple">
@@ -688,7 +683,7 @@ the former (<code class="docutils literal notranslate"><span class="pre">${{</sp
 </div>
 </section>
 <section id="common-errors-and-solutions">
-<h2>Common errors and solutions<a class="headerlink" href="#common-errors-and-solutions" title="Permalink to this headline">#</a></h2>
+<h2>Common errors and solutions<a class="headerlink" href="#common-errors-and-solutions" title="Permalink to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">AttributeError:</span> <span class="pre">'Document'</span> <span class="pre">object</span> <span class="pre">has</span> <span class="pre">no</span> <span class="pre">attribute</span> <span class="pre">'buffer'</span></code></p>
 <details>
   <summary>Solution</summary>
@@ -825,6 +820,7 @@ the former (<code class="docutils literal notranslate"><span class="pre">${{</sp
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>

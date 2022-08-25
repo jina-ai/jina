@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
 <meta property="og:title" content="Topology" />
   
@@ -21,8 +21,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
 <meta name="twitter:creator" content="@JinaAI_">
-<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
-<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">
+<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
+<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Monitor" href="../monitoring-flow/" /><link rel="prev" title="Add Executors" href="../add-executors/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/topologies.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-4.5.0, furo 2022.06.21"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
         <title>Topology - Jina 3.7.15 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
@@ -228,12 +228,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-    <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+    <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-cross-modal-multi-modal/">What is Cross-Modal &amp; Multi-Modal?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/what-is-jina/">What is Jina?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get-started/comparing-alternatives/">Comparing to Alternatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../get-started/install/">Install</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/docker/">Docker image</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../get-started/install/windows/">On Windows</a></li>
@@ -244,6 +246,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">User Guides</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../architecture-overview/">Basic Concepts</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../executor/">Executor</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-api/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/executor-methods/"><code class="docutils literal notranslate"><span class="pre">@requests</span></code> methods</a></li>
@@ -388,8 +391,8 @@
                     </label>
                 </div>
                 <article role="main">
-                    <section class="tex2jax_ignore mathjax_ignore" id="topology">
-<span id="flow-complex-topologies"></span><h1>Topology<a class="headerlink" href="#topology" title="Permalink to this headline">#</a></h1>
+                    <section id="topology">
+<span id="flow-complex-topologies"></span><h1>Topology<a class="headerlink" href="#topology" title="Permalink to this heading">#</a></h1>
 <p><a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>s are not restricted to sequential execution. Internally they are modelled as graphs and as such can represent any complex, non-cyclic topology.
 A typical use case for such a Flow is a topology with a common pre-processing part, but different indexers separating embeddings and data.
 To define a custom Flow topology you can use the <code class="docutils literal notranslate"><span class="pre">needs</span></code> keyword when adding an <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. By default, a Flow assumes that every Executor needs the previously added Executor.</p>
@@ -442,7 +445,7 @@ To define a custom Flow topology you can use the <code class="docutils literal n
 <p>So both <code class="docutils literal notranslate"><span class="pre">BarExecutor</span></code> and <code class="docutils literal notranslate"><span class="pre">BazExecutor</span></code> only received a single <code class="docutils literal notranslate"><span class="pre">Document</span></code> from <code class="docutils literal notranslate"><span class="pre">FooExecutor</span></code> as they are run in parallel. The last Executor <code class="docutils literal notranslate"><span class="pre">executor3</span></code> will receive both DocumentArrays and merges them automatically.
 The automated merging can be disabled by setting <code class="docutils literal notranslate"><span class="pre">disable_reduce=True</span></code>. This can be useful when you need to provide your custom merge logic in a separate Executor. In this case the last <code class="docutils literal notranslate"><span class="pre">.add()</span></code> call would like <code class="docutils literal notranslate"><span class="pre">.add(needs=['barExecutor',</span> <span class="pre">'bazExecutor'],</span> <span class="pre">uses=CustomMergeExecutor,</span> <span class="pre">disable_reduce=True)</span></code>. This feature requires Jina &gt;= 3.0.2.</p>
 <section id="replicate-executors">
-<span id="id1"></span><h2>Replicate Executors<a class="headerlink" href="#replicate-executors" title="Permalink to this headline">#</a></h2>
+<span id="id1"></span><h2>Replicate Executors<a class="headerlink" href="#replicate-executors" title="Permalink to this heading">#</a></h2>
 <p>Replication can be used to create multiple copies of the same <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s. Each request in the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is then passed to only one replica (instance) of your Executor. This can be useful for a couple of challenges like performance and availability:</p>
 <ul class="simple">
 <li><p>If you have slow Executors (like some Encoders) you may want to scale up the number of instances of this particular Executor so that you can process multiple requests in parallel</p></li>
@@ -463,7 +466,7 @@ The automated merging can be disabled by setting <code class="docutils literal n
 request to exactly one of the three instances. Then the replica will send its result to <code class="docutils literal notranslate"><span class="pre">fast_indexer</span></code>.</p>
 </section>
 <section id="replicate-on-multiple-gpus">
-<h2>Replicate on multiple GPUs<a class="headerlink" href="#replicate-on-multiple-gpus" title="Permalink to this headline">#</a></h2>
+<h2>Replicate on multiple GPUs<a class="headerlink" href="#replicate-on-multiple-gpus" title="Permalink to this heading">#</a></h2>
 <p>In certain situations, you may want to replicate your <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s so that each replica uses a different GPU on your machine.
 To achieve this, you need to tell the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> to leverage multiple GPUs, by passing <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR</span></code> as an environment variable.
 The Flow will then assign each available GPU to replicas in a round-robin fashion.</p>
@@ -506,70 +509,62 @@ The Flow will then assign each available GPU to replicas in a round-robin fashio
 </div>
 </div>
 <p>The Flow will assign GPU devices in the following round-robin fashion:</p>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>GPU device</th>
-<th>Replica ID</th>
+<tr class="row-odd"><th class="head"><p>GPU device</p></th>
+<th class="head"><p>Replica ID</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>0</td>
-<td>0</td>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>0</p></td>
 </tr>
-<tr>
-<td>1</td>
-<td>1</td>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>1</p></td>
 </tr>
-<tr>
-<td>2</td>
-<td>2</td>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>2</p></td>
 </tr>
-<tr>
-<td>0</td>
-<td>3</td>
+<tr class="row-odd"><td><p>0</p></td>
+<td><p>3</p></td>
 </tr>
-<tr>
-<td>1</td>
-<td>4</td>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>4</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 <p>You can also restrict the visible devices in round-robin assignment by <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR0:2</span></code>, where <code class="docutils literal notranslate"><span class="pre">0:2</span></code> has the same meaning as Python slice. This will create the following assignment:</p>
-<table border="1" class="docutils">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
-<tr>
-<th>GPU device</th>
-<th>Replica ID</th>
+<tr class="row-odd"><th class="head"><p>GPU device</p></th>
+<th class="head"><p>Replica ID</p></th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>0</td>
-<td>0</td>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>0</p></td>
 </tr>
-<tr>
-<td>1</td>
-<td>1</td>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>1</p></td>
 </tr>
-<tr>
-<td>0</td>
-<td>2</td>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>2</p></td>
 </tr>
-<tr>
-<td>1</td>
-<td>3</td>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>3</p></td>
 </tr>
-<tr>
-<td>0</td>
-<td>4</td>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>4</p></td>
 </tr>
 </tbody>
 </table>
+</div>
 </section>
 <section id="partition-data-with-shards">
-<span id="partition-data-by-using-shards"></span><h2>Partition data with shards<a class="headerlink" href="#partition-data-with-shards" title="Permalink to this headline">#</a></h2>
+<span id="partition-data-by-using-shards"></span><h2>Partition data with shards<a class="headerlink" href="#partition-data-with-shards" title="Permalink to this heading">#</a></h2>
 <p>Sharding can be used to partition data (like an Index) into several parts. This enables the distribution of data across multiple machines.
 This is helpful in two situations:</p>
 <ul class="simple">
@@ -606,7 +601,7 @@ For searching, you probably need to send the search request to all Shards, becau
 </ul>
 </section>
 <section id="filter-by-condition">
-<span id="flow-filter"></span><h2>Filter by condition<a class="headerlink" href="#filter-by-condition" title="Permalink to this headline">#</a></h2>
+<span id="flow-filter"></span><h2>Filter by condition<a class="headerlink" href="#filter-by-condition" title="Permalink to this heading">#</a></h2>
 <p>To define a filter condition, you can use <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions">DocArrays rich query language</a>.
 You can set a filter for each individual <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>, and every Document that does not satisfy the filter condition will be
 removed before reaching that Executor.</p>
@@ -840,6 +835,7 @@ This means that you can not only use this feature to build complex logic, but al
      src="https://static.scarf.sh/a.png?x-pxid=2823e771-0e1e-4320-8fde-48bc48e53262"/><script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
