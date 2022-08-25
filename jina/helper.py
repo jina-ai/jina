@@ -954,7 +954,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'jina-hubble-sdk': __hubble_version__,
             'jina-proto': __proto_version__,
             'protobuf': google.protobuf.__version__,
-            'proto-backend': api_implementation._default_implementation_type,
+            'proto-backend': api_implementation.Type(),
             'grpcio': getattr(grpc, '__version__', _grpcio_metadata.__version__),
             'pyyaml': yaml.__version__,
             'python': platform.python_version(),
