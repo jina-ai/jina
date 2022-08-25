@@ -26,13 +26,12 @@ class KindClusterWrapper:
 
     def _install_linkderd(self, kind_cluster):
         self._log.info('Installing Linkerd CRDs to Cluster...')
-        proc = subprocess.Popen(
+        subprocess.run(
             [f'{Path.home()}/.linkerd2/bin/linkerd', 'install', '--crds'],
             stdout=subprocess.PIPE,
             env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
         )
 
-        returncode = proc.poll()
         self._log.info(f'Installing Linkerd CRDs to Cluster returned code {returncode}')
         if returncode is not None and returncode != 0:
             raise Exception(f"Installing linkerd CRDs failed with {returncode}")
