@@ -132,7 +132,7 @@ class RequestHandler(MonitoringRequestMixin):
         metrics_registry: Optional['CollectorRegistry'] = None,
         runtime_name: Optional[str] = None,
     ):
-        super(RequestHandler, self).__init__(metrics_registry, runtime_name)
+        super().__init__(metrics_registry, runtime_name)
         self._executor_endpoint_mapping = None
         self._gathering_endpoints = False
 
