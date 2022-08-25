@@ -107,13 +107,18 @@ Check out more in-depth tutorials on the advanced usages of Jina.
 ```
 
 ```{toctree}
-:caption: Get Started
+:caption: Introduction
 :hidden:
 
 get-started/what-is-cross-modal-multi-modal
 get-started/what-is-jina
-fundamentals/architecture-overview
 get-started/comparing-alternatives
+```
+
+```{toctree}
+:caption: Get Started
+:hidden:
+
 get-started/install/index
 get-started/create-app
 ```
@@ -122,6 +127,7 @@ get-started/create-app
 :caption: User Guides
 :hidden:
 
+fundamentals/architecture-overview
 fundamentals/executor/index
 fundamentals/flow/index
 fundamentals/gateway/index

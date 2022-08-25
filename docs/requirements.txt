@@ -1,17 +1,15 @@
 # cf. https://github.com/ryanfox/sphinx-markdown-tables/issues/36
-markdown<3.4.0
 sphinx
 sphinx-argparse==0.3.1
 sphinxcontrib-apidoc==0.3.0
 sphinx-autodoc-typehints==1.18.3
-sphinx_markdown_tables==0.0.15
-sphinx_copybutton==0.4.0
+sphinx_copybutton
 sphinx-notfound-page==0.7.1
 gitpython==3.1.13
-sphinx-sitemap==2.2.0
+sphinx-sitemap
 sphinxext-opengraph
 furo
-myst-parser==0.15.1
+myst-parser
 sphinx-design
 sphinx-inline-tabs
 # sphinx-multiversion

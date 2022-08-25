@@ -107,7 +107,6 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinxcontrib.apidoc',
     'sphinxarg.ext',
-    'sphinx_markdown_tables',
     'sphinx_copybutton',
     'sphinx_sitemap',
     'sphinx.ext.intersphinx',
@@ -179,8 +178,8 @@ ogp_custom_meta_tags = [
     '<meta name="twitter:card" content="summary_large_image">',
     '<meta name="twitter:site" content="@JinaAI_">',
     '<meta name="twitter:creator" content="@JinaAI_">',
-    '<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">',
-    '<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native">',
+    '<meta name="description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">',
+    '<meta property="og:description" content="Build cross-modal and multi-modal applications on the cloud · Neural Search · Creative AI · Cloud Native · MLOps">',
     '''
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-48ZDWC8GT6"></script>
