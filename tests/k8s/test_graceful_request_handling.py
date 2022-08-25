@@ -20,6 +20,7 @@ async def create_all_flow_deployments_and_wait_ready(
         'kind': 'Namespace',
         'metadata': {'name': f'{namespace}'},
     }
+    print('creating namespace')
     try:
         utils.create_from_dict(api_client, namespace_object)
     except:
@@ -36,6 +37,8 @@ async def create_all_flow_deployments_and_wait_ready(
             }
         for file in file_set:
             try:
+                print(f'creating {os.path.join(flow_dump_path, deployment_name, file)}')
+
                 utils.create_from_yaml(
                     api_client,
                     yaml_file=os.path.join(flow_dump_path, deployment_name, file),
@@ -48,6 +51,7 @@ async def create_all_flow_deployments_and_wait_ready(
     # wait for all the pods to be up
     while True:
         namespaced_pods = core_client.list_namespaced_pod(namespace)
+        print(f'waiting for pods, created: {namespaced_pods.items}')
         if namespaced_pods.items is not None and len(namespaced_pods.items) == 4:
             break
         await asyncio.sleep(1.0)
@@ -63,7 +67,10 @@ async def create_all_flow_deployments_and_wait_ready(
         'gateway': 1,
         'slow-process-executor': 3,
     }
+
+    print('gathering ready deployments')
     while len(deployment_names) > 0:
+        print(f'waiting for deployments: {deployment_names}')
         deployments_ready = []
         for deployment_name in deployment_names:
             api_response = app_client.read_namespaced_deployment(
@@ -246,11 +253,13 @@ async def test_no_message_lost_during_kill(logger, docker_images, tmpdir):
     dump_path = os.path.join(str(tmpdir), 'test_flow_k8s')
     namespace = 'test-flow-slow-process-executor-ns-2'
     flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+    logger.info(f' finished generating yaml files')
     from kubernetes import client
 
     api_client = client.ApiClient()
     core_client = client.CoreV1Api(api_client=api_client)
     app_client = client.AppsV1Api(api_client=api_client)
+    logger.info(f'creating flow deployments and waiting')
     await create_all_flow_deployments_and_wait_ready(
         dump_path,
         namespace=namespace,
@@ -258,6 +267,7 @@ async def test_no_message_lost_during_kill(logger, docker_images, tmpdir):
         app_client=app_client,
         core_client=core_client,
     )
+    logger.info(f'finished creating flow deployments and waiting')
 
     # start port forwarding
     logger.debug(f' Start port forwarding')
