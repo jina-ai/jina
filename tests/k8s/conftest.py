@@ -1,5 +1,6 @@
 import os
 import subprocess
+import tempfile
 from pathlib import Path
 
 import docker
@@ -24,13 +25,26 @@ class KindClusterWrapper:
         self._install_linkderd(kind_cluster)
         self._loaded_images = set()
 
-    def _install_linkderd(self, kind_cluster):
-        self._log.info('Installing Linkerd to Cluster...')
-        proc = subprocess.Popen(
-            [f'{Path.home()}/.linkerd2/bin/linkerd', 'install'],
-            stdout=subprocess.PIPE,
+    def _linkerd_install_cmd(self, kind_cluster, cmd, tool_name):
+        self._log.info(f'Installing {tool_name} to Cluster...')
+        kube_out = subprocess.check_output(
+            (str(kind_cluster.kubectl_path), 'version'),
+            env=os.environ,
+        )
+        self._log.info(f'kuberbetes versions: {kube_out}')
+
+        # since we need to pipe to commands and the linkerd output can bee too long
+        # there is a risk of deadlock and hanging tests: https://docs.python.org/3/library/subprocess.html#popen-objects
+        # to avoid this, the right mechanism is implemented in subprocess.run and subprocess.check_output, but output
+        # must be piped to a file-like object, not to stdout
+        proc_stdout = tempfile.TemporaryFile()
+        proc = subprocess.run(
+            cmd,
+            stdout=proc_stdout,
             env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
         )
+
+        proc_stdout.seek(0)
         kube_out = subprocess.check_output(
             (
                 str(kind_cluster.kubectl_path),
@@ -38,16 +52,23 @@ class KindClusterWrapper:
                 '-f',
                 '-',
             ),
-            stdin=proc.stdout,
+            stdin=proc_stdout,
             env=os.environ,
         )
-        self._log.info('Poll status of linkerd install')
-        returncode = proc.poll()
+
+        returncode = proc.returncode
         self._log.info(
-            f'Installing Linkerd to Cluster returned code {returncode}, kubectl output was {kube_out}'
+            f'Installing {tool_name} to Cluster returned code {returncode}, kubectl output was {kube_out}'
         )
         if returncode is not None and returncode != 0:
-            raise Exception(f"Installing linkerd failed with {returncode}")
+            raise Exception(f'Installing {tool_name} failed with {returncode}')
+
+    def _install_linkderd(self, kind_cluster):
+        # linkerd < 2.12: only linkerd install is needed
+        # in later versions, linkerd install --crds will be needed
+        self._linkerd_install_cmd(
+            kind_cluster, [f'{Path.home()}/.linkerd2/bin/linkerd', 'install'], 'Linkerd'
+        )
 
         self._log.info('check linkerd status')
         out = subprocess.check_output(
