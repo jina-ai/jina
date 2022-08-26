@@ -7,7 +7,7 @@ import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
-from jina.helper import get_full_version
+from jina.helper import _get_grpc_server_options, get_full_version
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
@@ -87,23 +87,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
 
         self._grpc_server = grpc.aio.server(
-            options=[
-                ('grpc.max_send_message_length', -1),
-                ('grpc.max_receive_message_length', -1),
-                # for the following see this blog post for the choice of default value https://cs.mcgill.ca/~mxia3/2019/02/23/Using-gRPC-in-Production/
-                ('grpc.keepalive_time_ms', 10000),
-                # send keepalive ping every 10 second, default is 2 hours.
-                ('grpc.keepalive_timeout_ms', 5000),
-                # keepalive ping time out after 5 seconds, default is 20 seconds
-                ('grpc.keepalive_permit_without_calls', True),
-                # allow keepalive pings when there's no gRPC calls
-                ('grpc.http2.max_pings_without_data', 0),
-                # allow unlimited amount of keepalive pings without data
-                ('grpc.http2.min_time_between_pings_ms', 10000),
-                # allow grpc pings from client every 10 seconds
-                ('grpc.http2.min_ping_interval_without_data_ms', 5000),
-                # allow grpc pings from client without data every 5 seconds
-            ]
+            options=_get_grpc_server_options(self.args.grpc_server_options)
         )
 
         jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
