@@ -202,7 +202,7 @@ More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',
-        help='The grpc server options',
+        help='Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server',
         default=None,
     )
 
