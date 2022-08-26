@@ -174,3 +174,7 @@ body[data-theme="auto"] .only-dark-line {
     max-width: 7em;
     color: var(--color-foreground-muted);
 }
+
+.highlight .hll {
+    background-color: #ffffcc85;
+}

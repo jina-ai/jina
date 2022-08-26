@@ -31,27 +31,6 @@ pip install -U pip
 
 Then you are likely installing Jina on a less-supported system/architecture. For example, on native Mac M1, Alpine Linux, or Raspberry Pi 2/3 (armv6/7).
 
-## On Mac M1
-
-It is generally recommended using a conda environment on a Mac M1 and installing in particular `grpcio`, `protobuf` and `torch`  using `conda install`. See for more [Issue 4422](https://github.com/jina-ai/jina/issues/4422#issuecomment-1057663345).
-
-Some users may have difficulty to install Protobuf on MacOS from `pip`, you may try `brew install protobuf`.
-
-In general, some upstream dependencies do not yet have pre-built wheels for the M1 chip, so you are likely to encounter some issues during the install. In this case, you need to configure the development environment using [Rosetta2](https://support.apple.com/en-us/HT211861), including your terminal, `brew` and `python`. They must all be running under Rosetta2 instead of natively on M1.
-
-````{tip}
-You can run the following command in the terminal to check if you are running under Rosetta2 or natively on M1.
-
-```shell
-sysctl -n -i sysctl.proc_translated
-```
-
-Depending on the results:
-- `0`: for Apple silicon native process
-- `1`: for Rosetta2 translated process
-- `""`: in case the OID was not found, you are using an older Mac running Catalina or an earlier version. You don't have the M1 problem in the first place.
-````
-
 ## On Windows with `conda`
 
 Unfortunately, `conda install` is not supported on Windows. You can either do `pip install jina` natively on Windows, or use `pip/conda install` under WSL2.
