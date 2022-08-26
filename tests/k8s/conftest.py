@@ -40,6 +40,8 @@ class KindClusterWrapper:
         )
 
         proc_stdout.seek(0)
+        print('first command output:', proc_stdout.read())
+        proc_stdout.seek(0)
         kube_out = subprocess.check_output(
             (
                 str(kind_cluster.kubectl_path),
