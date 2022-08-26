@@ -2,6 +2,7 @@ import os
 import subprocess
 import tempfile
 from pathlib import Path
+from time import sleep
 
 import docker
 import pytest
@@ -71,6 +72,9 @@ class KindClusterWrapper:
             [f'{Path.home()}/.linkerd2/bin/linkerd', 'install', '--crds'],
             'Linkerd CRDs',
         )
+
+        # wait until resources are ready
+        sleep(10)
 
         self._linkerd_install_cmd(
             kind_cluster,
