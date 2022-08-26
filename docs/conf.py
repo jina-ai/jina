@@ -68,10 +68,6 @@ html_theme_options = {
 
     # start-announce
 
-    "announcement": '''
-    <a href="https://www.meetup.com/jina-community-meetup/events/287738538/?isFirstPublish=true">Join our Office Hours Special Edition on August 25th at 19:00 CET to talk about Career Development at Jina AI</a>
-    ''',
-        
     # end-announce
 }
 
