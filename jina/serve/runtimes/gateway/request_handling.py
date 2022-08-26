@@ -22,9 +22,9 @@ if TYPE_CHECKING:
     from jina.types.request import Request
 
 
-class RequestHandler:
+class MonitoringRequestMixin:
     """
-    Class that handles the requests arriving to the gateway and the result extracted from the requests future.
+    Mixin for the request handling monitoring
 
     :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler
     :param runtime_name: optional runtime_name that will be registered during monitoring
@@ -35,9 +35,8 @@ class RequestHandler:
         metrics_registry: Optional['CollectorRegistry'] = None,
         runtime_name: Optional[str] = None,
     ):
+
         self._request_init_time = {} if metrics_registry else None
-        self._executor_endpoint_mapping = None
-        self._gathering_endpoints = False
 
         if metrics_registry:
             with ImportExtensions(
@@ -48,7 +47,7 @@ class RequestHandler:
 
             self._receiving_request_metrics = Summary(
                 'receiving_request_seconds',
-                'Time spent processing request',
+                'Time spent processing successful request',
                 registry=metrics_registry,
                 namespace='jina',
                 labelnames=('runtime_name',),
@@ -90,8 +89,10 @@ class RequestHandler:
         if self._pending_requests_metrics:
             self._pending_requests_metrics.inc()
 
-    def _update_end_request_metrics(self, result: 'Request', exc: Exception = None):
-        if self._receiving_request_metrics:
+    def _update_end_successful_requests_metrics(self, result: 'Request'):
+        if (
+            self._receiving_request_metrics
+        ):  # this one should only be observed when the metrics is succesful
             init_time = self._request_init_time.pop(
                 result.request_id
             )  # need to pop otherwise it stays in memory forever
@@ -99,15 +100,41 @@ class RequestHandler:
 
         if self._pending_requests_metrics:
             self._pending_requests_metrics.dec()
-        if (
-            exc or result.status.code == jina_pb2.StatusProto.ERROR
-        ) and self._failed_requests_metrics:
-            self._failed_requests_metrics.inc()
-        if (
-            not (exc or result.status.code == jina_pb2.StatusProto.ERROR)
-            and self._successful_requests_metrics
-        ):
+
+        if self._successful_requests_metrics:
             self._successful_requests_metrics.inc()
+
+    def _update_end_failed_requests_metrics(self, result: 'Request'):
+        if self._pending_requests_metrics:
+            self._pending_requests_metrics.dec()
+
+        if self._failed_requests_metrics:
+            self._failed_requests_metrics.inc()
+
+    def _update_end_request_metrics(self, result: 'Request'):
+
+        if result.status.code != jina_pb2.StatusProto.ERROR:
+            self._update_end_successful_requests_metrics(result)
+        else:
+            self._update_end_failed_requests_metrics(result)
+
+
+class RequestHandler(MonitoringRequestMixin):
+    """
+    Class that handles the requests arriving to the gateway and the result extracted from the requests future.
+
+    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler
+    :param runtime_name: optional runtime_name that will be registered during monitoring
+    """
+
+    def __init__(
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        runtime_name: Optional[str] = None,
+    ):
+        super().__init__(metrics_registry, runtime_name)
+        self._executor_endpoint_mapping = None
+        self._gathering_endpoints = False
 
     def handle_request(
         self, graph: 'TopologyGraph', connection_pool: 'GrpcConnectionPool'
@@ -215,7 +242,7 @@ class RequestHandler:
                     partial_responses = await asyncio.gather(*tasks)
                 except Exception as e:
                     # update here failed request
-                    self._update_end_request_metrics(request, exc=e)
+                    self._update_end_failed_requests_metrics(request)
                     raise
                 partial_responses, metadatas = zip(*partial_responses)
                 filtered_partial_responses = list(
