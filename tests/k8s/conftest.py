@@ -82,14 +82,7 @@ class KindClusterWrapper:
         sleep(10)
 
         self._linkerd_install_cmd(
-            kind_cluster,
-            [
-                f'{Path.home()}/.linkerd2/bin/linkerd',
-                'install',
-                '--set',
-                'proxyInit.runAsRoot=true',
-            ],
-            'Linkerd',
+            kind_cluster, [f'{Path.home()}/.linkerd2/bin/linkerd', 'install'], 'Linkerd'
         )
 
         self._log.info('check linkerd status')
