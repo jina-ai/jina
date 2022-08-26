@@ -28,6 +28,11 @@ class KindClusterWrapper:
 
     def _linkerd_install_cmd(self, kind_cluster, cmd, tool_name):
         self._log.info(f'Installing {tool_name} to Cluster...')
+        kube_out = subprocess.check_output(
+            (str(kind_cluster.kubectl_path), 'version'),
+            env=os.environ,
+        )
+        self._log.info(f'kuberbetes versions: {kube_out}')
 
         # since we need to pipe to commands and the linkerd output can bee too long
         # there is a risk of deadlock and hanging tests: https://docs.python.org/3/library/subprocess.html#popen-objects
