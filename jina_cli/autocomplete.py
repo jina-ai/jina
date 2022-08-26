@@ -120,7 +120,7 @@ ac_table = {
             '--no-crud-endpoints',
             '--expose-endpoints',
             '--uvicorn-kwargs',
-            '--grpc-server-kwargs',
+            '--grpc-server-options',
             '--ssl-certfile',
             '--ssl-keyfile',
             '--expose-graphql-endpoint',

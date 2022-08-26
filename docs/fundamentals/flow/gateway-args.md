@@ -24,7 +24,7 @@
 | `no_crud_endpoints` | If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.<br><br>        Any executor that has `@requests(on=...)` bind with those values will receive data requests. | `boolean` | `False` |
 | `expose_endpoints` | A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints. | `string` | `None` |
 | `uvicorn_kwargs` | Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server<br><br>More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/ | `object` | `None` |
-| `grpc_server_kwargs` | Dictionary of kwargs arguments that will be passed to the grpc server when starting the server # todo update | `object` | `None` |
+| `grpc_server_options` | The grpc server options | `object` | `None` |
 | `ssl_certfile` | the path to the certificate file | `string` | `None` |
 | `ssl_keyfile` | the path to the key file | `string` | `None` |
 | `expose_graphql_endpoint` | If set, /graphql endpoint is added to HTTP interface. | `boolean` | `False` |
