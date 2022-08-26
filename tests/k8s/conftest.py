@@ -2,7 +2,6 @@ import os
 import subprocess
 import tempfile
 from pathlib import Path
-from time import sleep
 
 import docker
 import pytest
@@ -39,19 +38,12 @@ class KindClusterWrapper:
         # to avoid this, the right mechanism is implemented in subprocess.run and subprocess.check_output, but output
         # must be piped to a file-like object, not to stdout
         proc_stdout = tempfile.TemporaryFile()
-        proc_stderr = tempfile.TemporaryFile()
-        print(f'running command: {" ".join(cmd)}')
         proc = subprocess.run(
             cmd,
             stdout=proc_stdout,
-            stderr=proc_stderr,
             env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
         )
 
-        proc_stdout.seek(0)
-        proc_stderr.seek(0)
-        print('first command stdout:', proc_stdout.read())
-        print('first command stderr:', proc_stderr.read())
         proc_stdout.seek(0)
         kube_out = subprocess.check_output(
             (
@@ -72,15 +64,8 @@ class KindClusterWrapper:
             raise Exception(f'Installing {tool_name} failed with {returncode}')
 
     def _install_linkderd(self, kind_cluster):
-        self._linkerd_install_cmd(
-            kind_cluster,
-            [f'{Path.home()}/.linkerd2/bin/linkerd', 'install', '--crds'],
-            'Linkerd CRDs',
-        )
-
-        # wait until resources are ready
-        sleep(10)
-
+        # linkerd < 2.12: only linkerd install is needed
+        # in later versions, linkerd install --crds will be needed
         self._linkerd_install_cmd(
             kind_cluster, [f'{Path.home()}/.linkerd2/bin/linkerd', 'install'], 'Linkerd'
         )
