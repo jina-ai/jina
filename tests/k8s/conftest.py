@@ -29,47 +29,24 @@ class KindClusterWrapper:
     def _linkerd_install_cmd(self, kind_cluster, cmd, tool_name):
         self._log.info(f'Installing {tool_name} to Cluster...')
 
-        # since we need to pipe to commands and the linkerd output can bee too long
-        # there is a risk of deadlock and hanging tests: https://docs.python.org/3/library/subprocess.html#popen-objects
-        # to avoid this, the right mechanism is implemented in subprocess.run and subprocess.check_output, but output
-        # must be piped to a file-like object, not to stdout
-        proc_stdout = tempfile.TemporaryFile()
-        proc_stderr = tempfile.TemporaryFile()
-        print(f'running command: {" ".join(cmd)}')
-        proc = subprocess.run(
-            cmd,
-            stdout=proc_stdout,
-            stderr=proc_stderr,
-            env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
-        )
+        proc = subprocess.Popen(cmd, shell=True)
+        proc.wait()
 
-        proc_stdout.seek(0)
-        proc_stderr.seek(0)
-        print('first command stdout:', proc_stdout.read())
-        print('first command stderr:', proc_stderr.read())
-        proc_stdout.seek(0)
-        kube_out = subprocess.check_output(
-            (
-                str(kind_cluster.kubectl_path),
-                'apply',
-                '-f',
-                '-',
-            ),
-            stdin=proc_stdout,
-            env=os.environ,
-        )
-
+        stdout, stderr = proc.communicate()
         returncode = proc.returncode
+
         self._log.info(
-            f'Installing {tool_name} to Cluster returned code {returncode}, kubectl output was {kube_out}'
+            f'Installing {tool_name} to Cluster returned code {returncode}, output was {stdout}'
         )
         if returncode is not None and returncode != 0:
-            raise Exception(f'Installing {tool_name} failed with {returncode}')
+            raise Exception(
+                f'Installing {tool_name} failed with {returncode} err: {stderr}'
+            )
 
     def _install_linkderd(self, kind_cluster):
         self._linkerd_install_cmd(
             kind_cluster,
-            [f'{Path.home()}/.linkerd2/bin/linkerd', 'install', '--crds'],
+            f'{Path.home()}/.linkerd2/bin/linkerd install --crds | kubectl apply -f - ',
             'Linkerd CRDs',
         )
 
@@ -78,12 +55,7 @@ class KindClusterWrapper:
 
         self._linkerd_install_cmd(
             kind_cluster,
-            [
-                f'{Path.home()}/.linkerd2/bin/linkerd',
-                'install',
-                '--set',
-                'proxyInit.runAsRoot=true',
-            ],
+            f'{Path.home()}/.linkerd2/bin/linkerd install | kubectl apply -f -',
             'Linkerd',
         )
 
