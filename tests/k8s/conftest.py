@@ -33,14 +33,19 @@ class KindClusterWrapper:
         # to avoid this, the right mechanism is implemented in subprocess.run and subprocess.check_output, but output
         # must be piped to a file-like object, not to stdout
         proc_stdout = tempfile.TemporaryFile()
+        proc_stderr = tempfile.TemporaryFile()
+        print(f'running command: {" ".join(cmd)}')
         proc = subprocess.run(
             cmd,
             stdout=proc_stdout,
+            stderr=proc_stderr,
             env={"KUBECONFIG": str(kind_cluster.kubeconfig_path)},
         )
 
         proc_stdout.seek(0)
-        print('first command output:', proc_stdout.read())
+        proc_stderr.seek(0)
+        print('first command stdout:', proc_stdout.read())
+        print('first command stderr:', proc_stderr.read())
         proc_stdout.seek(0)
         kube_out = subprocess.check_output(
             (
