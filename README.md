@@ -38,11 +38,13 @@ Applications built with Jina enjoy the following features out-of-the-box:
 
 ☁️ **Cloud-native**
   - Seamless Docker container integration: sharing, exploring, sandboxing, versioning and dependency control via [Jina Hub](https://hub.jina.ai).
-  - Fast deployment to Kubernetes, Docker Compose and [Jina Cloud](https://docs.jina.ai/fundamentals/jcloud/).
   - Full observability via Prometheus and Grafana.
+  - Fast deployment to Kubernetes, Docker Compose.
 
 🍱 **Ecosystem**
   - Improved engineering efficiency thanks to the Jina AI ecosystem, so you can focus on innovating with the data applications you build.
+  - Free CPU/GPU hosting via [Jina Cloud](https://docs.jina.ai/fundamentals/jcloud/).
+
 
 <p align="center">
 <a href="#"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/core-tree-graph.svg?raw=true" alt="Jina in Jina AI neural search ecosystem" width="100%"></a>
@@ -58,7 +60,7 @@ Applications built with Jina enjoy the following features out-of-the-box:
 pip install jina
 ```
 
-[More install options can be found in the docs](https://docs.jina.ai/get-started/install/).
+[More install options on Apple Silicon and Windows can be found here](https://docs.jina.ai/get-started/install/).
 
 
 ## Get Started
