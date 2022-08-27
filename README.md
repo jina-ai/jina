@@ -76,6 +76,74 @@ Document, Executor and Flow are three fundamental concepts in Jina.
 
 [The full glossary is explained here.](https://docs.jina.ai/fundamentals/architecture-overview/)
 
+
+---
+
+<p align="center">
+<a href="https://docs.jina.ai"><img src="https://github.com/jina-ai/jina/blob/master/.github/readme/streamline-banner.png?raw=true" alt="Jina: Streamline AI & ML Product Delivery" width="100%"></a>
+</p>
+
+### Streamline AI & ML Product Delivery
+
+A new project starts from local. With Jina, you can easily leverage existing deep learning stacks, improve the quality and quickly build the POC.
+
+```python
+import torch
+from jina import DocumentArray
+
+model = torch.nn.Sequential(
+    torch.nn.Linear(
+        in_features=128,
+        out_features=128,
+    ),
+    torch.nn.ReLU(),
+    torch.nn.Linear(in_features=128, out_features=32),
+)
+
+
+docs = DocumentArray.from_files('left/*.jpg')
+docs.embed(model)
+```
+
+Moving to production, Jina enhances the POC with service endpoint, scalability and adds cloud-native features, making it ready for production without refactoring.
+
+<table>
+<tr>
+<td>
+
+```python
+from jina import DocumentArray, Executor, requests
+from .embedding import model
+
+
+class MyExec(Executor):
+    @requests(on='/embed')
+    async def embed(self, docs: DocumentArray, **kwargs):
+        docs.embed(model)
+```
+
+</td>
+<td>
+    
+```yaml
+jtype: Flow
+with:
+  port: 12345
+executors:
+- uses: MyExec
+  replicas: 2
+```
+</td>
+</tr>
+</table>
+
+
+Finally, the project can be easily deployed to the cloud and serve real traffic.
+
+```bash
+jina cloud deploy ./
+```
+
 ---
 
 <p align="center">
