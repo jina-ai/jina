@@ -1717,8 +1717,4 @@ def _get_grpc_server_options(option_from_args: Dict) -> List[Tuple[str, Any]]:
         else _DEFAULT_GRPC_OPTION
     )  # merge new and default args
 
-    options_from_dict = []
-    for key, value in option_from_args.items():
-        options_from_dict.append((key, value))
-
-    return options_from_dict
+    return list(option_from_args.items())
