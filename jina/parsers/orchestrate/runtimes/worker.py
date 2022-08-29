@@ -103,3 +103,12 @@ Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which c
 Defaults to retaining whatever type is returned by the Executor.
 ''',
     )
+
+    gp.add_argument(
+        '--grpc-server-options',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server',
+        default=None,
+    )

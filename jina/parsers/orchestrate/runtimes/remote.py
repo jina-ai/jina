@@ -198,15 +198,6 @@ More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
     )
 
     gp.add_argument(
-        '--grpc-server-options',
-        action=KVAppendAction,
-        metavar='KEY: VALUE',
-        nargs='*',
-        help='Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server',
-        default=None,
-    )
-
-    gp.add_argument(
         '--ssl-certfile',
         type=str,
         help='''
