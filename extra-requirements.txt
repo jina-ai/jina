@@ -39,7 +39,7 @@ uvloop:                     perf,standard,devel
 prometheus_client:          perf,standard,devel
 fastapi>=0.76.0:            standard,devel
 uvicorn[standard]:          standard,devel
-docarray[common]>=0.16.0:   standard,devel
+docarray[common]>=0.16.1:   standard,devel
 docker:                     standard,devel
 pathspec:                   standard,devel
 cryptography:               standard,devel
