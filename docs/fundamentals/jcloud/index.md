@@ -293,4 +293,6 @@ If you don't see any obvious errors, please raise an issue in [JCloud](https://g
 
 - **How long do you persist my service?**
 
-  Flows are terminated if they are not serving requests for the last 24hrs. But this is configurable by passing {ref}`retention-days <retention-days>` argument.
+  - If {ref}`retention-days <retention-days>` argument configured. Flows will be removed after `retention-day`, regradless of the usage.
+
+  - If {ref}`retention-days <retention-days>` argument not configured, or set to `0`. We will detect if flows are idle daily, they will be terminated if they are not serving requests for the last 24hrs. 
