@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/request_handling.html" />
 
     <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
-        <title>jina.serve.runtimes.gateway.request_handling - Jina 3.7.15 documentation</title>
+        <title>jina.serve.runtimes.gateway.request_handling - Jina 3.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
@@ -140,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.7.15 documentation</div>
+                <div class="brand">Jina 3.8.0 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -378,9 +378,9 @@
     <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 
 
-<div class="viewcode-block" id="RequestHandler"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler">[docs]</a><span class="k">class</span> <span class="nc">RequestHandler</span><span class="p">:</span>
+<div class="viewcode-block" id="MonitoringRequestMixin"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.MonitoringRequestMixin">[docs]</a><span class="k">class</span> <span class="nc">MonitoringRequestMixin</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class that handles the requests arriving to the gateway and the result extracted from the requests future.</span>
+<span class="sd">    Mixin for the request handling monitoring</span>
 
 <span class="sd">    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler</span>
 <span class="sd">    :param runtime_name: optional runtime_name that will be registered during monitoring</span>
@@ -391,9 +391,8 @@
         <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CollectorRegistry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">runtime_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_request_init_time</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">metrics_registry</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_executor_endpoint_mapping</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gathering_endpoints</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="n">metrics_registry</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span>
@@ -404,7 +403,7 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
                 <span class="s1">&#39;receiving_request_seconds&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;Time spent processing request&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Time spent processing successful request&#39;</span><span class="p">,</span>
                 <span class="n">registry</span><span class="o">=</span><span class="n">metrics_registry</span><span class="p">,</span>
                 <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;jina&#39;</span><span class="p">,</span>
                 <span class="n">labelnames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;runtime_name&#39;</span><span class="p">,),</span>
@@ -446,8 +445,10 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_update_end_request_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_update_end_successful_requests_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_request_metrics</span>
+        <span class="p">):</span>  <span class="c1"># this one should only be observed when the metrics is succesful</span>
             <span class="n">init_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request_init_time</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span>
                 <span class="n">result</span><span class="o">.</span><span class="n">request_id</span>
             <span class="p">)</span>  <span class="c1"># need to pop otherwise it stays in memory forever</span>
@@ -455,15 +456,41 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="o">.</span><span class="n">dec</span><span class="p">()</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">exc</span> <span class="ow">or</span> <span class="n">result</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">ERROR</span>
-        <span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_failed_requests_metrics</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_failed_requests_metrics</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="ow">not</span> <span class="p">(</span><span class="n">exc</span> <span class="ow">or</span> <span class="n">result</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">code</span> <span class="o">==</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_successful_requests_metrics</span>
-        <span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_successful_requests_metrics</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_successful_requests_metrics</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_update_end_failed_requests_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_requests_metrics</span><span class="o">.</span><span class="n">dec</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_failed_requests_metrics</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_failed_requests_metrics</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_update_end_request_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">code</span> <span class="o">!=</span> <span class="n">jina_pb2</span><span class="o">.</span><span class="n">StatusProto</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_end_successful_requests_metrics</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_end_failed_requests_metrics</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="RequestHandler"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler">[docs]</a><span class="k">class</span> <span class="nc">RequestHandler</span><span class="p">(</span><span class="n">MonitoringRequestMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class that handles the requests arriving to the gateway and the result extracted from the requests future.</span>
+
+<span class="sd">    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler</span>
+<span class="sd">    :param runtime_name: optional runtime_name that will be registered during monitoring</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CollectorRegistry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">runtime_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">metrics_registry</span><span class="p">,</span> <span class="n">runtime_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_executor_endpoint_mapping</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gathering_endpoints</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="RequestHandler.handle_request"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_request">[docs]</a>    <span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span> <span class="s1">&#39;TopologyGraph&#39;</span><span class="p">,</span> <span class="n">connection_pool</span><span class="p">:</span> <span class="s1">&#39;GrpcConnectionPool&#39;</span>
@@ -571,7 +598,7 @@
                     <span class="n">partial_responses</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="c1"># update here failed request</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_end_request_metrics</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">exc</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_end_failed_requests_metrics</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
                     <span class="k">raise</span>
                 <span class="n">partial_responses</span><span class="p">,</span> <span class="n">metadatas</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">partial_responses</span><span class="p">)</span>
                 <span class="n">filtered_partial_responses</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
@@ -646,7 +673,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 26, 2022</div>
+                            Last updated on Aug 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

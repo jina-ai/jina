@@ -1,6 +1,15 @@
 jina.proto package
 ==================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   jina.proto.pb
+   jina.proto.pb2
+
 Submodules
 ----------
 
