@@ -114,12 +114,18 @@ def protobuf_to_pydantic_model(
     oneof_fields = defaultdict(list)
     oneof_field_validators = {}
 
-    if isinstance(protobuf_model, Descriptor):
-        model_name = protobuf_model.name
-        protobuf_fields = protobuf_model.fields
-    elif isinstance(protobuf_model, GeneratedProtocolMessageType):
-        model_name = protobuf_model.DESCRIPTOR.name
-        protobuf_fields = protobuf_model.DESCRIPTOR.fields
+    desc = (
+        protobuf_model
+        if isinstance(protobuf_model, Descriptor)
+        else getattr(protobuf_model, 'DESCRIPTOR', None)
+    )
+    if desc:
+        model_name = desc.name
+        protobuf_fields = desc.fields
+    else:
+        raise ValueError(
+            f'protobuf_model is of type {type(protobuf_model)} and has no attribute "DESCRIPTOR"'
+        )
 
     if model_name in vars(PROTO_TO_PYDANTIC_MODELS):
         return PROTO_TO_PYDANTIC_MODELS.__getattribute__(model_name)
