@@ -323,8 +323,6 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install ".[all]" --no-cache-dir
-          pip uninstall -y docarray
-          pip install docarray --pre
           jina
           export JINA_LOG_LEVEL="ERROR"
       - name: Test
@@ -371,8 +369,6 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install wheel
           pip install --no-cache-dir .
-          pip uninstall -y docarray
-          pip install docarray --pre
         env:
           JINA_PIP_INSTALL_CORE: ${{ matrix.core }}
           JINA_PIP_INSTALL_PERF: ${{ matrix.perf }}
