@@ -139,7 +139,8 @@ def test_monitoring_head_few_port(port_generator, executor):
             assert resp.status_code == 200
 
 
-def test_monitoring_replicas_and_shards(port_generator, executor):
+@pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http', None])
+def test_monitoring_replicas_and_shards(port_generator, executor, protocol):
     n_shards = 2
     n_replicas = 3
     port_shards_list = [port_generator() for _ in range(n_shards * n_replicas)]
@@ -147,7 +148,13 @@ def test_monitoring_replicas_and_shards(port_generator, executor):
     port_monitoring = ','.join([str(port) for port in [port_head] + port_shards_list])
     port1 = port_generator()
 
-    f = Flow(monitoring=True, port_monitoring=port1).add(
+    flow = (
+        Flow(protocol=protocol, monitoring=True, port_monitoring=port1)
+        if protocol
+        else Flow(monitoring=True, port_monitoring=port1)
+    )
+
+    f = flow.add(
         uses=executor,
         port_monitoring=port_monitoring,
         shards=n_shards,
@@ -184,9 +191,6 @@ def test_monitoring_replicas_and_shards(port_generator, executor):
         resp = req.get(f'http://localhost:{port_head}/')
         assert f'jina_receiving_request_seconds' in str(resp.content)
         assert f'jina_sending_request_seconds' in str(resp.content)
-
-
-# GOOD
 
 
 def test_document_processed_total(port_generator, executor):
@@ -309,7 +313,6 @@ def test_requests_size(port_generator, executor):
         assert measured_request_bytes_sum > measured_request_bytes_sum_init
 
 
-# GOOD
 def test_failed_successful_request_count(port_generator, failing_executor):
     port0 = port_generator()
     port1 = port_generator()
