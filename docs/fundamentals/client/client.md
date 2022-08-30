@@ -116,6 +116,26 @@ c = Client(port=f.port)
 ```
 ````
 
+## Profiling the network
+
+Before sending any real data, you can test the connectivity and network latency by calling the {meth}`~jina.Client.profiling` method:
+
+```python
+from jina import Client
+
+c = Client(host='grpc://my.awesome.flow:1234')
+c.profiling()
+```
+
+```text
+ Roundtrip  24ms  100% 
+├──  Client-server network  17ms  71% 
+└──  Server  7ms  29% 
+    ├──  Gateway-executors network  0ms  0% 
+    ├──  executor0  5ms  71% 
+    └──  executor1  2ms  29% 
+```
+
 ## Send data
 
 After a {class}`~jina.Client` has connected to a {class}`~jina.Flow`, it can send requests to the Flow using its {meth}`~jina.clients.mixin.PostMixin.post` method.
@@ -194,9 +214,9 @@ This might be useful to control `Executor` objects during their lifetime.
 ````
 
 (specific-params)=
-### Send specific parameters to each Executors
+### Send parameters to specific Executors
 
-You can send specific parameters to each Executor by using the `executorname__paramname` syntax.
+You can send parameters to specific Executor by using the `executor__parameter` syntax.
 The Executor named `executorname` will receive the parameter `paramname` (without the `executorname__` in the key name) 
 and none of the other Executors will receive it.
 

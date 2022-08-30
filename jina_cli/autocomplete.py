@@ -327,7 +327,6 @@ ac_table = {
             '--port',
             '--tls',
             '--asyncio',
-            '--return-responses',
             '--protocol',
         ],
     },

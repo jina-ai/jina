@@ -28,12 +28,13 @@ def test_concurrent_clients(concurrent, protocol, shards, polling, prefetch, rer
             queue.put((peer_hash, d.text))
 
     def peer_client(port, protocol, peer_hash, queue):
-        c = Client(protocol=protocol, port=port, return_responses=True)
+        c = Client(protocol=protocol, port=port)
         for _ in range(NUM_REQUESTS):
             c.post(
                 '/ping',
                 Document(text=peer_hash),
                 on_done=lambda r: pong(peer_hash, queue, r),
+                return_responses=True,
             )
 
     f = Flow(protocol=protocol, prefetch=prefetch).add(
