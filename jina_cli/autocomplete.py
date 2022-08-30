@@ -301,6 +301,7 @@ ac_table = {
             '--replicas',
             '--port',
             '--monitoring',
+            '--port-monitoring',
             '--retries',
             '--floating',
             '--install-requirements',
@@ -318,7 +319,6 @@ ac_table = {
             '--external',
             '--deployment-role',
             '--tls',
-            '--port-monitoring',
         ],
         'client': [
             '--help',
