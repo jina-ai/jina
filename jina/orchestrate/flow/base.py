@@ -38,7 +38,7 @@ from rich.table import Table
 
 from jina import __default_host__, __docker_host__, helper
 from jina.clients import Client
-from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin
+from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin, ProfileMixin
 from jina.enums import (
     DeploymentRoleType,
     FlowBuildLevel,
@@ -98,7 +98,14 @@ FALLBACK_PARSERS = [
 ]
 
 
-class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
+class Flow(
+    PostMixin,
+    ProfileMixin,
+    HealthCheckMixin,
+    JAMLCompatible,
+    ExitStack,
+    metaclass=FlowType,
+):
     """Flow is how Jina streamlines and distributes Executors."""
 
     # overload_inject_start_client_flow

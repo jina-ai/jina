@@ -1,8 +1,8 @@
-from jina.clients.mixin import AsyncPostMixin
+from jina.clients.mixin import AsyncHealthCheckMixin, AsyncPostMixin, AsyncProfileMixin
 from jina.orchestrate.flow.base import Flow
 
 
-class AsyncFlow(AsyncPostMixin, Flow):
+class AsyncFlow(AsyncPostMixin, AsyncProfileMixin, AsyncHealthCheckMixin, Flow):
     """
     Asynchronous version of :class:`jina.Flow`. They share the same interface, except
     in :class:`AsyncFlow` :meth:`train`, :meth:`index`, :meth:`search` methods are coroutines
