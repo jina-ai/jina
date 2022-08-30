@@ -289,6 +289,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/scale-out/">Scale out with replicas and shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/google-colab/">Run on Google Colab with GPU/TPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/gpu-executor/">Build a GPU Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
@@ -540,11 +542,11 @@ your Prometheus configuration each time you restart your application.</p>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#gauge">Gauge</a></p></td>
 <td><p>Counts the number of pending requests</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_successful_requests</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_successful_requests_total</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#counter">Counter</a></p></td>
 <td><p>Counts the number of successful requests returned by the gateway</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_failed_requests</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_failed_requests_total</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#counter">Counter</a></p></td>
 <td><p>Counts the number of failed requests returned by the gateway</p></td>
 </tr>
@@ -673,7 +675,7 @@ Executor.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 29, 2022</div>
+                            Last updated on Aug 30, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

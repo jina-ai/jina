@@ -287,6 +287,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/scale-out/">Scale out with replicas and shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/google-colab/">Run on Google Colab with GPU/TPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/gpu-executor/">Build a GPU Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
@@ -487,6 +489,54 @@
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="jina.clients.mixin.ProfileMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.mixin.</span></span><span class="sig-name descname"><span class="pre">ProfileMixin</span></span><a class="reference internal" href="../../_modules/jina/clients/mixin/#ProfileMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.mixin.ProfileMixin" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The Profile Mixin for Client and Flow to expose <cite>profile</cite> API</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.clients.mixin.ProfileMixin.profiling">
+<span class="sig-name descname"><span class="pre">profiling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/mixin/#ProfileMixin.profiling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.mixin.ProfileMixin.profiling" title="Permalink to this definition">#</a></dt>
+<dd><p>Profiling a single query’s roundtrip including network and computation latency. Results is summarized in a Dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>show_table</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – whether to show the table or not.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the latency report in a dict.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.clients.mixin.AsyncProfileMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.mixin.</span></span><span class="sig-name descname"><span class="pre">AsyncProfileMixin</span></span><a class="reference internal" href="../../_modules/jina/clients/mixin/#AsyncProfileMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.mixin.AsyncProfileMixin" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The Profile Mixin for Client and Flow to expose <cite>profile</cite> API</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.clients.mixin.AsyncProfileMixin.profiling">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">profiling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show_table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/clients/mixin/#AsyncProfileMixin.profiling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.mixin.AsyncProfileMixin.profiling" title="Permalink to this definition">#</a></dt>
+<dd><p>Profiling a single query’s roundtrip including network and computation latency. Results is summarized in a Dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>show_table</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – whether to show the table or not.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the latency report in a dict.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="jina.clients.mixin.PostMixin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.clients.mixin.</span></span><span class="sig-name descname"><span class="pre">PostMixin</span></span><a class="reference internal" href="../../_modules/jina/clients/mixin/#PostMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.clients.mixin.PostMixin" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -625,7 +675,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 29, 2022</div>
+                            Last updated on Aug 30, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

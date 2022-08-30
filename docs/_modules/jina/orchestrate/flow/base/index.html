@@ -256,6 +256,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/scale-out/">Scale out with replicas and shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/google-colab/">Run on Google Colab with GPU/TPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/gpu-executor/">Build a GPU Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
@@ -394,7 +396,7 @@
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">__docker_host__</span><span class="p">,</span> <span class="n">helper</span>
 <span class="kn">from</span> <span class="nn">jina.clients</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">jina.clients.mixin</span> <span class="kn">import</span> <span class="n">AsyncPostMixin</span><span class="p">,</span> <span class="n">HealthCheckMixin</span><span class="p">,</span> <span class="n">PostMixin</span>
+<span class="kn">from</span> <span class="nn">jina.clients.mixin</span> <span class="kn">import</span> <span class="n">AsyncPostMixin</span><span class="p">,</span> <span class="n">HealthCheckMixin</span><span class="p">,</span> <span class="n">PostMixin</span><span class="p">,</span> <span class="n">ProfileMixin</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DeploymentRoleType</span><span class="p">,</span>
     <span class="n">FlowBuildLevel</span><span class="p">,</span>
@@ -454,7 +456,14 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="Flow"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow">[docs]</a><span class="k">class</span> <span class="nc">Flow</span><span class="p">(</span><span class="n">PostMixin</span><span class="p">,</span> <span class="n">HealthCheckMixin</span><span class="p">,</span> <span class="n">JAMLCompatible</span><span class="p">,</span> <span class="n">ExitStack</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">FlowType</span><span class="p">):</span>
+<div class="viewcode-block" id="Flow"><a class="viewcode-back" href="../../../../../api/jina.orchestrate.flow.base/#jina.Flow">[docs]</a><span class="k">class</span> <span class="nc">Flow</span><span class="p">(</span>
+    <span class="n">PostMixin</span><span class="p">,</span>
+    <span class="n">ProfileMixin</span><span class="p">,</span>
+    <span class="n">HealthCheckMixin</span><span class="p">,</span>
+    <span class="n">JAMLCompatible</span><span class="p">,</span>
+    <span class="n">ExitStack</span><span class="p">,</span>
+    <span class="n">metaclass</span><span class="o">=</span><span class="n">FlowType</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Flow is how Jina streamlines and distributes Executors.&quot;&quot;&quot;</span>
 
     <span class="c1"># overload_inject_start_client_flow</span>
@@ -467,7 +476,6 @@
         <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GRPC&#39;</span><span class="p">,</span>
         <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">return_responses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">tls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
@@ -478,7 +486,6 @@
 <span class="sd">        :param port: The port of the Gateway, which the client should connect to.</span>
 <span class="sd">        :param protocol: Communication protocol between server and client.</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
-<span class="sd">        :param return_responses: If set, return results as List of Requests instead of a reduced DocArray.</span>
 <span class="sd">        :param tls: If set, connect to gateway using tls encryption</span>
 
 <span class="sd">        .. # noqa: DAR202</span>
@@ -516,7 +523,7 @@
         <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span>
         <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
         <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GRPC&#39;</span><span class="p">,</span>
         <span class="n">proxy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -715,7 +722,6 @@
 <span class="sd">        :param port: The port of the Gateway, which the client should connect to.</span>
 <span class="sd">        :param protocol: Communication protocol between server and client.</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
-<span class="sd">        :param return_responses: If set, return results as List of Requests instead of a reduced DocArray.</span>
 <span class="sd">        :param tls: If set, connect to gateway using tls encryption</span>
 <span class="sd">        :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.</span>
 <span class="sd">        :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.</span>
@@ -2760,7 +2766,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 29, 2022</div>
+                            Last updated on Aug 30, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

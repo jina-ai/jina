@@ -289,6 +289,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../scale-out/">Scale out with replicas and shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../google-colab/">Run on Google Colab with GPU/TPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../gpu-executor/">Build a GPU Executor</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../docker-compose/">Deploy with Docker Compose</a></li>
@@ -503,9 +505,8 @@ the following Flow in a Python file:</p>
 We do this using a YAML file.</p>
 <p>In a new file called <code class="docutils literal notranslate"><span class="pre">my-exec.yml</span></code> we type:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
-<span class="nt">metas</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec.py</span><span class="w"></span>
+<span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec.py</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This simply points Jina to our file and Executor class.</p>
@@ -569,7 +570,7 @@ Received: <span class="s2">&quot;Greetings from Flow2&quot;</span>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 29, 2022</div>
+                            Last updated on Aug 30, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

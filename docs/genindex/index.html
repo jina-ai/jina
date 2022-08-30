@@ -255,6 +255,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../how-to/realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/scale-out/">Scale out with replicas and shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/google-colab/">Run on Google Colab with GPU/TPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/gpu-executor/">Build a GPU Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/docker-compose/">Deploy with Docker Compose</a></li>
@@ -531,6 +533,8 @@
 </li>
         <li><a href="../api/jina.serve.runtimes.gateway.graph.topology_graph/#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph.all_nodes">all_nodes (jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph property)</a>
 </li>
+        <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.allow_inf_nan">allow_inf_nan (jina.serve.runtimes.gateway.http.models.CustomConfig attribute)</a>
+</li>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.allow_mutation">allow_mutation (jina.serve.runtimes.gateway.http.models.CustomConfig attribute)</a>
 </li>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.allow_population_by_field_name">allow_population_by_field_name (jina.serve.runtimes.gateway.http.models.CustomConfig attribute)</a>
@@ -553,10 +557,12 @@
 </li>
         <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.anystr_strip_whitespace">anystr_strip_whitespace (jina.serve.runtimes.gateway.http.models.CustomConfig attribute)</a>
 </li>
-        <li><a href="../api/jina_cli.export/#jina_cli.export.api_to_dict">api_to_dict() (in module jina_cli.export)</a>
+        <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.anystr_upper">anystr_upper (jina.serve.runtimes.gateway.http.models.CustomConfig attribute)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="../api/jina_cli.export/#jina_cli.export.api_to_dict">api_to_dict() (in module jina_cli.export)</a>
+</li>
         <li><a href="../api/jina/#jina.DocumentArray.append">append() (jina.DocumentArray method)</a>
 </li>
         <li><a href="../api/jina.logging.logger/#jina.logging.logger.SysLogHandlerWrapper.append_nul">append_nul (jina.logging.logger.SysLogHandlerWrapper attribute)</a>
@@ -712,6 +718,8 @@
         <li><a href="../api/jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime">AsyncNewLoopRuntime (class in jina.serve.runtimes.asyncio)</a>
 </li>
         <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin">AsyncPostMixin (class in jina.clients.mixin)</a>
+</li>
+        <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.AsyncProfileMixin">AsyncProfileMixin (class in jina.clients.mixin)</a>
 </li>
         <li><a href="../api/jina.serve.stream.helper/#jina.serve.stream.helper.AsyncRequestsIterator">AsyncRequestsIterator (class in jina.serve.stream.helper)</a>
 </li>
@@ -4656,8 +4664,6 @@
           <li><a href="../api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.pop_all">(jina.orchestrate.flow.base.Flow method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina/#jina.AsyncFlow.port">port (jina.AsyncFlow property)</a>
 
         <ul>
@@ -4670,6 +4676,8 @@
           <li><a href="../api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.port">(jina.orchestrate.flow.base.Flow property)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="../api/jina/#jina.AsyncFlow.port_monitoring">port_monitoring (jina.AsyncFlow property)</a>
 
         <ul>
@@ -4714,6 +4722,8 @@
           <li><a href="../api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.post">(jina.orchestrate.flow.base.Flow method)</a>
 </li>
         </ul></li>
+        <li><a href="../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.post_init_call">post_init_call (jina.serve.runtimes.gateway.http.models.CustomConfig attribute)</a>
+</li>
         <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.PostMixin">PostMixin (class in jina.clients.mixin)</a>
 </li>
         <li><a href="../api/jina.clients.helper/#jina.clients.helper.pprint_routes">pprint_routes() (in module jina.clients.helper)</a>
@@ -4760,8 +4770,34 @@
         </ul></li>
         <li><a href="../api/jina.logging.formatter/#jina.logging.formatter.ProfileFormatter">ProfileFormatter (class in jina.logging.formatter)</a>
 </li>
-        <li><a href="../api/jina.logging.profile/#jina.logging.profile.profiling">profiling() (in module jina.logging.profile)</a>
+        <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.ProfileMixin">ProfileMixin (class in jina.clients.mixin)</a>
 </li>
+        <li><a href="../api/jina.logging.profile/#jina.logging.profile.profiling">profiling() (in module jina.logging.profile)</a>
+
+        <ul>
+          <li><a href="../api/jina/#jina.AsyncFlow.profiling">(jina.AsyncFlow method)</a>
+</li>
+          <li><a href="../api/jina.clients.grpc/#jina.clients.grpc.GRPCClient.profiling">(jina.clients.grpc.GRPCClient method)</a>
+</li>
+          <li><a href="../api/jina.clients.http/#jina.clients.http.AsyncHTTPClient.profiling">(jina.clients.http.AsyncHTTPClient method)</a>
+</li>
+          <li><a href="../api/jina.clients.http/#jina.clients.http.HTTPClient.profiling">(jina.clients.http.HTTPClient method)</a>
+</li>
+          <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.AsyncProfileMixin.profiling">(jina.clients.mixin.AsyncProfileMixin method)</a>
+</li>
+          <li><a href="../api/jina.clients.mixin/#jina.clients.mixin.ProfileMixin.profiling">(jina.clients.mixin.ProfileMixin method)</a>
+</li>
+          <li><a href="../api/jina.clients.websocket/#jina.clients.websocket.AsyncWebSocketClient.profiling">(jina.clients.websocket.AsyncWebSocketClient method)</a>
+</li>
+          <li><a href="../api/jina.clients.websocket/#jina.clients.websocket.WebSocketClient.profiling">(jina.clients.websocket.WebSocketClient method)</a>
+</li>
+          <li><a href="../api/jina/#jina.Flow.profiling">(jina.Flow method)</a>
+</li>
+          <li><a href="../api/jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.profiling">(jina.orchestrate.flow.asyncio.AsyncFlow method)</a>
+</li>
+          <li><a href="../api/jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.profiling">(jina.orchestrate.flow.base.Flow method)</a>
+</li>
+        </ul></li>
         <li><a href="../api/jina.logging.profile/#jina.logging.profile.ProgressBar">ProgressBar (class in jina.logging.profile)</a>
 </li>
         <li><a href="../api/jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.proto">proto (jina.types.mixin.ProtoTypeMixin property)</a>
@@ -5944,7 +5980,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 29, 2022</div>
+                            Last updated on Aug 30, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

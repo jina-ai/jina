@@ -287,6 +287,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/scale-out/">Scale out with replicas and shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../fundamentals/clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/google-colab/">Run on Google Colab with GPU/TPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/gpu-executor/">Build a GPU Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
@@ -407,6 +409,11 @@
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.CustomConfig.allow_inf_nan">
+<span class="sig-name descname"><span class="pre">allow_inf_nan</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.CustomConfig.allow_inf_nan" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.CustomConfig.allow_mutation">
 <span class="sig-name descname"><span class="pre">allow_mutation</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.CustomConfig.allow_mutation" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -419,6 +426,11 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.CustomConfig.anystr_strip_whitespace">
 <span class="sig-name descname"><span class="pre">anystr_strip_whitespace</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.CustomConfig.anystr_strip_whitespace" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.CustomConfig.anystr_upper">
+<span class="sig-name descname"><span class="pre">anystr_upper</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.CustomConfig.anystr_upper" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -558,6 +570,11 @@ kwarg; otherwise <code class="docutils literal notranslate"><span class="pre">JS
 <span class="sig-name descname"><span class="pre">orm_mode</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.CustomConfig.orm_mode" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.CustomConfig.post_init_call">
+<span class="sig-name descname"><span class="pre">post_init_call</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'before_validation'</span></em><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.CustomConfig.post_init_call" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.models.CustomConfig.prepare_field">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prepare_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.models.CustomConfig.prepare_field" title="Permalink to this definition">#</a></dt>
@@ -652,9 +669,9 @@ Behaves as if <cite>Config.extra = ‘allow’</cite> was set since it adds all 
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>include</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to include in new model</p></li>
-<li><p><strong>exclude</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to exclude from new model, as with values this takes precedence over include</p></li>
-<li><p><strong>update</strong> (<em>DictStrAny</em>) – values to change/add in the new model. Note: the data is not validated before creating
+<li><p><strong>include</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – fields to include in new model</p></li>
+<li><p><strong>exclude</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – fields to exclude from new model, as with values this takes precedence over include</p></li>
+<li><p><strong>update</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[DictStrAny]) – values to change/add in the new model. Note: the data is not validated before creating
 the new model: you should trust this data</p></li>
 <li><p><strong>deep</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – set to <cite>True</cite> to make a deep copy of the model</p></li>
 </ul>
@@ -832,9 +849,9 @@ Behaves as if <cite>Config.extra = ‘allow’</cite> was set since it adds all 
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>include</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to include in new model</p></li>
-<li><p><strong>exclude</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to exclude from new model, as with values this takes precedence over include</p></li>
-<li><p><strong>update</strong> (<em>DictStrAny</em>) – values to change/add in the new model. Note: the data is not validated before creating
+<li><p><strong>include</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – fields to include in new model</p></li>
+<li><p><strong>exclude</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – fields to exclude from new model, as with values this takes precedence over include</p></li>
+<li><p><strong>update</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[DictStrAny]) – values to change/add in the new model. Note: the data is not validated before creating
 the new model: you should trust this data</p></li>
 <li><p><strong>deep</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – set to <cite>True</cite> to make a deep copy of the model</p></li>
 </ul>
@@ -1017,9 +1034,9 @@ Behaves as if <cite>Config.extra = ‘allow’</cite> was set since it adds all 
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>include</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to include in new model</p></li>
-<li><p><strong>exclude</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to exclude from new model, as with values this takes precedence over include</p></li>
-<li><p><strong>update</strong> (<em>DictStrAny</em>) – values to change/add in the new model. Note: the data is not validated before creating
+<li><p><strong>include</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – fields to include in new model</p></li>
+<li><p><strong>exclude</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – fields to exclude from new model, as with values this takes precedence over include</p></li>
+<li><p><strong>update</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[DictStrAny]) – values to change/add in the new model. Note: the data is not validated before creating
 the new model: you should trust this data</p></li>
 <li><p><strong>deep</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – set to <cite>True</cite> to make a deep copy of the model</p></li>
 </ul>
@@ -1207,9 +1224,9 @@ Behaves as if <cite>Config.extra = ‘allow’</cite> was set since it adds all 
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>include</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to include in new model</p></li>
-<li><p><strong>exclude</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to exclude from new model, as with values this takes precedence over include</p></li>
-<li><p><strong>update</strong> (<em>DictStrAny</em>) – values to change/add in the new model. Note: the data is not validated before creating
+<li><p><strong>include</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – fields to include in new model</p></li>
+<li><p><strong>exclude</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – fields to exclude from new model, as with values this takes precedence over include</p></li>
+<li><p><strong>update</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[DictStrAny]) – values to change/add in the new model. Note: the data is not validated before creating
 the new model: you should trust this data</p></li>
 <li><p><strong>deep</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – set to <cite>True</cite> to make a deep copy of the model</p></li>
 </ul>
@@ -1382,9 +1399,9 @@ Behaves as if <cite>Config.extra = ‘allow’</cite> was set since it adds all 
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>include</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to include in new model</p></li>
-<li><p><strong>exclude</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny]) – fields to exclude from new model, as with values this takes precedence over include</p></li>
-<li><p><strong>update</strong> (<em>DictStrAny</em>) – values to change/add in the new model. Note: the data is not validated before creating
+<li><p><strong>include</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – fields to include in new model</p></li>
+<li><p><strong>exclude</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[AbstractSetIntStr, MappingIntStrAny, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – fields to exclude from new model, as with values this takes precedence over include</p></li>
+<li><p><strong>update</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[DictStrAny]) – values to change/add in the new model. Note: the data is not validated before creating
 the new model: you should trust this data</p></li>
 <li><p><strong>deep</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – set to <cite>True</cite> to make a deep copy of the model</p></li>
 </ul>
@@ -1534,7 +1551,7 @@ the new model: you should trust this data</p></li>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 29, 2022</div>
+                            Last updated on Aug 30, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

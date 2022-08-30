@@ -256,6 +256,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../how-to/realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../how-to/flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../how-to/scale-out/">Scale out with replicas and shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../how-to/google-colab/">Run on Google Colab with GPU/TPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../how-to/gpu-executor/">Build a GPU Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../how-to/external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
@@ -354,7 +356,8 @@
                 </div>
                 <article role="main">
                     <h1>Source code for jina.clients.mixin</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partialmethod</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -468,6 +471,91 @@
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_dry_run</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 
 
+<span class="k">def</span> <span class="nf">_render_response_table</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">ed</span><span class="p">,</span> <span class="n">show_table</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+    <span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="nb">print</span>
+
+    <span class="n">elapsed</span> <span class="o">=</span> <span class="p">(</span><span class="n">ed</span> <span class="o">-</span> <span class="n">st</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>
+    <span class="n">route</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">routes</span>
+    <span class="n">gateway_time</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">route</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span> <span class="o">-</span> <span class="n">route</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="n">exec_time</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">route</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">exec_time</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">executor</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">r</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span> <span class="o">-</span> <span class="n">r</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span>
+            <span class="p">)</span>
+    <span class="n">network_time</span> <span class="o">=</span> <span class="n">elapsed</span> <span class="o">-</span> <span class="n">gateway_time</span>
+    <span class="n">server_network</span> <span class="o">=</span> <span class="n">gateway_time</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">exec_time</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
+
+    <span class="k">def</span> <span class="nf">make_table</span><span class="p">(</span><span class="n">_title</span><span class="p">,</span> <span class="n">_time</span><span class="p">,</span> <span class="n">_percent</span><span class="p">):</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">show_header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">box</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+            <span class="n">_title</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;[b]</span><span class="si">{</span><span class="n">_time</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">[/b]ms&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;[dim]</span><span class="si">{</span><span class="n">_percent</span> <span class="o">*</span> <span class="mi">100</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1">%[/dim]&#39;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">table</span>
+
+    <span class="kn">from</span> <span class="nn">rich.tree</span> <span class="kn">import</span> <span class="n">Tree</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">(</span><span class="n">make_table</span><span class="p">(</span><span class="s1">&#39;Roundtrip&#39;</span><span class="p">,</span> <span class="n">elapsed</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">make_table</span><span class="p">(</span><span class="s1">&#39;Client-server network&#39;</span><span class="p">,</span> <span class="n">network_time</span><span class="p">,</span> <span class="n">network_time</span> <span class="o">/</span> <span class="n">elapsed</span><span class="p">))</span>
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">make_table</span><span class="p">(</span><span class="s1">&#39;Server&#39;</span><span class="p">,</span> <span class="n">gateway_time</span><span class="p">,</span> <span class="n">gateway_time</span> <span class="o">/</span> <span class="n">elapsed</span><span class="p">))</span>
+    <span class="n">t2</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+        <span class="n">make_table</span><span class="p">(</span>
+            <span class="s1">&#39;Gateway-executors network&#39;</span><span class="p">,</span> <span class="n">server_network</span><span class="p">,</span> <span class="n">server_network</span> <span class="o">/</span> <span class="n">gateway_time</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">_name</span><span class="p">,</span> <span class="n">_time</span> <span class="ow">in</span> <span class="n">exec_time</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">t2</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">make_table</span><span class="p">(</span><span class="n">_name</span><span class="p">,</span> <span class="n">_time</span><span class="p">,</span> <span class="n">_time</span> <span class="o">/</span> <span class="n">gateway_time</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">show_table</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;Roundtrip&#39;</span><span class="p">:</span> <span class="n">elapsed</span><span class="p">,</span>
+        <span class="s1">&#39;Client-server network&#39;</span><span class="p">:</span> <span class="n">network_time</span><span class="p">,</span>
+        <span class="s1">&#39;Server&#39;</span><span class="p">:</span> <span class="n">gateway_time</span><span class="p">,</span>
+        <span class="s1">&#39;Gateway-executors network&#39;</span><span class="p">:</span> <span class="n">server_network</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">exec_time</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<div class="viewcode-block" id="ProfileMixin"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.ProfileMixin">[docs]</a><span class="k">class</span> <span class="nc">ProfileMixin</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The Profile Mixin for Client and Flow to expose `profile` API&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ProfileMixin.profiling"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.ProfileMixin.profiling">[docs]</a>    <span class="k">def</span> <span class="nf">profiling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_table</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Profiling a single query&#39;s roundtrip including network and computation latency. Results is summarized in a Dict.</span>
+
+<span class="sd">        :param show_table: whether to show the table or not.</span>
+<span class="sd">        :return: the latency report in a dict.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+        <span class="n">st</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">return_responses</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">ed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">_render_response_table</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">st</span><span class="p">,</span> <span class="n">ed</span><span class="p">,</span> <span class="n">show_table</span><span class="o">=</span><span class="n">show_table</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="AsyncProfileMixin"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.AsyncProfileMixin">[docs]</a><span class="k">class</span> <span class="nc">AsyncProfileMixin</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The Profile Mixin for Client and Flow to expose `profile` API&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AsyncProfileMixin.profiling"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.AsyncProfileMixin.profiling">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">profiling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_table</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Profiling a single query&#39;s roundtrip including network and computation latency. Results is summarized in a Dict.</span>
+
+<span class="sd">        :param show_table: whether to show the table or not.</span>
+<span class="sd">        :return: the latency report in a dict.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Document</span>
+
+        <span class="n">st</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">return_responses</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">ed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">_render_response_table</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">ed</span><span class="p">,</span> <span class="n">show_table</span><span class="o">=</span><span class="n">show_table</span><span class="p">)</span></div></div>
+
+
 <div class="viewcode-block" id="PostMixin"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin">[docs]</a><span class="k">class</span> <span class="nc">PostMixin</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;The Post Mixin class for Client and Flow&quot;&quot;&quot;</span>
 
@@ -508,15 +596,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span>
-
-        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">return_responses</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">return_responses</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s1">&#39;return_responses was set in the Client constructor. Therefore, we are overriding the `.post()` input &#39;</span>
-                <span class="s1">&#39;parameter `return_responses`. This argument will be deprecated from the `constructor` &#39;</span>
-                <span class="s1">&#39;soon. We recommend passing `return_responses` to the `post` method.&#39;</span>
-            <span class="p">)</span>
-            <span class="n">return_responses</span> <span class="o">=</span> <span class="kc">True</span>
-
         <span class="n">c</span><span class="o">.</span><span class="n">show_progress</span> <span class="o">=</span> <span class="n">show_progress</span>
         <span class="n">c</span><span class="o">.</span><span class="n">continue_on_error</span> <span class="o">=</span> <span class="n">continue_on_error</span>
 
@@ -595,15 +674,6 @@
 <span class="sd">            ``target_executor`` uses ``re.match`` for checking if the pattern is matched. ``target_executor==&#39;foo&#39;`` will match both deployments with the name ``foo`` and ``foo_what_ever_suffix``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span>
-
-        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">return_responses</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">return_responses</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s1">&#39;return_responses was set in the Client constructor. Therefore, we are overriding the `.post()` input &#39;</span>
-                <span class="s1">&#39;parameter `return_responses`. This argument will be deprecated from the `constructor` &#39;</span>
-                <span class="s1">&#39;soon. We recommend passing `return_responses` to the `post` method.&#39;</span>
-            <span class="p">)</span>
-            <span class="n">return_responses</span> <span class="o">=</span> <span class="kc">True</span>
-
         <span class="n">c</span><span class="o">.</span><span class="n">show_progress</span> <span class="o">=</span> <span class="n">show_progress</span>
         <span class="n">c</span><span class="o">.</span><span class="n">continue_on_error</span> <span class="o">=</span> <span class="n">continue_on_error</span>
 
@@ -644,7 +714,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 29, 2022</div>
+                            Last updated on Aug 30, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

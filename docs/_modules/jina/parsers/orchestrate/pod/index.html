@@ -256,6 +256,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/scale-out/">Scale out with replicas and shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/google-colab/">Run on Google Colab with GPU/TPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/gpu-executor/">Build a GPU Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
@@ -362,10 +364,9 @@
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_SHOW_ALL_ARGS</span><span class="p">,</span> <span class="n">KVAppendAction</span><span class="p">,</span> <span class="n">add_arg_group</span>
 
 
-<div class="viewcode-block" id="mixin_pod_parser"><a class="viewcode-back" href="../../../../../api/jina.parsers.orchestrate.pod/#jina.parsers.orchestrate.pod.mixin_pod_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_pod_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">port_monitoring</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="mixin_pod_parser"><a class="viewcode-back" href="../../../../../api/jina.parsers.orchestrate.pod/#jina.parsers.orchestrate.pod.mixin_pod_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_pod_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Mixing in arguments required by :class:`Pod` into the given parser.</span>
 <span class="sd">    :param parser: the parser instance to which we add arguments</span>
-<span class="sd">    :param port_monitoring: if to include the port parsing</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Pod&#39;</span><span class="p">)</span>
@@ -453,14 +454,13 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If set, spawn an http server with a prometheus endpoint to expose metrics&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">port_monitoring</span><span class="p">:</span>
-        <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;--port-monitoring&#39;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">(),</span>
-            <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;port_monitoring&#39;</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;The port on which the prometheus server is exposed, default is a random port between [49152, 65535]&#39;</span><span class="p">,</span>
-        <span class="p">)</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--port-monitoring&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()),</span>
+        <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;port_monitoring&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;The port on which the prometheus server is exposed, default is a random port between [49152, 65535]&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--retries&#39;</span><span class="p">,</span>
@@ -491,7 +491,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 29, 2022</div>
+                            Last updated on Aug 30, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

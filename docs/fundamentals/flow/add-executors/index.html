@@ -289,6 +289,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/realtime-streaming/">Build real-time streaming service</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/flow-switch/">Conditional route request inside a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/scale-out/">Scale out with replicas and shards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../clean-code/">Write clean &amp; efficient code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/google-colab/">Run on Google Colab with GPU/TPU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/gpu-executor/">Build a GPU Executor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/external-executor/">Include external Executors in a Flow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/docker-compose/">Deploy with Docker Compose</a></li>
@@ -461,10 +463,10 @@
 </div>
 <div class="hint admonition">
 <p class="admonition-title">Hint: Load multiple Executors from the same module</p>
-<p>You can override the <code class="docutils literal notranslate"><span class="pre">metas</span></code> attribute for all Executors in a Flow. This allows you to specify a single Python module
+<p>You can override the <code class="docutils literal notranslate"><span class="pre">py_modules</span></code> attribute for all Executors in a Flow. This allows you to specify a single Python module
 from which you can then load all of your Executors, without having to specify the module individually for each Executor:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">metas</span><span class="p">:</span><span class="w"></span>
+<span class="nt">with</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executors.py</span><span class="w"></span>
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
@@ -653,10 +655,10 @@ the request has been handled also by it.</p>
 <span class="k">with</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
     <span class="n">uses</span><span class="o">=</span><span class="s1">&#39;MyExecutor&#39;</span><span class="p">,</span>
     <span class="n">uses_with</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;parameter_1&quot;</span><span class="p">:</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;parameter_2&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">},</span>
+    <span class="n">py_modules</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;executor.py&quot;</span><span class="p">],</span>
     <span class="n">uses_metas</span><span class="o">=</span><span class="p">{</span>
         <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;MyExecutor&quot;</span><span class="p">,</span>
         <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;MyExecutor does a thing to the stuff in your Documents&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;py_modules&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;executor.py&quot;</span><span class="p">],</span>
     <span class="p">},</span>
     <span class="n">uses_requests</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;/index&quot;</span><span class="p">:</span> <span class="s2">&quot;my_index&quot;</span><span class="p">,</span> <span class="s2">&quot;/search&quot;</span><span class="p">:</span> <span class="s2">&quot;my_search&quot;</span><span class="p">,</span> <span class="s2">&quot;/random&quot;</span><span class="p">:</span> <span class="s2">&quot;foo&quot;</span><span class="p">},</span>
     <span class="n">workspace</span><span class="o">=</span><span class="s2">&quot;some_custom_path&quot;</span><span class="p">,</span>
@@ -670,11 +672,11 @@ the request has been handled also by it.</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> is a string that defines the name of the executor;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">description</span></code> is a string that defines the description of this executor. It will be used in automatic docs UI;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code> is a list of strings that defines the Python dependencies of the executor;</p></li>
 </ul>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">uses_requests</span></code> is a key-value map that defines the <a class="reference internal" href="../../executor/executor-methods/#executor-requests"><span class="std std-ref">mapping from endpoint to class method</span></a>. Useful if one needs to overwrite the default endpoint-to-method mapping defined in the Executor python implementation.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code> is a string value that defines the <a class="reference internal" href="../../executor/executor-api/#executor-workspace"><span class="std std-ref">workspace</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code> is a list of strings that defines the Python dependencies of the executor;</p></li>
 </ul>
 <section id="set-metas-via-uses-metas">
 <h3>Set <code class="docutils literal notranslate"><span class="pre">metas</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code><a class="headerlink" href="#set-metas-via-uses-metas" title="Permalink to this heading">#</a></h3>
@@ -854,7 +856,7 @@ documentation about <a class="reference external" href="https://docarray.jina.ai
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 29, 2022</div>
+                            Last updated on Aug 30, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
