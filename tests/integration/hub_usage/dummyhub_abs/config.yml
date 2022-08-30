@@ -1,7 +1,6 @@
 !DummyHubExecutorAbs
 with:
   {}
-metas:
-  py_modules:
-    # - you can put more dependencies here
-    - __init__.py
+py_modules:
+  # - you can put more dependencies here
+  - __init__.py

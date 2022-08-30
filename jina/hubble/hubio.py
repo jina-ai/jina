@@ -229,9 +229,8 @@ jtype: {exec_name}
 with:
     foo: 1
     bar: hello
-metas:
-    py_modules:
-        - executor.py
+py_modules:
+    - executor.py
                 ''',
                     'yaml',
                     theme='monokai',
