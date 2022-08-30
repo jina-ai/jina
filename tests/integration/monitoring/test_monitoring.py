@@ -345,7 +345,7 @@ def test_pending_request(port_generator, failure_in_executor, protocol):
         def _send_request():
             f.search(inputs=DocumentArray.empty(size=1), continue_on_error=True)
 
-        p_send = multiprocessing.Process(target=_send_request)
+        p_send = multiprocessing.Process(target=_send_request, daemon=True)
         _assert_pending_value('0.0', runtime_name, port0)
 
         p_send.start()
@@ -409,6 +409,7 @@ def _create_worker(port, port_monitoring=None):
         target=_create_worker_runtime,
         args=(port,),
         kwargs={'port_monitoring': port_monitoring},
+        daemon=True,
     )
     p.start()
     time.sleep(0.1)
@@ -421,6 +422,7 @@ def _create_gateway(port, port_monitoring, graph, pod_addr, protocol, retries=-1
     p = multiprocessing.Process(
         target=_create_gateway_runtime,
         args=(graph, pod_addr, port, port_monitoring, protocol, retries),
+        daemon=True,
     )
     p.start()
     time.sleep(0.1)
@@ -463,7 +465,9 @@ def test_pending_requests_with_connection_error(port_generator, protocol):
     )
 
     try:
-        p = multiprocessing.Process(target=_send_request, args=(gateway_port, protocol))
+        p = multiprocessing.Process(
+            target=_send_request, args=(gateway_port, protocol), daemon=True
+        )
         p.start()
         p.join()
         time.sleep(2)
@@ -580,7 +584,10 @@ async def test_kill_worker(port_generator):
     try:
         # send first successful request
         p = multiprocessing.Process(
-            target=_send_request, args=(gateway_port, 'grpc'), kwargs={'n_docs': 1}
+            target=_send_request,
+            args=(gateway_port, 'grpc'),
+            kwargs={'n_docs': 1},
+            daemon=True,
         )
         p.start()
         p.join()
@@ -589,13 +596,16 @@ async def test_kill_worker(port_generator):
 
         worker_process.terminate()  # kill worker
         worker_process.join()
-
+        p.terminate()
         # send second request, should fail
-        p = multiprocessing.Process(
-            target=_send_request, args=(gateway_port, 'grpc'), kwargs={'n_docs': 1}
+        p2 = multiprocessing.Process(
+            target=_send_request,
+            args=(gateway_port, 'grpc'),
+            kwargs={'n_docs': 1},
+            daemon=True,
         )
-        p.start()
-        p.join()
+        p2.start()
+        p2.join()
 
         assert p.exitcode != 0
 
@@ -610,6 +620,7 @@ async def test_kill_worker(port_generator):
             f'jina_failed_requests_total{{runtime_name="gateway/GRPCGatewayRuntime"}} 1.0'
             in str(resp.content)
         )
+        p2.terminate()
 
     except Exception:
         raise
