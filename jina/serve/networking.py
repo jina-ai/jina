@@ -41,12 +41,12 @@ class ReplicaList:
     Maintains a list of connections to replicas and uses round robin for selecting a replica
     """
 
-    def __init__(self, summary, logger):
+    def __init__(self, _sending_requests_metrics, logger):
         self._connections = []
         self._address_to_connection_idx = {}
         self._address_to_channel = {}
         self._rr_counter = 0  # round robin counter
-        self.summary = summary
+        self._sending_requests_metrics = _sending_requests_metrics
         self._logger = logger
         self._destroyed_event = asyncio.Event()
 
@@ -138,7 +138,9 @@ class ReplicaList:
         use_tls = parsed_address.scheme in TLS_PROTOCOL_SCHEMES
 
         stubs, channel = GrpcConnectionPool.create_async_channel_stub(
-            address, tls=use_tls, summary=self.summary
+            address,
+            tls=use_tls,
+            _sending_requests_metrics=self._sending_requests_metrics,
         )
         return stubs, channel
 
@@ -252,10 +254,10 @@ class GrpcConnectionPool:
             'jina.JinaInfoRPC': jina_pb2_grpc.JinaInfoRPCStub,
         }
 
-        def __init__(self, address, channel, summary):
+        def __init__(self, address, channel, sending_requests_metrics):
             self.address = address
             self.channel = channel
-            self._summary_time = summary
+            self._sending_requests_metrics = sending_requests_metrics
             self._initialized = False
 
         # This has to be done lazily, because the target endpoint may not be available
@@ -326,14 +328,14 @@ class GrpcConnectionPool:
                         compression=compression,
                         timeout=timeout,
                     )
-                    with self._summary_time:
+                    with self._sending_requests_metrics if self._sending_requests_metrics else contextlib.nullcontext():
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
                         )
                     return response, metadata
                 elif self.stream_stub:
-                    with self._summary_time:
+                    with self._sending_requests_metrics if self._sending_requests_metrics else contextlib.nullcontext():
                         async for resp in self.stream_stub.Call(
                             iter(requests), compression=compression, timeout=timeout
                         ):
@@ -346,7 +348,7 @@ class GrpcConnectionPool:
                         compression=compression,
                         timeout=timeout,
                     )
-                    with self._summary_time:
+                    with self._sending_requests_metrics if self._sending_requests_metrics else contextlib.nullcontext():
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
@@ -360,13 +362,13 @@ class GrpcConnectionPool:
                 raise ValueError(f'Unsupported request type {type(requests[0])}')
 
     class _ConnectionPoolMap:
-        def __init__(self, logger: Optional[JinaLogger], summary):
+        def __init__(self, logger: Optional[JinaLogger], sending_requests_metrics):
             self._logger = logger
             # this maps deployments to shards or heads
             self._deployments: Dict[str, Dict[str, Dict[int, ReplicaList]]] = {}
             # dict stores last entity id used for a particular deployment, used for round robin
             self._access_count: Dict[str, int] = {}
-            self.summary = summary
+            self._sending_requests_metrics = sending_requests_metrics
 
             if os.name != 'nt':
                 os.unsetenv('http_proxy')
@@ -470,7 +472,9 @@ class GrpcConnectionPool:
         ):
             self._add_deployment(deployment)
             if entity_id not in self._deployments[deployment][type]:
-                connection_list = ReplicaList(self.summary, self._logger)
+                connection_list = ReplicaList(
+                    self._sending_requests_metrics, self._logger
+                )
                 self._deployments[deployment][type][entity_id] = connection_list
 
             if not self._deployments[deployment][type][entity_id].has_connection(
@@ -532,15 +536,17 @@ class GrpcConnectionPool:
             ):
                 from prometheus_client import Summary
 
-            self._summary_time = Summary(
+            self._sending_requests_metrics = Summary(
                 'sending_request_seconds',
                 'Time spent between sending a request to the Pod and receiving the response',
                 registry=metrics_registry,
                 namespace='jina',
             ).time()
         else:
-            self._summary_time = contextlib.nullcontext()
-        self._connections = self._ConnectionPoolMap(self._logger, self._summary_time)
+            self._sending_requests_metrics = None  # contextlib.nullcontext()
+        self._connections = self._ConnectionPoolMap(
+            self._logger, self._sending_requests_metrics
+        )
         self._deployment_address_map = {}
 
     def send_request(
@@ -1096,7 +1102,10 @@ class GrpcConnectionPool:
 
     @staticmethod
     def create_async_channel_stub(
-        address, tls=False, root_certificates: Optional[str] = None, summary=None
+        address,
+        tls=False,
+        root_certificates: Optional[str] = None,
+        _sending_requests_metrics=None,
     ) -> Tuple[ConnectionStubs, grpc.aio.Channel]:
         """
         Creates an async GRPC Channel. This channel has to be closed eventually!
@@ -1104,7 +1113,7 @@ class GrpcConnectionPool:
         :param address: the address to create the connection to, like 127.0.0.0.1:8080
         :param tls: if True, use tls for the grpc channel
         :param root_certificates: the path to the root certificates for tls, only u
-        :param summary: Optional Prometheus summary object
+        :param _sending_requests_metrics: Optional Prometheus summary object
 
         :returns: DataRequest stubs and an async grpc channel
         """
@@ -1116,7 +1125,9 @@ class GrpcConnectionPool:
         )
 
         return (
-            GrpcConnectionPool.ConnectionStubs(address, channel, summary),
+            GrpcConnectionPool.ConnectionStubs(
+                address, channel, _sending_requests_metrics
+            ),
             channel,
         )
 
