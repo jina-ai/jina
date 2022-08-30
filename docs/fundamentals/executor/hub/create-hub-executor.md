@@ -20,15 +20,13 @@ After running the command, a project with the following structure will be genera
 ```text
 MyExecutor/
 ├── Dockerfile	        # Advanced configuration will generate this file
-├── manifest.yml
 ├── config.yml
 ├── README.md
 ├── requirements.txt
 └── executor.py
 ```
 
-- `manifest.yml` should contain the Executor's annotations for getting better exposure on Jina Hub. {ref}`Its specification can be found here<manifest-yaml>`.
-- `config.yml` is the Executor's configuration file, where you can define **__init__** arguments using **with** keyword.
+- `config.yml` is the Executor's configuration file, where you can define **__init__** arguments using **with** keyword. You can also define manifest annotations relevant to the executor, for getting better exposer on Jina Hub. {ref}`It's configuration can be found here<config-yaml>`.
 - `requirements.txt` describes the Executor's Python dependencies.
 - `executor.py` should contain your Executor's main logic.
 - `README.md` should describe how to use your Executor.
@@ -47,17 +45,14 @@ structure.
 
 * No need to write Dockerfile manually 
 
-  Most of the time, you do not need to create `Dockerfile` manually, {abbr}`Hubble (Hubble is the Jina Hub building system)` will generate a well-optimized Dockerfile according to your Executor 
-    package.
+  Most of the time, you do not need to create `Dockerfile` manually, {abbr}`Hubble (Hubble is the Jina Hub building system)` will generate a well-optimized Dockerfile according to your Executor package.
 
 
 * No need to bump Jina version
 
-  Hub executors are version-agnostic. When you pull an Executor from Hub, Hubble will always select the right Jina 
-version for you. No worries about Jina version upgrade!
+  Hub executors are version-agnostic. When you pull an Executor from Hub, Hubble will always select the right Jina version for you. No worries about Jina version upgrade!
 
 
-* Fill in `manifest.yml` correctly. 
+* Fill in `manifest` correctly. 
 
-  Information you include in `manifest.yml` will be displayed on our website.
-Want to make your Executor eye-catching on our website? Fill all fields in `manifest.yml` with heart & love! {ref}`Its specification can be found here<manifest-yaml>`.
+  **Manifest** information you include in `config.yml` will be displayed on our website. Want to make your Executor eye-catching on our website? Fill all `manifest` fields in `config.yml` with heart & love! {ref}`Its specification can be found here<config.yml>`.
