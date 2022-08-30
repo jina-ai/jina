@@ -11,7 +11,7 @@ def slow_executor() -> Executor:
     class MySlowExec(Executor):
         @requests
         def slow(self, docs, **kwargs):
-            time.sleep(300)
+            time.sleep(30)
             for doc_ in docs:
                 doc_.text = 'process'
 
