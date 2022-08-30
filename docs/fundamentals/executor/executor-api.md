@@ -154,7 +154,6 @@ The list of the `metas` are:
 
 - `name`: Name given to the Executor;
 - `description`: Description of the Executor (optional, reserved for future-use in auto-docs);
-- `py_modules`: List of Python modules needed to import the Executor. It can be Python package path e.g. `foo.bar.package.module` or file path to the modules needed to import the Executor.
 
 
 These can be provided to the Executor via the {ref}`Python or YAML API <executor-api>`.
