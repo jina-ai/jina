@@ -6,8 +6,9 @@ import pytest
 from jina import Flow, __default_host__
 from jina.clients import Client
 from jina.excepts import PortAlreadyUsed
-from jina.helper import _get_grpc_server_options, is_port_free
+from jina.helper import is_port_free
 from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime as _GRPCGatewayRuntime
+from jina.serve.runtimes.helper import _get_grpc_server_options
 from tests import random_docs
 
 

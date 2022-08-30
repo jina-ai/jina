@@ -7,10 +7,11 @@ from grpc_reflection.v1alpha import reflection
 
 from jina import __default_host__
 from jina.excepts import PortAlreadyUsed
-from jina.helper import _get_grpc_server_options, get_full_version, is_port_free
+from jina.helper import get_full_version, is_port_free
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.bff import GatewayBFF
 from jina.serve.runtimes.gateway import GatewayRuntime
+from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.types.request.status import StatusMessage
 
 __all__ = ['GRPCGatewayRuntime']

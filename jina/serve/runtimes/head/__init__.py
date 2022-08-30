@@ -13,11 +13,12 @@ from grpc_reflection.v1alpha import reflection
 
 from jina.enums import PollingType
 from jina.excepts import InternalNetworkError
-from jina.helper import _get_grpc_server_options, get_full_version
+from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest, Response
 
