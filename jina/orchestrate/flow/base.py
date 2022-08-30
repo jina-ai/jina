@@ -118,7 +118,6 @@ class Flow(
         port: Optional[int] = None,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
-        return_responses: Optional[bool] = False,
         tls: Optional[bool] = False,
         **kwargs,
     ):
@@ -129,7 +128,6 @@ class Flow(
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
-        :param return_responses: If set, return results as List of Requests instead of a reduced DocArray.
         :param tls: If set, connect to gateway using tls encryption
 
         .. # noqa: DAR202
@@ -366,7 +364,6 @@ class Flow(
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
-        :param return_responses: If set, return results as List of Requests instead of a reduced DocArray.
         :param tls: If set, connect to gateway using tls encryption
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
