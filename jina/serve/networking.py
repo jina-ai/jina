@@ -7,7 +7,6 @@ from typing import Dict, List, Optional, Set, Tuple, Union
 from urllib.parse import urlparse
 
 import grpc
-import prometheus_client.metrics_core
 from grpc.aio import AioRpcError
 from grpc_health.v1 import health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha.reflection_pb2 import ServerReflectionRequest
@@ -27,7 +26,7 @@ TLS_PROTOCOL_SCHEMES = ['grpcs', 'https', 'wss']
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from prometheus_client import CollectorRegistry
+    from prometheus_client import CollectorRegistry, Summary
 
 
 DEFAULT_MINIMUM_RETRIES = 3
@@ -42,7 +41,7 @@ class ReplicaList:
     Maintains a list of connections to replicas and uses round robin for selecting a replica
     """
 
-    def __init__(self, sending_requests_metrics: prometheus_client.Summary, logger):
+    def __init__(self, sending_requests_metrics: 'Summary', logger):
         self._connections = []
         self._address_to_connection_idx = {}
         self._address_to_channel = {}
@@ -255,9 +254,7 @@ class GrpcConnectionPool:
             'jina.JinaInfoRPC': jina_pb2_grpc.JinaInfoRPCStub,
         }
 
-        def __init__(
-            self, address, channel, sending_requests_metrics: prometheus_client.Summary
-        ):
+        def __init__(self, address, channel, sending_requests_metrics: 'Summary'):
             self.address = address
             self.channel = channel
             self._sending_requests_metrics = sending_requests_metrics
@@ -368,7 +365,7 @@ class GrpcConnectionPool:
         def __init__(
             self,
             logger: Optional[JinaLogger],
-            sending_requests_metrics: prometheus_client.Summary,
+            sending_requests_metrics: 'Summary',
         ):
             self._logger = logger
             # this maps deployments to shards or heads
@@ -1112,7 +1109,7 @@ class GrpcConnectionPool:
         address,
         tls=False,
         root_certificates: Optional[str] = None,
-        sending_requests_metrics: Optional[prometheus_client.Summary] = None,
+        sending_requests_metrics: Optional['Summary'] = None,
     ) -> Tuple[ConnectionStubs, grpc.aio.Channel]:
         """
         Creates an async GRPC Channel. This channel has to be closed eventually!
