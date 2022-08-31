@@ -3,5 +3,5 @@ with:
   greetings: im from internal yaml!
 metas:
   name: my-mwu-encoder
-  py_modules: mwu_encoder.py
   workspace: ./
+py_modules: mwu_encoder.py

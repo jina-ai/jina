@@ -1,3 +1,2 @@
 !DummyExternalIndexer
-metas:
-  py_modules: dummy_exec.py
+py_modules: dummy_exec.py

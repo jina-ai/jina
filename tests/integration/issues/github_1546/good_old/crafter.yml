@@ -1,4 +1,3 @@
 !GoodCrafterOld
-metas:
-  py_modules:
-    - __init__.py
+py_modules:
+  - __init__.py

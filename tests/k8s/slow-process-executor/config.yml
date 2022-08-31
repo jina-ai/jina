@@ -1,4 +1,3 @@
 jtype: SlowProcessExecutor
-metas:
-  py_modules:
-    - debug_executor.py
+py_modules:
+  - debug_executor.py
