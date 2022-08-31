@@ -1,4 +1,6 @@
-FROM jinaai/jina:latest
+ARG JINA_VERSION=latest
+
+FROM jinaai/jina:${JINA_VERSION}
 
 # install requirements before copying the workspace
 COPY requirements.txt /requirements.txt

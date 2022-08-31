@@ -7,8 +7,8 @@ ARG JINA_VERSION=
 
 RUN python3 -m pip install --no-cache-dir jina${JINA_VERSION:+==${JINA_VERSION}}
 
-COPY gpu_requirements.txt gpu_requirements.txt
-RUN pip install --no-cache-dir -r gpu_requirements.txt
+COPY requirements.txt requirements.txt
+RUN pip install --default-timeout=1000 --compile -r requirements.txt
 
 COPY . /workdir/
 WORKDIR /workdir
