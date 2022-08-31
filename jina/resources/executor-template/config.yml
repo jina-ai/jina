@@ -2,8 +2,6 @@ jtype: {{exec_name}}
 metas:
   py_modules:
     - executor.py
-manifest:
-  manifest_version: 1
   name: {{exec_name}}
   description: {{exec_description}}
   url: {{exec_url}}

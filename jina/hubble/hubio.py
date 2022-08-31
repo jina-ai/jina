@@ -217,7 +217,7 @@ your executor has non-trivial dependencies or must be run under certain environm
         table.add_row(
             'config.yml',
             'The YAML config file of the Executor. You can define [bold]__init__[/bold] arguments using [bold]with[/bold] keyword.' +\
-            '\nYou can also define manifest metadata for the executor, for better appeal on Jina Hub.',
+            '\nYou can also define metadata for the executor, for better appeal on Jina Hub.',
         )
 
         table.add_row(
@@ -232,8 +232,6 @@ with:
 metas:
     py_modules:
         - executor.py
-manifest:
-    manifest_version: 1
     name: {exec_name}
     description: {exec_description if exec_description != '{{}}' else 'None'}
     url: {exec_url if exec_url != '{{}}' else 'None'}
