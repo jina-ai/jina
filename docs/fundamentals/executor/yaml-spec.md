@@ -20,10 +20,6 @@ py_modules:
 metas:
   name: Indexer
   description: Indexes all documents
-manifest:
-  manifest_version: 1
-  name: MyIndexer
-  description: Indexes all documents
   url: https://github.com/janedoe/indexer
   keywords: ["indexer", "executor"]
 ```
