@@ -45,7 +45,8 @@ def mixin_hub_new_parser(parser):
     )
 
     gp.add_argument(
-        '--add-dockerfile',
-        help='If set, add a Dockerfile to the created Executor bundle',
-        action='store_true',
+        '--dockerfile',
+        help='The Dockerfile template to use for the Executor',
+        type=str,
+        choices=['cpu', 'tf-gpu', 'torch-gpu', 'jax-gpu'],
     )

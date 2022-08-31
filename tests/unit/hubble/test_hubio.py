@@ -738,7 +738,7 @@ def test_pull_with_progress():
     HubIO(args)._pull_with_progress(_log_stream_generator(), console)
 
 
-@pytest.mark.parametrize('add_dockerfile', [True, False])
+@pytest.mark.parametrize('add_dockerfile', ['cpu', 'torch-gpu', 'tf-gpu', 'jax-gpu'])
 def test_new_without_arguments(monkeypatch, tmpdir, add_dockerfile):
     from rich.prompt import Confirm, Prompt
 
@@ -746,22 +746,21 @@ def test_new_without_arguments(monkeypatch, tmpdir, add_dockerfile):
         [
             'DummyExecutor',
             tmpdir / 'DummyExecutor',
+            add_dockerfile,
             'dummy description',
             'dummy author',
             'dummy tags',
         ]
     )
 
-    confirms = iter([True, add_dockerfile])
-
     def _mock_prompt_ask(*args, **kwargs):
         return next(prompts)
 
     def _mock_confirm_ask(*args, **kwargs):
-        return next(confirms)
+        return True
 
-    monkeypatch.setattr(Prompt, 'ask', _mock_prompt_ask)
     monkeypatch.setattr(Confirm, 'ask', _mock_confirm_ask)
+    monkeypatch.setattr(Prompt, 'ask', _mock_prompt_ask)
 
     args = set_hub_new_parser().parse_args([])
     HubIO(args).new()
@@ -775,7 +774,7 @@ def test_new_without_arguments(monkeypatch, tmpdir, add_dockerfile):
         'config.yml',
     ]
 
-    if add_dockerfile:
+    if add_dockerfile != 'none':
         pkg_files.append('Dockerfile')
 
     for file in pkg_files:
@@ -790,7 +789,7 @@ def test_new_without_arguments(monkeypatch, tmpdir, add_dockerfile):
             assert 'DummyExecutor' in fp.read()
 
 
-@pytest.mark.parametrize('add_dockerfile', [True, False])
+@pytest.mark.parametrize('add_dockerfile', ['cpu', 'torch-gpu', 'tf-gpu', 'jax-gpu'])
 @pytest.mark.parametrize('advance_configuration', [True, False])
 @pytest.mark.parametrize('confirm_advance_configuration', [True, False])
 @pytest.mark.parametrize('confirm_add_docker', [True, False])
@@ -809,6 +808,8 @@ def test_new_with_arguments(
     _args_list = [
         '--name',
         'argsExecutor',
+        '--dockerfile',
+        add_dockerfile,
         '--description',
         'args description',
         '--keywords',
@@ -823,15 +824,8 @@ def test_new_with_arguments(
     else:
         temp.append(confirm_advance_configuration)
 
-    if add_dockerfile:
-        _args_list.append('--add-dockerfile')
-    else:
-        temp.append(confirm_add_docker)
-
-    confirms = iter(temp)
-
     def _mock_confirm_ask(*args, **kwargs):
-        return next(confirms)
+        return True
 
     monkeypatch.setattr(Confirm, 'ask', _mock_confirm_ask)
 

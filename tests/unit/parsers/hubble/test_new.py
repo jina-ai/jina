@@ -13,7 +13,7 @@ def test_new_parser():
     mixin_hub_new_parser(parser)
 
     args = parser.parse_args([])
-    assert not args.add_dockerfile
+    assert not args.dockerfile
     assert not args.advance_configuration
     assert args.name == None
     assert args.path == None
@@ -21,8 +21,8 @@ def test_new_parser():
     assert args.keywords == None
     assert args.url == None
 
-    args = parser.parse_args(['--add-dockerfile'])
-    assert args.add_dockerfile
+    args = parser.parse_args(['--dockerfile', 'cpu'])
+    assert args.dockerfile
 
     args = parser.parse_args(['--advance-configuration'])
     assert args.advance_configuration
@@ -41,7 +41,7 @@ def test_new_parser():
             'Dummy url',
         ]
     )
-    assert not args.add_dockerfile
+    assert not args.dockerfile
     assert not args.advance_configuration
     assert args.name == 'Dummy Executor'
     assert args.path == 'Dummy Path'
@@ -64,7 +64,7 @@ def test_new_parser():
             '--advance-configuration',
         ]
     )
-    assert not args.add_dockerfile
+    assert not args.dockerfile
     assert args.advance_configuration
     assert args.name == 'Dummy Executor'
     assert args.path == 'Dummy Path'
@@ -74,7 +74,8 @@ def test_new_parser():
 
     args = parser.parse_args(
         [
-            '--add-dockerfile',
+            '--dockerfile',
+            'cpu',
             '--name',
             'Dummy Executor',
             '--path',
@@ -87,7 +88,7 @@ def test_new_parser():
             'Dummy url',
         ]
     )
-    assert args.add_dockerfile
+    assert args.dockerfile
     assert not args.advance_configuration
     assert args.name == 'Dummy Executor'
     assert args.path == 'Dummy Path'
