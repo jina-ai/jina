@@ -1,5 +1,5 @@
 !DummyExec
 metas:
   name: dummy-exec
-  py_modules: executor.py
   workspace: ./
+py_modules: executor.py

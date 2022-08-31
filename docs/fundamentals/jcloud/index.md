@@ -280,7 +280,7 @@ If you don't see any obvious errors, please raise an issue in [JCloud](https://g
 
 - **Is everything free?**
 
-  Yes! We just need your feedback - use `jc survey` to help us understand your needs.
+  Yes at the moment! We just need your feedback - use `jc survey` to help us understand your needs.
 
 - **How powerful is JCloud?**
 
@@ -290,9 +290,3 @@ If you don't see any obvious errors, please raise an issue in [JCloud](https://g
 
   - Deployments are only supported in `us-east` region.
   - Each Executor is allowed a maximum of 4 GPUs, 16G RAM, 16 CPU cores & 10GB of block storage.
-
-- **How long do you persist my service?**
-
-  - If {ref}`retention-days <retention-days>` argument configured. Flows will be removed after `retention-day`, regradless of the usage.
-
-  - If {ref}`retention-days <retention-days>` argument not configured, or set to `0`. We will detect if flows are idle daily, they will be terminated if they are not serving requests for the last 24hrs. 

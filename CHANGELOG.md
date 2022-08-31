@@ -225,6 +225,8 @@
 
 
 
+
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -578,6 +580,8 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 - [Release Note (`3.7.12`)](#release-note-3712)
 - [Release Note (`3.7.13`)](#release-note-3713)
 - [Release Note (`3.7.14`)](#release-note-3714)
+- [Release Note (`3.8.0`)](#release-note-380)
+- [Release Note (`3.8.1`)](#release-note-381)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -14818,4 +14822,88 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
  - [[```4f380c7e```](https://github.com/jina-ai/jina/commit/4f380c7e6a9dea2dd67eda08da050eb83323da26)] __-__ fix pprint (*Han Xiao*)
  - [[```0bd289fe```](https://github.com/jina-ai/jina/commit/0bd289fe4f13025b337e4b2586cde9444afad1c0)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```96489914```](https://github.com/jina-ai/jina/commit/96489914a49449cc99e8c97473953318a908ce3a)] __-__ __version__: the next version will be 3.7.14 (*Jina Dev Bot*)
+
+<a name=release-note-3-8-0></a>
+## Release Note (`3.8.0`)
+
+> Release time: 2022-08-29 16:43:11
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Johannes Messner,  tarrantro,  Han Xiao,  AlaeddineAbdessalem,  samsja,  Jina Dev Bot,  Zac Li,  🙇
+
+
+### 🆕 New Features
+
+ - [[```527beb85```](https://github.com/jina-ai/jina/commit/527beb85a62eef9ec239406b986e43fcec28c2e7)] __-__ bump protobuf version (#5082) (*AlaeddineAbdessalem*)
+ - [[```c47cb716```](https://github.com/jina-ai/jina/commit/c47cb71637a9f72dd0f8710a7f93b3e6c6e9b238)] __-__ add failed and successful request number metrics (#5079) (*AlaeddineAbdessalem*)
+
+### 🐞 Bug fixes
+
+ - [[```c81252ac```](https://github.com/jina-ai/jina/commit/c81252aca7ba0c52650f7e915febe367a5e4828f)] __-__ update to protobuf 4.21 new types (#5098) (*Johannes Messner*)
+
+### 🧼 Code Refactoring
+
+ - [[```6e51e815```](https://github.com/jina-ai/jina/commit/6e51e815e534a8bf54d6629dc828fd50ace21bc0)] __-__ refactor data request handler monitoring (#5088) (*samsja*)
+
+### 📗 Documentation
+
+ - [[```b3fdb49c```](https://github.com/jina-ai/jina/commit/b3fdb49cf4946796bc8b5fb8e5bc360f6f32bd0c)] __-__ correct jcloud retention days (#5096) (*tarrantro*)
+ - [[```98fb71f1```](https://github.com/jina-ai/jina/commit/98fb71f188fb71600db18ebd77809a36bfa9909c)] __-__ __jcloud__: adjust jcloud monitoring docs(#5081) (*Zac Li*)
+ - [[```dbea43f3```](https://github.com/jina-ai/jina/commit/dbea43f3f36fda3e111a7c0d58ea3b56b0146337)] __-__ remove kong/alb from jcloud document (#5080) (*tarrantro*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```27ec3b41```](https://github.com/jina-ai/jina/commit/27ec3b41f8b49507aa5694db2ef020a9161576e7)] __-__ cleanup pip install (#5094) (*AlaeddineAbdessalem*)
+ - [[```c0c3bf9a```](https://github.com/jina-ai/jina/commit/c0c3bf9a58cf59d6eea0cacabdb479b00d147b99)] __-__ downgrade linkerd version in CI (#5090) (*AlaeddineAbdessalem*)
+
+### 🍹 Other Improvements
+
+ - [[```142c0bb1```](https://github.com/jina-ai/jina/commit/142c0bb1d9c2f3deaf04c60e3f6d3509390851f7)] __-__ __docs__: add streamline value props (*Han Xiao*)
+ - [[```af7f6763```](https://github.com/jina-ai/jina/commit/af7f6763818cd121c973db5d10f98e3ceab96781)] __-__ fix readme (*Han Xiao*)
+ - [[```c39714fa```](https://github.com/jina-ai/jina/commit/c39714fae05e7e841574b1203de2781d708c13fb)] __-__ __docs__: add install apple silicon (*Han Xiao*)
+ - [[```5375b4d3```](https://github.com/jina-ai/jina/commit/5375b4d398425500eb425c93dfc48cedb758a24b)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```53553b14```](https://github.com/jina-ai/jina/commit/53553b1415ca024b0495b9658181b8ca6f227532)] __-__ add security report (*Han Xiao*)
+ - [[```cfe5dd70```](https://github.com/jina-ai/jina/commit/cfe5dd70fce54f2a6f1f5cecac3aab47d6ce2793)] __-__ update readme (*Han Xiao*)
+ - [[```e106796c```](https://github.com/jina-ai/jina/commit/e106796c26390f820d0f7d571c97303e3cd2f37f)] __-__ __docs__: update furo deps (*Han Xiao*)
+ - [[```079d04b0```](https://github.com/jina-ai/jina/commit/079d04b00946e0dbe274d1011f72a44dd65423d3)] __-__ __docs__: add jcloud to first app (*Han Xiao*)
+ - [[```64de8608```](https://github.com/jina-ai/jina/commit/64de86083f98f930fb87a99c41f1fbc6fb8a9d0d)] __-__ __docs__: add comparing alternatives (*Han Xiao*)
+ - [[```f9c2d8de```](https://github.com/jina-ai/jina/commit/f9c2d8ded6264a82297665d286fdc40ac3b469f9)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```2154f98f```](https://github.com/jina-ai/jina/commit/2154f98fddcbeddcfd80790de897f6210b408f87)] __-__ __version__: the next version will be 3.7.15 (*Jina Dev Bot*)
+
+<a name=release-note-3-8-1></a>
+## Release Note (`3.8.1`)
+
+> Release time: 2022-08-30 19:32:52
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Han Xiao,  samsja,  AlaeddineAbdessalem,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```6df36ce5```](https://github.com/jina-ai/jina/commit/6df36ce5958f3a7998c86e9f2745d897d4c1151e)] __-__ __client__: add profiling function to client and flow (#5105) (*Han Xiao*)
+
+### 🐞 Bug fixes
+
+ - [[```78aae025```](https://github.com/jina-ai/jina/commit/78aae0256da180287fc6b05fc3d5d74b6b7d2e02)] __-__ fix inconsistent docs and tests on py_modules (#5108) (*Han Xiao*)
+ - [[```a725010d```](https://github.com/jina-ai/jina/commit/a725010d0f41967603dd207ee0a7a5ab6a568e71)] __-__ remove flakyness of monitoring integration tests in CI (#5106) (*samsja*)
+
+### 🧼 Code Refactoring
+
+ - [[```90fa81f3```](https://github.com/jina-ai/jina/commit/90fa81f3d0a4c9cb7b4aa3b6303dfb5fd7410b96)] __-__ move port monitoring to pods parsing (#5100) (*samsja*)
+
+### 📗 Documentation
+
+ - [[```95ee283c```](https://github.com/jina-ai/jina/commit/95ee283c510fc52c3b40ef1a6c25c3255215966d)] __-__ fix naming (#5102) (*AlaeddineAbdessalem*)
+
+### 🍹 Other Improvements
+
+ - [[```d528d947```](https://github.com/jina-ai/jina/commit/d528d9476316fb0a9bef712447187659b7829f7d)] __-__ fix cd pipeline (*Han Xiao*)
+ - [[```57625350```](https://github.com/jina-ai/jina/commit/5762535035b28e358c1ba8e1c777b9575aa8172c)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```1ad06216```](https://github.com/jina-ai/jina/commit/1ad06216b3d92501e6292fdabd542ed59b388284)] __-__ __docs__: fix retention days description (*Han Xiao*)
+ - [[```9f5f5879```](https://github.com/jina-ai/jina/commit/9f5f58796481bbc0fc7f6985721ba726ef121860)] __-__ __version__: the next version will be 3.8.1 (*Jina Dev Bot*)
 

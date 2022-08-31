@@ -51,7 +51,8 @@ can put that into practice you can find {ref}`here <kubernetes>`.
 realtime-streaming
 flow-switch
 scale-out
-../fundamentals/clean-codegoogle-colab
+../fundamentals/clean-code
+google-colab
 gpu-executor
 external-executor
 docker-compose

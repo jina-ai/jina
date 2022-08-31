@@ -328,15 +328,24 @@ executors:
 ```
 
 
-(retention-days)=
-### Retention days
+### Lifetime
 
-In JCloud, we have a default life-cycle of 24hrs for Flows, after which they're removed if idle. You can manage the same yourself by passing the right parameter for `retention-days` under `jcloud`. `0` is to use the default life-cycle, `X` (0<X<365), which is meant to keep the Flow alive until X days, and `-1` is for never expired,
+A Flow that receives no traffic in 24 hours will be automatically deleted by default.
+
+To ignore the lifetime reclaim policy of a Flow, you can use the `retention_days` parameter in the Flow yaml. `retention_days` will keep the flow alive for `x` days (0<x<365). flows is going to be removed after `x` days regardless of above reclaim policy. `-1` is to keep the flow alive regardless of the reclaim policy.
+
+```{note}
+- If {ref}`retention-days <retention-days>` argument configured as `x` (0<x<365). Flows will be removed after `retention-days`, regradless of the usage.
+
+- If {ref}`retention-days <retention-days>` argument configured as `-1`. Flows will not be removed, regradless of the usage.
+
+- If {ref}`retention-days <retention-days>` argument not configured, or set to `0`. We will detect if flows are idle daily, they will be terminated if they are not serving requests for the last 24hrs.
+```
 
 ```yaml
 jtype: Flow
 jcloud:
-  retention_days: -1
+  retention_days: 7
 executors:
   - name: executor1
     uses: jinahub+docker://Executor1

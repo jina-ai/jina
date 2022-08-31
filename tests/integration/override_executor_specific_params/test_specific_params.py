@@ -1,6 +1,6 @@
 from typing import Dict
 
-from jina import Flow, DocumentArray, Document, Executor, Client, requests
+from jina import Client, Document, DocumentArray, Executor, Flow, requests
 
 ORIGINAL_PARAMS = {'param1': 50, 'param2': 60, 'exec_name': {'param1': 'changed'}}
 OVERRIDEN_EXECUTOR1_PARAMS = {
@@ -45,10 +45,11 @@ def test_override_params(mocker, port_generator):
     error_mock = mocker.Mock()
 
     with f:
-        resp = Client(port=exposed_port, return_responses=True).index(
+        resp = Client(port=exposed_port).index(
             inputs=DocumentArray([Document()]),
             parameters={'param1': 50, 'param2': 60, 'exec_name': {'param1': 'changed'}},
             on_error=error_mock,
+            return_responses=True,
         )
     error_mock.assert_not_called()
 

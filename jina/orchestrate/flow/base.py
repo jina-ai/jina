@@ -38,7 +38,7 @@ from rich.table import Table
 
 from jina import __default_host__, __docker_host__, helper
 from jina.clients import Client
-from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin
+from jina.clients.mixin import AsyncPostMixin, HealthCheckMixin, PostMixin, ProfileMixin
 from jina.enums import (
     DeploymentRoleType,
     FlowBuildLevel,
@@ -98,7 +98,14 @@ FALLBACK_PARSERS = [
 ]
 
 
-class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=FlowType):
+class Flow(
+    PostMixin,
+    ProfileMixin,
+    HealthCheckMixin,
+    JAMLCompatible,
+    ExitStack,
+    metaclass=FlowType,
+):
     """Flow is how Jina streamlines and distributes Executors."""
 
     # overload_inject_start_client_flow
@@ -111,7 +118,6 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         port: Optional[int] = None,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
-        return_responses: Optional[bool] = False,
         tls: Optional[bool] = False,
         **kwargs,
     ):
@@ -122,7 +128,6 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
-        :param return_responses: If set, return results as List of Requests instead of a reduced DocArray.
         :param tls: If set, connect to gateway using tls encryption
 
         .. # noqa: DAR202
@@ -160,7 +165,7 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
-        port_monitoring: Optional[int] = None,
+        port_monitoring: Optional[str] = None,
         prefetch: Optional[int] = 1000,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
@@ -359,7 +364,6 @@ class Flow(PostMixin, HealthCheckMixin, JAMLCompatible, ExitStack, metaclass=Flo
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
-        :param return_responses: If set, return results as List of Requests instead of a reduced DocArray.
         :param tls: If set, connect to gateway using tls encryption
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.

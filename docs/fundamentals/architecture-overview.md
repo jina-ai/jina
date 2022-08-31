@@ -130,12 +130,10 @@ with:
 executors:
 - uses: FooExec
   replicas: 3
-  uses_metas:
-    py_modules: executor.py
+  py_modules: executor.py
 - uses: BarExec
   replicas: 2
-  uses_metas:
-    py_modules: executor.py
+  py_modules: executor.py
 ```
 ````
 

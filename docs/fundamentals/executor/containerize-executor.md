@@ -106,9 +106,8 @@ and we can define such a configuration in `config.yml`:
 
 ```yaml
 jtype: ContainerizedEncoder
-metas:
-  py_modules:
-    - my_executor.py
+py_modules:
+ - my_executor.py
 ```
 
 ### Write `requirements.txt`

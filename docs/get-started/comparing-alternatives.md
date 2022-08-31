@@ -189,7 +189,7 @@ When a Jina Flow contains only one Executor, serving this Flow is basically serv
 
 When using Jina on cloud, it makes sense to compare Jina with other MLOps platforms. Note that MLOps is an especially confusing landscape with hundreds of tools available. Platforms have their own specializations and there is no clear line between a tool (with a narrow focus) and a platform (which supports many ML lifecycle activities). Even platforms that have a similar scope have different concepts and strategies, making them hard to compare directly. 
 
-### Based on "Guide to Evaluating MLOps Platforms"
+#### Based on "Guide to Evaluating MLOps Platforms"
 
 The figures below illustrate how platforms specialize in particular areas (bottom) and others aim to cover the whole lifecycle with equal focus (top). The original figures are from [the Thoughtworks Guide to MLOps Platforms](https://www.thoughtworks.com/what-we-do/data-and-ai/cd4ml/guide-to-evaluating-mlops-platforms). We add Jina as a new entry to it.
 
@@ -197,7 +197,7 @@ The figures below illustrate how platforms specialize in particular areas (botto
 ```
 
 
-### Based on "MLOps Platforms"
+#### Based on "MLOps Platforms"
 
 Below we adopt the methodology from [MLOps Platforms](https://github.com/thoughtworks/mlops-platforms) and add Jina as an entry. The chart and tabular data are credited to MLOps Platforms.
 
