@@ -163,7 +163,7 @@ ac_table = {
             '--description',
             '--keywords',
             '--url',
-            '--add-dockerfile',
+            '--dockerfile',
         ],
         'hub push': [
             '--help',
