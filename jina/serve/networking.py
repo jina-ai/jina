@@ -331,14 +331,14 @@ class GrpcConnectionPool:
                         compression=compression,
                         timeout=timeout,
                     )
-                    with self._sending_requests_metrics if self._sending_requests_metrics else contextlib.nullcontext():
+                    with self._sending_requests_metrics.time() if self._sending_requests_metrics else contextlib.nullcontext():
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
                         )
                     return response, metadata
                 elif self.stream_stub:
-                    with self._sending_requests_metrics if self._sending_requests_metrics else contextlib.nullcontext():
+                    with self._sending_requests_metrics.time() if self._sending_requests_metrics else contextlib.nullcontext():
                         async for resp in self.stream_stub.Call(
                             iter(requests), compression=compression, timeout=timeout
                         ):
@@ -351,7 +351,7 @@ class GrpcConnectionPool:
                         compression=compression,
                         timeout=timeout,
                     )
-                    with self._sending_requests_metrics if self._sending_requests_metrics else contextlib.nullcontext():
+                    with self._sending_requests_metrics.time() if self._sending_requests_metrics else contextlib.nullcontext():
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
@@ -548,7 +548,7 @@ class GrpcConnectionPool:
                 'Time spent between sending a request to the Pod and receiving the response',
                 registry=metrics_registry,
                 namespace='jina',
-            ).time()
+            )
         else:
             self._sending_requests_metrics = None
         self._connections = self._ConnectionPoolMap(
