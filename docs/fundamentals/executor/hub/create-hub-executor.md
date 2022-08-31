@@ -51,6 +51,11 @@ structure.
     package.
 
 
+```{tip}
+In the wizard of `jina hub new`, you can choose from four Dockerfile templates: `cpu`, `tf-gpu`, `torch-gpu`, and `jax-cpu`.
+```
+
+
 * No need to bump Jina version
 
   Hub executors are version-agnostic. When you pull an Executor from Hub, Hubble will always select the right Jina 

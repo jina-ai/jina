@@ -738,7 +738,7 @@ def test_pull_with_progress():
     HubIO(args)._pull_with_progress(_log_stream_generator(), console)
 
 
-@pytest.mark.parametrize('add_dockerfile', ['cpu', 'torch-gpu', 'tf-gpu'])
+@pytest.mark.parametrize('add_dockerfile', ['cpu', 'torch-gpu', 'tf-gpu', 'jax-gpu'])
 def test_new_without_arguments(monkeypatch, tmpdir, add_dockerfile):
     from rich.prompt import Confirm, Prompt
 
@@ -789,7 +789,7 @@ def test_new_without_arguments(monkeypatch, tmpdir, add_dockerfile):
             assert 'DummyExecutor' in fp.read()
 
 
-@pytest.mark.parametrize('add_dockerfile', ['cpu', 'torch-gpu', 'tf-gpu'])
+@pytest.mark.parametrize('add_dockerfile', ['cpu', 'torch-gpu', 'tf-gpu', 'jax-gpu'])
 @pytest.mark.parametrize('advance_configuration', [True, False])
 @pytest.mark.parametrize('confirm_advance_configuration', [True, False])
 @pytest.mark.parametrize('confirm_add_docker', [True, False])

@@ -48,5 +48,5 @@ def mixin_hub_new_parser(parser):
         '--dockerfile',
         help='The Dockerfile template to use for the Executor',
         type=str,
-        choices=['cpu', 'tf-gpu', 'torch-gpu'],
+        choices=['cpu', 'tf-gpu', 'torch-gpu', 'jax-gpu'],
     )

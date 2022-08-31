@@ -134,9 +134,10 @@ your executor has non-trivial dependencies or must be run under certain environm
 - If [bold]Dockerfile[/bold] is provided by you, then Jina Cloud will respect it when building the Executor.
 
 Here are some Dockerfile templates for you to choose from:
-- [b]cpu[/b]: CPU-only executor with Jina as base image
-- [b]torch-gpu[/b]: GPU enabled executor with PyTorch as the base image
-- [b]tf-gpu[/b]: GPU enabled executor with Tensorflow as the base image
+- [b]cpu[/b]: CPU-only executor with Jina as base image;
+- [b]torch-gpu[/b]: GPU enabled executor with PyTorch as the base image;
+- [b]tf-gpu[/b]: GPU enabled executor with Tensorflow as the base image;
+- [b]jax-gpu[/b]: GPU enabled executor with JAX installed.
 ''',
                     title=':package: [bold]Dockerfile[/bold]',
                     width=80,
@@ -145,7 +146,7 @@ Here are some Dockerfile templates for you to choose from:
 
             is_dockerfile = self.args.dockerfile or Prompt.ask(
                 ':grey_question: Select how you want to generate the [bold]Dockerfile[/bold] for this Executor?',
-                choices=['cpu', 'torch-gpu', 'tf-gpu', 'none'],
+                choices=['cpu', 'torch-gpu', 'tf-gpu', 'jax-gpu', 'none'],
                 default='cpu',
             )
 
@@ -229,6 +230,8 @@ Meta information helps other users to identify, search and reuse your Executor o
         if is_dockerfile == 'cpu':
             pkg_files.append('Dockerfile')
         elif is_dockerfile == 'torch-gpu':
+            pkg_files.append('torch.Dockerfile')
+        elif is_dockerfile == 'jax-gpu':
             pkg_files.append('torch.Dockerfile')
         elif is_dockerfile == 'tf-gpu':
             pkg_files.append('tf.Dockerfile')
