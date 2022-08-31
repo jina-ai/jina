@@ -52,7 +52,7 @@ structure.
 
 
 ```{tip}
-In the wizard of `jina hub new`, you can choose from four Dockerfile templates: `cpu`, `tf-gpu`, `torch-gpu`, and `jax-cpu`.
+In the wizard of `jina hub new`, you can choose from four Dockerfile templates: `cpu`, `tf-gpu`, `torch-gpu`, and `jax-gpu`.
 ```
 
 
