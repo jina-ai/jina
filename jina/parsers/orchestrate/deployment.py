@@ -60,11 +60,3 @@ def mixin_base_deployment_parser(parser):
         default=False,
         help='If set, connect to deployment using tls encryption',
     )
-
-    gp.add_argument(
-        '--port-monitoring',
-        type=str,
-        default=str(helper.random_port()),
-        dest='port_monitoring',
-        help=f'The port on which the prometheus server is exposed, default is a random port between [49152, 65535]',
-    )

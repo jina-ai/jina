@@ -44,11 +44,11 @@ async def test_run_async_flow(
     protocol, mocker, flow_cls, return_responses, return_class
 ):
     r_val = mocker.Mock()
-    with flow_cls(
-        protocol=protocol, asyncio=True, return_responses=return_responses
-    ).add() as f:
+    with flow_cls(protocol=protocol, asyncio=True).add() as f:
         async for r in f.index(
-            from_ndarray(np.random.random([num_docs, 4])), on_done=r_val
+            from_ndarray(np.random.random([num_docs, 4])),
+            on_done=r_val,
+            return_responses=return_responses,
         ):
             assert isinstance(r, return_class)
     validate_callback(r_val, validate)

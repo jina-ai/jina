@@ -1,4 +1,5 @@
 import pytest
+
 from jina import Flow
 
 num_calls = 0
@@ -31,7 +32,7 @@ def test_single_import(patched_path_import):
 def test_single_import_metas(patched_path_import):
     flow = Flow().add(
         uses='ExecutorImportedOnce',
-        uses_metas=dict(py_modules=['executors/executor_fails_import_twice.py']),
+        py_modules=['executors/executor_fails_import_twice.py'],
     )
     with flow:
         pass

@@ -23,7 +23,6 @@ def Client(
     port: Optional[int] = None,
     protocol: Optional[str] = 'GRPC',
     proxy: Optional[bool] = False,
-    return_responses: Optional[bool] = False,
     tls: Optional[bool] = False,
     **kwargs
 ) -> Union[
@@ -41,7 +40,6 @@ def Client(
     :param port: The port of the Gateway, which the client should connect to.
     :param protocol: Communication protocol between server and client.
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
-    :param return_responses: If set, return results as List of Requests instead of a reduced DocArray.
     :param tls: If set, connect to gateway using tls encryption
     :return: the new Client object
 
@@ -86,7 +84,6 @@ def Client(
     :param port: The port of the Gateway, which the client should connect to.
     :param protocol: Communication protocol between server and client.
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
-    :param return_responses: If set, return results as List of Requests instead of a reduced DocArray.
     :param tls: If set, connect to gateway using tls encryption
     :return: the new Client object
 

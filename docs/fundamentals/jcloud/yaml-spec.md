@@ -330,9 +330,17 @@ executors:
 
 ### Lifetime
 
-A Flow that receives no traffic in 24 hours will be automatically deleted.
+A Flow that receives no traffic in 24 hours will be automatically deleted by default.
 
-To control the lifetime of a Flow, you can specify the `retention_days: x` parameter in the Flow yaml, which keeps the Flow alive for `x` days. After `x` days, it will be deleted automatically, *regardless* of the traffic.
+To ignore the lifetime reclaim policy of a Flow, you can use the `retention_days` parameter in the Flow yaml. `retention_days` will keep the flow alive for `x` days (0<x<365). flows is going to be removed after `x` days regardless of above reclaim policy. `-1` is to keep the flow alive regardless of the reclaim policy.
+
+```{note}
+- If {ref}`retention-days <retention-days>` argument configured as `x` (0<x<365). Flows will be removed after `retention-days`, regradless of the usage.
+
+- If {ref}`retention-days <retention-days>` argument configured as `-1`. Flows will not be removed, regradless of the usage.
+
+- If {ref}`retention-days <retention-days>` argument not configured, or set to `0`. We will detect if flows are idle daily, they will be terminated if they are not serving requests for the last 24hrs.
+```
 
 ```yaml
 jtype: Flow

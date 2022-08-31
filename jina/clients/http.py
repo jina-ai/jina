@@ -3,13 +3,17 @@ from jina.clients.mixin import (
     AsyncHealthCheckMixin,
     AsyncMutateMixin,
     AsyncPostMixin,
+    AsyncProfileMixin,
     HealthCheckMixin,
     MutateMixin,
     PostMixin,
+    ProfileMixin,
 )
 
 
-class HTTPClient(HTTPBaseClient, PostMixin, MutateMixin, HealthCheckMixin):
+class HTTPClient(
+    HTTPBaseClient, PostMixin, ProfileMixin, MutateMixin, HealthCheckMixin
+):
     """A client connecting to a Gateway using gRPC protocol.
 
     Instantiate this class through the :meth:`jina.Client` convenience method.
@@ -31,7 +35,11 @@ class HTTPClient(HTTPBaseClient, PostMixin, MutateMixin, HealthCheckMixin):
 
 
 class AsyncHTTPClient(
-    HTTPBaseClient, AsyncPostMixin, AsyncMutateMixin, AsyncHealthCheckMixin
+    HTTPBaseClient,
+    AsyncPostMixin,
+    AsyncMutateMixin,
+    AsyncProfileMixin,
+    AsyncHealthCheckMixin,
 ):
     """
     Asynchronous client connecting to a Gateway using HTTP protocol.

@@ -19,7 +19,8 @@ jobs:
         env:
           release_token: ${{ secrets.JINA_CORE_RELEASE_TOKEN }}
 
-  hub-integration: 
+  hub-integration:
+    needs: token-check
     uses: jina-ai/hub-integration/.github/workflows/main.yml@main
     with:
       actions: 'all'

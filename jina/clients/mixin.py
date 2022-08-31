@@ -1,3 +1,4 @@
+import time
 import warnings
 from functools import partialmethod
 from typing import TYPE_CHECKING, AsyncGenerator, Dict, List, Optional, Union
@@ -112,6 +113,91 @@ class AsyncHealthCheckMixin:
         return await self.client._dry_run(**kwargs)
 
 
+def _render_response_table(r, st, ed, show_table: bool = True):
+
+    from rich import print
+
+    elapsed = (ed - st) * 1000
+    route = r.routes
+    gateway_time = (
+        route[0].end_time.ToMilliseconds() - route[0].start_time.ToMilliseconds()
+    )
+    exec_time = {}
+
+    if len(route) > 1:
+        for r in route[1:]:
+            exec_time[r.executor] = (
+                r.end_time.ToMilliseconds() - r.start_time.ToMilliseconds()
+            )
+    network_time = elapsed - gateway_time
+    server_network = gateway_time - sum(exec_time.values())
+    from rich.table import Table
+
+    def make_table(_title, _time, _percent):
+        table = Table(show_header=False, box=None)
+        table.add_row(
+            _title, f'[b]{_time:.0f}[/b]ms', f'[dim]{_percent * 100:.0f}%[/dim]'
+        )
+        return table
+
+    from rich.tree import Tree
+
+    t = Tree(make_table('Roundtrip', elapsed, 1))
+    t.add(make_table('Client-server network', network_time, network_time / elapsed))
+    t2 = t.add(make_table('Server', gateway_time, gateway_time / elapsed))
+    t2.add(
+        make_table(
+            'Gateway-executors network', server_network, server_network / gateway_time
+        )
+    )
+    for _name, _time in exec_time.items():
+        t2.add(make_table(_name, _time, _time / gateway_time))
+
+    if show_table:
+        print(t)
+    return {
+        'Roundtrip': elapsed,
+        'Client-server network': network_time,
+        'Server': gateway_time,
+        'Gateway-executors network': server_network,
+        **exec_time,
+    }
+
+
+class ProfileMixin:
+    """The Profile Mixin for Client and Flow to expose `profile` API"""
+
+    def profiling(self, show_table: bool = True) -> Dict[str, float]:
+        """Profiling a single query's roundtrip including network and computation latency. Results is summarized in a Dict.
+
+        :param show_table: whether to show the table or not.
+        :return: the latency report in a dict.
+        """
+        from jina import Document
+
+        st = time.perf_counter()
+        r = self.client.post('/', Document, return_responses=True)
+        ed = time.perf_counter()
+        return _render_response_table(r[0], st, ed, show_table=show_table)
+
+
+class AsyncProfileMixin:
+    """The Profile Mixin for Client and Flow to expose `profile` API"""
+
+    async def profiling(self, show_table: bool = True) -> Dict[str, float]:
+        """Profiling a single query's roundtrip including network and computation latency. Results is summarized in a Dict.
+
+        :param show_table: whether to show the table or not.
+        :return: the latency report in a dict.
+        """
+        from jina import Document
+
+        st = time.perf_counter()
+        async for r in self.client.post('/', Document, return_responses=True):
+            ed = time.perf_counter()
+            return _render_response_table(r, st, ed, show_table=show_table)
+
+
 class PostMixin:
     """The Post Mixin class for Client and Flow"""
 
@@ -152,15 +238,6 @@ class PostMixin:
         """
 
         c = self.client
-
-        if c.args.return_responses and not return_responses:
-            warnings.warn(
-                'return_responses was set in the Client constructor. Therefore, we are overriding the `.post()` input '
-                'parameter `return_responses`. This argument will be deprecated from the `constructor` '
-                'soon. We recommend passing `return_responses` to the `post` method.'
-            )
-            return_responses = True
-
         c.show_progress = show_progress
         c.continue_on_error = continue_on_error
 
@@ -239,15 +316,6 @@ class AsyncPostMixin:
             ``target_executor`` uses ``re.match`` for checking if the pattern is matched. ``target_executor=='foo'`` will match both deployments with the name ``foo`` and ``foo_what_ever_suffix``.
         """
         c = self.client
-
-        if c.args.return_responses and not return_responses:
-            warnings.warn(
-                'return_responses was set in the Client constructor. Therefore, we are overriding the `.post()` input '
-                'parameter `return_responses`. This argument will be deprecated from the `constructor` '
-                'soon. We recommend passing `return_responses` to the `post` method.'
-            )
-            return_responses = True
-
         c.show_progress = show_progress
         c.continue_on_error = continue_on_error
 

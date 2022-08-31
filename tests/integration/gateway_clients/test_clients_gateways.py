@@ -219,11 +219,13 @@ def create_runtime(
 def client_send(client_id: int, port: int, protocol: str):
     from jina.clients import Client
 
-    c = Client(protocol=protocol, port=port, return_responses=True)
+    c = Client(protocol=protocol, port=port)
 
     # send requests
     return c.post(
-        on='/', inputs=DocumentArray([Document(text=f'client{client_id}-Request')])
+        on='/',
+        inputs=DocumentArray([Document(text=f'client{client_id}-Request')]),
+        return_responses=True,
     )
 
 

@@ -148,9 +148,8 @@ In a new file called `my-exec.yml` we type:
 
 ```yaml
 jtype: MyExecutor
-metas:
-  py_modules:
-    - exec.py
+py_modules:
+  - exec.py
 ```
 
 This simply points Jina to our file and Executor class.
