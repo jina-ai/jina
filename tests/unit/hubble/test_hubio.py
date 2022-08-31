@@ -824,7 +824,7 @@ def test_new_with_arguments(
         temp.append(confirm_advance_configuration)
 
     if add_dockerfile:
-        _args_list.append('--add-dockerfile')
+        _args_list.extend(['--dockerfile', 'cpu'])
     else:
         temp.append(confirm_add_docker)
 

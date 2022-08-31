@@ -143,7 +143,7 @@ Here are some Dockerfile templates for you to choose from:
                 )
             )
 
-            is_dockerfile = self.args.add_dockerfile or Prompt.ask(
+            is_dockerfile = self.args.dockerfile or Prompt.ask(
                 ':grey_question: Select how you want to generate the [bold]Dockerfile[/bold] for this Executor?',
                 choices=['cpu', 'torch-gpu', 'tf-gpu', 'none'],
                 default='cpu',
