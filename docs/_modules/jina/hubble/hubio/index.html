@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/hubble/hubio.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
-        <title>jina.hubble.hubio - Jina 3.8.1 documentation</title>
+        <title>jina.hubble.hubio - Jina 3.8.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -124,7 +124,13 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-
+<div class="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/288131091/?isFirstPublish=true">Learn more about how to build a Discord bot on Jina's platform on September 13th at 18:00 CET together with Peter Willemsen</a>
+     
+    </aside>
+</div>
 
 <div class="page">
     <header class="mobile-header">
@@ -140,7 +146,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.8.1 documentation</div>
+                <div class="brand">Jina 3.8.2 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -475,13 +481,49 @@
         <span class="n">exec_keywords</span> <span class="o">=</span> <span class="s1">&#39;{{}}&#39;</span>
         <span class="n">exec_url</span> <span class="o">=</span> <span class="s1">&#39;{{}}&#39;</span>
 
-        <span class="n">is_dockerfile</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">is_dockerfile</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">advance_configuration</span> <span class="ow">or</span> <span class="n">Confirm</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span>
             <span class="s1">&#39;[green]That</span><span class="se">\&#39;</span><span class="s1">s all we need to create an Executor![/green]</span><span class="se">\n</span><span class="s1">&#39;</span>
-            <span class="s1">&#39;:grey_question: Or do you want to proceed to advanced configuration&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;:grey_question: Or do you want to proceed to advanced configuration [dim](GPU support, meta information on Hub, etc.)[/]&#39;</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">Panel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+                    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">[bold]Dockerfile[/bold] describes how this executor will be built. It is useful when</span>
+<span class="sd">your executor has non-trivial dependencies or must be run under certain environment.</span>
+
+<span class="sd">- If [bold]Dockerfile[/bold] is not given, Jina Cloud automatically generates one.</span>
+<span class="sd">- If [bold]Dockerfile[/bold] is provided by you, then Jina Cloud will respect it when building the Executor.</span>
+
+<span class="sd">Here are some Dockerfile templates for you to choose from:</span>
+<span class="sd">- [b]cpu[/b]: CPU-only executor with Jina as base image;</span>
+<span class="sd">- [b]torch-gpu[/b]: GPU enabled executor with PyTorch as the base image;</span>
+<span class="sd">- [b]tf-gpu[/b]: GPU enabled executor with Tensorflow as the base image;</span>
+<span class="sd">- [b]jax-gpu[/b]: GPU enabled executor with JAX installed.</span>
+<span class="sd">&#39;&#39;&#39;</span><span class="p">,</span>
+                    <span class="n">title</span><span class="o">=</span><span class="s1">&#39;:package: [bold]Dockerfile[/bold]&#39;</span><span class="p">,</span>
+                    <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">is_dockerfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">dockerfile</span> <span class="ow">or</span> <span class="n">Prompt</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span>
+                <span class="s1">&#39;:grey_question: Select how you want to generate the [bold]Dockerfile[/bold] for this Executor?&#39;</span><span class="p">,</span>
+                <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span> <span class="s1">&#39;torch-gpu&#39;</span><span class="p">,</span> <span class="s1">&#39;tf-gpu&#39;</span><span class="p">,</span> <span class="s1">&#39;jax-gpu&#39;</span><span class="p">,</span> <span class="s1">&#39;none&#39;</span><span class="p">],</span>
+                <span class="n">default</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">Panel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+                    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Meta information helps other users to identify, search and reuse your Executor on Jina Cloud.</span>
+<span class="sd">&#39;&#39;&#39;</span><span class="p">,</span>
+                    <span class="n">title</span><span class="o">=</span><span class="s1">&#39;:name_badge: [bold]Meta Info[/bold]&#39;</span><span class="p">,</span>
+                    <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
             <span class="n">exec_description</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">description</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">description</span>
@@ -515,32 +557,18 @@
                 <span class="p">)</span>
             <span class="p">)</span>
 
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="n">Panel</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-                    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">[bold]Dockerfile[/bold] describes how this executor will be built. It is useful when</span>
-<span class="sd">your executor has non-trivial dependencies or must be run under certain environment.</span>
-
-<span class="sd">- If the [bold]Dockerfile[/bold] is missing, Jina automatically generates one for you.</span>
-<span class="sd">- If you provide one, then Jina will respect the given [bold]Dockerfile[/bold].&#39;&#39;&#39;</span><span class="p">,</span>
-                    <span class="n">title</span><span class="o">=</span><span class="s1">&#39;[Optional] [bold]Dockerfile[/bold]&#39;</span><span class="p">,</span>
-                    <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
-
-            <span class="n">is_dockerfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">add_dockerfile</span> <span class="ow">or</span> <span class="n">Confirm</span><span class="o">.</span><span class="n">ask</span><span class="p">(</span>
-                <span class="s1">&#39;:grey_question: Do you need to write your own [bold]Dockerfile[/bold] instead of the auto-generated one?&#39;</span><span class="p">,</span>
-                <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[green]That</span><span class="se">\&#39;</span><span class="s1">s all we need to create an Executor![/green]&#39;</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">mustache_repl</span><span class="p">(</span><span class="n">srcs</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">track</span><span class="p">(</span>
                 <span class="n">srcs</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Creating </span><span class="si">{</span><span class="n">exec_name</span><span class="si">}</span><span class="s1">...&#39;</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">srcs</span><span class="p">)</span>
             <span class="p">):</span>
+                <span class="n">dest</span> <span class="o">=</span> <span class="n">src</span>
+                <span class="k">if</span> <span class="n">dest</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.Dockerfile&#39;</span><span class="p">):</span>
+                    <span class="n">dest</span> <span class="o">=</span> <span class="s1">&#39;Dockerfile&#39;</span>
                 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
                     <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__resources_path__</span><span class="p">,</span> <span class="s1">&#39;executor-template&#39;</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
-                <span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exec_path</span><span class="p">,</span> <span class="n">src</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fpw</span><span class="p">:</span>
+                <span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exec_path</span><span class="p">,</span> <span class="n">dest</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fpw</span><span class="p">:</span>
                     <span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
                         <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;{{exec_name}}&#39;</span><span class="p">,</span> <span class="n">exec_name</span><span class="p">)</span>
@@ -563,8 +591,16 @@
             <span class="s1">&#39;config.yml&#39;</span><span class="p">,</span>
         <span class="p">]</span>
 
-        <span class="k">if</span> <span class="n">is_dockerfile</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_dockerfile</span> <span class="o">==</span> <span class="s1">&#39;cpu&#39;</span><span class="p">:</span>
             <span class="n">pkg_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Dockerfile&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">is_dockerfile</span> <span class="o">==</span> <span class="s1">&#39;torch-gpu&#39;</span><span class="p">:</span>
+            <span class="n">pkg_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;torch.Dockerfile&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">is_dockerfile</span> <span class="o">==</span> <span class="s1">&#39;jax-gpu&#39;</span><span class="p">:</span>
+            <span class="n">pkg_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;torch.Dockerfile&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">is_dockerfile</span> <span class="o">==</span> <span class="s1">&#39;tf-gpu&#39;</span><span class="p">:</span>
+            <span class="n">pkg_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;tf.Dockerfile&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">is_dockerfile</span> <span class="o">!=</span> <span class="s1">&#39;none&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown Dockerfile type: </span><span class="si">{</span><span class="n">is_dockerfile</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="n">mustache_repl</span><span class="p">(</span><span class="n">pkg_files</span><span class="p">)</span>
 
@@ -585,11 +621,10 @@
                     <span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
 <span class="s1">jtype: </span><span class="si">{</span><span class="n">exec_name</span><span class="si">}</span><span class="s1"></span>
 <span class="s1">with:</span>
-<span class="s1">    foo: 1</span>
-<span class="s1">    bar: hello</span>
+<span class="s1">  foo: 1</span>
+<span class="s1">  bar: hello</span>
 <span class="s1">py_modules:</span>
-<span class="s1">    - executor.py</span>
-<span class="s1">                &#39;&#39;&#39;</span><span class="p">,</span>
+<span class="s1">  - executor.py&#39;&#39;&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;yaml&#39;</span><span class="p">,</span>
                     <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;monokai&#39;</span><span class="p">,</span>
                     <span class="n">line_numbers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -601,7 +636,7 @@
             <span class="p">),</span>
         <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">is_dockerfile</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_dockerfile</span> <span class="o">!=</span> <span class="s1">&#39;none&#39;</span><span class="p">:</span>
             <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                 <span class="s1">&#39;Dockerfile&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;The Dockerfile describes how this executor will be built.&#39;</span><span class="p">,</span>
@@ -640,7 +675,7 @@
 
         <span class="n">p0</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span>
             <span class="n">Syntax</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;cd </span><span class="si">{</span><span class="n">exec_path</span><span class="si">}</span><span class="se">\n</span><span class="s1">ls&#39;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">&#39;ls </span><span class="si">{</span><span class="n">exec_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;console&#39;</span><span class="p">,</span>
                 <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;monokai&#39;</span><span class="p">,</span>
                 <span class="n">line_numbers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -658,6 +693,19 @@
             <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
 
+        <span class="n">p12</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span>
+            <span class="n">Syntax</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;jina executor --uses </span><span class="si">{</span><span class="n">exec_path</span><span class="si">}</span><span class="s1">/config.yml&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;console&#39;</span><span class="p">,</span>
+                <span class="n">theme</span><span class="o">=</span><span class="s1">&#39;monokai&#39;</span><span class="p">,</span>
+                <span class="n">line_numbers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">word_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;3. Test the Executor locally&#39;</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span>
+            <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
         <span class="n">p2</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span>
             <span class="n">Syntax</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;jina hub push </span><span class="si">{</span><span class="n">exec_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
@@ -666,14 +714,13 @@
                 <span class="n">line_numbers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">word_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="p">),</span>
-            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;3. Share it to Jina Hub&#39;</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;4. Share it to Jina Hub&#39;</span><span class="p">,</span>
             <span class="n">width</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span>
             <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">final_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">p0</span><span class="p">)</span>
-        <span class="n">final_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
-        <span class="n">final_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_p</span> <span class="ow">in</span> <span class="p">[</span><span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p12</span><span class="p">,</span> <span class="n">p2</span><span class="p">]:</span>
+            <span class="n">final_table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="n">_p</span><span class="p">)</span>
 
         <span class="n">p</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span>
             <span class="n">final_table</span><span class="p">,</span>
@@ -1345,7 +1392,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 30, 2022</div>
+                            Last updated on Aug 31, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
