@@ -26,7 +26,7 @@ MyExecutor/
 └── executor.py
 ```
 
-- `config.yml` is the Executor's configuration file, where you can define **__init__** arguments using **with** keyword. You can also define manifest annotations relevant to the executor, for getting better exposer on Jina Hub. {ref}`It's configuration can be found here<config-yaml>`.
+- `config.yml` is the Executor's configuration file, where you can define **__init__** arguments using **with** keyword. You can also define meta annotations relevant to the executor, for getting better exposer on Jina Hub. {ref}`It's configuration can be found here<config-yaml>`.
 - `requirements.txt` describes the Executor's Python dependencies.
 - `executor.py` should contain your Executor's main logic.
 - `README.md` should describe how to use your Executor.
@@ -53,6 +53,6 @@ structure.
   Hub executors are version-agnostic. When you pull an Executor from Hub, Hubble will always select the right Jina version for you. No worries about Jina version upgrade!
 
 
-* Fill in `manifest` correctly. 
+* Fill in `metas` correctly. 
 
-  **Manifest** information you include in `config.yml` will be displayed on our website. Want to make your Executor eye-catching on our website? Fill all `manifest` fields in `config.yml` with heart & love! {ref}`Its specification can be found here<config.yml>`.
+  Information you include under the `metas` key, in `config.yml`, will be displayed on our website. Want to make your Executor eye-catching on our website? Fill all `metas` fields in `config.yml` with heart & love! {ref}`Its specification can be found here<config.yml>`.

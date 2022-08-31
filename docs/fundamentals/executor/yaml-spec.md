@@ -42,17 +42,8 @@ List of strings defining the Python dependencies of the Executor. Most notably t
 ### `metas`
 Collection containing meta information about the Executor.
 
-- **`name`**: String that defines the name of the Executor.
-- **`description`**: String that describes the Executor.
+Your executor will also be annoted with this information when publishing to Jina Hub. To get better appeal on Jina Hub, you may want to carefully set the `metas` fields to the correct values:
 
-### `manifest`
-Optional collection containing meta information about the Executor relevant to Jina Hub. 
-
-When publishing an executor (`jina hub push ...`), your executor will be annoted with this information so that it can be better managed by the Hub system.
-
-To get better appeal on Jina Hub, you may want to carefully set the manifest fields to the correct values:
-
-- **`manifest_version`**: The version of the manifest protocol.
 - **`name`**: Human-readable name of the Executor.
 - **`description`**: Human-readable description of the Executor. 
 - **`url`**: URL of where to find more information about the Executor, normally a GitHub repo URL.
