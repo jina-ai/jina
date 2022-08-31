@@ -109,6 +109,6 @@ Defaults to retaining whatever type is returned by the Executor.
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',
-        help="Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {grpc.max_send_message_length': -1}",
+        help="Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}",
         default=None,
     )
