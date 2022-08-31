@@ -12,9 +12,8 @@ When you are only working with a single python file (let's call it `my_executor.
 
 ```yaml
 jtype: MyExecutor
-metas:
-  py_modules:
-    - my_executor.py
+py_modules:
+  - my_executor.py
 ```
 
 ## Multiple Python files + YAML
@@ -71,9 +70,8 @@ Finally, the contents of `config.yml` - notice that only the `executor/__init__.
 
 ```yaml
 jtype: MyExecutor
-metas:
-  py_modules:
-    - executor/__init__.py
+py_modules:
+  - executor/__init__.py
 ```
 
 This was a relatively simple example, but this way of structuring python modules works for any python package structure, however complex. Consider this slightly more complicated example

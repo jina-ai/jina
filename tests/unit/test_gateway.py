@@ -29,9 +29,8 @@ def test_gateway_concurrency(protocol, reraise):
                 durations=durations,
                 index=index,
             )
-            results = Client(port=port, protocol=protocol, return_responses=True).index(
-                inputs=(Document() for _ in range(256)),
-                _size=16,
+            results = Client(port=port, protocol=protocol).index(
+                inputs=(Document() for _ in range(256)), _size=16, return_responses=True
             )
             assert len(results) > 0
             for result in results:

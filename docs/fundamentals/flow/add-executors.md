@@ -81,12 +81,12 @@ with f:
 ````{admonition} Hint: Load multiple Executors from the same module
 :class: hint
 
-You can override the `metas` attribute for all Executors in a Flow. This allows you to specify a single Python module
+You can override the `py_modules` attribute for all Executors in a Flow. This allows you to specify a single Python module
 from which you can then load all of your Executors, without having to specify the module individually for each Executor:
 
 ```yaml
 jtype: Flow
-metas:
+with:
   py_modules:
     - executors.py
 executors:
@@ -311,10 +311,10 @@ from jina import Flow
 with Flow().add(
     uses='MyExecutor',
     uses_with={"parameter_1": "foo", "parameter_2": "bar"},
+    py_modules=["executor.py"],
     uses_metas={
         "name": "MyExecutor",
         "description": "MyExecutor does a thing to the stuff in your Documents",
-        "py_modules": ["executor.py"],
     },
     uses_requests={"/index": "my_index", "/search": "my_search", "/random": "foo"},
     workspace="some_custom_path",
@@ -326,9 +326,9 @@ with Flow().add(
 - `uses_metas` is a key-value map that defines some {ref}`internal attributes<executor-metas>` of the Executor. It contains the following fields:
     - `name` is a string that defines the name of the executor;
     - `description` is a string that defines the description of this executor. It will be used in automatic docs UI;
-    - `py_modules` is a list of strings that defines the Python dependencies of the executor;
 - `uses_requests` is a key-value map that defines the {ref}`mapping from endpoint to class method<executor-requests>`. Useful if one needs to overwrite the default endpoint-to-method mapping defined in the Executor python implementation.
 - `workspace` is a string value that defines the {ref}`workspace <executor-workspace>`.
+- `py_modules` is a list of strings that defines the Python dependencies of the executor;
 
 
 ### Set `metas` via `uses_metas`

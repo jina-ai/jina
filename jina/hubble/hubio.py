@@ -230,12 +230,12 @@ with:
     foo: 1
     bar: hello
 metas:
-    py_modules:
-        - executor.py
     name: {exec_name}
     description: {exec_description if exec_description != '{{}}' else 'None'}
     url: {exec_url if exec_url != '{{}}' else 'None'}
     keywords: {exec_keywords if exec_keywords != '{{}}' else 'None'}
+py_modules:
+    - executor.py
                 ''',
                     'yaml',
                     theme='monokai',

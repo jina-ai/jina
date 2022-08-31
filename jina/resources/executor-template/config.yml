@@ -1,8 +1,8 @@
 jtype: {{exec_name}}
 metas:
-  py_modules:
-    - executor.py
   name: {{exec_name}}
   description: {{exec_description}}
   url: {{exec_url}}
   keywords: {{exec_keywords}}
+py_modules:
+  - executor.py

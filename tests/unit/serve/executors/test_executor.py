@@ -80,9 +80,8 @@ def test_executor_with_pymodule_path():
         ex = Executor.load_config(
             '''
         jtype: BaseExecutor
-        metas:
-            py_modules:
-                - jina.no_valide.executor
+        py_modules:
+            - jina.no_valide.executor
         '''
         )
 
@@ -91,9 +90,8 @@ def test_executor_with_pymodule_path():
     jtype: MyExecutor
     with:
         bar: 123
-    metas:
-        py_modules:
-            - unit.serve.executors.dummy_executor
+    py_modules:
+        - unit.serve.executors.dummy_executor
     '''
     )
     assert ex.bar == 123
