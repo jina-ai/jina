@@ -93,13 +93,12 @@ class Wait5s(Executor):
         time.sleep(5)
 
 
-async def run_async_flow_5s(protocol):
-    with Flow(protocol=protocol, asyncio=True, timeout_send=6000).add(uses=Wait5s) as f:
-        async for r in f.index(
-            from_ndarray(np.random.random([num_docs, 4])),
-            on_done=validate,
-        ):
-            assert isinstance(r, DocumentArray)
+async def run_async_flow_5s(flow):
+    async for r in flow.index(
+        from_ndarray(np.random.random([num_docs, 4])),
+        on_done=validate,
+    ):
+        assert isinstance(r, DocumentArray)
 
 
 async def sleep_print():
@@ -111,13 +110,18 @@ async def sleep_print():
 
 async def concurrent_main(protocol):
     # about 5s; but some dispatch cost, can't be just 5s, usually at <7s
-    await asyncio.gather(run_async_flow_5s(protocol), sleep_print())
+    with Flow(protocol=protocol, asyncio=True, timeout_send=6000).add(uses=Wait5s) as f:
+        with TimeContext('concurrent await') as t:
+            await asyncio.gather(run_async_flow_5s(f), sleep_print())
+    return t
 
 
 async def sequential_main(protocol):
     # about 10s; with some dispatch cost , usually at <12s
-    await run_async_flow_5s(protocol)
-    await sleep_print()
+    with Flow(protocol=protocol, asyncio=True, timeout_send=6000).add(uses=Wait5s) as f:
+        with TimeContext('sequential await') as t:
+            await run_async_flow_5s(f)
+            await sleep_print()
 
 
 @pytest.mark.slow
@@ -134,11 +138,10 @@ async def test_run_async_flow_other_task_sequential(protocol):
 @pytest.mark.asyncio
 @pytest.mark.parametrize('protocol', ['websocket', 'grpc', 'http'])
 async def test_run_async_flow_other_task_concurrent(protocol):
-    with TimeContext('concurrent await') as t:
-        await concurrent_main(protocol)
+    t = await concurrent_main(protocol)
 
-    # some dispatch cost, can't be just 5s, usually at 7~8s, but must <10s
-    assert t.duration < 10
+    # some dispatch cost, can't be just 5s, usually between 5 and 6, but must be <7s
+    assert t.duration < 7
 
 
 @pytest.mark.slow
