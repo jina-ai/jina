@@ -118,8 +118,10 @@ async def concurrent_main(protocol):
 
 async def sequential_main(protocol):
     # about 10s; with some dispatch cost , usually at <12s
-    await run_async_flow_5s(protocol)
-    await sleep_print()
+    with Flow(protocol=protocol, asyncio=True, timeout_send=6000).add(uses=Wait5s) as f:
+        with TimeContext('sequential await') as t:
+            await run_async_flow_5s(f)
+            await sleep_print()
 
 
 @pytest.mark.slow
