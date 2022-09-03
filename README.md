@@ -23,10 +23,10 @@ Jina is a MLOps framework that empowers anyone to build cross-modal and multi-mo
 
 <sup>
 <sub>
-<table>
+<table align=center>
 <thead>
   <tr>
-    <th colspan="3">Understand Jina better</th>
+    <th colspan="4">Understand Jina better</th>
   </tr>
 </thead>
 <tbody>
@@ -34,11 +34,13 @@ Jina is a MLOps framework that empowers anyone to build cross-modal and multi-mo
     <td><a href="https://docs.jina.ai/get-started/what-is-jina/" target="_blank" rel="noopener noreferrer">📗 What is Jina?</a></td>
     <td><a href="https://docs.jina.ai/get-started/what-is-jina/#relation-to-mlops" target="_blank" rel="noopener noreferrer">🔍 Is Jina MLOps for search?</a></td>
     <td><a href="https://docs.jina.ai/get-started/comparing-alternatives/" target="_blank" rel="noopener noreferrer">🆚 How Jina compares to alternatives?</a></td>
+    <td><a href="https://docs.jina.ai/get-started/what-is-jina/#why-cloud-native" target="_blank" rel="noopener noreferrer">☁️ What is Cloud-Native?</a></td>
   </tr>
   <tr>
     <td><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/" target="_blank" rel="noopener noreferrer">🔮 What is cross-modal and multimodal？</a></td>
     <td><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/#neural-search" target="_blank" rel="noopener noreferrer">🧬 What is neural search?</a></td>
     <td><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/#creative-ai" target="_blank" rel="noopener noreferrer">🎨 What is creative AI?</a></td>
+    <td></td>
   </tr>
 </tbody>
 </table>
