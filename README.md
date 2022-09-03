@@ -21,30 +21,6 @@
 
 Jina is a MLOps framework that empowers anyone to build cross-modal and multi-modal applications on the cloud. It uplifts a PoC into a production-ready service. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer. 
 
-<sup>
-<table align=center>
-<thead>
-  <tr>
-    <th colspan="4">Understand Jina better</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td><a href="https://docs.jina.ai/get-started/what-is-jina/" target="_blank" rel="noopener noreferrer">📗 What is Jina?</a></td>
-    <td><a href="https://docs.jina.ai/get-started/what-is-jina/#relation-to-mlops" target="_blank" rel="noopener noreferrer">🔍 Is Jina MLOps for search?</a></td>
-    <td><a href="https://docs.jina.ai/get-started/comparing-alternatives/" target="_blank" rel="noopener noreferrer">🆚 How Jina compares to alternatives?</a></td>
-    <td><a href="https://docs.jina.ai/get-started/what-is-jina/#why-cloud-native" target="_blank" rel="noopener noreferrer">☁️ What is Cloud-Native?</a></td>
-  </tr>
-  <tr>
-    <td><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/" target="_blank" rel="noopener noreferrer">🔮 What is cross-modal and multimodal？</a></td>
-    <td><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/#neural-search" target="_blank" rel="noopener noreferrer">🧬 What is neural search?</a></td>
-    <td><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/#creative-ai" target="_blank" rel="noopener noreferrer">🎨 What is creative AI?</a></td>
-    <td></td>
-  </tr>
-</tbody>
-</table>
-</sup>
-
 Applications built with Jina enjoy the following features out-of-the-box:
 
 🌌 **Universal**
@@ -74,7 +50,31 @@ Applications built with Jina enjoy the following features out-of-the-box:
 
 <!-- end jina-description -->
 
+
 ## [Documentation](https://docs.jina.ai)
+
+<table align=center>
+<thead>
+  <tr>
+    <th colspan="4">Understand Jina better</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td><a href="https://docs.jina.ai/get-started/what-is-jina/" target="_blank" rel="noopener noreferrer">📗 What is Jina?</a></td>
+    <td><a href="https://docs.jina.ai/get-started/what-is-jina/#relation-to-mlops" target="_blank" rel="noopener noreferrer">🔍 Is Jina MLOps for search?</a></td>
+    <td><a href="https://docs.jina.ai/get-started/comparing-alternatives/" target="_blank" rel="noopener noreferrer">🆚 How Jina compares to alternatives?</a></td>
+    <td><a href="https://docs.jina.ai/get-started/what-is-jina/#why-cloud-native" target="_blank" rel="noopener noreferrer">☁️ What is Cloud-Native?</a></td>
+  </tr>
+  <tr>
+    <td><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/" target="_blank" rel="noopener noreferrer">🔮 What is cross-modal and multimodal？</a></td>
+    <td><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/#neural-search" target="_blank" rel="noopener noreferrer">🧬 What is neural search?</a></td>
+    <td><a href="https://docs.jina.ai/get-started/what-is-cross-modal-multi-modal/#creative-ai" target="_blank" rel="noopener noreferrer">🎨 What is creative AI?</a></td>
+    <td></td>
+  </tr>
+</tbody>
+</table>
+
 
 ## Install 
 
