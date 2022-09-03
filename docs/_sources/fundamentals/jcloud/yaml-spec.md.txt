@@ -267,9 +267,8 @@ jtype: Flow
 jcloud:
   gateway:
     resources:
-      requests:
-        memory: 800M
-        cpu: 0.4
+      memory: 800M
+      cpu: 0.4
 executors:
   - name: encoder
     uses: jinahub+docker://Encoder

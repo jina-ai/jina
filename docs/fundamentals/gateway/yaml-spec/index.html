@@ -454,7 +454,7 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">ANY</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uses</span></code></p></td>
-<td><p>The config of the executor, it could be one of the followings:<br>        * an Executor YAML file (.yml, .yaml, .jaml)<br>        * a Jina Hub Executor (must start with <code class="docutils literal notranslate"><span class="pre">jinahub://</span></code> or <code class="docutils literal notranslate"><span class="pre">jinahub+docker://</span></code>)<br>        * a docker image (must start with <code class="docutils literal notranslate"><span class="pre">docker://</span></code>)<br>        * the string literal of a YAML config (must start with <code class="docutils literal notranslate"><span class="pre">!</span></code> or <code class="docutils literal notranslate"><span class="pre">jtype:</span> </code>)<br>        * the string literal of a JSON config<br><br>        When use it under Python, one can use the following values additionally:<br>        - a Python dict that represents the config<br>        - a text file stream has <code class="docutils literal notranslate"><span class="pre">.read()</span></code> interface</p></td>
+<td><p>The config of the executor, it could be one of the followings:<br>        * the string literal of an Executor class name<br>        * an Executor YAML file (.yml, .yaml, .jaml)<br>        * a Jina Hub Executor (must start with <code class="docutils literal notranslate"><span class="pre">jinahub://</span></code> or <code class="docutils literal notranslate"><span class="pre">jinahub+docker://</span></code>)<br>        * a docker image (must start with <code class="docutils literal notranslate"><span class="pre">docker://</span></code>)<br>        * the string literal of a YAML config (must start with <code class="docutils literal notranslate"><span class="pre">!</span></code> or <code class="docutils literal notranslate"><span class="pre">jtype:</span> </code>)<br>        * the string literal of a JSON config<br><br>        When use it under Python, one can use the following values additionally:<br>        - a Python dict that represents the config<br>        - a text file stream has <code class="docutils literal notranslate"><span class="pre">.read()</span></code> interface</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">BaseExecutor</span></code></p></td>
 </tr>
@@ -498,48 +498,48 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">prefetch</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">grpc_server_options</span></code></p></td>
+<td><p>Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {‘grpc.max_send_message_length’: -1}</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">prefetch</span></code></p></td>
 <td><p>Number of requests fetched from the client before feeding into the first Executor. <br>    <br>    Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">1000</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">title</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">title</span></code></p></td>
 <td><p>The title of this HTTP server. It will be used in automatics docs such as Swagger UI.</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code></p></td>
 <td><p>The description of this HTTP server. It will be used in automatics docs such as Swagger UI.</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cors</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cors</span></code></p></td>
 <td><p>If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">no_debug_endpoints</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">no_debug_endpoints</span></code></p></td>
 <td><p>If set, <code class="docutils literal notranslate"><span class="pre">/status</span></code> <code class="docutils literal notranslate"><span class="pre">/post</span></code> endpoints are removed from HTTP interface.</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">no_crud_endpoints</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">no_crud_endpoints</span></code></p></td>
 <td><p>If set, <code class="docutils literal notranslate"><span class="pre">/index</span></code>, <code class="docutils literal notranslate"><span class="pre">/search</span></code>, <code class="docutils literal notranslate"><span class="pre">/update</span></code>, <code class="docutils literal notranslate"><span class="pre">/delete</span></code> endpoints are removed from HTTP interface.<br><br>        Any executor that has <code class="docutils literal notranslate"><span class="pre">&#64;requests(on=...)</span></code> bind with those values will receive data requests.</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">boolean</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">expose_endpoints</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">expose_endpoints</span></code></p></td>
 <td><p>A JSON string that represents a map from executor endpoints (<code class="docutils literal notranslate"><span class="pre">&#64;requests(on=...)</span></code>) to HTTP endpoints.</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uvicorn_kwargs</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uvicorn_kwargs</span></code></p></td>
 <td><p>Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server<br><br>More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">grpc_server_kwargs</span></code></p></td>
-<td><p>Dictionary of kwargs arguments that will be passed to the grpc server when starting the server # todo update</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">object</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
 </tr>
@@ -689,7 +689,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 31, 2022</div>
+                            Last updated on Sep 03, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -375,6 +375,7 @@
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span><span class="p">,</span> <span class="n">jina_pb2_grpc</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.asyncio</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.helper</span> <span class="kn">import</span> <span class="n">_get_grpc_server_options</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.request_handlers.data_request_handler</span> <span class="kn">import</span> <span class="n">DataRequestHandler</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
 
@@ -451,10 +452,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_grpc_server</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">server</span><span class="p">(</span>
-            <span class="n">options</span><span class="o">=</span><span class="p">[</span>
-                <span class="p">(</span><span class="s1">&#39;grpc.max_send_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;grpc.max_receive_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
-            <span class="p">]</span>
+            <span class="n">options</span><span class="o">=</span><span class="n">_get_grpc_server_options</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">grpc_server_options</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaSingleDataRequestRPCServicer_to_server</span><span class="p">(</span>
@@ -592,7 +590,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 31, 2022</div>
+                            Last updated on Sep 03, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

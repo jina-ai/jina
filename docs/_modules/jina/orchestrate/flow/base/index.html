@@ -517,7 +517,7 @@
         <span class="n">floating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="n">graph_description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
-        <span class="n">grpc_server_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">grpc_server_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span>
         <span class="n">host_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span>
         <span class="n">log_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -567,7 +567,7 @@
 <span class="sd">        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.</span>
 <span class="sd">        :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.</span>
 <span class="sd">        :param graph_description: Routing graph for the gateway</span>
-<span class="sd">        :param grpc_server_kwargs: Dictionary of kwargs arguments that will be passed to the grpc server when starting the server # todo update</span>
+<span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
 <span class="sd">        :param host_in: The host address for binding to, by default it is 0.0.0.0</span>
 <span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
@@ -625,6 +625,7 @@
 <span class="sd">        :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</span>
 <span class="sd">        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
 <span class="sd">        :param uses: The config of the executor, it could be one of the followings:</span>
+<span class="sd">                  * the string literal of an Executor class name</span>
 <span class="sd">                  * an Executor YAML file (.yml, .yaml, .jaml)</span>
 <span class="sd">                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)</span>
 <span class="sd">                  * a docker image (must start with `docker://`)</span>
@@ -740,7 +741,7 @@
 <span class="sd">        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.</span>
 <span class="sd">        :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.</span>
 <span class="sd">        :param graph_description: Routing graph for the gateway</span>
-<span class="sd">        :param grpc_server_kwargs: Dictionary of kwargs arguments that will be passed to the grpc server when starting the server # todo update</span>
+<span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
 <span class="sd">        :param host_in: The host address for binding to, by default it is 0.0.0.0</span>
 <span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
@@ -798,6 +799,7 @@
 <span class="sd">        :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</span>
 <span class="sd">        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
 <span class="sd">        :param uses: The config of the executor, it could be one of the followings:</span>
+<span class="sd">                  * the string literal of an Executor class name</span>
 <span class="sd">                  * an Executor YAML file (.yml, .yaml, .jaml)</span>
 <span class="sd">                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)</span>
 <span class="sd">                  * a docker image (must start with `docker://`)</span>
@@ -1157,6 +1159,7 @@
         <span class="n">floating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">force_update</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">gpus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">grpc_server_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">host</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span>
         <span class="n">host_in</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span>
         <span class="n">install_requirements</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1217,6 +1220,7 @@
 <span class="sd">              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`</span>
 <span class="sd">              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`</span>
 <span class="sd">              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</span>
+<span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
 <span class="sd">        :param host_in: The host address for binding to, by default it is 0.0.0.0</span>
 <span class="sd">        :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local</span>
@@ -1274,6 +1278,7 @@
 <span class="sd">          - by default, `--uses` YAML file is always uploaded.</span>
 <span class="sd">          - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.</span>
 <span class="sd">        :param uses: The config of the executor, it could be one of the followings:</span>
+<span class="sd">                  * the string literal of an Executor class name</span>
 <span class="sd">                  * an Executor YAML file (.yml, .yaml, .jaml)</span>
 <span class="sd">                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)</span>
 <span class="sd">                  * a docker image (must start with `docker://`)</span>
@@ -1363,6 +1368,7 @@
 <span class="sd">              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`</span>
 <span class="sd">              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`</span>
 <span class="sd">              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</span>
+<span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
 <span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
 <span class="sd">        :param host_in: The host address for binding to, by default it is 0.0.0.0</span>
 <span class="sd">        :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local</span>
@@ -1420,6 +1426,7 @@
 <span class="sd">          - by default, `--uses` YAML file is always uploaded.</span>
 <span class="sd">          - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.</span>
 <span class="sd">        :param uses: The config of the executor, it could be one of the followings:</span>
+<span class="sd">                  * the string literal of an Executor class name</span>
 <span class="sd">                  * an Executor YAML file (.yml, .yaml, .jaml)</span>
 <span class="sd">                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)</span>
 <span class="sd">                  * a docker image (must start with `docker://`)</span>
@@ -2772,7 +2779,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 31, 2022</div>
+                            Last updated on Sep 03, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

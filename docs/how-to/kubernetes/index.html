@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.8.2 Documentation" />
   
-<meta property="og:description" content="Deploying a Flow in Kubernetes is the recommended way of using Jina in production. Since a Flow is composed of Executor s which can run in different runtimes depending on how you want to deploy your Flow, Kubernetes can easily take over the lifetime management of Executors. In general, Jina follo..." />
+<meta property="og:description" content="Deploy a Flow to JCloud JCloud is a free CPU/GPU hosting platform for Jina projects. Deploying a Flow in Kubernetes is the recommended way of using Jina in production. Since a Flow is composed of Executor s which can run in different runtimes depending on how you want to deploy your Flow, Kuberne..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -396,6 +396,24 @@
                 <article role="main">
                     <section id="deploy-with-kubernetes">
 <span id="kubernetes"></span><h1>Deploy with Kubernetes<a class="headerlink" href="#deploy-with-kubernetes" title="Permalink to this heading">#</a></h1>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>This guide is designed for users who want to <strong>manually</strong> deploy Jina project on Kubernetes.</p>
+<p>If you are looking for a <strong>one-click</strong> solution to deploy and host Jina, meanwhile leveraging cloud-native stack such as Kubernetes, Prometheus and Grafana, <strong>without worrying about provisioning</strong>, please check out <a class="reference internal" href="../../fundamentals/jcloud/#jcloud"><span class="std std-ref">JCloud</span></a>.</p>
+</div>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover color-gradient-card-2 docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-cpu" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M8.75 8a.75.75 0 00-.75.75v6.5c0 .414.336.75.75.75h6.5a.75.75 0 00.75-.75v-6.5a.75.75 0 00-.75-.75h-6.5zm.75 6.5v-5h5v5h-5z"></path><path fill-rule="evenodd" d="M15.25 1a.75.75 0 01.75.75V4h2.25c.966 0 1.75.784 1.75 1.75V8h2.25a.75.75 0 010 1.5H20v5h2.25a.75.75 0 010 1.5H20v2.25A1.75 1.75 0 0118.25 20H16v2.25a.75.75 0 01-1.5 0V20h-5v2.25a.75.75 0 01-1.5 0V20H5.75A1.75 1.75 0 014 18.25V16H1.75a.75.75 0 010-1.5H4v-5H1.75a.75.75 0 010-1.5H4V5.75C4 4.784 4.784 4 5.75 4H8V1.75a.75.75 0 011.5 0V4h5V1.75a.75.75 0 01.75-.75zm3 17.5a.25.25 0 00.25-.25V5.75a.25.25 0 00-.25-.25H5.75a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h12.5z"></path></svg> Deploy a Flow to JCloud</div>
+<p class="sd-card-text">JCloud is a free CPU/GPU hosting platform for Jina projects.</p>
+</div>
+<span class="sd-stretched-link"></span></div>
+</div>
+</div>
+</div>
 <p>Deploying a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> in Kubernetes is the recommended way of using Jina in production.</p>
 <p>Since a <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is composed of <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s which can run in different runtimes depending on how you want to deploy
 your Flow, Kubernetes can easily take over the lifetime management of Executors.</p>
@@ -405,10 +423,6 @@ This means that while Jina generates configurations for you that run out of the 
 always see them as just a starting point to get you off the ground.</p>
 <p>In this how-to you will go through how to deploy a simple Flow using Kubernetes, how to customize the Kubernetes configuration
 to your needs, and how to scale Executors using replicas and shards.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Do you know <a class="reference internal" href="../../fundamentals/jcloud/#jcloud"><span class="std std-ref">JCloud</span></a> simplifies Flow deployment and hosting? It saves all the trouble for you so you can focus on what really matters!</p>
-</div>
 <section id="preliminaries">
 <h2>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this heading">#</a></h2>
 <p>To follow along with this how-to, you will need access to a Kubernetes cluster.</p>
@@ -726,7 +740,7 @@ Finally, it prints the uri of the closest matches.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 31, 2022</div>
+                            Last updated on Sep 03, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

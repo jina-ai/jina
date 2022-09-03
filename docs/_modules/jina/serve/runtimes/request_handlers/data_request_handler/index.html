@@ -462,10 +462,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="si">}</span><span class="s1"> is successfully loaded!&#39;</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="n">BadConfigSource</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;fail to load config from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="si">}</span><span class="s1">, if you are using docker image for --uses, &#39;</span>
-                <span class="sa">f</span><span class="s1">&#39;please use `docker://YOUR_IMAGE_NAME`&#39;</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;fail to load config from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">raise</span>
         <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;fail to load file dependency&#39;</span><span class="p">)</span>
@@ -733,7 +730,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 31, 2022</div>
+                            Last updated on Sep 03, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

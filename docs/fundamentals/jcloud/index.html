@@ -463,6 +463,14 @@ jc -h
 </section>
 <section id="a-project-folder">
 <h4>A project folder<a class="headerlink" href="#a-project-folder" title="Permalink to this heading">#</a></h4>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The best practice of creating a JCloud project is to use</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jc</span> <span class="n">new</span>
+</pre></div>
+</div>
+<p>This ensures the correct project structure accepted by JCloud.</p>
+</div>
 <p>Just like a regular Python project, you can have sub-folders of Executor implementations; and a <code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> on the top-level to connect all Executors together.</p>
 <p>You can create an example local project using <code class="docutils literal notranslate"><span class="pre">jc</span> <span class="pre">new</span> <span class="pre">hello</span></code>. The default structure looks like:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>hello/
@@ -530,10 +538,9 @@ the deletion, to make it non-interactive to better suit your use case, set below
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">JCLOUD_NO_INTERACTIVE</span><span class="o">=</span><span class="m">1</span>
 </pre></div>
 </div>
-<p>(jcloud-flow-status)</p>
 </section>
 <section id="get-status">
-<h3>Get status<a class="headerlink" href="#get-status" title="Permalink to this heading">#</a></h3>
+<span id="jcloud-flow-status"></span><h3>Get status<a class="headerlink" href="#get-status" title="Permalink to this heading">#</a></h3>
 <p>To get the status of a Flow:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc status 15937a10bd
 </pre></div>
@@ -545,7 +552,7 @@ the deletion, to make it non-interactive to better suit your use case, set below
 <section id="monitoring">
 <h3>Monitoring<a class="headerlink" href="#monitoring" title="Permalink to this heading">#</a></h3>
 <p>Basic monitoring is provided to the Flows deployed on JCloud.</p>
-<p>To access the <a class="reference external" href="https://grafana.com/">Grafana</a> powered dashboard, get <code class="docutils literal notranslate"><span class="pre">{ref}</span> <span class="pre">the</span> <span class="pre">status</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">Flow</span> <span class="pre">&lt;jcloud-flow-status&gt;</span></code> first, at the bottom of the pane you should see the <code class="docutils literal notranslate"><span class="pre">dashboards</span></code> link. Visit the URL and you will find some basic metrics such as ‘Number of Request Gateway Received’ and ‘Time elapsed between receiving a request and sending back the response’:</p>
+<p>To access the <a class="reference external" href="https://grafana.com/">Grafana</a> powered dashboard, get <a class="reference internal" href="#jcloud-flow-status"><span class="std std-ref">the status of the Flow</span></a> first, at the bottom of the pane you should see the <code class="docutils literal notranslate"><span class="pre">dashboards</span></code> link. Visit the URL and you will find some basic metrics such as ‘Number of Request Gateway Received’ and ‘Time elapsed between receiving a request and sending back the response’:</p>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/monitoring.png"><img alt="../../_images/monitoring.png" src="../../_images/monitoring.png" style="width: 70%;" /></a>
 </figure>
@@ -662,7 +669,7 @@ the deletion, to make it non-interactive to better suit your use case, set below
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 31, 2022</div>
+                            Last updated on Sep 03, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

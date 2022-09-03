@@ -373,8 +373,9 @@
 <span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">PortAlreadyUsed</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_full_version</span><span class="p">,</span> <span class="n">is_port_free</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span><span class="p">,</span> <span class="n">jina_pb2_grpc</span>
-<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway</span> <span class="kn">import</span> <span class="n">GatewayRuntime</span>
 <span class="kn">from</span> <span class="nn">jina.serve.bff</span> <span class="kn">import</span> <span class="n">GatewayBFF</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway</span> <span class="kn">import</span> <span class="n">GatewayRuntime</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.helper</span> <span class="kn">import</span> <span class="n">_get_grpc_server_options</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.status</span> <span class="kn">import</span> <span class="n">StatusMessage</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GRPCGatewayRuntime&#39;</span><span class="p">]</span>
@@ -384,9 +385,9 @@
     <span class="sd">&quot;&quot;&quot;Gateway Runtime for gRPC.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize the runtime</span>
 <span class="sd">        :param args: args from CLI</span>
@@ -409,10 +410,7 @@
             <span class="k">raise</span> <span class="n">PortAlreadyUsed</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;port:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">server</span><span class="p">(</span>
-            <span class="n">options</span><span class="o">=</span><span class="p">[</span>
-                <span class="p">(</span><span class="s1">&#39;grpc.max_send_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;grpc.max_receive_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
-            <span class="p">]</span>
+            <span class="n">options</span><span class="o">=</span><span class="n">_get_grpc_server_options</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">grpc_server_options</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_async_setup_server</span><span class="p">()</span></div>
@@ -426,19 +424,23 @@
         <span class="n">deployments_addresses</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">deployments_addresses</span><span class="p">)</span>
         <span class="n">deployments_disable_reduce</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">deployments_disable_reduce</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">gateway_bff</span> <span class="o">=</span> <span class="n">GatewayBFF</span><span class="p">(</span><span class="n">graph_representation</span><span class="o">=</span><span class="n">graph_description</span><span class="p">,</span>
-                                      <span class="n">executor_addresses</span><span class="o">=</span><span class="n">deployments_addresses</span><span class="p">,</span>
-                                      <span class="n">graph_conditions</span><span class="o">=</span><span class="n">graph_conditions</span><span class="p">,</span>
-                                      <span class="n">deployments_disable_reduce</span><span class="o">=</span><span class="n">deployments_disable_reduce</span><span class="p">,</span>
-                                      <span class="n">timeout_send</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span><span class="p">,</span>
-                                      <span class="n">retries</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">retries</span><span class="p">,</span>
-                                      <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span>
-                                      <span class="n">runtime_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                                      <span class="n">prefetch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">prefetch</span><span class="p">,</span>
-                                      <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-                                      <span class="n">metrics_registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gateway_bff</span> <span class="o">=</span> <span class="n">GatewayBFF</span><span class="p">(</span>
+            <span class="n">graph_representation</span><span class="o">=</span><span class="n">graph_description</span><span class="p">,</span>
+            <span class="n">executor_addresses</span><span class="o">=</span><span class="n">deployments_addresses</span><span class="p">,</span>
+            <span class="n">graph_conditions</span><span class="o">=</span><span class="n">graph_conditions</span><span class="p">,</span>
+            <span class="n">deployments_disable_reduce</span><span class="o">=</span><span class="n">deployments_disable_reduce</span><span class="p">,</span>
+            <span class="n">timeout_send</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span><span class="p">,</span>
+            <span class="n">retries</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">retries</span><span class="p">,</span>
+            <span class="n">compression</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">compression</span><span class="p">,</span>
+            <span class="n">runtime_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">prefetch</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">prefetch</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
+            <span class="n">metrics_registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
+        <span class="p">)</span>
 
-        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gateway_bff</span><span class="o">.</span><span class="n">_streamer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
+        <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaRPCServicer_to_server</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gateway_bff</span><span class="o">.</span><span class="n">_streamer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span>
+        <span class="p">)</span>
         <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaGatewayDryRunRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
         <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">add_JinaInfoRPCServicer_to_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">)</span>
 
@@ -473,7 +475,7 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">add_secure_port</span><span class="p">(</span><span class="n">bind_addr</span><span class="p">,</span> <span class="n">server_credentials</span><span class="p">)</span>
         <span class="k">elif</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssl_keyfile</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssl_certfile</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssl_keyfile</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssl_certfile</span>
         <span class="p">):</span>  <span class="c1"># if we have only ssl_keyfile and not ssl_certfile or vice versa</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;you can&#39;t pass a ssl_keyfile without a ssl_certfile and vice versa&quot;</span>
@@ -508,6 +510,7 @@
 <span class="sd">        :returns: the response request</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span>
+
         <span class="kn">from</span> <span class="nn">jina.clients.request</span> <span class="kn">import</span> <span class="n">request_generator</span>
         <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">DataInputType</span>
         <span class="kn">from</span> <span class="nn">jina.serve.executors</span> <span class="kn">import</span> <span class="n">__dry_run_endpoint__</span>
@@ -559,7 +562,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 31, 2022</div>
+                            Last updated on Sep 03, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

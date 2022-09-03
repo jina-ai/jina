@@ -96,6 +96,16 @@ jina flow --uses flow.yml
 
 #### A project folder
 
+````{tip}
+The best practice of creating a JCloud project is to use
+
+```
+jc new
+```
+
+This ensures the correct project structure accepted by JCloud.
+````
+
 Just like a regular Python project, you can have sub-folders of Executor implementations; and a `flow.yml` on the top-level to connect all Executors together.
 
 You can create an example local project using `jc new hello`. The default structure looks like:
@@ -186,7 +196,7 @@ the deletion, to make it non-interactive to better suit your use case, set below
 export JCLOUD_NO_INTERACTIVE=1
 ```
 
-(jcloud-flow-status)
+(jcloud-flow-status)=
 ### Get status
 
 To get the status of a Flow:
@@ -201,7 +211,7 @@ jc status 15937a10bd
 ### Monitoring
 Basic monitoring is provided to the Flows deployed on JCloud.
 
-To access the [Grafana](https://grafana.com/) powered dashboard, get `{ref} the status of the Flow <jcloud-flow-status>` first, at the bottom of the pane you should see the `dashboards` link. Visit the URL and you will find some basic metrics such as 'Number of Request Gateway Received' and 'Time elapsed between receiving a request and sending back the response':
+To access the [Grafana](https://grafana.com/) powered dashboard, get {ref}`the status of the Flow<jcloud-flow-status>` first, at the bottom of the pane you should see the `dashboards` link. Visit the URL and you will find some basic metrics such as 'Number of Request Gateway Received' and 'Time elapsed between receiving a request and sending back the response':
 
 ```{figure} monitoring.png
 :width: 70%

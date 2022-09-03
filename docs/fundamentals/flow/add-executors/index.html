@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.8.2 Documentation" />
   
-<meta property="og:description" content="A Flow orchestrates its Executor s as a graph and will send requests to all Executors in the desired order. Executors can be added with the add() method of the Flow or be listed in the yaml configuration of a Flow. When you start a Flow, it will check the configured Executors and starts instances..." />
+<meta property="og:description" content="A Flow orchestrates its Executor s as a graph and will send requests to all Executors in the order specified by add() or listed in a YAML file. When you start a Flow, the Executor will always be running in a separate process. Multiple Executors will be running in different processes. Multiprocess..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -396,124 +396,93 @@
                 <article role="main">
                     <section id="add-executors">
 <span id="flow-add-executors"></span><h1>Add Executors<a class="headerlink" href="#add-executors" title="Permalink to this heading">#</a></h1>
-<p>A <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> orchestrates its <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s as a graph and will send requests to all Executors in the desired order. Executors can be added with the <a class="reference internal" href="../../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> method of the Flow or be listed in the yaml configuration of a Flow. When you start a Flow, it will check the configured Executors and starts instances of these Executors accordingly. When adding Executors you have to define its type with the <code class="docutils literal notranslate"><span class="pre">uses</span></code> keyword. Executors can be used from various sources like code, docker images and the Hub:</p>
-<div class="tab-set docutils">
-<input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Python</label><div class="tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
-
-
-<span class="k">class</span> <span class="nc">FooExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;foo was here&#39;</span><span class="p">))</span>
-
-
-<span class="k">class</span> <span class="nc">BarExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;bar was here&#39;</span><span class="p">))</span>
-
-
-<span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">Flow</span><span class="p">()</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">FooExecutor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fooExecutor&#39;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">BarExecutor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;barExecutor&#39;</span><span class="p">)</span>
-<span class="p">)</span>  <span class="c1"># Create the empty Flow</span>
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># Using it as a Context Manager will start the Flow</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-        <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/search&#39;</span>
-    <span class="p">)</span>  <span class="c1"># This sends a request to the /search endpoint of the Flow</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">YAML</label><div class="tab-content docutils">
-<p><code class="docutils literal notranslate"><span class="pre">flow.yml</span></code>:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myexec1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FooExecutor</span><span class="w"></span>
-<span class="w">    </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec.py</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myexec2</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BarExecutor</span><span class="w"></span>
-<span class="w">    </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exec.py</span><span class="w"></span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">exec.py</span></code></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
-
-
-<span class="k">class</span> <span class="nc">FooExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;foo was here&#39;</span><span class="p">))</span>
-
-
-<span class="k">class</span> <span class="nc">BarExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;bar was here&#39;</span><span class="p">))</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">main.py</span></code></p>
+<p>A <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> orchestrates its <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s as a graph and will send requests to all Executors in the order specified by <a class="reference internal" href="../../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> or listed in <a class="reference internal" href="../yaml-spec/#flow-yaml-spec"><span class="std std-ref">a YAML file</span></a>.</p>
+<p>When you start a Flow, the Executor will always be running in a <strong>separate process</strong>. Multiple Executors will be running in <strong>different processes</strong>. Multiprocessing is the lowest level of separation when you run a Flow locally. When running a Flow on Kubernetes, Docker Swarm, <a class="reference internal" href="../../jcloud/#jcloud"><span class="std std-ref">JCloud</span></a>, different Executors are running in different containers, pods or instances.</p>
+<section id="id1">
+<h2>Add Executors<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<p>Executors can be added into a Flow via <a class="reference internal" href="../../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">&#39;flow.yml&#39;</span><span class="p">)</span>
-
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-        <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/search&#39;</span>
-    <span class="p">)</span>  <span class="c1"># This sends a request to the /search endpoint of the Flow</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">texts</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="hint admonition">
-<p class="admonition-title">Hint: Load multiple Executors from the same module</p>
-<p>You can override the <code class="docutils literal notranslate"><span class="pre">py_modules</span></code> attribute for all Executors in a Flow. This allows you to specify a single Python module
-from which you can then load all of your Executors, without having to specify the module individually for each Executor:</p>
+<p>This will add a “no-op” Executor called <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code> to the Flow.</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../../_images/no-op-flow.svg"><img alt="../../../_images/no-op-flow.svg" src="../../../_images/no-op-flow.svg" /></a>
+</figure>
+<p>To better identify and executor, you can change its name by passing the <code class="docutils literal notranslate"><span class="pre">name</span></code> parameter:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;myVeryFirstExecutor&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;secondIsBest&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<figure class="align-default">
+<a class="reference internal image-reference" href="../../../_images/named-flow.svg"><img alt="../../../_images/named-flow.svg" src="../../../_images/named-flow.svg" /></a>
+</figure>
+<p>The above Flow can be also defined via YAML:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">with</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executors.py</span><span class="w"></span>
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FooExecutor</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BarExecutor</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myVeryFirstExecutor</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secondIsBest</span><span class="w"></span>
 </pre></div>
 </div>
-<p>In this example, both <code class="docutils literal notranslate"><span class="pre">FooExecutor</span></code> and <code class="docutils literal notranslate"><span class="pre">BarExecutor</span></code> are defined inside of <code class="docutils literal notranslate"><span class="pre">executors.py</span></code>, and both will be located and loaded by the Flow.</p>
-</div>
-</div>
-</div>
-<p>The response of the Flow defined above is <code class="docutils literal notranslate"><span class="pre">['foo</span> <span class="pre">was</span> <span class="pre">here',</span> <span class="pre">'bar</span> <span class="pre">was</span> <span class="pre">here']</span></code>, because the request was first sent to FooExecutor and then to BarExecutor.</p>
-<section id="supported-executors">
-<h2>Supported Executors<a class="headerlink" href="#supported-executors" title="Permalink to this heading">#</a></h2>
-<p>As explained above, the type of <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> is defined by providing the <code class="docutils literal notranslate"><span class="pre">uses</span></code> keyword. The source of an Executor can be code, docker images or Hub images.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ExecutorClass</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">docs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;foo was here&#39;</span><span class="p">))</span>
-
-
-<span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">Flow</span><span class="p">()</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">ExecutorClass</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;executor1&#39;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinahub://TransformerTorchEncoder/&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;executor2&#39;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinahub+docker://TransformerTorchEncoder&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;executor3&#39;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;jinahub+sandbox://TransformerTorchEncoder&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;executor4&#39;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;docker://sentence-encoder&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;executor5&#39;</span><span class="p">)</span>
-    <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="s1">&#39;executor-config.yml&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;executor6&#39;</span><span class="p">)</span>
-<span class="p">)</span>
+<p>Save it as <code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> and run it via:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yml
 </pre></div>
 </div>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">executor1</span></code> will use <code class="docutils literal notranslate"><span class="pre">ExecutorClass</span></code> from code, and will be created as a separate process.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">executor2</span></code> will download the Executor class from Hub, and will be created as a separate process.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">executor3</span></code> will use an Executor docker image coming from the Hub, and will be created as a docker container of this image.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">executor4</span></code> will use a <a class="reference internal" href="../../../how-to/sandbox/#sandbox"><span class="std std-ref">Sandbox Executor</span></a> run by Hubble, in the cloud.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">executor5</span></code> will use a Docker image tagged as <code class="docutils literal notranslate"><span class="pre">sentence-encoder</span></code>, and will be created as a docker container of this image.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">executor6</span></code> will use an Executor configuration file defining the <span class="xref std std-ref">Executor YAML interface</span>, and will be created as a separate process.</p></li>
-</ul>
-<p>More complex Executors typically are used from Docker images or will be structured into separate Python modules.</p>
+<p>More Flow YAML specifications can be found in <a class="reference internal" href="../yaml-spec/#flow-yaml-spec"><span class="std std-ref">Flow YAML Specification</span></a>.</p>
+</section>
+<section id="define-executor-types-via-uses">
+<h2>Define Executor types via <code class="docutils literal notranslate"><span class="pre">uses</span></code><a class="headerlink" href="#define-executor-types-via-uses" title="Permalink to this heading">#</a></h2>
+<p>The type of <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> is defined by the <code class="docutils literal notranslate"><span class="pre">uses</span></code> keyword. <code class="docutils literal notranslate"><span class="pre">uses</span></code> accepts a wide range of Executor. Please also beware that some usages are not support on JCloud because of security reasons and their nature of facilitating local debugging.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Local Dev</p></th>
+<th class="head"><p>JCloud</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">.add(uses=...)</span></code></p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>✅</p></td>
+<td><p>❌</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ExecutorClass</span></code></p></td>
+<td><p>use <code class="docutils literal notranslate"><span class="pre">ExecutorClass</span></code> from the inline context.</p></td>
+</tr>
+<tr class="row-odd"><td><p>✅</p></td>
+<td><p>❌</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'my.py_modules.ExecutorClass'</span></code></p></td>
+<td><p>use <code class="docutils literal notranslate"><span class="pre">ExecutorClass</span></code> from <code class="docutils literal notranslate"><span class="pre">my.py_modules</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'executor-config.yml'</span></code></p></td>
+<td><p>use an Executor from a YAML file defined by <a class="reference internal" href="../../executor/yaml-spec/#executor-yaml-spec"><span class="std std-ref">Executor YAML interface</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>✅</p></td>
+<td><p>❌</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'jinahub://TransformerTorchEncoder/'</span></code></p></td>
+<td><p>use an Executor as Python source from Jina Hub.</p></td>
+</tr>
+<tr class="row-even"><td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'jinahub+docker://TransformerTorchEncoder'</span></code></p></td>
+<td><p>use an Executor as a Docker container from Jina Hub.</p></td>
+</tr>
+<tr class="row-odd"><td><p>✅</p></td>
+<td><p>✅</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'jinahub+sandbox://TransformerTorchEncoder'</span></code></p></td>
+<td><p>use a <a class="reference internal" href="../../../how-to/sandbox/#sandbox"><span class="std std-ref">Sandbox Executor</span></a> hosted on Jina Hub. The Executor is running remotely on Jina Hub.</p></td>
+</tr>
+<tr class="row-even"><td><p>✅</p></td>
+<td><p>❌</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'docker://sentence-encoder'</span></code></p></td>
+<td><p>use a pre-built Executor as a Docker container.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="hint admonition">
 <p class="admonition-title">Hint: Load multiple Executors from the same directory</p>
 <p>If you want to load multiple Executor YAMLs from the same directory, you don’t need to specify the parent directory for
@@ -532,8 +501,9 @@ Instead, you can configure a common search path for all Executors:</p>
 </pre></div>
 </div>
 </div>
+</section>
 <section id="external-executors">
-<span id="id1"></span><h3>External Executors<a class="headerlink" href="#external-executors" title="Permalink to this heading">#</a></h3>
+<span id="id2"></span><h2>External Executors<a class="headerlink" href="#external-executors" title="Permalink to this heading">#</a></h2>
 <p>Usually a Flow will manage all of its Executors. External Executors are not managed by the current Flow object but by others. For example, one may want to share expensive Executors between Flows. Often these Executors are stateless, GPU based Encoders.</p>
 <p>Those Executors are marked with the <code class="docutils literal notranslate"><span class="pre">external</span></code> keyword when added to a <code class="docutils literal notranslate"><span class="pre">Flow</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -555,7 +525,7 @@ for further details</p>
 </div>
 </section>
 <section id="floating-executors">
-<span id="id2"></span><h3>Floating Executors<a class="headerlink" href="#floating-executors" title="Permalink to this heading">#</a></h3>
+<span id="id3"></span><h2>Floating Executors<a class="headerlink" href="#floating-executors" title="Permalink to this heading">#</a></h2>
 <p>Some Executors in your Flow may be used for asynchronous background tasks that can take some time and that do not generate a needed output. For instance,
 logging specific information in external services, storing partial results, etc.</p>
 <p>You can unblock your Flow from such tasks by using <em>floating Executors</em>.</p>
@@ -651,9 +621,8 @@ the request has been handled also by it.</p>
 <a class="reference internal image-reference" href="../../../_images/flow_cancel_floating.svg"><img alt="../../../_images/flow_cancel_floating.svg" src="../../../_images/flow_cancel_floating.svg" width="70%" /></a>
 </figure>
 </section>
-</section>
-<section id="set-configs">
-<h2>Set configs<a class="headerlink" href="#set-configs" title="Permalink to this heading">#</a></h2>
+<section id="config-executors">
+<h2>Config Executors<a class="headerlink" href="#config-executors" title="Permalink to this heading">#</a></h2>
 <p>You can set and override <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> configs when adding them into a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>.</p>
 <p>This example shows how to start a Flow with an Executor via the Python API:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -674,46 +643,16 @@ the request has been handled also by it.</p>
 </div>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">uses_with</span></code> is a key-value map that defines the <span class="xref std std-ref">arguments of the Executor’</span> <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uses_requests</span></code> is a key-value map that defines the <a class="reference internal" href="../../executor/executor-methods/#executor-requests"><span class="std std-ref">mapping from endpoint to class method</span></a>. Useful if one needs to overwrite the default endpoint-to-method mapping defined in the Executor python implementation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code> is a string value that defines the <a class="reference internal" href="../../executor/executor-api/#executor-workspace"><span class="std std-ref">workspace</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code> is a list of strings that defines the Python dependencies of the executor;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">uses_metas</span></code> is a key-value map that defines some <a class="reference internal" href="../../executor/executor-api/#executor-metas"><span class="std std-ref">internal attributes</span></a> of the Executor. It contains the following fields:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> is a string that defines the name of the executor;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">description</span></code> is a string that defines the description of this executor. It will be used in automatic docs UI;</p></li>
 </ul>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">uses_requests</span></code> is a key-value map that defines the <a class="reference internal" href="../../executor/executor-methods/#executor-requests"><span class="std std-ref">mapping from endpoint to class method</span></a>. Useful if one needs to overwrite the default endpoint-to-method mapping defined in the Executor python implementation.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code> is a string value that defines the <a class="reference internal" href="../../executor/executor-api/#executor-workspace"><span class="std std-ref">workspace</span></a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code> is a list of strings that defines the Python dependencies of the executor;</p></li>
 </ul>
-<section id="set-metas-via-uses-metas">
-<h3>Set <code class="docutils literal notranslate"><span class="pre">metas</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code><a class="headerlink" href="#set-metas-via-uses-metas" title="Permalink to this heading">#</a></h3>
-<p>To set/override the <code class="docutils literal notranslate"><span class="pre">metas</span></code> configuration of an executor, use <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
-
-
-<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
-    <span class="nd">@requests</span>
-    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-
-
-<span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
-    <span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span>
-    <span class="n">uses_metas</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;different_name&#39;</span><span class="p">},</span>
-<span class="p">)</span>
-<span class="k">with</span> <span class="n">flow</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>      executor0@219291[L]:ready and listening
-        gateway@219291[L]:ready and listening
-           Flow@219291[I]:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:58827
-	🔒 Private network:	192.168.1.101:58827
-different_name
-</pre></div>
-</div>
-</section>
 <section id="set-with-via-uses-with">
 <h3>Set <code class="docutils literal notranslate"><span class="pre">with</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_with</span></code><a class="headerlink" href="#set-with-via-uses-with" title="Permalink to this heading">#</a></h3>
 <p>To set/override the <code class="docutils literal notranslate"><span class="pre">with</span></code> configs of an executor, use <code class="docutils literal notranslate"><span class="pre">uses_with</span></code>. The <code class="docutils literal notranslate"><span class="pre">with</span></code> configuration refers to user-defined
@@ -803,9 +742,39 @@ foo foo()
 </pre></div>
 </div>
 </section>
+<section id="set-metas-via-uses-metas">
+<h3>Set <code class="docutils literal notranslate"><span class="pre">metas</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code><a class="headerlink" href="#set-metas-via-uses-metas" title="Permalink to this heading">#</a></h3>
+<p>To set/override the <code class="docutils literal notranslate"><span class="pre">metas</span></code> configuration of an executor, use <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span>
+
+
+<span class="k">class</span> <span class="nc">MyExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
+    <span class="nd">@requests</span>
+    <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metas</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+
+<span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span>
+    <span class="n">uses_metas</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;different_name&#39;</span><span class="p">},</span>
+<span class="p">)</span>
+<span class="k">with</span> <span class="n">flow</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>      executor0@219291[L]:ready and listening
+        gateway@219291[L]:ready and listening
+           Flow@219291[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:58827
+	🔒 Private network:	192.168.1.101:58827
+different_name
+</pre></div>
+</div>
 </section>
-<section id="unify-ndarray-types">
-<h2>Unify NDArray types<a class="headerlink" href="#unify-ndarray-types" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="unify-ndarray-types-in-output">
+<h2>Unify NDArray types in output<a class="headerlink" href="#unify-ndarray-types-in-output" title="Permalink to this heading">#</a></h2>
 <p>Different <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s in a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> may depend on slightly different <code class="docutils literal notranslate"><span class="pre">types</span></code> for array-like data such as <code class="docutils literal notranslate"><span class="pre">doc.tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">doc.embedding</span></code>,
 for example because they were written using different machine learning frameworks.
 As the builder of a Flow you don’t always have control over this, for example when using Executors from the Jina Hub.</p>
@@ -862,7 +831,7 @@ documentation about <a class="reference external" href="https://docarray.jina.ai
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Aug 31, 2022</div>
+                            Last updated on Sep 03, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -895,18 +864,17 @@ documentation about <a class="reference external" href="https://docarray.jina.ai
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Add Executors</a><ul>
-<li><a class="reference internal" href="#supported-executors">Supported Executors</a><ul>
+<li><a class="reference internal" href="#id1">Add Executors</a></li>
+<li><a class="reference internal" href="#define-executor-types-via-uses">Define Executor types via <code class="docutils literal notranslate"><span class="pre">uses</span></code></a></li>
 <li><a class="reference internal" href="#external-executors">External Executors</a></li>
 <li><a class="reference internal" href="#floating-executors">Floating Executors</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#set-configs">Set configs</a><ul>
-<li><a class="reference internal" href="#set-metas-via-uses-metas">Set <code class="docutils literal notranslate"><span class="pre">metas</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code></a></li>
+<li><a class="reference internal" href="#config-executors">Config Executors</a><ul>
 <li><a class="reference internal" href="#set-with-via-uses-with">Set <code class="docutils literal notranslate"><span class="pre">with</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_with</span></code></a></li>
 <li><a class="reference internal" href="#set-requests-via-uses-requests">Set <code class="docutils literal notranslate"><span class="pre">requests</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_requests</span></code></a></li>
+<li><a class="reference internal" href="#set-metas-via-uses-metas">Set <code class="docutils literal notranslate"><span class="pre">metas</span></code> via <code class="docutils literal notranslate"><span class="pre">uses_metas</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#unify-ndarray-types">Unify NDArray types</a></li>
+<li><a class="reference internal" href="#unify-ndarray-types-in-output">Unify NDArray types in output</a></li>
 </ul>
 </li>
 </ul>
