@@ -35,6 +35,24 @@ f = Flow().add(name='myVeryFirstExecutor').add(name='secondIsBest')
 :scale: 70%
 ```
 
+The above Flow can be also defined via YAML:
+
+```yaml
+jtype: Flow
+executors:
+  - name: myVeryFirstExecutor
+  - name: secondIsBest
+```
+
+Save it as `flow.yml` and run it via: 
+
+```bash
+jina flow --uses flow.yml
+```
+
+More Flow YAML specifications can be found in {ref}`Flow YAML Specification<flow-yaml-spec>`.
+
+
 ## Define Executor types via `uses`
 
 The type of {class}`~jina.Executor` is defined by the `uses` keyword. `uses` accepts a wide range of Executor. Please also beware that some usages are not support on JCloud because of security reasons and their nature of facilitating local debugging.
