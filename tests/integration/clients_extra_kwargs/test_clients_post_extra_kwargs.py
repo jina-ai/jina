@@ -8,6 +8,7 @@ from jina.clients import Client
 from jina.excepts import PortAlreadyUsed
 from jina.helper import is_port_free
 from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime as _GRPCGatewayRuntime
+from jina.serve.runtimes.helper import _get_grpc_server_options
 from tests import random_docs
 
 
@@ -52,12 +53,8 @@ def flow_with_grpc(monkeypatch):
 
             self.server = grpc.aio.server(
                 interceptors=(AuthInterceptor('access_key'),),
-                options=[
-                    ('grpc.max_send_message_length', -1),
-                    ('grpc.max_receive_message_length', -1),
-                ],
+                options=_get_grpc_server_options(self.args.grpc_server_options),
             )
-
 
             await self._async_setup_server()
 

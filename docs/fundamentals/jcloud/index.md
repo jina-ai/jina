@@ -196,7 +196,7 @@ the deletion, to make it non-interactive to better suit your use case, set below
 export JCLOUD_NO_INTERACTIVE=1
 ```
 
-(jcloud-flow-status)
+(jcloud-flow-status)=
 ### Get status
 
 To get the status of a Flow:
@@ -211,7 +211,7 @@ jc status 15937a10bd
 ### Monitoring
 Basic monitoring is provided to the Flows deployed on JCloud.
 
-To access the [Grafana](https://grafana.com/) powered dashboard, get `{ref} the status of the Flow <jcloud-flow-status>` first, at the bottom of the pane you should see the `dashboards` link. Visit the URL and you will find some basic metrics such as 'Number of Request Gateway Received' and 'Time elapsed between receiving a request and sending back the response':
+To access the [Grafana](https://grafana.com/) powered dashboard, get {ref}`the status of the Flow<jcloud-flow-status>` first, at the bottom of the pane you should see the `dashboards` link. Visit the URL and you will find some basic metrics such as 'Number of Request Gateway Received' and 'Time elapsed between receiving a request and sending back the response':
 
 ```{figure} monitoring.png
 :width: 70%

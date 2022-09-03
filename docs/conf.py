@@ -68,6 +68,10 @@ html_theme_options = {
 
     # start-announce
 
+    "announcement": '''
+    <a href="https://www.meetup.com/jina-community-meetup/events/288131091/?isFirstPublish=true">Learn more about how to build a Discord bot on Jina's platform on September 13th at 18:00 CET together with Peter Willemsen</a>
+    ''',
+        
     # end-announce
 }
 

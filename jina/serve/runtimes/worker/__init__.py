@@ -11,6 +11,7 @@ from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest
 
@@ -87,10 +88,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
 
         self._grpc_server = grpc.aio.server(
-            options=[
-                ('grpc.max_send_message_length', -1),
-                ('grpc.max_receive_message_length', -1),
-            ]
+            options=_get_grpc_server_options(self.args.grpc_server_options)
         )
 
         jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
