@@ -1,6 +1,27 @@
 (kubernetes)=
 # Deploy with Kubernetes
 
+
+```{tip}
+This guide is designed for users who want to **manually** deploy Jina project on Kubernetes.
+
+If you are looking for a **one-click** solution to deploy and host Jina, meanwhile leveraging cloud-native stack such as Kubernetes, Prometheus and Grafana, **without worrying about provisioning**, please check out {ref}`jcloud`.
+```
+
+
+:::::{grid} 2
+:gutter: 3
+
+::::{grid-item-card} {octicon}`cpu;1.5em` Deploy a Flow to JCloud
+:link: fundamentals/jcloud/index
+:link-type: doc
+:class-card: color-gradient-card-2
+
+JCloud is a free CPU/GPU hosting platform for Jina projects.
+::::
+:::::
+
+
 Deploying a {class}`~jina.Flow` in Kubernetes is the recommended way of using Jina in production.
 
 Since a {class}`~jina.Flow` is composed of {class}`~jina.Executor`s which can run in different runtimes depending on how you want to deploy
@@ -14,9 +35,7 @@ always see them as just a starting point to get you off the ground.
 In this how-to you will go through how to deploy a simple Flow using Kubernetes, how to customize the Kubernetes configuration
 to your needs, and how to scale Executors using replicas and shards.
 
-```{note}
-Do you know {ref}`JCloud <jcloud>` simplifies Flow deployment and hosting? It saves all the trouble for you so you can focus on what really matters!
-```
+
 
 ## Preliminaries
 

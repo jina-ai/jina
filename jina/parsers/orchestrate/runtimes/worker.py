@@ -17,6 +17,7 @@ def mixin_worker_runtime_parser(parser):
         default=__default_executor__,
         help='''
         The config of the executor, it could be one of the followings:
+        * the string literal of an Executor class name
         * an Executor YAML file (.yml, .yaml, .jaml)
         * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
         * a docker image (must start with `docker://`)
