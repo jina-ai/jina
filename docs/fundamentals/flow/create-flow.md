@@ -28,6 +28,10 @@ jtype: Flow
 An empty Flow contains only {ref}`the Gateway<flow>`.
 ```
 
+```{figure} zero-flow.svg
+:scale: 70%
+```
+
 For production, we recommend YAML files to define the Flows. This is because YAML files are independent of Python logic code and easy to maintain.
 
 

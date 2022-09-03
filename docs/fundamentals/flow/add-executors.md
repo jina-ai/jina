@@ -1,9 +1,9 @@
 (flow-add-executors)=
 # Add Executors
 
-A {class}`~jina.Flow` orchestrates its {class}`~jina.Executor`s as a graph and will send requests to all Executors in the desired order. Executors can be added with the {meth}`~jina.Flow.add` method of the Flow or be listed in the yaml configuration of a Flow. When you start a Flow, it will check the configured Executors and starts instances of these Executors accordingly.
+A {class}`~jina.Flow` orchestrates its {class}`~jina.Executor`s as a graph and will send requests to all Executors in the order specified by {meth}`~jina.Flow.add` or listed in {ref}`a YAML file<flow-yaml-spec>`. 
 
-The response of the Flow defined above is `['foo was here', 'bar was here']`, because the request was first sent to FooExecutor and then to BarExecutor.
+When you start a Flow, the Executor will always be running in a **separate process**. Multiple Executors will be running in **different processes**. Multiprocessing is the lowest level of separation when you run a Flow locally. When running a Flow on Kubernetes, Docker Swarm, {ref}`jcloud`, different Executors are running in different containers, pods or instances.   
 
 ## Add Executors
 
@@ -17,6 +17,11 @@ f = Flow().add()
 
 This will add a "no-op" Executor called {class}`~jina.Executor.BaseExecutor` to the Flow.
 
+```{figure} no-op-flow.svg
+:scale: 70%
+```
+
+
 To better identify and executor, you can change its name by passing the `name` parameter:
 
 ```python
@@ -25,24 +30,24 @@ from jina import Flow
 f = Flow().add(name='myVeryFirstExecutor').add(name='secondIsBest')
 ```
 
-Note that the Executor will always be running in a **separate process**. Multiple Executors will be running in **different processes**. This is the lowest level of separation when you run a Flow locally. when running a Flow on Kubernetes, Docker Swarm, {ref}`jcloud`, different Executors are running in different Pods or instances.   
 
+```{figure} named-flow.svg
+:scale: 70%
+```
 
 ## Define Executor types via `uses`
 
-The type of {class}`~jina.Executor` is defined by the `uses` keyword. `uses` accepts a wide range of Executor. 
+The type of {class}`~jina.Executor` is defined by the `uses` keyword. `uses` accepts a wide range of Executor. Please also beware that some usages are not support on JCloud because of security reasons and their nature of facilitating local debugging.
 
-| Type                                                       | Description                                                                                      |
-|------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| `.add(uses=ExecutorClass)`                                 | use `ExecutorClass` from the inline context.                                                     |
-| `.add(uses='my.py_modules.ExecutorClass'`)                 | use `ExecutorClass` from `my.py_modules`.                                                        |
-| `.add(uses='executor-config.yml')`                         | use an Executor configuration file defining the {ref}`Executor YAML interface <executor-api>`.   |
-| `.add(uses='jinahub://TransformerTorchEncoder/')`          | use an Executor as Python source from Jina Hub.                                                  |
-| `.add(uses='jinahub+docker://TransformerTorchEncoder')`    | use an Executor as a Docker container from Jina Hub.                                             |
-| `.add(uses='jinahub+sandbox://TransformerTorchEncoder')`   | use a {ref}`Sandbox Executor <sandbox>` hosted on Jina Hub. The Executor is running remotely on Jina Hub. |
-| `.add(uses='docker://sentence-encoder', name='executor5')` | use a pre-built Executor as a Docker container. |
-
-
+| Local Dev | JCloud | `.add(uses=...)`                              | Description                                                                                               |
+|-----------|--------|-----------------------------------------------|-----------------------------------------------------------------------------------------------------------|
+| ✅         | ❌      | `ExecutorClass`                               | use `ExecutorClass` from the inline context.                                                              |
+| ✅         | ❌      | `'my.py_modules.ExecutorClass'`               | use `ExecutorClass` from `my.py_modules`.                                                                 |
+| ✅         | ✅      | `'executor-config.yml'`                       | use an Executor from a YAML file defined by {ref}`Executor YAML interface <executor-yaml-spec>`.          |
+| ✅         | ❌      | `'jinahub://TransformerTorchEncoder/'`        | use an Executor as Python source from Jina Hub.                                                           |
+| ✅         | ✅      | `'jinahub+docker://TransformerTorchEncoder'`  | use an Executor as a Docker container from Jina Hub.                                                      |
+| ✅         | ✅      | `'jinahub+sandbox://TransformerTorchEncoder'` | use a {ref}`Sandbox Executor <sandbox>` hosted on Jina Hub. The Executor is running remotely on Jina Hub. |
+| ✅         | ❌      | `'docker://sentence-encoder'`                 | use a pre-built Executor as a Docker container.                                                           |
 
 
 ````{admonition} Hint: Load multiple Executors from the same directory
@@ -67,8 +72,9 @@ f = Flow(extra_search_paths=['../executor']).add(uses='config1.yml').add(uses='c
 ```
 
 ````
+
 (external-executors)=
-### External Executors
+## External Executors
 
 Usually a Flow will manage all of its Executors. External Executors are not managed by the current Flow object but by others. For example, one may want to share expensive Executors between Flows. Often these Executors are stateless, GPU based Encoders.
 
@@ -97,7 +103,7 @@ for further details
 
 
 (floating-executors)=
-### Floating Executors
+## Floating Executors
 
 Some Executors in your Flow may be used for asynchronous background tasks that can take some time and that do not generate a needed output. For instance,
 logging specific information in external services, storing partial results, etc.
@@ -212,7 +218,7 @@ f.plot()
 ```
 
 
-## Set configs
+## Config Executors
 You can set and override {class}`~jina.Executor` configs when adding them into a {class}`~jina.Flow`.
 
 This example shows how to start a Flow with an Executor via the Python API:
@@ -235,14 +241,12 @@ with Flow().add(
 ```
 
 - `uses_with` is a key-value map that defines the {ref}`arguments of the Executor'<executor-args>` `__init__` method.
-- `uses_metas` is a key-value map that defines some {ref}`internal attributes<executor-metas>` of the Executor. It contains the following fields:
-    - `name` is a string that defines the name of the executor;
-    - `description` is a string that defines the description of this executor. It will be used in automatic docs UI;
 - `uses_requests` is a key-value map that defines the {ref}`mapping from endpoint to class method<executor-requests>`. Useful if one needs to overwrite the default endpoint-to-method mapping defined in the Executor python implementation.
 - `workspace` is a string value that defines the {ref}`workspace <executor-workspace>`.
 - `py_modules` is a list of strings that defines the Python dependencies of the executor;
-
-
+- `uses_metas` is a key-value map that defines some {ref}`internal attributes<executor-metas>` of the Executor. It contains the following fields:
+    - `name` is a string that defines the name of the executor;
+    - `description` is a string that defines the description of this executor. It will be used in automatic docs UI;
 
 ### Set `with` via `uses_with`
 
@@ -368,7 +372,7 @@ different_name
 ```
 
 
-## Unify NDArray types
+## Unify NDArray types in output
 
 Different {class}`~jina.Executor`s in a {class}`~jina.Flow` may depend on slightly different `types` for array-like data such as `doc.tensor` and `doc.embedding`,
 for example because they were written using different machine learning frameworks.
