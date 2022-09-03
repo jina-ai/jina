@@ -181,7 +181,11 @@ def parse_config_source(
     elif allow_class_type and path.isidentifier():
         # possible class name
         return io.StringIO(f'!{path}'), None
-    elif allow_py_module_class_type and path.split('.')[-1].isidentifier():
+    elif (
+        allow_py_module_class_type
+        and '.' in path
+        and path.split('.')[-1].isidentifier()
+    ):
         # possible module.class name
         module_name, cls_name = path.rsplit('.', maxsplit=1)
         print(module_name, cls_name)

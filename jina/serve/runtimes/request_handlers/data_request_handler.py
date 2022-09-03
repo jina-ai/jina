@@ -185,10 +185,7 @@ class DataRequestHandler:
                 self.args.name,
             ).inc(len(docs))
 
-        if self.args.output_array_type:
-            DataRequestHandler.replace_docs(
-                requests[0], docs, self.args.output_array_type
-            )
+        DataRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
 
         return requests[0]
 
