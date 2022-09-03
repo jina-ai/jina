@@ -22,7 +22,6 @@
 Jina is a MLOps framework that empowers anyone to build cross-modal and multi-modal applications on the cloud. It uplifts a PoC into a production-ready service. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer. 
 
 <sup>
-<sub>
 <table align=center>
 <thead>
   <tr>
@@ -44,7 +43,6 @@ Jina is a MLOps framework that empowers anyone to build cross-modal and multi-mo
   </tr>
 </tbody>
 </table>
-</sub>
 </sup>
 
 Applications built with Jina enjoy the following features out-of-the-box:
