@@ -1,136 +1,48 @@
 (flow-add-executors)=
 # Add Executors
 
-A {class}`~jina.Flow` orchestrates its {class}`~jina.Executor`s as a graph and will send requests to all Executors in the desired order. Executors can be added with the {meth}`~jina.Flow.add` method of the Flow or be listed in the yaml configuration of a Flow. When you start a Flow, it will check the configured Executors and starts instances of these Executors accordingly. When adding Executors you have to define its type with the `uses` keyword. Executors can be used from various sources like code, docker images and the Hub:
-
-````{tab} Python
-
-```python
-from jina import Executor, Flow, requests, Document, DocumentArray
-
-
-class FooExecutor(Executor):
-    @requests
-    def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text='foo was here'))
-
-
-class BarExecutor(Executor):
-    @requests
-    def bar(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text='bar was here'))
-
-
-f = (
-    Flow()
-    .add(uses=FooExecutor, name='fooExecutor')
-    .add(uses=BarExecutor, name='barExecutor')
-)  # Create the empty Flow
-with f:  # Using it as a Context Manager will start the Flow
-    response = f.post(
-        on='/search'
-    )  # This sends a request to the /search endpoint of the Flow
-    print(response.texts)
-```
-````
-
-`````{tab} YAML
-`flow.yml`:
-
-```yaml
-jtype: Flow
-executors:
-  - name: myexec1
-    uses: FooExecutor
-    py_modules: exec.py
-  - name: myexec2
-    uses: BarExecutor
-    py_modules: exec.py
-```
-
-`exec.py`
-```python
-from jina import Executor, requests, Document, DocumentArray
-
-
-class FooExecutor(Executor):
-    @requests
-    def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text='foo was here'))
-
-
-class BarExecutor(Executor):
-    @requests
-    def bar(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text='bar was here'))
-```
-
-`main.py`
-```python
-from jina import Flow
-
-f = Flow.load_config('flow.yml')
-
-with f:
-    response = f.post(
-        on='/search'
-    )  # This sends a request to the /search endpoint of the Flow
-    print(response.texts)
-```
-
-````{admonition} Hint: Load multiple Executors from the same module
-:class: hint
-
-You can override the `py_modules` attribute for all Executors in a Flow. This allows you to specify a single Python module
-from which you can then load all of your Executors, without having to specify the module individually for each Executor:
-
-```yaml
-jtype: Flow
-with:
-  py_modules:
-    - executors.py
-executors:
-  - uses: FooExecutor
-  - uses: BarExecutor
-```
-
-In this example, both `FooExecutor` and `BarExecutor` are defined inside of `executors.py`, and both will be located and loaded by the Flow.
-````
-`````
-
+A {class}`~jina.Flow` orchestrates its {class}`~jina.Executor`s as a graph and will send requests to all Executors in the desired order. Executors can be added with the {meth}`~jina.Flow.add` method of the Flow or be listed in the yaml configuration of a Flow. When you start a Flow, it will check the configured Executors and starts instances of these Executors accordingly.
 
 The response of the Flow defined above is `['foo was here', 'bar was here']`, because the request was first sent to FooExecutor and then to BarExecutor.
 
-## Supported Executors
+## Add Executors
 
-As explained above, the type of {class}`~jina.Executor` is defined by providing the `uses` keyword. The source of an Executor can be code, docker images or Hub images.
+Executors can be added into a Flow via {meth}`~jina.Flow.add`.  
 
 ```python
-class ExecutorClass(Executor):
-    @requests
-    def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text='foo was here'))
+from jina import Flow
 
-
-f = (
-    Flow()
-    .add(uses=ExecutorClass, name='executor1')
-    .add(uses='jinahub://TransformerTorchEncoder/', name='executor2')
-    .add(uses='jinahub+docker://TransformerTorchEncoder', name='executor3')
-    .add(uses='jinahub+sandbox://TransformerTorchEncoder', name='executor4')
-    .add(uses='docker://sentence-encoder', name='executor5')
-    .add(uses='executor-config.yml', name='executor6')
-)
+f = Flow().add()
 ```
 
-* `executor1` will use `ExecutorClass` from code, and will be created as a separate process.
-* `executor2` will download the Executor class from Hub, and will be created as a separate process.
-* `executor3` will use an Executor docker image coming from the Hub, and will be created as a docker container of this image.
-* `executor4` will use a {ref}`Sandbox Executor <sandbox>` run by Hubble, in the cloud.
-* `executor5` will use a Docker image tagged as `sentence-encoder`, and will be created as a docker container of this image.
-* `executor6` will use an Executor configuration file defining the {ref}`Executor YAML interface <executor-api>`, and will be created as a separate process.
+This will add a "no-op" Executor called {class}`~jina.Executor.BaseExecutor` to the Flow.
 
-More complex Executors typically are used from Docker images or will be structured into separate Python modules. 
+To better identify and executor, you can change its name by passing the `name` parameter:
+
+```python
+from jina import Flow
+
+f = Flow().add(name='myVeryFirstExecutor').add(name='secondIsBest')
+```
+
+Note that the Executor will always be running in a **separate process**. Multiple Executors will be running in **different processes**. This is the lowest level of separation when you run a Flow locally. when running a Flow on Kubernetes, Docker Swarm, {ref}`jcloud`, different Executors are running in different Pods or instances.   
+
+
+## Define Executor types via `uses`
+
+The type of {class}`~jina.Executor` is defined by the `uses` keyword. `uses` accepts a wide range of Executor. 
+
+| Type                                                       | Description                                                                                      |
+|------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| `.add(uses=ExecutorClass)`                                 | use `ExecutorClass` from the inline context.                                                     |
+| `.add(uses='my.py_modules.ExecutorClass'`)                 | use `ExecutorClass` from `my.py_modules`.                                                        |
+| `.add(uses='executor-config.yml')`                         | use an Executor configuration file defining the {ref}`Executor YAML interface <executor-api>`.   |
+| `.add(uses='jinahub://TransformerTorchEncoder/')`          | use an Executor as Python source from Jina Hub.                                                  |
+| `.add(uses='jinahub+docker://TransformerTorchEncoder')`    | use an Executor as a Docker container from Jina Hub.                                             |
+| `.add(uses='jinahub+sandbox://TransformerTorchEncoder')`   | use a {ref}`Sandbox Executor <sandbox>` hosted on Jina Hub. The Executor is running remotely on Jina Hub. |
+| `.add(uses='docker://sentence-encoder', name='executor5')` | use a pre-built Executor as a Docker container. |
+
+
 
 
 ````{admonition} Hint: Load multiple Executors from the same directory
@@ -331,38 +243,6 @@ with Flow().add(
 - `py_modules` is a list of strings that defines the Python dependencies of the executor;
 
 
-### Set `metas` via `uses_metas`
-
-To set/override the `metas` configuration of an executor, use `uses_metas`:
-
-```python
-from jina import Executor, requests, Flow
-
-
-class MyExecutor(Executor):
-    @requests
-    def foo(self, docs, **kwargs):
-        print(self.metas.name)
-
-
-flow = Flow().add(
-    uses=MyExecutor,
-    uses_metas={'name': 'different_name'},
-)
-with flow as f:
-    f.post('/')
-```
-
-```text
-      executor0@219291[L]:ready and listening
-        gateway@219291[L]:ready and listening
-           Flow@219291[I]:🎉 Flow is ready to use!
-	🔗 Protocol: 		GRPC
-	🏠 Local access:	0.0.0.0:58827
-	🔒 Private network:	192.168.1.101:58827
-different_name
-```
-
 
 ### Set `with` via `uses_with`
 
@@ -454,6 +334,39 @@ foo foo()
 all req all_req()
 foo foo()
 ```
+
+### Set `metas` via `uses_metas`
+
+To set/override the `metas` configuration of an executor, use `uses_metas`:
+
+```python
+from jina import Executor, requests, Flow
+
+
+class MyExecutor(Executor):
+    @requests
+    def foo(self, docs, **kwargs):
+        print(self.metas.name)
+
+
+flow = Flow().add(
+    uses=MyExecutor,
+    uses_metas={'name': 'different_name'},
+)
+with flow as f:
+    f.post('/')
+```
+
+```text
+      executor0@219291[L]:ready and listening
+        gateway@219291[L]:ready and listening
+           Flow@219291[I]:🎉 Flow is ready to use!
+	🔗 Protocol: 		GRPC
+	🏠 Local access:	0.0.0.0:58827
+	🔒 Private network:	192.168.1.101:58827
+different_name
+```
+
 
 ## Unify NDArray types
 
