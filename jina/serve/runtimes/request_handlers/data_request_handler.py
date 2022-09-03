@@ -98,10 +98,7 @@ class DataRequestHandler:
             self.logger.debug(f'{self._executor} is successfully loaded!')
 
         except BadConfigSource:
-            self.logger.error(
-                f'fail to load config from {self.args.uses}, if you are using docker image for --uses, '
-                f'please use `docker://YOUR_IMAGE_NAME`'
-            )
+            self.logger.error(f'fail to load config from {self.args.uses}')
             raise
         except FileNotFoundError:
             self.logger.error(f'fail to load file dependency')
@@ -188,7 +185,10 @@ class DataRequestHandler:
                 self.args.name,
             ).inc(len(docs))
 
-        DataRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
+        if self.args.output_array_type:
+            DataRequestHandler.replace_docs(
+                requests[0], docs, self.args.output_array_type
+            )
 
         return requests[0]
 

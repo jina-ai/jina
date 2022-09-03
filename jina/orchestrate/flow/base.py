@@ -261,6 +261,7 @@ class Flow(
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param uses: The config of the executor, it could be one of the followings:
+                  * the string literal of an Executor class name
                   * an Executor YAML file (.yml, .yaml, .jaml)
                   * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
                   * a docker image (must start with `docker://`)
@@ -434,6 +435,7 @@ class Flow(
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param uses: The config of the executor, it could be one of the followings:
+                  * the string literal of an Executor class name
                   * an Executor YAML file (.yml, .yaml, .jaml)
                   * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
                   * a docker image (must start with `docker://`)
@@ -912,6 +914,7 @@ class Flow(
           - by default, `--uses` YAML file is always uploaded.
           - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.
         :param uses: The config of the executor, it could be one of the followings:
+                  * the string literal of an Executor class name
                   * an Executor YAML file (.yml, .yaml, .jaml)
                   * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
                   * a docker image (must start with `docker://`)
@@ -1059,6 +1062,7 @@ class Flow(
           - by default, `--uses` YAML file is always uploaded.
           - uploaded files are by default isolated across the runs. To ensure files are submitted to the same workspace across different runs, use `--workspace-id` to specify the workspace.
         :param uses: The config of the executor, it could be one of the followings:
+                  * the string literal of an Executor class name
                   * an Executor YAML file (.yml, .yaml, .jaml)
                   * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
                   * a docker image (must start with `docker://`)

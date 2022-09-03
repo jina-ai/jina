@@ -13,6 +13,7 @@ from docarray import Document, DocumentArray
 
 from jina import Client, Executor, Flow, __cache_path__, requests
 from jina.clients.request import request_generator
+from jina.excepts import RuntimeFailToStart
 from jina.parsers import set_pod_parser
 from jina.serve.executors.metas import get_default_metas
 from jina.serve.networking import GrpcConnectionPool
@@ -96,6 +97,36 @@ def test_executor_with_pymodule_path():
     )
     assert ex.bar == 123
     assert ex.process(DocumentArray([Document()]))[0].text == 'hello world'
+
+
+def test_flow_uses_with_pymodule_path():
+    with Flow.load_config(
+        '''
+    jtype: Flow
+    executors:
+        - uses: unit.serve.executors.dummy_executor.MyExecutor
+          uses_with:
+            bar: 123
+    '''
+    ):
+        pass
+
+    with Flow().add(
+        uses='unit.serve.executors.dummy_executor.MyExecutor', uses_with={'bar': 123}
+    ):
+        pass
+
+    with pytest.raises(RuntimeFailToStart):
+        with Flow.load_config(
+            '''
+            jtype: Flow
+            executors:
+                - uses: jina.no_valide.executor
+                  uses_with:
+                    bar: 123
+            '''
+        ):
+            pass
 
 
 @property
