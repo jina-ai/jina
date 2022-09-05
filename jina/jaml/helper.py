@@ -131,6 +131,7 @@ def parse_config_source(
     allow_dict: bool = True,
     allow_json: bool = True,
     allow_url: bool = True,
+    allow_py_module_class_type: bool = True,
     extra_search_paths: Optional[List[str]] = None,
     *args,
     **kwargs,
@@ -144,6 +145,7 @@ def parse_config_source(
     :param allow_yaml_file: flag
     :param allow_raw_yaml_content: flag
     :param allow_class_type: flag
+    :param allow_py_module_class_type: flag
     :param allow_dict: flag
     :param allow_json: flag
     :param allow_url: flag
@@ -179,6 +181,16 @@ def parse_config_source(
     elif allow_class_type and path.isidentifier():
         # possible class name
         return io.StringIO(f'!{path}'), None
+    elif (
+        allow_py_module_class_type
+        and '.' in path
+        and path.split('.')[-1].isidentifier()
+    ):
+        # possible module.class name
+        module_name, cls_name = path.rsplit('.', maxsplit=1)
+        print(module_name, cls_name)
+        PathImporter.add_modules(module_name)
+        return io.StringIO(f'!{cls_name}'), None
     elif allow_json and isinstance(path, str):
         try:
             from jina.jaml import JAML

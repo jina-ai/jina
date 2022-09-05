@@ -10,6 +10,7 @@ In particular, each Flow also launches a *Gateway* service, which can expose all
 
 
 The most important methods of the `Flow` object are the following:
+
 | Method                                    | Description                                                                                                                                  |
 |-------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
 | {meth}`~jina.Flow.add`                    | Add an Executor to the Flow                                                                                                                |
@@ -20,7 +21,7 @@ The most important methods of the `Flow` object are the following:
 | {meth}`~jina.clients.mixin.PostMixin.post()`                                 | Sends requests to the Flow API.                                                                                                     |
 | {meth}`~jina.Flow.block()`                                | Blocks execution until the program is terminated. This is useful to keep the Flow alive so it can be used from other places (clients, etc). |
 | {meth}`~jina.Flow.to_docker_compose_yaml()`               | Generates a Docker-Compose file listing all its Executors as Services.                                                                       |
-| `.to_kubernetes_yaml(<output_directory>)` | Generates the Kubernetes configuration files in `<output_directory>`. Based on your local Jina version, Jina Hub may rebuild the Docker image during the YAML generation process. If you do not wish to rebuild the image, set the environment variable `JINA_HUB_NO_IMAGE_REBUILD`. |
+| {meth}`~jina.Flow.to_kubernetes_yaml()` | Generates the Kubernetes configuration files in `<output_directory>`. Based on your local Jina version, Jina Hub may rebuild the Docker image during the YAML generation process. If you do not wish to rebuild the image, set the environment variable `JINA_HUB_NO_IMAGE_REBUILD`. |
 | {meth}`~jina.clients.mixin.HealthCheckMixin.dry_run()`                             | Calls the dry run endpoint of the Flow to check if the Flow is ready to process requests. Returns a boolean indicating the readiness |
 
 ## Why should you use a Flow?
@@ -122,15 +123,7 @@ with f:
 
 ````
 
-````{admonition} See Also
-:class: seealso
 
-Executor and Flow are the two fundamental concepts in Jina.
-
-- <a href="https://docarray.jina.ai/">Document</a> is the basic data type in Jina
-- {ref}`Executor <executor>` is how Jina processes Documents
-- {ref}`Flow <flow>` is how Jina streamlines and scales Executors
-````
 
 
 ```{toctree}

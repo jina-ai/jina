@@ -96,6 +96,16 @@ jina flow --uses flow.yml
 
 #### A project folder
 
+````{tip}
+The best practice of creating a JCloud project is to use
+
+```
+jc new
+```
+
+This ensures the correct project structure accepted by JCloud.
+````
+
 Just like a regular Python project, you can have sub-folders of Executor implementations; and a `flow.yml` on the top-level to connect all Executors together.
 
 You can create an example local project using `jc new hello`. The default structure looks like:
