@@ -17,6 +17,7 @@ def mixin_worker_runtime_parser(parser):
         default=__default_executor__,
         help='''
         The config of the executor, it could be one of the followings:
+        * the string literal of an Executor class name
         * an Executor YAML file (.yml, .yaml, .jaml)
         * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
         * a docker image (must start with `docker://`)
@@ -102,4 +103,13 @@ Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which c
 `here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.
 Defaults to retaining whatever type is returned by the Executor.
 ''',
+    )
+
+    gp.add_argument(
+        '--grpc-server-options',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help="Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}",
+        default=None,
     )

@@ -63,3 +63,10 @@ def test_gateway_concurrency(protocol, reraise):
     # requests.
     rate = failed / success
     assert rate < 0.1
+
+
+def test_grpc_custom_otpions():
+
+    f = Flow(grpc_server_options={'grpc.max_send_message_length': -1})
+    with f:
+        pass

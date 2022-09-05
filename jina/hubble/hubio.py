@@ -117,13 +117,49 @@ This guide helps you to create your own Executor in 30 seconds.''',
         exec_keywords = '{{}}'
         exec_url = '{{}}'
 
-        is_dockerfile = False
+        is_dockerfile = 'none'
 
         if self.args.advance_configuration or Confirm.ask(
             '[green]That\'s all we need to create an Executor![/green]\n'
-            ':grey_question: Or do you want to proceed to advanced configuration',
+            ':grey_question: Or do you want to proceed to advanced configuration [dim](GPU support, meta information on Hub, etc.)[/]',
             default=False,
         ):
+            print(
+                Panel.fit(
+                    '''
+[bold]Dockerfile[/bold] describes how this executor will be built. It is useful when
+your executor has non-trivial dependencies or must be run under certain environment.
+
+- If [bold]Dockerfile[/bold] is not given, Jina Cloud automatically generates one.
+- If [bold]Dockerfile[/bold] is provided by you, then Jina Cloud will respect it when building the Executor.
+
+Here are some Dockerfile templates for you to choose from:
+- [b]cpu[/b]: CPU-only executor with Jina as base image;
+- [b]torch-gpu[/b]: GPU enabled executor with PyTorch as the base image;
+- [b]tf-gpu[/b]: GPU enabled executor with Tensorflow as the base image;
+- [b]jax-gpu[/b]: GPU enabled executor with JAX installed.
+''',
+                    title=':package: [bold]Dockerfile[/bold]',
+                    width=80,
+                )
+            )
+
+            is_dockerfile = self.args.dockerfile or Prompt.ask(
+                ':grey_question: Select how you want to generate the [bold]Dockerfile[/bold] for this Executor?',
+                choices=['cpu', 'torch-gpu', 'tf-gpu', 'jax-gpu', 'none'],
+                default='cpu',
+            )
+
+            print(
+                Panel.fit(
+                    '''
+Meta information helps other users to identify, search and reuse your Executor on Jina Cloud.
+''',
+                    title=':name_badge: [bold]Meta Info[/bold]',
+                    width=80,
+                )
+            )
+
             exec_description = (
                 self.args.description
                 if self.args.description
@@ -157,32 +193,18 @@ This guide helps you to create your own Executor in 30 seconds.''',
                 )
             )
 
-            print(
-                Panel.fit(
-                    '''
-[bold]Dockerfile[/bold] describes how this executor will be built. It is useful when
-your executor has non-trivial dependencies or must be run under certain environment.
-
-- If the [bold]Dockerfile[/bold] is missing, Jina automatically generates one for you.
-- If you provide one, then Jina will respect the given [bold]Dockerfile[/bold].''',
-                    title='[Optional] [bold]Dockerfile[/bold]',
-                    width=80,
-                )
-            )
-
-            is_dockerfile = self.args.add_dockerfile or Confirm.ask(
-                ':grey_question: Do you need to write your own [bold]Dockerfile[/bold] instead of the auto-generated one?',
-                default=False,
-            )
             print('[green]That\'s all we need to create an Executor![/green]')
 
         def mustache_repl(srcs):
             for src in track(
                 srcs, description=f'Creating {exec_name}...', total=len(srcs)
             ):
+                dest = src
+                if dest.endswith('.Dockerfile'):
+                    dest = 'Dockerfile'
                 with open(
                     os.path.join(__resources_path__, 'executor-template', src)
-                ) as fp, open(os.path.join(exec_path, src), 'w') as fpw:
+                ) as fp, open(os.path.join(exec_path, dest), 'w') as fpw:
                     f = (
                         fp.read()
                         .replace('{{exec_name}}', exec_name)
@@ -204,8 +226,16 @@ your executor has non-trivial dependencies or must be run under certain environm
             'config.yml',
         ]
 
-        if is_dockerfile:
+        if is_dockerfile == 'cpu':
             pkg_files.append('Dockerfile')
+        elif is_dockerfile == 'torch-gpu':
+            pkg_files.append('torch.Dockerfile')
+        elif is_dockerfile == 'jax-gpu':
+            pkg_files.append('torch.Dockerfile')
+        elif is_dockerfile == 'tf-gpu':
+            pkg_files.append('tf.Dockerfile')
+        elif is_dockerfile != 'none':
+            raise ValueError(f'Unknown Dockerfile type: {is_dockerfile}')
 
         mustache_repl(pkg_files)
 
@@ -227,16 +257,16 @@ your executor has non-trivial dependencies or must be run under certain environm
                     f'''
 jtype: {exec_name}
 with:
-    foo: 1
-    bar: hello
-metas:
-    name: {exec_name}
-    description: {exec_description if exec_description != '{{}}' else 'None'}
-    url: {exec_url if exec_url != '{{}}' else 'None'}
-    keywords: {exec_keywords if exec_keywords != '{{}}' else 'None'}
+  foo: 1
+  bar: hello
 py_modules:
-    - executor.py
-                ''',
+  - executor.py
+metas:
+  name: {exec_name}
+  description: {exec_description if exec_description != '{{}}' else 'None'}
+  url: {exec_url if exec_url != '{{}}' else 'None'}
+  keywords: {exec_keywords if exec_keywords != '{{}}' else 'None'}
+''',
                     'yaml',
                     theme='monokai',
                     line_numbers=True,
@@ -248,7 +278,7 @@ py_modules:
             ),
         )
 
-        if is_dockerfile:
+        if is_dockerfile != 'none':
             table.add_row(
                 'Dockerfile',
                 'The Dockerfile describes how this executor will be built.',
@@ -266,7 +296,7 @@ py_modules:
 
         p0 = Panel(
             Syntax(
-                f'cd {exec_path}\nls',
+                f'ls {exec_path}',
                 'console',
                 theme='monokai',
                 line_numbers=True,
@@ -284,6 +314,19 @@ py_modules:
             expand=False,
         )
 
+        p12 = Panel(
+            Syntax(
+                f'jina executor --uses {exec_path}/config.yml',
+                'console',
+                theme='monokai',
+                line_numbers=True,
+                word_wrap=True,
+            ),
+            title='3. Test the Executor locally',
+            width=120,
+            expand=False,
+        )
+
         p2 = Panel(
             Syntax(
                 f'jina hub push {exec_path}',
@@ -292,14 +335,13 @@ py_modules:
                 line_numbers=True,
                 word_wrap=True,
             ),
-            title='3. Share it to Jina Hub',
+            title='4. Share it to Jina Hub',
             width=120,
             expand=False,
         )
 
-        final_table.add_row(p0)
-        final_table.add_row(p1)
-        final_table.add_row(p2)
+        for _p in [p0, p1, p12, p2]:
+            final_table.add_row(_p)
 
         p = Panel(
             final_table,

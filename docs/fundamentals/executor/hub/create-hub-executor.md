@@ -48,6 +48,11 @@ structure.
   Most of the time, you do not need to create `Dockerfile` manually, {abbr}`Hubble (Hubble is the Jina Hub building system)` will generate a well-optimized Dockerfile according to your Executor package.
 
 
+```{tip}
+In the wizard of `jina hub new`, you can choose from four Dockerfile templates: `cpu`, `tf-gpu`, `torch-gpu`, and `jax-gpu`.
+```
+
+
 * No need to bump Jina version
 
   Hub executors are version-agnostic. When you pull an Executor from Hub, Hubble will always select the right Jina version for you. No worries about Jina version upgrade!

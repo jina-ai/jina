@@ -29,7 +29,7 @@ jobs:
       jina_auth_token: ${{ secrets.JINA_AUTH_TOKEN }}
 
   regular-release:
-    needs: [token-check, hub-integration]
+    needs: [token-check]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

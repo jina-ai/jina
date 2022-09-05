@@ -98,10 +98,7 @@ class DataRequestHandler:
             self.logger.debug(f'{self._executor} is successfully loaded!')
 
         except BadConfigSource:
-            self.logger.error(
-                f'fail to load config from {self.args.uses}, if you are using docker image for --uses, '
-                f'please use `docker://YOUR_IMAGE_NAME`'
-            )
+            self.logger.error(f'fail to load config from {self.args.uses}')
             raise
         except FileNotFoundError:
             self.logger.error(f'fail to load file dependency')
