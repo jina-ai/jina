@@ -188,6 +188,7 @@ class Flow(
         uses_with: Optional[dict] = None,
         uvicorn_kwargs: Optional[dict] = None,
         workspace: Optional[str] = None,
+        exit_on_exceptions: Optional[List[str]] = None,
         **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina gateway` CLI.

@@ -1,5 +1,6 @@
 import argparse
 import contextlib
+import sys
 from abc import ABC
 from typing import List
 
@@ -190,6 +191,13 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                     else '',
                     exc_info=not self.args.quiet_error,
                 )
+
+                if (
+                    self.args.exit_on_exceptions
+                    and type(ex).__name__ in self.args.exit_on_exceptions
+                ):
+                    self.logger.info('Exiting because of "--exit-on-exceptions".')
+                    sys.exit(1)
 
                 requests[0].add_exception(ex, self._data_request_handler._executor)
                 context.set_trailing_metadata((('is-error', 'true'),))
