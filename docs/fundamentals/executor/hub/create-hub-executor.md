@@ -7,30 +7,29 @@ To create your Hub {class}`~jina.Executor`, you just need to run:
 jina hub new
 ```
 
+<script id="asciicast-T98aWaJLe0r0ul3cXGk7AzqUs" src="https://asciinema.org/a/T98aWaJLe0r0ul3cXGk7AzqUs.js" async></script>
 
-```{figure} screenshots/create-new.gif
-:align: center
-```
+For the basic configuration (advanced configuration is optional but rarely necessary), you will be asked for two things: 
 
-For the basic configuration, 
-you will be asked for two things: The Executor’s name and where it should be saved. A more advanced configuration is optional but rarely necessary.
+- Name of your Executor 
+- Path to the folder where it should be saved. 
 
 After running the command, a project with the following structure will be generated:
 
 ```text
 MyExecutor/
-├── Dockerfile	        # Advanced configuration will generate this file
+├── executor.py
 ├── config.yml
 ├── README.md
 ├── requirements.txt
-└── executor.py
+└── Dockerfile
 ```
 
-- `config.yml` is the Executor's configuration file, where you can define **__init__** arguments using **with** keyword. You can also define meta annotations relevant to the executor, for getting better exposer on Jina Hub. {ref}`It's configuration can be found here<config-yaml>`.
-- `requirements.txt` describes the Executor's Python dependencies.
 - `executor.py` should contain your Executor's main logic.
+- `config.yml` is the Executor's configuration file, where you can define `__init__` arguments using `with` keyword. You can also define meta annotations relevant to the executor, for getting better exposer on Jina Hub. {ref}`It's configuration can be found here <yaml-spec>`.
+- `requirements.txt` describes the Executor's Python dependencies.
 - `README.md` should describe how to use your Executor.
-
+- `Dockerfile` will only be generated once you request advanced configuration.
 
 
 ## Tips
@@ -45,7 +44,7 @@ structure.
 
 * No need to write Dockerfile manually 
 
-  Most of the time, you do not need to create `Dockerfile` manually, {abbr}`Hubble (Hubble is the Jina Hub building system)` will generate a well-optimized Dockerfile according to your Executor package.
+  Most of the time, you do not need to create `Dockerfile` manually. Build system will generate a well-optimized Dockerfile according to your Executor package.
 
 
 ```{tip}
@@ -58,6 +57,6 @@ In the wizard of `jina hub new`, you can choose from four Dockerfile templates: 
   Hub executors are version-agnostic. When you pull an Executor from Hub, Hubble will always select the right Jina version for you. No worries about Jina version upgrade!
 
 
-* Fill in `metas` correctly. 
+* Fill in metadata of your Executor correctly
 
   Information you include under the `metas` key, in `config.yml`, will be displayed on our website. Want to make your Executor eye-catching on our website? Fill all `metas` fields in `config.yml` with heart & love! {ref}`Its specification can be found here<config.yml>`.
