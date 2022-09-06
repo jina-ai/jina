@@ -22,7 +22,7 @@ hello-jina/
 - `config.yml` is the config file for the {class}`~jina.Executor`. It’s where you keep metadata for your Executor, as well as dependencies.
 - `client.py` is the entrypoint of your Jina project. You can run it via `python app.py`.
 
-There may be some other files like `README.md`, `manifest.yml`  `requirements.txt` to provide extra metadata about that {class}`~jina.Executor`. More information {ref}`can be found here<create-executor>`.
+There may be some other files like `README.md`, `requirements.txt` to provide extra metadata about that {class}`~jina.Executor`. More information {ref}`can be found here<create-executor>`.
 
 
 Now run it and observe the output of the server and client.

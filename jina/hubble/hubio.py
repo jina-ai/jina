@@ -217,7 +217,6 @@ Meta information helps other users to identify, search and reuse your Executor o
         Path(exec_path).mkdir(parents=True, exist_ok=True)
         pkg_files = [
             'executor.py',
-            'manifest.yml',
             'README.md',
             'requirements.txt',
             'config.yml',
@@ -243,7 +242,8 @@ Meta information helps other users to identify, search and reuse your Executor o
         # adding the columns in order of `ls` output
         table.add_row(
             'config.yml',
-            'The YAML config file of the Executor. You can define [bold]__init__[/bold] arguments using [bold]with[/bold] keyword.',
+            'The YAML config file of the Executor. You can define [bold]__init__[/bold] arguments using [bold]with[/bold] keyword.' +\
+            '\nYou can also define metadata for the executor, for better appeal on Jina Hub.',
         )
 
         table.add_row(
@@ -256,7 +256,13 @@ with:
   foo: 1
   bar: hello
 py_modules:
-  - executor.py''',
+  - executor.py
+metas:
+  name: {exec_name}
+  description: {exec_description if exec_description != '{{}}' else 'None'}
+  url: {exec_url if exec_url != '{{}}' else 'None'}
+  keywords: {exec_keywords if exec_keywords != '{{}}' else 'None'}
+''',
                     'yaml',
                     theme='monokai',
                     line_numbers=True,
@@ -275,27 +281,6 @@ py_modules:
             )
 
         table.add_row('executor.py', 'The main logic file of the Executor.')
-        table.add_row(
-            'manifest.yml',
-            'Metadata for the Executor, for better appeal on Jina Hub.',
-        )
-
-        manifest_fields_table = Table(box=box.SIMPLE)
-        manifest_fields_table.add_column('Field', style='cyan', no_wrap=True)
-        manifest_fields_table.add_column('Description', no_wrap=True)
-        manifest_fields_table.add_row('name', 'Human-readable title of the Executor')
-        manifest_fields_table.add_row(
-            'description', 'Human-readable description of the Executor'
-        )
-        manifest_fields_table.add_row(
-            'url',
-            'URL to find more information on the Executor (e.g. GitHub repo URL)',
-        )
-        manifest_fields_table.add_row(
-            'keywords', 'Keywords that help user find the Executor'
-        )
-
-        table.add_row('', manifest_fields_table)
         table.add_row('README.md', 'A usage guide of the Executor.')
         table.add_row('requirements.txt', 'The Python dependencies of the Executor.')
 
