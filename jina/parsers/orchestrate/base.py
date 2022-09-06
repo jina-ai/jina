@@ -125,5 +125,5 @@ def mixin_base_ppr_parser(parser):
         type=str,
         default=[],
         nargs='*',
-        help='List of exceptions that will cause the executor to shutdown.',
+        help='List of exceptions that will cause the Executor to shut down.',
     )
