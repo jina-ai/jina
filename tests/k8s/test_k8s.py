@@ -128,7 +128,6 @@ async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_si
         client_kwargs = dict(
             host='localhost',
             port=flow.port,
-            return_responses=True,
             asyncio=True,
         )
         client_kwargs.update(flow._common_kwargs)
@@ -140,6 +139,7 @@ async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_si
             endpoint,
             inputs=[Document() for _ in range(n_docs)],
             request_size=request_size,
+            return_responses=True,
         ):
             responses.append(resp)
 
