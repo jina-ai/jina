@@ -13,6 +13,7 @@ def generate_default_volume_and_workspace(workspace_id=''):
 
     default_workspace = __cache_path__
     container_addr = '/app'
+    # dummy coment
     if default_workspace:  # use default workspace provided in env var
         host_addr = default_workspace
         workspace = os.path.relpath(
