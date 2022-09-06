@@ -26,7 +26,7 @@ MyExecutor/
 ```
 
 - `executor.py` should contain your Executor's main logic.
-- `config.yml` is the Executor's configuration file, where you can define `__init__` arguments using `with` keyword. You can also define meta annotations relevant to the executor, for getting better exposer on Jina Hub. {ref}`It's configuration can be found here <yaml-spec>`.
+- `config.yml` is the Executor's {ref}`configuration <executor-yaml-spec>` file, where you can define `__init__` arguments using `with` keyword. You can also define meta annotations relevant to the executor, for getting better exposer on Jina Hub.
 - `requirements.txt` describes the Executor's Python dependencies.
 - `README.md` should describe how to use your Executor.
 - `Dockerfile` will only be generated once you request advanced configuration.
