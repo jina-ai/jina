@@ -191,6 +191,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                     exc_info=not self.args.quiet_error,
                 )
 
+                from jina.helper import send_telemetry_event
+                send_telemetry_event(event='exception', obj=self, exception=ex.__class__.__name__)
                 requests[0].add_exception(ex, self._data_request_handler._executor)
                 context.set_trailing_metadata((('is-error', 'true'),))
                 if self._failed_requests_metrics:

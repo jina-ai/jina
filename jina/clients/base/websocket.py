@@ -182,6 +182,10 @@ class WebSocketBaseClient(BaseClient):
                     if self.show_progress:
                         p_bar.update()
                     yield response
+            except Exception as e:
+                from jina.helper import send_telemetry_event
+                send_telemetry_event(event='exception', obj=self, exception=e.__class__.__name__)
+                raise
             finally:
                 if iolet.close_code == status.WS_1011_INTERNAL_ERROR:
                     raise ConnectionError(iolet.close_message)

@@ -112,6 +112,9 @@ class GRPCBaseClient(BaseClient):
             my_details = err.details()
             msg = f'gRPC error: {my_code} {my_details}'
 
+            from jina.helper import send_telemetry_event
+            send_telemetry_event(event='exception', obj=self, exception=err.__class__.__name__, grpc_error_code=my_code)
+
             if my_code == grpc.StatusCode.UNAVAILABLE:
                 self.logger.error(
                     f'{msg}\nThe ongoing request is terminated as the server is not available or closed already.'

@@ -1653,7 +1653,7 @@ def _parse_ports(port: str) -> Union[int, List]:
     return port
 
 
-def send_telemetry_event(event: str, obj: Any) -> None:
+def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
     """Sends in a thread a request with telemetry for a given event
     :param event: Event leading to the telemetry entry
     :param obj: Object to be tracked
@@ -1670,7 +1670,7 @@ def send_telemetry_event(event: str, obj: Any) -> None:
             metas, _ = get_full_version()
             data = base64.urlsafe_b64encode(
                 json.dumps(
-                    {**metas, 'event': f'{obj.__class__.__name__}.{event}'}
+                    {**metas, 'event': f'{obj.__class__.__name__}.{event}', **kwargs}
                 ).encode('utf-8')
             )
 
