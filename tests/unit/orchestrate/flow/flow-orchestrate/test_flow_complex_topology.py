@@ -1,4 +1,5 @@
 import threading
+import multiprocessing
 import time
 
 import pytest
@@ -36,15 +37,14 @@ def test_flow_external_executor_with_gateway():
     def serve_exec(**kwargs):
         FooExec.serve(**kwargs)
 
-    e = threading.Event()
-    t = threading.Thread(
+    e = multiprocessing.Event()
+    t = multiprocessing.Process(
         name='serve-exec',
         target=serve_exec,
-        kwargs={'port_expose': external_gateway_port, 'stop_event': e},
-        daemon=True,
+        kwargs={'port': external_gateway_port, 'stop_event': e},
     )
     t.start()
-    time.sleep(3)  # allow exec to start
+    time.sleep(5)  # allow exec to start
 
     with Flow().add(
         name='external_gateway_exec', external=True, port=external_gateway_port
@@ -53,6 +53,8 @@ def test_flow_external_executor_with_gateway():
         assert docs.texts == ['foo']
 
     e.set()
+    t.terminate()
+    t.join()
 
 
 class BarExec(Executor):
