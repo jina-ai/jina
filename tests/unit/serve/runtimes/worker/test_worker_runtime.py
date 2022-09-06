@@ -426,3 +426,50 @@ async def test_decorator_monitoring(port_generator):
     runtime_thread.join()
 
     assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+
+
+@pytest.mark.slow
+@pytest.mark.timeout(10)
+def test_error_in_worker_runtime_with_exit_on_exceptions(monkeypatch):
+    args = set_pod_parser().parse_args(['--exit-on-exceptions', 'RuntimeError'])
+
+    cancel_event = multiprocessing.Event()
+
+    def fail(*args, **kwargs):
+        raise RuntimeError('intentional error')
+
+    monkeypatch.setattr(DataRequestHandler, 'handle', fail)
+
+    def start_runtime(args, cancel_event):
+        with WorkerRuntime(args, cancel_event=cancel_event) as runtime:
+            runtime.run_forever()
+
+    runtime_thread = Process(
+        target=start_runtime,
+        args=(args, cancel_event),
+        daemon=True,
+    )
+    runtime_thread.start()
+
+    assert AsyncNewLoopRuntime.wait_for_ready_or_shutdown(
+        timeout=5.0,
+        ctrl_address=f'{args.host}:{args.port}',
+        ready_or_shutdown_event=Event(),
+    )
+
+    target = f'{args.host}:{args.port}'
+    with grpc.insecure_channel(
+        target,
+        options=GrpcConnectionPool.get_default_grpc_options(),
+    ) as channel:
+        stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
+        response, call = stub.process_single_data.with_call(_create_test_data_message())
+
+    assert response.header.status.code == jina_pb2.StatusProto.ERROR
+    assert 'is-error' in dict(call.trailing_metadata())
+    cancel_event.set()
+    runtime_thread.join()
+
+    assert response
+
+    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
