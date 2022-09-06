@@ -140,7 +140,6 @@ async def run_test_until_event(
         client_kwargs = dict(
             host='localhost',
             port=flow.port,
-            return_responses=True,
             asyncio=True,
         )
         client_kwargs.update(flow._common_kwargs)
@@ -166,6 +165,7 @@ async def run_test_until_event(
             endpoint,
             inputs=functools.partial(async_inputs, sent_ids, sleep_time),
             request_size=1,
+            return_responses=True
         ):
             responses.append(resp)
 
