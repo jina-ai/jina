@@ -212,10 +212,6 @@ Meta information helps other users to identify, search and reuse your Executor o
                         .replace('{{exec_keywords}}', str(exec_keywords.split(',')))
                         .replace('{{exec_url}}', exec_url)
                     )
-
-                    f = [
-                        v + '\n' for v in f.split('\n') if not ('{{' in v or '}}' in v)
-                    ]
                     fpw.writelines(f)
 
         Path(exec_path).mkdir(parents=True, exist_ok=True)
