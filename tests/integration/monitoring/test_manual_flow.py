@@ -283,7 +283,7 @@ def test_pending_request(port_generator, failure_in_executor, protocol):
         _assert_pending_value('0.0', runtime_name, port0)
 
         p_send.start()
-        time.sleep(1)
+        time.sleep(3)
 
         _assert_pending_value('1.0', runtime_name, port0)
 
