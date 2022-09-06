@@ -71,7 +71,7 @@ pytest-kind==21.1.3:        test
 pytest-lazy-fixture:        test
 torch:                      cicd
 psutil:                     test
-strawberry-graphql>=0.96.0: cicd,devel
+strawberry-graphql>=0.96.0,<0.128.0: cicd,devel
 sgqlc:                      cicd,devel
 bs4:                        cicd
 jsonschema:                 cicd
