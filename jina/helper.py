@@ -966,6 +966,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'session-id': str(random_uuid(use_uuid1=True)),
             'uptime': __uptime__,
             'ci-vendor': get_ci_vendor() or __unset_msg__,
+            'internal': 'jina-ai' in os.getenv('GITHUB_ACTION_REPOSITORY', __unset_msg__)
         }
 
         env_info = {k: os.getenv(k, __unset_msg__) for k in __jina_env__}
