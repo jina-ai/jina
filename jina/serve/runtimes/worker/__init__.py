@@ -1,6 +1,5 @@
 import argparse
 import contextlib
-import sys
 from abc import ABC
 from typing import List
 
@@ -8,6 +7,7 @@ import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
+from jina.excepts import RuntimeTerminated
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
@@ -197,7 +197,7 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                     and type(ex).__name__ in self.args.exit_on_exceptions
                 ):
                     self.logger.info('Exiting because of "--exit-on-exceptions".')
-                    sys.exit(1)
+                    raise RuntimeTerminated
 
                 requests[0].add_exception(ex, self._data_request_handler._executor)
                 context.set_trailing_metadata((('is-error', 'true'),))
