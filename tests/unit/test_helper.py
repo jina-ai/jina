@@ -367,3 +367,8 @@ def test_run_async():
 )
 def test_parse_port(port, output):
     assert _parse_ports(port) == output
+
+
+def test_parse_empty_string():
+    from jina.helper import parse_arg
+    assert [] == parse_arg('[]')

@@ -165,8 +165,8 @@ def deprecated_method(new_function_name):
 
 
 def retry(
-    num_retry: int = 3,
-    message: str = 'Calling {func_name} failed, retry attempt {attempt}/{num_retry}. Error: {error!r}',
+        num_retry: int = 3,
+        message: str = 'Calling {func_name} failed, retry attempt {attempt}/{num_retry}. Error: {error!r}',
 ):
     """
     Retry calling a function again in case of an error.
@@ -210,18 +210,18 @@ def get_readable_size(num_bytes: Union[int, float]) -> str:
     num_bytes = int(num_bytes)
     if num_bytes < 1024:
         return f'{num_bytes} Bytes'
-    elif num_bytes < 1024**2:
+    elif num_bytes < 1024 ** 2:
         return f'{num_bytes / 1024:.1f} KB'
-    elif num_bytes < 1024**3:
+    elif num_bytes < 1024 ** 3:
         return f'{num_bytes / (1024 ** 2):.1f} MB'
     else:
         return f'{num_bytes / (1024 ** 3):.1f} GB'
 
 
 def batch_iterator(
-    data: Iterable[Any],
-    batch_size: int,
-    axis: int = 0,
+        data: Iterable[Any],
+        batch_size: int,
+        axis: int = 0,
 ) -> Iterator[Any]:
     """
     Get an iterator of batches of data.
@@ -260,7 +260,7 @@ def batch_iterator(
             yield data
             return
         for _ in range(0, len(data), batch_size):
-            yield data[_ : _ + batch_size]
+            yield data[_: _ + batch_size]
     elif isinstance(data, Iterable):
         # as iterator, there is no way to know the length of it
         iterator = iter(data)
@@ -286,7 +286,10 @@ def parse_arg(v: str) -> Optional[Union[bool, int, str, list, float]]:
 
     if v.startswith('[') and v.endswith(']'):
         # function args must be immutable tuples not list
-        tmp = v.replace('[', '').replace(']', '').strip().split(',')
+        tmp = v.replace('[', '').replace(']', '').strip()
+        if len(tmp) == 0:
+            return []
+        tmp = tmp.split(',')
         if len(tmp) > 0:
             return [parse_arg(vv.strip()) for vv in tmp]
         else:
@@ -561,7 +564,7 @@ def expand_env_var(v: str) -> Optional[Union[bool, int, str, list, float]]:
 
 
 def expand_dict(
-    d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True
+        d: Dict, expand_fn=expand_env_var, resolve_cycle_ref=True
 ) -> Dict[str, Any]:
     """
     Expand variables from YAML file.
@@ -663,10 +666,10 @@ if __windows__:
 
 
 def colored(
-    text: str,
-    color: Optional[str] = None,
-    on_color: Optional[str] = None,
-    attrs: Optional[Union[str, list]] = None,
+        text: str,
+        color: Optional[str] = None,
+        on_color: Optional[str] = None,
+        attrs: Optional[Union[str, list]] = None,
 ) -> str:
     """
     Give the text with color.
@@ -723,10 +726,10 @@ def colored(
 
 
 def colored_rich(
-    text: str,
-    color: Optional[str] = None,
-    on_color: Optional[str] = None,
-    attrs: Optional[Union[str, list]] = None,
+        text: str,
+        color: Optional[str] = None,
+        on_color: Optional[str] = None,
+        attrs: Optional[Union[str, list]] = None,
 ) -> str:
     """
     Give the text with color. You should only use it when printing with rich print. Othersiwe please see the colored
@@ -819,11 +822,11 @@ class ArgNamespace:
 
     @staticmethod
     def kwargs2namespace(
-        kwargs: Dict[str, Union[str, int, bool]],
-        parser: ArgumentParser,
-        warn_unknown: bool = False,
-        fallback_parsers: Optional[List[ArgumentParser]] = None,
-        positional_args: Optional[Tuple[str, ...]] = None,
+            kwargs: Dict[str, Union[str, int, bool]],
+            parser: ArgumentParser,
+            warn_unknown: bool = False,
+            fallback_parsers: Optional[List[ArgumentParser]] = None,
+            positional_args: Optional[Tuple[str, ...]] = None,
     ) -> Namespace:
         """
         Convert dict to a namespace.
@@ -857,7 +860,7 @@ class ArgNamespace:
 
     @staticmethod
     def get_non_defaults_args(
-        args: Namespace, parser: ArgumentParser, taboo: Optional[Set[str]] = None
+            args: Namespace, parser: ArgumentParser, taboo: Optional[Set[str]] = None
     ) -> Dict:
         """
         Get non-default args in a dict.
@@ -878,7 +881,7 @@ class ArgNamespace:
 
     @staticmethod
     def flatten_to_dict(
-        args: Union[Dict[str, 'Namespace'], 'Namespace']
+            args: Union[Dict[str, 'Namespace'], 'Namespace']
     ) -> Dict[str, Any]:
         """Convert argparse.Namespace to dict to be uploaded via REST.
 
