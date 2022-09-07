@@ -18,6 +18,7 @@ from jina.helper import (
     get_ci_vendor,
     is_port_free,
     is_yaml_filepath,
+    parse_arg,
     random_port,
     reset_ports,
     retry,
@@ -367,3 +368,19 @@ def test_run_async():
 )
 def test_parse_port(port, output):
     assert _parse_ports(port) == output
+
+
+@pytest.mark.parametrize(
+    'input, expected',
+    [
+        ('12', 12),
+        ('1.5', 1.5),
+        ('str', 'str'),
+        ('[]', []),
+        ('[1, 1.5, 5]', [1, 1.5, 5]),
+        ('true', True),
+        ('False', False),
+    ],
+)
+def test_parse_arg(input, expected):
+    assert parse_arg(input) == expected
