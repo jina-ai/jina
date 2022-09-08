@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/checker.html" />
 
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
-        <title>jina.checker - Jina 3.9.0 documentation</title>
+        <title>jina.checker - Jina 3.9.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -146,7 +146,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.9.0 documentation</div>
+                <div class="brand">Jina 3.9.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -378,18 +378,21 @@
 
         <span class="kn">import</span> <span class="nn">time</span>
 
+        <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
         <span class="kn">from</span> <span class="nn">jina.logging.profile</span> <span class="kn">import</span> <span class="n">TimeContext</span>
         <span class="kn">from</span> <span class="nn">jina.serve.runtimes.worker</span> <span class="kn">import</span> <span class="n">WorkerRuntime</span>
 
-        <span class="n">ctrl_addr</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">total_time</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">total_success</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">retries</span><span class="p">):</span>
                 <span class="k">with</span> <span class="n">TimeContext</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;ping </span><span class="si">{</span><span class="n">ctrl_addr</span><span class="si">}</span><span class="s1"> at </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1"> round&#39;</span><span class="p">,</span> <span class="n">default_logger</span>
+                    <span class="sa">f</span><span class="s1">&#39;ping </span><span class="si">{</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1"> at </span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s1"> round&#39;</span><span class="p">,</span> <span class="n">default_logger</span>
                 <span class="p">)</span> <span class="k">as</span> <span class="n">tc</span><span class="p">:</span>
-                    <span class="n">r</span> <span class="o">=</span> <span class="n">WorkerRuntime</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span><span class="n">ctrl_addr</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">target</span> <span class="o">==</span> <span class="s1">&#39;executor&#39;</span><span class="p">:</span>
+                        <span class="n">r</span> <span class="o">=</span> <span class="n">WorkerRuntime</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">target</span> <span class="o">==</span> <span class="s1">&#39;flow&#39;</span><span class="p">:</span>
+                        <span class="n">r</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span><span class="o">.</span><span class="n">is_flow_ready</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
                         <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                             <span class="s1">&#39;not responding, retry (</span><span class="si">%d</span><span class="s1">/</span><span class="si">%d</span><span class="s1">) in 1s&#39;</span>
@@ -418,35 +421,6 @@
 
         <span class="c1"># returns 1 (anomaly) when it comes to here</span>
         <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="dry_run_checker"><a class="viewcode-back" href="../../../api/jina.checker/#jina.checker.dry_run_checker">[docs]</a><span class="k">def</span> <span class="nf">dry_run_checker</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="s1">&#39;argparse.Namespace&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    call dry run on the given endpoint</span>
-<span class="sd">    :param args: args provided by the CLI.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># No retry mechanism for dry run since it is built in the Flow</span>
-
-    <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
-
-    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
-
-    <span class="k">try</span><span class="p">:</span>
-
-        <span class="k">if</span> <span class="n">client</span><span class="o">.</span><span class="n">dry_run</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">timeout</span><span class="p">):</span>
-            <span class="n">default_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;dry run successful&#39;</span><span class="p">)</span>
-            <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">default_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;dry run failed&#39;</span><span class="p">)</span>
-            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-        <span class="k">pass</span>
-
-    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
-
-
-<span class="c1"># returns 1 (anomaly) when it comes to here</span>
 </pre></div>
                 </article>
             </div>

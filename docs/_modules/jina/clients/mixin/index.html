@@ -6,7 +6,7 @@
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/clients/mixin.html" />
 
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
-        <title>jina.clients.mixin - Jina 3.9.0 documentation</title>
+        <title>jina.clients.mixin - Jina 3.9.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
@@ -146,7 +146,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../">
-                <div class="brand">Jina 3.9.0 documentation</div>
+                <div class="brand">Jina 3.9.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -366,7 +366,7 @@
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partialmethod</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_or_reuse_loop</span><span class="p">,</span> <span class="n">run_async</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">deprecate_by</span><span class="p">,</span> <span class="n">get_or_reuse_loop</span><span class="p">,</span> <span class="n">run_async</span>
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -455,25 +455,29 @@
 <div class="viewcode-block" id="HealthCheckMixin"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin">[docs]</a><span class="k">class</span> <span class="nc">HealthCheckMixin</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;The Health check Mixin for Client and Flow to expose `dry_run` API&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="HealthCheckMixin.dry_run"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin.dry_run">[docs]</a>    <span class="k">def</span> <span class="nf">dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Sends a dry run to the Flow to validate if the Flow is ready to receive requests</span>
+<div class="viewcode-block" id="HealthCheckMixin.is_flow_ready"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin.is_flow_ready">[docs]</a>    <span class="k">def</span> <span class="nf">is_flow_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check if the Flow is ready to receive requests</span>
 
 <span class="sd">        :param kwargs: potential kwargs received passed from the public interface</span>
 <span class="sd">        :return: boolean indicating the health/readiness of the Flow</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">run_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_dry_run</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">run_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_is_flow_ready</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="n">dry_run</span> <span class="o">=</span> <span class="n">deprecate_by</span><span class="p">(</span><span class="n">is_flow_ready</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AsyncHealthCheckMixin"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.AsyncHealthCheckMixin">[docs]</a><span class="k">class</span> <span class="nc">AsyncHealthCheckMixin</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;The Health check Mixin for Client and Flow to expose `dry_run` API&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="AsyncHealthCheckMixin.dry_run"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.AsyncHealthCheckMixin.dry_run">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">dry_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Sends a dry run to the Flow to validate if the Flow is ready to receive requests</span>
+<div class="viewcode-block" id="AsyncHealthCheckMixin.is_flow_ready"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.AsyncHealthCheckMixin.is_flow_ready">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">is_flow_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check if the Flow is ready to receive requests</span>
 
 <span class="sd">        :param kwargs: potential kwargs received passed from the public interface</span>
 <span class="sd">        :return: boolean indicating the health/readiness of the Flow</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_dry_run</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">_is_flow_ready</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="n">dry_run</span> <span class="o">=</span> <span class="n">deprecate_by</span><span class="p">(</span><span class="n">is_flow_ready</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_render_response_table</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">ed</span><span class="p">,</span> <span class="n">show_table</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>

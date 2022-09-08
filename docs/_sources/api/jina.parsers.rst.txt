@@ -20,7 +20,6 @@ Submodules
    jina.parsers.client
    jina.parsers.create
    jina.parsers.deprecated
-   jina.parsers.dryrun
    jina.parsers.export
    jina.parsers.flow
    jina.parsers.helper
