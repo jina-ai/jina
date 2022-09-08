@@ -434,12 +434,19 @@ class Flow(
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
-        :param uses: The config of the custom gateway, it could be one of the followings:
-                  * a Gateway class
-                  * a Gateway YAML file
+        :param uses: The config of the executor, it could be one of the followings:
+                  * the string literal of an Executor class name
+                  * an Executor YAML file (.yml, .yaml, .jaml)
+                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
                   * a docker image (must start with `docker://`)
-                  * a Flow definition YAML file
+                  * the string literal of a YAML config (must start with `!` or `jtype: `)
+                  * the string literal of a JSON config
 
+                  When use it under Python, one can use the following values additionally:
+                  - a Python dict that represents the config
+                  - a text file stream has `.read()` interface
+        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
+        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
 
@@ -461,6 +468,7 @@ class Flow(
               When not given, then the default naming strategy will apply.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
+        :param uses: The YAML path represents a flow. It can be either a local file path or a URL.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
         .. # noqa: DAR102
