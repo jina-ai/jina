@@ -493,7 +493,42 @@ def my_callback(resp: DataRequest):
 
 ### Handle exceptions in callbacks
 
-Server error are handled by the `on_error` callback function.
+Server error can be caught by Client's `on_error` callback function. You can get the error message and traceback from `header.status`:
+
+```python
+from pprint import pprint
+
+from jina import Flow, Client, Executor, requests
+
+
+class MyExec1(Executor):
+    @requests
+    def foo(self, **kwargs):
+        raise NotImplementedError
+
+
+with Flow(port=12345).add(uses=MyExec1) as f:
+    c = Client(port=f.port)
+    c.post(on='/', on_error=lambda x: pprint(x.header.status))
+```
+
+
+```text
+code: ERROR
+description: "NotImplementedError()"
+exception {
+  name: "NotImplementedError"
+  stacks: "Traceback (most recent call last):\n"
+  stacks: "  File \"/Users/hanxiao/Documents/jina/jina/serve/runtimes/worker/__init__.py\", line 181, in process_data\n    result = await self._data_request_handler.handle(requests=requests)\n"
+  stacks: "  File \"/Users/hanxiao/Documents/jina/jina/serve/runtimes/request_handlers/data_request_handler.py\", line 152, in handle\n    return_data = await self._executor.__acall__(\n"
+  stacks: "  File \"/Users/hanxiao/Documents/jina/jina/serve/executors/__init__.py\", line 301, in __acall__\n    return await self.__acall_endpoint__(__default_endpoint__, **kwargs)\n"
+  stacks: "  File \"/Users/hanxiao/Documents/jina/jina/serve/executors/__init__.py\", line 322, in __acall_endpoint__\n    return func(self, **kwargs)\n"
+  stacks: "  File \"/Users/hanxiao/Documents/jina/jina/serve/executors/decorators.py\", line 213, in arg_wrapper\n    return fn(executor_instance, *args, **kwargs)\n"
+  stacks: "  File \"/Users/hanxiao/Documents/jina/toy44.py\", line 10, in foo\n    raise NotImplementedError\n"
+  stacks: "NotImplementedError\n"
+  executor: "MyExec1"
+}
+```
 
 
 

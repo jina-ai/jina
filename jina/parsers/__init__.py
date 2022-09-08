@@ -186,7 +186,7 @@ def get_main_parser():
         sp.add_parser(
             'ping',
             help='Ping an Executor/Flow',
-            description='Ping a remote Executor or a Flow and check its network connectivity.',
+            description='Ping a remote Executor or a Flow.',
             formatter_class=_chf,
         )
     )

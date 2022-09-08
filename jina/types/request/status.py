@@ -49,7 +49,7 @@ class StatusMessage(ProtoTypeMixin):
         self.proto.exception.name = ex.__class__.__name__
         self.proto.exception.args.extend([str(v) for v in ex.args])
         self.proto.exception.stacks.extend(
-            traceback.format_exception(etype=type(ex), value=ex, tb=ex.__traceback__)
+            traceback.format_exception(type(ex), value=ex, tb=ex.__traceback__)
         )
 
     def set_code(self, code):
