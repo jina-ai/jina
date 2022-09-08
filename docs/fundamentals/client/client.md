@@ -1,10 +1,40 @@
 (client)=
 # Client
-{class}`~jina.Client` enables you to send Documents to a running {class}`~jina.Flow` in a number of different ways, as shown below.
+{class}`~jina.Client` enables you to send Documents to a running {class}`~jina.Flow`. Client supports four different networking protocols: **HTTP**, **gRPC**, **WebSocket** and **GraphQL**.
 
-Clients support four different networking protocols: **HTTP**, **gRPC**, **WebSocket** and **GraphQL**
+You may have observed two styles of using a Client in the docs:
 
-For each of them, you first connect your Client to the API Gateway, before you can send requests to it.
+````{tab} Implicit, inside a Flow
+
+```{code-block} python
+---
+emphasize-lines: 6
+---
+from jina import Flow
+
+f = Flow()
+
+with f:
+    f.post('/')
+```
+
+````
+
+````{tab} Explicit, outside a Flow
+
+```{code-block} python
+---
+emphasize-lines: 3,4
+---
+from jina import Client
+
+c = Client(...)
+c.post('/')
+```
+
+````
+
+The implicit style is easier in debugging and local development, as you don't need to specify the host and port of the Flow. However, it makes very strong assumptions on (1) one Flow only corresponds to one client (2) the Flow is running on the same machine as the Client. For those reasons, explicit style is recommended for production use.
 
 ```{hint}
 If you want to connect to your Flow from a programming language other than Python, please follow the third party 
@@ -14,20 +44,26 @@ client {ref}`documentation <third-party-client>`.
 
 ## Connect
 
-If there is not already a Flow running in the background or on the network, you can start one:
+To connect to a Flow started by:
 
 ```python
 from jina import Flow
 
-PORT = 1234
-PROTOCOL = 'grpc'  # one of 'grpc', 'http', 'websocket'
-
-with Flow(port=PORT, protocol=PROTOCOL) as f:
+with Flow(port=1234, protocol='grpc') as f:
     f.block()
 ```
 
-To connect to the `Flow`, the Client has to specify the followings parameters.
-All af these have to match the Flow and how it was set up:
+```text
+────────────────────────── 🎉 Flow is ready to serve! ──────────────────────────
+╭────────────── 🔗 Endpoint ───────────────╮
+│  ⛓      Protocol                   GRPC  │
+│  🏠        Local           0.0.0.0:1234  │
+│  🔒      Private     192.168.1.126:1234  │
+│  🌍       Public    87.191.159.105:1234  │
+╰──────────────────────────────────────────╯
+```
+
+The Client has to specify the followings parameters to match the Flow and how it was set up:
 * the `protocol` it needs to use to communicate with the Flow
 * the `host` and the `port` as exposed by the Flow
 * if it needs to use `TLS` encryption
@@ -70,6 +106,8 @@ Equivalently, you can pass each relevant parameter as a keyword argument:
 ````{tab} TLS disabled
 
 ```python
+from jina import Client
+
 Client(host='my.awesome.flow', port=1234, protocol='http')
 Client(host='my.awesome.flow', port=1234, protocol='websocket')
 Client(host='my.awesome.flow', port=1234, protocol='grpc')
@@ -80,6 +118,8 @@ Client(host='my.awesome.flow', port=1234, protocol='grpc')
 ````{tab} TLS enabled
 
 ```python
+from jina import Client
+
 Client(host='my.awesome.flow', port=1234, protocol='http', tls=True)
 Client(host='my.awesome.flow', port=1234, protocol='websocket', tls=True)
 Client(host='my.awesome.flow', port=1234, protocol='grpc', tls=True)
@@ -91,6 +131,8 @@ Client(host='my.awesome.flow', port=1234, protocol='grpc', tls=True)
 You can also use a mixe of both:
 
 ```python
+from jina import Client
+
 Client(host='https://my.awesome.flow', port=1234)
 Client(host='my.awesome.flow:1234', protocol='http', tls=True)
 ```
@@ -100,21 +142,13 @@ Client(host='my.awesome.flow:1234', protocol='http', tls=True)
 You can't define these parameters both by keyword argument and by host scheme - you can't have two sources of truth.
 Example: the following code will raise an exception:
 ```python
+from jina import Client
+
 Client(host='https://my.awesome.flow:1234', port=4321)
 ```
 ````
 
-````{admonition} Hint
-:class: hint
-The arguments above have usefule defaults: `protocol='grpc'` and `host='0.0.0.0'`.
-This is particularly useful when debugging or accessing a Flow on your local machine.
 
-To connect to a Flow `f` it is therefore often enough to do the following:
-
-```{code-block} python
-c = Client(port=f.port)
-```
-````
 
 ## Test readiness of the Flow
 
@@ -150,31 +184,89 @@ After a {class}`~jina.Client` has connected to a {class}`~jina.Flow`, it can sen
 This expects as inputs the {ref}`Executor endpoint <exec-endpoint>` that you want to target, as well as a Document or Iterable of Documents:
 
 
-```python
-from docarray import Document, DocumentArray
+````{tab} A single Document
 
+```{code-block} python
+---
+emphasize-lines: 6
+---
+from docarray import Document
+
+d1 = Document(content='hello')
+client = Client(...)
+
+client.post('/endpoint', d1)
+```
+
+````
+
+````{tab} A list of Documents
+
+```{code-block} python
+---
+emphasize-lines: 7
+---
+from docarray import Document
 
 d1 = Document(content='hello')
 d2 = Document(content='world')
+client = Client(...)
 
+client.post('/endpoint', [d1, d2])
+
+```
+
+````
+
+````{tab} A DocumentArray
+
+```{code-block} python
+---
+emphasize-lines: 6
+---
+from docarray import DocumentArray
+
+da = DocumentArray.empty(10)
+client = Client(...)
+
+client.post('/endpoint', da)
+```
+
+````
+
+````{tab} A Generator of Document
+
+```{code-block} python
+---
+emphasize-lines: 3-5, 9
+---
+from docarray import Document
 
 def doc_gen():
     for j in range(10):
         yield Document(content=f'hello {j}')
+        
+client = Client(...)
 
-
-client = Client(port=PORT)
-
-client.post('/endpoint', d1)  # Single Document
-
-client.post('/endpoint', [d1, d2])  # List of Documents
-
-client.post('/endpoint', doc_gen)  # Document generator
-
-client.post('/endpoint', DocumentArray([d1, d2]))  # DocumentArray
-
-client.post('/endpoint')  # Empty
+client.post('/endpoint', doc_gen)
 ```
+
+````
+
+
+````{tab} No Document
+
+```{code-block} python
+---
+emphasize-lines: 3
+---
+client = Client(...)
+
+client.post('/endpoint')
+```
+
+````
+
 
 
 ```{admonition} Caution
@@ -347,6 +439,16 @@ The Executor `exec1` will receive `{'traversal_path':'@r'}` as parameters, where
 
 This feature is intended for the case where there are multiple Executors that take the same parameter names, but you want to use different values for each Executor.
 This is often the case for Executors from the Hub, since they tend to share a common interface for parameters.
+
+```{admonition} Difference to target_executor
+
+Why do we need this feature if we already have `target_executor`?
+
+On the surface, both of them is about sending information to a partial Flow, i.e. a subset of Executors. However, they work differently under the hood. `target_executor` directly send info to those specified executors, ignoring the topology of the Flow; whereas `executor__parameter`'s request follows the topology of the Flow and only send parameters to the Executor that matches.
+
+Think about roll call and passing notes in a classroom. `target_executor` is like calling a student directly, whereas `executor__parameter` is like asking him/her to pass the notes to the next student one by one while each picks out the note with its own name.
+```
+
 
 
 (callback-functions)=
