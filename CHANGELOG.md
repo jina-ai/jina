@@ -230,6 +230,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -15007,4 +15008,24 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```a9b80aec```](https://github.com/jina-ai/jina/commit/a9b80aec484ac6ced21c71dddb285afa40384049)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```1df9b459```](https://github.com/jina-ai/jina/commit/1df9b45919b5d24cd0d61dbcaec633c43c2e02bc)] __-__ __version__: the next version will be 3.8.4 (*Jina Dev Bot*)
+
+<a name=release-note-3-9-0></a>
+## Release Note (`3.9.0`)
+
+> Release time: 2022-09-08 11:53:16
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Joan Fontanals,  Andrei Ungureanu,  Jina Dev Bot,  🙇
+
+
+### 🐞 Bug fixes
+
+ - [[```40af2f04```](https://github.com/jina-ai/jina/commit/40af2f047388ace9916f512a0a5032e769c9876f)] __-__ __hubio__: add default values for metas when using `jina hub new` (#5149) (*Andrei Ungureanu*)
+
+### 🍹 Other Improvements
+
+ - [[```b49aa212```](https://github.com/jina-ai/jina/commit/b49aa212d92a1ac5f80d632d83696214f44d4b30)] __-__ bump jina version (#5150) (*Joan Fontanals*)
+ - [[```731819a4```](https://github.com/jina-ai/jina/commit/731819a4faffbb58e0caeb1930417e6102a478e3)] __-__ __version__: the next version will be 3.8.5 (*Jina Dev Bot*)
 
