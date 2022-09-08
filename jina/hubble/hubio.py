@@ -260,8 +260,8 @@ py_modules:
 metas:
   name: {exec_name}
   description: {exec_description if exec_description != '{{}}' else ''}
-  keywords: {exec_keywords if exec_keywords != '{{}}' else '[]'}
   url: {exec_url if exec_url != '{{}}' else ''}
+  keywords: {exec_keywords if exec_keywords != '{{}}' else '[]'}
 ''',
                     'yaml',
                     theme='monokai',
