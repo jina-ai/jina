@@ -2,6 +2,7 @@
 # You need to install linkerd cli on your local machine if you want to run the k8s tests https://linkerd.io/2.11/getting-started/#step-1-install-the-cli
 import asyncio
 import os
+import re
 
 import pytest
 import requests as req
@@ -742,12 +743,12 @@ async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
             endpoint='/',
         )
     except:
+        asyncio.sleep(0.1)
         pass
 
-    await asyncio.sleep(0.2)
-
     deployments = app_client.list_namespaced_deployment(namespace=namespace)
-    ready_replicas = [item.status.ready_replicas for item in deployments.items]
-    assert ready_replicas == 1
+    all_ready_replicas = [item.status.ready_replicas for item in deployments.items]
+    unready_replicas = [replica for replica in all_ready_replicas if replica is None]
+    assert len(unready_replicas) == 1
 
     core_client.delete_namespace(namespace)
