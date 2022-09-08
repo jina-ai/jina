@@ -192,6 +192,11 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                     exc_info=not self.args.quiet_error,
                 )
 
+                requests[0].add_exception(ex, self._data_request_handler._executor)
+                context.set_trailing_metadata((('is-error', 'true'),))
+                if self._failed_requests_metrics:
+                    self._failed_requests_metrics.inc()
+
                 if (
                     self.args.exit_on_exceptions
                     and type(ex).__name__ in self.args.exit_on_exceptions
@@ -199,10 +204,6 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                     self.logger.info('Exiting because of "--exit-on-exceptions".')
                     raise RuntimeTerminated
 
-                requests[0].add_exception(ex, self._data_request_handler._executor)
-                context.set_trailing_metadata((('is-error', 'true'),))
-                if self._failed_requests_metrics:
-                    self._failed_requests_metrics.inc()
                 return requests[0]
 
     async def _status(self, empty, context) -> jina_pb2.JinaInfoProto:
