@@ -1,7 +1,7 @@
 from jina import DocumentArray, Executor, requests
 
 
-class FailingExecutor(Executor):
+class TestExecutor(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         from jina.logging.logger import JinaLogger
