@@ -208,9 +208,17 @@ Meta information helps other users to identify, search and reuse your Executor o
                     f = (
                         fp.read()
                         .replace('{{exec_name}}', exec_name)
-                        .replace('{{exec_description}}', exec_description)
-                        .replace('{{exec_keywords}}', str(exec_keywords.split(',')))
-                        .replace('{{exec_url}}', exec_url)
+                        .replace(
+                            '{{exec_description}}',
+                            exec_description if exec_description != '{{}}' else '',
+                        )
+                        .replace(
+                            '{{exec_keywords}}',
+                            str(exec_keywords.split(','))
+                            if exec_keywords != '{{}}'
+                            else '[]',
+                        )
+                        .replace('{{exec_url}}', exec_url if exec_url != '{{}}' else '')
                     )
                     fpw.writelines(f)
 
@@ -242,8 +250,8 @@ Meta information helps other users to identify, search and reuse your Executor o
         # adding the columns in order of `ls` output
         table.add_row(
             'config.yml',
-            'The YAML config file of the Executor. You can define [bold]__init__[/bold] arguments using [bold]with[/bold] keyword.' +\
-            '\nYou can also define metadata for the executor, for better appeal on Jina Hub.',
+            'The YAML config file of the Executor. You can define [bold]__init__[/bold] arguments using [bold]with[/bold] keyword.'
+            + '\nYou can also define metadata for the executor, for better appeal on Jina Hub.',
         )
 
         table.add_row(
@@ -259,9 +267,9 @@ py_modules:
   - executor.py
 metas:
   name: {exec_name}
-  description: {exec_description if exec_description != '{{}}' else 'None'}
-  url: {exec_url if exec_url != '{{}}' else 'None'}
-  keywords: {exec_keywords if exec_keywords != '{{}}' else 'None'}
+  description: {exec_description if exec_description != '{{}}' else ''}
+  url: {exec_url if exec_url != '{{}}' else ''}
+  keywords: {exec_keywords if exec_keywords != '{{}}' else '[]'}
 ''',
                     'yaml',
                     theme='monokai',
