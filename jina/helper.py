@@ -286,9 +286,9 @@ def parse_arg(v: str) -> Optional[Union[bool, int, str, list, float]]:
 
     if v.startswith('[') and v.endswith(']'):
         # function args must be immutable tuples not list
-        tmp = v.replace('[', '').replace(']', '').strip().split(',')
+        tmp = v.replace('[', '').replace(']', '').strip()
         if len(tmp) > 0:
-            return [parse_arg(vv.strip()) for vv in tmp]
+            return [parse_arg(vv.strip()) for vv in tmp.split(',')]
         else:
             return []
     try:
