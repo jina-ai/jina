@@ -743,12 +743,10 @@ async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
             endpoint='/',
         )
     except:
-        asyncio.sleep(0.1)
-        pass
+        await asyncio.sleep(1)
 
-    deployments = app_client.list_namespaced_deployment(namespace=namespace)
-    all_ready_replicas = [item.status.ready_replicas for item in deployments.items]
-    unready_replicas = [replica for replica in all_ready_replicas if replica is None]
-    assert len(unready_replicas) == 1
+    pods = core_client.list_namespaced_pod(namespace=namespace).items
+    pod_restarts = [item.status.container_statuses[0].restart_count for item in pods]
+    assert any([count for count in pod_restarts if count > 0])
 
     core_client.delete_namespace(namespace)
