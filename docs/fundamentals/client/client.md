@@ -1,6 +1,6 @@
 (client)=
 # Client
-{class}`~jina.Client` enables you to send Documents to a running {class}`~jina.Flow`. Client supports four different networking protocols: **HTTP**, **gRPC**, **WebSocket** and **GraphQL**.
+{class}`~jina.Client` enables you to send Documents to a running {class}`~jina.Flow`. Same as Gateway, Client supports four networking protocols: **gRPC**, **HTTP**, **WebSocket** and **GraphQL** with/without TLS.
 
 You may have observed two styles of using a Client in the docs:
 
@@ -28,13 +28,13 @@ emphasize-lines: 3,4
 ---
 from jina import Client
 
-c = Client(...)
+c = Client(...)  # must match the Flow setup
 c.post('/')
 ```
 
 ````
 
-The implicit style is easier in debugging and local development, as you don't need to specify the host and port of the Flow. However, it makes very strong assumptions on (1) one Flow only corresponds to one client (2) the Flow is running on the same machine as the Client. For those reasons, explicit style is recommended for production use.
+The implicit style is easier in debugging and local development, as you don't need to specify the host, port and protocol of the Flow. However, it makes very strong assumptions on (1) one Flow only corresponds to one client (2) the Flow is running on the same machine as the Client. For those reasons, explicit style is recommended for production use.
 
 ```{hint}
 If you want to connect to your Flow from a programming language other than Python, please follow the third party 
