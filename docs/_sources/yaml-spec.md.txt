@@ -17,14 +17,6 @@ Executor level YAML is placed inside the Executor directory, as a part of Execut
 Define the argument of `__init__`, Python module dependencies and other settings of an Executor. 
 ::::
 
-::::{grid-item-card} Hub Manifest YAML
-:link: fundamentals/executor/hub/yaml-spec
-:link-type: doc
-
-Define meta information about how the Executor appears in Jina Hub.
-
-::::
-
 
 :::::
 

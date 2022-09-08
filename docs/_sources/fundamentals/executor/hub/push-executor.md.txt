@@ -14,10 +14,7 @@ There are two types of sharing:
 jina hub push [--public/--private] <path_to_executor_folder>
 ```
 
-```{figure} screenshots/hub-push.gif
-:align: center
-```
-
+<script id="asciicast-tpvuZ9u0lU2IumRyLlly3JI93" src="https://asciinema.org/a/tpvuZ9u0lU2IumRyLlly3JI93.js" async></script>
 
 It will return `NAME` & `SECRET`, which you will need to use (if the Executor is private) or update the Executor. **Please keep them carefully.**
 
