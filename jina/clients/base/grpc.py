@@ -5,7 +5,7 @@ import grpc
 
 from jina.clients.base import BaseClient
 from jina.clients.helper import callback_exec
-from jina.excepts import BadClient, BadClientInput, InternalNetworkError
+from jina.excepts import BadClientInput, BadServerFlow, InternalNetworkError
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
@@ -135,7 +135,7 @@ class GRPCBaseClient(BaseClient):
                     'please double check your input iterator'
                 ) from err
             else:
-                raise BadClient(msg) from err
+                raise BadServerFlow(msg) from err
         except:
             # Not sure why, adding this line helps in fixing a hanging test
             raise

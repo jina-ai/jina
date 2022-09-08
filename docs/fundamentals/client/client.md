@@ -116,6 +116,14 @@ c = Client(port=f.port)
 ```
 ````
 
+## Test readiness of the Flow
+
+```{include} ../flow/health-check.md
+:start-after: <!-- start flow-ready -->
+:end-before: <!-- end flow-ready -->
+```
+
+
 ## Profiling the network
 
 Before sending any real data, you can test the connectivity and network latency by calling the {meth}`~jina.Client.profiling` method:
@@ -176,6 +184,105 @@ However, once your solution is deployed remotely, the Flow interface is not pres
 Hence, `flow.post()` is not recommended outside of testing or debugging use cases.
 ```
 
+
+
+### Send data asynchronously
+
+There also exists an async version of the Python Client which works with {meth}`~jina.clients.mixin.PostMixin.post` and {meth}`~jina.clients.mixin.MutateMixin.mutate`.
+
+While the standard `Client` is also asynchronous under the hood, its async version exposes this fact to the outside world,
+by allowing *coroutines* as input, and returning an *asynchronous iterator*.
+This means you can iterate over Responses one by one, as they come in.
+
+```python
+import asyncio
+
+from jina import Client, Flow, Document
+
+
+async def async_inputs():
+    for _ in range(10):
+        yield Document()
+        await asyncio.sleep(0.1)
+
+
+async def run_client(port):
+    client = Client(port=port, asyncio=True)
+    async for resp in client.post('/', async_inputs, request_size=1):
+        print(resp)
+
+
+with Flow() as f:  # Using it as a Context Manager will start the Flow
+    asyncio.run(run_client(f.port))
+```
+
+Async send is useful when calling a Flow from an Executor, as described in {ref}`async-executors`.
+
+```python
+from jina import Client, Executor, requests, DocumentArray
+
+
+class DummyExecutor(Executor):
+
+    c = Client(host='grpc://0.0.0.0:51234', asyncio=True)
+
+    @requests
+    async def process(self, docs: DocumentArray, **kwargs):
+        self.c.post('/', docs)
+```
+
+
+### Send data in batches
+
+Especially during indexing, a Client can send up to thousands or millions of Documents to a {class}`~jina.Flow`.
+Those Documents are internally batched into a `Request`, providing a smaller memory footprint and faster response times thanks
+to {ref}`callback functions <callback-functions>`.
+
+The size of these batches can be controlled with the `request_size` keyword.
+The default `request_size` is 100 Documents. The optimal size will depend on your use case.
+```python
+from jina import Flow, Client, Document, DocumentArray
+
+with Flow() as f:
+    client = Client(port=f.port)
+    client.post('/', DocumentArray(Document() for _ in range(100)), request_size=10)
+```
+
+### Send data to specific Executor
+
+Usually a {class}`~jina.Flow` will send each request to all {class}`~jina.Executor`s with matching endpoints as configured. But the {class}`~jina.Client` also allows you to only target specific Executors in a Flow using the `target_executor` keyword. The request will then only be processed by the Executors which match the provided target_executor regex. Its usage is shown in the listing below.
+
+```python
+from jina import Client, Executor, Flow, requests, Document, DocumentArray
+
+
+class FooExecutor(Executor):
+    @requests
+    async def foo(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text=f'foo was here and got {len(docs)} document'))
+
+
+class BarExecutor(Executor):
+    @requests
+    async def bar(self, docs: DocumentArray, **kwargs):
+        docs.append(Document(text=f'bar was here and got {len(docs)} document'))
+
+
+f = (
+    Flow()
+    .add(uses=FooExecutor, name='fooExecutor')
+    .add(uses=BarExecutor, name='barExecutor')
+)
+
+with f:  # Using it as a Context Manager will start the Flow
+    client = Client(port=f.port)
+    docs = client.post(on='/', target_executor='bar*')
+    print(docs.texts)
+```
+This will send the request to all Executors whose names start with 'bar', such as 'barExecutor'.
+In the simplest case, you can specify a precise Executor name, and the request will be sent only to that single Executor.
+
+
 ## Send parameters
 
 The {class}`~jina.Client` can also send parameters to the {class}`~jina.Executor`s as shown below:
@@ -223,11 +330,14 @@ and none of the other Executors will receive it.
 For instance in the following Flow:
 
 ```python
-from jina import Flow, DocumentArray
+from jina import Flow, DocumentArray, Client
 
-with Flow().add(name='exec1').add(name='exec2') as flow:
+with Flow().add(name='exec1').add(name='exec2') as f:
 
-    flow.index(
+    client = Client(port=f.port)
+
+    client.post(
+        '/index',
         DocumentArray.empty(size=5),
         parameters={'exec1__traversal_path': '@r', 'exec2__traversal_path': '@c'},
     )
@@ -238,103 +348,6 @@ The Executor `exec1` will receive `{'traversal_path':'@r'}` as parameters, where
 This feature is intended for the case where there are multiple Executors that take the same parameter names, but you want to use different values for each Executor.
 This is often the case for Executors from the Hub, since they tend to share a common interface for parameters.
 
-
-
-## Async send
-
-There also exists an async version of the Python Client which works with {meth}`~jina.clients.mixin.PostMixin.post` and {meth}`~jina.clients.mixin.MutateMixin.mutate`.
-
-While the standard `Client` is also asynchronous under the hood, its async version exposes this fact to the outside world,
-by allowing *coroutines* as input, and returning an *asynchronous iterator*.
-This means you can iterate over Responses one by one, as they come in.
-
-```python
-import asyncio
-
-from jina import Client, Flow, Document
-
-
-async def async_inputs():
-    for _ in range(10):
-        yield Document()
-        await asyncio.sleep(0.1)
-
-
-async def run_client(port):
-    client = Client(port=port, asyncio=True)
-    async for resp in client.post('/', async_inputs, request_size=1):
-        print(resp)
-
-
-with Flow() as f:  # Using it as a Context Manager will start the Flow
-    asyncio.run(run_client(f.port))
-```
-
-Async send is useful when calling a Flow from an Executor, as described in {ref}`async-executors`.
-
-```python
-from jina import Client, Executor, requests, DocumentArray
-
-
-class DummyExecutor(Executor):
-
-    c = Client(host='grpc://0.0.0.0:51234', asyncio=True)
-
-    @requests
-    async def process(self, docs: DocumentArray, **kwargs):
-        self.c.post('/', docs)
-```
-
-
-## Batch data
-
-Especially during indexing, a Client can send up to thousands or millions of Documents to a {class}`~jina.Flow`.
-Those Documents are internally batched into a `Request`, providing a smaller memory footprint and faster response times thanks
-to {ref}`callback functions <callback-functions>`.
-
-The size of these batches can be controlled with the `request_size` keyword.
-The default `request_size` is 100 Documents. The optimal size will depend on your use case.
-```python
-from jina import Flow, Client, Document, DocumentArray
-
-with Flow() as f:
-    client = Client(port=f.port)
-    client.post('/', DocumentArray(Document() for _ in range(100)), request_size=10)
-```
-
-## Bypass Executor
-
-Usually a {class}`~jina.Flow` will send each request to all {class}`~jina.Executor`s with matching endpoints as configured. But the {class}`~jina.Client` also allows you to only target specific Executors in a Flow using the `target_executor` keyword. The request will then only be processed by the Executors which match the provided target_executor regex. Its usage is shown in the listing below.
-
-```python
-from jina import Client, Executor, Flow, requests, Document, DocumentArray
-
-
-class FooExecutor(Executor):
-    @requests
-    async def foo(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text=f'foo was here and got {len(docs)} document'))
-
-
-class BarExecutor(Executor):
-    @requests
-    async def bar(self, docs: DocumentArray, **kwargs):
-        docs.append(Document(text=f'bar was here and got {len(docs)} document'))
-
-
-f = (
-    Flow()
-    .add(uses=FooExecutor, name='fooExecutor')
-    .add(uses=BarExecutor, name='barExecutor')
-)
-
-with f:  # Using it as a Context Manager will start the Flow
-    client = Client(port=f.port)
-    docs = client.post(on='/', target_executor='bar*')
-    print(docs.texts)
-```
-This will send the request to all Executors whose names start with 'bar', such as 'barExecutor'.
-In the simplest case, you can specify a precise Executor name, and the request will be sent only to that single Executor.
 
 (callback-functions)=
 ## Callbacks
@@ -360,48 +373,129 @@ Callback functions in Jina expect a `Response` of the type {class}`~jina.types.r
 parameters, and other information.
 
 
-````{hint} Understanding DataRequest
+
+
+
+### Handle DataRequest in callbacks
 
 `DataRequest`s are objects that are sent by Jina internally. Callback functions process DataRequests, and `client.post()`
 can return DataRequests.
 
-`DataRequest` objects can be seen as a container for data relevant for a given request, most importantly:
+`DataRequest` objects can be seen as a container for data relevant for a given request, it contains the following fields:
 
-- `dr.docs`: The DocumentArray being passed between and returned by the Executors.
-    These are the Documents usually processed in a callback function, and are often the main payload.
-- `dr.parameters`: The input parameters of the associated request.
-    - `dr.parameters['__results__']`: Reserved field that gets populated by Executors returning a Python `dict`.
-        Information in those returned `dict`s gets collected here, behind each Executor's *pod_id*.
-- `dr.data`: Contains information associated with the data in the request. Most importatnly, `dr.data.docs` refers to the
-    same object as `dr.docs`.
+````{tab} header
 
-````
-
-Accordingly, a callback function can be defined in the following way:
-
-````{tab} General callback function
+The request header.
 
 ```python
-from jina.types.request.data import DataRequest
+from pprint import pprint
 
+from jina import Client
 
-def my_callback(resp: DataRequest):
-    ...  # process request here
+Client().post(on='/', on_done=lambda x: pprint(x.header))
+```
+
+```console
+request_id: "ea504823e9de415d890a85d1d00ccbe9"
+exec_endpoint: "/"
+target_executor: ""
 ```
 
 ````
-````{tab} Processing documents
+
+````{tab} parameters
+
+The input parameters of the associated request. In particular, `DataRequest.parameters['__results__']` is a 
+reserved field that gets populated by Executors returning a Python `dict`. 
+Information in those returned `dict`s gets collected here, behind each Executor ID.
 
 ```python
-from jina.types.request.data import DataRequest
+from pprint import pprint
 
+from jina import Client
 
-def my_callback(resp: DataRequest):
-    docs = resp.docs
-    ...  # process docs here
+Client().post(on='/', on_done=lambda x: pprint(x.parameters))
+```
+
+```console
+{'__results__': {}}
 ```
 
 ````
+
+````{tab} routes
+
+The routing information of the data request. It contains the which Executors have been called, and the order in which they were called.
+The timing and latency of each Executor is also recorded.
+
+```python
+from pprint import pprint
+
+from jina import Client
+
+Client().post(on='/', on_done=lambda x: pprint(x.routes))
+```
+
+```console
+[executor: "gateway"
+start_time {
+  seconds: 1662637747
+  nanos: 790248000
+}
+end_time {
+  seconds: 1662637747
+  nanos: 794104000
+}
+, executor: "executor0"
+start_time {
+  seconds: 1662637747
+  nanos: 790466000
+}
+end_time {
+  seconds: 1662637747
+  nanos: 793982000
+}
+]
+
+```
+
+````
+
+````{tab} docs
+The DocumentArray being passed between and returned by the Executors. These are the Documents usually processed in a callback function, and are often the main payload.
+
+```python
+from pprint import pprint
+
+from jina import Client
+
+Client().post(on='/', on_done=lambda x: pprint(x.docs))
+```
+
+```console
+<DocumentArray (length=0) at 5044245248>
+
+```
+````
+
+  
+Accordingly, a callback that processing documents can be defined as:
+
+```{code-block} python
+---
+emphasize-lines: 4
+---
+from jina.types.request.data import DataRequest
+
+def my_callback(resp: DataRequest):
+    foo(resp.docs)
+```
+
+### Handle exceptions in callbacks
+
+Server error are handled by the `on_error` callback function.
+
+
 
 In the example below, our Flow passes the message then prints the result when successful.
 If something goes wrong, it beeps. Finally, the result is written to output.txt.
@@ -459,9 +553,9 @@ with Flow() as f:
     print(docs)
     print(docs.texts)
 ```
-```  
->>> <DocumentArray (length=1) at 140619524357664>
->>> ['Hi there!']
+```console  
+<DocumentArray (length=1) at 140619524357664>
+['Hi there!']
 ```
 
 ````
@@ -476,9 +570,9 @@ with Flow() as f:
     print(resp)
     print(resp[0].docs.texts)
 ```
-``` 
->>> [<jina.types.request.data.DataRequest ('header', 'parameters', 'routes', 'data') at 140619524354592>]
->>> ['Hi there!']
+```console 
+[<jina.types.request.data.DataRequest ('header', 'parameters', 'routes', 'data') at 140619524354592>]
+['Hi there!']
 ```
 
 ````
@@ -496,9 +590,9 @@ with Flow() as f:
     )
     print(resp)
 ```
-```
->>> ['Hi there!']
->>> None
+```console
+['Hi there!']
+None
 ```
 
 ````

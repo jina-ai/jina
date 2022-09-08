@@ -32,6 +32,10 @@ class BadConfigSource(FileNotFoundError, BaseJinaException):
     """The yaml config file is bad, not loadable or not exist."""
 
 
+class BadServerFlow(Exception, BaseJinaException):
+    """A wrongly defined Flow on the server side"""
+
+
 class BadClient(Exception, BaseJinaException):
     """A wrongly defined client, can not communicate with jina server correctly."""
 

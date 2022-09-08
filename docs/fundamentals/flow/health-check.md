@@ -1,22 +1,23 @@
 # Readiness & health check
-Every Jina {class}`~jina.Flow` consists of a {ref}`number of Executor<architecture-overview>`,
+A Jina {class}`~jina.Flow` consists of {ref}`a Gateway and Executors<architecture-overview>`,
 each of which have to be healthy before the Flow is ready to receive requests.
+
+A Flow is marked as "ready", when all its Executors and its Gateway are fully loaded and ready.
 
 Each Executor provides a health check in the form of a [standardized gRPC endpoint](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) that exposes this information to the outside world.
 This means that health checks can automatically be performed by Jina itself as well as external tools like Docker Compose, Kubernetes service meshes, or load balancers.
+
+
+## Readiness of a Flow
 
 In most cases, it is most useful to check if an entire Flow is ready to accept requests.
 To enable this readiness check, the Jina Gateway can aggregate health check information from all services and provides
 a readiness check endpoint for the complete Flow.
 
-## Readiness of a Flow
 
-A Flow is in the ready status, when all its Executors and the Gateway are fully loaded and ready.
+<!-- start flow-ready -->
 
-A lot of times, it is useful to know if a Flow, as a complete set of Executors, is ready to receive requests. This is why the Gateway 
-exposes an endpoint for each of the supported protocols to know the health and readiness of the entire Flow. 
-
-Jina {class}`~jina.Flow` and {class}`~jina.Client` offer a convenient API to query these readiness endpoints. You can call {meth}`~jina.Flow.is_flow_ready` or `jina.Client.client.is_flow_ready`, which will return `True` if the Flow is healthy and ready, and `False` otherwise:
+{class}`~jina.Client` offer a convenient API to query these readiness endpoints. You can call {meth}`~jina.clients.mixin.HealthCheckMixin.is_flow_ready` or {meth}`~jina.Flow.is_flow_ready`, it will return `True` if the Flow is ready, and `False` when it is not.
 
 ````{tab} via Flow
 ```python
@@ -109,6 +110,8 @@ WARNI… JINA@92986 message lost 100% (3/3)
 ```
 ````
 `````
+
+<!-- end flow-ready -->
 
 ### Flow status using third-party clients
 
@@ -275,7 +278,7 @@ docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12346 grpc
 ```
 
 (health-check-gateway)=
-### Health check of the Gateway
+## Health check of the Gateway
 
 Just like each individual Executor, the Gateway also exposes a health check endpoint.
 
