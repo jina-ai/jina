@@ -5,7 +5,7 @@ import grpc
 
 from jina.clients.base import BaseClient
 from jina.clients.helper import callback_exec
-from jina.excepts import BadClient, BadClientInput, InternalNetworkError
+from jina.excepts import BadClientInput, BadServerFlow, InternalNetworkError
 from jina.logging.profile import ProgressBar
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.networking import GrpcConnectionPool
@@ -20,7 +20,7 @@ class GRPCBaseClient(BaseClient):
     It manages the asyncio event loop internally, so all interfaces are synchronous from the outside.
     """
 
-    async def _dry_run(self, **kwargs) -> bool:
+    async def _is_flow_ready(self, **kwargs) -> bool:
         """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
 
         :param kwargs: potential kwargs received passed from the public interface
@@ -135,7 +135,7 @@ class GRPCBaseClient(BaseClient):
                     'please double check your input iterator'
                 ) from err
             else:
-                raise BadClient(msg) from err
+                raise BadServerFlow(msg) from err
         except:
             # Not sure why, adding this line helps in fixing a hanging test
             raise

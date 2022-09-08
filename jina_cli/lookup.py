@@ -77,7 +77,7 @@ def _prettyprint_help(d, also_in=None):
             table['Default'] = d['default']
         if d['default_random']:
             table['Remark'] = colored(
-                'This argument has a random default value!', 'on yellow'
+                'This argument has a random default value!', 'yellow'
             )
 
         table_str = '\n    '.join(
@@ -89,7 +89,7 @@ def _prettyprint_help(d, also_in=None):
 
         print(
             f'''
-    {colored(d['name'], attrs='bold')} is {colored('an internal CLI of Jina, should not be used directly', color='yellow') if d['help'] == argparse.SUPPRESS else 'a CLI argument of Jina.'}. 
+    {colored(d['name'], attrs='bold')} is {colored('an internal CLI of Jina, should not be used directly', color='yellow') if d['help'] == argparse.SUPPRESS else 'a CLI argument of Jina'}. 
     It is available in {availables} {option_str}
     
     {colored(d['help'], attrs='bold') if d['help'] != argparse.SUPPRESS else lb * 2}

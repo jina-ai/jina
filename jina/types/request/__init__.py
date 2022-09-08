@@ -41,5 +41,5 @@ class Request(ProtoTypeMixin):
         d.exception.name = ex.__class__.__name__
         d.exception.args.extend([str(v) for v in ex.args])
         d.exception.stacks.extend(
-            traceback.format_exception(etype=type(ex), value=ex, tb=ex.__traceback__)
+            traceback.format_exception(type(ex), value=ex, tb=ex.__traceback__)
         )
