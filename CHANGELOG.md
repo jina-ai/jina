@@ -229,6 +229,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -14968,4 +14969,42 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```47e2cfc3```](https://github.com/jina-ai/jina/commit/47e2cfc3c28465af8f402261341693e28614f034)] __-__ __docs__: update TOC (*Jina Dev Bot*)
  - [[```0dbdcaa0```](https://github.com/jina-ai/jina/commit/0dbdcaa048bff6b05fcfb9930f92dbc5a6c5da12)] __-__ __version__: the next version will be 3.8.3 (*Jina Dev Bot*)
+
+<a name=release-note-3-8-4></a>
+## Release Note (`3.8.4`)
+
+> Release time: 2022-09-08 08:51:32
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Deepankar Mahapatro,  AlaeddineAbdessalem,  Joan Fontanals,  Johannes Messner,  Andrei Ungureanu,  samsja,  Jina Dev Bot,  🙇
+
+
+### 🆕 New Features
+
+ - [[```d1faf6e6```](https://github.com/jina-ai/jina/commit/d1faf6e6131961cf773e0447c98aefa9eaccf29b)] __-__ pass internal flag to telemetry (#5134) (*Joan Fontanals*)
+
+### 🐞 Bug fixes
+
+ - [[```e501ddfd```](https://github.com/jina-ai/jina/commit/e501ddfdfc86b4309e329f1442ff6f1ad79cae81)] __-__ __version__: adapt to docker hub v2 (#5146) (*Deepankar Mahapatro*)
+ - [[```d76e69ac```](https://github.com/jina-ai/jina/commit/d76e69ac06ca52c6fbe2512f3224d40fca98b77e)] __-__ fix parsing empty list (#5143) (*AlaeddineAbdessalem*)
+ - [[```3ec33c08```](https://github.com/jina-ai/jina/commit/3ec33c0851842c89e5f7d76bf91248c016173a3d)] __-__ gpu dockerfile template include now jina install (#5124) (*samsja*)
+ - [[```e2967f98```](https://github.com/jina-ai/jina/commit/e2967f9889caa1d24445d5e3df2923431dadb16f)] __-__ set minimal docarray dependency (#5133) (*Joan Fontanals*)
+ - [[```ff803686```](https://github.com/jina-ai/jina/commit/ff803686a929be5f20f646baa05d81ac9721809b)] __-__ linkerd cd (#5131) (*AlaeddineAbdessalem*)
+
+### 🧼 Code Refactoring
+
+ - [[```a78612f3```](https://github.com/jina-ai/jina/commit/a78612f3eecb0fc3ee79b301f0775a3590b7ad35)] __-__ manifest config (#5101) (*Andrei Ungureanu*)
+
+### 🏁 Unit Test and CICD
+
+ - [[```ddf90efb```](https://github.com/jina-ai/jina/commit/ddf90efb6b7c430c31de0d51b0741d57053afed4)] __-__ remove outdated test (#5139) (*Johannes Messner*)
+ - [[```a4ea7215```](https://github.com/jina-ai/jina/commit/a4ea72159c9d9a00862e012310bb34897f5e2fb4)] __-__ increase wait time (#5137) (*AlaeddineAbdessalem*)
+ - [[```478e53f6```](https://github.com/jina-ai/jina/commit/478e53f63bf8d26023b1327ccece6fdcc0915bc4)] __-__ fix k8s tests return responses params (#5127) (*Joan Fontanals*)
+
+### 🍹 Other Improvements
+
+ - [[```a9b80aec```](https://github.com/jina-ai/jina/commit/a9b80aec484ac6ced21c71dddb285afa40384049)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```1df9b459```](https://github.com/jina-ai/jina/commit/1df9b45919b5d24cd0d61dbcaec633c43c2e02bc)] __-__ __version__: the next version will be 3.8.4 (*Jina Dev Bot*)
 
