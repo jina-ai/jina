@@ -1,5 +1,4 @@
 from jina.parsers.client import mixin_comm_protocol_parser
-from jina.parsers.dryrun import set_dryrun_parser
 from jina.parsers.helper import _SHOW_ALL_ARGS
 from jina.parsers.orchestrate.runtimes.head import mixin_head_parser
 
@@ -186,17 +185,8 @@ def get_main_parser():
     set_ping_parser(
         sp.add_parser(
             'ping',
-            help='Ping an Executor',
-            description='Ping a Deployment and check its network connectivity.',
-            formatter_class=_chf,
-        )
-    )
-
-    set_dryrun_parser(
-        sp.add_parser(
-            'dryrun',
-            help='Dryrun a Flow',
-            description='send a dryrun request to a Flow to check if it is working',
+            help='Ping an Executor/Flow',
+            description='Ping a remote Executor or a Flow and check its network connectivity.',
             formatter_class=_chf,
         )
     )
@@ -294,7 +284,7 @@ def get_main_parser():
     set_client_cli_parser(
         sp.add_parser(
             'client',
-            description='Start a Python client that connects to a Jina gateway',
+            description='Start a Python client that connects to a Jina Gateway',
             formatter_class=_chf,
             **(dict(help='Start a Client')) if _SHOW_ALL_ARGS else {},
         )

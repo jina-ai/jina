@@ -59,6 +59,22 @@ def test_all_start_method(smethod):
     assert smethod in s.decode()
 
 
+def test_help_non_exist():
+    s = subprocess.check_output(
+        ['jina', 'help', 'abcdefg'],
+        stderr=subprocess.STDOUT,
+    )
+    assert 'misspelling' in s.decode()
+
+
+def test_help_exist():
+    s = subprocess.check_output(
+        ['jina', 'help', 'port'],
+        stderr=subprocess.STDOUT,
+    )
+    assert 'a CLI argument of Jina' in s.decode()
+
+
 def test_parse_env_map():
     a = set_deployment_parser().parse_args(
         ['--env', 'key1=value1', '--env', 'key2=value2']

@@ -20,7 +20,7 @@ class GRPCBaseClient(BaseClient):
     It manages the asyncio event loop internally, so all interfaces are synchronous from the outside.
     """
 
-    async def _dry_run(self, **kwargs) -> bool:
+    async def _is_flow_ready(self, **kwargs) -> bool:
         """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
 
         :param kwargs: potential kwargs received passed from the public interface
