@@ -41,7 +41,7 @@ class HTTPBaseClient(BaseClient):
         ):  # failure codes
             raise ValueError(r_str)
 
-    async def _dry_run(self, **kwargs) -> bool:
+    async def _is_flow_ready(self, **kwargs) -> bool:
         """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
 
         :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `HTTPClientlet`
@@ -127,7 +127,7 @@ class HTTPBaseClient(BaseClient):
                 result_handler=_result_handler,
                 prefetch=getattr(self.args, 'prefetch', 0),
                 logger=self.logger,
-                **vars(self.args)
+                **vars(self.args),
             )
             async for response in streamer.stream(request_iterator):
                 r_status = response.status

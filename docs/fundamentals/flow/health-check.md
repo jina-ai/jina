@@ -1,29 +1,32 @@
 # Readiness & health check
-Every Jina {class}`~jina.Flow` consists of a {ref}`number of microservices <architecture-overview>`,
+A Jina {class}`~jina.Flow` consists of {ref}`a Gateway and Executors<architecture-overview>`,
 each of which have to be healthy before the Flow is ready to receive requests.
 
-Each Flow microservice provides a health check in the form of a [standardized gRPC endpoint](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) that exposes this information to the outside world.
+A Flow is marked as "ready", when all its Executors and its Gateway are fully loaded and ready.
+
+Each Executor provides a health check in the form of a [standardized gRPC endpoint](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) that exposes this information to the outside world.
 This means that health checks can automatically be performed by Jina itself as well as external tools like Docker Compose, Kubernetes service meshes, or load balancers.
+
+
+## Readiness of a Flow
 
 In most cases, it is most useful to check if an entire Flow is ready to accept requests.
 To enable this readiness check, the Jina Gateway can aggregate health check information from all services and provides
 a readiness check endpoint for the complete Flow.
 
-## Readiness of complete Flow
 
-A lot of times, it is useful to know if a Flow, as a complete set of microservices, is ready to receive requests. This is why the Gateway 
-exposes an endpoint for each of the supported protocols to know the health and readiness of the entire Flow. 
+<!-- start flow-ready -->
 
-Jina {class}`~jina.Flow` and {class}`~jina.Client` offer a convenient API to query these readiness endpoints. You can call `flow.dry_run()` or `client.dry_run()`, which will return `True` if the Flow is healthy and ready, and `False` otherwise:
+{class}`~jina.Client` offer a convenient API to query these readiness endpoints. You can call {meth}`~jina.clients.mixin.HealthCheckMixin.is_flow_ready` or {meth}`~jina.Flow.is_flow_ready`, it will return `True` if the Flow is ready, and `False` when it is not.
 
 ````{tab} via Flow
 ```python
 from jina import Flow
 
 with Flow().add() as f:
-    print(f.dry_run())
+    print(f.is_flow_ready())
 
-print(f.dry_run())
+print(f.is_flow_ready())
 ```
 ```text
 True
@@ -41,14 +44,14 @@ with Flow(port=12345).add() as f:
 from jina import Client
 
 client = Client(port=12345)
-print(client.dry_run())
+print(client.is_flow_ready())
 ```
 ```text
 True
 ```
 ````
 
-````{tab} via CLI
+`````{tab} via CLI
 ```python
 from jina import Flow
 
@@ -56,12 +59,59 @@ with Flow(port=12345).add() as f:
     f.block()
 ```
 ```bash
-jina dryrun grpc://localhost:12345
+jina ping flow grpc://localhost:12345
 ```
+
+````{tab} Success
 ```text
-dry run successful
+INFO   JINA@92877 ping grpc://localhost:12345 at 0 round...                                                                                              [09/08/22 12:58:13]
+INFO   JINA@92877 ping grpc://localhost:12345 at 0 round takes 0 seconds (0.04s)
+INFO   JINA@92877 ping grpc://localhost:12345 at 1 round...                                                                                              [09/08/22 12:58:14]
+INFO   JINA@92877 ping grpc://localhost:12345 at 1 round takes 0 seconds (0.01s)
+INFO   JINA@92877 ping grpc://localhost:12345 at 2 round...                                                                                              [09/08/22 12:58:15]
+INFO   JINA@92877 ping grpc://localhost:12345 at 2 round takes 0 seconds (0.01s)
+INFO   JINA@92877 avg. latency: 24 ms                                                                                                                    [09/08/22 12:58:16]
 ```
 ````
+
+````{tab} Failure
+```text
+INFO   JINA@92986 ping grpc://localhost:12345 at 0 round...                                                                                              [09/08/22 12:59:00]
+ERROR  GRPCClient@92986 Error while getting response from grpc server <AioRpcError of RPC that terminated with:                                          [09/08/22 12:59:00]
+               status = StatusCode.UNAVAILABLE
+               details = "failed to connect to all addresses; last error: UNKNOWN: Failed to connect to remote host: Connection refused"
+               debug_error_string = "UNKNOWN:Failed to pick subchannel {created_time:"2022-09-08T12:59:00.518707+02:00", children:[UNKNOWN:failed to
+       connect to all addresses; last error: UNKNOWN: Failed to connect to remote host: Connection refused {grpc_status:14,
+       created_time:"2022-09-08T12:59:00.518706+02:00"}]}"
+       >
+WARNI… JINA@92986 not responding, retry (1/3) in 1s
+INFO   JINA@92986 ping grpc://localhost:12345 at 0 round takes 0 seconds (0.01s)
+INFO   JINA@92986 ping grpc://localhost:12345 at 1 round...                                                                                              [09/08/22 12:59:01]
+ERROR  GRPCClient@92986 Error while getting response from grpc server <AioRpcError of RPC that terminated with:                                          [09/08/22 12:59:01]
+               status = StatusCode.UNAVAILABLE
+               details = "failed to connect to all addresses; last error: UNKNOWN: Failed to connect to remote host: Connection refused"
+               debug_error_string = "UNKNOWN:Failed to pick subchannel {created_time:"2022-09-08T12:59:01.537293+02:00", children:[UNKNOWN:failed to
+       connect to all addresses; last error: UNKNOWN: Failed to connect to remote host: Connection refused {grpc_status:14,
+       created_time:"2022-09-08T12:59:01.537291+02:00"}]}"
+       >
+WARNI… JINA@92986 not responding, retry (2/3) in 1s
+INFO   JINA@92986 ping grpc://localhost:12345 at 1 round takes 0 seconds (0.01s)
+INFO   JINA@92986 ping grpc://localhost:12345 at 2 round...                                                                                              [09/08/22 12:59:02]
+ERROR  GRPCClient@92986 Error while getting response from grpc server <AioRpcError of RPC that terminated with:                                          [09/08/22 12:59:02]
+               status = StatusCode.UNAVAILABLE
+               details = "failed to connect to all addresses; last error: UNKNOWN: Failed to connect to remote host: Connection refused"
+               debug_error_string = "UNKNOWN:Failed to pick subchannel {created_time:"2022-09-08T12:59:02.557195+02:00", children:[UNKNOWN:failed to
+       connect to all addresses; last error: UNKNOWN: Failed to connect to remote host: Connection refused {grpc_status:14,
+       created_time:"2022-09-08T12:59:02.557193+02:00"}]}"
+       >
+WARNI… JINA@92986 not responding, retry (3/3) in 1s
+INFO   JINA@92986 ping grpc://localhost:12345 at 2 round takes 0 seconds (0.02s)
+WARNI… JINA@92986 message lost 100% (3/3)
+```
+````
+`````
+
+<!-- end flow-ready -->
 
 ### Flow status using third-party clients
 
@@ -185,18 +235,18 @@ Then by doing the same check, you will see that the call returns an error:
 ```
 
 (health-check-microservices)=
-## Health check of individual microservices
+## Health check of an Executor
 
-In addition to a performing a readiness check for the entire Flow, it is also possible to check every individual microservice in said Flow,
+In addition to a performing a readiness check for the entire Flow, it is also possible to check every individual Executor in said Flow,
 by utilizing a [standardized gRPC health check endpoint](https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
 In most cases this is not necessary, since such checks are performed by Jina, a Kubernetes service mesh or a load balancer under the hood.
 Nevertheless, it is possible to perform these checks as a user.
 
 When performing these checks, you can expect on of the following `ServingStatus` responses:
-- **`UNKNOWN` (0)**: The health of the microservice could not be determined
-- **`SERVING` (1)**: The microservice is healthy and ready to receive requests
-- **`NOT_SERVING` (2)**: The microservice is *not* healthy and *not* ready to receive requests
-- **`SERVICE_UNKNOWN` (3)**: The health of the microservice could not be determined while performing streaming
+- **`UNKNOWN` (0)**: The health of the Executor could not be determined
+- **`SERVING` (1)**: The Executor is healthy and ready to receive requests
+- **`NOT_SERVING` (2)**: The Executor is *not* healthy and *not* ready to receive requests
+- **`SERVICE_UNKNOWN` (3)**: The health of the Executor could not be determined while performing streaming
 
 ````{admonition} See Also
 :class: seealso
@@ -204,12 +254,7 @@ When performing these checks, you can expect on of the following `ServingStatus`
 To learn more about these status codes, and how health checks are performed with gRPC, see [here](https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
 ````
 
-(health-check-executor)=
-### Health check of an Executor
-
-{class}`~jina.Executor`s run as microservices exposing gRPC endpoints, and they expose one endpoint for a health and readiness check.
-
-To see how to use it, you can start a Flow inside a terminal and block it to accept requests:
+You can start a Flow inside a terminal and block it to accept requests:
 
 ```python
 from jina import Flow
@@ -233,9 +278,9 @@ docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12346 grpc
 ```
 
 (health-check-gateway)=
-### Health check of the Gateway
+## Health check of the Gateway
 
-Just like each individual Executor, the Gateway also acts as a microservice, and as such it exposes a health check endpoint.
+Just like each individual Executor, the Gateway also exposes a health check endpoint.
 
 In contrast to Executors however, a Gateway can use gRPC, HTTP, or Websocket, and the health check endpoint changes accordingly.
 

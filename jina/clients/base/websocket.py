@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 class WebSocketBaseClient(BaseClient):
     """A Websocket Client."""
 
-    async def _dry_run(self, **kwargs) -> bool:
+    async def _is_flow_ready(self, **kwargs) -> bool:
         """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
 
         :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `WebsocketClientlet`
@@ -162,7 +162,7 @@ class WebSocketBaseClient(BaseClient):
                 end_of_iter_handler=_handle_end_of_iter,
                 prefetch=getattr(self.args, 'prefetch', 0),
                 logger=self.logger,
-                **vars(self.args)
+                **vars(self.args),
             )
 
             receive_task = asyncio.create_task(_receive())

@@ -3,7 +3,7 @@ import warnings
 from functools import partialmethod
 from typing import TYPE_CHECKING, AsyncGenerator, Dict, List, Optional, Union
 
-from jina.helper import get_or_reuse_loop, run_async
+from jina.helper import deprecate_by, get_or_reuse_loop, run_async
 from jina.importer import ImportExtensions
 
 if TYPE_CHECKING:
@@ -92,25 +92,29 @@ class AsyncMutateMixin(MutateMixin):
 class HealthCheckMixin:
     """The Health check Mixin for Client and Flow to expose `dry_run` API"""
 
-    def dry_run(self, **kwargs) -> bool:
-        """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
+    def is_flow_ready(self, **kwargs) -> bool:
+        """Check if the Flow is ready to receive requests
 
         :param kwargs: potential kwargs received passed from the public interface
         :return: boolean indicating the health/readiness of the Flow
         """
-        return run_async(self.client._dry_run, **kwargs)
+        return run_async(self.client._is_flow_ready, **kwargs)
+
+    dry_run = deprecate_by(is_flow_ready)
 
 
 class AsyncHealthCheckMixin:
     """The Health check Mixin for Client and Flow to expose `dry_run` API"""
 
-    async def dry_run(self, **kwargs) -> bool:
-        """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
+    async def is_flow_ready(self, **kwargs) -> bool:
+        """Check if the Flow is ready to receive requests
 
         :param kwargs: potential kwargs received passed from the public interface
         :return: boolean indicating the health/readiness of the Flow
         """
-        return await self.client._dry_run(**kwargs)
+        return await self.client._is_flow_ready(**kwargs)
+
+    dry_run = deprecate_by(is_flow_ready)
 
 
 def _render_response_table(r, st, ed, show_table: bool = True):

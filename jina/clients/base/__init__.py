@@ -154,7 +154,7 @@ class BaseClient(ABC):
         ...
 
     @abc.abstractmethod
-    def _dry_run(self, **kwargs) -> bool:
+    def _is_flow_ready(self, **kwargs) -> bool:
         """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
 
         :param kwargs: potential kwargs received passed from the public interface

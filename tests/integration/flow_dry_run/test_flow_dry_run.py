@@ -7,8 +7,8 @@ from jina import Flow
 def test_dry_run(protocol):
     f = Flow(protocol=protocol).add()
     with f:
-        dry_run = f.dry_run()
-    dry_run_negative = f.dry_run()
+        dry_run = f.is_flow_ready()
+    dry_run_negative = f.is_flow_ready()
 
     assert dry_run
     assert not dry_run_negative
