@@ -11,22 +11,20 @@ from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 
 if TYPE_CHECKING:
-    from prometheus_client import CollectorRegistry
+    from jina.serve.streamer import GatewayStreamer
 
 
 def get_fastapi_app(
-        args: 'argparse.Namespace',
-        logger: 'JinaLogger',
-        timeout_send: Optional[float] = None,
-        metrics_registry: Optional['CollectorRegistry'] = None,
+    streamer: 'GatewayStreamer',
+    args: 'argparse.Namespace',
+    logger: 'JinaLogger',
 ):
     """
     Get the app from FastAPI as the REST interface.
 
+    :param streamer: gateway streamer object
     :param args: passed arguments.
     :param logger: Jina logger.
-    :param timeout_send: Timeout to be used when sending to Executors
-    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler
     :return: fastapi app
     """
     with ImportExtensions(required=True):
@@ -42,8 +40,8 @@ def get_fastapi_app(
     app = FastAPI(
         title=args.title or 'My Jina Service',
         description=args.description
-                    or 'This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` '
-                       'to customize the title and description.',
+        or 'This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` '
+        'to customize the title and description.',
         version=__version__,
     )
 
@@ -57,30 +55,9 @@ def get_fastapi_app(
         )
         logger.warning('CORS is enabled. This service is accessible from any website!')
 
-    from jina.serve.bff import GatewayBFF
-
-    import json
-
-    graph_description = json.loads(args.graph_description)
-    graph_conditions = json.loads(args.graph_conditions)
-    deployments_addresses = json.loads(args.deployments_addresses)
-    deployments_disable_reduce = json.loads(args.deployments_disable_reduce)
-
-    gateway_bff = GatewayBFF(graph_representation=graph_description,
-                             executor_addresses=deployments_addresses,
-                             graph_conditions=graph_conditions,
-                             deployments_disable_reduce=deployments_disable_reduce,
-                             timeout_send=timeout_send,
-                             retries=args.retries,
-                             compression=args.compression,
-                             runtime_name=args.name,
-                             prefetch=args.prefetch,
-                             logger=logger,
-                             metrics_registry=metrics_registry)
-
     @app.on_event('shutdown')
     async def _shutdown():
-        await gateway_bff.close()
+        await streamer.close()
 
     openapi_tags = []
     if not args.no_debug_endpoints:
@@ -88,7 +65,7 @@ def get_fastapi_app(
             {
                 'name': 'Debug',
                 'description': 'Debugging interface. In production, you should hide them by setting '
-                               '`--no-debug-endpoints` in `Flow`/`Gateway`.',
+                '`--no-debug-endpoints` in `Flow`/`Gateway`.',
             }
         )
 
@@ -108,6 +85,7 @@ def get_fastapi_app(
             return {}
 
         from docarray import DocumentArray
+
         from jina.proto import jina_pb2
         from jina.serve.executors import __dry_run_endpoint__
         from jina.serve.runtimes.gateway.http.models import (
@@ -119,7 +97,7 @@ def get_fastapi_app(
         @app.get(
             path='/dry_run',
             summary='Get the readiness of Jina Flow service, sends an empty DocumentArray to the complete Flow to '
-                    'validate connectivity',
+            'validate connectivity',
             response_model=PROTO_TO_PYDANTIC_MODELS.StatusProto,
         )
         async def _flow_health():
@@ -176,7 +154,7 @@ def get_fastapi_app(
             # do not add response_model here, this debug endpoint should not restricts the response model
         )
         async def post(
-                body: JinaEndpointRequestModel, response: Response
+            body: JinaEndpointRequestModel, response: Response
         ):  # 'response' is a FastAPI response, not a Jina response
             """
             Post a data request to some endpoint.
@@ -283,7 +261,7 @@ def get_fastapi_app(
             {
                 'name': 'CRUD',
                 'description': 'CRUD interface. If your service does not implement those interfaces, you can should '
-                               'hide them by setting `--no-crud-endpoints` in `Flow`/`Gateway`.',
+                'hide them by setting `--no-crud-endpoints` in `Flow`/`Gateway`.',
             }
         )
         crud = {
@@ -312,6 +290,7 @@ def get_fastapi_app(
             from dataclasses import asdict
 
             import strawberry
+            from docarray import DocumentArray
             from docarray.document.strawberry_type import (
                 JSONScalar,
                 StrawberryDocument,
@@ -319,10 +298,8 @@ def get_fastapi_app(
             )
             from strawberry.fastapi import GraphQLRouter
 
-            from docarray import DocumentArray
-
             async def get_docs_from_endpoint(
-                    data, target_executor, parameters, exec_endpoint
+                data, target_executor, parameters, exec_endpoint
             ):
                 req_generator_input = {
                     'data': [asdict(d) for d in data],
@@ -333,8 +310,8 @@ def get_fastapi_app(
                 }
 
                 if (
-                        req_generator_input['data'] is not None
-                        and 'docs' in req_generator_input['data']
+                    req_generator_input['data'] is not None
+                    and 'docs' in req_generator_input['data']
                 ):
                     req_generator_input['data'] = req_generator_input['data']['docs']
                 try:
@@ -352,11 +329,11 @@ def get_fastapi_app(
             class Mutation:
                 @strawberry.mutation
                 async def docs(
-                        self,
-                        data: Optional[List[StrawberryDocumentInput]] = None,
-                        target_executor: Optional[str] = None,
-                        parameters: Optional[JSONScalar] = None,
-                        exec_endpoint: str = '/search',
+                    self,
+                    data: Optional[List[StrawberryDocumentInput]] = None,
+                    target_executor: Optional[str] = None,
+                    parameters: Optional[JSONScalar] = None,
+                    exec_endpoint: str = '/search',
                 ) -> List[StrawberryDocument]:
                     return await get_docs_from_endpoint(
                         data, target_executor, parameters, exec_endpoint
@@ -366,11 +343,11 @@ def get_fastapi_app(
             class Query:
                 @strawberry.field
                 async def docs(
-                        self,
-                        data: Optional[List[StrawberryDocumentInput]] = None,
-                        target_executor: Optional[str] = None,
-                        parameters: Optional[JSONScalar] = None,
-                        exec_endpoint: str = '/search',
+                    self,
+                    data: Optional[List[StrawberryDocumentInput]] = None,
+                    target_executor: Optional[str] = None,
+                    parameters: Optional[JSONScalar] = None,
+                    exec_endpoint: str = '/search',
                 ) -> List[StrawberryDocument]:
                     return await get_docs_from_endpoint(
                         data, target_executor, parameters, exec_endpoint
@@ -386,7 +363,7 @@ def get_fastapi_app(
         :param request_iterator: request iterator, with length of 1
         :return: the first result from the request iterator
         """
-        async for k in gateway_bff.stream(request_iterator=request_iterator):
+        async for k in streamer.stream(request_iterator=request_iterator):
             request_dict = k.to_dict()
             return request_dict
 

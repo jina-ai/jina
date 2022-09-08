@@ -9,6 +9,8 @@ from jina.serve.runtimes.gateway.websocket.app import get_fastapi_app
 
 __all__ = ['WebSocketGatewayRuntime']
 
+from jina.serve.runtimes.gateway.websocket.gateway import WebSocketGateway
+
 
 class WebSocketGatewayRuntime(GatewayRuntime):
     """Runtime for Websocket interface."""
@@ -58,24 +60,19 @@ class WebSocketGatewayRuntime(GatewayRuntime):
             # Filter out healthcheck endpoint `GET /`
             logging.getLogger("uvicorn.access").addFilter(_EndpointFilter())
 
-        from jina.helper import extend_rest_interface
-
         uvicorn_kwargs = self.args.uvicorn_kwargs or {}
         for ssl_file in ['ssl_keyfile', 'ssl_certfile']:
             if getattr(self.args, ssl_file):
                 if ssl_file not in uvicorn_kwargs.keys():
                     uvicorn_kwargs[ssl_file] = getattr(self.args, ssl_file)
 
+        self.gateway = WebSocketGateway(
+            streamer=self.streamer, args=self.args, logger=self.logger
+        )
+
         self._server = UviServer(
             config=Config(
-                app=extend_rest_interface(
-                    get_fastapi_app(
-                        args=self.args,
-                        logger=self.logger,
-                        timeout_send=self.timeout_send,
-                        metrics_registry=self.metrics_registry,
-                    )
-                ),
+                app=self.gateway.app,
                 host=__default_host__,
                 port=self.args.port,
                 ws_max_size=1024 * 1024 * 1024,
@@ -99,6 +96,7 @@ class WebSocketGatewayRuntime(GatewayRuntime):
 
     async def async_teardown(self):
         """Shutdown the server."""
+        self.gateway.stop()
         await self._server.shutdown()
 
     async def async_cancel(self):

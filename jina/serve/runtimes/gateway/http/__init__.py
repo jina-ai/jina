@@ -9,6 +9,8 @@ from jina.serve.runtimes.gateway.http.app import get_fastapi_app
 
 __all__ = ['HTTPGatewayRuntime']
 
+from jina.serve.runtimes.gateway.http.gateway import HTTPGateway
+
 
 class HTTPGatewayRuntime(GatewayRuntime):
     """Runtime for HTTP interface."""
@@ -67,16 +69,13 @@ class HTTPGatewayRuntime(GatewayRuntime):
                 if ssl_file not in uvicorn_kwargs.keys():
                     uvicorn_kwargs[ssl_file] = getattr(self.args, ssl_file)
 
+        self.gateway = HTTPGateway(
+            streamer=self.streamer, args=self.args, logger=self.logger
+        )
+
         self._server = UviServer(
             config=Config(
-                app=extend_rest_interface(
-                    get_fastapi_app(
-                        args=self.args,
-                        logger=self.logger,
-                        timeout_send=self.timeout_send,
-                        metrics_registry=self.metrics_registry,
-                    )
-                ),
+                app=self.gateway.app,
                 host=__default_host__,
                 port=self.args.port,
                 log_level=os.getenv('JINA_LOG_LEVEL', 'error').lower(),
@@ -99,6 +98,7 @@ class HTTPGatewayRuntime(GatewayRuntime):
 
     async def async_teardown(self):
         """Shutdown the server."""
+        self.gateway.stop()
         await self._server.shutdown()
 
     async def async_cancel(self):

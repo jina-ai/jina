@@ -9,9 +9,8 @@ from jina import __default_host__
 from jina.excepts import PortAlreadyUsed
 from jina.helper import get_full_version, is_port_free
 from jina.proto import jina_pb2, jina_pb2_grpc
-from jina.serve.bff import GatewayBFF
 from jina.serve.runtimes.gateway import GatewayRuntime
-from jina.serve.runtimes.helper import _get_grpc_server_options
+from jina.serve.runtimes.gateway.grpc.gateway import GRPCGateway
 from jina.types.request.status import StatusMessage
 
 __all__ = ['GRPCGatewayRuntime']
@@ -19,18 +18,6 @@ __all__ = ['GRPCGatewayRuntime']
 
 class GRPCGatewayRuntime(GatewayRuntime):
     """Gateway Runtime for gRPC."""
-
-    def __init__(
-        self,
-        args: argparse.Namespace,
-        **kwargs,
-    ):
-        """Initialize the runtime
-        :param args: args from CLI
-        :param kwargs: keyword args
-        """
-        self._health_servicer = health.HealthServicer(experimental_non_blocking=True)
-        super().__init__(args, **kwargs)
 
     async def async_setup(self):
         """
@@ -45,43 +32,20 @@ class GRPCGatewayRuntime(GatewayRuntime):
         if not (is_port_free(__default_host__, self.args.port)):
             raise PortAlreadyUsed(f'port:{self.args.port}')
 
-        self.server = grpc.aio.server(
-            options=_get_grpc_server_options(self.args.grpc_server_options)
+        self._health_servicer = health.HealthServicer(experimental_non_blocking=True)
+
+        self.gateway = GRPCGateway(
+            self, streamer=self.streamer, args=self.args, logger=self.logger
         )
+        self.server = self.gateway.app
 
         await self._async_setup_server()
 
     async def _async_setup_server(self):
-
-        import json
-
-        graph_description = json.loads(self.args.graph_description)
-        graph_conditions = json.loads(self.args.graph_conditions)
-        deployments_addresses = json.loads(self.args.deployments_addresses)
-        deployments_disable_reduce = json.loads(self.args.deployments_disable_reduce)
-
-        self.gateway_bff = GatewayBFF(
-            graph_representation=graph_description,
-            executor_addresses=deployments_addresses,
-            graph_conditions=graph_conditions,
-            deployments_disable_reduce=deployments_disable_reduce,
-            timeout_send=self.timeout_send,
-            retries=self.args.retries,
-            compression=self.args.compression,
-            runtime_name=self.name,
-            prefetch=self.args.prefetch,
-            logger=self.logger,
-            metrics_registry=self.metrics_registry,
-        )
-
-        jina_pb2_grpc.add_JinaRPCServicer_to_server(
-            self.gateway_bff._streamer, self.server
-        )
         jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self, self.server)
         jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self.server)
 
         service_names = (
-            jina_pb2.DESCRIPTOR.services_by_name['JinaRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaGatewayDryRunRPC'].full_name,
             jina_pb2.DESCRIPTOR.services_by_name['JinaInfoRPC'].full_name,
             reflection.SERVICE_NAME,
@@ -126,7 +90,8 @@ class GRPCGatewayRuntime(GatewayRuntime):
         # usually async_cancel should already have been called, but then its a noop
         # if the runtime is stopped without a sigterm (e.g. as a context manager, this can happen)
         self._health_servicer.enter_graceful_shutdown()
-        await self.gateway_bff.close()
+        self.gateway.stop()
+        await self.streamer.close()
         await self.async_cancel()
 
     async def async_cancel(self):
@@ -159,7 +124,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
                 data=da,
                 data_type=DataInputType.DOCUMENT,
             )
-            async for _ in self.gateway_bff.stream(request_iterator=req_iterator):
+            async for _ in self.streamer.stream(request_iterator=req_iterator):
                 pass
             status_message = StatusMessage()
             status_message.set_code(jina_pb2.StatusProto.SUCCESS)
