@@ -13,7 +13,6 @@ from jina.helper import (
     ArgNamespace,
     T,
     iscoroutinefunction,
-    send_telemetry_event,
     typename,
 )
 from jina.importer import ImportExtensions
@@ -151,7 +150,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             )
         if type(self) == BaseExecutor:
             self.requests[__default_endpoint__] = self._dry_run_func
-        send_telemetry_event(event='start', obj=self)
 
     def _dry_run_func(self, *args, **kwargs):
         pass
