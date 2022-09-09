@@ -1433,7 +1433,13 @@ class Flow(
         self._build_level = FlowBuildLevel.EMPTY
 
         self._stop_time = time.time()
-        send_telemetry_event(event='stop', obj=self, flow_id=self._flow_id, duration=self._stop_time - self._start_time, exc_type=str(exc_type))
+        send_telemetry_event(
+            event='stop',
+            obj=self,
+            flow_id=self._flow_id,
+            duration=self._stop_time - self._start_time,
+            exc_type=str(exc_type),
+        )
         self.logger.debug('flow is closed!')
         self.logger.close()
 
@@ -2408,7 +2414,10 @@ class Flow(
     @property
     def _flow_id(self) -> str:
         import hashlib
+
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
 
-        return hashlib.sha256(json.dumps(self._get_graph_representation()).encode('utf-8')).hexdigest()
+        return hashlib.sha256(
+            json.dumps(self._get_graph_representation()).encode('utf-8')
+        ).hexdigest()
