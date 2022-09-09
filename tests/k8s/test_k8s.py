@@ -749,7 +749,7 @@ async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
 
     pods = core_client.list_namespaced_pod(namespace=namespace).items
     pod_restarts = [item.status.container_statuses[0].restart_count for item in pods]
-    logger.info(f'Pod restarts : {",".join(pod_restarts)}')
+    logger.info(f'Pod restarts : {",".join([str(count) for count in pod_restarts])}')
     assert any([count for count in pod_restarts if count > 0])
 
     core_client.delete_namespace(namespace)
