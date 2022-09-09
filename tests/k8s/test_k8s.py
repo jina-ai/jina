@@ -707,7 +707,7 @@ async def _create_external_deployment(api_client, app_client, docker_images, tmp
     indirect=True,
 )
 async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
-    flow = Flow(name='k8s_flow-with_workspace', port=9090, protocol='http').add(
+    flow = Flow(name='failing_flow-with_workspace', port=9090, protocol='http').add(
         name='failing_executor',
         uses=f'docker://{docker_images[0]}',
         workspace='/shared',
