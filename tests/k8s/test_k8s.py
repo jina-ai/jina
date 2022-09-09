@@ -734,6 +734,8 @@ async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
         },
         logger=logger,
     )
+    pods = core_client.list_namespaced_pod(namespace=namespace).items
+    logger.info(f'Pods list: {",".join([item.metadata.name for item in pods])}')
 
     try:
         await run_test(
@@ -743,9 +745,12 @@ async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
             endpoint='/',
         )
     except:
-        await asyncio.sleep(1)
+        pass
+
+    await asyncio.sleep(1)
 
     pods = core_client.list_namespaced_pod(namespace=namespace).items
+    logger.info(f'Pods list: {",".join([item.metadata.name for item in pods])}')
     pod_restarts = [item.status.container_statuses[0].restart_count for item in pods]
     assert any([count for count in pod_restarts if count > 0])
 
