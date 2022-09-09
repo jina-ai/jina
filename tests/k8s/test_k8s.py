@@ -711,6 +711,7 @@ async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
         name='failing_executor',
         uses=f'docker://{docker_images[0]}',
         workspace='/shared',
+        exit_on_exceptions=["Exception", "RuntimeError"],
     )
 
     dump_path = os.path.join(str(tmpdir), 'failing-flow-with-workspace')
