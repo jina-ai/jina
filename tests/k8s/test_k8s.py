@@ -745,11 +745,16 @@ async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
     except:
         pass
 
-    await asyncio.sleep(2)
+    await asyncio.sleep(0.5)
 
     pods = core_client.list_namespaced_pod(namespace=namespace).items
     pod_restarts = [item.status.container_statuses[0].restart_count for item in pods]
-    logger.info(f'Pod restarts : {",".join([str(count) for count in pod_restarts])}')
     assert any([count for count in pod_restarts if count > 0])
+
+    await asyncio.sleep(2)
+    pods = core_client.list_namespaced_pod(namespace=namespace).items
+    pod_phases = [item.status.phase for item in pods]
+    assert len(pod_phases) == 2
+    assert all([True if phase == 'Running' else False for phase in pod_phases])
 
     core_client.delete_namespace(namespace)
