@@ -16,14 +16,28 @@ if TYPE_CHECKING:
 
 def get_fastapi_app(
     streamer: 'GatewayStreamer',
-    args: 'argparse.Namespace',
+    title: str,
+    description: str,
+    no_debug_endpoints: bool,
+    no_crud_endpoints: bool,
+    expose_endpoints: bool,
+    expose_graphql_endpoint: bool,
+    cors: bool,
     logger: 'JinaLogger',
 ):
     """
     Get the app from FastAPI as the REST interface.
 
     :param streamer: gateway streamer object
-    :param args: passed arguments.
+    :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
+    :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
+    :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+    :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
+
+              Any executor that has `@requests(on=...)` bind with those values will receive data requests.
+    :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
+    :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
+    :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
     :param logger: Jina logger.
     :return: fastapi app
     """
@@ -38,14 +52,14 @@ def get_fastapi_app(
         )
 
     app = FastAPI(
-        title=args.title or 'My Jina Service',
-        description=args.description
+        title=title or 'My Jina Service',
+        description=description
         or 'This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` '
         'to customize the title and description.',
         version=__version__,
     )
 
-    if args.cors:
+    if cors:
         app.add_middleware(
             CORSMiddleware,
             allow_origins=['*'],
@@ -60,7 +74,7 @@ def get_fastapi_app(
         await streamer.close()
 
     openapi_tags = []
-    if not args.no_debug_endpoints:
+    if not no_debug_endpoints:
         openapi_tags.append(
             {
                 'name': 'Debug',
@@ -256,7 +270,7 @@ def get_fastapi_app(
             )
             return result
 
-    if not args.no_crud_endpoints:
+    if not no_crud_endpoints:
         openapi_tags.append(
             {
                 'name': 'CRUD',
@@ -280,12 +294,12 @@ def get_fastapi_app(
     if openapi_tags:
         app.openapi_tags = openapi_tags
 
-    if args.expose_endpoints:
-        endpoints = json.loads(args.expose_endpoints)  # type: Dict[str, Dict]
+    if expose_endpoints:
+        endpoints = json.loads(expose_endpoints)  # type: Dict[str, Dict]
         for k, v in endpoints.items():
             expose_executor_endpoint(exec_endpoint=k, **v)
 
-    if args.expose_graphql_endpoint:
+    if expose_graphql_endpoint:
         with ImportExtensions(required=True):
             from dataclasses import asdict
 

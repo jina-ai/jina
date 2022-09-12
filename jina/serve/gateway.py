@@ -8,6 +8,9 @@ from jina.serve.streamer import GatewayStreamer
 
 __all__ = ['BaseGateway']
 
+if TYPE_CHECKING:
+    from prometheus_client import CollectorRegistry
+
 
 class BaseGateway(JAMLCompatible):
     """
@@ -19,27 +22,68 @@ class BaseGateway(JAMLCompatible):
 
     def __init__(
         self,
-        streamer: Optional[GatewayStreamer] = None,
-        args: 'argparse.Namespace' = None,
-        logger: 'JinaLogger' = None,
         **kwargs,
     ):
         """
-        :param streamer: configured gateway streamer
-        :param args: args
-        :param logger: jina logger object
         :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected
         """
-        self.streamer = streamer
-        self.args = args
-        self.logger = logger
-        self.app = self.get_app()
+        self.streamer = None
+        self.logger = JinaLogger(self.name, **vars(self.args))
+
+    def _set_streamer(
+        self,
+        args: 'argparse.Namespace' = None,
+        timeout_send: Optional[float] = None,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+    ):
+        import json
+
+        from jina.serve.streamer import GatewayStreamer
+
+        graph_description = json.loads(args.graph_description)
+        graph_conditions = json.loads(args.graph_conditions)
+        deployments_addresses = json.loads(args.deployments_addresses)
+        deployments_disable_reduce = json.loads(args.deployments_disable_reduce)
+
+        self.streamer = GatewayStreamer(
+            graph_representation=graph_description,
+            executor_addresses=deployments_addresses,
+            graph_conditions=graph_conditions,
+            deployments_disable_reduce=deployments_disable_reduce,
+            timeout_send=timeout_send,
+            retries=args.retries,
+            compression=args.compression,
+            runtime_name=args.name,
+            prefetch=args.prefetch,
+            logger=self.logger,
+            metrics_registry=metrics_registry,
+        )
 
     @abc.abstractmethod
-    def get_app(self):
-        """Initialize and return ASGI application"""
-        pass
+    async def setup_server(self):
+        """Setup server"""
+        ...
 
-    def stop(self):
-        """Stop ASGI application"""
-        pass
+    @abc.abstractmethod
+    async def run_server(self):
+        """Run server forever"""
+        ...
+
+    async def teardown(self):
+        """Free other resources allocated with the server, e.g, gateway object, ..."""
+        await self.streamer.close()
+
+    @abc.abstractmethod
+    async def stop_server(self):
+        """Stop server"""
+        ...
+
+    # some servers need to set a flag useful in handling termination signals
+    # e.g, HTTPGateway/ WebSocketGateway
+    @property
+    def should_exit(self) -> bool:
+        """
+        Boolean flag that indicates whether the gateway server should exit or not
+        :return: boolean flag
+        """
+        return False

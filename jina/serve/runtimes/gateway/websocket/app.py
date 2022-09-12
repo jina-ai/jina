@@ -23,14 +23,12 @@ def _fits_ws_close_msg(msg: str):
 
 def get_fastapi_app(
     streamer: 'GatewayStreamer',
-    args: 'argparse.Namespace',
     logger: 'JinaLogger',
 ):
     """
     Get the app from FastAPI as the Websocket interface.
 
     :param streamer: gateway streamer object.
-    :param args: passed arguments.
     :param logger: Jina logger.
     :return: fastapi app
     """
