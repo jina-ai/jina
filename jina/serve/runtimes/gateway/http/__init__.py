@@ -20,15 +20,16 @@ class HTTPGatewayRuntime(GatewayRuntime):
         Setup the uvicorn server.
         """
         self.gateway = HTTPGateway(
-            self.args.port,
-            self.args.title,
-            self.args.description,
-            self.args.no_debug_endpoints,
-            self.args.no_crud_endpoints,
-            self.args.expose_endpoints,
-            self.args.expose_graphql_endpoints,
-            self.args.cors,
-            self.args.uvicorn_kwargs,
+            name=self.name,
+            port=self.args.port,
+            title=self.args.title,
+            description=self.args.description,
+            no_debug_endpoints=self.args.no_debug_endpoints,
+            no_crud_endpoints=self.args.no_crud_endpoints,
+            expose_endpoints=self.args.expose_endpoints,
+            expose_graphql_endpoint=self.args.expose_graphql_endpoint,
+            cors=self.args.cors,
+            uvicorn_kwargs=self.args.uvicorn_kwargs,
         )
 
         self.gateway._set_streamer(self.args, self.timeout_send, self.metrics_registry)

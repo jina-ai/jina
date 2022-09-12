@@ -19,6 +19,7 @@ class WebSocketGatewayRuntime(GatewayRuntime):
         """
 
         self.gateway = WebSocketGateway(
+            name=self.name,
             port=self.args.port,
             uvicorn_kwargs=self.args.uvicorn_kwargs,
             logger=self.logger,

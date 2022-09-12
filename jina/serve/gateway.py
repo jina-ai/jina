@@ -22,13 +22,17 @@ class BaseGateway(JAMLCompatible):
 
     def __init__(
         self,
+        name: Optional[str] = 'gateway',
         **kwargs,
     ):
         """
+        :param name: Gateway pod name
         :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected
         """
         self.streamer = None
-        self.logger = JinaLogger(self.name, **vars(self.args))
+        self.name = name
+        # TODO: original implementation also passes args, maybe move this to a setter/initializer func
+        self.logger = JinaLogger(self.name)
 
     def _set_streamer(
         self,

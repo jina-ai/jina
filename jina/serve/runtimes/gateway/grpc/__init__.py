@@ -26,6 +26,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
             raise PortAlreadyUsed(f'port:{self.args.port}')
 
         self.gateway = GRPCGateway(
+            name=self.name,
             grpc_server_options=self.args.grpc_server_options,
             port=self.args.port,
             ssl_keyfile=self.args.keyfile,
