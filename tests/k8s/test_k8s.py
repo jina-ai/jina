@@ -756,6 +756,6 @@ async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
     pods = core_client.list_namespaced_pod(namespace=namespace).items
     pod_phases = [item.status.phase for item in pods]
     assert len(pod_phases) == 2
-    assert all([True if phase == 'Running' else False for phase in pod_phases])
+    assert all([phase == 'Running' for phase in pod_phases])
 
     core_client.delete_namespace(namespace)
