@@ -23,8 +23,10 @@ class HTTPGateway(BaseGateway):
         expose_endpoints: Optional[str] = None,
         expose_graphql_endpoint: Optional[bool] = False,
         cors: Optional[bool] = False,
+        ssl_keyfile: Optional[str] = None,
+        ssl_certfile: Optional[str] = None,
         uvicorn_kwargs: Optional[dict] = None,
-        **kwargs,
+        **kwargs
     ):
         """Initialize the gateway
             Get the app from FastAPI as the REST interface.
@@ -38,6 +40,8 @@ class HTTPGateway(BaseGateway):
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
+        :param ssl_keyfile: the path to the key file
+        :param ssl_certfile: the path to the certificate file
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
         :param kwargs: keyword args
         """
@@ -50,6 +54,8 @@ class HTTPGateway(BaseGateway):
         self.expose_endpoints = expose_endpoints
         self.expose_graphql_endpoint = expose_graphql_endpoint
         self.cors = cors
+        self.ssl_keyfile = ssl_keyfile
+        self.ssl_certfile = ssl_certfile
         self.uvicorn_kwargs = uvicorn_kwargs
 
     async def setup_server(self):
@@ -111,10 +117,11 @@ class HTTPGateway(BaseGateway):
 
         uvicorn_kwargs = self.uvicorn_kwargs or {}
 
-        for ssl_file in ['ssl_keyfile', 'ssl_certfile']:
-            if ssl_file:
-                if ssl_file not in uvicorn_kwargs.keys():
-                    uvicorn_kwargs[ssl_file] = ssl_file
+        if self.ssl_keyfile and 'ssl_keyfile' not in uvicorn_kwargs.keys():
+            uvicorn_kwargs['ssl_keyfile'] = self.ssl_keyfile
+
+        if self.ssl_certfile and 'ssl_certfile' not in uvicorn_kwargs.keys():
+            uvicorn_kwargs['ssl_certfile'] = self.ssl_certfile
 
         self.server = UviServer(
             config=Config(

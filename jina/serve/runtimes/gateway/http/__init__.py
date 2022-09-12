@@ -29,6 +29,8 @@ class HTTPGatewayRuntime(GatewayRuntime):
             expose_endpoints=self.args.expose_endpoints,
             expose_graphql_endpoint=self.args.expose_graphql_endpoint,
             cors=self.args.cors,
+            ssl_keyfile=self.args.ssl_keyfile,
+            ssl_certfile=self.args.ssl_certfile,
             uvicorn_kwargs=self.args.uvicorn_kwargs,
         )
 

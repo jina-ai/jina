@@ -16,16 +16,22 @@ class WebSocketGateway(BaseGateway):
     def __init__(
         self,
         port: Optional[int] = None,
+        ssl_keyfile: Optional[str] = None,
+        ssl_certfile: Optional[str] = None,
         uvicorn_kwargs: Optional[dict] = None,
-        **kwargs,
+        **kwargs
     ):
         """Initialize the gateway
         :param port: The port of the Gateway, which the client should connect to.
+        :param ssl_keyfile: the path to the key file
+        :param ssl_certfile: the path to the certificate file
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
         self.port = port
+        self.ssl_keyfile = ssl_keyfile
+        self.ssl_certfile = ssl_certfile
         self.uvicorn_kwargs = uvicorn_kwargs
 
     async def setup_server(self):
@@ -80,10 +86,11 @@ class WebSocketGateway(BaseGateway):
 
         uvicorn_kwargs = self.uvicorn_kwargs or {}
 
-        for ssl_file in ['ssl_keyfile', 'ssl_certfile']:
-            if ssl_file:
-                if ssl_file not in uvicorn_kwargs.keys():
-                    uvicorn_kwargs[ssl_file] = ssl_file
+        if self.ssl_keyfile and 'ssl_keyfile' not in uvicorn_kwargs.keys():
+            uvicorn_kwargs['ssl_keyfile'] = self.ssl_keyfile
+
+        if self.ssl_certfile and 'ssl_certfile' not in uvicorn_kwargs.keys():
+            uvicorn_kwargs['ssl_certfile'] = self.ssl_certfile
 
         self.server = UviServer(
             config=Config(
