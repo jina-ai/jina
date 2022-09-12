@@ -433,7 +433,7 @@ async def test_decorator_monitoring(port_generator):
 
 @pytest.mark.slow
 @pytest.mark.timeout(10)
-def test_error_in_worker_runtime_with_exit_on_exceptions(monkeypatch):
+async def test_error_in_worker_runtime_with_exit_on_exceptions(monkeypatch):
     args = set_pod_parser().parse_args(['--exit-on-exceptions', 'RuntimeError'])
 
     cancel_event = multiprocessing.Event()
@@ -461,22 +461,12 @@ def test_error_in_worker_runtime_with_exit_on_exceptions(monkeypatch):
     )
 
     target = f'{args.host}:{args.port}'
-    try:
-        with grpc.insecure_channel(
-            target,
-            options=GrpcConnectionPool.get_default_grpc_options(),
-        ) as channel:
-            stub = jina_pb2_grpc.JinaSingleDataRequestRPCStub(channel)
-            response, call = stub.process_single_data.with_call(
-                _create_test_data_message()
-            )
-
-        assert response.header.status.code == jina_pb2.StatusProto.ERROR
-        assert 'is-error' in dict(call.trailing_metadata())
-    except:
-        pass
+    response = await GrpcConnectionPool.send_request_async(
+        _create_test_data_message(), target
+    )
+    assert response.header.status.code == jina_pb2.StatusProto.ERROR
 
     cancel_event.set()
     runtime_thread.join()
 
-    assert not AsyncNewLoopRuntime.is_ready(f'{args.host}:{args.port}')
+    assert not AsyncNewLoopRuntime.is_ready(target)
