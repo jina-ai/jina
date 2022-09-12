@@ -29,7 +29,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
             name=self.name,
             grpc_server_options=self.args.grpc_server_options,
             port=self.args.port,
-            ssl_keyfile=self.args.keyfile,
+            ssl_keyfile=self.args.ssl_keyfile,
             ssl_certfile=self.args.ssl_certfile,
         )
 
