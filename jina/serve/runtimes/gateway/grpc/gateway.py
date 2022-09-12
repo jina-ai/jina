@@ -36,15 +36,15 @@ class GRPCGateway(BaseGateway):
         self.grpc_server_options = grpc_server_options
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
+        self.server = grpc.aio.server(
+            options=_get_grpc_server_options(self.grpc_server_options)
+        )
+        self.health_servicer = health.HealthServicer(experimental_non_blocking=True)
 
     async def setup_server(self):
         """
         setup GRPC server
         """
-        self.server = grpc.aio.server(
-            options=_get_grpc_server_options(self.grpc_server_options)
-        )
-        self.health_servicer = health.HealthServicer(experimental_non_blocking=True)
         jina_pb2_grpc.add_JinaRPCServicer_to_server(self.streamer, self.server)
 
         jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self, self.server)
