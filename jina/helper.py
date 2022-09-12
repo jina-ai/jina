@@ -286,9 +286,9 @@ def parse_arg(v: str) -> Optional[Union[bool, int, str, list, float]]:
 
     if v.startswith('[') and v.endswith(']'):
         # function args must be immutable tuples not list
-        tmp = v.replace('[', '').replace(']', '').strip().split(',')
+        tmp = v.replace('[', '').replace(']', '').strip()
         if len(tmp) > 0:
-            return [parse_arg(vv.strip()) for vv in tmp]
+            return [parse_arg(vv.strip()) for vv in tmp.split(',')]
         else:
             return []
     try:
@@ -966,6 +966,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'session-id': str(random_uuid(use_uuid1=True)),
             'uptime': __uptime__,
             'ci-vendor': get_ci_vendor() or __unset_msg__,
+            'internal': 'jina-ai' in os.getenv('GITHUB_ACTION_REPOSITORY', __unset_msg__)
         }
 
         env_info = {k: os.getenv(k, __unset_msg__) for k in __jina_env__}

@@ -12,11 +12,19 @@ def set_ping_parser(parser=None):
         parser = set_base_parser()
 
     parser.add_argument(
-        'host', type=str, help='The host address of the target Pod, e.g. 0.0.0.0'
+        'target',
+        type=str,
+        choices=['flow', 'executor'],
+        help='The target type to ping',
+        default='executor',
     )
+
     parser.add_argument(
-        'port', type=int, help='The control port of the target deployment/pod'
+        'host',
+        type=str,
+        help='The host address with port of a target Executor or a Flow, e.g. 0.0.0.0:8000',
     )
+
     parser.add_argument(
         '--timeout',
         type=int,

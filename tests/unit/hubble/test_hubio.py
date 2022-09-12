@@ -768,7 +768,6 @@ def test_new_without_arguments(monkeypatch, tmpdir, add_dockerfile):
 
     pkg_files = [
         'executor.py',
-        'manifest.yml',
         'README.md',
         'requirements.txt',
         'config.yml',
@@ -781,7 +780,6 @@ def test_new_without_arguments(monkeypatch, tmpdir, add_dockerfile):
         assert (path / file).exists()
     for file in [
         'executor.py',
-        'manifest.yml',
         'README.md',
         'config.yml',
     ]:
@@ -836,7 +834,6 @@ def test_new_with_arguments(
 
     pkg_files = [
         'executor.py',
-        'manifest.yml',
         'README.md',
         'requirements.txt',
         'config.yml',
@@ -851,16 +848,17 @@ def test_new_with_arguments(
     for file in pkg_files:
         assert (path / file).exists()
 
-    for file in ['executor.py', 'manifest.yml', 'README.md', 'config.yml']:
+    for file in ['executor.py', 'README.md', 'config.yml']:
         with open(path / file, 'r') as fp:
             assert 'argsExecutor' in fp.read()
+    
     if advance_configuration or confirm_advance_configuration:
-        with open(path / 'manifest.yml') as fp:
+        with open(path / 'config.yml') as fp:
             temp = yaml.load(fp, Loader=yaml.FullLoader)
-            assert temp['name'] == 'argsExecutor'
-            assert temp['description'] == 'args description'
-            assert temp['keywords'] == ['args', 'keywords']
-            assert temp['url'] == 'args url'
+            assert temp['metas']['name'] == 'argsExecutor'
+            assert temp['metas']['description'] == 'args description'
+            assert temp['metas']['keywords'] == ['args', 'keywords']
+            assert temp['metas']['url'] == 'args url'
 
 
 class SandboxGetMockResponse:
