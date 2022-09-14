@@ -326,6 +326,32 @@ executors:
     uses: jinahub+docker://Executor1
 ```
 
+### Add Labels
+
+You can use `labels` (as key-value pairs) to attach metadata to your Flows.
+
+```yaml
+jtype: Flow
+jcloud:
+  labels: 
+    username: johndoe
+    app: fashion-search
+executors:
+  - name: executor1
+    uses: jinahub+docker://Executor1
+```
+
+```{note}
+
+Keys in `labels` have the following restrictions.
+  - Must be 63 characters or less.
+  - Must begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.
+  - Following keys are skipped if passed in the Flow YAML.
+    - user
+    - jina-version
+    - retention-days
+```
+
 
 ### Lifetime
 
