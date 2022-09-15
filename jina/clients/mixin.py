@@ -231,7 +231,7 @@ class PostMixin:
         :param target_executor: a regex string. Only matching Executors will process the request.
         :param request_size: the number of Documents per request. <=0 means all inputs in one request.
         :param show_progress: if set, client will show a progress bar on receiving every request.
-        :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.7
+        :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.
         :param return_responses: if set to True, the result will come as Response and not as a `DocumentArray`
 
         :param kwargs: additional parameters

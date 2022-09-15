@@ -659,6 +659,7 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
     )
 ```
 
+### Continue streaming when an error occurs
 
 
 ## Returns
