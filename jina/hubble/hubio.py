@@ -7,7 +7,7 @@ import json
 import os
 import random
 from pathlib import Path
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Union, List
 from urllib.parse import urljoin
 
 import hubble
@@ -482,7 +482,7 @@ metas:
                 )
 
                 image = None
-                warning = None
+                warnings = []
                 session_id = req_header.get('jinameta-session-id')
                 for stream_line in resp.iter_lines():
                     stream_msg = json.loads(stream_line)
@@ -508,6 +508,9 @@ metas:
                         raise Exception(
                             f'{overridden_msg or msg or "Unknown Error"} session_id: {session_id}'
                         )
+                    elif t == 'warning':
+                        warnings.append(stream_msg.get('message'))
+        
                     if t == 'progress' and subject == 'buildWorkspace':
                         legacy_message = stream_msg.get('legacyMessage', {})
                         status = legacy_message.get('status', '')
@@ -533,7 +536,7 @@ metas:
 
                 if image:
                     new_uuid8, new_secret = self._prettyprint_result(
-                        console, image, warning=warning
+                        console, image, warnings=warnings
                     )
                     if new_uuid8 != uuid8 or new_secret != secret:
                         dump_secret(work_path, new_uuid8, new_secret or '')
@@ -549,7 +552,7 @@ metas:
                 )
                 raise e
 
-    def _prettyprint_result(self, console, image, *, warning: Optional[str] = None):
+    def _prettyprint_result(self, console, image, *, warnings: Optional[List[str]] = None):
         # TODO: only support single executor now
 
         from rich import box
@@ -576,21 +579,23 @@ metas:
             table.add_row(':lock: Secret', secret)
             table.add_row(
                 '',
-                ':point_up:️ [bold red]Please keep this token in a safe place!',
+                '👆 [bold red]Please keep this token in a safe place!',
             )
 
         table.add_row(':eyes: Visibility', visibility)
 
-        if warning:
+        if warnings:
             table.add_row(
-                ':warning: Warning',
-                f':exclamation:️ [bold yellow]{warning}',
+                ':exclamation: Warnings',
+                '👇 [bold yellow]Process finished with warnings!',
             )
+            for warning in warnings:
+                table.add_row('', f'[yellow]• {warning}')
 
         p1 = Panel(
             table,
             title='Published',
-            width=80,
+            width=100,
             expand=False,
         )
         console.print(p1)
