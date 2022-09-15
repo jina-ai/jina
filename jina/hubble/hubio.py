@@ -803,7 +803,7 @@ metas:
         if task_id:
             param_str.add_row('')
             param_str.add_row(
-                f'Also you can use `jina hub status {work_path} --id {task_id}` get the specified building state about the executor.',
+                f'Also you can use `jina hub status --id {task_id}` get the specified building state about the executor.',
             )
 
         console.print(
