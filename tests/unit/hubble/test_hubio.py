@@ -687,31 +687,6 @@ def test_push_with_error(
     )
 
 
-@pytest.mark.parametrize('build_env', ['DOMAIN=github.com DOWNLOAD=download'])
-def test_push_with_authorization(mocker, monkeypatch, build_env):
-    mock = mocker.Mock()
-
-    def _mock_post(url, data, headers, stream):
-        mock(url=url, headers=headers)
-        return PostMockResponse(response_code=requests.codes.created)
-
-    monkeypatch.setattr(requests, 'post', _mock_post)
-
-    exec_path = os.path.join(cur_dir, 'dummy_executor')
-    _args_list = [exec_path]
-    if build_env:
-        _args_list.extend(['--build-env', build_env])
-
-    args = set_hub_push_parser().parse_args(_args_list)
-
-    with monkeypatch.context() as m:
-        m.setattr(helper, 'get_token', lambda: 'test-auth-token')
-        HubIO(args).push()
-
-        assert mock.call_count == 1
-
-    _, kwargs = mock.call_args_list[0]
-
 @pytest.mark.parametrize('task_id', [None, '6316e9ac8e'])
 @pytest.mark.parametrize('verbose', [False, True])
 @pytest.mark.parametrize('replay', [False, True])
@@ -968,19 +943,13 @@ def test_fetch_with_authorization(mocker, monkeypatch):
 
     monkeypatch.setattr(requests, 'post', _mock_post)
 
-    with monkeypatch.context() as m:
-        m.setattr(helper, 'get_token', lambda: 'test-auth-token')
-        HubIO.fetch_meta('dummy_mwu_encoder', tag=None, force=True)
+    HubIO.fetch_meta('dummy_mwu_encoder', tag=None, force=True)
 
-        assert mock.call_count == 1
+    assert mock.call_count == 1
 
-        _, kwargs = mock.call_args_list[0]
+    _, kwargs = mock.call_args_list[0]
 
-<<<<<<< HEAD
     assert kwargs['headers'].get('Authorization').startswith('token ')
-=======
-        assert kwargs['headers'].get('Authorization') == f'token {auth_token}'
->>>>>>> 2204faa498 (feat: use async push for logged in user)
 
 
 class DownloadMockResponse:
