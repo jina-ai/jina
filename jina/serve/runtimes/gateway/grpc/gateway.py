@@ -45,7 +45,9 @@ class GRPCGateway(BaseGateway):
         """
         setup GRPC server
         """
-        jina_pb2_grpc.add_JinaRPCServicer_to_server(self.streamer, self.server)
+        jina_pb2_grpc.add_JinaRPCServicer_to_server(
+            self.streamer._streamer, self.server
+        )
 
         jina_pb2_grpc.add_JinaGatewayDryRunRPCServicer_to_server(self, self.server)
         jina_pb2_grpc.add_JinaInfoRPCServicer_to_server(self, self.server)
