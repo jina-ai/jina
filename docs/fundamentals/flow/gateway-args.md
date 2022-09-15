@@ -7,7 +7,6 @@
 | `quiet_error` | If set, then exception stack information will not be added to the log | `boolean` | `False` |
 | `timeout_ctrl` | The timeout in milliseconds of the control request, -1 for waiting forever | `number` | `60` |
 | `polling` | The polling strategy of the Deployment and its endpoints (when `shards>1`).<br>    Can be defined for all endpoints of a Deployment or by endpoint.<br>    Define per Deployment:<br>    - ANY: only one (whoever is idle) Pod polls the message<br>    - ALL: all Pods poll the message (like a broadcast)<br>    Define per Endpoint:<br>    JSON dict, {endpoint: PollingType}<br>    {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'} | `string` | `ANY` |
-| `exit_on_exceptions` | List of exceptions that will cause the Executor to shut down. | `array` | `[]` |
 | `uses` | The config of the executor, it could be one of the followings:<br>        * the string literal of an Executor class name<br>        * an Executor YAML file (.yml, .yaml, .jaml)<br>        * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)<br>        * a docker image (must start with `docker://`)<br>        * the string literal of a YAML config (must start with `!` or `jtype: `)<br>        * the string literal of a JSON config<br><br>        When use it under Python, one can use the following values additionally:<br>        - a Python dict that represents the config<br>        - a text file stream has `.read()` interface | `string` | `BaseExecutor` |
 | `uses_with` | Dictionary of keyword arguments that will override the `with` configuration in `uses` | `object` | `None` |
 | `uses_metas` | Dictionary of keyword arguments that will override the `metas` configuration in `uses` | `object` | `None` |
@@ -18,6 +17,7 @@
 | `native` | If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime. | `boolean` | `False` |
 | `output_array_type` | The type of array `tensor` and `embedding` will be serialized to.<br><br>Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found <br>`here <https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf>`.<br>Defaults to retaining whatever type is returned by the Executor. | `string` | `None` |
 | `grpc_server_options` | Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1} | `object` | `None` |
+| `exit_on_exceptions` | List of exceptions that will cause the Executor to shut down. | `array` | `[]` |
 | `prefetch` | Number of requests fetched from the client before feeding into the first Executor. <br>    <br>    Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default) | `number` | `1000` |
 | `title` | The title of this HTTP server. It will be used in automatics docs such as Swagger UI. | `string` | `None` |
 | `description` | The description of this HTTP server. It will be used in automatics docs such as Swagger UI. | `string` | `None` |

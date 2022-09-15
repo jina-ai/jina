@@ -113,3 +113,11 @@ Defaults to retaining whatever type is returned by the Executor.
         help="Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}",
         default=None,
     )
+
+    gp.add_argument(
+        '--exit-on-exceptions',
+        type=str,
+        default=[],
+        nargs='*',
+        help='List of exceptions that will cause the Executor to shut down.',
+    )
