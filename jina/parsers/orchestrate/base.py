@@ -119,11 +119,3 @@ def mixin_base_ppr_parser(parser):
     
     ''',
     )
-
-    gp.add_argument(
-        '--exit-on-exceptions',
-        type=str,
-        default=[],
-        nargs='*',
-        help='List of exceptions that will cause the Executor to shut down.',
-    )
