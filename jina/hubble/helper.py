@@ -16,6 +16,8 @@ from pathlib import Path
 from typing import Dict, Optional, Tuple
 from urllib.parse import urlparse
 
+from hubble import get_token
+
 from jina import __cache_path__, __resources_path__
 from jina.enums import BetterEnum
 from jina.helper import get_request_header as _get_request_header_main
@@ -76,9 +78,8 @@ def get_request_header() -> Dict:
     :return: request header
     """
     headers = _get_request_header_main()
-    import hubble
 
-    auth_token = hubble.get_token()
+    auth_token = get_token()
     if auth_token:
         headers['Authorization'] = f'token {auth_token}'
 
@@ -316,6 +317,39 @@ def upload_file(
 
     response = getattr(requests, method)(url, data=data, headers=headers, stream=stream)
 
+    return response
+
+
+def status_task(
+    url: str,
+    id: str,
+    dict_data: Dict,
+    headers: Dict,
+    stream: bool = False,
+    method: str = 'post',
+):
+    """Query building status progress of the executor
+
+    :param url: target url
+    :param id: the task id
+    :param dict_data: the dict-style data
+    :param headers: the request header
+    :param stream: receive stream response
+    :param method: the request method
+    :return: the response of request
+    """
+
+    with ImportExtensions(required=True):
+        import requests
+
+    dict_data['id'] = id
+    (data, ctype) = requests.packages.urllib3.filepost.encode_multipart_formdata(
+        dict_data
+    )
+
+    headers.update({'Content-Type': ctype})
+    # asyncTask.getDetail
+    response = getattr(requests, method)(url, data=data, headers=headers, stream=stream)
     return response
 
 
