@@ -7,7 +7,7 @@ import json
 import os
 import random
 from pathlib import Path
-from typing import Dict, Optional, Union, List
+from typing import Dict, List, Optional, Union
 from urllib.parse import urljoin
 
 import hubble
@@ -421,9 +421,7 @@ metas:
 
             image = self._status_with_progress(console, st, new_task_id, False, verbose)
             if image:
-                new_uuid8, new_secret = self._prettyprint_result(
-                    console, image, warning=None
-                )
+                new_uuid8, new_secret = self._prettyprint_result(console, image)
 
                 if new_uuid8 != uuid8 or new_secret != secret or task_id != new_task_id:
                     dump_secret(work_path, new_uuid8, new_secret or '', new_task_id)
@@ -454,7 +452,7 @@ metas:
             method='post',
         )
 
-        warning = None
+        warnings = []
         verbose = form_data.get('verbose', False)
         image = None
         session_id = req_header.get('jinameta-session-id')
@@ -481,6 +479,8 @@ metas:
                 raise Exception(
                     f'{overridden_msg or msg or "Unknown Error"} session_id: {session_id}'
                 )
+            elif t == 'warning':
+                warnings.append(stream_msg.get('message'))
 
             if t == 'progress' and subject == 'buildWorkspace':
                 legacy_message = stream_msg.get('legacyMessage', {})
@@ -489,7 +489,7 @@ metas:
 
             elif t == 'complete':
                 image = stream_msg['payload']
-                warning = stream_msg.get('warning')
+                warnings.append(stream_msg.get('warning'))
                 st.update(
                     f'Cloud building ... [dim]{subject}: {t} ({stream_msg["message"]})[/dim]'
                 )
@@ -503,7 +503,7 @@ metas:
 
         if image:
             new_uuid8, new_secret = self._prettyprint_result(
-                console, image, warning=warning
+                console, image, warnings=warnings
             )
             if new_uuid8 != uuid8 or new_secret != secret:
                 dump_secret(work_path, new_uuid8, new_secret or '', None)
@@ -664,9 +664,9 @@ metas:
                 )
                 raise e
 
-    def _prettyprint_result(self, console, image, *, warnings: Optional[List[str]] = None):
-        # TODO: only support single executor now
-
+    def _prettyprint_result(
+        self, console, image, *, warnings: Optional[List[str]] = None
+    ):
         from rich import box
         from rich.panel import Panel
         from rich.table import Table
@@ -953,7 +953,7 @@ metas:
 
             if image:
                 self.args.no_usage = False
-                self._prettyprint_result(console, image, warning=None)
+                self._prettyprint_result(console, image)
             else:
                 console.log(f'Waiting `{task_id}` ...')
 
