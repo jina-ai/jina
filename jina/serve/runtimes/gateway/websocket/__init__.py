@@ -31,7 +31,7 @@ class WebSocketGatewayRuntime(GatewayRuntime):
             args=self.args,
             timeout_send=self.timeout_send,
             metrics_registry=self.metrics_registry,
-            runtime_name=self.name,
+            runtime_name=self.args.name,
         )
         await self.gateway.setup_server()
 
