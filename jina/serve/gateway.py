@@ -39,12 +39,14 @@ class BaseGateway(JAMLCompatible):
         args: 'argparse.Namespace' = None,
         timeout_send: Optional[float] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
+        runtime_name: Optional[str] = None,
     ):
         """
         Set streamer object by providing runtime parameters.
         :param args: runtime args
         :param timeout_send: grpc connection timeout
         :param metrics_registry: metric registry when monitoring is enabled
+        :param runtime_name: name of the runtime providing the streamer
         """
         import json
 
@@ -63,7 +65,7 @@ class BaseGateway(JAMLCompatible):
             timeout_send=timeout_send,
             retries=args.retries,
             compression=args.compression,
-            runtime_name=args.name,
+            runtime_name=runtime_name,
             prefetch=args.prefetch,
             logger=self.logger,
             metrics_registry=metrics_registry,

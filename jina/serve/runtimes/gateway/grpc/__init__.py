@@ -34,7 +34,10 @@ class GRPCGatewayRuntime(GatewayRuntime):
         )
 
         self.gateway.set_streamer(
-            self.args, self.timeout_send, metrics_registry=self.metrics_registry
+            args=self.args,
+            timeout_send=self.timeout_send,
+            metrics_registry=self.metrics_registry,
+            runtime_name=self.name,
         )
         await self.gateway.setup_server()
 

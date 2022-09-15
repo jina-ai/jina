@@ -27,7 +27,12 @@ class WebSocketGatewayRuntime(GatewayRuntime):
             logger=self.logger,
         )
 
-        self.gateway.set_streamer(self.args, self.timeout_send, self.metrics_registry)
+        self.gateway.set_streamer(
+            args=self.args,
+            timeout_send=self.timeout_send,
+            metrics_registry=self.metrics_registry,
+            runtime_name=self.name,
+        )
         await self.gateway.setup_server()
 
     async def _wait_for_cancel(self):
