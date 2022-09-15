@@ -25,17 +25,6 @@ from jina.parsers.hubble import (
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-@pytest.fixture(scope='function')
-def auth_token(tmpdir):
-    from hubble.utils.config import Config
-
-    c = Config()
-    token = 'test-auth-token'
-    c.set('auth_token', token)
-    yield token
-    c.delete('auth_token')
-
-
 class PostMockResponse:
     def __init__(self, response_code: int = 201):
         self.response_code = response_code
@@ -398,7 +387,7 @@ def test_push_wrong_dockerfile(
 
 
 @pytest.mark.parametrize('build_env', ['DOMAIN=github.com DOWNLOAD=download'])
-def test_push_with_authorization(mocker, monkeypatch, auth_token, build_env):
+def test_push_with_authorization(mocker, monkeypatch, build_env):
     mock = mocker.Mock()
 
     def _mock_post(url, data, headers, stream):
@@ -419,7 +408,7 @@ def test_push_with_authorization(mocker, monkeypatch, auth_token, build_env):
 
     _, kwargs = mock.call_args_list[0]
 
-    assert kwargs['headers'].get('Authorization') == f'token {auth_token}'
+    assert kwargs['headers'].get('Authorization').startswith('token ')
 
 
 @pytest.mark.parametrize('rebuild_image', [True, False])
@@ -538,7 +527,7 @@ def test_fetch_with_retry(mocker, monkeypatch):
     assert mock.call_count == 6  # mock must be called 3+3
 
 
-def test_fetch_with_authorization(mocker, monkeypatch, auth_token):
+def test_fetch_with_authorization(mocker, monkeypatch):
     mock = mocker.Mock()
 
     def _mock_post(url, json, headers):
@@ -553,7 +542,7 @@ def test_fetch_with_authorization(mocker, monkeypatch, auth_token):
 
     _, kwargs = mock.call_args_list[0]
 
-    assert kwargs['headers'].get('Authorization') == f'token {auth_token}'
+    assert kwargs['headers'].get('Authorization').startswith('token ')
 
 
 class DownloadMockResponse:
@@ -851,7 +840,7 @@ def test_new_with_arguments(
     for file in ['executor.py', 'README.md', 'config.yml']:
         with open(path / file, 'r') as fp:
             assert 'argsExecutor' in fp.read()
-    
+
     if advance_configuration or confirm_advance_configuration:
         with open(path / 'config.yml') as fp:
             temp = yaml.load(fp, Loader=yaml.FullLoader)
