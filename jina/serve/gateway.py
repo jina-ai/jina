@@ -34,12 +34,18 @@ class BaseGateway(JAMLCompatible):
         # TODO: original implementation also passes args, maybe move this to a setter/initializer func
         self.logger = JinaLogger(self.name)
 
-    def _set_streamer(
+    def set_streamer(
         self,
         args: 'argparse.Namespace' = None,
         timeout_send: Optional[float] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
     ):
+        """
+        Set streamer object by providing runtime parameters.
+        :param args: runtime args
+        :param timeout_send: grpc connection timeout
+        :param metrics_registry: metric registry when monitoring is enabled
+        """
         import json
 
         from jina.serve.streamer import GatewayStreamer

@@ -33,7 +33,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
             ssl_certfile=self.args.ssl_certfile,
         )
 
-        self.gateway._set_streamer(
+        self.gateway.set_streamer(
             self.args, self.timeout_send, metrics_registry=self.metrics_registry
         )
         await self.gateway.setup_server()

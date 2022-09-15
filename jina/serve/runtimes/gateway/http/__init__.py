@@ -34,7 +34,7 @@ class HTTPGatewayRuntime(GatewayRuntime):
             uvicorn_kwargs=self.args.uvicorn_kwargs,
         )
 
-        self.gateway._set_streamer(self.args, self.timeout_send, self.metrics_registry)
+        self.gateway.set_streamer(self.args, self.timeout_send, self.metrics_registry)
         await self.gateway.setup_server()
 
     async def _wait_for_cancel(self):
