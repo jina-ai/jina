@@ -1658,6 +1658,7 @@ def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
     """Sends in a thread a request with telemetry for a given event
     :param event: Event leading to the telemetry entry
     :param obj: Object to be tracked
+    :param kwargs: Extra kwargs to be passed to the data sent
     """
 
     if 'JINA_OPTOUT_TELEMETRY' in os.environ:
