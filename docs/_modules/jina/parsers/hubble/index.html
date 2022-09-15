@@ -421,6 +421,20 @@
     <span class="k">return</span> <span class="n">parser</span></div>
 
 
+<div class="viewcode-block" id="set_hub_status_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.hubble/#jina.parsers.hubble.set_hub_status_parser">[docs]</a><span class="k">def</span> <span class="nf">set_hub_status_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set the parser for the hub status</span>
+<span class="sd">    :param parser: an optional existing parser to build upon</span>
+<span class="sd">    :return: the parser</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">parser</span><span class="p">:</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
+
+    <span class="kn">from</span> <span class="nn">jina.parsers.hubble.status</span> <span class="kn">import</span> <span class="n">mixin_hub_status_parser</span>
+
+    <span class="n">mixin_hub_status_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
 <div class="viewcode-block" id="set_hub_parser"><a class="viewcode-back" href="../../../../api/jina.parsers.hubble/#jina.parsers.hubble.set_hub_parser">[docs]</a><span class="k">def</span> <span class="nf">set_hub_parser</span><span class="p">(</span><span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Set the parser for the hub</span>
 <span class="sd">    :param parser: the parser configure</span>
@@ -460,6 +474,15 @@
             <span class="s1">&#39;pull&#39;</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="s1">&#39;download an executor image/package from Jina hub&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Download an executor image/package from Jina hub&#39;</span><span class="p">,</span>
+            <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">set_hub_status_parser</span><span class="p">(</span>
+        <span class="n">spp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
+            <span class="s1">&#39;status&#39;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;query an executor building status of of a pushed Executor from Jina hub&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Query an executor building status of of a pushed Executor from Jina hub&#39;</span><span class="p">,</span>
             <span class="n">formatter_class</span><span class="o">=</span><span class="n">_chf</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span>

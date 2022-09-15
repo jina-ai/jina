@@ -102,7 +102,7 @@ emphasize-lines: 13-15
 - jina 3.7.14
 - docarray 0.15.4
 - jcloud 0.0.35
-- jina-hubble-sdk 0.15.2
+- jina-hubble-sdk 0.16.1
 - jina-proto 0.1.13
 - protobuf 3.20.1
 - proto-backend python

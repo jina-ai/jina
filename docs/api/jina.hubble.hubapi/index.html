@@ -456,23 +456,25 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.hubble.hubapi.load_secret">
 <span class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></span><span class="sig-name descname"><span class="pre">load_secret</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">work_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#load_secret"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.load_secret" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the UUID and Secret from local
+<dd><p>Get the UUID, Secret and Task id from local cache
 :type work_path: <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>
 :param work_path: the work path of the executor
 :rtype: <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]
-:return: the UUID and secret</p>
+:return: the UUID, secret and task_id</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.hubble.hubapi.dump_secret">
-<span class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></span><span class="sig-name descname"><span class="pre">dump_secret</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">work_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uuid8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#dump_secret"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.dump_secret" title="Permalink to this definition">#</a></dt>
-<dd><p>Dump the UUID and Secret into local file
+<span class="sig-prename descclassname"><span class="pre">jina.hubble.hubapi.</span></span><span class="sig-name descname"><span class="pre">dump_secret</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">work_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uuid8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/hubble/hubapi/#dump_secret"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.hubble.hubapi.dump_secret" title="Permalink to this definition">#</a></dt>
+<dd><p>Dump the UUID, Secret and Task_id into local file
 :type work_path: <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>
 :param work_path: the work path of the executor
 :type uuid8: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
 :param uuid8: the ID of the executor
 :type secret: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
-:param secret: the access secret</p>
+:param secret: the access secret
+:type task_id: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param task_id: the ID of the executor’s building task</p>
 </dd></dl>
 
 <dl class="py function">

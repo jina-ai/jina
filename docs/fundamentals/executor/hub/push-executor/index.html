@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.9.2 Documentation" />
   
-<meta property="og:description" content="If you want to share your Executor s, you can push it to Jina Hub. There are two types of sharing: Public(default): Anyone can use public Executors without any restrictions., Private: Only people that have the secret can use private Executors.. First publish: It will return NAME& SECRET, which yo..." />
+<meta property="og:description" content="If you want to share your Executor s, you can push it to Jina Hub. There are two types of sharing: Public(default): Anyone can use public Executors without any restrictions., Private: Only people that have the secret can use private Executors.. First publish: If you have logged in Jina, it will r..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -407,7 +407,8 @@
 </pre></div>
 </div>
 <script id="asciicast-tpvuZ9u0lU2IumRyLlly3JI93" src="https://asciinema.org/a/tpvuZ9u0lU2IumRyLlly3JI93.js" async></script>
-<p>It will return <code class="docutils literal notranslate"><span class="pre">NAME</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">SECRET</span></code>, which you will need to use (if the Executor is private) or update the Executor. <strong>Please keep them carefully.</strong></p>
+<p>If you have logged in Jina, it will return <code class="docutils literal notranslate"><span class="pre">TASK_ID</span></code>. You need that to get build status and logs.</p>
+<p>If you haven’t logged in Jina, it will return <code class="docutils literal notranslate"><span class="pre">NAME</span></code> and <code class="docutils literal notranslate"><span class="pre">SECRET</span></code>. You will need them to use (if the Executor is private) or update the Executor. <strong>Please keep them carefully.</strong></p>
 <div class="note admonition">
 <p class="admonition-title">Note</p>
 <p>If you are logged in to the Hub using our CLI tools (<code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">auth</span> <span class="pre">login</span></code> or <code class="docutils literal notranslate"><span class="pre">jcloud</span> <span class="pre">login</span></code>), you can push and pull your executors without <code class="docutils literal notranslate"><span class="pre">SECRET</span></code>.</p>
@@ -508,6 +509,16 @@ For example:</p>
 </pre></div>
 </div>
 </section>
+<section id="building-status-of-an-executor">
+<h2>Building status of an Executor<a class="headerlink" href="#building-status-of-an-executor" title="Permalink to this heading">#</a></h2>
+<p>You can query the build status of a pushed Executor by doing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub status <span class="o">[</span>&lt;path_to_executor_folder&gt;<span class="o">]</span> <span class="o">[</span>--id TASK_ID<span class="o">]</span> <span class="o">[</span>--verbose<span class="o">]</span> <span class="o">[</span>--replay<span class="o">]</span>
+</pre></div>
+</div>
+<p>If set <code class="docutils literal notranslate"><span class="pre">--id</span> <span class="pre">TASK_ID</span></code>, you can get the build status of a specific build task.</p>
+<p>If set <code class="docutils literal notranslate"><span class="pre">--verbose</span></code>, verbose build logs will be printed.</p>
+<p>If set <code class="docutils literal notranslate"><span class="pre">--replay</span></code>, will print build status from the beginning.</p>
+<script id="asciicast-Asd8bQ9YqsuJBVV1V7EfWmCu3" src="https://asciinema.org/a/Asd8bQ9YqsuJBVV1V7EfWmCu3.js" async></script></section>
 </section>
 
                 </article>
@@ -585,6 +596,7 @@ For example:</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#use-environment-variables">Use environment variables</a></li>
+<li><a class="reference internal" href="#building-status-of-an-executor">Building status of an Executor</a></li>
 </ul>
 </li>
 </ul>

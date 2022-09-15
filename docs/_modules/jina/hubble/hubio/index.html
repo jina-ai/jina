@@ -370,7 +370,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urljoin</span>
 
 <span class="kn">import</span> <span class="nn">hubble</span>
@@ -389,6 +389,7 @@
     <span class="n">get_request_header</span><span class="p">,</span>
     <span class="n">get_requirements_env_variables</span><span class="p">,</span>
     <span class="n">parse_hub_uri</span><span class="p">,</span>
+    <span class="n">status_task</span><span class="p">,</span>
     <span class="n">upload_file</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">jina.hubble.hubapi</span> <span class="kn">import</span> <span class="p">(</span>
@@ -571,8 +572,16 @@
                     <span class="n">f</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
                         <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;{{exec_name}}&#39;</span><span class="p">,</span> <span class="n">exec_name</span><span class="p">)</span>
-                        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;{{exec_description}}&#39;</span><span class="p">,</span> <span class="n">exec_description</span> <span class="k">if</span> <span class="n">exec_description</span> <span class="o">!=</span> <span class="s1">&#39;{{}}&#39;</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-                        <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;{{exec_keywords}}&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">exec_keywords</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">))</span> <span class="k">if</span> <span class="n">exec_keywords</span> <span class="o">!=</span> <span class="s1">&#39;{{}}&#39;</span> <span class="k">else</span> <span class="s1">&#39;[]&#39;</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                            <span class="s1">&#39;{{exec_description}}&#39;</span><span class="p">,</span>
+                            <span class="n">exec_description</span> <span class="k">if</span> <span class="n">exec_description</span> <span class="o">!=</span> <span class="s1">&#39;{{}}&#39;</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                            <span class="s1">&#39;{{exec_keywords}}&#39;</span><span class="p">,</span>
+                            <span class="nb">str</span><span class="p">(</span><span class="n">exec_keywords</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">))</span>
+                            <span class="k">if</span> <span class="n">exec_keywords</span> <span class="o">!=</span> <span class="s1">&#39;{{}}&#39;</span>
+                            <span class="k">else</span> <span class="s1">&#39;[]&#39;</span><span class="p">,</span>
+                        <span class="p">)</span>
                         <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;{{exec_url}}&#39;</span><span class="p">,</span> <span class="n">exec_url</span> <span class="k">if</span> <span class="n">exec_url</span> <span class="o">!=</span> <span class="s1">&#39;{{}}&#39;</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
                     <span class="p">)</span>
                     <span class="n">fpw</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
@@ -605,8 +614,8 @@
         <span class="c1"># adding the columns in order of `ls` output</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
             <span class="s1">&#39;config.yml&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;The YAML config file of the Executor. You can define [bold]__init__[/bold] arguments using [bold]with[/bold] keyword.&#39;</span> <span class="o">+</span>\
-            <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">You can also define metadata for the executor, for better appeal on Jina Hub.&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;The YAML config file of the Executor. You can define [bold]__init__[/bold] arguments using [bold]with[/bold] keyword.&#39;</span>
+            <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">You can also define metadata for the executor, for better appeal on Jina Hub.&#39;</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
@@ -709,6 +718,160 @@
             <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_async_push</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">console</span><span class="p">,</span>
+        <span class="n">st</span><span class="p">,</span>
+        <span class="n">req_header</span><span class="p">,</span>
+        <span class="n">content</span><span class="p">,</span>
+        <span class="n">form_data</span><span class="p">,</span>
+        <span class="n">work_path</span><span class="p">,</span>
+        <span class="n">uuid8</span><span class="p">,</span>
+        <span class="n">secret</span><span class="p">,</span>
+        <span class="n">task_id</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="n">verbose</span> <span class="o">=</span> <span class="n">form_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;verbose&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">session_id</span> <span class="o">=</span> <span class="n">req_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;jinameta-session-id&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">task_id</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">form_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">):</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status_with_progress</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">task_id</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">image</span><span class="p">:</span>
+                <span class="n">new_uuid8</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+                <span class="n">new_secret</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;secret&#39;</span><span class="p">)</span>
+                <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_uuid8</span>
+
+                <span class="k">if</span> <span class="n">new_uuid8</span> <span class="o">!=</span> <span class="n">uuid8</span> <span class="ow">or</span> <span class="n">new_secret</span> <span class="o">!=</span> <span class="n">secret</span><span class="p">:</span>
+                    <span class="n">dump_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">,</span> <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">new_secret</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">task_id</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown Error, session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">form_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">):</span>
+            <span class="n">hubble_url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">hubble</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_base_url</span><span class="p">(),</span> <span class="s1">&#39;executor.updateAsync&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">hubble_url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">hubble</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_base_url</span><span class="p">(),</span> <span class="s1">&#39;executor.createAsync&#39;</span><span class="p">)</span>
+
+        <span class="c1"># upload the archived executor to Jina Hub</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Async Uploading...&#39;</span><span class="p">)</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">upload_file</span><span class="p">(</span>
+            <span class="n">hubble_url</span><span class="p">,</span>
+            <span class="s1">&#39;filename&#39;</span><span class="p">,</span>
+            <span class="n">content</span><span class="p">,</span>
+            <span class="n">dict_data</span><span class="o">=</span><span class="n">form_data</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">req_header</span><span class="p">,</span>
+            <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">verbose</span> <span class="o">=</span> <span class="n">form_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;verbose&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">push_task</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">stream_line</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">iter_lines</span><span class="p">():</span>
+            <span class="n">stream_msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">stream_line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;code&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">202</span><span class="p">:</span>
+                <span class="n">push_task</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span> <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;Unknown Error&quot;</span><span class="si">}</span><span class="s1"> session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">new_task_id</span> <span class="o">=</span> <span class="n">push_task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_task_id</span><span class="p">:</span>
+
+            <span class="n">dump_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">new_task_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prettyprint_status_usage</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">work_path</span><span class="p">,</span> <span class="n">new_task_id</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Async Uploaded!&#39;</span><span class="p">)</span>
+
+            <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status_with_progress</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">new_task_id</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">image</span><span class="p">:</span>
+                <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">new_secret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prettyprint_result</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">new_uuid8</span> <span class="o">!=</span> <span class="n">uuid8</span> <span class="ow">or</span> <span class="n">new_secret</span> <span class="o">!=</span> <span class="n">secret</span> <span class="ow">or</span> <span class="n">task_id</span> <span class="o">!=</span> <span class="n">new_task_id</span><span class="p">:</span>
+                    <span class="n">dump_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">,</span> <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">new_secret</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">new_task_id</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown Error, session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Error: can</span><span class="se">\&#39;</span><span class="s1">t get task_id session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_sync_push</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">console</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">req_header</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">form_data</span><span class="p">,</span> <span class="n">work_path</span><span class="p">,</span> <span class="n">uuid8</span><span class="p">,</span> <span class="n">secret</span>
+    <span class="p">):</span>
+        <span class="c1"># upload the archived executor to Jina Hub</span>
+        <span class="k">if</span> <span class="n">form_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">):</span>
+            <span class="n">hubble_url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">hubble</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_base_url</span><span class="p">(),</span> <span class="s1">&#39;executor.update&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">hubble_url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">hubble</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_base_url</span><span class="p">(),</span> <span class="s1">&#39;executor.create&#39;</span><span class="p">)</span>
+
+        <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Uploading...&#39;</span><span class="p">)</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">upload_file</span><span class="p">(</span>
+            <span class="n">hubble_url</span><span class="p">,</span>
+            <span class="s1">&#39;filename&#39;</span><span class="p">,</span>
+            <span class="n">content</span><span class="p">,</span>
+            <span class="n">dict_data</span><span class="o">=</span><span class="n">form_data</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">req_header</span><span class="p">,</span>
+            <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">warnings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">verbose</span> <span class="o">=</span> <span class="n">form_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;verbose&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">session_id</span> <span class="o">=</span> <span class="n">req_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;jinameta-session-id&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">stream_line</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">iter_lines</span><span class="p">():</span>
+
+            <span class="n">stream_msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">stream_line</span><span class="p">)</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span>
+            <span class="n">subject</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">)</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;payload&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;error&#39;</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">)</span>
+                <span class="n">hubble_err</span> <span class="o">=</span> <span class="n">payload</span>
+                <span class="n">overridden_msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                <span class="n">detail_msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hubble_err</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="p">(</span><span class="n">overridden_msg</span><span class="p">,</span> <span class="n">detail_msg</span><span class="p">)</span> <span class="o">=</span> <span class="n">get_hubble_error_message</span><span class="p">(</span><span class="n">hubble_err</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">msg</span><span class="p">:</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="n">detail_msg</span>
+
+                <span class="k">if</span> <span class="n">overridden_msg</span> <span class="ow">and</span> <span class="n">overridden_msg</span> <span class="o">!=</span> <span class="n">detail_msg</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">overridden_msg</span><span class="p">)</span>
+
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">overridden_msg</span> <span class="ow">or</span> <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;Unknown Error&quot;</span><span class="si">}</span><span class="s1"> session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;warning&#39;</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;progress&#39;</span> <span class="ow">and</span> <span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;buildWorkspace&#39;</span><span class="p">:</span>
+                <span class="n">legacy_message</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;legacyMessage&#39;</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="n">legacy_message</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cloud building ... [dim]</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s1">)[/dim]&#39;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;complete&#39;</span><span class="p">:</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="p">[</span><span class="s1">&#39;payload&#39;</span><span class="p">]</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;warning&#39;</span><span class="p">))</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Cloud building ... [dim]</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">stream_msg</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">)[/dim]&#39;</span>
+                <span class="p">)</span>
+                <span class="k">break</span>
+
+            <span class="k">elif</span> <span class="n">t</span> <span class="ow">and</span> <span class="n">subject</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">verbose</span> <span class="ow">and</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;console&#39;</span><span class="p">:</span>
+                    <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cloud building ... [dim]</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">payload</span><span class="si">}</span><span class="s1">[/dim]&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cloud building ... [dim]</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">payload</span><span class="si">}</span><span class="s1">[/dim]&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">image</span><span class="p">:</span>
+            <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">new_secret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prettyprint_result</span><span class="p">(</span>
+                <span class="n">console</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">warnings</span><span class="o">=</span><span class="n">warnings</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">new_uuid8</span> <span class="o">!=</span> <span class="n">uuid8</span> <span class="ow">or</span> <span class="n">new_secret</span> <span class="o">!=</span> <span class="n">secret</span><span class="p">:</span>
+                <span class="n">dump_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">,</span> <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">new_secret</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown Error, session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="HubIO.push"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Push the executor package to Jina Hub.&quot;&quot;&quot;</span>
@@ -820,91 +983,40 @@
                 <span class="k">if</span> <span class="n">build_env</span><span class="p">:</span>
                     <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;buildEnv&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">build_env</span><span class="p">)</span>
 
-                <span class="n">uuid8</span><span class="p">,</span> <span class="n">secret</span> <span class="o">=</span> <span class="n">load_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">)</span>
+                <span class="n">uuid8</span><span class="p">,</span> <span class="n">secret</span><span class="p">,</span> <span class="n">task_id</span> <span class="o">=</span> <span class="n">load_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force_update</span> <span class="ow">or</span> <span class="n">uuid8</span><span class="p">:</span>
                     <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">force_update</span> <span class="ow">or</span> <span class="n">uuid8</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span> <span class="ow">or</span> <span class="n">secret</span><span class="p">:</span>
                     <span class="n">form_data</span><span class="p">[</span><span class="s1">&#39;secret&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">secret</span> <span class="ow">or</span> <span class="n">secret</span>
 
                 <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Connecting to Jina Hub ...&#39;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">form_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">):</span>
-                    <span class="n">hubble_url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">hubble</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_base_url</span><span class="p">(),</span> <span class="s1">&#39;executor.update&#39;</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">hubble_url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="n">hubble</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_base_url</span><span class="p">(),</span> <span class="s1">&#39;executor.create&#39;</span><span class="p">)</span>
 
-                <span class="c1"># upload the archived executor to Jina Hub</span>
-                <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Uploading...&#39;</span><span class="p">)</span>
-                <span class="n">resp</span> <span class="o">=</span> <span class="n">upload_file</span><span class="p">(</span>
-                    <span class="n">hubble_url</span><span class="p">,</span>
-                    <span class="s1">&#39;filename&#39;</span><span class="p">,</span>
-                    <span class="n">content</span><span class="p">,</span>
-                    <span class="n">dict_data</span><span class="o">=</span><span class="n">form_data</span><span class="p">,</span>
-                    <span class="n">headers</span><span class="o">=</span><span class="n">req_header</span><span class="p">,</span>
-                    <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                    <span class="n">method</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">,</span>
-                <span class="p">)</span>
-
-                <span class="n">image</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="n">warnings</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="n">session_id</span> <span class="o">=</span> <span class="n">req_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;jinameta-session-id&#39;</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">stream_line</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">iter_lines</span><span class="p">():</span>
-                    <span class="n">stream_msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">stream_line</span><span class="p">)</span>
-
-                    <span class="n">t</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span>
-                    <span class="n">subject</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">)</span>
-                    <span class="n">payload</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;payload&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;error&#39;</span><span class="p">:</span>
-                        <span class="n">msg</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">)</span>
-                        <span class="n">hubble_err</span> <span class="o">=</span> <span class="n">payload</span>
-                        <span class="n">overridden_msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-                        <span class="n">detail_msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hubble_err</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                            <span class="p">(</span><span class="n">overridden_msg</span><span class="p">,</span> <span class="n">detail_msg</span><span class="p">)</span> <span class="o">=</span> <span class="n">get_hubble_error_message</span><span class="p">(</span>
-                                <span class="n">hubble_err</span>
-                            <span class="p">)</span>
-                            <span class="k">if</span> <span class="ow">not</span> <span class="n">msg</span><span class="p">:</span>
-                                <span class="n">msg</span> <span class="o">=</span> <span class="n">detail_msg</span>
-
-                        <span class="k">if</span> <span class="n">overridden_msg</span> <span class="ow">and</span> <span class="n">overridden_msg</span> <span class="o">!=</span> <span class="n">detail_msg</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">overridden_msg</span><span class="p">)</span>
-
-                        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">overridden_msg</span> <span class="ow">or</span> <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;Unknown Error&quot;</span><span class="si">}</span><span class="s1"> session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">&#39;</span>
-                        <span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;warning&#39;</span><span class="p">:</span>
-                        <span class="n">warnings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">))</span>
-        
-                    <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;progress&#39;</span> <span class="ow">and</span> <span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;buildWorkspace&#39;</span><span class="p">:</span>
-                        <span class="n">legacy_message</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;legacyMessage&#39;</span><span class="p">,</span> <span class="p">{})</span>
-                        <span class="n">status</span> <span class="o">=</span> <span class="n">legacy_message</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-                        <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">&#39;Cloud building ... [dim]</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s1">)[/dim]&#39;</span>
-                        <span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;complete&#39;</span><span class="p">:</span>
-                        <span class="n">image</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="p">[</span><span class="s1">&#39;payload&#39;</span><span class="p">]</span>
-                        <span class="n">warning</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;warning&#39;</span><span class="p">)</span>
-                        <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">&#39;Cloud building ... [dim]</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">stream_msg</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">)[/dim]&#39;</span>
-                        <span class="p">)</span>
-                        <span class="k">break</span>
-                    <span class="k">elif</span> <span class="n">t</span> <span class="ow">and</span> <span class="n">subject</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;console&#39;</span><span class="p">:</span>
-                            <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s1">&#39;Cloud building ... [dim]</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">payload</span><span class="si">}</span><span class="s1">[/dim]&#39;</span>
-                            <span class="p">)</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s1">&#39;Cloud building ... [dim]</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">payload</span><span class="si">}</span><span class="s1">[/dim]&#39;</span>
-                            <span class="p">)</span>
-
-                <span class="k">if</span> <span class="n">image</span><span class="p">:</span>
-                    <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">new_secret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prettyprint_result</span><span class="p">(</span>
-                        <span class="n">console</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">warnings</span><span class="o">=</span><span class="n">warnings</span>
+                <span class="n">logged_in</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">hubble</span><span class="o">.</span><span class="n">is_logged_in</span><span class="p">()</span> <span class="k">else</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="n">logged_in</span><span class="p">:</span>  <span class="c1"># if user logged in use async upload api</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_async_push</span><span class="p">(</span>
+                        <span class="n">console</span><span class="p">,</span>
+                        <span class="n">st</span><span class="p">,</span>
+                        <span class="n">req_header</span><span class="p">,</span>
+                        <span class="n">content</span><span class="p">,</span>
+                        <span class="n">form_data</span><span class="p">,</span>
+                        <span class="n">work_path</span><span class="p">,</span>
+                        <span class="n">uuid8</span><span class="p">,</span>
+                        <span class="n">secret</span><span class="p">,</span>
+                        <span class="n">task_id</span><span class="p">,</span>
                     <span class="p">)</span>
-                    <span class="k">if</span> <span class="n">new_uuid8</span> <span class="o">!=</span> <span class="n">uuid8</span> <span class="ow">or</span> <span class="n">new_secret</span> <span class="o">!=</span> <span class="n">secret</span><span class="p">:</span>
-                        <span class="n">dump_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">,</span> <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">new_secret</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown Error, session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="c1"># if user not logged in use async upload api</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_sync_push</span><span class="p">(</span>
+                        <span class="n">console</span><span class="p">,</span>
+                        <span class="n">st</span><span class="p">,</span>
+                        <span class="n">req_header</span><span class="p">,</span>
+                        <span class="n">content</span><span class="p">,</span>
+                        <span class="n">form_data</span><span class="p">,</span>
+                        <span class="n">work_path</span><span class="p">,</span>
+                        <span class="n">uuid8</span><span class="p">,</span>
+                        <span class="n">secret</span><span class="p">,</span>
+                    <span class="p">)</span>
 
             <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
                 <span class="k">pass</span>
@@ -915,9 +1027,9 @@
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="n">e</span></div>
 
-    <span class="k">def</span> <span class="nf">_prettyprint_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">console</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">warnings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># TODO: only support single executor now</span>
-
+    <span class="k">def</span> <span class="nf">_prettyprint_result</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">console</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">warnings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
         <span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">box</span>
         <span class="kn">from</span> <span class="nn">rich.panel</span> <span class="kn">import</span> <span class="n">Panel</span>
         <span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
@@ -925,7 +1037,9 @@
         <span class="n">uuid8</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
         <span class="n">secret</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;secret&#39;</span><span class="p">)</span>
         <span class="n">visibility</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="s1">&#39;visibility&#39;</span><span class="p">]</span>
-        <span class="n">tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tag</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">commit</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;commit&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="n">commit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tags&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="n">tags</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">tags</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tags</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
 
         <span class="n">table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span><span class="n">box</span><span class="o">=</span><span class="n">box</span><span class="o">.</span><span class="n">SIMPLE</span><span class="p">,</span> <span class="n">show_header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">table</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="n">no_wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1030,6 +1144,181 @@
                 <span class="n">width</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_prettyprint_status_usage</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">console</span><span class="p">,</span> <span class="n">work_path</span><span class="p">,</span> <span class="n">task_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usage_kind</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">box</span>
+        <span class="kn">from</span> <span class="nn">rich.panel</span> <span class="kn">import</span> <span class="n">Panel</span>
+        <span class="kn">from</span> <span class="nn">rich.table</span> <span class="kn">import</span> <span class="n">Table</span>
+
+        <span class="n">param_str</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
+            <span class="n">box</span><span class="o">=</span><span class="n">box</span><span class="o">.</span><span class="n">SIMPLE</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">param_str</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span>
+            <span class="s1">&#39;If you don</span><span class="se">\&#39;</span><span class="s1">t want to wait the executor</span><span class="se">\&#39;</span><span class="s1">s building status, you can use </span><span class="se">\&#39;</span><span class="s1">Ctrl + C</span><span class="se">\&#39;</span><span class="s1">, after that you can always get the status of the executor anytime using the command!&#39;</span>
+        <span class="p">)</span>
+        <span class="n">param_str</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;You can use `jina hub status </span><span class="si">{</span><span class="n">work_path</span><span class="si">}</span><span class="s1">` get the last building status of the executor&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">task_id</span><span class="p">:</span>
+            <span class="n">param_str</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">param_str</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Also you can use `jina hub status --id </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s1">` get the specified building state about the executor.&#39;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span>
+            <span class="n">Panel</span><span class="p">(</span>
+                <span class="n">param_str</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Status&#39;</span><span class="p">,</span>
+                <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">width</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_status_with_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">console</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">replay</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="n">req_header</span> <span class="o">=</span> <span class="n">get_request_header</span><span class="p">()</span>
+        <span class="n">dict_data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">dict_data</span><span class="p">[</span><span class="s1">&#39;replay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">replay</span>
+        <span class="n">dict_data</span><span class="p">[</span><span class="s1">&#39;verbose&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">verbose</span>
+
+        <span class="n">session_id</span> <span class="o">=</span> <span class="n">req_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;jinameta-session-id&#39;</span><span class="p">)</span>
+        <span class="n">task_progress</span> <span class="o">=</span> <span class="n">status_task</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">hubble</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_base_url</span><span class="p">(),</span> <span class="s1">&#39;executor.queryProgress&#39;</span><span class="p">),</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
+            <span class="n">dict_data</span><span class="o">=</span><span class="n">dict_data</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">req_header</span><span class="p">,</span>
+            <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;post&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">stream_line</span> <span class="ow">in</span> <span class="n">task_progress</span><span class="o">.</span><span class="n">iter_lines</span><span class="p">():</span>
+            <span class="n">stream_msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">stream_line</span><span class="p">)</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span>
+
+            <span class="n">code</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;code&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">code</span> <span class="ow">and</span> <span class="n">code</span> <span class="o">&gt;=</span> <span class="mi">400</span><span class="p">:</span>
+                <span class="n">error</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span> <span class="n">error</span> <span class="ow">or</span> <span class="s2">&quot;Unknown Error&quot;</span><span class="si">}</span><span class="s1"> session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;error&#39;</span><span class="p">:</span>
+                <span class="n">error</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span> <span class="n">error</span> <span class="ow">or</span> <span class="s2">&quot;Unknown Error&quot;</span><span class="si">}</span><span class="s1"> session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;report&#39;</span><span class="p">:</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;pending&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">replay</span><span class="p">:</span>
+                        <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">&#39;Cloud pending ... [dim]: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s1">)[/dim]&#39;</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cloud pending ... [dim]: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s1">)[/dim]&#39;</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;failed&#39;</span><span class="p">:</span>
+                    <span class="n">error</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span> <span class="n">error</span> <span class="ow">or</span> <span class="s2">&quot;Unknown Error&quot;</span><span class="si">}</span><span class="s1"> session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;waiting&#39;</span><span class="p">:</span>
+                    <span class="n">error</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">replay</span><span class="p">:</span>
+                        <span class="n">task</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;task&#39;</span><span class="p">,</span> <span class="p">{})</span>
+                        <span class="n">task_id</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span>
+                        <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">&#39;Cloud waiting ... [dim]: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> task: </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">error</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s1">)[/dim]&#39;</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">&#39;Cloud waiting ... [dim]: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">error</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s1">)[/dim]&#39;</span>
+                        <span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="s1">&#39;succeeded&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;result&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+                        <span class="n">image</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="p">[</span><span class="s1">&#39;result&#39;</span><span class="p">]</span>
+                        <span class="n">executor_id</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">replay</span><span class="p">:</span>
+                            <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s1">&#39;Cloud succeeded ... [dim]: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> executor: </span><span class="si">{</span><span class="n">executor_id</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s1">)[/dim]&#39;</span>
+                            <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s1">&#39;Cloud succeeded ... [dim]: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> executor: </span><span class="si">{</span><span class="n">executor_id</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s1">)[/dim]&#39;</span>
+                            <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">task</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;task&#39;</span><span class="p">,</span> <span class="p">{})</span>
+                        <span class="n">task_id</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">replay</span><span class="p">:</span>
+                            <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s1">&#39;Cloud succeeded ... [dim]: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> task: </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s1">)[/dim]&#39;</span>
+                            <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s1">&#39;Cloud succeeded ... [dim]: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> task: </span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s1">)[/dim]&#39;</span>
+                            <span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;progress&#39;</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="n">legacy_message</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="p">{})</span>
+
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">legacy_message</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span>
+                <span class="n">subject</span> <span class="o">=</span> <span class="n">legacy_message</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">)</span>
+                <span class="n">payload</span> <span class="o">=</span> <span class="n">legacy_message</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;payload&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;console&#39;</span><span class="p">:</span>
+                        <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">&#39;Cloud building ... [dim]</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">payload</span><span class="si">}</span><span class="s1">[/dim]&#39;</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cloud building ... [dim]</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s1"> [/dim]&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;console&#39;</span><span class="p">:</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">&#39;Cloud building ... [dim]</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">payload</span><span class="si">}</span><span class="s1">[/dim]&#39;</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cloud building ... [dim]</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="nb">type</span><span class="si">}</span><span class="s1"> [/dim]&#39;</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cloud succeeded ... [dim]: </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1"> [/dim]&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">image</span>
+
+<div class="viewcode-block" id="HubIO.status"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.status">[docs]</a>    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Query the building status of the executor.&quot;&quot;&quot;</span>
+
+        <span class="n">task_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="n">task_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">work_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">uuid8</span><span class="p">,</span> <span class="n">secret</span><span class="p">,</span> <span class="n">exists_task_id</span> <span class="o">=</span> <span class="n">load_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">)</span>
+            <span class="n">task_id</span> <span class="o">=</span> <span class="n">exists_task_id</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">task_id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Error: can</span><span class="se">\&#39;</span><span class="s1">t get task_id! You can set `--id your task_id` to get building progress info!&#39;</span>
+            <span class="p">)</span>
+
+        <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">verbose</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="n">replay</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">replay</span> <span class="k">else</span> <span class="kc">False</span>
+
+        <span class="n">console</span> <span class="o">=</span> <span class="n">get_rich_console</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">console</span><span class="o">.</span><span class="n">status</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Querying `</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s1">` ...&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">st</span><span class="p">:</span>
+
+            <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status_with_progress</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">replay</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">image</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_usage</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_prettyprint_result</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Waiting `</span><span class="si">{</span><span class="n">task_id</span><span class="si">}</span><span class="s1">` ...&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="HubIO.fetch_meta"><a class="viewcode-back" href="../../../../api/jina.hubble.hubio/#jina.hubble.hubio.HubIO.fetch_meta">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@disk_cache_offline</span><span class="p">(</span><span class="n">cache_file</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">get_cache_db</span><span class="p">()))</span>

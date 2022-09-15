@@ -408,6 +408,15 @@ and is sent back to the client.
 If the gRPC or WebSocket protocols are used, the networking stream is not interrupted and can accept further requests.</p>
 <p>In all cases, the <a class="reference internal" href="../../client/client/#client"><span class="std std-ref">Jina Client</span></a> will raise an Exception.</p>
 </section>
+<section id="exit-on-exceptions">
+<h2>Exit on exceptions<a class="headerlink" href="#exit-on-exceptions" title="Permalink to this heading">#</a></h2>
+<p>Some exceptions like network errors or request timeouts can be transient and can recover automatically. In some cases there
+can be fatal errors or user defined errors that can put the Executor in an unuseable state. The executor can be restarted to recover from such a
+state. Locally the flow must to be re-run manually to restore the Executor availability.</p>
+<p>On Kubernetes deployments, the process can be automated by terminating the Exeuctor process which will cause the pod to terminate. The availability
+is restored by the autoscaler by creating a new pod to replace the terminated pod. The termination can be enabled for one or more errors by using the <code class="docutils literal notranslate"><span class="pre">exit_on_exceptions</span></code> argument when creating the Executor in a Flow. Upon matching the caught exception, the Executor will perform a gracefull termination.</p>
+<p>A sample Flow can be <code class="docutils literal notranslate"><span class="pre">Flow().add(uses=MyExecutor,</span> <span class="pre">exit_on_exceptions:</span> <span class="pre">['Exception',</span> <span class="pre">'RuntimeException'])</span></code>. The <code class="docutils literal notranslate"><span class="pre">exit_on_exceptions</span></code> argument accepts a list of python or user defined custom Exception or Error class names.</p>
+</section>
 <section id="network-errors">
 <h2>Network errors<a class="headerlink" href="#network-errors" title="Permalink to this heading">#</a></h2>
 <p>When an <a class="reference internal" href="../../architecture-overview/#architecture-overview"><span class="std std-ref">Executor or Head</span></a> can’t be reached by the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>’s gateway, it attempts to re-connect
@@ -612,6 +621,7 @@ case the replicas are managed by k8s and only a single address is available.</p>
                         <ul>
 <li><a class="reference internal" href="#">Handle exceptions</a><ul>
 <li><a class="reference internal" href="#executor-errors">Executor errors</a></li>
+<li><a class="reference internal" href="#exit-on-exceptions">Exit on exceptions</a></li>
 <li><a class="reference internal" href="#network-errors">Network errors</a><ul>
 <li><a class="reference internal" href="#request-retries-local-deployment">Request retries: Local deployment</a></li>
 <li><a class="reference internal" href="#request-retries-deployment-with-kubernetes">Request retries: Deployment with Kubernetes</a></li>

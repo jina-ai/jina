@@ -379,6 +379,8 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
 
+<span class="kn">from</span> <span class="nn">hubble</span> <span class="kn">import</span> <span class="n">get_token</span>
+
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__cache_path__</span><span class="p">,</span> <span class="n">__resources_path__</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">BetterEnum</span>
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">get_request_header</span> <span class="k">as</span> <span class="n">_get_request_header_main</span>
@@ -439,9 +441,8 @@
 <span class="sd">    :return: request header</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="n">_get_request_header_main</span><span class="p">()</span>
-    <span class="kn">import</span> <span class="nn">hubble</span>
 
-    <span class="n">auth_token</span> <span class="o">=</span> <span class="n">hubble</span><span class="o">.</span><span class="n">get_token</span><span class="p">()</span>
+    <span class="n">auth_token</span> <span class="o">=</span> <span class="n">get_token</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">auth_token</span><span class="p">:</span>
         <span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Authorization&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;token </span><span class="si">{</span><span class="n">auth_token</span><span class="si">}</span><span class="s1">&#39;</span>
 
@@ -679,6 +680,39 @@
 
     <span class="n">response</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">method</span><span class="p">)(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
 
+    <span class="k">return</span> <span class="n">response</span></div>
+
+
+<div class="viewcode-block" id="status_task"><a class="viewcode-back" href="../../../../api/jina.hubble.helper/#jina.hubble.helper.status_task">[docs]</a><span class="k">def</span> <span class="nf">status_task</span><span class="p">(</span>
+    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">dict_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">stream</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;post&#39;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Query building status progress of the executor</span>
+
+<span class="sd">    :param url: target url</span>
+<span class="sd">    :param id: the task id</span>
+<span class="sd">    :param dict_data: the dict-style data</span>
+<span class="sd">    :param headers: the request header</span>
+<span class="sd">    :param stream: receive stream response</span>
+<span class="sd">    :param method: the request method</span>
+<span class="sd">    :return: the response of request</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">requests</span>
+
+    <span class="n">dict_data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">id</span>
+    <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ctype</span><span class="p">)</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">urllib3</span><span class="o">.</span><span class="n">filepost</span><span class="o">.</span><span class="n">encode_multipart_formdata</span><span class="p">(</span>
+        <span class="n">dict_data</span>
+    <span class="p">)</span>
+
+    <span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="n">ctype</span><span class="p">})</span>
+    <span class="c1"># asyncTask.getDetail</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span> <span class="n">method</span><span class="p">)(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">response</span></div>
 
 
