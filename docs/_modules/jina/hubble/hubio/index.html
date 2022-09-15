@@ -124,7 +124,13 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-
+<div class="announcement">
+    <aside class="announcement-content">
+         
+    <a href="https://www.meetup.com/jina-community-meetup/events/288496227/?isFirstPublish=true">Join our Office Hour on September 29th at 19:00 CET </a>
+     
+    </aside>
+</div>
 
 <div class="page">
     <header class="mobile-header">
@@ -364,7 +370,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urljoin</span>
 
 <span class="kn">import</span> <span class="nn">hubble</span>
@@ -839,7 +845,7 @@
                 <span class="p">)</span>
 
                 <span class="n">image</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="n">warning</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">warnings</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="n">session_id</span> <span class="o">=</span> <span class="n">req_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;jinameta-session-id&#39;</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">stream_line</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">iter_lines</span><span class="p">():</span>
                     <span class="n">stream_msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">stream_line</span><span class="p">)</span>
@@ -865,6 +871,9 @@
                         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">overridden_msg</span> <span class="ow">or</span> <span class="n">msg</span> <span class="ow">or</span> <span class="s2">&quot;Unknown Error&quot;</span><span class="si">}</span><span class="s1"> session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">&#39;</span>
                         <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;warning&#39;</span><span class="p">:</span>
+                        <span class="n">warnings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">))</span>
+        
                     <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s1">&#39;progress&#39;</span> <span class="ow">and</span> <span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;buildWorkspace&#39;</span><span class="p">:</span>
                         <span class="n">legacy_message</span> <span class="o">=</span> <span class="n">stream_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;legacyMessage&#39;</span><span class="p">,</span> <span class="p">{})</span>
                         <span class="n">status</span> <span class="o">=</span> <span class="n">legacy_message</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
@@ -890,7 +899,7 @@
 
                 <span class="k">if</span> <span class="n">image</span><span class="p">:</span>
                     <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">new_secret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prettyprint_result</span><span class="p">(</span>
-                        <span class="n">console</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">warning</span><span class="o">=</span><span class="n">warning</span>
+                        <span class="n">console</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">warnings</span><span class="o">=</span><span class="n">warnings</span>
                     <span class="p">)</span>
                     <span class="k">if</span> <span class="n">new_uuid8</span> <span class="o">!=</span> <span class="n">uuid8</span> <span class="ow">or</span> <span class="n">new_secret</span> <span class="o">!=</span> <span class="n">secret</span><span class="p">:</span>
                         <span class="n">dump_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">,</span> <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">new_secret</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
@@ -906,7 +915,7 @@
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="n">e</span></div>
 
-    <span class="k">def</span> <span class="nf">_prettyprint_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">console</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">warning</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_prettyprint_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">console</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">warnings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="c1"># TODO: only support single executor now</span>
 
         <span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="n">box</span>
@@ -933,21 +942,23 @@
             <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">&#39;:lock: Secret&#39;</span><span class="p">,</span> <span class="n">secret</span><span class="p">)</span>
             <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
                 <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;:point_up:️ [bold red]Please keep this token in a safe place!&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;👆 [bold red]Please keep this token in a safe place!&#39;</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">&#39;:eyes: Visibility&#39;</span><span class="p">,</span> <span class="n">visibility</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">warning</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">warnings</span><span class="p">:</span>
             <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span>
-                <span class="s1">&#39;:warning: Warning&#39;</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s1">&#39;:exclamation:️ [bold yellow]</span><span class="si">{</span><span class="n">warning</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;:exclamation: Warnings&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;👇 [bold yellow]Process finished with warnings!&#39;</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="k">for</span> <span class="n">warning</span> <span class="ow">in</span> <span class="n">warnings</span><span class="p">:</span>
+                <span class="n">table</span><span class="o">.</span><span class="n">add_row</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;[yellow]• </span><span class="si">{</span><span class="n">warning</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="n">p1</span> <span class="o">=</span> <span class="n">Panel</span><span class="p">(</span>
             <span class="n">table</span><span class="p">,</span>
             <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Published&#39;</span><span class="p">,</span>
-            <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
             <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
@@ -1366,7 +1377,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 13, 2022</div>
+                            Last updated on Sep 15, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
