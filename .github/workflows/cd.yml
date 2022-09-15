@@ -143,6 +143,7 @@ jobs:
           JINAHUB_USERNAME: ${{ secrets.JINAHUB_USERNAME }}
           JINAHUB_PASSWORD: ${{ secrets.JINAHUB_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JINA_AUTH_TOKEN: "${{ secrets.JINA_AUTH_TOKEN }}"
       - name: Check file existence
         id: check_files
         uses: andstor/file-existence-action@v1
