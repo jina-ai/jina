@@ -1,6 +1,7 @@
 """Module wrapping interactions with the local executor packages."""
 
 import json
+import os
 import shutil
 from pathlib import Path
 from typing import Tuple
@@ -14,8 +15,6 @@ from jina.hubble.helper import (
     is_requirements_installed,
     unpack_package,
 )
-
-import os
 
 SECRET_PATH = 'secrets'
 
@@ -62,7 +61,8 @@ def get_lockfile() -> str:
     """
     return str(get_hub_packages_dir() / 'LOCK')
 
-def get_secret_path(inode: str) -> 'Path': 
+
+def get_secret_path(inode: str) -> 'Path':
     """Get the path of secrets
     :param inode: the inode of the executor path
     :return: the path of secrets
@@ -74,11 +74,11 @@ def get_secret_path(inode: str) -> 'Path':
 
 
 def load_secret(work_path: 'Path') -> Tuple[str, str]:
-    """Get the UUID and Secret from local
+    """Get the UUID, Secret and Task id from local cache
     :param work_path: the work path of the executor
-    :return: the UUID and secret
+    :return: the UUID, secret and task_id
     """
-    
+
     from cryptography.fernet import Fernet
 
     preConfig = work_path / '.jina'
@@ -93,6 +93,7 @@ def load_secret(work_path: 'Path') -> Tuple[str, str]:
 
     uuid8 = None
     secret = None
+    task_id = None
     if local_id_file.exists():
         with local_id_file.open() as f:
             local_id, local_key = f.readline().strip().split('\t')
@@ -106,18 +107,20 @@ def load_secret(work_path: 'Path') -> Tuple[str, str]:
                 encrypted_secret = local_config.get('encrypted_secret', None)
                 if encrypted_secret:
                     secret = fernet.decrypt(encrypted_secret.encode()).decode()
-    return uuid8, secret
+                task_id = local_config.get('task_id', None)
+    return uuid8, secret, task_id
 
 
-def dump_secret(work_path: 'Path', uuid8: str, secret: str):
-    """Dump the UUID and Secret into local file
+def dump_secret(work_path: 'Path', uuid8: str, secret: str, task_id: str):
+    """Dump the UUID, Secret and Task_id into local file
     :param work_path: the work path of the executor
     :param uuid8: the ID of the executor
     :param secret: the access secret
+    :param task_id: the ID of the executor's building task
     """
     from cryptography.fernet import Fernet
 
-    config = get_secret_path(os.stat(work_path).st_ino);
+    config = get_secret_path(os.stat(work_path).st_ino)
     config.mkdir(parents=True, exist_ok=True)
 
     local_id_file = config / 'secret.key'
@@ -136,10 +139,15 @@ def dump_secret(work_path: 'Path', uuid8: str, secret: str):
             f.write(f'{local_id}\t{local_key.decode()}')
 
     local_config_file = get_config_path(local_id)
-    secret_data = {
-        'uuid8': uuid8,
-        'encrypted_secret': fernet.encrypt(secret.encode()).decode(),
-    }
+
+    secret_data = {}
+    if uuid8:
+        secret_data['uuid8'] = uuid8
+    if secret:
+        secret_data['encrypted_secret'] = fernet.encrypt(secret.encode()).decode()
+    if task_id:
+        secret_data['task_id'] = task_id
+
     with local_config_file.open('w') as f:
         f.write(json.dumps(secret_data))
 

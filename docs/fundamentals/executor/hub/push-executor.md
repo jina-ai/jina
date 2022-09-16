@@ -16,7 +16,9 @@ jina hub push [--public/--private] <path_to_executor_folder>
 
 <script id="asciicast-tpvuZ9u0lU2IumRyLlly3JI93" src="https://asciinema.org/a/tpvuZ9u0lU2IumRyLlly3JI93.js" async></script>
 
-It will return `NAME` & `SECRET`, which you will need to use (if the Executor is private) or update the Executor. **Please keep them carefully.**
+If you have logged in Jina, it will return `TASK_ID`. You need that to get build status and logs. 
+
+If you haven't logged in Jina, it will return `NAME` and `SECRET`. You will need them to use (if the Executor is private) or update the Executor. **Please keep them carefully.**
 
 ````{admonition} Note
 :class: note
@@ -134,3 +136,19 @@ For multiple environment variables, we can pass it in this way:
 ```bash
 jina hub push --build-env FIRST=foo --build-env SECOND=bar
 ```
+
+## Building status of an Executor 
+
+You can query the build status of a pushed Executor by doing:
+
+```bash
+jina hub status [<path_to_executor_folder>] [--id TASK_ID] [--verbose] [--replay]
+```
+
+If set `--id TASK_ID`, you can get the build status of a specific build task.
+
+If set `--verbose`, verbose build logs will be printed.
+
+If set `--replay`, will print build status from the beginning.
+
+<script id="asciicast-Asd8bQ9YqsuJBVV1V7EfWmCu3" src="https://asciinema.org/a/Asd8bQ9YqsuJBVV1V7EfWmCu3.js" async></script>
