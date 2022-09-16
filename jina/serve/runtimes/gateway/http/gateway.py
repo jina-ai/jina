@@ -3,7 +3,6 @@ import os
 from typing import Optional
 
 from jina import __default_host__
-from jina.helper import extend_rest_interface
 from jina.importer import ImportExtensions
 
 from ....gateway import BaseGateway
@@ -62,6 +61,8 @@ class HTTPGateway(BaseGateway):
         """
         Initialize and return GRPC server
         """
+        from jina.helper import extend_rest_interface
+
         self.app = extend_rest_interface(
             get_fastapi_app(
                 streamer=self.streamer,
