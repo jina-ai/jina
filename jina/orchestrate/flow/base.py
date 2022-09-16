@@ -1442,7 +1442,7 @@ class Flow(
         send_telemetry_event(
             event='stop',
             obj=self,
-            flow_id=self._flow_id,
+            entity_id=self._entity_id,
             duration=self._stop_time - self._start_time,
             exc_type=str(exc_type),
         )
@@ -1463,7 +1463,7 @@ class Flow(
 
         :return: this instance
         """
-
+        self._start_time = time.time()
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
 
@@ -1487,8 +1487,7 @@ class Flow(
 
         self._build_level = FlowBuildLevel.RUNNING
 
-        self._start_time = time.time()
-        send_telemetry_event(event='start', obj=self, flow_id=self._flow_id)
+        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
 
         return self
 
@@ -2418,12 +2417,9 @@ class Flow(
         return obj
 
     @property
-    def _flow_id(self) -> str:
-        import hashlib
-
-        if self._build_level.value < FlowBuildLevel.GRAPH.value:
-            self.build(copy_flow=False)
-
-        return hashlib.sha256(
-            json.dumps(self._get_graph_representation()).encode('utf-8')
-        ).hexdigest()
+    def _entity_id(self) -> str:
+        import uuid
+        if hasattr(self, '_entity_id_'):
+            return self._entity_id_
+        self._entity_id_ = uuid.uuid1().hex
+        return self._entity_id_

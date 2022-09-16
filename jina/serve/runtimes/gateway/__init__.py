@@ -28,8 +28,3 @@ class GatewayRuntime(AsyncNewLoopRuntime, ABC):
         if self.timeout_send:
             self.timeout_send /= 1e3  # convert ms to seconds
         super().__init__(args, cancel_event, **kwargs)
-
-    @property
-    def _flow_id(self):
-        import hashlib
-        return hashlib.sha256(self.args.graph_description.encode('utf-8')).hexdigest()

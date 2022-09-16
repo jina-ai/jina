@@ -65,12 +65,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
             )
 
         self._setup_monitoring()
-        flow_id = self._flow_id
-        telemetry_kwargs = {}
-
-        if flow_id is not None:
-            telemetry_kwargs = {'flow_id': flow_id}
-        send_telemetry_event(event='start', obj=self, **telemetry_kwargs)
+        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
         self._start_time = time.time()
         self._loop.run_until_complete(self.async_setup())
 
@@ -88,13 +83,8 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
         self._loop.stop()
         self._loop.close()
         super().teardown()
-        flow_id = self._flow_id
         self._stop_time = time.time()
-        telemetry_kwargs = {'duration': self._stop_time - self._start_time}
-
-        if flow_id is not None:
-            telemetry_kwargs = {'flow_id': flow_id}
-        send_telemetry_event(event='stop', obj=self, **telemetry_kwargs)
+        send_telemetry_event(event='stop', obj=self, duration=self._stop_time - self._start_time, entity_id=self._entity_id)
 
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPod`"""
@@ -208,5 +198,9 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
         )
 
     @property
-    def _flow_id(self):
-        return None
+    def _entity_id(self):
+        import uuid
+        if hasattr(self, '_entity_id_'):
+            return self._entity_id_
+        self._entity_id_ = uuid.uuid1().hex
+        return self._entity_id_
