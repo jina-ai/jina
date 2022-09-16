@@ -103,6 +103,7 @@ class HTTPClientlet(AioHttpClientlet):
         req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
         if 'target_executor' in req_dict['header']:
             req_dict['target_executor'] = req_dict['header']['target_executor']
+        # we have to send here `retries` information
         return await self.session.post(url=self.url, json=req_dict).__aenter__()
 
     async def send_dry_run(self):
@@ -161,6 +162,7 @@ class WebsocketClientlet(AioHttpClientlet):
         :param request: request object
         :return: send request as bytes awaitable
         """
+        # we have to send here `retries` information
         try:
             return await self.websocket.send_bytes(request.SerializeToString())
         except ConnectionResetError:

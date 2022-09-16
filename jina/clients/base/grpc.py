@@ -74,6 +74,7 @@ class GRPCBaseClient(BaseClient):
             self.inputs = inputs
             req_iter = self._get_requests(**kwargs)
             continue_on_error = self.continue_on_error
+            # while loop with retries, check in which state the `iterator` remains after failure
             async with GrpcConnectionPool.get_grpc_channel(
                 f'{self.args.host}:{self.args.port}',
                 asyncio=True,
