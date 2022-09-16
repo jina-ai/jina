@@ -80,6 +80,8 @@ class HTTPBaseClient(BaseClient):
         on_done: 'CallbackFnType',
         on_error: Optional['CallbackFnType'] = None,
         on_always: Optional['CallbackFnType'] = None,
+        num_retries: bool = 1,
+        retry_delay: float = 0.5,
         **kwargs,
     ):
         """
@@ -87,6 +89,8 @@ class HTTPBaseClient(BaseClient):
         :param on_done: the callback for on_done
         :param on_error: the callback for on_error
         :param on_always: the callback for on_always
+        :param num_retries: Number of retries to do when sending a request in case of failure
+        :param retry_delay: Delay in seconds between retries
         :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `HTTPClientlet`
         :yields: generator over results
         """
@@ -105,7 +109,7 @@ class HTTPBaseClient(BaseClient):
             proto = 'https' if self.args.tls else 'http'
             url = f'{proto}://{self.args.host}:{self.args.port}/post'
             iolet = await stack.enter_async_context(
-                HTTPClientlet(url=url, logger=self.logger, **kwargs)
+                HTTPClientlet(url=url, logger=self.logger, num_retries=num_retries, retry_delay=retry_delay, **kwargs)
             )
 
             def _request_handler(

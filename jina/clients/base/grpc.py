@@ -2,6 +2,7 @@ import asyncio
 from typing import TYPE_CHECKING, Optional
 
 import grpc
+import json
 
 from jina.clients.base import BaseClient
 from jina.clients.helper import callback_exec
@@ -62,6 +63,8 @@ class GRPCBaseClient(BaseClient):
         on_error: Optional['CallbackFnType'] = None,
         on_always: Optional['CallbackFnType'] = None,
         compression: Optional[str] = None,
+        num_retries: bool = 1,
+        retry_delay: float = 0.5,
         **kwargs,
     ):
         try:
@@ -75,8 +78,28 @@ class GRPCBaseClient(BaseClient):
             req_iter = self._get_requests(**kwargs)
             continue_on_error = self.continue_on_error
             # while loop with retries, check in which state the `iterator` remains after failure
+            options = GrpcConnectionPool.get_default_grpc_options()
+            if num_retries > 1:
+                service_config_json = json.dumps({
+                                "methodConfig": [{
+                                    # To apply retry to all methods, put [{}] in the "name" field
+                                    "name": [{}],
+                                    "retryPolicy": {
+                                        "maxAttempts": num_retries,
+                                        "initialBackoff": f"{retry_delay}s",
+                                        "maxBackoff": f"{retry_delay}s",
+                                        "backoffMultiplier": 10,
+                                        "retryableStatusCodes": ["UNAVAILABLE", "DEADLINE_EXCEEDED", "INTERNAL"],
+                                    },
+                                }]
+                            })
+                # NOTE: the retry feature will be enabled by default >=v1.40.0
+                options.append(("grpc.enable_retries", 1))
+                options.append(("grpc.service_config", service_config_json))
+
             async with GrpcConnectionPool.get_grpc_channel(
                 f'{self.args.host}:{self.args.port}',
+                options=options,
                 asyncio=True,
                 tls=self.args.tls,
             ) as channel:

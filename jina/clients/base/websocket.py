@@ -77,6 +77,8 @@ class WebSocketBaseClient(BaseClient):
         on_done: 'CallbackFnType',
         on_error: Optional['CallbackFnType'] = None,
         on_always: Optional['CallbackFnType'] = None,
+        num_retries: bool = 1,
+        retry_delay: float = 0.5,
         **kwargs,
     ):
         """
@@ -84,6 +86,8 @@ class WebSocketBaseClient(BaseClient):
         :param on_done: the callback for on_done
         :param on_error: the callback for on_error
         :param on_always: the callback for on_always
+        :param num_retries: Number of retries to do when sending a request in case of failure
+        :param retry_delay: Delay in seconds between retries
         :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `WebsocketClientlet`
         :yields: generator over results
         """
@@ -102,7 +106,7 @@ class WebSocketBaseClient(BaseClient):
             proto = 'wss' if self.args.tls else 'ws'
             url = f'{proto}://{self.args.host}:{self.args.port}/'
             iolet = await stack.enter_async_context(
-                WebsocketClientlet(url=url, logger=self.logger, **kwargs)
+                WebsocketClientlet(url=url, logger=self.logger, num_retries=num_retries, retry_delay=retry_delay, **kwargs)
             )
 
             request_buffer: Dict[

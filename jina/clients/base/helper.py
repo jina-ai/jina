@@ -17,11 +17,13 @@ if TYPE_CHECKING:
 class AioHttpClientlet(ABC):
     """aiohttp session manager"""
 
-    def __init__(self, url: str, logger: 'JinaLogger', **kwargs) -> None:
+    def __init__(self, url: str, logger: 'JinaLogger',  num_retries: int = 1, retry_delay: float = 0.5,  **kwargs) -> None:
         """HTTP Client to be used with the streamer
 
         :param url: url to send http/websocket request to
         :param logger: jina logger
+        :param num_retries: Number of retries to do when sending a request in case of failure
+        :param retry_delay: Delay in seconds between retries
         :param kwargs: kwargs  which will be forwarded to the `aiohttp.Session` instance. Used to pass headers to requests
         """
         self.url = url
@@ -36,6 +38,8 @@ class AioHttpClientlet(ABC):
             self._session_kwargs['auth'] = kwargs.get('auth')
         if kwargs.get('cookies', None):
             self._session_kwargs['cookies'] = kwargs.get('cookies')
+        self.num_retries = num_retries
+        self.retry_delay = retry_delay
 
     @abstractmethod
     async def send_message(self, **kwargs):
@@ -103,8 +107,15 @@ class HTTPClientlet(AioHttpClientlet):
         req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
         if 'target_executor' in req_dict['header']:
             req_dict['target_executor'] = req_dict['header']['target_executor']
-        # we have to send here `retries` information
-        return await self.session.post(url=self.url, json=req_dict).__aenter__()
+        for retry in range(self.num_retries):
+            try:
+                res = await self.session.post(url=self.url, json=req_dict).__aenter__()
+                return res
+            except:
+                if retry == self.num_retries - 1:
+                    raise
+                else:
+                    await asyncio.sleep(self.retry_delay)
 
     async def send_dry_run(self):
         """Query the dry_run endpoint from Gateway
@@ -163,10 +174,16 @@ class WebsocketClientlet(AioHttpClientlet):
         :return: send request as bytes awaitable
         """
         # we have to send here `retries` information
-        try:
-            return await self.websocket.send_bytes(request.SerializeToString())
-        except ConnectionResetError:
-            self.logger.critical(f'server connection closed already!')
+        for retry in range(self.num_retries):
+            try:
+                res = await self.websocket.send_bytes(request.SerializeToString())
+                return res
+            except ConnectionResetError:
+                if retry == self.num_retries - 1:
+                    self.logger.critical(f'server connection closed already!')
+                    raise
+                else:
+                    await asyncio.sleep(self.retry_delay)
 
     async def send_dry_run(self):
         """Query the dry_run endpoint from Gateway
