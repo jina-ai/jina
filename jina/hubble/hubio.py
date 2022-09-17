@@ -377,11 +377,11 @@ metas:
 
             if image:
                 new_uuid8 = image['id']
-                new_secret = image.get('secret')
+                # new_secret 始终是 None
+                # new_secret = image.get('secret')
                 form_data['id'] = new_uuid8
 
-                if new_uuid8 != uuid8 or new_secret != secret:
-                    dump_secret(work_path, new_uuid8, new_secret or '', task_id)
+                dump_secret(work_path, new_uuid8, form_data.get('secret'), task_id)
             else:
                 raise Exception(f'Unknown Error, session_id: {session_id}')
 
@@ -415,16 +415,17 @@ metas:
         new_task_id = push_task.get('_id')
         if new_task_id:
 
-            dump_secret(work_path, None, None, new_task_id)
+            dump_secret(work_path, None, form_data.get('secret'), new_task_id)
             self._prettyprint_status_usage(console, work_path, new_task_id)
             st.update(f'Async Uploaded!')
 
             image = self._status_with_progress(console, st, new_task_id, False, verbose)
             if image:
+
+                #new_secret 始终是 None
                 new_uuid8, new_secret = self._prettyprint_result(console, image)
 
-                if new_uuid8 != uuid8 or new_secret != secret or task_id != new_task_id:
-                    dump_secret(work_path, new_uuid8, new_secret or '', new_task_id)
+                dump_secret(work_path, new_uuid8, form_data.get('secret'), new_task_id)
 
             else:
                 raise Exception(f'Unknown Error, session_id: {session_id}')
@@ -857,9 +858,11 @@ metas:
                         st.update(f'Cloud pending ... [dim]: {t} ({status})[/dim]')
 
                 elif status == 'failed':
-                    error = stream_msg.get('message')
+                    error = stream_msg.get('error', {})
+                    msg = error.get('message')
+
                     raise Exception(
-                        f'{ error or "Unknown Error"} session_id: {session_id}'
+                        f'{ msg or "Unknown Error"} session_id: {session_id}'
                     )
 
                 elif status == 'waiting':
