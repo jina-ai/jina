@@ -2,6 +2,9 @@
 import os
 
 from opentelemetry import metrics, trace
+from opentelemetry.instrumentation.grpc import (
+    client_interceptor as grpc_client_interceptor,
+)
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import (
     ConsoleMetricExporter,
@@ -18,7 +21,7 @@ resource = Resource(
 )
 
 if 'JINA_ENABLE_OTEL_TRACING':
-    provider = TracerProvider()
+    provider = TracerProvider(resource=resource)
     processor = BatchSpanProcessor(ConsoleSpanExporter())
     provider.add_span_processor(processor)
     trace.set_tracer_provider(provider)
@@ -28,9 +31,16 @@ else:
 
 if 'JINA_ENABLE_OTEL_METRICS':
     metric_reader = PeriodicExportingMetricReader(ConsoleMetricExporter())
-    meter_provider = MeterProvider(metric_readers=[metric_reader])
+    meter_provider = MeterProvider(metric_readers=[metric_reader], resource=resource)
     metrics.set_meter_provider(meter_provider)
     # Sets the global meter provider
     METER = metrics.get_meter(os.getenv('JINA_DEPLOYMENT_NAME', 'worker'))
 else:
     metrics.set_meter_provider(METER)
+
+
+def client_tracing_interceptor():
+    '''
+    :returns: a gRPC client interceptor with the global tracing provider.
+    '''
+    return grpc_client_interceptor(trace.get_tracer_provider())

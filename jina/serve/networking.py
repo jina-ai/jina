@@ -3,7 +3,7 @@ import contextlib
 import ipaddress
 import os
 from collections import defaultdict
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Set, Tuple, Union
 from urllib.parse import urlparse
 
 import grpc
@@ -11,6 +11,7 @@ from grpc.aio import AioRpcError
 from grpc_health.v1 import health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha.reflection_pb2 import ServerReflectionRequest
 from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
+from opentelemetry.instrumentation.grpc.grpcext import intercept_channel
 
 from jina import __default_endpoint__
 from jina.enums import PollingType
@@ -18,6 +19,8 @@ from jina.excepts import EstablishGrpcConnectionError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2, jina_pb2_grpc
+from jina.serve.instrumentation import client_tracing_interceptor
+from jina.serve.instrumentation._aio_client import aio_client_interceptors
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
 
@@ -900,6 +903,41 @@ class GrpcConnectionPool:
         return asyncio.create_task(task_wrapper())
 
     @staticmethod
+    def __aio_channel_with_tracing_interceptor(
+        address,
+        credentials=None,
+        options=None,
+    ) -> grpc.aio.Channel:
+        if credentials:
+            return grpc.aio.secure_channel(
+                address,
+                credentials,
+                options=options,
+                interceptors=aio_client_interceptors(),
+            )
+        return grpc.aio.insecure_channel(
+            address, options=options, interceptors=aio_client_interceptors()
+        )
+
+    @staticmethod
+    def __channel_with_tracing_interceptor(
+        address,
+        credentials=None,
+        options=None,
+    ) -> grpc.Channel:
+        interceptor = client_tracing_interceptor()
+        print(f'--->type of interceptor: {type(interceptor)}')
+        if credentials:
+            return intercept_channel(
+                grpc.secure_channel(address, credentials, options=options),
+                interceptor,
+            )
+        return intercept_channel(
+            grpc.insecure_channel(address, options=options),
+            interceptor,
+        )
+
+    @staticmethod
     def get_grpc_channel(
         address: str,
         options: Optional[list] = None,
@@ -919,24 +957,23 @@ class GrpcConnectionPool:
         :return: A grpc channel or an asyncio channel
         """
 
-        secure_channel = grpc.secure_channel
-        insecure_channel = grpc.insecure_channel
-
-        if asyncio:
-            secure_channel = grpc.aio.secure_channel
-            insecure_channel = grpc.aio.insecure_channel
-
         if options is None:
             options = GrpcConnectionPool.get_default_grpc_options()
 
+        credentials = None
         if tls:
             credentials = grpc.ssl_channel_credentials(
                 root_certificates=root_certificates
             )
 
-            return secure_channel(address, credentials, options)
+        if asyncio:
+            return GrpcConnectionPool.__aio_channel_with_tracing_interceptor(
+                address, credentials, options
+            )
 
-        return insecure_channel(address, options)
+        return GrpcConnectionPool.__channel_with_tracing_interceptor(
+            address, credentials, options
+        )
 
     @staticmethod
     def send_request_sync(
