@@ -82,6 +82,8 @@ def test_enable_monitoring_gateway(protocol, port_generator, executor):
         assert f'jina_sending_request_seconds' in str(resp.content)
         assert f'jina_successful_requests_total' in str(resp.content)
         assert f'jina_failed_requests_total' in str(resp.content)
+        assert f'jina_return_request_bytes' in str(resp.content)
+        assert f'jina_send_request_bytes' in str(resp.content)
 
 
 def test_monitoring_head(port_generator, executor):
@@ -114,6 +116,8 @@ def test_monitoring_head(port_generator, executor):
         resp = req.get(f'http://localhost:{port_head}/')
         assert f'jina_receiving_request_seconds' in str(resp.content)
         assert f'jina_sending_request_seconds' in str(resp.content)
+        assert f'jina_return_request_bytes' in str(resp.content)
+        assert f'jina_send_request_bytes' in str(resp.content)
 
 
 def test_monitoring_head_few_port(port_generator, executor):
@@ -294,6 +298,11 @@ def test_requests_size(port_generator, executor):
             in str(resp.content)
         )
 
+        assert (
+            f'jina_send_request_bytes_count{{executor="DummyExecutor",executor_endpoint="/foo",runtime_name="executor0/rep-0"}} 1.0'
+            in str(resp.content)
+        )
+
         def _get_request_bytes_size():
             resp = req.get(f'http://localhost:{port1}/')  # enable on port0
 
@@ -304,13 +313,26 @@ def test_requests_size(port_generator, executor):
                 if 'jina_request_size_bytes_sum{executor="DummyExecutor"' in line
             ]
 
-            return float(byte_line[0][-5:])
+            byte_send_line = [
+                line
+                for line in resp_lines
+                if 'jina_send_request_bytes_sum{executor="DummyExecutor"' in line
+            ]
 
-        measured_request_bytes_sum_init = _get_request_bytes_size()
+            return float(byte_line[0][-5:]), float(byte_send_line[0][-5:])
+
+        (
+            measured_request_bytes_sum_init,
+            measured_request_bytes_send_sum_init,
+        ) = _get_request_bytes_size()
         f.post('/foo', inputs=DocumentArray.empty(size=1))
-        measured_request_bytes_sum = _get_request_bytes_size()
+        (
+            measured_request_bytes_sum,
+            measured_request_bytes_send_sum,
+        ) = _get_request_bytes_size()
 
         assert measured_request_bytes_sum > measured_request_bytes_sum_init
+        assert measured_request_bytes_send_sum > measured_request_bytes_send_sum_init
 
 
 def test_failed_successful_request_count(port_generator, failing_executor):
