@@ -45,7 +45,7 @@ class _NetworkingMetrics:
 
     sending_requests_time_metrics: Optional['Summary']
     returns_requests_bytes_metrics: Optional['Summary']
-    sending_requests_bytes_metrics: Optional['Summary']
+    send_requests_bytes_metrics: Optional['Summary']
 
 
 class ReplicaList:
@@ -349,8 +349,8 @@ class GrpcConnectionPool:
                         compression=compression,
                         timeout=timeout,
                     )
-                    if self._metrics.sending_requests_bytes_metrics:
-                        self._metrics.sending_requests_bytes_metrics.observe(
+                    if self._metrics.send_requests_bytes_metrics:
+                        self._metrics.send_requests_bytes_metrics.observe(
                             len(requests[0].buffer)
                         )
                         # it might not work when the response is deserialized already (which should never happened here )
@@ -369,9 +369,9 @@ class GrpcConnectionPool:
                     return response, metadata
 
                 elif self.stream_stub:
-                    if self._metrics.sending_requests_bytes_metrics:
+                    if self._metrics.send_requests_bytes_metrics:
                         for req in requests:
-                            self._metrics.sending_requests_bytes_metrics.observe(
+                            self._metrics.send_requests_bytes_metrics.observe(
                                 len(req.buffer)
                             )
 
@@ -608,7 +608,7 @@ class GrpcConnectionPool:
             else None
         )
 
-        sending_requests_bytes_metrics = (
+        send_requests_bytes_metrics = (
             Summary(
                 'send_request_bytes',
                 'Size in Bytes of the request send to the Pod',
@@ -622,7 +622,7 @@ class GrpcConnectionPool:
         self._metrics = _NetworkingMetrics(
             sending_requests_time_metrics,
             returns_requests_bytes_metrics,
-            sending_requests_bytes_metrics,
+            send_requests_bytes_metrics,
         )
 
         self._connections = self._ConnectionPoolMap(self._logger, self._metrics)
