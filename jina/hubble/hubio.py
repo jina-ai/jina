@@ -364,8 +364,6 @@ metas:
         content,
         form_data,
         work_path,
-        uuid8,
-        secret,
         task_id,
     ):
 
@@ -377,8 +375,6 @@ metas:
 
             if image:
                 new_uuid8 = image['id']
-                # new_secret 始终是 None
-                # new_secret = image.get('secret')
                 form_data['id'] = new_uuid8
 
                 dump_secret(work_path, new_uuid8, form_data.get('secret'), task_id)
@@ -422,7 +418,7 @@ metas:
             image = self._status_with_progress(console, st, new_task_id, False, verbose)
             if image:
 
-                #new_secret 始终是 None
+                #new_secret always None
                 new_uuid8, new_secret = self._prettyprint_result(console, image)
                 dump_secret(work_path, new_uuid8, form_data.get('secret'), new_task_id)
 
@@ -637,8 +633,6 @@ metas:
                         content,
                         form_data,
                         work_path,
-                        uuid8,
-                        secret,
                         task_id,
                     )
 
