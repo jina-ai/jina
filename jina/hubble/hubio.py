@@ -424,7 +424,6 @@ metas:
 
                 #new_secret 始终是 None
                 new_uuid8, new_secret = self._prettyprint_result(console, image)
-
                 dump_secret(work_path, new_uuid8, form_data.get('secret'), new_task_id)
 
             else:
@@ -860,9 +859,9 @@ metas:
                 elif status == 'failed':
                     error = stream_msg.get('error', {})
                     msg = error.get('message')
-
+                    message = stream_msg.get('message', {})
                     raise Exception(
-                        f'{ msg or "Unknown Error"} session_id: {session_id}'
+                        f'{ msg or message or "Unknown Error"} session_id: {session_id}'
                     )
 
                 elif status == 'waiting':
