@@ -351,7 +351,7 @@ class GrpcConnectionPool:
                             self._sending_requests_bytes_metrics.observe(
                                 len(
                                     response.buffer
-                                )  # it might not work when the response is deserialize already
+                                )  # it might not work when the response is deserialized already (which should never happened here )
                             )
 
                     return response, metadata
@@ -364,7 +364,7 @@ class GrpcConnectionPool:
                                 self._sending_requests_bytes_metrics.observe(
                                     len(
                                         response.buffer
-                                    )  # it might not work when the response is deserialize already
+                                    )  # it might not work when the response is deserializedd already (which should never happened here )
                                 )
 
                             return response, None
