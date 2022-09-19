@@ -54,7 +54,7 @@ class DataRequestHandler:
             ):
                 from prometheus_client import Counter, Summary
 
-                self._counter = Counter(
+                self._document_processed_metrics = Counter(
                     'document_processed',
                     'Number of Documents that have been processed by the executor',
                     namespace='jina',
@@ -69,9 +69,18 @@ class DataRequestHandler:
                     labelnames=('executor_endpoint', 'executor', 'runtime_name'),
                     registry=metrics_registry,
                 )
+
+                self._sending_request_size_metrics = Summary(
+                    'send_request_bytes',
+                    'The size in Bytes of the send/return request',
+                    namespace='jina',
+                    labelnames=('executor_endpoint', 'executor', 'runtime_name'),
+                    registry=metrics_registry,
+                )
         else:
-            self._counter = None
+            self._document_processed_metrics = None
             self._request_size_metrics = None
+            self._sending_request_size_metrics = None
 
     def _load_executor(self, metrics_registry: Optional['CollectorRegistry'] = None):
         """
@@ -178,14 +187,21 @@ class DataRequestHandler:
                     f'but getting {return_data!r}'
                 )
 
-        if self._counter:
-            self._counter.labels(
+        if self._document_processed_metrics:
+            self._document_processed_metrics.labels(
                 requests[0].header.exec_endpoint,
                 self._executor.__class__.__name__,
                 self.args.name,
             ).inc(len(docs))
 
         DataRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
+        #
+        # if self._sending_request_size_metrics:
+        #     self._sending_request_size_metrics.labels(
+        #             requests[0].header.exec_endpoint,
+        #             self._executor.__class__.__name__,
+        #             self.args.name,
+        #     ).observe(requests[0].nbytes)
 
         return requests[0]
 
