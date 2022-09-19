@@ -600,7 +600,7 @@ class GrpcConnectionPool:
         returns_requests_bytes_metrics = (
             Summary(
                 'return_request_bytes',
-                'Size in Bytes of the request returns by the Pod',
+                'Size in Bytes of the request returned by the Pod',
                 registry=metrics_registry,
                 namespace='jina',
             )
@@ -610,7 +610,7 @@ class GrpcConnectionPool:
 
         sending_requests_bytes_metrics = (
             Summary(
-                'return_request_bytes',
+                'send_request_bytes',
                 'Size in Bytes of the request send to the Pod',
                 registry=metrics_registry,
                 namespace='jina',
