@@ -84,6 +84,7 @@ def test_enable_monitoring_gateway(protocol, port_generator, executor):
         assert f'jina_failed_requests_total' in str(resp.content)
         assert f'jina_return_request_bytes' in str(resp.content)
         assert f'jina_send_request_bytes' in str(resp.content)
+        assert f'jina_request_size_bytes' in str(resp.content)
 
 
 def test_monitoring_head(port_generator, executor):

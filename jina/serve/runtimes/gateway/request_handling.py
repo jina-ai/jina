@@ -77,6 +77,14 @@ class MonitoringRequestMixin:
                 labelnames=('runtime_name',),
             ).labels(runtime_name)
 
+            self._request_size_metrics = Summary(
+                'request_size_bytes',
+                'The receive request size in Bytes',
+                namespace='jina',
+                labelnames=('runtime_name',),
+                registry=metrics_registry,
+            ).labels(runtime_name)
+
         else:
             self._receiving_request_metrics = None
             self._pending_requests_metrics = None
@@ -84,6 +92,8 @@ class MonitoringRequestMixin:
             self._successful_requests_metrics = None
 
     def _update_start_request_metrics(self, request: 'Request'):
+        if self._request_size_metrics:
+            self._request_size_metrics.observe(request.nbytes)
         if self._receiving_request_metrics:
             self._request_init_time[request.request_id] = time.time()
         if self._pending_requests_metrics:
