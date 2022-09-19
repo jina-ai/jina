@@ -411,7 +411,7 @@ metas:
         new_task_id = push_task.get('_id')
         if new_task_id:
 
-            dump_secret(work_path, None, form_data.get('secret'), new_task_id)
+            dump_secret(work_path, form_data.get('id'), form_data.get('secret'), new_task_id)
             self._prettyprint_status_usage(console, work_path, new_task_id)
             st.update(f'Async Uploaded!')
 
@@ -420,7 +420,8 @@ metas:
 
                 #new_secret always None
                 new_uuid8, new_secret = self._prettyprint_result(console, image)
-                dump_secret(work_path, new_uuid8, form_data.get('secret'), new_task_id)
+                if new_uuid8 != form_data.get('id'):
+                    dump_secret(work_path, new_uuid8, form_data.get('secret'), new_task_id)
 
             else:
                 raise Exception(f'Unknown Error, session_id: {session_id}')
