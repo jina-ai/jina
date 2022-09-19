@@ -586,38 +586,30 @@ class GrpcConnectionPool:
             ):
                 from prometheus_client import Summary
 
-        sending_requests_time_metrics = (
-            Summary(
+            sending_requests_time_metrics = Summary(
                 'sending_request_seconds',
                 'Time spent between sending a request to the Pod and receiving the response',
                 registry=metrics_registry,
                 namespace='jina',
             )
-            if metrics_registry
-            else None
-        )
 
-        returns_requests_bytes_metrics = (
-            Summary(
+            returns_requests_bytes_metrics = Summary(
                 'return_request_bytes',
                 'Size in Bytes of the request returned by the Pod',
                 registry=metrics_registry,
                 namespace='jina',
             )
-            if metrics_registry
-            else None
-        )
 
-        send_requests_bytes_metrics = (
-            Summary(
+            send_requests_bytes_metrics = Summary(
                 'send_request_bytes',
                 'Size in Bytes of the request send to the Pod',
                 registry=metrics_registry,
                 namespace='jina',
             )
-            if metrics_registry
-            else None
-        )
+        else:
+            sending_requests_time_metrics = None
+            returns_requests_bytes_metrics = None
+            send_requests_bytes_metrics = None
 
         self._metrics = _NetworkingMetrics(
             sending_requests_time_metrics,
