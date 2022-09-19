@@ -195,13 +195,13 @@ class DataRequestHandler:
             ).inc(len(docs))
 
         DataRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
-        #
-        # if self._sending_request_size_metrics:
-        #     self._sending_request_size_metrics.labels(
-        #             requests[0].header.exec_endpoint,
-        #             self._executor.__class__.__name__,
-        #             self.args.name,
-        #     ).observe(requests[0].nbytes)
+
+        if self._sending_request_size_metrics:
+            self._sending_request_size_metrics.labels(
+                requests[0].header.exec_endpoint,
+                self._executor.__class__.__name__,
+                self.args.name,
+            ).observe(requests[0].nbytes)
 
         return requests[0]
 
