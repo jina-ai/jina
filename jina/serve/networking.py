@@ -369,13 +369,13 @@ class GrpcConnectionPool:
                     return response, metadata
 
                 elif self.stream_stub:
-                    with self._metrics.sending_requests_time_metrics.time() if self._metrics.sending_requests_time_metrics else contextlib.nullcontext():
-                        if self._metrics.sending_requests_bytes_metrics:
-                            for req in requests:
-                                self._metrics.sending_requests_bytes_metrics.observe(
-                                    len(req.buffer)
-                                )
+                    if self._metrics.sending_requests_bytes_metrics:
+                        for req in requests:
+                            self._metrics.sending_requests_bytes_metrics.observe(
+                                len(req.buffer)
+                            )
 
+                    with self._metrics.sending_requests_time_metrics.time() if self._metrics.sending_requests_time_metrics else contextlib.nullcontext():
                         async for response in self.stream_stub.Call(
                             iter(requests), compression=compression, timeout=timeout
                         ):
