@@ -351,9 +351,8 @@ class GrpcConnectionPool:
                     )
                     if self._metrics.send_requests_bytes_metrics:
                         self._metrics.send_requests_bytes_metrics.observe(
-                            len(requests[0].buffer)
+                            requests[0].nbytes
                         )
-                        # it might not work when the response is deserialized already (which should never happened here )
 
                     with self._metrics.sending_requests_time_metrics.time() if self._metrics.sending_requests_time_metrics else contextlib.nullcontext():
                         metadata, response = (
@@ -363,16 +362,15 @@ class GrpcConnectionPool:
 
                         if self._metrics.returns_requests_bytes_metrics:
                             self._metrics.returns_requests_bytes_metrics.observe(
-                                len(response.buffer)
+                                response.nbytes
                             )
-                            # it might not work when the response is deserialized already (which should never happened here )
                     return response, metadata
 
                 elif self.stream_stub:
                     if self._metrics.send_requests_bytes_metrics:
-                        for req in requests:
+                        for response in requests:
                             self._metrics.send_requests_bytes_metrics.observe(
-                                len(req.buffer)
+                                response.nbytes
                             )
 
                     with self._metrics.sending_requests_time_metrics.time() if self._metrics.sending_requests_time_metrics else contextlib.nullcontext():
@@ -381,9 +379,8 @@ class GrpcConnectionPool:
                         ):
                             if self._metrics.returns_requests_bytes_metrics:
                                 self._metrics.returns_requests_bytes_metrics.observe(
-                                    len(response.buffer)
+                                    response.nbytes
                                 )
-                                # it might not work when the response is deserializedd already (which should never happened here )
 
                             return response, None
             if request_type == DataRequest and len(requests) > 1:
