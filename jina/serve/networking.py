@@ -45,6 +45,7 @@ class _NetworkingMetrics:
 
     sending_requests_time_metrics: Optional['Summary']
     returns_requests_bytes_metrics: Optional['Summary']
+    sending_requests_bytes_metrics: Optional['Summary']
 
 
 class ReplicaList:
@@ -348,30 +349,41 @@ class GrpcConnectionPool:
                         compression=compression,
                         timeout=timeout,
                     )
+                    if self._metrics.sending_requests_bytes_metrics:
+                        self._metrics.sending_requests_bytes_metrics.observe(
+                            len(requests[0].buffer)
+                        )
+                        # it might not work when the response is deserialized already (which should never happened here )
+
                     with self._metrics.sending_requests_time_metrics.time() if self._metrics.sending_requests_time_metrics else contextlib.nullcontext():
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
                         )
+
                         if self._metrics.returns_requests_bytes_metrics:
                             self._metrics.returns_requests_bytes_metrics.observe(
-                                len(
-                                    response.buffer
-                                )  # it might not work when the response is deserialized already (which should never happened here )
+                                len(response.buffer)
                             )
-
+                            # it might not work when the response is deserialized already (which should never happened here )
                     return response, metadata
+
                 elif self.stream_stub:
                     with self._metrics.sending_requests_time_metrics.time() if self._metrics.sending_requests_time_metrics else contextlib.nullcontext():
+                        if self._metrics.sending_requests_bytes_metrics:
+                            for req in requests:
+                                self._metrics.sending_requests_bytes_metrics.observe(
+                                    len(req.buffer)
+                                )
+
                         async for response in self.stream_stub.Call(
                             iter(requests), compression=compression, timeout=timeout
                         ):
                             if self._metrics.returns_requests_bytes_metrics:
                                 self._metrics.returns_requests_bytes_metrics.observe(
-                                    len(
-                                        response.buffer
-                                    )  # it might not work when the response is deserializedd already (which should never happened here )
+                                    len(response.buffer)
                                 )
+                                # it might not work when the response is deserializedd already (which should never happened here )
 
                             return response, None
             if request_type == DataRequest and len(requests) > 1:
@@ -596,8 +608,21 @@ class GrpcConnectionPool:
             else None
         )
 
+        sending_requests_bytes_metrics = (
+            Summary(
+                'return_request_bytes',
+                'Size in Bytes of the request send to the Pod',
+                registry=metrics_registry,
+                namespace='jina',
+            )
+            if metrics_registry
+            else None
+        )
+
         self._metrics = _NetworkingMetrics(
-            sending_requests_time_metrics, returns_requests_bytes_metrics
+            sending_requests_time_metrics,
+            returns_requests_bytes_metrics,
+            sending_requests_bytes_metrics,
         )
 
         self._connections = self._ConnectionPoolMap(self._logger, self._metrics)
