@@ -44,7 +44,7 @@ class ReplicaList:
     def __init__(
         self,
         sending_requests_time_metrics: Optional['Summary'],
-        sending_requests_bytes_metrics: Optional['Summary'],
+        returns_requests_bytes_metrics: Optional['Summary'],
         logger,
     ):
         self._connections = []
@@ -52,7 +52,7 @@ class ReplicaList:
         self._address_to_channel = {}
         self._rr_counter = 0  # round robin counter
         self._sending_requests_time_metrics = sending_requests_time_metrics
-        self._sending_requests_bytes_metrics = sending_requests_bytes_metrics
+        self._returns_requests_bytes_metrics = returns_requests_bytes_metrics
         self._logger = logger
         self._destroyed_event = asyncio.Event()
 
@@ -147,7 +147,7 @@ class ReplicaList:
             address,
             tls=use_tls,
             sending_requests_time_metrics=self._sending_requests_time_metrics,
-            sending_requests_bytes_metrics=self._sending_requests_bytes_metrics,
+            returns_requests_bytes_metrics=self._returns_requests_bytes_metrics,
         )
         return stubs, channel
 
@@ -266,12 +266,12 @@ class GrpcConnectionPool:
             address,
             channel,
             sending_requests_time_metrics: Optional['Summary'],
-            sending_requests_bytes_metrics: Optional['Summary'],
+            returns_requests_bytes_metrics: Optional['Summary'],
         ):
             self.address = address
             self.channel = channel
             self._sending_requests_time_metrics = sending_requests_time_metrics
-            self._sending_requests_bytes_metrics = sending_requests_bytes_metrics
+            self._returns_requests_bytes_metrics = returns_requests_bytes_metrics
             self._initialized = False
 
         # This has to be done lazily, because the target endpoint may not be available
@@ -347,8 +347,8 @@ class GrpcConnectionPool:
                             await call_result.trailing_metadata(),
                             await call_result,
                         )
-                        if self._sending_requests_bytes_metrics:
-                            self._sending_requests_bytes_metrics.observe(
+                        if self._returns_requests_bytes_metrics:
+                            self._returns_requests_bytes_metrics.observe(
                                 len(
                                     response.buffer
                                 )  # it might not work when the response is deserialized already (which should never happened here )
@@ -360,8 +360,8 @@ class GrpcConnectionPool:
                         async for response in self.stream_stub.Call(
                             iter(requests), compression=compression, timeout=timeout
                         ):
-                            if self._sending_requests_bytes_metrics:
-                                self._sending_requests_bytes_metrics.observe(
+                            if self._returns_requests_bytes_metrics:
+                                self._returns_requests_bytes_metrics.observe(
                                     len(
                                         response.buffer
                                     )  # it might not work when the response is deserializedd already (which should never happened here )
@@ -394,7 +394,7 @@ class GrpcConnectionPool:
             self,
             logger: Optional[JinaLogger],
             sending_requests_time_metrics: Optional['Summary'],
-            sending_requests_bytes_metrics: Optional['Summary'],
+            returns_requests_bytes_metrics: Optional['Summary'],
         ):
             self._logger = logger
             # this maps deployments to shards or heads
@@ -402,7 +402,7 @@ class GrpcConnectionPool:
             # dict stores last entity id used for a particular deployment, used for round robin
             self._access_count: Dict[str, int] = {}
             self._sending_requests_time_metrics = sending_requests_time_metrics
-            self._sending_requests_bytes_metrics = sending_requests_bytes_metrics
+            self._returns_requests_bytes_metrics = returns_requests_bytes_metrics
             if os.name != 'nt':
                 os.unsetenv('http_proxy')
                 os.unsetenv('https_proxy')
@@ -507,7 +507,7 @@ class GrpcConnectionPool:
             if entity_id not in self._deployments[deployment][type]:
                 connection_list = ReplicaList(
                     self._sending_requests_time_metrics,
-                    self._sending_requests_bytes_metrics,
+                    self._returns_requests_bytes_metrics,
                     self._logger,
                 )
                 self._deployments[deployment][type][entity_id] = connection_list
@@ -578,21 +578,21 @@ class GrpcConnectionPool:
                 namespace='jina',
             )
 
-            self._sending_requests_bytes_metrics = Summary(
-                'sending_request_bytes',
-                'size in Bytes of the send requests',
+            self._returns_requests_bytes_metrics = Summary(
+                'return_request_bytes',
+                'Size in Bytes of the request returns by the Pod',
                 registry=metrics_registry,
                 namespace='jina',
             )
 
         else:
             self._sending_requests_time_metrics = None
-            self._sending_requests_bytes_metrics = None
+            self._returns_requests_bytes_metrics = None
 
         self._connections = self._ConnectionPoolMap(
             self._logger,
             self._sending_requests_time_metrics,
-            self._sending_requests_bytes_metrics,
+            self._returns_requests_bytes_metrics,
         )
         self._deployment_address_map = {}
 
@@ -1153,7 +1153,7 @@ class GrpcConnectionPool:
         tls=False,
         root_certificates: Optional[str] = None,
         sending_requests_time_metrics: Optional['Summary'] = None,
-        sending_requests_bytes_metrics: Optional['Summary'] = None,
+        returns_requests_bytes_metrics: Optional['Summary'] = None,
     ) -> Tuple[ConnectionStubs, grpc.aio.Channel]:
         """
         Creates an async GRPC Channel. This channel has to be closed eventually!
@@ -1162,7 +1162,7 @@ class GrpcConnectionPool:
         :param tls: if True, use tls for the grpc channel
         :param root_certificates: the path to the root certificates for tls, only u
         :param sending_requests_time_metrics: Optional Prometheus summary object that track the time
-        :param sending_requests_bytes_metrics: Optional Prometheus summary object that track the bytes
+        :param returns_requests_bytes_metrics: Optional Prometheus summary object that track the bytes
 
         :returns: DataRequest stubs and an async grpc channel
         """
@@ -1178,7 +1178,7 @@ class GrpcConnectionPool:
                 address,
                 channel,
                 sending_requests_time_metrics,
-                sending_requests_bytes_metrics,
+                returns_requests_bytes_metrics,
             ),
             channel,
         )

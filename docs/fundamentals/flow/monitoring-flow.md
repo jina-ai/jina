@@ -191,7 +191,7 @@ You can find more information on the different type of metrics in Prometheus [he
 
 
 ```{seealso} 
-Beyond monitoring every endpoint of an Executor you can define {ref}`custom metrics <monitoring-executor>`for you 
+Beyond monitoring every endpoint of an Executor you can define {ref}`custom metrics <monitoring-executor>` for you 
 Executor. 
 ```
 

@@ -64,7 +64,7 @@ class DataRequestHandler:
 
                 self._request_size_metrics = Summary(
                     'request_size_bytes',
-                    'The request size in Bytes',
+                    'The receive request size in Bytes',
                     namespace='jina',
                     labelnames=('executor_endpoint', 'executor', 'runtime_name'),
                     registry=metrics_registry,
