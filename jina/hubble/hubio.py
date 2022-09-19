@@ -859,7 +859,7 @@ metas:
                 elif status == 'failed':
                     error = stream_msg.get('error', {})
                     msg = error.get('message')
-                    message = stream_msg.get('message', {})
+                    message = stream_msg.get('message')
                     raise Exception(
                         f'{ msg or message or "Unknown Error"} session_id: {session_id}'
                     )
