@@ -20,7 +20,7 @@ resource = Resource(
     attributes={SERVICE_NAME: os.getenv('JINA_DEPLOYMENT_NAME', 'worker')}
 )
 
-if 'JINA_ENABLE_OTEL_TRACING':
+if 'JINA_ENABLE_OTEL_TRACING' in os.environ:
     provider = TracerProvider(resource=resource)
     processor = BatchSpanProcessor(ConsoleSpanExporter())
     provider.add_span_processor(processor)
@@ -29,7 +29,7 @@ if 'JINA_ENABLE_OTEL_TRACING':
 else:
     trace.set_tracer_provider(TRACER)
 
-if 'JINA_ENABLE_OTEL_METRICS':
+if 'JINA_ENABLE_OTEL_METRICS' in os.environ:
     metric_reader = PeriodicExportingMetricReader(ConsoleMetricExporter())
     meter_provider = MeterProvider(metric_readers=[metric_reader], resource=resource)
     metrics.set_meter_provider(meter_provider)
