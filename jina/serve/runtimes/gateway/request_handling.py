@@ -90,6 +90,7 @@ class MonitoringRequestMixin:
             self._pending_requests_metrics = None
             self._failed_requests_metrics = None
             self._successful_requests_metrics = None
+            self._request_size_metrics = None
 
     def _update_start_request_metrics(self, request: 'Request'):
         if self._request_size_metrics:
