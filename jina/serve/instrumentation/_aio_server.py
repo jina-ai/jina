@@ -13,14 +13,11 @@
 # limitations under the License.
 
 import grpc.aio
-from opentelemetry import trace
 from opentelemetry.instrumentation.grpc._server import (
     OpenTelemetryServerInterceptor,
     _OpenTelemetryServicerContext,
     _wrap_rpc_behavior,
 )
-
-from jina.serve.instrumentation import TRACER
 
 
 class OpenTelemetryAioServerInterceptor(
@@ -109,12 +106,3 @@ class OpenTelemetryAioServerInterceptor(
                         raise error
 
         return _stream_interceptor
-
-
-def aio_server_interceptor():
-    '''Create a gRPC aio server interceptor.
-    :returns: A service-side aio interceptor object.
-    '''
-    from . import _aio_server
-
-    return _aio_server.OpenTelemetryAioServerInterceptor(TRACER)

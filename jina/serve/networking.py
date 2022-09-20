@@ -19,8 +19,7 @@ from jina.excepts import EstablishGrpcConnectionError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2, jina_pb2_grpc
-from jina.serve.instrumentation import client_tracing_interceptor
-from jina.serve.instrumentation._aio_client import aio_client_interceptors
+from jina.serve.instrumentation import InstrumentationMixin
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
 
@@ -913,10 +912,12 @@ class GrpcConnectionPool:
                 address,
                 credentials,
                 options=options,
-                interceptors=aio_client_interceptors(),
+                interceptors=InstrumentationMixin.aio_tracing_client_interceptors(),
             )
         return grpc.aio.insecure_channel(
-            address, options=options, interceptors=aio_client_interceptors()
+            address,
+            options=options,
+            interceptors=InstrumentationMixin.aio_tracing_client_interceptors(),
         )
 
     @staticmethod
@@ -925,7 +926,7 @@ class GrpcConnectionPool:
         credentials=None,
         options=None,
     ) -> grpc.Channel:
-        interceptor = client_tracing_interceptor()
+        interceptor = InstrumentationMixin.tracing_client_interceptor()
         if credentials:
             return intercept_channel(
                 grpc.secure_channel(address, credentials, options=options),

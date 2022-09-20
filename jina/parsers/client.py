@@ -30,3 +30,19 @@ def mixin_client_features_parser(parser):
         default=False,
         help='If set, then the input and output of this Client work in an asynchronous manner. ',
     )
+
+    parser.add_argument(
+        '--opentelemetry-tracing',
+        action='store_true',
+        default=False,
+        help='If set, real implementation of the tracer will be available and will be enabled for automatic tracing of requests and customer span creation. '
+        'Otherwise a no-op implementation will be provided.',
+    )
+
+    parser.add_argument(
+        '--opentelemetry-metrics',
+        action='store_true',
+        default=False,
+        help='If set, real implementation of the metrics will be available for default monitoring and custom measurements. '
+        'Otherwise a no-op implementation will be provided.',
+    )

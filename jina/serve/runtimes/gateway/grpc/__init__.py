@@ -10,7 +10,6 @@ from jina.excepts import PortAlreadyUsed
 from jina.helper import get_full_version, is_port_free
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.bff import GatewayBFF
-from jina.serve.instrumentation._aio_server import aio_server_interceptor
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.types.request.status import StatusMessage
@@ -48,7 +47,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
 
         self.server = grpc.aio.server(
             options=_get_grpc_server_options(self.args.grpc_server_options),
-            interceptors=[aio_server_interceptor()],
+            interceptors=[self.aio_tracing_server_interceptor()],
         )
         await self._async_setup_server()
 

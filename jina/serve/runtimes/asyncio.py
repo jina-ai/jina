@@ -11,6 +11,7 @@ from grpc import RpcError
 from jina import __windows__
 from jina.helper import send_telemetry_event
 from jina.importer import ImportExtensions
+from jina.serve.instrumentation import InstrumentationMixin
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.base import BaseRuntime
 from jina.serve.runtimes.monitoring import MonitoringMixin
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
     import threading
 
 
-class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
+class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, ABC):
     """
     The async runtime to start a new event loop.
     """
@@ -65,6 +66,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
             )
 
         self._setup_monitoring()
+        self._setup_instrumentation()
         send_telemetry_event(event='start', obj=self)
         self._loop.run_until_complete(self.async_setup())
 

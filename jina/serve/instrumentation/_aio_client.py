@@ -27,8 +27,6 @@ from opentelemetry.propagate import inject
 from opentelemetry.semconv.trace import SpanAttributes
 from opentelemetry.trace.status import Status, StatusCode
 
-from jina.serve.instrumentation import TRACER
-
 
 def _unary_done_callback(span, code, details):
     def callback(call):
@@ -319,16 +317,3 @@ class StreamStreamAioClientInterceptor(
             resp = await continuation(new_details, request_iterator)
 
             return self._wrap_stream_response(span, resp)
-
-
-def aio_client_interceptors():
-    '''Create a gRPC client aio channel interceptor.
-    :returns: An invocation-side list of aio interceptor objects.
-    '''
-
-    return [
-        UnaryUnaryAioClientInterceptor(TRACER),
-        UnaryStreamAioClientInterceptor(TRACER),
-        StreamUnaryAioClientInterceptor(TRACER),
-        StreamStreamAioClientInterceptor(TRACER),
-    ]

@@ -119,3 +119,19 @@ def mixin_pod_parser(parser):
         help='If set, the current Pod/Deployment can not be further chained, '
         'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
     )
+
+    gp.add_argument(
+        '--opentelemetry-tracing',
+        action='store_true',
+        default=False,
+        help='If set, real implementation of the tracer will be available and will be enabled for automatic tracing of requests and customer span creation. '
+        'Otherwise a no-op implementation will be provided.',
+    )
+
+    gp.add_argument(
+        '--opentelemetry-metrics',
+        action='store_true',
+        default=False,
+        help='If set, real implementation of the metrics will be available for default monitoring and custom measurements. '
+        'Otherwise a no-op implementation will be provided.',
+    )

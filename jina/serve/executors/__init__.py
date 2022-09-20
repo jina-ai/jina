@@ -7,6 +7,8 @@ import warnings
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union
 
+from opentelemetry import metrics, trace
+
 from jina import __args_executor_init__, __cache_path__, __default_endpoint__
 from jina.enums import BetterEnum
 from jina.helper import (
@@ -140,6 +142,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._add_requests(requests)
         self._add_runtime_args(runtime_args)
         self._init_monitoring()
+        self._init_instrumentation()
         self._init_workspace = workspace
         self.logger = JinaLogger(self.__class__.__name__)
         if __dry_run_endpoint__ not in self.requests:
@@ -185,6 +188,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         else:
             self._summary_method = None
             self._metrics_buffer = None
+
+    def _init_instrumentation(self):
+        self.tracer = trace.get_tracer(self.runtime_args.name)
+        self.meter = metrics.get_meter(self.runtime_args.name)
 
     def _add_requests(self, _requests: Optional[Dict]):
         if not hasattr(self, 'requests'):
