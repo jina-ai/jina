@@ -418,7 +418,7 @@ metas:
             image = self._status_with_progress(console, st, new_task_id, False, verbose)
             if image:
 
-                #new_secret always None
+                # `new_secret` is always None
                 new_uuid8, new_secret = self._prettyprint_result(console, image)
                 if new_uuid8 != form_data.get('id'):
                     dump_secret(work_path, new_uuid8, form_data.get('secret'), new_task_id)
