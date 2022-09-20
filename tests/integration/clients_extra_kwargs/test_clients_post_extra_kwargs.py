@@ -7,6 +7,7 @@ from jina import Flow, __default_host__
 from jina.clients import Client
 from jina.excepts import PortAlreadyUsed
 from jina.helper import is_port_free
+from jina.serve.runtimes.gateway.grpc import GRPCGateway
 from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime as _GRPCGatewayRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
 from tests import random_docs
@@ -38,6 +39,14 @@ def flow_with_grpc(monkeypatch):
 
             return self._deny
 
+    class AlternativeGRPCGateway(GRPCGateway):
+        def __init__(self, *args, **kwargs):
+            super(AlternativeGRPCGateway, self).__init__(*args, **kwargs)
+            self.server = grpc.aio.server(
+                interceptors=(AuthInterceptor('access_key'),),
+                options=_get_grpc_server_options(self.grpc_server_options),
+            )
+
     class AlternativeGRPCGatewayRuntime(_GRPCGatewayRuntime):
         async def async_setup(self):
             """
@@ -51,12 +60,21 @@ def flow_with_grpc(monkeypatch):
             if not (is_port_free(__default_host__, self.args.port)):
                 raise PortAlreadyUsed(f'port:{self.args.port}')
 
-            self.server = grpc.aio.server(
-                interceptors=(AuthInterceptor('access_key'),),
-                options=_get_grpc_server_options(self.args.grpc_server_options),
+            self.gateway = AlternativeGRPCGateway(
+                name=self.name,
+                grpc_server_options=self.args.grpc_server_options,
+                port=self.args.port,
+                ssl_keyfile=self.args.ssl_keyfile,
+                ssl_certfile=self.args.ssl_certfile,
             )
 
-            await self._async_setup_server()
+            self.gateway.set_streamer(
+                args=self.args,
+                timeout_send=self.timeout_send,
+                metrics_registry=self.metrics_registry,
+                runtime_name=self.name,
+            )
+            await self.gateway.setup_server()
 
     monkeypatch.setattr(
         'jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime',

@@ -11,8 +11,14 @@ GATEWAY_SCHEMA_FILENAME = 'gateway.json'
 args = set_gateway_parser().parse_args([])
 logger = JinaLogger('')
 gateway_app = get_fastapi_app(
-    args,
-    logger=logger,
+    title=args.title,
+    description=args.description,
+    no_debug_endpoints=args.no_debug_endpoints,
+    no_crud_endpoints=args.no_crud_endpoints,
+    expose_endpoints=args.expose_endpoints,
+    expose_graphql_endpoint=args.expose_graphql_endpoint,
+    cors=args.cors,
+    logger=args.logger,
 )
 gateway_schema = gateway_app.openapi()
 gateway_schema['info']['x-logo'] = {'url': JINA_LOGO_URL}
