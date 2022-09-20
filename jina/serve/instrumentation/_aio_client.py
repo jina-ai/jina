@@ -17,7 +17,7 @@ from collections import OrderedDict
 
 import grpc
 from grpc.aio import ClientCallDetails
-from opentelemetry import context, trace
+from opentelemetry import context
 from opentelemetry.instrumentation.grpc._client import (
     OpenTelemetryClientInterceptor,
     _carrier_setter,

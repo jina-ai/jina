@@ -6,6 +6,7 @@ from typing import List
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
+from opentelemetry.propagate import Context, extract
 
 from jina.excepts import RuntimeTerminated
 from jina.helper import get_full_version
@@ -165,6 +166,11 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         )
         return endpointsProto
 
+    @staticmethod
+    def _extract_tracing_context(metadata: grpc.aio.Metadata) -> Context:
+        context = extract(dict(metadata))
+        return context
+
     async def process_data(self, requests: List[DataRequest], context) -> DataRequest:
         """
         Process the received requests and return the result as a new request
@@ -179,7 +185,12 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 if self.logger.debug_enabled:
                     self._log_data_request(requests[0])
 
-                result = await self._data_request_handler.handle(requests=requests)
+                otel_context = WorkerRuntime._extract_tracing_context(
+                    context.invocation_metadata()
+                )
+                result = await self._data_request_handler.handle(
+                    requests=requests, otel_context=otel_context
+                )
                 if self._successful_requests_metrics:
                     self._successful_requests_metrics.inc()
                 return result

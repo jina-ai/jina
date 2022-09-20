@@ -2,6 +2,7 @@ import copy
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from docarray import DocumentArray
+from opentelemetry.context.context import Context
 
 from jina import __default_endpoint__
 from jina.excepts import BadConfigSource
@@ -116,10 +117,13 @@ class DataRequestHandler:
 
         return parsed_params
 
-    async def handle(self, requests: List['DataRequest']) -> DataRequest:
+    async def handle(
+        self, requests: List['DataRequest'], otel_context: Context = None
+    ) -> DataRequest:
         """Initialize private parameters and execute private loading functions.
 
         :param requests: The messages to handle containing a DataRequest
+        :param otel_context: OpenTelemetry Context from the originating request.
         :returns: the processed message
         """
         # skip executor if endpoints mismatch
@@ -157,6 +161,7 @@ class DataRequestHandler:
                 requests,
                 field='docs',
             ),
+            otel_context=otel_context,
         )
         # assigning result back to request
         if return_data is not None:

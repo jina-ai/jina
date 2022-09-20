@@ -926,7 +926,6 @@ class GrpcConnectionPool:
         options=None,
     ) -> grpc.Channel:
         interceptor = client_tracing_interceptor()
-        print(f'--->type of interceptor: {type(interceptor)}')
         if credentials:
             return intercept_channel(
                 grpc.secure_channel(address, credentials, options=options),
