@@ -203,6 +203,11 @@ from jina.orchestrate.flow.base import Flow
 # Executor
 from jina.serve.executors import BaseExecutor as Executor
 from jina.serve.executors.decorators import monitor, requests
+from jina.serve.runtimes.gateway.grpc.gateway import GRPCGateway
+
+# Gateway
+from jina.serve.runtimes.gateway.http.gateway import HTTPGateway
+from jina.serve.runtimes.gateway.websocket.gateway import WebSocketGateway
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend(_names_with_underscore)

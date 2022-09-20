@@ -1349,6 +1349,7 @@ class Flow(
                 deployments_addresses=op_flow._get_deployments_addresses(),
                 graph_conditions=op_flow._get_graph_conditions(),
                 deployments_disabled_reduce=op_flow._get_disabled_reduce_deployments(),
+                uses=op_flow.args.uses,
             )
 
         removed_deployments = []

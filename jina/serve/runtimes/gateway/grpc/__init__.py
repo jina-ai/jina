@@ -25,12 +25,25 @@ class GRPCGatewayRuntime(GatewayRuntime):
         if not (is_port_free(__default_host__, self.args.port)):
             raise PortAlreadyUsed(f'port:{self.args.port}')
 
-        self.gateway = GRPCGateway(
-            name=self.name,
-            grpc_server_options=self.args.grpc_server_options,
-            port=self.args.port,
-            ssl_keyfile=self.args.ssl_keyfile,
-            ssl_certfile=self.args.ssl_certfile,
+        self.gateway = GRPCGateway.load_config(
+            self.args.uses,
+            uses_with=dict(
+                name=self.name,
+                grpc_server_options=self.args.grpc_server_options,
+                port=self.args.port,
+                ssl_keyfile=self.args.ssl_keyfile,
+                ssl_certfile=self.args.ssl_certfile,
+            ),
+            uses_metas=self.args.uses_metas,
+            runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
+                'workspace': self.args.workspace,
+                'shard_id': self.args.shard_id,
+                'shards': self.args.shards,
+                'replicas': self.args.replicas,
+                'name': self.args.name,
+            },
+            py_modules=self.args.py_modules,
+            extra_search_paths=self.args.extra_search_paths,
         )
 
         self.gateway.set_streamer(
