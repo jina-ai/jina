@@ -2,16 +2,14 @@ import multiprocessing
 
 import pytest
 
+from jina import DocumentArray, Executor, requests
 from jina.parsers import set_pod_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
-from jina.serve.bff import GatewayBFF
-from jina import Executor, requests
-from jina import DocumentArray
+from jina.serve.streamer import GatewayStreamer
 
 
 class BffTestExecutor(Executor):
-
     @requests
     def foo(self, docs, parameters, **kwargs):
         text_to_add = parameters.get('text_to_add', 'default ')
@@ -52,24 +50,41 @@ def _setup(pod0_port, pod1_port):
     return pod0_process, pod1_process
 
 
-@pytest.mark.parametrize('parameters, target_executor, expected_text', [  # (None, None, 'default default '),
-    ({'pod0__text_to_add': 'param_pod0 '}, None, 'param_pod0 default '),
-    (None, 'pod1', 'default '), ({'pod0__text_to_add': 'param_pod0 '}, 'pod0', 'param_pod0 ')])
+@pytest.mark.parametrize(
+    'parameters, target_executor, expected_text',
+    [  # (None, None, 'default default '),
+        ({'pod0__text_to_add': 'param_pod0 '}, None, 'param_pod0 default '),
+        (None, 'pod1', 'default '),
+        ({'pod0__text_to_add': 'param_pod0 '}, 'pod0', 'param_pod0 '),
+    ],
+)
 @pytest.mark.asyncio
-async def test_gateway_bff(port_generator, parameters, target_executor, expected_text):
+async def test_custom_gateway(
+    port_generator, parameters, target_executor, expected_text
+):
     pod0_port = port_generator()
     pod1_port = port_generator()
     pod0_process, pod1_process = _setup(pod0_port, pod1_port)
-    graph_description = {"start-gateway": ["pod0"], "pod0": ["pod1"], "pod1": ["end-gateway"]}
+    graph_description = {
+        "start-gateway": ["pod0"],
+        "pod0": ["pod1"],
+        "pod1": ["end-gateway"],
+    }
     pod_addresses = {"pod0": [f"0.0.0.0:{pod0_port}"], "pod1": [f"0.0.0.0:{pod1_port}"]}
     # send requests to the gateway
-    gateway_bff = GatewayBFF(graph_representation=graph_description, executor_addresses=pod_addresses)
+    gateway_streamer = GatewayStreamer(
+        graph_representation=graph_description, executor_addresses=pod_addresses
+    )
     try:
         input_da = DocumentArray.empty(60)
         resp = DocumentArray.empty(0)
         num_resp = 0
-        async for r in gateway_bff.stream_docs(docs=input_da, request_size=10, parameters=parameters,
-                                               target_executor=target_executor):
+        async for r in gateway_streamer.stream_docs(
+            docs=input_da,
+            request_size=10,
+            parameters=parameters,
+            target_executor=target_executor,
+        ):
             num_resp += 1
             resp.extend(r)
 
@@ -84,4 +99,4 @@ async def test_gateway_bff(port_generator, parameters, target_executor, expected
         pod1_process.terminate()
         pod0_process.join()
         pod1_process.join()
-        await gateway_bff.close()
+        await gateway_streamer.close()
