@@ -95,9 +95,12 @@ def test_request_size_increasing(port_generator, executor):
         'jina_request_size_bytes_sum{executor="IncreaseSizeExecutor",executor_endpoint="/",runtime_name="executor0/rep-0"}'
     ]
     size_send_by_gateway = metrics_gateway['jina_send_request_bytes_sum']
-    size_return_by_gateway = metrics_gateway['jina_return_request_bytes_sum']
+    size_return_from_exec_at_gateway = metrics_gateway['jina_return_request_bytes_sum']
     size_received_at_gateway = metrics_gateway[
         'jina_request_size_bytes_sum{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}'
+    ]
+    size_send_by_executor = metrics_executor[
+        'jina_send_request_bytes_sum{executor="IncreaseSizeExecutor",executor_endpoint="/",runtime_name="executor0/rep-0"}'
     ]
 
     assert (
@@ -111,5 +114,9 @@ def test_request_size_increasing(port_generator, executor):
     )  # both should have the same size since it is just the same request send from gateway to executor
 
     assert (
-        size_received_at_executor < 10 * size_return_by_gateway
+        size_received_at_executor < 10 * size_return_from_exec_at_gateway
     )  # the return request should be way bigger since we add data
+
+    assert (
+        size_return_from_exec_at_gateway == size_send_by_executor
+    )  # both should have the same size since it is just the same request send from executor to gateway
