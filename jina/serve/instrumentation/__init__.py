@@ -51,9 +51,11 @@ class InstrumentationMixin:
         '''Create a gRPC aio server interceptor.
         :returns: A service-side aio interceptor object.
         '''
-        from . import _aio_server
+        from jina.serve.instrumentation._aio_server import (
+            OpenTelemetryAioServerInterceptor,
+        )
 
-        return _aio_server.OpenTelemetryAioServerInterceptor(self.tracer)
+        return OpenTelemetryAioServerInterceptor(self.tracer)
 
     @staticmethod
     def aio_tracing_client_interceptors():
