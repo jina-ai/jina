@@ -149,6 +149,17 @@ You can also restrict the visible devices in round-robin assignment by `CUDA_VIS
 | 0          | 4          |
 
 
+You can also restrict the visible devices in round-robin assignment by assigning a list of devices ids `CUDA_VISIBLE_DEVICES=RR1,3`. This will create the following assignment:
+
+| GPU device | Replica ID |
+|------------|------------|
+| 1          | 0          |
+| 3          | 1          |
+| 1          | 2          |
+| 3          | 3          |
+| 1          | 4          |
+
+
 (partition-data-by-using-shards)=
 ## Partition data with shards
 
