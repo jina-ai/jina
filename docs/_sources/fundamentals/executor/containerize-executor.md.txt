@@ -64,8 +64,10 @@ the basic entrypoint of the image calls `jina executor` {ref}`CLI <../api/jina_c
 ENTRYPOINT ["jina", "executor", "--uses", "config.yml"]
 ```
 
-```{tip}
-We **strongly encourage** you to name the Executor YAML as `config.yml`, otherwise using your containerize Executor with Kubernetes will require extra step.
+```{note}
+We **strongly encourage** you to name the Executor YAML as `config.yml`, otherwise using your containerize Executor with Kubernetes will require extra step. 
+When using {meth}`~jina.serve.executors.BaseExecutor.to_kubernetes_yaml()` or {meth}`~jina.serve.executors.BaseExecutor.to_docker_compose_yaml()`, Jina will add `--uses config.yml` in the entrypoint. 
+In order to change that, you will need to manually alter the generated files.
 ```
 
 ## Example: Dockerized Executor

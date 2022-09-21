@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/http.html" />
 
-    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
-        <title>jina.serve.runtimes.gateway.http - Jina 3.9.2 documentation</title>
+    <link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+        <title>jina.serve.runtimes.gateway.http - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -146,7 +146,7 @@
         </div>
         <div class="header-center">
             <a href="../../../../../../">
-                <div class="brand">Jina 3.9.2 documentation</div>
+                <div class="brand">Jina 3.9.3 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -362,15 +362,15 @@
                 <article role="main">
                     <h1>Source code for jina.serve.runtimes.gateway.http</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span>
-<span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway</span> <span class="kn">import</span> <span class="n">GatewayRuntime</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.app</span> <span class="kn">import</span> <span class="n">get_fastapi_app</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;HTTPGatewayRuntime&#39;</span><span class="p">]</span>
+
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http.gateway</span> <span class="kn">import</span> <span class="n">HTTPGateway</span>
 
 
 <div class="viewcode-block" id="HTTPGatewayRuntime"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime">[docs]</a><span class="k">class</span> <span class="nc">HTTPGatewayRuntime</span><span class="p">(</span><span class="n">GatewayRuntime</span><span class="p">):</span>
@@ -382,91 +382,48 @@
 
 <span class="sd">        Setup the uvicorn server.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="kn">from</span> <span class="nn">uvicorn</span> <span class="kn">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">Server</span>
-
-        <span class="k">class</span> <span class="nc">UviServer</span><span class="p">(</span><span class="n">Server</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;The uvicorn server.&quot;&quot;&quot;</span>
-
-            <span class="k">async</span> <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sockets</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-                <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                Setup uvicorn server.</span>
-
-<span class="sd">                :param sockets: sockets of server.</span>
-<span class="sd">                &quot;&quot;&quot;</span>
-                <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
-                    <span class="n">config</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">lifespan</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">lifespan_class</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">install_signal_handlers</span><span class="p">()</span>
-                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">startup</span><span class="p">(</span><span class="n">sockets</span><span class="o">=</span><span class="n">sockets</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_exit</span><span class="p">:</span>
-                    <span class="k">return</span>
-
-            <span class="k">async</span> <span class="k">def</span> <span class="nf">serve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">                Start the server.</span>
-
-<span class="sd">                :param kwargs: keyword arguments</span>
-<span class="sd">                &quot;&quot;&quot;</span>
-                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_loop</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="s1">&#39;CICD_JINA_DISABLE_HEALTHCHECK_LOGS&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
-
-            <span class="k">class</span> <span class="nc">_EndpointFilter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Filter</span><span class="p">):</span>
-                <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-                    <span class="c1"># NOTE: space is important after `GET /`, else all logs will be disabled.</span>
-                    <span class="k">return</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;GET / &quot;</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
-
-            <span class="c1"># Filter out healthcheck endpoint `GET /`</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;uvicorn.access&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">addFilter</span><span class="p">(</span><span class="n">_EndpointFilter</span><span class="p">())</span>
-
-        <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">extend_rest_interface</span>
-
-        <span class="n">uvicorn_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uvicorn_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
-
-        <span class="k">for</span> <span class="n">ssl_file</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ssl_keyfile&#39;</span><span class="p">,</span> <span class="s1">&#39;ssl_certfile&#39;</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">ssl_file</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">ssl_file</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">uvicorn_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                    <span class="n">uvicorn_kwargs</span><span class="p">[</span><span class="n">ssl_file</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">ssl_file</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_server</span> <span class="o">=</span> <span class="n">UviServer</span><span class="p">(</span>
-            <span class="n">config</span><span class="o">=</span><span class="n">Config</span><span class="p">(</span>
-                <span class="n">app</span><span class="o">=</span><span class="n">extend_rest_interface</span><span class="p">(</span>
-                    <span class="n">get_fastapi_app</span><span class="p">(</span>
-                        <span class="n">args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
-                        <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-                        <span class="n">timeout_send</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span><span class="p">,</span>
-                        <span class="n">metrics_registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
-                    <span class="p">)</span>
-                <span class="p">),</span>
-                <span class="n">host</span><span class="o">=</span><span class="n">__default_host__</span><span class="p">,</span>
-                <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
-                <span class="n">log_level</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;JINA_LOG_LEVEL&#39;</span><span class="p">,</span> <span class="s1">&#39;error&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
-                <span class="o">**</span><span class="n">uvicorn_kwargs</span>
-            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span> <span class="o">=</span> <span class="n">HTTPGateway</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+            <span class="n">no_debug_endpoints</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_debug_endpoints</span><span class="p">,</span>
+            <span class="n">no_crud_endpoints</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_crud_endpoints</span><span class="p">,</span>
+            <span class="n">expose_endpoints</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">expose_endpoints</span><span class="p">,</span>
+            <span class="n">expose_graphql_endpoint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">expose_graphql_endpoint</span><span class="p">,</span>
+            <span class="n">cors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">cors</span><span class="p">,</span>
+            <span class="n">ssl_keyfile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssl_keyfile</span><span class="p">,</span>
+            <span class="n">ssl_certfile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssl_certfile</span><span class="p">,</span>
+            <span class="n">uvicorn_kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uvicorn_kwargs</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="HTTPGatewayRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Running method of the server.&quot;&quot;&quot;</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server</span><span class="o">.</span><span class="n">serve</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">set_streamer</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">timeout_send</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span><span class="p">,</span>
+            <span class="n">metrics_registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
+            <span class="n">runtime_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">setup_server</span><span class="p">()</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_for_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Do NOT override this method when inheriting from :class:`GatewayPod`&quot;&quot;&quot;</span>
         <span class="c1"># handle terminate signals</span>
-        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server</span><span class="o">.</span><span class="n">should_exit</span><span class="p">:</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">should_exit</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
 
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
 
 <div class="viewcode-block" id="HTTPGatewayRuntime.async_teardown"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Shutdown the server.&quot;&quot;&quot;</span>
-        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="HTTPGatewayRuntime.async_cancel"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.async_cancel">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Stop the server.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_server</span><span class="o">.</span><span class="n">should_exit</span> <span class="o">=</span> <span class="kc">True</span></div></div>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">stop_server</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="HTTPGatewayRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../../api/jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Running method of the server.&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">run_server</span><span class="p">()</span></div></div>
 </pre></div>
                 </article>
             </div>
@@ -481,7 +438,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 15, 2022</div>
+                            Last updated on Sep 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

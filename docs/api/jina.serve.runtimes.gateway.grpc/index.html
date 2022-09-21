@@ -10,13 +10,13 @@
   
 <meta property="og:url" content="https://docs.jina.ai/api/jina.serve.runtimes.gateway.grpc/" />
   
-<meta property="og:site_name" content="Jina 3.9.2 Documentation" />
+<meta property="og:site_name" content="Jina 3.9.3 Documentation" />
   
-<meta property="og:description" content="Module contents:" />
+<meta property="og:description" content="Submodules: jina.serve.runtimes.gateway.grpc.gateway module. Module contents:" />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
-<meta property="og:image:alt" content="Jina 3.9.2 Documentation" />
+<meta property="og:image:alt" content="Jina 3.9.3 Documentation" />
   
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@JinaAI_">
@@ -38,10 +38,10 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.runtimes.gateway.grpc.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.06.21"/>
-        <title>jina.serve.runtimes.gateway.grpc package - Jina 3.9.2 documentation</title>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+        <title>jina.serve.runtimes.gateway.grpc package - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=40978830699223671f4072448e654b5958f38b89" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -179,7 +179,7 @@
         </div>
         <div class="header-center">
             <a href="../../">
-                <div class="brand">Jina 3.9.2 documentation</div>
+                <div class="brand">Jina 3.9.3 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -395,17 +395,21 @@
                 <article role="main">
                     <section id="jina-serve-runtimes-gateway-grpc-package">
 <h1>jina.serve.runtimes.gateway.grpc package<a class="headerlink" href="#jina-serve-runtimes-gateway-grpc-package" title="Permalink to this heading">#</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc.gateway/">jina.serve.runtimes.gateway.grpc.gateway module</a></li>
+</ul>
+</div>
+</section>
 <section id="module-jina.serve.runtimes.gateway.grpc">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-jina.serve.runtimes.gateway.grpc" title="Permalink to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.grpc.</span></span><span class="sig-name descname"><span class="pre">GRPCGatewayRuntime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/grpc/#GRPCGatewayRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.grpc.</span></span><span class="sig-name descname"><span class="pre">GRPCGatewayRuntime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/grpc/#GRPCGatewayRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime" title="jina.serve.runtimes.gateway.GatewayRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayRuntime</span></code></a></p>
 <p>Gateway Runtime for gRPC.</p>
-<p>Initialize the runtime
-:type args: <code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code>
-:param args: args from CLI
-:param kwargs: keyword args</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_setup">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/grpc/#GRPCGatewayRuntime.async_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_setup" title="Permalink to this definition">#</a></dt>
@@ -429,26 +433,6 @@
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_run_forever">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_run_forever</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/grpc/#GRPCGatewayRuntime.async_run_forever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_run_forever" title="Permalink to this definition">#</a></dt>
 <dd><p>The async running of server.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.dry_run">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dry_run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">empty</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/grpc/#GRPCGatewayRuntime.dry_run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.dry_run" title="Permalink to this definition">#</a></dt>
-<dd><p>Process the the call requested by having a dry run call to every Executor in the graph</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>empty</strong> – The service expects an empty protobuf message</p></li>
-<li><p><strong>context</strong> – grpc context</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">StatusProto</span></code></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the response request</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -532,7 +516,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 15, 2022</div>
+                            Last updated on Sep 21, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -565,6 +549,7 @@
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">jina.serve.runtimes.gateway.grpc package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-jina.serve.runtimes.gateway.grpc">Module contents</a></li>
 </ul>
 </li>

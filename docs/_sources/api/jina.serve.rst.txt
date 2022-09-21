@@ -17,8 +17,9 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   jina.serve.bff
+   jina.serve.gateway
    jina.serve.networking
+   jina.serve.streamer
 
 Module contents
 ---------------

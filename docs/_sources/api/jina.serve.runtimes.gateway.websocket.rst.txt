@@ -8,6 +8,7 @@ Submodules
    :maxdepth: 4
 
    jina.serve.runtimes.gateway.websocket.app
+   jina.serve.runtimes.gateway.websocket.gateway
 
 Module contents
 ---------------
