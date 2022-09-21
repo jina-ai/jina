@@ -631,11 +631,9 @@ class Deployment(BaseDeployment):
         """
 
         all_devices = range(num_devices)
-        print(f' value {value}')
         if re.match(WRAPPED_SLICE_BASE, value):
             value = value[1:-1]
 
-        print(f' 2-value {value}')
         if value:
             parts = value.split(',')
             if len(parts) == 1:
@@ -646,8 +644,7 @@ class Deployment(BaseDeployment):
                     parts = [parts[0], str(int(parts[0]) + 1)]
                 # else: slice(start, stop[, step])
             else:
-                print(f' parts HEY {parts}')
-
+                return [int(p) for p in parts]
         else:
             parts = []
         return all_devices[slice(*[int(p) if p else None for p in parts])]
@@ -676,12 +673,13 @@ class Deployment(BaseDeployment):
                 if num_devices == 0:
                     return
 
-            all_devices = list(range(num_devices))
             selected_devices = []
             if device_str[2:]:
                 for device_num in Deployment._parse_devices(device_str[2:], num_devices):
                     selected_devices.append(device_num)
-
+            else:
+                selected_devices = range(num_devices)
+            print(f' selected devices {selected_devices}')
             _c = cycle(selected_devices)
             return {j: next(_c) for j in range(replicas)}
 

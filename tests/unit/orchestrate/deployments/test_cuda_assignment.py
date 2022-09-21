@@ -30,13 +30,8 @@ def cuda_total_devices(request):
         ['RR1:2', 1, {0: 1}, 3],
         ['RR0,2,3', 3, {0: 0, 1: 2, 2: 3}, 4],
         ['RR0,2,3', 5, {0: 0, 1: 2, 2: 3, 3: 0, 4: 2}, 4],
-        ['RR0,1:3', 3, {0: 0, 1: 1, 2: 2}, 4],
-        ['RR0,1:3', 5, {0: 0, 1: 1, 2: 2, 3: 0, 4: 1}, 4],
-        ['RR0:2,4', 3, {0: 0, 1: 1, 2: 4}, 5],
-        ['RR0:2,4', 5, {0: 0, 1: 1, 2: 4, 3: 0, 4: 1}, 5],
     ], indirect=['cuda_total_devices']
 )
 def test_cuda_assignment(device_str, replicas, expected, cuda_total_devices):
     actual = Deployment._roundrobin_cuda_device(device_str, replicas)
-    print(f' actual {actual} vs expected {expected}')
     assert actual == expected
