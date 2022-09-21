@@ -89,3 +89,48 @@ def get_metric_values(raw_metrics: str) -> Dict[str, float]:
             metrics[metric_name] = metric_value
 
     return metrics
+
+
+def test_request_size_increasing(port_generator, executor):
+    class IncreaseSizeExecutor(executor):
+        @requests
+        def foo(self, docs, **kwargs):
+            for doc_ in docs:
+                doc_.text = 'hello wolrd' * 10_000
+
+    port0 = port_generator()
+    port1 = port_generator()
+
+    with Flow(monitoring=True, port_monitoring=port0).add(
+        uses=IncreaseSizeExecutor, port_monitoring=port1
+    ) as f:
+        f.post('/', inputs=DocumentArray.empty(size=1))
+
+        raw_metrics_executor = req.get(f'http://localhost:{port1}/').content.decode()
+        raw_metrics_gateway = req.get(f'http://localhost:{port0}/').content.decode()
+
+    metrics_executor = get_metric_values(raw_metrics_executor)
+    metrics_gateway = get_metric_values(raw_metrics_gateway)
+
+    size_received_at_executor = metrics_executor[
+        'jina_request_size_bytes_sum{executor="IncreaseSizeExecutor",executor_endpoint="/",runtime_name="executor0/rep-0"}'
+    ]
+    size_send_by_gateway = metrics_gateway['jina_send_request_bytes_sum']
+    size_return_by_gateway = metrics_gateway['jina_return_request_bytes_sum']
+    size_received_at_gateway = metrics_gateway[
+        'jina_request_size_bytes_sum{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}'
+    ]
+
+    assert (
+        abs(size_received_at_gateway - size_send_by_gateway)
+        / (2 * (size_received_at_gateway + size_send_by_gateway))
+        < 0.5
+    )  # the diff between the size received at the gateway and forward to the executor should be relatively small
+
+    assert (
+        size_send_by_gateway == size_received_at_executor
+    )  # both should have the same size since it is just the same request send from gateway to executor
+
+    assert (
+        size_received_at_executor < 10 * size_return_by_gateway
+    )  # the return request should be way bigger since we add data
