@@ -163,6 +163,8 @@ class Flow(
         native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
+        opentelemetry_tracing: Optional[bool] = False,
+        opentelemetry_metrics: Optional[bool] = False,
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
@@ -224,6 +226,8 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param opentelemetry_tracing: 'If set, real implementation of the tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.'
+        :param opentelemetry_metrics: 'If set, real implementation of the metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.'
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
@@ -807,6 +811,8 @@ class Flow(
         monitoring: Optional[bool] = False,
         name: Optional[str] = None,
         native: Optional[bool] = False,
+        opentelemetry_tracing: Optional[bool] = False,
+        opentelemetry_metrics: Optional[bool] = False,
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
@@ -877,6 +883,8 @@ class Flow(
 
               When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
+        :param opentelemetry_tracing: 'If set, real implementation of the tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.'
+        :param opentelemetry_metrics: 'If set, real implementation of the metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.'
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found

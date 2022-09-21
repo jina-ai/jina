@@ -20,12 +20,12 @@ def Client(
     *,
     asyncio: Optional[bool] = False,
     host: Optional[str] = '0.0.0.0',
+    opentelemetry_tracing: Optional[bool] = False,
+    opentelemetry_metrics: Optional[bool] = False,
     port: Optional[int] = None,
     protocol: Optional[str] = 'GRPC',
     proxy: Optional[bool] = False,
     tls: Optional[bool] = False,
-    opentelemetry_tracing: Optional[bool] = False,
-    opentelemetry_metrics: Optional[bool] = False,
     **kwargs
 ) -> Union[
     'AsyncWebSocketClient',
@@ -39,6 +39,8 @@ def Client(
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
     :param host: The host address of the runtime, by default it is 0.0.0.0.
+    :param opentelemetry_tracing: 'If set, real implementation of the tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.'
+    :param opentelemetry_metrics: 'If set, real implementation of the metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.'
     :param port: The port of the Gateway, which the client should connect to.
     :param protocol: Communication protocol between server and client.
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
