@@ -299,7 +299,7 @@ If you don't see any obvious errors, please raise an issue in [JCloud](https://g
   - Each account can serve at most 2 CPU Flows at the same time.
   - Each account can serve at most 1 GPU Flow at the same time.
   
-  Since this is a free service we can not always guarantee to meet the resource requirements. We will still try our best to meet the requirements.
+  Since this is a free service we can not always guarantee resource availability. JCloud will do its best to fulfil your processing requests, given current demand.
 
 - **How powerful is JCloud?**
 

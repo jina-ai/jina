@@ -63,7 +63,7 @@ JCloud supports GPU workloads with two different usages: `shared` or `dedicated`
 If GPU is enabled, JCloud will provide NVIDIA A10G Tensor Core GPUs with 24G memory for workloads in both usage types.
 
 ```{hint}
-When using GPU resources, it may take few extra mins until all Executors ready to serve traffic.
+When using GPU resources, it may take a few extra minutes before all Executors are ready to serve traffic.
 ```
 
 #### Shared GPU
@@ -147,7 +147,7 @@ By default, we attach an `efs` to all the Executors in a Flow. The benefits of d
 jc deploy flow.yml --workspace-id <prev-flow-id>
 ```
 
-If your Executor needs high IO, you can use `ebs` instead. Please hint that,
+If your Executor needs high IO, you can use `ebs` instead. Please note that,
 
 - The disk cannot be shared with other Executors / Flows.
 - You must pass a size of storage (default: `1G`, max `10G`).
@@ -238,7 +238,7 @@ To expose users' Flows to the public Internet with TLS, JCloud provides support 
 In JCloud. We use [Let's Encrypt](https://letsencrypt.org/) for TLS.
 
 ```{hint}
-The JCloud gateway is different from Jina's Gateway. In JCloud, a gateway works as a proxy to distribute internet traffic between Flows, each of which has a Jina Gateway (which is responsible to manage external gRPC/HTTP/Websocket traffic to your Executors)
+The JCloud gateway is different from Jina's Gateway. In JCloud, a gateway works as a proxy to distribute internet traffic between Flows, each of which has a Jina Gateway (which is responsible for managing external gRPC/HTTP/Websocket traffic to your Executors)
 ```
 
 ### Set timeout
@@ -360,6 +360,17 @@ A Flow that receives no traffic in 24 hours will be automatically deleted by def
 - Maximal retention days for CPU Flows is 3 days
 - Maximal retention days for GPU Flows is 0.5 days.
 
+To ignore the lifetime reclaim policy of a Flow, you can use the `retention_days` parameter in the Flow yaml. `retention_days` will keep the flow alive for `x` days (0<x<3) and (0<x<0.5) for CPU  and GPU respectively. A Flow is going to be removed after `x` days regardless of above reclaim policy. `-1` is to keep the flow alive regardless of the reclaim policy.
+
 ```{hint}
 - If {ref}`retention-days <retention-days>` argument configured as `-1`. Flows will be removed after 3 days, regardless of the usage.
+```
+
+```yaml
+jtype: Flow
+jcloud:
+  retention_days: 7
+executors:
+  - name: executor1
+    uses: jinahub+docker://Executor1
 ```
