@@ -40,7 +40,7 @@ By default, `0.1 (1/10 of a core)` CPU is allocated to each Executor. You can us
 
 JCloud offers the general Intel Xeon processor (Skylake 8175M or Cascade Lake 8259CL) by default. 
 
-```{note}
+```{hint}
 Maximum of 16 cores is allowed per Executor.
 ```
 
@@ -62,7 +62,7 @@ JCloud supports GPU workloads with two different usages: `shared` or `dedicated`
 
 If GPU is enabled, JCloud will provide NVIDIA A10G Tensor Core GPUs with 24G memory for workloads in both usage types.
 
-```{note}
+```{hint}
 When using GPU resources, it may take few extra mins until all Executors ready to serve traffic.
 ```
 
@@ -116,7 +116,7 @@ executors:
 
 By default, `100M` of RAM is allocated to each Executor. You can use `memory` arg under `resources` to customise it.
 
-```{note}
+```{hint}
 Maximum of 16G RAM is allowed per Executor.
 ```
 
@@ -135,7 +135,7 @@ executors:
 
 JCloud supports 2 kinds of Storage types [efs](https://aws.amazon.com/efs/) (default) and [ebs](https://aws.amazon.com/ebs/). The former one is a network file storage, whereas the latter is a block device.
 
-````{note}
+````{hint}
 
 By default, we attach an `efs` to all the Executors in a Flow. The benefits of doing so are
 
@@ -147,7 +147,7 @@ By default, we attach an `efs` to all the Executors in a Flow. The benefits of d
 jc deploy flow.yml --workspace-id <prev-flow-id>
 ```
 
-If your Executor needs high IO, you can use `ebs` instead. Please note that,
+If your Executor needs high IO, you can use `ebs` instead. Please hint that,
 
 - The disk cannot be shared with other Executors / Flows.
 - You must pass a size of storage (default: `1G`, max `10G`).
@@ -193,7 +193,7 @@ executors:
 
 JCloud autoscaling leverages [Knative](https://knative.dev/docs/) behind the scenes, and `jinahub+serverless` uses a set of Knative configurations as defaults.
 
-```{note}
+```{hint}
 For more information about the Knative Autoscaling configurations, please visit [Knative Autoscaling](https://knative.dev/docs/serving/autoscaling/).
 ```
 
@@ -221,7 +221,7 @@ executors:
 Below are the defaults and requirements for the configurations:
 
 | Name   | Default     | Allowed                  | Description                                     |
-|--------|-------------|--------------------------|-------------------------------------------------|
+| ------ | ----------- | ------------------------ | ----------------------------------------------- |
 | min    | 1           | int                      | Minimum number of replicas (0 means serverless) |
 | max    | 2           | int, up to 5             | Maximum number of replicas                      |
 | metric | concurrency | `concurrency`  /   `rps` | Metric for scaling                              |
@@ -237,7 +237,7 @@ To expose users' Flows to the public Internet with TLS, JCloud provides support 
 
 In JCloud. We use [Let's Encrypt](https://letsencrypt.org/) for TLS.
 
-```{note}
+```{hint}
 The JCloud gateway is different from Jina's Gateway. In JCloud, a gateway works as a proxy to distribute internet traffic between Flows, each of which has a Jina Gateway (which is responsible to manage external gRPC/HTTP/Websocket traffic to your Executors)
 ```
 
@@ -341,7 +341,7 @@ executors:
     uses: jinahub+docker://Executor1
 ```
 
-```{note}
+```{hint}
 
 Keys in `labels` have the following restrictions.
   - Must be 63 characters or less.
@@ -352,26 +352,14 @@ Keys in `labels` have the following restrictions.
     - retention-days
 ```
 
-
+(jcloud-lifetime)=
 ### Lifetime
 
 A Flow that receives no traffic in 24 hours will be automatically deleted by default.
 
-To ignore the lifetime reclaim policy of a Flow, you can use the `retention_days` parameter in the Flow yaml. `retention_days` will keep the flow alive for `x` days (0<x<365). flows is going to be removed after `x` days regardless of above reclaim policy. `-1` is to keep the flow alive regardless of the reclaim policy.
+- Maximal retention days for CPU Flows is 3 days
+- Maximal retention days for GPU Flows is 0.5 days.
 
-```{note}
-- If {ref}`retention-days <retention-days>` argument configured as `x` (0<x<365). Flows will be removed after `retention-days`, regradless of the usage.
-
-- If {ref}`retention-days <retention-days>` argument configured as `-1`. Flows will not be removed, regradless of the usage.
-
-- If {ref}`retention-days <retention-days>` argument not configured, or set to `0`. We will detect if flows are idle daily, they will be terminated if they are not serving requests for the last 24hrs.
-```
-
-```yaml
-jtype: Flow
-jcloud:
-  retention_days: 7
-executors:
-  - name: executor1
-    uses: jinahub+docker://Executor1
+```{hint}
+- If {ref}`retention-days <retention-days>` argument configured as `-1`. Flows will be removed after 3 days, regardless of the usage.
 ```

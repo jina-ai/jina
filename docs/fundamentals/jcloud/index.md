@@ -61,6 +61,10 @@ If you have no access to the web browser in your integration environment, you ca
 
 In Jina's idiom, a project is a [Flow](https://docs.jina.ai/fundamentals/flow/), which represents an end-to-end task such as indexing, searching or recommending. In this README, we will use "project" and "Flow" interchangeably.
 
+```{caution}
+Flows have a maximal {ref}`lifetime<jcloud-lifetime>` after which they are automatically deleted.
+```
+
 A Flow can have two types of file structure: a single YAML file or a project folder.
 
 #### A single YAML file
@@ -292,6 +296,11 @@ If you don't see any obvious errors, please raise an issue in [JCloud](https://g
 
   Yes at the moment! We just need your feedback - use `jc survey` to help us understand your needs.
 
+  - Each account can serve at most 2 CPU Flows at the same time.
+  - Each account can serve at most 1 GPU Flow at the same time.
+  
+  Since this is a free service we can not always guarantee to meet the resource requirements. We will still try our best to meet the requirements.
+
 - **How powerful is JCloud?**
 
   JCloud scales according to your need. You can demand all the resources (GPU / RAM / CPU / Storage / instance-capacity) your Flows & Executors need. If there's anything particular you'd be looking for, you can contact us [on Slack](https://slack.jina.ai) or let us know via `jc survey`.
@@ -299,4 +308,4 @@ If you don't see any obvious errors, please raise an issue in [JCloud](https://g
 - **What restrictions are there on JCloud?**
 
   - Deployments are only supported in `us-east` region.
-  - Each Executor is allowed a maximum of 4 GPUs, 16G RAM, 16 CPU cores & 10GB of block storage.
+  - Each Executor is allowed a maximum of 4 GPUs, 16G RAM, 16 CPU cores & 10GB of block storage.  
