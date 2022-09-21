@@ -1,6 +1,8 @@
 import argparse
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional, Union
 
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
 from jina.clients.request import request_generator
 from jina.enums import DataInputType, WebsocketSubProtocols
 from jina.excepts import InternalNetworkError
@@ -22,10 +24,10 @@ def _fits_ws_close_msg(msg: str):
 
 
 def get_fastapi_app(
-        args: 'argparse.Namespace',
-        logger: 'JinaLogger',
-        timeout_send: Optional[float] = None,
-        metrics_registry: Optional['CollectorRegistry'] = None,
+    args: 'argparse.Namespace',
+    logger: 'JinaLogger',
+    timeout_send: Optional[float] = None,
+    metrics_registry: Optional['CollectorRegistry'] = None,
 ):
     """
     Get the app from FastAPI as the Websocket interface.
@@ -101,7 +103,7 @@ def get_fastapi_app(
                 pass
 
         async def send(
-                self, websocket: WebSocket, data: Union[DataRequest, StatusMessage]
+            self, websocket: WebSocket, data: Union[DataRequest, StatusMessage]
         ) -> None:
             subprotocol = self.protocol_dict[self.get_client(websocket)]
             if subprotocol == WebsocketSubProtocols.JSON:
@@ -113,25 +115,31 @@ def get_fastapi_app(
 
     app = FastAPI()
 
-    from jina.serve.bff import GatewayBFF
+    if args.opentelemetry_tracing:
+        FastAPIInstrumentor.instrument_app(app)
+
     import json
+
+    from jina.serve.bff import GatewayBFF
 
     graph_description = json.loads(args.graph_description)
     graph_conditions = json.loads(args.graph_conditions)
     deployments_addresses = json.loads(args.deployments_addresses)
     deployments_disable_reduce = json.loads(args.deployments_disable_reduce)
 
-    gateway_bff = GatewayBFF(graph_representation=graph_description,
-                             executor_addresses=deployments_addresses,
-                             graph_conditions=graph_conditions,
-                             deployments_disable_reduce=deployments_disable_reduce,
-                             timeout_send=timeout_send,
-                             retries=args.retries,
-                             compression=args.compression,
-                             runtime_name=args.name,
-                             prefetch=args.prefetch,
-                             logger=logger,
-                             metrics_registry=metrics_registry)
+    gateway_bff = GatewayBFF(
+        graph_representation=graph_description,
+        executor_addresses=deployments_addresses,
+        graph_conditions=graph_conditions,
+        deployments_disable_reduce=deployments_disable_reduce,
+        timeout_send=timeout_send,
+        retries=args.retries,
+        compression=args.compression,
+        runtime_name=args.name,
+        prefetch=args.prefetch,
+        logger=logger,
+        metrics_registry=metrics_registry,
+    )
 
     @app.get(
         path='/',
@@ -170,7 +178,7 @@ def get_fastapi_app(
 
     @app.websocket('/')
     async def websocket_endpoint(
-            websocket: WebSocket, response: Response
+        websocket: WebSocket, response: Response
     ):  # 'response' is a FastAPI response, not a Jina response
         await manager.connect(websocket)
 
@@ -233,6 +241,7 @@ def get_fastapi_app(
             return request_dict
 
     from docarray import DocumentArray
+
     from jina.proto import jina_pb2
     from jina.serve.executors import __dry_run_endpoint__
     from jina.serve.runtimes.gateway.http.models import PROTO_TO_PYDANTIC_MODELS
@@ -240,7 +249,7 @@ def get_fastapi_app(
     @app.get(
         path='/dry_run',
         summary='Get the readiness of Jina Flow service, sends an empty DocumentArray to the complete Flow to '
-                'validate connectivity',
+        'validate connectivity',
         response_model=PROTO_TO_PYDANTIC_MODELS.StatusProto,
     )
     async def _dry_run_http():
@@ -270,7 +279,7 @@ def get_fastapi_app(
 
     @app.websocket('/dry_run')
     async def websocket_endpoint(
-            websocket: WebSocket, response: Response
+        websocket: WebSocket, response: Response
     ):  # 'response' is a FastAPI response, not a Jina response
         from jina.proto import jina_pb2
         from jina.serve.executors import __dry_run_endpoint__
@@ -280,11 +289,11 @@ def get_fastapi_app(
         da = DocumentArray()
         try:
             async for _ in gateway_bff.stream(
-                    request_iterator=request_generator(
-                        exec_endpoint=__dry_run_endpoint__,
-                        data=da,
-                        data_type=DataInputType.DOCUMENT,
-                    )
+                request_iterator=request_generator(
+                    exec_endpoint=__dry_run_endpoint__,
+                    data=da,
+                    data_type=DataInputType.DOCUMENT,
+                )
             ):
                 pass
             status_message = StatusMessage()

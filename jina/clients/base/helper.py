@@ -1,8 +1,12 @@
+import argparse
 import asyncio
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from aiohttp import WSMsgType
+from opentelemetry import trace
+from opentelemetry.instrumentation.aiohttp_client import create_trace_config
+from opentelemetry.propagate import inject
 
 from jina.enums import WebsocketSubProtocols
 from jina.importer import ImportExtensions
@@ -17,7 +21,12 @@ if TYPE_CHECKING:
 class AioHttpClientlet(ABC):
     """aiohttp session manager"""
 
-    def __init__(self, url: str, logger: 'JinaLogger', **kwargs) -> None:
+    def __init__(
+        self,
+        url: str,
+        logger: 'JinaLogger',
+        **kwargs,
+    ) -> None:
         """HTTP Client to be used with the streamer
 
         :param url: url to send http/websocket request to
@@ -28,6 +37,9 @@ class AioHttpClientlet(ABC):
         self.logger = logger
         self.msg_recv = 0
         self.msg_sent = 0
+        self._trace_config = create_trace_config(
+            tracer_provider=trace.get_tracer_provider(),
+        )
         self.session = None
         self._session_kwargs = {}
         if kwargs.get('headers', None):
@@ -75,7 +87,9 @@ class AioHttpClientlet(ABC):
         with ImportExtensions(required=True):
             import aiohttp
 
-        self.session = aiohttp.ClientSession(**self._session_kwargs)
+        self.session = aiohttp.ClientSession(
+            **self._session_kwargs, trace_configs=[self._trace_config]
+        )
         await self.session.__aenter__()
         return self
 
