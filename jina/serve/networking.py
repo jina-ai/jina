@@ -906,18 +906,19 @@ class GrpcConnectionPool:
         address,
         credentials=None,
         options=None,
+        interceptors=None,
     ) -> grpc.aio.Channel:
         if credentials:
             return grpc.aio.secure_channel(
                 address,
                 credentials,
                 options=options,
-                interceptors=InstrumentationMixin.aio_tracing_client_interceptors(),
+                interceptors=interceptors,
             )
         return grpc.aio.insecure_channel(
             address,
             options=options,
-            interceptors=InstrumentationMixin.aio_tracing_client_interceptors(),
+            interceptors=interceptors,
         )
 
     @staticmethod
@@ -925,17 +926,20 @@ class GrpcConnectionPool:
         address,
         credentials=None,
         options=None,
+        interceptor=None,
     ) -> grpc.Channel:
-        interceptor = InstrumentationMixin.tracing_client_interceptor()
         if credentials:
+            channel = grpc.secure_channel(address, credentials, options=options)
+        else:
+            channel = grpc.insecure_channel(address, options=options)
+
+        if interceptor:
             return intercept_channel(
-                grpc.secure_channel(address, credentials, options=options),
+                channel,
                 interceptor,
             )
-        return intercept_channel(
-            grpc.insecure_channel(address, options=options),
-            interceptor,
-        )
+        else:
+            return channel
 
     @staticmethod
     def get_grpc_channel(
@@ -944,6 +948,7 @@ class GrpcConnectionPool:
         asyncio: bool = False,
         tls: bool = False,
         root_certificates: Optional[str] = None,
+        enable_trace: Optional[bool] = True,
     ) -> grpc.Channel:
         """
         Creates a grpc channel to the given address
@@ -953,6 +958,7 @@ class GrpcConnectionPool:
         :param asyncio: If True, use the asyncio implementation of the grpc channel
         :param tls: If True, use tls encryption for the grpc channel
         :param root_certificates: The path to the root certificates for tls, only used if tls is True
+        :param enable_trace: If True the tracing interceptors are added to the channel otherwise the channel will not be provided with any tracing interceptors.
 
         :return: A grpc channel or an asyncio channel
         """
@@ -967,12 +973,20 @@ class GrpcConnectionPool:
             )
 
         if asyncio:
+            interceptors = (
+                InstrumentationMixin.aio_tracing_client_interceptors()
+                if enable_trace
+                else None
+            )
             return GrpcConnectionPool.__aio_channel_with_tracing_interceptor(
-                address, credentials, options
+                address, credentials, options, interceptors
             )
 
+        interceptor = (
+            InstrumentationMixin.tracing_client_interceptor() if enable_trace else None
+        )
         return GrpcConnectionPool.__channel_with_tracing_interceptor(
-            address, credentials, options
+            address, credentials, options, interceptor
         )
 
     @staticmethod
@@ -1040,6 +1054,7 @@ class GrpcConnectionPool:
                     target,
                     tls=tls,
                     root_certificates=root_certificates,
+                    enable_trace=False,
                 ) as channel:
                     health_check_req = health_pb2.HealthCheckRequest()
                     health_check_req.service = ''
