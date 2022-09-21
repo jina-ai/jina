@@ -190,7 +190,7 @@ async def test_kill_worker(port_generator):
         p.start()
         p.join()
 
-        assert p.exitcode != 0
+        assert p.exitcode == 0 # continue on error makes it not fail
 
         # 1 request failed, 1 request successful
         resp = req.get(f'http://localhost:{gateway_monitoring_port}/')
