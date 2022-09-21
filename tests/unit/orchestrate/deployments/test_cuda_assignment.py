@@ -38,4 +38,5 @@ def cuda_total_devices(request):
 )
 def test_cuda_assignment(device_str, replicas, expected, cuda_total_devices):
     actual = Deployment._roundrobin_cuda_device(device_str, replicas)
+    print(f' actual {actual} vs expected {expected}')
     assert actual == expected
