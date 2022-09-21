@@ -94,8 +94,12 @@ def test_request_size_increasing(port_generator, executor):
     size_received_at_executor = metrics_executor[
         'jina_request_size_bytes_sum{executor="IncreaseSizeExecutor",executor_endpoint="/",runtime_name="executor0/rep-0"}'
     ]
-    size_send_by_gateway = metrics_gateway['jina_send_request_bytes_sum']
-    size_return_from_exec_at_gateway = metrics_gateway['jina_return_request_bytes_sum']
+    size_send_by_gateway = metrics_gateway[
+        'jina_send_request_bytes_sum{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}'
+    ]
+    size_return_from_exec_at_gateway = metrics_gateway[
+        'jina_return_request_bytes_sum{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}'
+    ]
     size_received_at_gateway = metrics_gateway[
         'jina_request_size_bytes_sum{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}'
     ]

@@ -57,7 +57,9 @@ class ReplicaList:
         self,
         metrics: _NetworkingMetrics,
         logger,
+        runtine_name: str,
     ):
+        self.runtime_name = runtine_name
         self._connections = []
         self._address_to_connection_idx = {}
         self._address_to_channel = {}
@@ -156,6 +158,7 @@ class ReplicaList:
         stubs, channel = GrpcConnectionPool.create_async_channel_stub(
             address,
             metrics=self._metrics,
+            runtime_name=self.runtime_name,
             tls=use_tls,
         )
         return stubs, channel
@@ -274,6 +277,7 @@ class GrpcConnectionPool:
             self,
             address,
             channel,
+            runtime_name: str,
             metrics: _NetworkingMetrics,
         ):
             self.address = address
@@ -409,6 +413,7 @@ class GrpcConnectionPool:
             self,
             logger: Optional[JinaLogger],
             metrics: _NetworkingMetrics,
+            runtime_name: str,
         ):
             self._logger = logger
             # this maps deployments to shards or heads
@@ -416,6 +421,7 @@ class GrpcConnectionPool:
             # dict stores last entity id used for a particular deployment, used for round robin
             self._access_count: Dict[str, int] = {}
             self._metrics = metrics
+            self.runtime_name = runtime_name
             if os.name != 'nt':
                 os.unsetenv('http_proxy')
                 os.unsetenv('https_proxy')
@@ -519,8 +525,7 @@ class GrpcConnectionPool:
             self._add_deployment(deployment)
             if entity_id not in self._deployments[deployment][type]:
                 connection_list = ReplicaList(
-                    self._metrics,
-                    self._logger,
+                    self._metrics, self._logger, self.runtime_name
                 )
                 self._deployments[deployment][type][entity_id] = connection_list
 
@@ -564,6 +569,7 @@ class GrpcConnectionPool:
 
     def __init__(
         self,
+        runtime_name,
         logger: Optional[JinaLogger] = None,
         compression: Optional[str] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
@@ -588,21 +594,24 @@ class GrpcConnectionPool:
                 'Time spent between sending a request to the Pod and receiving the response',
                 registry=metrics_registry,
                 namespace='jina',
-            )
+                labelnames=('runtime_name',),
+            ).labels(runtime_name)
 
             returns_requests_bytes_metrics = Summary(
                 'return_request_bytes',
                 'Size in Bytes of the request returned by the Pod',
                 registry=metrics_registry,
                 namespace='jina',
-            )
+                labelnames=('runtime_name',),
+            ).labels(runtime_name)
 
             send_requests_bytes_metrics = Summary(
                 'send_request_bytes',
                 'Size in Bytes of the request send to the Pod',
                 registry=metrics_registry,
                 namespace='jina',
-            )
+                labelnames=('runtime_name',),
+            ).labels(runtime_name)
         else:
             sending_requests_time_metrics = None
             returns_requests_bytes_metrics = None
@@ -614,7 +623,9 @@ class GrpcConnectionPool:
             send_requests_bytes_metrics,
         )
 
-        self._connections = self._ConnectionPoolMap(self._logger, self._metrics)
+        self._connections = self._ConnectionPoolMap(
+            self._logger, self._metrics, runtime_name
+        )
         self._deployment_address_map = {}
 
     def send_request(
@@ -1172,6 +1183,7 @@ class GrpcConnectionPool:
     def create_async_channel_stub(
         address,
         metrics: _NetworkingMetrics,
+        runtime_name: str,
         tls=False,
         root_certificates: Optional[str] = None,
     ) -> Tuple[ConnectionStubs, grpc.aio.Channel]:
@@ -1179,6 +1191,7 @@ class GrpcConnectionPool:
         Creates an async GRPC Channel. This channel has to be closed eventually!
 
         :param address: the address to create the connection to, like 127.0.0.0.1:8080
+        :param runtime_name: name of the current runtime
         :param tls: if True, use tls for the grpc channel
         :param root_certificates: the path to the root certificates for tls, only u
         :param metrics: NetworkingMetrics object that contain optional metrics
@@ -1192,7 +1205,7 @@ class GrpcConnectionPool:
         )
 
         return (
-            GrpcConnectionPool.ConnectionStubs(address, channel, metrics),
+            GrpcConnectionPool.ConnectionStubs(address, channel, runtime_name, metrics),
             channel,
         )
 
