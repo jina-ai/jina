@@ -19,19 +19,28 @@ class HTTPGatewayRuntime(GatewayRuntime):
 
         Setup the uvicorn server.
         """
-        self.gateway = HTTPGateway(
-            name=self.name,
-            port=self.args.port,
-            title=self.args.title,
-            description=self.args.description,
-            no_debug_endpoints=self.args.no_debug_endpoints,
-            no_crud_endpoints=self.args.no_crud_endpoints,
-            expose_endpoints=self.args.expose_endpoints,
-            expose_graphql_endpoint=self.args.expose_graphql_endpoint,
-            cors=self.args.cors,
-            ssl_keyfile=self.args.ssl_keyfile,
-            ssl_certfile=self.args.ssl_certfile,
-            uvicorn_kwargs=self.args.uvicorn_kwargs,
+        self.gateway = HTTPGateway.load_config(
+            self.args.uses,
+            uses_with=dict(
+                name=self.name,
+                port=self.args.port,
+                title=self.args.title,
+                description=self.args.description,
+                no_debug_endpoints=self.args.no_debug_endpoints,
+                no_crud_endpoints=self.args.no_crud_endpoints,
+                expose_endpoints=self.args.expose_endpoints,
+                expose_graphql_endpoint=self.args.expose_graphql_endpoint,
+                cors=self.args.cors,
+                ssl_keyfile=self.args.ssl_keyfile,
+                ssl_certfile=self.args.ssl_certfile,
+                uvicorn_kwargs=self.args.uvicorn_kwargs,
+            ),
+            uses_metas=self.args.uses_metas,
+            runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
+                'name': self.args.name,
+            },
+            py_modules=self.args.py_modules,
+            extra_search_paths=self.args.extra_search_paths,
         )
 
         self.gateway.set_streamer(

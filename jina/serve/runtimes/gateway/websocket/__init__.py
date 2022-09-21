@@ -18,13 +18,22 @@ class WebSocketGatewayRuntime(GatewayRuntime):
         Setup the uvicorn server.
         """
 
-        self.gateway = WebSocketGateway(
-            name=self.name,
-            port=self.args.port,
-            ssl_keyfile=self.args.ssl_keyfile,
-            ssl_certfile=self.args.ssl_certfile,
-            uvicorn_kwargs=self.args.uvicorn_kwargs,
-            logger=self.logger,
+        self.gateway = WebSocketGateway.load_config(
+            self.args.uses,
+            uses_with=dict(
+                name=self.name,
+                port=self.args.port,
+                ssl_keyfile=self.args.ssl_keyfile,
+                ssl_certfile=self.args.ssl_certfile,
+                uvicorn_kwargs=self.args.uvicorn_kwargs,
+                logger=self.logger,
+            ),
+            uses_metas=self.args.uses_metas,
+            runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
+                'name': self.args.name,
+            },
+            py_modules=self.args.py_modules,
+            extra_search_paths=self.args.extra_search_paths,
         )
 
         self.gateway.set_streamer(
