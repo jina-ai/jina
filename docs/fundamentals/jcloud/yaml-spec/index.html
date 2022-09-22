@@ -423,8 +423,8 @@
 <h3>CPU<a class="headerlink" href="#cpu" title="Permalink to this heading">#</a></h3>
 <p>By default, <code class="docutils literal notranslate"><span class="pre">0.1</span> <span class="pre">(1/10</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">core)</span></code> CPU is allocated to each Executor. You can use <code class="docutils literal notranslate"><span class="pre">cpu</span></code> arg under <code class="docutils literal notranslate"><span class="pre">resources</span></code> to customise it.</p>
 <p>JCloud offers the general Intel Xeon processor (Skylake 8175M or Cascade Lake 8259CL) by default.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
 <p>Maximum of 16 cores is allowed per Executor.</p>
 </div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
@@ -441,9 +441,9 @@
 <h3>GPU<a class="headerlink" href="#gpu" title="Permalink to this heading">#</a></h3>
 <p>JCloud supports GPU workloads with two different usages: <code class="docutils literal notranslate"><span class="pre">shared</span></code> or <code class="docutils literal notranslate"><span class="pre">dedicated</span></code>.</p>
 <p>If GPU is enabled, JCloud will provide NVIDIA A10G Tensor Core GPUs with 24G memory for workloads in both usage types.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>When using GPU resources, it may take few extra mins until all Executors ready to serve traffic.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>When using GPU resources, it may take a few extra minutes before all Executors are ready to serve traffic.</p>
 </div>
 <section id="shared-gpu">
 <h4>Shared GPU<a class="headerlink" href="#shared-gpu" title="Permalink to this heading">#</a></h4>
@@ -492,8 +492,8 @@ This enables a time-slicing, which allows workloads that land on oversubscribed 
 <section id="memory">
 <h3>Memory<a class="headerlink" href="#memory" title="Permalink to this heading">#</a></h3>
 <p>By default, <code class="docutils literal notranslate"><span class="pre">100M</span></code> of RAM is allocated to each Executor. You can use <code class="docutils literal notranslate"><span class="pre">memory</span></code> arg under <code class="docutils literal notranslate"><span class="pre">resources</span></code> to customise it.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
 <p>Maximum of 16G RAM is allowed per Executor.</p>
 </div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
@@ -509,8 +509,8 @@ This enables a time-slicing, which allows workloads that land on oversubscribed 
 <section id="storage">
 <h3>Storage<a class="headerlink" href="#storage" title="Permalink to this heading">#</a></h3>
 <p>JCloud supports 2 kinds of Storage types <a class="reference external" href="https://aws.amazon.com/efs/">efs</a> (default) and <a class="reference external" href="https://aws.amazon.com/ebs/">ebs</a>. The former one is a network file storage, whereas the latter is a block device.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
 <p>By default, we attach an <code class="docutils literal notranslate"><span class="pre">efs</span></code> to all the Executors in a Flow. The benefits of doing so are</p>
 <ul class="simple">
 <li><p>It can grow in size dynamically, so you don’t need to shrink/grow volumes as &amp; when necessary.</p></li>
@@ -558,8 +558,8 @@ This enables a time-slicing, which allows workloads that land on oversubscribed 
 </span></pre></div>
 </div>
 <p>JCloud autoscaling leverages <a class="reference external" href="https://knative.dev/docs/">Knative</a> behind the scenes, and <code class="docutils literal notranslate"><span class="pre">jinahub+serverless</span></code> uses a set of Knative configurations as defaults.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
 <p>For more information about the Knative Autoscaling configurations, please visit <a class="reference external" href="https://knative.dev/docs/serving/autoscaling/">Knative Autoscaling</a>.</p>
 </div>
 </section>
@@ -620,9 +620,9 @@ to handle the initial requests since it may need to scale the deployments behind
 <h2>Config Gateway<a class="headerlink" href="#config-gateway" title="Permalink to this heading">#</a></h2>
 <p>To expose users’ Flows to the public Internet with TLS, JCloud provides support Ingress Gateways.</p>
 <p>In JCloud. We use <a class="reference external" href="https://letsencrypt.org/">Let’s Encrypt</a> for TLS.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The JCloud gateway is different from Jina’s Gateway. In JCloud, a gateway works as a proxy to distribute internet traffic between Flows, each of which has a Jina Gateway (which is responsible to manage external gRPC/HTTP/Websocket traffic to your Executors)</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>The JCloud gateway is different from Jina’s Gateway. In JCloud, a gateway works as a proxy to distribute internet traffic between Flows, each of which has a Jina Gateway (which is responsible for managing external gRPC/HTTP/Websocket traffic to your Executors)</p>
 </div>
 <section id="set-timeout">
 <h3>Set timeout<a class="headerlink" href="#set-timeout" title="Permalink to this heading">#</a></h3>
@@ -709,8 +709,8 @@ to handle the initial requests since it may need to scale the deployments behind
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Executor1</span><span class="w"></span>
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
 <p>Keys in <code class="docutils literal notranslate"><span class="pre">labels</span></code> have the following restrictions.</p>
 <ul class="simple">
 <li><p>Must be 63 characters or less.</p></li>
@@ -723,27 +723,6 @@ to handle the initial requests since it may need to scale the deployments behind
 </ul>
 </li>
 </ul>
-</div>
-</section>
-<section id="lifetime">
-<h3>Lifetime<a class="headerlink" href="#lifetime" title="Permalink to this heading">#</a></h3>
-<p>A Flow that receives no traffic in 24 hours will be automatically deleted by default.</p>
-<p>To ignore the lifetime reclaim policy of a Flow, you can use the <code class="docutils literal notranslate"><span class="pre">retention_days</span></code> parameter in the Flow yaml. <code class="docutils literal notranslate"><span class="pre">retention_days</span></code> will keep the flow alive for <code class="docutils literal notranslate"><span class="pre">x</span></code> days (0&lt;x&lt;365). flows is going to be removed after <code class="docutils literal notranslate"><span class="pre">x</span></code> days regardless of above reclaim policy. <code class="docutils literal notranslate"><span class="pre">-1</span></code> is to keep the flow alive regardless of the reclaim policy.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul class="simple">
-<li><p>If <span class="xref std std-ref">retention-days</span> argument configured as <code class="docutils literal notranslate"><span class="pre">x</span></code> (0&lt;x&lt;365). Flows will be removed after <code class="docutils literal notranslate"><span class="pre">retention-days</span></code>, regradless of the usage.</p></li>
-<li><p>If <span class="xref std std-ref">retention-days</span> argument configured as <code class="docutils literal notranslate"><span class="pre">-1</span></code>. Flows will not be removed, regradless of the usage.</p></li>
-<li><p>If <span class="xref std std-ref">retention-days</span> argument not configured, or set to <code class="docutils literal notranslate"><span class="pre">0</span></code>. We will detect if flows are idle daily, they will be terminated if they are not serving requests for the last 24hrs.</p></li>
-</ul>
-</div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
-<span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">retention_days</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7</span><span class="w"></span>
-<span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Executor1</span><span class="w"></span>
-</pre></div>
 </div>
 </section>
 </section>
@@ -761,14 +740,10 @@ to handle the initial requests since it may need to scale the deployments behind
                             </div>
                             <div class="title"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-book" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z"></path></svg> How-To</div>
                         </div>
-                        <svg>
-                            <use href="#svg-arrow-right"></use>
-                        </svg>
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                     </a>
                     <a class="prev-page" href="../">
-                        <svg>
-                            <use href="#svg-arrow-right"></use>
-                        </svg>
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                         <div class="page-info">
                             <div class="context">
                                 <span>Previous</span>
@@ -784,7 +759,7 @@ to handle the initial requests since it may need to scale the deployments behind
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 21, 2022</div>
+                            Last updated on Sep 22, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -843,7 +818,6 @@ to handle the initial requests since it may need to scale the deployments behind
 <li><a class="reference internal" href="#other-deployment-options">Other deployment options</a><ul>
 <li><a class="reference internal" href="#specify-jina-version">Specify Jina version</a></li>
 <li><a class="reference internal" href="#add-labels">Add Labels</a></li>
-<li><a class="reference internal" href="#lifetime">Lifetime</a></li>
 </ul>
 </li>
 </ul>

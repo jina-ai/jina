@@ -433,6 +433,10 @@ jc -h
 <section id="deploy">
 <h3>Deploy<a class="headerlink" href="#deploy" title="Permalink to this heading">#</a></h3>
 <p>In Jina’s idiom, a project is a <a class="reference external" href="https://docs.jina.ai/fundamentals/flow/">Flow</a>, which represents an end-to-end task such as indexing, searching or recommending. In this README, we will use “project” and “Flow” interchangeably.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Flows have a maximal <span class="xref std std-ref">lifetime</span> after which they are automatically deleted.</p>
+</div>
 <p>A Flow can have two types of file structure: a single YAML file or a project folder.</p>
 <section id="a-single-yaml-file">
 <h4>A single YAML file<a class="headerlink" href="#a-single-yaml-file" title="Permalink to this heading">#</a></h4>
@@ -614,22 +618,19 @@ the deletion, to make it non-interactive to better suit your use case, set below
 </div>
 <p>If you don’t see any obvious errors, please raise an issue in <a class="reference external" href="https://github.com/jina-ai/jcloud/issues/new/choose">JCloud</a></p>
 </section>
-<section id="faq">
-<h2>FAQ<a class="headerlink" href="#faq" title="Permalink to this heading">#</a></h2>
-<ul>
-<li><p><strong>Is everything free?</strong></p>
-<p>Yes at the moment! We just need your feedback - use <code class="docutils literal notranslate"><span class="pre">jc</span> <span class="pre">survey</span></code> to help us understand your needs.</p>
-</li>
-<li><p><strong>How powerful is JCloud?</strong></p>
-<p>JCloud scales according to your need. You can demand all the resources (GPU / RAM / CPU / Storage / instance-capacity) your Flows &amp; Executors need. If there’s anything particular you’d be looking for, you can contact us <a class="reference external" href="https://slack.jina.ai">on Slack</a> or let us know via <code class="docutils literal notranslate"><span class="pre">jc</span> <span class="pre">survey</span></code>.</p>
-</li>
-<li><p><strong>What restrictions are there on JCloud?</strong></p>
+<section id="restrictions">
+<h2>Restrictions<a class="headerlink" href="#restrictions" title="Permalink to this heading">#</a></h2>
+<p>JCloud scales according to your need. You can demand different resources (GPU / RAM / CPU / Storage / instance-capacity) your Flows &amp; Executors need. We have the following restrictions on its usage. If you have specific resource requirements, please contact us <a class="reference external" href="https://slack.jina.ai">on Slack</a> or raise a <a class="reference external" href="https://github.com/jina-ai/jcloud/issues/new/choose">Github issue</a>.</p>
+<div class="admonition-restrictions admonition">
+<p class="admonition-title">Restrictions</p>
 <ul class="simple">
 <li><p>Deployments are only supported in <code class="docutils literal notranslate"><span class="pre">us-east</span></code> region.</p></li>
-<li><p>Each Executor is allowed a maximum of 4 GPUs, 16G RAM, 16 CPU cores &amp; 10GB of block storage.</p></li>
+<li><p>Each Executor is allowed a maximum of 4G RAM, 2 CPU cores &amp; 10GB of block storage.</p></li>
+<li><p>3 Flows can be deployed at a time, out of which there can be 1 Flow using GPU.</p></li>
+<li><p>A maximum of 2 GPUs are allowed per Flow.</p></li>
+<li><p>Flows with Executors using GPU are removed after 12hrs, whereas other Flows are removed after 72hrs.</p></li>
 </ul>
-</li>
-</ul>
+</div>
 </section>
 </section>
 
@@ -645,14 +646,10 @@ the deletion, to make it non-interactive to better suit your use case, set below
                             </div>
                             <div class="title"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-file-code" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z"></path></svg> YAML specification</div>
                         </div>
-                        <svg>
-                            <use href="#svg-arrow-right"></use>
-                        </svg>
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                     </a>
                     <a class="prev-page" href="../../how-to/debug-executor/">
-                        <svg>
-                            <use href="#svg-arrow-right"></use>
-                        </svg>
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                         <div class="page-info">
                             <div class="context">
                                 <span>Previous</span>
@@ -668,7 +665,7 @@ the deletion, to make it non-interactive to better suit your use case, set below
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 21, 2022</div>
+                            Last updated on Sep 22, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -721,7 +718,7 @@ the deletion, to make it non-interactive to better suit your use case, set below
 </ul>
 </li>
 <li><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
-<li><a class="reference internal" href="#faq">FAQ</a></li>
+<li><a class="reference internal" href="#restrictions">Restrictions</a></li>
 </ul>
 </li>
 </ul>

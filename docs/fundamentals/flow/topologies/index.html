@@ -564,6 +564,33 @@ The Flow will then assign each available GPU to replicas in a round-robin fashio
 </tbody>
 </table>
 </div>
+<p>You can also restrict the visible devices in round-robin assignment by assigning a list of devices ids <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR1,3</span></code>. This will create the following assignment:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>GPU device</p></th>
+<th class="head"><p>Replica ID</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section id="partition-data-with-shards">
 <span id="partition-data-by-using-shards"></span><h2>Partition data with shards<a class="headerlink" href="#partition-data-with-shards" title="Permalink to this heading">#</a></h2>
@@ -748,14 +775,10 @@ This means that you can not only use this feature to build complex logic, but al
                             </div>
                             <div class="title">Monitor</div>
                         </div>
-                        <svg>
-                            <use href="#svg-arrow-right"></use>
-                        </svg>
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                     </a>
                     <a class="prev-page" href="../add-executors/">
-                        <svg>
-                            <use href="#svg-arrow-right"></use>
-                        </svg>
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                         <div class="page-info">
                             <div class="context">
                                 <span>Previous</span>
@@ -771,7 +794,7 @@ This means that you can not only use this feature to build complex logic, but al
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 21, 2022</div>
+                            Last updated on Sep 22, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -985,25 +985,32 @@
         <span class="k">return</span> <span class="n">is_ready</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_parse_slice</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Parses a `slice()` from string, like `start:stop:step`.</span>
+    <span class="k">def</span> <span class="nf">_parse_devices</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">num_devices</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Parses a list of devices from string, like `start:stop:step` or &#39;num1,num2,num3` or combination of both.</span>
 
 <span class="sd">        :param value: a string like</span>
+<span class="sd">        :param num_devices: total number of devices</span>
 <span class="sd">        :return: slice</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">all_devices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_devices</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">WRAPPED_SLICE_BASE</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
-            <span class="n">parts</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="c1"># slice(stop)</span>
-                <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
-            <span class="c1"># else: slice(start, stop[, step])</span>
+                <span class="n">parts</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># slice(stop)</span>
+                    <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+                <span class="c1"># else: slice(start, stop[, step])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># slice()</span>
             <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">return</span> <span class="nb">slice</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">all_devices</span><span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">if</span> <span class="n">p</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">])]</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_roundrobin_cuda_device</span><span class="p">(</span><span class="n">device_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">replicas</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
@@ -1013,6 +1020,7 @@
 <span class="sd">        :param replicas: the number of replicas</span>
 <span class="sd">        :return: a map from replica id to device id</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; device_str </span><span class="si">{</span><span class="n">device_str</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">device_str</span>
             <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">device_str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
@@ -1028,11 +1036,14 @@
                 <span class="k">if</span> <span class="n">num_devices</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">return</span>
 
-            <span class="n">all_devices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_devices</span><span class="p">))</span>
+            <span class="n">selected_devices</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">if</span> <span class="n">device_str</span><span class="p">[</span><span class="mi">2</span><span class="p">:]:</span>
-                <span class="n">all_devices</span> <span class="o">=</span> <span class="n">all_devices</span><span class="p">[</span><span class="n">Deployment</span><span class="o">.</span><span class="n">_parse_slice</span><span class="p">(</span><span class="n">device_str</span><span class="p">[</span><span class="mi">2</span><span class="p">:])]</span>
-
-            <span class="n">_c</span> <span class="o">=</span> <span class="n">cycle</span><span class="p">(</span><span class="n">all_devices</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">device_num</span> <span class="ow">in</span> <span class="n">Deployment</span><span class="o">.</span><span class="n">_parse_devices</span><span class="p">(</span><span class="n">device_str</span><span class="p">[</span><span class="mi">2</span><span class="p">:],</span> <span class="n">num_devices</span><span class="p">):</span>
+                    <span class="n">selected_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device_num</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">selected_devices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_devices</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; selected devices </span><span class="si">{</span><span class="n">selected_devices</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">_c</span> <span class="o">=</span> <span class="n">cycle</span><span class="p">(</span><span class="n">selected_devices</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">{</span><span class="n">j</span><span class="p">:</span> <span class="nb">next</span><span class="p">(</span><span class="n">_c</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">replicas</span><span class="p">)}</span>
 
     <span class="nd">@staticmethod</span>
@@ -1284,7 +1295,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 21, 2022</div>
+                            Last updated on Sep 22, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
