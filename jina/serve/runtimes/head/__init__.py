@@ -16,6 +16,7 @@ from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
+from jina.serve.instrumentation import InstrumentationMixin
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
@@ -143,7 +144,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
     async def async_setup(self):
         """Wait for the GRPC server to start"""
         self._grpc_server = grpc.aio.server(
-            options=_get_grpc_server_options(self.args.grpc_server_options)
+            options=_get_grpc_server_options(self.args.grpc_server_options),
+            interceptors=[self.aio_tracing_server_interceptor()],
         )
 
         jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
