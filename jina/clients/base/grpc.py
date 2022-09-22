@@ -132,37 +132,38 @@ class GRPCBaseClient(BaseClient):
                         my_code = err.code()
                         my_details = err.details()
                         msg = f'gRPC error: {my_code} {my_details}'
+                        exc_from = None
+                        exception = None
 
                         if my_code == grpc.StatusCode.UNAVAILABLE:
                             self.logger.error(
                                 f'{msg}\nThe ongoing request is terminated as the server is not available or closed already.'
                             )
-                            if not continue_on_error:
-                                raise ConnectionError(my_details) from None
+                            exception = ConnectionError(my_details)
                         elif my_code == grpc.StatusCode.DEADLINE_EXCEEDED:
                             self.logger.error(
                                 f'{msg}\nThe ongoing request is terminated due to a server-side timeout.'
                             )
-                            if not continue_on_error:
-                                raise ConnectionError(my_details) from None
+                            exception = ConnectionError(my_details)
                         elif my_code == grpc.StatusCode.INTERNAL:
                             self.logger.error(f'{msg}\ninternal error on the server side')
-                            if not continue_on_error:
-                                raise err
+                            exception = err
                         elif (
                                 my_code == grpc.StatusCode.UNKNOWN
                                 and 'asyncio.exceptions.TimeoutError' in my_details
                         ):
-                            if not continue_on_error:
-                                raise BadClientInput(
-                                    f'{msg}\n'
-                                    'often the case is that you define/send a bad input iterator to jina, '
-                                    'please double check your input iterator'
-                                ) from err
+                            exception = BadClientInput(
+                                f'{msg}\n'
+                                'often the case is that you define/send a bad input iterator to jina, '
+                                'please double check your input iterator'
+                            )
+                            exc_from = err
                         else:
-                            if not continue_on_error:
-                                raise BadServerFlow(msg) from err
+                            exception = BadServerFlow(msg)
+                            exc_from = err
 
+                        if exception is not None and not continue_on_error:
+                            raise exception from exc_from
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except asyncio.CancelledError as ex:

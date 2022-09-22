@@ -130,6 +130,9 @@ class WebSocketBaseClient(BaseClient):
                 try:
                     async for response in iolet.recv_message():
                         _response_handler(response)
+                except:
+                    if not self.continue_on_error:
+                        raise
                 finally:
                     if request_buffer:
                         self.logger.warning(
@@ -187,6 +190,6 @@ class WebSocketBaseClient(BaseClient):
                         p_bar.update()
                     yield response
             finally:
-                if iolet.close_code == status.WS_1011_INTERNAL_ERROR:
+                if iolet.close_code == status.WS_1011_INTERNAL_ERROR and not self.continue_on_error:
                     raise ConnectionError(iolet.close_message)
                 await receive_task
