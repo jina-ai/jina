@@ -85,12 +85,21 @@ class MonitoringRequestMixin:
                 registry=metrics_registry,
             ).labels(runtime_name)
 
+            self._return_client_request_bytes = Summary(
+                'return_client_request_bytes',
+                'The size of the request return to the client in Bytes',
+                namespace='jina',
+                labelnames=('runtime_name',),
+                registry=metrics_registry,
+            ).labels(runtime_name)
+
         else:
             self._receiving_request_metrics = None
             self._pending_requests_metrics = None
             self._failed_requests_metrics = None
             self._successful_requests_metrics = None
             self._request_size_metrics = None
+            self._return_client_request_bytes = None
 
     def _update_start_request_metrics(self, request: 'Request'):
         if self._request_size_metrics:
@@ -114,6 +123,9 @@ class MonitoringRequestMixin:
 
         if self._successful_requests_metrics:
             self._successful_requests_metrics.inc()
+
+        if self._return_client_request_bytes:
+            self._return_client_request_bytes.observe(result.nbytes)
 
     def _update_end_failed_requests_metrics(self, result: 'Request'):
         if self._pending_requests_metrics:
