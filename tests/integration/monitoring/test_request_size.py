@@ -129,4 +129,9 @@ def test_request_size_increasing(port_generator, executor):
         size_return_from_exec_at_gateway == size_send_by_executor
     )  # both should have the same size since it is just the same request send from executor to gateway
 
-    # assert _compare_relative_difference(size_return_to_the_client, size_return_from_exec_at_gateway) < 0.1
+    assert (
+        _compare_relative_difference(
+            size_return_to_the_client, size_return_from_exec_at_gateway
+        )
+        < 0.1
+    )
