@@ -141,16 +141,12 @@
                             </div>
                             <div class="title">{{ next.title }}</div>
                         </div>
-                        <svg>
-                            <use href="#svg-arrow-right"></use>
-                        </svg>
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                     </a>
                     {%- endif %}
                     {% if prev -%}
                     <a class="prev-page" href="{{ prev.link }}">
-                        <svg>
-                            <use href="#svg-arrow-right"></use>
-                        </svg>
+                        <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
                         <div class="page-info">
                             <div class="context">
                                 <span>{{ _("Previous") }}</span>
