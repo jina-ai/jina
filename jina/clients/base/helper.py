@@ -118,18 +118,14 @@ class HTTPClientlet(AioHttpClientlet):
         req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
         if 'target_executor' in req_dict['header']:
             req_dict['target_executor'] = req_dict['header']['target_executor']
-        for retry in range(self.max_attempts):
+        for retry in range(1, self.max_attempts + 1):
             try:
-                res = await self.session.post(url=self.url, json=req_dict).__aenter__()
-                return res
+                return await self.session.post(url=self.url, json=req_dict).__aenter__()
             except:
-                if retry == self.max_attempts - 1:
+                if retry == self.max_attempts:
                     raise
                 else:
-                    if retry == 0:
-                        wait_time = random.uniform(0, self.initial_backoff)
-                    else:
-                        wait_time = random.uniform(0, min(self.initial_backoff*self.backoff_multiplier**(retry-1), self.max_backoff))
+                    wait_time = random.uniform(0, min(self.initial_backoff*self.backoff_multiplier**(retry-1), self.max_backoff))
                     await asyncio.sleep(wait_time)
 
     async def send_dry_run(self):
@@ -189,19 +185,15 @@ class WebsocketClientlet(AioHttpClientlet):
         :return: send request as bytes awaitable
         """
         # we have to send here `retries` information
-        for retry in range(self.max_attempts):
+        for retry in range(1, self.max_attempts + 1):
             try:
-                res = await self.websocket.send_bytes(request.SerializeToString())
-                return res
+                return await self.websocket.send_bytes(request.SerializeToString())
             except ConnectionResetError:
-                if retry == self.max_attempts - 1:
+                if retry == self.max_attempts:
                     self.logger.critical(f'server connection closed already!')
                     raise
                 else:
-                    if retry == 0:
-                        wait_time = random.uniform(0, self.initial_backoff)
-                    else:
-                        wait_time = random.uniform(0, min(self.initial_backoff*self.backoff_multiplier**(retry-1), self.max_backoff))
+                    wait_time = random.uniform(0, min(self.initial_backoff*self.backoff_multiplier**(retry-1), self.max_backoff))
                     await asyncio.sleep(wait_time)
 
     async def send_dry_run(self):
