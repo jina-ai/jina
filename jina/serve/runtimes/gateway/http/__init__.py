@@ -35,7 +35,7 @@ class HTTPGatewayRuntime(GatewayRuntime):
                 ssl_certfile=self.args.ssl_certfile,
                 uvicorn_kwargs=self.args.uvicorn_kwargs,
             ),
-            uses_metas=self.args.uses_metas,
+            uses_metas={},
             runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
                 'name': self.args.name,
             },

@@ -304,7 +304,7 @@ class Deployment(BaseDeployment):
 
         :return: True if this deployment is provided as a sandbox, False otherwise
         """
-        uses = getattr(self.args, 'uses', '')
+        uses = getattr(self.args, 'uses', '') or ''
         is_sandbox = uses.startswith('jinahub+sandbox://')
         return is_sandbox
 

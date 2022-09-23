@@ -28,7 +28,7 @@ class WebSocketGatewayRuntime(GatewayRuntime):
                 uvicorn_kwargs=self.args.uvicorn_kwargs,
                 logger=self.logger,
             ),
-            uses_metas=self.args.uses_metas,
+            uses_metas={},
             runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
                 'name': self.args.name,
             },

@@ -80,7 +80,6 @@ def set_gateway_parser(parser=None):
     from jina.parsers.orchestrate.runtimes.worker import mixin_worker_runtime_parser
 
     mixin_base_ppr_parser(parser)
-    mixin_worker_runtime_parser(parser)
     mixin_prefetch_parser(parser)
     mixin_http_gateway_parser(parser)
     mixin_graphql_parser(parser)

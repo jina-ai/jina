@@ -78,6 +78,11 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
         GatewayProtocolType.WEBSOCKET: 'WebSocketGatewayRuntime',
         GatewayProtocolType.HTTP: 'HTTPGatewayRuntime',
     }
+    gateway_dict = {
+        GatewayProtocolType.GRPC: 'GRPCGateway',
+        GatewayProtocolType.WEBSOCKET: 'WebSocketGateway',
+        GatewayProtocolType.HTTP: 'HTTPGateway',
+    }
     if _args.runtime_cls == 'WorkerRuntime' and is_valid_huburi(_args.uses):
         _hub_args = deepcopy(_args)
         _hub_args.uri = _args.uses
@@ -86,6 +91,8 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
 
     if hasattr(_args, 'protocol'):
         _args.runtime_cls = gateway_runtime_dict[_args.protocol]
+        if not _args.uses:
+            _args.uses = gateway_dict[_args.protocol]
     if _args.pod_role == PodRoleType.HEAD:
         _args.runtime_cls = 'HeadRuntime'
 

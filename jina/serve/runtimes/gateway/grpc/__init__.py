@@ -34,7 +34,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
                 ssl_keyfile=self.args.ssl_keyfile,
                 ssl_certfile=self.args.ssl_certfile,
             ),
-            uses_metas=self.args.uses_metas,
+            uses_metas={},
             runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
                 'name': self.args.name,
             },
