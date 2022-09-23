@@ -657,7 +657,6 @@ class Deployment(BaseDeployment):
         :param replicas: the number of replicas
         :return: a map from replica id to device id
         """
-        print(f' device_str {device_str}')
         if (
             device_str
             and isinstance(device_str, str)
@@ -679,7 +678,6 @@ class Deployment(BaseDeployment):
                     selected_devices.append(device_num)
             else:
                 selected_devices = range(num_devices)
-            print(f' selected devices {selected_devices}')
             _c = cycle(selected_devices)
             return {j: next(_c) for j in range(replicas)}
 
