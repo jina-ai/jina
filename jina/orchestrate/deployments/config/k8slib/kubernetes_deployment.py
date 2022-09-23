@@ -7,27 +7,27 @@ from jina.serve.networking import GrpcConnectionPool
 
 
 def get_deployment_yamls(
-    name: str,
-    namespace: str,
-    image_name: str,
-    container_cmd: str,
-    container_args: str,
-    replicas: int,
-    pull_policy: str,
-    jina_deployment_name: str,
-    pod_type: str,
-    shard_id: Optional[int] = None,
-    port: Optional[int] = None,
-    env: Optional[Dict] = None,
-    gpus: Optional[Union[int, str]] = None,
-    image_name_uses_before: Optional[str] = None,
-    image_name_uses_after: Optional[str] = None,
-    container_cmd_uses_before: Optional[str] = None,
-    container_cmd_uses_after: Optional[str] = None,
-    container_args_uses_before: Optional[str] = None,
-    container_args_uses_after: Optional[str] = None,
-    monitoring: bool = False,
-    port_monitoring: Optional[int] = None,
+        name: str,
+        namespace: str,
+        image_name: str,
+        container_cmd: str,
+        container_args: str,
+        replicas: int,
+        pull_policy: str,
+        jina_deployment_name: str,
+        pod_type: str,
+        shard_id: Optional[int] = None,
+        port: Optional[int] = None,
+        env: Optional[Dict] = None,
+        gpus: Optional[Union[int, str]] = None,
+        image_name_uses_before: Optional[str] = None,
+        image_name_uses_after: Optional[str] = None,
+        container_cmd_uses_before: Optional[str] = None,
+        container_cmd_uses_after: Optional[str] = None,
+        container_args_uses_before: Optional[str] = None,
+        container_args_uses_after: Optional[str] = None,
+        monitoring: bool = False,
+        port_monitoring: Optional[int] = None,
 ) -> List[Dict]:
     """Get the yaml description of a service on Kubernetes
 
@@ -62,7 +62,6 @@ def get_deployment_yamls(
     if not port_monitoring:
         port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
 
-
     deployment_params = {
         'name': name,
         'namespace': namespace,
@@ -88,7 +87,7 @@ def get_deployment_yamls(
     if gpus:
         deployment_params['device_plugins'] = {'nvidia.com/gpu': gpus}
 
-    template_name = 'deployment'
+    template_name = 'deployment-executor' if name != 'gateway' else 'deployment-gateway'
 
     if image_name_uses_before and image_name_uses_after:
         template_name = 'deployment-uses-before-after'
@@ -151,7 +150,7 @@ def get_deployment_yamls(
 
 
 def get_cli_params(
-    arguments: Namespace, skip_list: Tuple[str] = (), port: Optional[int] = None
+        arguments: Namespace, skip_list: Tuple[str] = (), port: Optional[int] = None
 ) -> str:
     """Get cli parameters based on the arguments.
 
@@ -163,16 +162,16 @@ def get_cli_params(
     """
     arguments.host = '0.0.0.0'
     skip_attributes = [
-        'uses',  # set manually
-        'uses_with',  # set manually
-        'runtime_cls',  # set manually
-        'workspace',
-        'log_config',
-        'polling_type',
-        'uses_after',
-        'uses_before',
-        'replicas',
-    ] + list(skip_list)
+                          'uses',  # set manually
+                          'uses_with',  # set manually
+                          'runtime_cls',  # set manually
+                          'workspace',
+                          'log_config',
+                          'polling_type',
+                          'uses_after',
+                          'uses_before',
+                          'replicas',
+                      ] + list(skip_list)
     if port:
         arguments.port = port
     arg_list = [

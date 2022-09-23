@@ -11,7 +11,7 @@ from jina.orchestrate.deployments.config.k8slib.kubernetes_tools import get_yaml
     [
         ('namespace', {'name': 'test-ns'}),
         ('service', {'name': 'test-svc'}),
-        ('deployment', {'name': 'test-dep'}),
+        ('deployment-executor', {'name': 'test-dep'}),
         (
             'configmap',
             {
