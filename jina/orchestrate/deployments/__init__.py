@@ -622,25 +622,32 @@ class Deployment(BaseDeployment):
         return is_ready
 
     @staticmethod
-    def _parse_slice(value: str):
-        """Parses a `slice()` from string, like `start:stop:step`.
+    def _parse_devices(value: str, num_devices: int):
+        """Parses a list of devices from string, like `start:stop:step` or 'num1,num2,num3` or combination of both.
 
         :param value: a string like
+        :param num_devices: total number of devices
         :return: slice
         """
+
+        all_devices = range(num_devices)
         if re.match(WRAPPED_SLICE_BASE, value):
             value = value[1:-1]
 
         if value:
-            parts = value.split(':')
+            parts = value.split(',')
             if len(parts) == 1:
-                # slice(stop)
-                parts = [parts[0], str(int(parts[0]) + 1)]
-            # else: slice(start, stop[, step])
+                parts = value.split(':')
+
+                if len(parts) == 1:
+                    # slice(stop)
+                    parts = [parts[0], str(int(parts[0]) + 1)]
+                # else: slice(start, stop[, step])
+            else:
+                return [int(p) for p in parts]
         else:
-            # slice()
             parts = []
-        return slice(*[int(p) if p else None for p in parts])
+        return all_devices[slice(*[int(p) if p else None for p in parts])]
 
     @staticmethod
     def _roundrobin_cuda_device(device_str: str, replicas: int):
@@ -665,11 +672,13 @@ class Deployment(BaseDeployment):
                 if num_devices == 0:
                     return
 
-            all_devices = list(range(num_devices))
+            selected_devices = []
             if device_str[2:]:
-                all_devices = all_devices[Deployment._parse_slice(device_str[2:])]
-
-            _c = cycle(all_devices)
+                for device_num in Deployment._parse_devices(device_str[2:], num_devices):
+                    selected_devices.append(device_num)
+            else:
+                selected_devices = range(num_devices)
+            _c = cycle(selected_devices)
             return {j: next(_c) for j in range(replicas)}
 
     @staticmethod

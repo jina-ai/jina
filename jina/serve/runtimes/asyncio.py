@@ -27,12 +27,12 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
     """
 
     def __init__(
-        self,
-        args: 'argparse.Namespace',
-        cancel_event: Optional[
-            Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
-        ] = None,
-        **kwargs,
+            self,
+            args: 'argparse.Namespace',
+            cancel_event: Optional[
+                Union['asyncio.Event', 'multiprocessing.Event', 'threading.Event']
+            ] = None,
+            **kwargs,
     ):
         super().__init__(args, **kwargs)
         self._loop = asyncio.new_event_loop()
@@ -53,9 +53,9 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
                 )
         else:
             with ImportExtensions(
-                required=True,
-                logger=self.logger,
-                help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
+                    required=True,
+                    logger=self.logger,
+                    help_text='''If you see a 'DLL load failed' error, please reinstall `pywin32`.
                 If you're using conda, please use the command `conda install -c anaconda pywin32`''',
             ):
                 import win32api
@@ -65,7 +65,8 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
             )
 
         self._setup_monitoring()
-        send_telemetry_event(event='start', obj=self)
+        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
+        self._start_time = time.time()
         self._loop.run_until_complete(self.async_setup())
 
     def run_forever(self):
@@ -82,6 +83,8 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
         self._loop.stop()
         self._loop.close()
         super().teardown()
+        self._stop_time = time.time()
+        send_telemetry_event(event='stop', obj=self, duration=self._stop_time - self._start_time, entity_id=self._entity_id)
 
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPod`"""
@@ -162,10 +165,10 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
 
     @staticmethod
     def wait_for_ready_or_shutdown(
-        timeout: Optional[float],
-        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
-        ctrl_address: str,
-        **kwargs,
+            timeout: Optional[float],
+            ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+            ctrl_address: str,
+            **kwargs,
     ):
         """
         Check if the runtime has successfully started
@@ -180,7 +183,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
             if ready_or_shutdown_event.is_set() or AsyncNewLoopRuntime.is_ready(
-                ctrl_address
+                    ctrl_address
             ):
                 return True
             time.sleep(0.1)
@@ -193,3 +196,11 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
         self.logger.debug(
             f'recv DataRequest at {request.header.exec_endpoint} with id: {request.header.request_id}'
         )
+
+    @property
+    def _entity_id(self):
+        import uuid
+        if hasattr(self, '_entity_id_'):
+            return self._entity_id_
+        self._entity_id_ = uuid.uuid1().hex
+        return self._entity_id_
