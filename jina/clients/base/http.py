@@ -80,7 +80,7 @@ class HTTPBaseClient(BaseClient):
             on_done: 'CallbackFnType',
             on_error: Optional['CallbackFnType'] = None,
             on_always: Optional['CallbackFnType'] = None,
-            num_retries: int = 1,
+            max_attempts: int = 1,
             initial_backoff: float = 0.5,
             max_backoff: float = 0.1,
             backoff_multiplier: float = 1.5,
@@ -91,7 +91,7 @@ class HTTPBaseClient(BaseClient):
         :param on_done: the callback for on_done
         :param on_error: the callback for on_error
         :param on_always: the callback for on_always
-        :param num_retries: Number of retries to do when sending a request in case of failure
+        :param max_attempts: Number of sending attempts, including the original request.
         :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
@@ -113,7 +113,7 @@ class HTTPBaseClient(BaseClient):
             proto = 'https' if self.args.tls else 'http'
             url = f'{proto}://{self.args.host}:{self.args.port}/post'
             iolet = await stack.enter_async_context(
-                HTTPClientlet(url=url, logger=self.logger, num_retries=num_retries, initial_backoff=initial_backoff,
+                HTTPClientlet(url=url, logger=self.logger, max_attempts=max_attempts, initial_backoff=initial_backoff,
                               max_backoff=max_backoff, backoff_multiplier=backoff_multiplier, **kwargs)
             )
 

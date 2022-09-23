@@ -20,7 +20,7 @@ class AioHttpClientlet(ABC):
 
     def __init__(self, url: str,
                  logger: 'JinaLogger',
-                 num_retries: int = 1,
+                 max_attempts: int = 1,
                  initial_backoff: float = 0.5,
                  max_backoff: float = 0.1,
                  backoff_multiplier: float = 1.5,
@@ -29,7 +29,7 @@ class AioHttpClientlet(ABC):
 
         :param url: url to send http/websocket request to
         :param logger: jina logger
-        :param num_retries: Number of retries to do when sending a request in case of failure
+        :param max_attempts: Number of sending attempts, including the original request.
         :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
@@ -47,7 +47,7 @@ class AioHttpClientlet(ABC):
             self._session_kwargs['auth'] = kwargs.get('auth')
         if kwargs.get('cookies', None):
             self._session_kwargs['cookies'] = kwargs.get('cookies')
-        self.num_retries = num_retries
+        self.max_attempts = max_attempts
         self.initial_backoff = initial_backoff
         self.max_backoff = max_backoff
         self.backoff_multiplier = backoff_multiplier
@@ -118,12 +118,12 @@ class HTTPClientlet(AioHttpClientlet):
         req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
         if 'target_executor' in req_dict['header']:
             req_dict['target_executor'] = req_dict['header']['target_executor']
-        for retry in range(self.num_retries):
+        for retry in range(self.max_attempts):
             try:
                 res = await self.session.post(url=self.url, json=req_dict).__aenter__()
                 return res
             except:
-                if retry == self.num_retries - 1:
+                if retry == self.max_attempts - 1:
                     raise
                 else:
                     if retry == 0:
@@ -189,12 +189,12 @@ class WebsocketClientlet(AioHttpClientlet):
         :return: send request as bytes awaitable
         """
         # we have to send here `retries` information
-        for retry in range(self.num_retries):
+        for retry in range(self.max_attempts):
             try:
                 res = await self.websocket.send_bytes(request.SerializeToString())
                 return res
             except ConnectionResetError:
-                if retry == self.num_retries - 1:
+                if retry == self.max_attempts - 1:
                     self.logger.critical(f'server connection closed already!')
                     raise
                 else:

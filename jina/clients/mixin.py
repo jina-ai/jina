@@ -217,8 +217,7 @@ class PostMixin:
             show_progress: bool = False,
             continue_on_error: bool = False,
             return_responses: bool = False,
-            num_retries: bool = 1,
-            retry_delay: float = 0.5,
+            max_attempts: bool = 1,
             initial_backoff: float = 0.5,
             max_backoff: float = 0.1,
             backoff_multiplier: float = 1.5,
@@ -237,7 +236,7 @@ class PostMixin:
         :param show_progress: if set, client will show a progress bar on receiving every request.
         :param continue_on_error: if set, a Request that causes an error will be logged only without blocking the further requests.
         :param return_responses: if set to True, the result will come as Response and not as a `DocumentArray`
-        :param num_retries: Number of retries to do when sending a request in case of failure
+        :param max_attempts: Number of sending attempts, including the original request.
         :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
@@ -279,8 +278,7 @@ class PostMixin:
             target_executor=target_executor,
             parameters=parameters,
             request_size=request_size,
-            num_retries=num_retries,
-            retry_delay=retry_delay,
+            max_attempts=max_attempts,
             initial_backoff=initial_backoff,
             max_backoff=max_backoff,
             backoff_multiplier=backoff_multiplier,
@@ -310,7 +308,7 @@ class AsyncPostMixin:
             show_progress: bool = False,
             continue_on_error: bool = False,
             return_responses: bool = False,
-            num_retries: bool = 1,
+            max_attempts: bool = 1,
             initial_backoff: float = 0.5,
             max_backoff: float = 0.1,
             backoff_multiplier: float = 1.5,
@@ -329,7 +327,7 @@ class AsyncPostMixin:
         :param show_progress: if set, client will show a progress bar on receiving every request.
         :param continue_on_error: if set, a Request that causes an error will be logged only without blocking the further requests.
         :param return_responses: if set to True, the result will come as Response and not as a `DocumentArray`
-        :param num_retries: Number of retries to do when sending a request in case of failure
+        :param max_attempts: Number of sending attempts, including the original request.
         :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
@@ -354,7 +352,7 @@ class AsyncPostMixin:
                 target_executor=target_executor,
                 parameters=parameters,
                 request_size=request_size,
-                num_retries=num_retries,
+                max_attempts=max_attempts,
                 initial_backoff=initial_backoff,
                 max_backoff=max_backoff,
                 backoff_multiplier=backoff_multiplier,

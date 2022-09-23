@@ -63,7 +63,7 @@ class GRPCBaseClient(BaseClient):
         on_error: Optional['CallbackFnType'] = None,
         on_always: Optional['CallbackFnType'] = None,
         compression: Optional[str] = None,
-        num_retries: bool = 1,
+        max_attempts: bool = 1,
         initial_backoff: float = 0.5,
         max_backoff: float = 0.1,
         backoff_multiplier: float = 1.5,
@@ -81,13 +81,13 @@ class GRPCBaseClient(BaseClient):
             continue_on_error = self.continue_on_error
             # while loop with retries, check in which state the `iterator` remains after failure
             options = GrpcConnectionPool.get_default_grpc_options()
-            if num_retries > 1:
+            if max_attempts > 1:
                 service_config_json = json.dumps({
                                 "methodConfig": [{
                                     # To apply retry to all methods, put [{}] in the "name" field
                                     "name": [{}],
                                     "retryPolicy": {
-                                        "maxAttempts": num_retries,
+                                        "maxAttempts": max_attempts,
                                         "initialBackoff": f"{initial_backoff}s",
                                         "maxBackoff": f"{max_backoff}s",
                                         "backoffMultiplier": {backoff_multiplier},
