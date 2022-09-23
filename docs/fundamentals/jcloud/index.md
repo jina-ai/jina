@@ -61,6 +61,10 @@ If you have no access to the web browser in your integration environment, you ca
 
 In Jina's idiom, a project is a [Flow](https://docs.jina.ai/fundamentals/flow/), which represents an end-to-end task such as indexing, searching or recommending. In this README, we will use "project" and "Flow" interchangeably.
 
+```{caution}
+Flows have a maximal {ref}`lifetime<jcloud-lifetime>` after which they are automatically deleted.
+```
+
 A Flow can have two types of file structure: a single YAML file or a project folder.
 
 #### A single YAML file
@@ -286,17 +290,16 @@ JCLOUD_LOGLEVEL=DEBUG jc deploy flow.yml
 
 If you don't see any obvious errors, please raise an issue in [JCloud](https://github.com/jina-ai/jcloud/issues/new/choose)
 
-## FAQ
+## Restrictions
 
-- **Is everything free?**
+JCloud scales according to your need. You can demand different resources (GPU / RAM / CPU / Storage / instance-capacity) your Flows & Executors need. We have the following restrictions on its usage. If you have specific resource requirements, please contact us [on Slack](https://slack.jina.ai) or raise a [Github issue](https://github.com/jina-ai/jcloud/issues/new/choose).
 
-  Yes at the moment! We just need your feedback - use `jc survey` to help us understand your needs.
 
-- **How powerful is JCloud?**
-
-  JCloud scales according to your need. You can demand all the resources (GPU / RAM / CPU / Storage / instance-capacity) your Flows & Executors need. If there's anything particular you'd be looking for, you can contact us [on Slack](https://slack.jina.ai) or let us know via `jc survey`.
-
-- **What restrictions are there on JCloud?**
-
-  - Deployments are only supported in `us-east` region.
-  - Each Executor is allowed a maximum of 4 GPUs, 16G RAM, 16 CPU cores & 10GB of block storage.
+```{admonition} Restrictions
+  
+- Deployments are only supported in `us-east` region.
+- Each Executor is allowed a maximum of 4G RAM, 2 CPU cores & 10GB of block storage.
+- 3 Flows can be deployed at a time, out of which there can be 1 Flow using GPU.
+- A maximum of 2 GPUs are allowed per Flow.
+- Flows with Executors using GPU are removed after 12hrs, whereas other Flows are removed after 72hrs.
+```

@@ -58,6 +58,20 @@ def set_hub_new_parser(parser=None):
     return parser
 
 
+def set_hub_status_parser(parser=None):
+    """Set the parser for the hub status
+    :param parser: an optional existing parser to build upon
+    :return: the parser
+    """
+    if not parser:
+        parser = set_base_parser()
+
+    from jina.parsers.hubble.status import mixin_hub_status_parser
+
+    mixin_hub_status_parser(parser)
+    return parser
+
+
 def set_hub_parser(parser=None):
     """Set the parser for the hub
     :param parser: the parser configure
@@ -97,6 +111,15 @@ def set_hub_parser(parser=None):
             'pull',
             help='download an executor image/package from Jina hub',
             description='Download an executor image/package from Jina hub',
+            formatter_class=_chf,
+        )
+    )
+
+    set_hub_status_parser(
+        spp.add_parser(
+            'status',
+            help='query an executor building status of of a pushed Executor from Jina hub',
+            description='Query an executor building status of of a pushed Executor from Jina hub',
             formatter_class=_chf,
         )
     )

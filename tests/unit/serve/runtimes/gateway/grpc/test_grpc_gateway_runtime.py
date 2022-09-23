@@ -189,7 +189,7 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
                 req = request_generator(
                     '/', DocumentArray([Document(text='client0-Request')])
                 )
-                async for resp in runtime.gateway_bff.stream(request_iterator=req):
+                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
                     r.append(resp)
                 return r
 
@@ -241,7 +241,7 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
                 req = request_generator(
                     '/', DocumentArray([Document(text='client0-Request')])
                 )
-                async for resp in runtime.gateway_bff.stream(request_iterator=req):
+                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
                     responses.append(resp)
                 return responses
 
@@ -295,7 +295,7 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
                 req = request_generator(
                     '/', DocumentArray([Document(text='client0-Request')])
                 )
-                async for resp in runtime.gateway_bff.stream(request_iterator=req):
+                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
                     responses.append(resp)
                 return responses
 
@@ -352,7 +352,7 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_deployment(
                 req = request_generator(
                     '/', DocumentArray([Document(text='client0-Request')])
                 )
-                async for resp in runtime.gateway_bff.stream(request_iterator=req):
+                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
                     responses.append(resp)
                 return responses
 
@@ -409,7 +409,7 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
                 req = request_generator(
                     '/', DocumentArray([Document(text='client0-Request')])
                 )
-                async for resp in runtime.gateway_bff.stream(request_iterator=req):
+                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
                     responses.append(resp)
                 return responses
 
@@ -459,7 +459,7 @@ def test_grpc_gateway_runtime_handle_empty_graph():
                 req = request_generator(
                     '/', DocumentArray([Document(text='client0-Request')])
                 )
-                async for resp in runtime.gateway_bff.stream(request_iterator=req):
+                async for resp in runtime.gateway.streamer.stream(request_iterator=req):
                     responses.append(resp)
                 return responses
 

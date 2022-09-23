@@ -9,10 +9,12 @@ from io import BytesIO
 from pathlib import Path
 
 import docker
+import hubble
 import pytest
 import requests
 import yaml
 
+from jina.hubble import helper, hubio
 from jina.hubble.helper import disk_cache_offline, get_requirements_env_variables
 from jina.hubble.hubapi import get_secret_path
 from jina.hubble.hubio import HubExecutor, HubIO
@@ -20,25 +22,16 @@ from jina.parsers.hubble import (
     set_hub_new_parser,
     set_hub_pull_parser,
     set_hub_push_parser,
+    set_hub_status_parser,
 )
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-@pytest.fixture(scope='function')
-def auth_token(tmpdir):
-    from hubble.utils.config import Config
-
-    c = Config()
-    token = 'test-auth-token'
-    c.set('auth_token', token)
-    yield token
-    c.delete('auth_token')
-
-
 class PostMockResponse:
-    def __init__(self, response_code: int = 201):
+    def __init__(self, response_code: int = 201, response_error: str = ''):
         self.response_code = response_code
+        self.response_error = response_error
 
     def json(self):
         return {
@@ -67,8 +60,32 @@ class PostMockResponse:
             '{"type":"done","subject":"extractZip"}',
             '{"type":"start","subject":"pushImage"}',
             '{"type":"done","subject":"pushImage"}',
-            '{"type":"complete","subject":"createExecutor","message":"Successfully pushed w7qckiqy","payload":{"id":"w7qckiqy","secret":"f7386f9ef7ea238fd955f2de9fb254a0","visibility":"public"}}',
+            '{"type":"progress","subject":"buildWorkspace"}',
+            '{"type":"console","subject":"pushImage","payload":"payload_test"}',
+            b'{"type":"complete","subject":"createExecutor","message":"Successfully pushed w7qckiqy","payload": {"id":"w7qckiqy","secret":"f7386f9ef7ea238fd955f2de9fb254a0","visibility":"public"}}',
         ]
+
+        if self.response_error == 'response_error':
+            logs = [
+                b'{"type":"error","message":"test error", "payload":{"readableMessage": "readableMessage"}}',
+                '{"type":"start","subject":"extractZip"}',
+                '{"type":"done","subject":"extractZip"}',
+                '{"type":"start","subject":"pushImage"}',
+                '{"type":"done","subject":"pushImage"}',
+                '{"type":"console","subject":"pushImage","payload":"payload_test"}',
+                b'{"type":"complete","subject":"createExecutor","message":"Successfully pushed w7qckiqy","payload":{"id":"w7qckiqy","secret":"f7386f9ef7ea238fd955f2de9fb254a0","visibility":"public"}}',
+            ]
+
+        if self.response_error == 'image_not_exits':
+            logs = [
+                '{"type":"error","message":"test error"}',
+                '{"type":"start","subject":"extractZip"}',
+                '{"type":"done","subject":"extractZip"}',
+                '{"type":"start","subject":"pushImage"}',
+                '{"type":"done","subject":"pushImage"}',
+                '{"type":"console","subject":"pushImage","payload":"payload_test"}',
+                b'{"type":"complete","subject":"createExecutor","message":"Successfully pushed w7qckiqy"}',
+            ]
 
         return itertools.chain(logs)
 
@@ -125,31 +142,241 @@ class FetchMetaMockResponse:
         return self.response_code
 
 
-@pytest.mark.parametrize('no_cache', [False, True])
-@pytest.mark.parametrize('tag', [None, '-t v0'])
+class LoggedInPostMockResponse:
+    def __init__(self, response_code: int = 202):
+        self.response_code = response_code
+
+    def json(self):
+        return {
+            '_id': '6316ede56501',
+            'topic': 'executor:buildAndCreateNewCommit',
+            'data': {
+                'executor': 'bebbf22d20',
+                'visibility': 'private',
+                'commitTags': ['v0'],
+                'immutableCommitTags': [],
+                'jinaEnv': {
+                    'meta': {
+                        'jina': '3.8.2',
+                        'docarray': '0.16.1',
+                        'jcloud': '0.0.35',
+                        'jina-hubble-sdk': '0.16.1',
+                        'jina-proto': '0.1.13',
+                        'protobuf': '3.20.1',
+                        'proto-backend': 'python',
+                        'grpcio': '1.47.0',
+                        'pyyaml': '6.0',
+                        'python': '3.9.13',
+                        'platform': 'Darwin',
+                        'platform-release': '21.4.0',
+                        'platform-version': 'Darwin Kernel Version 21.4.0: Mon Feb 21 20:36:53 PST 2022; root:xnu-8020.101.4~2/RELEASE_ARM64_T8101',
+                        'architecture': 'arm64',
+                        'processor': 'arm',
+                        'uid': '86450951707024',
+                        'session-id': '4c2810ea-2db0-11ed-9481-4ea06e445990',
+                        'uptime': '2022-09-06T14:51:12.849445',
+                        'ci-vendor': '(unset)',
+                    },
+                    'env': {
+                        'default_host': '(unset)',
+                        'default_timeout_ctrl': '500',
+                        'deployment_name': '(unset)',
+                        'disable_uvloop': '(unset)',
+                        'early_stop': '(unset)',
+                        'full_cli': '(unset)',
+                        'gateway_image': '(unset)',
+                        'grpc_recv_bytes': '(unset)',
+                        'grpc_send_bytes': '(unset)',
+                        'hub_no_image_rebuild': '(unset)',
+                        'log_config': '(unset)',
+                        'log_level': 'DEBUG',
+                        'log_no_color': '(unset)',
+                        'mp_start_method': '(unset)',
+                        'optout_telemetry': 'True',
+                        'random_port_max': '(unset)',
+                        'random_port_min': '(unset)',
+                    },
+                    'clientIp': '58.152.48.222',
+                },
+                'buildParams': {
+                    'noCache': True,
+                    'buildArgs': {'ARG_BUILD_DATE': '2022-09-06T06:51:17.376Z'},
+                    'buildSecrets': ['6316ede46501894889a8a36d'],
+                },
+                'normalizationResult': {
+                    'executor': 'MyExecutor',
+                    'docstring': None,
+                    'init': {
+                        'args': [{'arg': 'self', 'annotation': None}],
+                        'kwargs': [],
+                        'docstring': None,
+                    },
+                    'endpoints': [
+                        {
+                            'args': [{'arg': 'self', 'annotation': None}],
+                            'kwargs': [],
+                            'docstring': None,
+                            'name': 'foo',
+                            'requests': 'ALL',
+                        }
+                    ],
+                    'hubble_score_metrics': {
+                        'dockerfile_exists': False,
+                        'manifest_exists': True,
+                        'config_exists': False,
+                        'readme_exists': False,
+                        'requirements_exists': True,
+                        'tests_exists': False,
+                        'gpu_dockerfile_exists': False,
+                    },
+                    'filepath': '/data/jina-hubble-temp/4e34f1a0-2db0-11ed-a502-abf1ab488543/exec.py',
+                },
+                'normalizedZipFile': 'normalized.zip',
+                'uploadedZipFile': 'uploaded.zip',
+            },
+            'owner': '62b49155b31010',
+            'createdAt': '2022-09-06T06:51:17.456Z',
+            'updatedAt': '2022-09-06T06:51:17.376Z',
+            'status': 'created',
+            'triesLeft': 1,
+            'traceId': '4c2810ea-2db0-11ed-9481-4ea06e445990',
+        }
+
+    @property
+    def text(self):
+        return json.dumps(self.json())
+
+    @property
+    def status_code(self):
+        return self.response_code
+
+    def iter_lines(self):
+        logs = [
+            '{"code":202,"status":20200,"data":{"_id":"6316ede56501","topic":"executor:buildAndCreateNewCommit","data":{"executor":"bebbf22d20","visibility":"private","commitTags":["v0"],"immutableCommitTags":[], "jinaEnv":{"meta":{"jina":"3.8.2","docarray":"0.16.1","jcloud":"0.0.35","jina-hubble-sdk":"0.16.1","jina-proto":"0.1.13","protobuf":"3.20.1","proto-backend":"python","grpcio":"1.47.0","pyyaml":"6.0","python":"3.9.13","platform":"Darwin","platfor m-release":"21.4.0","platform-version":"Darwin Kernel Version 21.4.0: Mon Feb 21 20:36:53 PST 2022; root:xnu-8020.101.4~2/RELEASE_ARM64_T8101","architecture":"arm64","processor":"arm","uid":"86450951707024","session-id":"4c2810ea-2db0-11ed-9481- 4ea06e445990","uptime":"2022-09-06T14:51:12.849445","ci-vendor":"(unset)"},"env":{"default_host":"(unset)","default_timeout_ctrl":"500","deployment_name":"(unset)","disable_uvloop":"(unset)","early_stop":"(unset)","full_cli":"(unset)","gateway_i mage":"(unset)","grpc_recv_bytes":"(unset)","grpc_send_bytes":"(unset)","hub_no_image_rebuild":"(unset)","log_config":"(unset)","log_level":"DEBUG","log_no_color":"(unset)","mp_start_method":"(unset)","optout_telemetry":"True","random_port_max": "(unset)","random_port_min":"(unset)"},"clientIp":"58.152.48.222"},"buildParams":{"noCache":true,"buildArgs":{"ARG_BUILD_DATE":"2022-09-06T06:51:17.376Z"},"buildSecrets":["6316ede46501894889a8a36d"]},"normalizationResult":{"executor":"MyExecutor ","docstring":null,"init":{"args":[{"arg":"self","annotation":null}],"kwargs":[],"docstring":null},"endpoints":[{"args":[{"arg":"self","annotation":null}],"kwargs":[],"docstring":null,"name":"foo","requests":"ALL"}],"hubble_score_metrics":{"dock erfile_exists":false,"manifest_exists":true,"config_exists":false,"readme_exists":false,"requirements_exists":true,"tests_exists":false,"gpu_dockerfile_exists":false},"filepath":"/data/jina-hubble-temp/4e34f1a0-2db0-11ed-a502-abf1ab488543/exec.p y"},"normalizedZipFile":"normalized.zip","uploadedZipFile":"uploaded.zip"},"owner":"62b49155b31010","createdAt":"2022-09-06T06:51:17.456Z","updatedAt":"2022-09-06T06:51:17.376Z","status":"created","triesLeft":1,"traceId":"4c2810ea-2db0 -11ed-9481-4ea06e445990"}}'
+        ]
+
+        return itertools.chain(logs)
+
+
+class StatusPostMockResponse:
+    def __init__(self, response_code: int = 202, response_error: bool = False):
+        self.response_code = response_code
+        self.response_error = response_error
+
+    def json(self):
+        return {
+            "_id": "1e4bebbf22d20",
+            "id": "w7qckiqy",
+            "ownerUserId": "01044af02b79a",
+            "name": "dummy_executor",
+            "identifiers": ["w7qckiqy", "dummy_executor"],
+            "visibility": "private",
+        }
+
+    @property
+    def text(self):
+        return json.dumps(self.json())
+
+    @property
+    def status_code(self):
+        return self.response_code
+
+    def iter_lines(self):
+        logs = [
+            b'{"type":"progress","data":{"sn":212,"dt":28165,"data":{"type":"console","subject":"buildWorkspace","payload":"#11 pushing layer 9a3c20c4fe55","source":"stderr"}}}',
+            b'{"type":"progress","data":{"sn":212,"dt":28165,"data":{"type":"console","subject":"buildWorkspace","payload":"#11 pushing layer 9a3c20c4fe55","source":"stderr"}}}',
+            b'{"type":"progress","data":{"sn":213,"dt":28165,"data":{"type":"console","subject":"buildWorkspace","payload":"#11 pushing layer 3c7441d381a3","source":"stderr"}}}',
+            b'{"type":"report","status":"pending"}',
+            b'{"type":"report","status":"waiting","task":{"_id":"6316e9ac8e"}}',
+            b'{"type":"test","status":"test","task":{"_id":"6316e9ac8e"}}',
+            b'{"type":"progress","data":{"sn":213,"dt":28165,"data":{"type":"done","subject":"buildWorkspace","payload":"Done","source":"stderr"}}}',
+            b'{"type":"report","status":"succeeded","task":{"_id":"6316e9ac8e"}}',
+            b'{"type":"report","status":"succeeded","task":{"_id":"6316e9ac8e"}, "result":{"_id":"1e4bebbf22d20","id":"w7qckiqy","ownerUserId":"01044af02b79a","name":"dummy_executor","identifiers":["w7qckiqy","dummy_executor"],"visibility":"private"}}',
+        ]
+        if self.response_error:
+            logs = [
+                b'{"type":"report","status":"failed","message":"async upload error"}',
+                b'{"type":"progress","data":{"sn":212,"dt":28165,"data":{"type":"console","subject":"buildWorkspace","payload":"#11 pushing layer 9a3c20c4fe55","source":"stderr"}}}',
+                b'{"type":"progress","data":{"sn":213,"dt":28165,"data":{"type":"console","subject":"buildWorkspace","payload":"#11 pushing layer 3c7441d381a3","source":"stderr"}}}',
+                b'{"type":"error","message":"async upload error"}',
+                b'{"type":"progress","data":{"sn":213,"dt":28165,"data":{"type":"done","subject":"buildWorkspace","payload":"Done","source":"stderr"}}}',
+                b'{"type":"report","status":"succeeded","task":{"_id":"6316e9ac8e"}, "result":{"_id":"1e4bebbf22d20","id":"w7qckiqy","ownerUserId":"01044af02b79a","name":"dummy_executor","identifiers":["w7qckiqy","dummy_executor"],"visibility":"private"}}',
+                b'{"type":"report","status":"succeeded","task":{"_id":"6316e9ac8e"}}',
+            ]
+
+        if self.response_code >= 400:
+            logs = [
+                b'{"type":"report","status":"failed","message":"async upload error"}',
+                b'{"type":"progress","data":{"sn":212,"dt":28165,"data":{"type":"console","subject":"buildWorkspace","payload":"#11 pushing layer 9a3c20c4fe55","source":"stderr"}}}',
+                b'{"type":"progress","data":{"sn":213,"dt":28165,"data":{"type":"console","subject":"buildWorkspace","payload":"#11 pushing layer 3c7441d381a3","source":"stderr"}}}',
+                b'{"type":"code","message":"AuthenticationRequiredError"}',
+                b'{"type":"progress","data":{"sn":213,"dt":28165,"data":{"type":"done","subject":"buildWorkspace","payload":"Done","source":"stderr"}}}',
+                b'{"type":"report","status":"succeeded","task":{"_id":"6316e9ac8e"}, "result":{"_id":"1e4bebbf22d20","id":"w7qckiqy","ownerUserId":"01044af02b79a","name":"dummy_executor","identifiers":["w7qckiqy","dummy_executor"],"visibility":"private"}}',
+                b'{"type":"report","status":"succeeded","task":{"_id":"6316e9ac8e"}}',
+            ]
+
+        return itertools.chain(logs)
+
+
+@pytest.mark.parametrize('no_cache', [True, False])
+@pytest.mark.parametrize('tag', ['v0', None])
 @pytest.mark.parametrize('force', [None, 'UUID8'])
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
 @pytest.mark.parametrize('build_env', ['DOMAIN=github.com DOWNLOAD=download'])
-def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, build_env):
+@pytest.mark.parametrize('is_login', [True, False])
+@pytest.mark.parametrize('verbose', [False, True])
+def test_push(
+    mocker,
+    monkeypatch,
+    path,
+    mode,
+    tmpdir,
+    force,
+    tag,
+    no_cache,
+    build_env,
+    is_login,
+    verbose,
+):
     mock = mocker.Mock()
 
-    def _mock_post(url, data, headers=None, stream=True):
-        mock(url=url, data=data, headers=headers)
-        return PostMockResponse(response_code=requests.codes.created)
+    if is_login:
 
-    monkeypatch.setattr(requests, 'post', _mock_post)
-    # Second push will use --force --secret because of .jina/secret.key
-    # Then it will use put method
-    monkeypatch.setattr(requests, 'put', _mock_post)
+        def _mock_logged_post(url, data, headers=None, stream=True):
+            mock(url=url, data=data, headers=headers)
+            return LoggedInPostMockResponse(response_code=requests.codes.created)
+
+        monkeypatch.setattr(requests, 'post', _mock_logged_post)
+        # Second push will use --force --secret because of .jina/secret.key
+        # Then it will use put method
+        monkeypatch.setattr(requests, 'put', _mock_logged_post)
+
+        def _mock_status_post(self, console, st, task_id, verbose, replay):
+            mock(self, console, st, task_id, verbose, replay)
+            return StatusPostMockResponse(response_code=requests.codes.created).json()
+
+        monkeypatch.setattr(HubIO, '_status_with_progress', _mock_status_post)
+
+    else:
+
+        def _mock_post(url, data, headers=None, stream=True):
+            mock(url=url, data=data, headers=headers)
+            return PostMockResponse(response_code=requests.codes.created)
+
+        monkeypatch.setattr(requests, 'post', _mock_post)
+        # Second push will use --force --secret because of .jina/secret.key
+        # Then it will use put method
+        monkeypatch.setattr(requests, 'put', _mock_post)
 
     exec_path = os.path.join(cur_dir, path)
     _args_list = [exec_path, mode]
+
     if force:
         _args_list.extend(['--force', force])
 
     if tag:
-        _args_list.append(tag)
+        _args_list.extend(['-t', tag])
 
     if no_cache:
         _args_list.append('--no-cache')
@@ -157,16 +384,21 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
     if build_env:
         _args_list.extend(['--build-env', build_env])
 
+    if verbose:
+        _args_list.append('--verbose')
+
     args = set_hub_push_parser().parse_args(_args_list)
 
-    result = HubIO(args).push()
+    with monkeypatch.context() as m:
+        m.setattr(hubble, 'is_logged_in', lambda: is_login)
+        HubIO(args).push()
 
     exec_config_path = get_secret_path(os.stat(exec_path).st_ino)
     shutil.rmtree(exec_config_path)
 
     _, mock_kwargs = mock.call_args_list[0]
-
     c_type, c_data = cgi.parse_header(mock_kwargs['headers']['Content-Type'])
+
     assert c_type == 'multipart/form-data'
 
     form_data = cgi.parse_multipart(
@@ -182,7 +414,6 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
         assert form_data.get('id') is None
 
     if build_env:
-        print(form_data['buildEnv'])
         assert form_data['buildEnv'] == [
             '{"DOMAIN": "github.com", "DOWNLOAD": "download"}'
         ]
@@ -197,7 +428,7 @@ def test_push(mocker, monkeypatch, path, mode, tmpdir, force, tag, no_cache, bui
         assert form_data['public'] == ['True']
 
     if tag:
-        assert form_data['tags'] == [' v0']
+        assert form_data['tags'] == ['v0']
     else:
         assert form_data.get('tags') is None
 
@@ -397,29 +628,194 @@ def test_push_wrong_dockerfile(
     )
 
 
+@pytest.mark.parametrize(
+    'response_error',
+    ['test error session_id'],
+)
+@pytest.mark.parametrize(
+    'response_image_not_exits_error',
+    ['Unknown Error, session_id'],
+)
+@pytest.mark.parametrize(
+    'response_readableMessage_error',
+    ['readableMessage session_id'],
+)
+@pytest.mark.parametrize('path', ['dummy_executor'])
+@pytest.mark.parametrize('mode', ['--public', '--private'])
 @pytest.mark.parametrize('build_env', ['DOMAIN=github.com DOWNLOAD=download'])
-def test_push_with_authorization(mocker, monkeypatch, auth_token, build_env):
+@pytest.mark.parametrize('response_error_status', ['image_not_exits', 'response_error'])
+def test_push_with_error(
+    mocker,
+    monkeypatch,
+    path,
+    mode,
+    tmpdir,
+    build_env,
+    response_error,
+    response_image_not_exits_error,
+    response_readableMessage_error,
+    response_error_status,
+):
     mock = mocker.Mock()
 
-    def _mock_post(url, data, headers, stream):
-        mock(url=url, headers=headers)
-        return PostMockResponse(response_code=200)
+    def _mock_post(url, data, headers=None, stream=True):
+        mock(url=url, data=data, headers=headers)
+        return PostMockResponse(
+            response_code=requests.codes.created, response_error=response_error_status
+        )
 
     monkeypatch.setattr(requests, 'post', _mock_post)
+    # Second push will use --force --secret because of .jina/secret.key
+    # Then it will use put method
+    monkeypatch.setattr(requests, 'put', _mock_post)
 
-    exec_path = os.path.join(cur_dir, 'dummy_executor')
-    _args_list = [exec_path]
+    exec_path = os.path.join(cur_dir, path)
+    _args_list = [exec_path, mode]
+
     if build_env:
         _args_list.extend(['--build-env', build_env])
 
     args = set_hub_push_parser().parse_args(_args_list)
-    HubIO(args).push()
 
-    assert mock.call_count == 1
+    with pytest.raises(Exception) as info:
+        result = HubIO(args).push()
 
-    _, kwargs = mock.call_args_list[0]
+    assert (
+        response_error in str(info.value)
+        or response_image_not_exits_error in str(info.value)
+        or response_readableMessage_error in str(info.value)
+    )
 
-    assert kwargs['headers'].get('Authorization') == f'token {auth_token}'
+
+@pytest.mark.parametrize('task_id', [None, '6316e9ac8e'])
+@pytest.mark.parametrize('verbose', [False, True])
+@pytest.mark.parametrize('replay', [False, True])
+@pytest.mark.parametrize('is_login', [False, True])
+@pytest.mark.parametrize('path', ['dummy_executor'])
+def test_status(mocker, monkeypatch, path, verbose, replay, task_id, is_login):
+
+    mock = mocker.Mock()
+
+    def _mock_post(url, data, headers=None, stream=True):
+        mock(url=url, data=data, headers=headers, stream=stream)
+        return StatusPostMockResponse(response_code=requests.codes.created)
+
+    monkeypatch.setattr(requests, 'post', _mock_post)
+
+    exec_path = os.path.join(cur_dir, path)
+    _args_list = [exec_path]
+
+    if task_id:
+        _args_list.extend(['--id', task_id])
+
+    if verbose:
+        _args_list.append('--verbose')
+
+    if replay:
+        _args_list.append('--replay')
+
+    args = set_hub_status_parser().parse_args(_args_list)
+
+    with monkeypatch.context() as m:
+        m.setattr(hubble, 'is_logged_in', lambda: is_login)
+        if not task_id:
+            m.setattr(
+                hubio,
+                'load_secret',
+                lambda exec_path: ('pathw7qckiqy', None, '6316e9ac8e'),
+            )
+        HubIO(args).status()
+
+    _, mock_kwargs = mock.call_args_list[0]
+    c_type, c_data = cgi.parse_header(mock_kwargs['headers']['Content-Type'])
+
+    assert c_type == 'multipart/form-data'
+
+    form_data = cgi.parse_multipart(
+        BytesIO(mock_kwargs['data']), {'boundary': c_data['boundary'].encode()}
+    )
+
+    if task_id:
+        form_data['id'] == task_id
+
+    if verbose:
+        form_data['verbose'] == True
+    else:
+        form_data['verbose'] == False
+
+    if replay:
+        form_data['replay'] == True
+    else:
+        form_data['replay'] == False
+
+
+@pytest.mark.parametrize('task_id', [None, '6316e9ac8e'])
+@pytest.mark.parametrize('verbose', [False, True])
+@pytest.mark.parametrize('replay', [False, True])
+@pytest.mark.parametrize('code', [200, 401])
+@pytest.mark.parametrize('path', ['dummy_executor'])
+@pytest.mark.parametrize(
+    'response_error',
+    [
+        'async upload error',
+    ],
+)
+@pytest.mark.parametrize(
+    'response_code_error',
+    [
+        'AuthenticationRequiredError',
+    ],
+)
+@pytest.mark.parametrize(
+    'response_task_id_error',
+    [
+        'Error: can\'t get task_id',
+    ],
+)
+def test_status_with_error(
+    mocker,
+    monkeypatch,
+    verbose,
+    replay,
+    code,
+    task_id,
+    path,
+    response_error,
+    response_code_error,
+    response_task_id_error,
+):
+
+    mock = mocker.Mock()
+
+    def _mock_post(url, data, headers=None, stream=True):
+        mock(url=url, data=data, headers=headers, stream=stream)
+        return StatusPostMockResponse(response_code=code, response_error=True)
+
+    monkeypatch.setattr(requests, 'post', _mock_post)
+
+    monkeypatch.setattr(requests, 'get', _mock_post)
+
+    exec_path = os.path.join(cur_dir, path)
+    _args_list = [exec_path]
+
+    if task_id:
+        _args_list.extend(['--id', task_id])
+
+    if verbose:
+        _args_list.append('--verbose')
+
+    if replay:
+        _args_list.append('--replay')
+
+    with pytest.raises(Exception) as info:
+        args = set_hub_status_parser().parse_args(_args_list)
+        HubIO(args).status()
+
+    assert (
+        response_error in str(info.value)
+        or response_code_error in str(info.value)
+        or response_task_id_error in str(info.value)
+    )
 
 
 @pytest.mark.parametrize('rebuild_image', [True, False])
@@ -457,7 +853,7 @@ def test_fetch(mocker, monkeypatch, rebuild_image):
 
 
 @pytest.mark.parametrize('rebuild_image', [True, False])
-def test_fetch_with_buildenv(mocker, monkeypatch, rebuild_image):
+def test_fetch_with_build_env(mocker, monkeypatch, rebuild_image):
     mock = mocker.Mock()
 
     def _mock_post(url, json, headers=None):
@@ -538,7 +934,7 @@ def test_fetch_with_retry(mocker, monkeypatch):
     assert mock.call_count == 6  # mock must be called 3+3
 
 
-def test_fetch_with_authorization(mocker, monkeypatch, auth_token):
+def test_fetch_with_authorization(mocker, monkeypatch):
     mock = mocker.Mock()
 
     def _mock_post(url, json, headers):
@@ -553,7 +949,7 @@ def test_fetch_with_authorization(mocker, monkeypatch, auth_token):
 
     _, kwargs = mock.call_args_list[0]
 
-    assert kwargs['headers'].get('Authorization') == f'token {auth_token}'
+    assert kwargs['headers'].get('Authorization').startswith('token ')
 
 
 class DownloadMockResponse:
@@ -851,7 +1247,7 @@ def test_new_with_arguments(
     for file in ['executor.py', 'README.md', 'config.yml']:
         with open(path / file, 'r') as fp:
             assert 'argsExecutor' in fp.read()
-    
+
     if advance_configuration or confirm_advance_configuration:
         with open(path / 'config.yml') as fp:
             temp = yaml.load(fp, Loader=yaml.FullLoader)

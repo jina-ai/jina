@@ -2,6 +2,7 @@
 # You need to install linkerd cli on your local machine if you want to run the k8s tests https://linkerd.io/2.11/getting-started/#step-1-install-the-cli
 import asyncio
 import os
+import re
 
 import pytest
 import requests as req
@@ -696,3 +697,64 @@ async def _create_external_deployment(api_client, app_client, docker_images, tmp
             pass
 
     await asyncio.sleep(1.0)
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['failing-executor', 'jinaai/jina']],
+    indirect=True,
+)
+async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
+    flow = Flow(name='failing_flow-with_workspace', port=9090, protocol='http').add(
+        name='failing_executor',
+        uses=f'docker://{docker_images[0]}',
+        workspace='/shared',
+        exit_on_exceptions=["Exception", "RuntimeError"],
+    )
+
+    dump_path = os.path.join(str(tmpdir), 'failing-flow-with-workspace')
+    namespace = f'failing-flow-with-workspace'.lower()
+    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    await create_all_flow_deployments_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'failing-executor': 1,
+        },
+        logger=logger,
+    )
+
+    try:
+        await run_test(
+            flow=flow,
+            namespace=namespace,
+            core_client=core_client,
+            endpoint='/',
+        )
+    except:
+        pass
+
+    await asyncio.sleep(0.5)
+
+    pods = core_client.list_namespaced_pod(namespace=namespace).items
+    pod_restarts = [item.status.container_statuses[0].restart_count for item in pods]
+    assert any([count for count in pod_restarts if count > 0])
+
+    await asyncio.sleep(2)
+    pods = core_client.list_namespaced_pod(namespace=namespace).items
+    pod_phases = [item.status.phase for item in pods]
+    assert all([phase == 'Running' for phase in pod_phases])
+
+    core_client.delete_namespace(namespace)

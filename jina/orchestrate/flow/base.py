@@ -148,6 +148,7 @@ class Flow(
         deployments_disable_reduce: Optional[str] = '[]',
         description: Optional[str] = None,
         env: Optional[dict] = None,
+        exit_on_exceptions: Optional[List[str]] = [],
         expose_endpoints: Optional[str] = None,
         expose_graphql_endpoint: Optional[bool] = False,
         floating: Optional[bool] = False,
@@ -198,6 +199,7 @@ class Flow(
         :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param env: The map of environment variables that are available inside runtime
+        :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
@@ -372,6 +374,7 @@ class Flow(
         :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param env: The map of environment variables that are available inside runtime
+        :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
@@ -791,6 +794,7 @@ class Flow(
         docker_kwargs: Optional[dict] = None,
         entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
+        exit_on_exceptions: Optional[List[str]] = [],
         external: Optional[bool] = False,
         floating: Optional[bool] = False,
         force_update: Optional[bool] = False,
@@ -845,6 +849,7 @@ class Flow(
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
+        :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
@@ -993,6 +998,7 @@ class Flow(
           More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
         :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
+        :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
@@ -1432,6 +1438,14 @@ class Flow(
 
         self._build_level = FlowBuildLevel.EMPTY
 
+        self._stop_time = time.time()
+        send_telemetry_event(
+            event='stop',
+            obj=self,
+            entity_id=self._entity_id,
+            duration=self._stop_time - self._start_time,
+            exc_type=str(exc_type),
+        )
         self.logger.debug('flow is closed!')
         self.logger.close()
 
@@ -1449,7 +1463,7 @@ class Flow(
 
         :return: this instance
         """
-
+        self._start_time = time.time()
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
 
@@ -1473,7 +1487,7 @@ class Flow(
 
         self._build_level = FlowBuildLevel.RUNNING
 
-        send_telemetry_event(event='start', obj=self)
+        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
 
         return self
 
@@ -2401,3 +2415,12 @@ class Flow(
             )
 
         return obj
+
+    @property
+    def _entity_id(self) -> str:
+        import uuid
+
+        if hasattr(self, '_entity_id_'):
+            return self._entity_id_
+        self._entity_id_ = uuid.uuid1().hex
+        return self._entity_id_

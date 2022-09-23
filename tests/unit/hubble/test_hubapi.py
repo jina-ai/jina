@@ -40,11 +40,13 @@ def test_load_dump_secret():
 
     uuid8 = 'hello'
     secret = 'world'
+    task_id = 'UUID'
     with tempfile.TemporaryDirectory() as tmpdirname:
-        hubapi.dump_secret(Path(tmpdirname), uuid8, secret)
-        new_uuid8, new_secret = hubapi.load_secret(Path(tmpdirname))
+        hubapi.dump_secret(Path(tmpdirname), uuid8, secret, task_id)
+        new_uuid8, new_secret, new_task_id = hubapi.load_secret(Path(tmpdirname))
     assert new_uuid8 == uuid8
     assert new_secret == secret
+    assert task_id == new_task_id
 
 
 def test_load_dump_secret_existing_encryption_key():
@@ -52,12 +54,14 @@ def test_load_dump_secret_existing_encryption_key():
 
     uuid8 = 'hello'
     secret = 'world'
+    task_id = 'UUID'
     with tempfile.TemporaryDirectory() as tmpdirname:
         # creates an encryption key
-        hubapi.dump_secret(Path(tmpdirname), 'dummy', 'dummy')
+        hubapi.dump_secret(Path(tmpdirname), 'dummy', 'dummy', 'dummy')
 
         # dump secret using existing encryption key
-        hubapi.dump_secret(Path(tmpdirname), uuid8, secret)
-        new_uuid8, new_secret = hubapi.load_secret(Path(tmpdirname))
+        hubapi.dump_secret(Path(tmpdirname), uuid8, secret, task_id)
+        new_uuid8, new_secret, new_task_id = hubapi.load_secret(Path(tmpdirname))
     assert new_uuid8 == uuid8
     assert new_secret == secret
+    assert task_id == new_task_id

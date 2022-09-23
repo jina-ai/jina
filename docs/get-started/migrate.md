@@ -89,15 +89,14 @@ docs = nested_docs()
 
 print(docs.traverse_flat('r,c').texts)
 ```
-```
->>> ['root1', 'rooot2', 'chunk11', 'chunk12', 'chunk21', 'chunk22']
+```console
+['root1', 'rooot2', 'chunk11', 'chunk12', 'chunk21', 'chunk22']
 ```
 ```python
 print(docs.flatten().texts)
 ```
-```
->>> ['chunk11', 'chunk12', 'root1', 'chunk21', 'chunk22', 'root2']
-
+```console
+['chunk11', 'chunk12', 'root1', 'chunk21', 'chunk22', 'root2']
 ```
 
 ````
@@ -111,15 +110,14 @@ docs = nested_docs()
 
 print(docs['@r,c'].texts)
 ```
-```
->>> ['root1', 'rooot2', 'chunk11', 'chunk12', 'chunk21', 'chunk22']
+```console
+['root1', 'rooot2', 'chunk11', 'chunk12', 'chunk21', 'chunk22']
 ```
 ```python
 print(docs[...].texts)
 ```
-```
->>> ['chunk11', 'chunk12', 'root1', 'chunk21', 'chunk22', 'root2']
-
+```console
+['chunk11', 'chunk12', 'root1', 'chunk21', 'chunk22', 'root2']
 ```
 
 ````
@@ -183,15 +181,15 @@ from jina import Document, DocumentArray
 d = Document()
 print(d.text)
 ```
-```
->>> ''
+```console
+''
 ```
 ```python
 docs = DocumentArray([d, d])
 print(docs.texts)
 ```
-```
->>> ['', '']
+```console
+['', '']
 ```
 
 ````
@@ -204,15 +202,15 @@ from docarray import Document, DocumentArray
 d = Document()
 print(d.text)
 ```
-```
->>> ''
+```console
+''
 ```
 ```python
 docs = DocumentArray([d, d])
 print(docs.texts)
 ```
-```
->>> None
+```console
+None
 ```
 
 ````

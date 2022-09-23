@@ -7,6 +7,7 @@ import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
 
+from jina.excepts import RuntimeTerminated
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
@@ -195,6 +196,14 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 context.set_trailing_metadata((('is-error', 'true'),))
                 if self._failed_requests_metrics:
                     self._failed_requests_metrics.inc()
+
+                if (
+                    self.args.exit_on_exceptions
+                    and type(ex).__name__ in self.args.exit_on_exceptions
+                ):
+                    self.logger.info('Exiting because of "--exit-on-exceptions".')
+                    raise RuntimeTerminated
+
                 return requests[0]
 
     async def _status(self, empty, context) -> jina_pb2.JinaInfoProto:
