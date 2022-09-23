@@ -28,6 +28,7 @@ def get_deployment_yamls(
         container_args_uses_after: Optional[str] = None,
         monitoring: bool = False,
         port_monitoring: Optional[int] = None,
+        protocol: Optional[str] = None
 ) -> List[Dict]:
     """Get the yaml description of a service on Kubernetes
 
@@ -52,6 +53,7 @@ def get_deployment_yamls(
     :param container_args_uses_after: arguments used for uses_after container on the k8s pod
     :param monitoring: enable monitoring on the deployment
     :param port_monitoring: port which will be exposed, for the prometheus server, by the deployed containers
+    :param protocol: In case of being a Gateway, the protocol used to expose its server
     :return: Return a dictionary with all the yaml configuration needed for a deployment
     """
     # we can always assume the ports are the same for all executors since they run on different k8s pods
@@ -82,6 +84,7 @@ def get_deployment_yamls(
         'jina_deployment_name': jina_deployment_name,
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
         'pod_type': pod_type,
+        'protocol': protocol,
     }
 
     if gpus:

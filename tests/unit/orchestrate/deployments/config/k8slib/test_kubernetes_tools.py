@@ -33,7 +33,7 @@ def test_get(template: str, params: Dict):
                 assert config['data'][sub_key] == sub_v
 
 
-@pytest.mark.parametrize('template', ['deployment'])
+@pytest.mark.parametrize('template', ['deployment-executor'])
 def test_get_deployment_with_device_plugin(template, monkeypatch):
     params = {
         'name': 'test-name',
