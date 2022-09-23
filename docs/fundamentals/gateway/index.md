@@ -218,7 +218,9 @@ curl --request POST \
 The above cURL command is equivalent to passing the `on` parameter to `client.post` as follows:
 
 ```python
-from jina import Client, DocumentArray, Document
+from docarray import DocumentArray, Document
+from jina import Client
+
 client = Client(port=12345, protocol='http')
 client.post(on='/foo', inputs=DocumentArray([Document(text='hello world')]))
 ```
