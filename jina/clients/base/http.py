@@ -25,19 +25,19 @@ class HTTPBaseClient(BaseClient):
         if r_status == status.HTTP_404_NOT_FOUND:
             raise BadClient(f'no such endpoint {url}')
         elif (
-            r_status == status.HTTP_503_SERVICE_UNAVAILABLE
-            or r_status == status.HTTP_504_GATEWAY_TIMEOUT
+                r_status == status.HTTP_503_SERVICE_UNAVAILABLE
+                or r_status == status.HTTP_504_GATEWAY_TIMEOUT
         ):
             if (
-                'header' in r_str
-                and 'status' in r_str['header']
-                and 'description' in r_str['header']['status']
+                    'header' in r_str
+                    and 'status' in r_str['header']
+                    and 'description' in r_str['header']['status']
             ):
                 raise ConnectionError(r_str['header']['status']['description'])
             else:
                 raise ValueError(r_str)
         elif (
-            r_status < status.HTTP_200_OK or r_status > status.HTTP_300_MULTIPLE_CHOICES
+                r_status < status.HTTP_200_OK or r_status > status.HTTP_300_MULTIPLE_CHOICES
         ):  # failure codes
             raise ValueError(r_str)
 
@@ -75,14 +75,16 @@ class HTTPBaseClient(BaseClient):
         return False
 
     async def _get_results(
-        self,
-        inputs: 'InputType',
-        on_done: 'CallbackFnType',
-        on_error: Optional['CallbackFnType'] = None,
-        on_always: Optional['CallbackFnType'] = None,
-        num_retries: bool = 1,
-        retry_delay: float = 0.5,
-        **kwargs,
+            self,
+            inputs: 'InputType',
+            on_done: 'CallbackFnType',
+            on_error: Optional['CallbackFnType'] = None,
+            on_always: Optional['CallbackFnType'] = None,
+            num_retries: int = 1,
+            initial_backoff: float = 0.5,
+            max_backoff: float = 0.1,
+            backoff_multiplier: float = 1.5,
+            **kwargs,
     ):
         """
         :param inputs: the callable
@@ -90,7 +92,9 @@ class HTTPBaseClient(BaseClient):
         :param on_error: the callback for on_error
         :param on_always: the callback for on_always
         :param num_retries: Number of retries to do when sending a request in case of failure
-        :param retry_delay: Delay in seconds between retries
+        :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
+        :param max_backoff: The maximum accepted backoff after the exponential incremental delay
+        :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
         :param kwargs: kwargs coming from the public interface. Includes arguments to be passed to the `HTTPClientlet`
         :yields: generator over results
         """
@@ -109,11 +113,12 @@ class HTTPBaseClient(BaseClient):
             proto = 'https' if self.args.tls else 'http'
             url = f'{proto}://{self.args.host}:{self.args.port}/post'
             iolet = await stack.enter_async_context(
-                HTTPClientlet(url=url, logger=self.logger, num_retries=num_retries, retry_delay=retry_delay, **kwargs)
+                HTTPClientlet(url=url, logger=self.logger, num_retries=num_retries, initial_backoff=initial_backoff,
+                              max_backoff=max_backoff, backoff_multiplier=backoff_multiplier, **kwargs)
             )
 
             def _request_handler(
-                request: 'Request',
+                    request: 'Request',
             ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
                 """
                 For HTTP Client, for each request in the iterator, we `send_message` using

@@ -1,4 +1,5 @@
 import asyncio
+import random
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
@@ -17,13 +18,21 @@ if TYPE_CHECKING:
 class AioHttpClientlet(ABC):
     """aiohttp session manager"""
 
-    def __init__(self, url: str, logger: 'JinaLogger',  num_retries: int = 1, retry_delay: float = 0.5,  **kwargs) -> None:
+    def __init__(self, url: str,
+                 logger: 'JinaLogger',
+                 num_retries: int = 1,
+                 initial_backoff: float = 0.5,
+                 max_backoff: float = 0.1,
+                 backoff_multiplier: float = 1.5,
+                 **kwargs) -> None:
         """HTTP Client to be used with the streamer
 
         :param url: url to send http/websocket request to
         :param logger: jina logger
         :param num_retries: Number of retries to do when sending a request in case of failure
-        :param retry_delay: Delay in seconds between retries
+        :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
+        :param max_backoff: The maximum accepted backoff after the exponential incremental delay
+        :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
         :param kwargs: kwargs  which will be forwarded to the `aiohttp.Session` instance. Used to pass headers to requests
         """
         self.url = url
@@ -39,7 +48,9 @@ class AioHttpClientlet(ABC):
         if kwargs.get('cookies', None):
             self._session_kwargs['cookies'] = kwargs.get('cookies')
         self.num_retries = num_retries
-        self.retry_delay = retry_delay
+        self.initial_backoff = initial_backoff
+        self.max_backoff = max_backoff
+        self.backoff_multiplier = backoff_multiplier
 
     @abstractmethod
     async def send_message(self, **kwargs):
@@ -115,7 +126,11 @@ class HTTPClientlet(AioHttpClientlet):
                 if retry == self.num_retries - 1:
                     raise
                 else:
-                    await asyncio.sleep(self.retry_delay)
+                    if retry == 0:
+                        wait_time = random.uniform(0, self.initial_backoff)
+                    else:
+                        wait_time = random.uniform(0, min(self.initial_backoff*self.backoff_multiplier**(retry-1), self.max_backoff))
+                    await asyncio.sleep(wait_time)
 
     async def send_dry_run(self):
         """Query the dry_run endpoint from Gateway
@@ -183,7 +198,11 @@ class WebsocketClientlet(AioHttpClientlet):
                     self.logger.critical(f'server connection closed already!')
                     raise
                 else:
-                    await asyncio.sleep(self.retry_delay)
+                    if retry == 0:
+                        wait_time = random.uniform(0, self.initial_backoff)
+                    else:
+                        wait_time = random.uniform(0, min(self.initial_backoff*self.backoff_multiplier**(retry-1), self.max_backoff))
+                    await asyncio.sleep(wait_time)
 
     async def send_dry_run(self):
         """Query the dry_run endpoint from Gateway

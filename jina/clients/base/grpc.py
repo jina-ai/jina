@@ -64,7 +64,9 @@ class GRPCBaseClient(BaseClient):
         on_always: Optional['CallbackFnType'] = None,
         compression: Optional[str] = None,
         num_retries: bool = 1,
-        retry_delay: float = 0.5,
+        initial_backoff: float = 0.5,
+        max_backoff: float = 0.1,
+        backoff_multiplier: float = 1.5,
         **kwargs,
     ):
         try:
@@ -86,9 +88,9 @@ class GRPCBaseClient(BaseClient):
                                     "name": [{}],
                                     "retryPolicy": {
                                         "maxAttempts": num_retries,
-                                        "initialBackoff": f"{retry_delay}s",
-                                        "maxBackoff": f"{retry_delay}s",
-                                        "backoffMultiplier": 10,
+                                        "initialBackoff": f"{initial_backoff}s",
+                                        "maxBackoff": f"{max_backoff}s",
+                                        "backoffMultiplier": {backoff_multiplier},
                                         "retryableStatusCodes": ["UNAVAILABLE", "DEADLINE_EXCEEDED", "INTERNAL"],
                                     },
                                 }]

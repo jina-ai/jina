@@ -219,6 +219,9 @@ class PostMixin:
             return_responses: bool = False,
             num_retries: bool = 1,
             retry_delay: float = 0.5,
+            initial_backoff: float = 0.5,
+            max_backoff: float = 0.1,
+            backoff_multiplier: float = 1.5,
             **kwargs,
     ) -> Optional[Union['DocumentArray', List['Response']]]:
         """Post a general data request to the Flow.
@@ -235,8 +238,9 @@ class PostMixin:
         :param continue_on_error: if set, a Request that causes an error will be logged only without blocking the further requests.
         :param return_responses: if set to True, the result will come as Response and not as a `DocumentArray`
         :param num_retries: Number of retries to do when sending a request in case of failure
-        :param retry_delay: Delay in seconds between retries
-
+        :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
+        :param max_backoff: The maximum accepted backoff after the exponential incremental delay
+        :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
         :param kwargs: additional parameters
         :return: None or DocumentArray containing all response Documents
 
@@ -277,6 +281,9 @@ class PostMixin:
             request_size=request_size,
             num_retries=num_retries,
             retry_delay=retry_delay,
+            initial_backoff=initial_backoff,
+            max_backoff=max_backoff,
+            backoff_multiplier=backoff_multiplier,
             **kwargs,
         )
 
@@ -304,7 +311,9 @@ class AsyncPostMixin:
             continue_on_error: bool = False,
             return_responses: bool = False,
             num_retries: bool = 1,
-            retry_delay: float = 0.5,
+            initial_backoff: float = 0.5,
+            max_backoff: float = 0.1,
+            backoff_multiplier: float = 1.5,
             **kwargs,
     ) -> AsyncGenerator[None, Union['DocumentArray', 'Response']]:
         """Async Post a general data request to the Flow.
@@ -321,7 +330,9 @@ class AsyncPostMixin:
         :param continue_on_error: if set, a Request that causes an error will be logged only without blocking the further requests.
         :param return_responses: if set to True, the result will come as Response and not as a `DocumentArray`
         :param num_retries: Number of retries to do when sending a request in case of failure
-        :param retry_delay: Delay in seconds between retries
+        :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
+        :param max_backoff: The maximum accepted backoff after the exponential incremental delay
+        :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
         :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call
         :yield: Response object
 
@@ -344,7 +355,9 @@ class AsyncPostMixin:
                 parameters=parameters,
                 request_size=request_size,
                 num_retries=num_retries,
-                retry_delay=retry_delay,
+                initial_backoff=initial_backoff,
+                max_backoff=max_backoff,
+                backoff_multiplier=backoff_multiplier,
                 **kwargs,
         ):
             if not return_responses:
