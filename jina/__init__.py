@@ -109,6 +109,10 @@ __default_host__ = _os.environ.get(
 )
 __docker_host__ = 'host.docker.internal'
 __default_executor__ = 'BaseExecutor'
+__default_gateway__ = 'BaseGateway'
+__default_http_gateway__ = 'HTTPGateway'
+__default_websocket_gateway__ = 'WebSocketGateway'
+__default_grpc_gateway__ = 'GRPCGateway'
 __default_endpoint__ = '/default'
 __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
