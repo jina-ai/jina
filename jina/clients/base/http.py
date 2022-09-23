@@ -21,10 +21,9 @@ if TYPE_CHECKING:
 class HTTPBaseClient(BaseClient):
     """A MixIn for HTTP Client."""
 
-    def _handle_response_status(self, r_status, r_str, url, continue_on_error):
-        exception = None
+    def _handle_response_status(self, r_status, r_str, url):
         if r_status == status.HTTP_404_NOT_FOUND:
-            exception = BadClient(f'no such endpoint {url}')
+            raise BadClient(f'no such endpoint {url}')
         elif (
             r_status == status.HTTP_503_SERVICE_UNAVAILABLE
             or r_status == status.HTTP_504_GATEWAY_TIMEOUT
@@ -34,21 +33,13 @@ class HTTPBaseClient(BaseClient):
                 and 'status' in r_str['header']
                 and 'description' in r_str['header']['status']
             ):
-                exception = ConnectionError(r_str['header']['status']['description'])
+                raise ConnectionError(r_str['header']['status']['description'])
             else:
-                exception = ValueError(r_str)
+                raise ValueError(r_str)
         elif (
             r_status < status.HTTP_200_OK or r_status > status.HTTP_300_MULTIPLE_CHOICES
         ):  # failure codes
-            exception = ValueError(r_str)
-
-        if exception is not None and not continue_on_error:
-            raise exception
-        else:
-            if exception:
-                self.logger.error(
-                    f'{repr(exception)}'
-                )
+            raise ValueError(r_str)
 
     async def _is_flow_ready(self, **kwargs) -> bool:
         """Sends a dry run to the Flow to validate if the Flow is ready to receive requests
@@ -70,7 +61,7 @@ class HTTPBaseClient(BaseClient):
                 r_status = response.status
 
                 r_str = await response.json()
-                self._handle_response_status(r_status, r_str, url, False)
+                self._handle_response_status(r_status, r_str, url)
                 if r_str['code'] == jina_pb2.StatusProto.SUCCESS:
                     return True
                 else:

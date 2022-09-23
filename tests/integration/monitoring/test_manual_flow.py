@@ -180,7 +180,7 @@ async def test_kill_worker(port_generator):
         worker_process.terminate()  # kill worker
         worker_process.join()
 
-        # send second request, should fail but not raise exception because of `continue_on_error`
+        # send second request, should fail
         p = multiprocessing.Process(
             target=_send_request,
             args=(gateway_port, 'grpc'),
@@ -190,7 +190,7 @@ async def test_kill_worker(port_generator):
         p.start()
         p.join()
 
-        assert p.exitcode == 0 # continue on error makes it not fail
+        assert p.exitcode != 0
 
         # 1 request failed, 1 request successful
         resp = req.get(f'http://localhost:{gateway_monitoring_port}/')

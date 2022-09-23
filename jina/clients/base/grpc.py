@@ -132,38 +132,32 @@ class GRPCBaseClient(BaseClient):
                         my_code = err.code()
                         my_details = err.details()
                         msg = f'gRPC error: {my_code} {my_details}'
-                        exc_from = None
-                        exception = None
 
                         if my_code == grpc.StatusCode.UNAVAILABLE:
                             self.logger.error(
                                 f'{msg}\nThe ongoing request is terminated as the server is not available or closed already.'
                             )
-                            exception = ConnectionError(my_details)
+                            raise ConnectionError(my_details)
                         elif my_code == grpc.StatusCode.DEADLINE_EXCEEDED:
                             self.logger.error(
                                 f'{msg}\nThe ongoing request is terminated due to a server-side timeout.'
                             )
-                            exception = ConnectionError(my_details)
+                            raise ConnectionError(my_details)
                         elif my_code == grpc.StatusCode.INTERNAL:
                             self.logger.error(f'{msg}\ninternal error on the server side')
-                            exception = err
+                            raise err
                         elif (
                                 my_code == grpc.StatusCode.UNKNOWN
                                 and 'asyncio.exceptions.TimeoutError' in my_details
                         ):
-                            exception = BadClientInput(
+                            raise BadClientInput(
                                 f'{msg}\n'
                                 'often the case is that you define/send a bad input iterator to jina, '
                                 'please double check your input iterator'
-                            )
-                            exc_from = err
+                            ) from err
                         else:
-                            exception = BadServerFlow(msg)
-                            exc_from = err
+                            raise BadServerFlow(msg) from err
 
-                        if exception is not None and not continue_on_error:
-                            raise exception from exc_from
         except KeyboardInterrupt:
             self.logger.warning('user cancel the process')
         except asyncio.CancelledError as ex:
