@@ -91,7 +91,7 @@ def set_gateway_parser(parser=None):
 
     parser.set_defaults(
         name='gateway',
-        runtime_cls='GRPCGatewayRuntime',
+        runtime_cls='GatewayRuntime',
         deployment_role=DeploymentRoleType.GATEWAY,
     )
 

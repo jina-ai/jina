@@ -5,9 +5,7 @@ import pytest
 from jina import Client
 from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
-from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
-from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
+from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 
 
@@ -22,13 +20,7 @@ def _create_worker_runtime(port, name='', executor=None):
 
 
 def _create_gateway_runtime(graph_description, pod_addresses, port, protocol='grpc'):
-    if protocol == 'http':
-        gateway_runtime = HTTPGatewayRuntime
-    elif protocol == 'websocket':
-        gateway_runtime = WebSocketGatewayRuntime
-    else:
-        gateway_runtime = GRPCGatewayRuntime
-    with gateway_runtime(
+    with GatewayRuntime(
         set_gateway_parser().parse_args(
             [
                 '--graph-description',

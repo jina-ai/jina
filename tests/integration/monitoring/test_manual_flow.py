@@ -8,9 +8,7 @@ from docarray import Document, DocumentArray
 from jina import Executor, Flow, requests
 from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
-from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
-from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
+from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 
 
@@ -33,13 +31,7 @@ def _create_worker_runtime(port, name='', executor=None, port_monitoring=None):
 def _create_gateway_runtime(
     graph_description, pod_addresses, port, port_monitoring, protocol='grpc', retries=-1
 ):
-    if protocol == 'http':
-        gateway_runtime = HTTPGatewayRuntime
-    elif protocol == 'websocket':
-        gateway_runtime = WebSocketGatewayRuntime
-    else:
-        gateway_runtime = GRPCGatewayRuntime
-    with gateway_runtime(
+    with GatewayRuntime(
         set_gateway_parser().parse_args(
             [
                 '--graph-description',
@@ -101,7 +93,7 @@ def _send_request(gateway_port, protocol, n_docs=2):
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_pending_requests_with_connection_error(port_generator, protocol):
-    runtime_name = 'gateway/GRPCGatewayRuntime' if protocol == 'grpc' else 'gateway'
+    runtime_name = 'gateway'
     gateway_port = port_generator()
     worker_port = port_generator()
     port_monitoring = port_generator()
@@ -194,14 +186,12 @@ async def test_kill_worker(port_generator):
 
         # 1 request failed, 1 request successful
         resp = req.get(f'http://localhost:{gateway_monitoring_port}/')
-        assert (
-            f'jina_successful_requests_total{{runtime_name="gateway/GRPCGatewayRuntime"}} 1.0'
-            in str(resp.content)
+        assert f'jina_successful_requests_total{{runtime_name="gateway"}} 1.0' in str(
+            resp.content
         )
 
-        assert (
-            f'jina_failed_requests_total{{runtime_name="gateway/GRPCGatewayRuntime"}} 1.0'
-            in str(resp.content)
+        assert f'jina_failed_requests_total{{runtime_name="gateway"}} 1.0' in str(
+            resp.content
         )
 
     except Exception:
@@ -213,7 +203,7 @@ async def test_kill_worker(port_generator):
 
 @pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
 def test_pending_requests_with_connection_error(port_generator, protocol):
-    runtime_name = 'gateway/GRPCGatewayRuntime' if protocol == 'grpc' else 'gateway'
+    runtime_name = 'gateway' if protocol == 'grpc' else 'gateway'
     gateway_port = port_generator()
     worker_port = port_generator()
     port_monitoring = port_generator()
@@ -261,9 +251,7 @@ def _assert_pending_value(val: str, runtime_name, port):
 def test_pending_request(port_generator, failure_in_executor, protocol):
     port0 = port_generator()
     port1 = port_generator()
-    runtime_name = (
-        'gateway/rep-0/GRPCGatewayRuntime' if protocol == 'grpc' else 'gateway/rep-0'
-    )
+    runtime_name = 'gateway/rep-0'
 
     class SlowExecutor(Executor):
         @requests

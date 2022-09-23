@@ -18,9 +18,10 @@ if TYPE_CHECKING:
     import threading
 
 
-class GatewayRuntime(AsyncNewLoopRuntime, ABC):
+class GatewayRuntime(AsyncNewLoopRuntime):
+    # TODO: more docs here
     """
-    The Runtime from which the GatewayRuntimes need to inherit
+    The Gateway Runtime that starts a gateway pod.
     """
 
     def __init__(

@@ -73,11 +73,6 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
     :return: runtime class as a string
     """
     _args = deepcopy(args) if copy else args
-    gateway_runtime_dict = {
-        GatewayProtocolType.GRPC: 'GRPCGatewayRuntime',
-        GatewayProtocolType.WEBSOCKET: 'WebSocketGatewayRuntime',
-        GatewayProtocolType.HTTP: 'HTTPGatewayRuntime',
-    }
     gateway_dict = {
         GatewayProtocolType.GRPC: 'GRPCGateway',
         GatewayProtocolType.WEBSOCKET: 'WebSocketGateway',
@@ -90,7 +85,6 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
         _args.uses = HubIO(_hub_args).pull()
 
     if hasattr(_args, 'protocol'):
-        _args.runtime_cls = gateway_runtime_dict[_args.protocol]
         if not _args.uses:
             _args.uses = gateway_dict[_args.protocol]
     if _args.pod_role == PodRoleType.HEAD:
