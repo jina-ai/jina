@@ -1,7 +1,7 @@
-from typing import Any, Iterable, Optional, Sequence
+from typing import Iterable, Optional, Sequence
 
 from prometheus_client import REGISTRY, CollectorRegistry
-from prometheus_client.metrics import Summary, T, _build_full_name
+from prometheus_client.metrics import Summary, _build_full_name
 
 
 class _SummaryDeprecated(Summary):
@@ -50,7 +50,7 @@ class _SummaryDeprecated(Summary):
         metric = self._get_metric()
         for suffix, labels, value, timestamp, exemplar in self._samples():
             metric.add_sample(self._name + suffix, labels, value, timestamp, exemplar)
-            if self._old_name:  # here this is the hack to injec the old metrics names
+            if self._old_name:  # here this is the hack to inject the old metrics names
                 metric.add_sample(
                     self._old_name + suffix, labels, value, timestamp, exemplar
                 )
