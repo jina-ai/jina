@@ -483,11 +483,10 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">log_config</span><span class="p">:</span>
-            <span class="n">log_config</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span>
-                <span class="s1">&#39;JINA_LOG_CONFIG&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;default&#39;</span><span class="p">,</span>
-            <span class="p">)</span>
+        <span class="n">log_config</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span>
+            <span class="s1">&#39;JINA_LOG_CONFIG&#39;</span><span class="p">,</span>
+            <span class="n">log_config</span> <span class="ow">or</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">quiet</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;JINA_LOG_CONFIG&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;QUIET&#39;</span><span class="p">:</span>
             <span class="n">log_config</span> <span class="o">=</span> <span class="s1">&#39;quiet&#39;</span>
@@ -631,7 +630,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 22, 2022</div>
+                            Last updated on Sep 23, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -494,7 +494,7 @@ The default port for the Client is <code class="docutils literal notranslate"><s
 </div>
 </div>
 </div>
-<p>You can also use a mixe of both:</p>
+<p>You can also use a mix of both:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
 
 <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;https://my.awesome.flow&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
@@ -510,6 +510,14 @@ Example: the following code will raise an exception:</p>
 <span class="n">Client</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;https://my.awesome.flow:1234&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">4321</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="caution admonition">
+<p class="admonition-title">Caution</p>
+<p>In case you instanciate a <code class="docutils literal notranslate"><span class="pre">Client</span></code> object using the <code class="docutils literal notranslate"><span class="pre">grpc</span></code> protocol, keep in mind that <code class="docutils literal notranslate"><span class="pre">grpc</span></code> clients cannot be used in
+a multi-threaded environment (check <a class="reference external" href="https://github.com/grpc/grpc/issues/25364">this gRPC issue</a> for reference).
+What you should do, is to rely on asynchronous programming or multi-processing rather than multi-threading.
+For instance, if you’re building a web server, you can introduce multi-processing based parallelism to your app using
+<code class="docutils literal notranslate"><span class="pre">gunicorn</span></code>: <code class="docutils literal notranslate"><span class="pre">gunicorn</span> <span class="pre">main:app</span> <span class="pre">--workers</span> <span class="pre">4</span> <span class="pre">--worker-class</span> <span class="pre">uvicorn.workers.UvicornWorker</span> <span class="pre">...</span></code></p>
 </div>
 </section>
 <section id="test-readiness-of-the-flow">
@@ -1154,7 +1162,7 @@ set the Client’s <code class="docutils literal notranslate"><span class="pre">
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 22, 2022</div>
+                            Last updated on Sep 23, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

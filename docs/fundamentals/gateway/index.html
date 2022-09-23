@@ -556,6 +556,21 @@ These custom endpoints can be added to the HTTP interface using <code class="doc
 </div>
 </div>
 </div>
+<p>However, if you want to send requests to a different Executor endpoint, you can still do it without exposing it in the HTTP endpoint, by sending an HTTP request to the <code class="docutils literal notranslate"><span class="pre">/post</span></code> HTTP endpoint while setting<br />
+<code class="docutils literal notranslate"><span class="pre">execEndpoint</span></code> in the request.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>curl --request POST \
+&#39;http://localhost:12345/post&#39; \
+--header &#39;Content-Type: application/json&#39; -d &#39;{&quot;data&quot;: [{&quot;text&quot;: &quot;hello world&quot;}], &quot;execEndpoint&quot;: &quot;/foo&quot;}&#39;
+</pre></div>
+</div>
+<p>The above cURL command is equivalent to passing the <code class="docutils literal notranslate"><span class="pre">on</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">client.post</span></code> as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">docarray</span> <span class="kn">import</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;hello world&#39;</span><span class="p">)]))</span>
+</pre></div>
+</div>
 <section id="hide-default-endpoints">
 <h3>Hide default endpoints<a class="headerlink" href="#hide-default-endpoints" title="Permalink to this heading">#</a></h3>
 <p>It is possible to hide the default CRUD and debug endpoints in production. This might be useful when the context is not applicable.
@@ -859,7 +874,7 @@ To enable this endpoint, all you need to do is set <code class="docutils literal
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 22, 2022</div>
+                            Last updated on Sep 23, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

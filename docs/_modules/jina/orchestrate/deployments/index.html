@@ -1020,7 +1020,6 @@
 <span class="sd">        :param replicas: the number of replicas</span>
 <span class="sd">        :return: a map from replica id to device id</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; device_str </span><span class="si">{</span><span class="n">device_str</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">device_str</span>
             <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">device_str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
@@ -1042,7 +1041,6 @@
                     <span class="n">selected_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device_num</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">selected_devices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_devices</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; selected devices </span><span class="si">{</span><span class="n">selected_devices</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="n">_c</span> <span class="o">=</span> <span class="n">cycle</span><span class="p">(</span><span class="n">selected_devices</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">{</span><span class="n">j</span><span class="p">:</span> <span class="nb">next</span><span class="p">(</span><span class="n">_c</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">replicas</span><span class="p">)}</span>
 
@@ -1295,7 +1293,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 22, 2022</div>
+                            Last updated on Sep 23, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

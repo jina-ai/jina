@@ -551,7 +551,6 @@
     <span class="p">):</span>
         <span class="c1"># possible module.class name</span>
         <span class="n">module_name</span><span class="p">,</span> <span class="n">cls_name</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">cls_name</span><span class="p">)</span>
         <span class="n">PathImporter</span><span class="o">.</span><span class="n">add_modules</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;!</span><span class="si">{</span><span class="n">cls_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">),</span> <span class="kc">None</span>
     <span class="k">elif</span> <span class="n">allow_json</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -661,7 +660,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 22, 2022</div>
+                            Last updated on Sep 23, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
