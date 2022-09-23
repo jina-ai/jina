@@ -205,6 +205,24 @@ with:
         - fine-tuning
 ```
 ````
+
+However, if you want to send requests to a different Executor endpoint, you can still do it without exposing it in the HTTP endpoint, by sending an HTTP request to the `/post` HTTP endpoint while setting  
+`execEndpoint` in the request.
+
+```text
+curl --request POST \
+'http://localhost:12345/post' \
+--header 'Content-Type: application/json' -d '{"data": [{"text": "hello world"}], "execEndpoint": "/foo"}'
+```
+
+this would be equivalent to passing the `on` parameter to `client.post` like:
+
+```python
+from jina import Client, DocumentArray, Document
+client = Client(port=12345, protocol='http')
+client.post(on='/foo', inputs=DocumentArray([Document(text='hello world')]))
+```
+
 ### Hide default endpoints
 
 It is possible to hide the default CRUD and debug endpoints in production. This might be useful when the context is not applicable.
