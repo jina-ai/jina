@@ -215,7 +215,7 @@ curl --request POST \
 --header 'Content-Type: application/json' -d '{"data": [{"text": "hello world"}], "execEndpoint": "/foo"}'
 ```
 
-this would be equivalent to passing the `on` parameter to `client.post` like:
+The above cURL command is equivalent to passing the `on` parameter to `client.post` as follows:
 
 ```python
 from jina import Client, DocumentArray, Document
