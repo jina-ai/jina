@@ -43,7 +43,6 @@ def test_get_deployment_with_device_plugin(template, monkeypatch):
         'command': 'test-command',
         'args': 'test-args',
         'port': 1234,
-        'port': 1234,
         'port_out': 1234,
         'port_ctrl': 1234,
         'pull_policy': 1234,
