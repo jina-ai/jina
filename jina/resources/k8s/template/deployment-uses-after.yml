@@ -67,7 +67,12 @@ spec:
           value: {jina_deployment_name}
 
         readinessProbe:
-          tcpSocket:
-            port: {port_uses_after}
+          exec:
+            command:
+              - jina
+              - ping
+              - executor
+              - 127.0.0.1:{port_uses_after}
           initialDelaySeconds: 5
-          periodSeconds: 10
+          periodSeconds: 20
+          timeoutSeconds: 10
