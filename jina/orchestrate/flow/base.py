@@ -183,9 +183,7 @@ class Flow(
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
         title: Optional[str] = None,
-        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
-        uses_metas: Optional[dict] = None,
-        uses_requests: Optional[dict] = None,
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_with: Optional[dict] = None,
         uvicorn_kwargs: Optional[dict] = None,
         workspace: Optional[str] = None,
@@ -244,12 +242,11 @@ class Flow(
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
-        :param py_modules: The customized python modules need to be imported before loading the executor
+        :param py_modules: The customized python modules need to be imported before loading the gateway
 
           Note that the recommended way is to only import a single module - a simple python file, if your
-          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
-          which should be structured as a python package. For more details, please see the
-          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__
+          gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
+          which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param replicas: The number of replicas in the deployment
@@ -262,10 +259,9 @@ class Flow(
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
-        :param uses: The config of the executor, it could be one of the followings:
-                  * the string literal of an Executor class name
-                  * an Executor YAML file (.yml, .yaml, .jaml)
-                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
+        :param uses: The config of the gateway, it could be one of the followings:
+                  * the string literal of an Gateway class name
+                  * a Gateway YAML file (.yml, .yaml, .jaml)
                   * a docker image (must start with `docker://`)
                   * the string literal of a YAML config (must start with `!` or `jtype: `)
                   * the string literal of a JSON config
@@ -273,8 +269,6 @@ class Flow(
                   When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
-        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
-        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
 
@@ -419,12 +413,11 @@ class Flow(
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
-        :param py_modules: The customized python modules need to be imported before loading the executor
+        :param py_modules: The customized python modules need to be imported before loading the gateway
 
           Note that the recommended way is to only import a single module - a simple python file, if your
-          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
-          which should be structured as a python package. For more details, please see the
-          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__
+          gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
+          which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param replicas: The number of replicas in the deployment
@@ -437,10 +430,9 @@ class Flow(
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
-        :param uses: The config of the executor, it could be one of the followings:
-                  * the string literal of an Executor class name
-                  * an Executor YAML file (.yml, .yaml, .jaml)
-                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
+        :param uses: The config of the gateway, it could be one of the followings:
+                  * the string literal of an Gateway class name
+                  * a Gateway YAML file (.yml, .yaml, .jaml)
                   * a docker image (must start with `docker://`)
                   * the string literal of a YAML config (must start with `!` or `jtype: `)
                   * the string literal of a JSON config
@@ -448,8 +440,6 @@ class Flow(
                   When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
-        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
-        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
 
