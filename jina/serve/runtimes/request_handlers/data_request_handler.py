@@ -54,6 +54,8 @@ class DataRequestHandler:
             ):
                 from prometheus_client import Counter, Summary
 
+                from jina.serve.monitoring import _SummaryDeprecated
+
                 self._document_processed_metrics = Counter(
                     'document_processed',
                     'Number of Documents that have been processed by the executor',
@@ -62,9 +64,10 @@ class DataRequestHandler:
                     registry=metrics_registry,
                 )
 
-                self._request_size_metrics = Summary(
-                    'request_size_bytes',
-                    'The receive request size in Bytes',
+                self._request_size_metrics = _SummaryDeprecated(
+                    old_name='request_size_bytes',
+                    name='received_request_bytes',
+                    documentation='The size of the request return to the gateway in Bytes',
                     namespace='jina',
                     labelnames=('executor_endpoint', 'executor', 'runtime_name'),
                     registry=metrics_registry,

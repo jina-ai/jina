@@ -45,6 +45,8 @@ class MonitoringRequestMixin:
             ):
                 from prometheus_client import Counter, Gauge, Summary
 
+                from jina.serve.monitoring import _SummaryDeprecated
+
             self._receiving_request_metrics = Summary(
                 'receiving_request_seconds',
                 'Time spent processing successful request',
@@ -77,9 +79,10 @@ class MonitoringRequestMixin:
                 labelnames=('runtime_name',),
             ).labels(runtime_name)
 
-            self._request_size_metrics = Summary(
-                'request_size_bytes',
-                'The receive request size in Bytes',
+            self._request_size_metrics = _SummaryDeprecated(
+                old_name='request_size_bytes',
+                name='received_request_bytes',
+                documentation='The size of the request return to the client in Bytes',
                 namespace='jina',
                 labelnames=('runtime_name',),
                 registry=metrics_registry,
