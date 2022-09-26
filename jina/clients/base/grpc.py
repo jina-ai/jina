@@ -31,6 +31,7 @@ class GRPCBaseClient(BaseClient):
                 f'{self.args.host}:{self.args.port}',
                 asyncio=True,
                 tls=self.args.tls,
+                enable_trace=False,
             ) as channel:
                 stub = jina_pb2_grpc.JinaGatewayDryRunRPCStub(channel)
                 self.logger.debug(f'connected to {self.args.host}:{self.args.port}')

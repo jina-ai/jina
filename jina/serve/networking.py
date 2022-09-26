@@ -140,7 +140,7 @@ class ReplicaList:
         use_tls = parsed_address.scheme in TLS_PROTOCOL_SCHEMES
 
         stubs, channel = GrpcConnectionPool.create_async_channel_stub(
-            address, tls=use_tls, summary=self.summary
+            address, tls=use_tls, summary=self.summary, enable_trace=False
         )
         return stubs, channel
 
@@ -1148,7 +1148,11 @@ class GrpcConnectionPool:
 
     @staticmethod
     def create_async_channel_stub(
-        address, tls=False, root_certificates: Optional[str] = None, summary=None
+        address,
+        tls=False,
+        root_certificates: Optional[str] = None,
+        summary=None,
+        enable_trace: Optional[bool] = False,
     ) -> Tuple[ConnectionStubs, grpc.aio.Channel]:
         """
         Creates an async GRPC Channel. This channel has to be closed eventually!
@@ -1157,6 +1161,8 @@ class GrpcConnectionPool:
         :param tls: if True, use tls for the grpc channel
         :param root_certificates: the path to the root certificates for tls, only u
         :param summary: Optional Prometheus summary object
+        :param enable_trace: If True the tracing interceptors are added to the channel otherwise the channel will not be provided with any tracing interceptors.
+        :param
 
         :returns: DataRequest stubs and an async grpc channel
         """
@@ -1165,6 +1171,7 @@ class GrpcConnectionPool:
             asyncio=True,
             tls=tls,
             root_certificates=root_certificates,
+            enable_trace=enable_trace,
         )
 
         return (
