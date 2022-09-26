@@ -73,9 +73,9 @@ class DataRequestHandler:
                     registry=metrics_registry,
                 )
 
-                self._sending_request_size_metrics = Summary(
-                    'sent_request_bytes',
-                    'The size in Bytes of the send/return request',
+                self._sent_response_size_metrics = Summary(
+                    'sent_response_bytes',
+                    'The size in Bytes of the response',
                     namespace='jina',
                     labelnames=('executor_endpoint', 'executor', 'runtime_name'),
                     registry=metrics_registry,
@@ -83,7 +83,7 @@ class DataRequestHandler:
         else:
             self._document_processed_metrics = None
             self._request_size_metrics = None
-            self._sending_request_size_metrics = None
+            self._sent_response_size_metrics = None
 
     def _load_executor(self, metrics_registry: Optional['CollectorRegistry'] = None):
         """
@@ -199,8 +199,8 @@ class DataRequestHandler:
 
         DataRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
 
-        if self._sending_request_size_metrics:
-            self._sending_request_size_metrics.labels(
+        if self._sent_response_size_metrics:
+            self._sent_response_size_metrics.labels(
                 requests[0].header.exec_endpoint,
                 self._executor.__class__.__name__,
                 self.args.name,

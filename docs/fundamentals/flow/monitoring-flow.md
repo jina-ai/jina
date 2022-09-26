@@ -193,7 +193,7 @@ You can find more information on the different type of metrics in Prometheus [he
 | `jina_successful_requests_total` | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter) | Total count of successful requests returned by the Executor across all endpoints                            |
 | `jina_failed_requests_total`     | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter) | Total count of failed requests returned by the Executor across all endpoints                                |
 | `jina_received_request_bytes`        | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measures the size of the request in Bytes received at the Executor level                                    |
-| `jina_sent_request_bytes`        | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measures the size of the request in Bytes return from the Executor to the Gateway                           |
+| `jina_sent_response_bytes`        | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measures the size of the request in Bytes return from the Executor to the Gateway                           |
 
 sent_request_bytes
 
