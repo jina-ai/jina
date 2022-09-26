@@ -121,13 +121,21 @@ def validate_uses(uses: str):
     :param uses: uses argument
     :return: boolean indicating whether is a valid uses to be used in K8s or docker compose
     """
-    # Allow either a default gateway class, default executor or docker image
-    if uses in [
-        __default_http_gateway__,
-        __default_websocket_gateway__,
-        __default_grpc_gateway__,
-        __default_executor__,
-    ] or uses.startswith('docker://'):
+    # Uses can be either None (not specified), default gateway class, default executor or docker image
+    # None => deplyoment uses base container image and uses is determined inside container
+    # default gateway class or default executor => deployment uses base container and sets uses in command
+    # container images => deployment uses the specified container image and uses is defined by container
+    if (
+        uses is None
+        or uses
+        in [
+            __default_http_gateway__,
+            __default_websocket_gateway__,
+            __default_grpc_gateway__,
+            __default_executor__,
+        ]
+        or uses.startswith('docker://')
+    ):
         return True
 
     try:
