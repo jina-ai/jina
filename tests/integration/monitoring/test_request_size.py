@@ -115,7 +115,10 @@ def test_request_size_increasing(port_generator, executor):
         'jina_return_client_request_bytes_sum{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}'
     ]
 
-    # assert _compare_relative_difference(size_received_at_gateway, size_send_by_gateway) < 0.5  # the diff between the size received at the gateway and forward to the executor should be relatively small
+    assert (
+        _compare_relative_difference(size_received_at_gateway, size_send_by_gateway)
+        < 0.5
+    )  # the diff between the size received at the gateway and forward to the executor should be relatively small
 
     assert (
         size_send_by_gateway == size_received_at_executor
