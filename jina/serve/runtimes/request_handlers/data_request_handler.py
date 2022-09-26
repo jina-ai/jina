@@ -74,7 +74,7 @@ class DataRequestHandler:
                 )
 
                 self._sending_request_size_metrics = Summary(
-                    'send_request_bytes',
+                    'sent_request_bytes',
                     'The size in Bytes of the send/return request',
                     namespace='jina',
                     labelnames=('executor_endpoint', 'executor', 'runtime_name'),

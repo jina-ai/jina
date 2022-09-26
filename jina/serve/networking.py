@@ -598,7 +598,7 @@ class GrpcConnectionPool:
             ).labels(runtime_name)
 
             returns_requests_bytes_metrics = Summary(
-                'return_request_bytes',
+                'received_response_bytes',
                 'Size in Bytes of the request returned by the Pod',
                 registry=metrics_registry,
                 namespace='jina',
@@ -606,7 +606,7 @@ class GrpcConnectionPool:
             ).labels(runtime_name)
 
             send_requests_bytes_metrics = Summary(
-                'send_request_bytes',
+                'sent_request_bytes',
                 'Size in Bytes of the request send to the Pod',
                 registry=metrics_registry,
                 namespace='jina',
