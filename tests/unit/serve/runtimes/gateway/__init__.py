@@ -1,15 +1,20 @@
+import json
 import multiprocessing
-from typing import Dict, Optional, Sequence
+from typing import Dict, Optional, Sequence, Tuple
 
 from docarray import DocumentArray
 from opentelemetry.context.context import Context
+from opentelemetry.sdk.metrics._internal import MeterProvider
 from opentelemetry.sdk.metrics._internal.export import (
+    InMemoryMetricReader,
     MetricExporter,
     MetricExportResult,
+    MetricReader,
 )
-from opentelemetry.sdk.metrics.export import MetricsData
-from opentelemetry.sdk.trace import ReadableSpan
+from opentelemetry.sdk.metrics.export import MetricsData, PeriodicExportingMetricReader
+from opentelemetry.sdk.trace import ReadableSpan, TracerProvider, export
 from opentelemetry.sdk.trace.export import SpanExporter, SpanExportResult
+from opentelemetry.test.test_base import TestBase
 
 from jina import Executor, requests
 
@@ -107,3 +112,69 @@ class CustomMetricExporter(MetricExporter):
 
     def get_docs_count_data_points(self):
         return self._docs_count_data_points
+
+
+class InstrumentationTestBase(TestBase):
+    custom_metric_exporter = CustomMetricExporter()
+
+    @staticmethod
+    def create_tracer_provider(**kwargs):
+        """Helper to create a configured tracer provider.
+
+        Creates and configures a `TracerProvider` with a
+        `SimpleSpanProcessor` and a `InMemorySpanExporter`.
+        All the parameters passed are forwarded to the TracerProvider
+        constructor.
+
+        Returns:
+            A list with the tracer provider in the first element and the
+            in-memory span exporter in the second.
+        """
+
+        memory_exporter = CustomSpanExporter()
+
+        tracer_provider = TracerProvider(**kwargs)
+        span_processor = export.SimpleSpanProcessor(memory_exporter)
+        tracer_provider.add_span_processor(span_processor)
+
+        return tracer_provider, memory_exporter
+
+    @staticmethod
+    def create_meter_provider(
+        **kwargs,
+    ) -> Tuple[MeterProvider, MetricReader]:
+        """Helper to create a configured meter provider
+        Creates a `MeterProvider` and an `InMemoryMetricReader`.
+        Returns:
+            A tuple with the meter provider in the first element and the
+            in-memory metrics exporter in the second
+        """
+        memory_reader = InMemoryMetricReader()
+        custom_metric_reader = PeriodicExportingMetricReader(
+            InstrumentationTestBase.custom_metric_exporter, export_interval_millis=500
+        )
+
+        metric_readers = kwargs.get("metric_readers", [])
+        metric_readers.append(memory_reader)
+        metric_readers.append(custom_metric_reader)
+        kwargs["metric_readers"] = metric_readers
+        meter_provider = MeterProvider(**kwargs)
+        return meter_provider, memory_reader
+
+    def partition_spans_by_kind(self):
+        '''Returns three lists each containing spans of kind SpanKind.SERVER, SpanKind.CLIENT and SpandKind.INTERNAL'''
+        server_spans = []
+        client_spans = []
+        internal_spans = []
+
+        for span_json in self.memory_exporter.get_finished_spans():
+            span = json.loads(span_json)
+            span_kind = span.get('kind', '')
+            if 'SpanKind.SERVER' == span_kind:
+                server_spans.append(span)
+            elif 'SpanKind.CLIENT' == span_kind:
+                client_spans.append(span)
+            elif 'SpanKind.INTERNAL' == span_kind:
+                internal_spans.append(span)
+
+        return (server_spans, client_spans, internal_spans)
