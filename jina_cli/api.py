@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from jina.enums import GatewayProtocolType
+from jina.parsers.helper import _set_gateway_uses
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -103,14 +103,7 @@ def gateway(args: 'Namespace'):
     """
     from jina.serve.runtimes import get_runtime
 
-    gateway_dict = {
-        GatewayProtocolType.GRPC: 'GRPCGateway',
-        GatewayProtocolType.WEBSOCKET: 'WebSocketGateway',
-        GatewayProtocolType.HTTP: 'HTTPGateway',
-    }
-
-    if not args.uses:
-        args.uses = gateway_dict[args.protocol]
+    _set_gateway_uses(args)
 
     runtime_cls = get_runtime('GatewayRuntime')
 

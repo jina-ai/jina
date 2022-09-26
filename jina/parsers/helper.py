@@ -3,6 +3,8 @@ import argparse
 import os
 from typing import Tuple
 
+from jina.enums import GatewayProtocolType
+
 _SHOW_ALL_ARGS = 'JINA_FULL_CLI' in os.environ
 
 
@@ -256,6 +258,16 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
             lines.extend(new_lines or [''])
 
         return lines
+
+
+def _set_gateway_uses(args: 'argparse.Namespace'):
+    gateway_dict = {
+        GatewayProtocolType.GRPC: 'GRPCGateway',
+        GatewayProtocolType.WEBSOCKET: 'WebSocketGateway',
+        GatewayProtocolType.HTTP: 'HTTPGateway',
+    }
+    if not args.uses:
+        args.uses = gateway_dict[args.protocol]
 
 
 _chf = _ColoredHelpFormatter

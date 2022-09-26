@@ -3,9 +3,10 @@ from copy import deepcopy
 from functools import partial
 from typing import TYPE_CHECKING
 
-from jina.enums import GatewayProtocolType, PodRoleType
+from jina.enums import PodRoleType
 from jina.hubble.helper import is_valid_huburi
 from jina.hubble.hubio import HubIO
+from jina.parsers.helper import _set_gateway_uses
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -73,11 +74,7 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
     :return: runtime class as a string
     """
     _args = deepcopy(args) if copy else args
-    gateway_dict = {
-        GatewayProtocolType.GRPC: 'GRPCGateway',
-        GatewayProtocolType.WEBSOCKET: 'WebSocketGateway',
-        GatewayProtocolType.HTTP: 'HTTPGateway',
-    }
+
     if _args.runtime_cls == 'WorkerRuntime' and is_valid_huburi(_args.uses):
         _hub_args = deepcopy(_args)
         _hub_args.uri = _args.uses
@@ -85,8 +82,7 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
         _args.uses = HubIO(_hub_args).pull()
 
     if hasattr(_args, 'protocol'):
-        if not _args.uses:
-            _args.uses = gateway_dict[_args.protocol]
+        _set_gateway_uses(_args)
     if _args.pod_role == PodRoleType.HEAD:
         _args.runtime_cls = 'HeadRuntime'
 

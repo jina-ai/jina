@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional, Union
 from jina import __default_host__
 from jina.excepts import PortAlreadyUsed
 from jina.helper import is_port_free
+from jina.parsers.helper import _set_gateway_uses
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.gateway.grpc import GRPCGateway
@@ -35,6 +36,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
         self.timeout_send = args.timeout_send
         if self.timeout_send:
             self.timeout_send /= 1e3  # convert ms to seconds
+        _set_gateway_uses(args)
         super().__init__(args, cancel_event, **kwargs)
 
     async def async_setup(self):
