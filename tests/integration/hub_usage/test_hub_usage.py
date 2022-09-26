@@ -62,19 +62,18 @@ def local_hub_executor(tmpdir):
     )
 
 
-def test_use_from_local_hub_deployment_level(
-    mocker, monkeypatch, local_hub_executor
-):
+def test_use_from_local_hub_deployment_level(mocker, monkeypatch, local_hub_executor):
     from jina.hubble.hubio import HubExecutor, HubIO
 
     mock = mocker.Mock()
 
     def _mock_fetch(
         name,
-        tag=None,
+        tag,
+        image_required=False,
+        rebuild_image=False,
+        *,
         secret=None,
-        image_required=True,
-        rebuild_image=True,
         force=False,
     ):
         mock(name=name)
@@ -97,19 +96,18 @@ def test_use_from_local_hub_deployment_level(
         pass
 
 
-def test_use_from_local_hub_flow_level(
-    mocker, monkeypatch, local_hub_executor
-):
+def test_use_from_local_hub_flow_level(mocker, monkeypatch, local_hub_executor):
     from jina.hubble.hubio import HubExecutor, HubIO
 
     mock = mocker.Mock()
 
     def _mock_fetch(
         name,
-        tag=None,
+        tag,
+        image_required=False,
+        rebuild_image=False,
+        *,
         secret=None,
-        image_required=True,
-        rebuild_image=True,
         force=False,
     ):
         mock(name=name)

@@ -47,10 +47,11 @@ def test_get_image_name(mocker, monkeypatch):
 
     def _mock_fetch(
         name,
-        tag=None,
+        tag,
+        image_required=False,
+        rebuild_image=False,
+        *,
         secret=None,
-        image_required=True,
-        rebuild_image=True,
         force=False,
     ):
         mock(name=name, rebuild_image=rebuild_image)

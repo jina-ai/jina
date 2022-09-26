@@ -394,10 +394,11 @@ def test_k8s_yaml_regular_deployment(
 ):
     def _mock_fetch(
         name,
-        tag=None,
+        tag,
+        image_required=False,
+        rebuild_image=False,
+        *,
         secret=None,
-        image_required=True,
-        rebuild_image=True,
         force=False,
     ):
         return (

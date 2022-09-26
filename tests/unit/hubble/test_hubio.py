@@ -973,10 +973,11 @@ def test_pull(mocker, monkeypatch, executor_name, build_env):
 
     def _mock_fetch(
         name,
-        tag=None,
+        tag,
+        image_required=False,
+        rebuild_image=False,
+        *,
         secret=None,
-        image_required=True,
-        rebuild_image=True,
         force=False,
         build_env=build_env,
     ):
