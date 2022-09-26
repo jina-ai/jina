@@ -1,5 +1,4 @@
 import asyncio
-import contextlib
 import ipaddress
 import os
 from collections import defaultdict
@@ -19,6 +18,7 @@ from jina.excepts import EstablishGrpcConnectionError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2, jina_pb2_grpc
+from jina.serve.helper import _get_summary_time_context_or_null
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
 
@@ -277,7 +277,6 @@ class GrpcConnectionPool:
             self,
             address,
             channel,
-            runtime_name: str,
             metrics: _NetworkingMetrics,
         ):
             self.address = address
@@ -357,8 +356,9 @@ class GrpcConnectionPool:
                         self._metrics.send_requests_bytes_metrics.observe(
                             requests[0].nbytes
                         )
-
-                    with self._metrics.sending_requests_time_metrics.time() if self._metrics.sending_requests_time_metrics else contextlib.nullcontext():
+                    with _get_summary_time_context_or_null(
+                        self._metrics.sending_requests_time_metrics
+                    ):
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
@@ -377,7 +377,9 @@ class GrpcConnectionPool:
                                 response.nbytes
                             )
 
-                    with self._metrics.sending_requests_time_metrics.time() if self._metrics.sending_requests_time_metrics else contextlib.nullcontext():
+                    with _get_summary_time_context_or_null(
+                        self._metrics.sending_requests_time_metrics
+                    ):
                         async for response in self.stream_stub.Call(
                             iter(requests), compression=compression, timeout=timeout
                         ):
@@ -395,7 +397,9 @@ class GrpcConnectionPool:
                         compression=compression,
                         timeout=timeout,
                     )
-                    with self._metrics.sending_requests_time_metrics.time() if self._metrics.sending_requests_time_metrics else contextlib.nullcontext():
+                    with _get_summary_time_context_or_null(
+                        self._metrics.sending_requests_time_metrics
+                    ):
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
@@ -411,9 +415,9 @@ class GrpcConnectionPool:
     class _ConnectionPoolMap:
         def __init__(
             self,
+            runtime_name: str,
             logger: Optional[JinaLogger],
             metrics: _NetworkingMetrics,
-            runtime_name: str,
         ):
             self._logger = logger
             # this maps deployments to shards or heads
@@ -624,7 +628,7 @@ class GrpcConnectionPool:
         )
 
         self._connections = self._ConnectionPoolMap(
-            self._logger, self._metrics, runtime_name
+            runtime_name, self._logger, self._metrics
         )
         self._deployment_address_map = {}
 
@@ -1205,7 +1209,7 @@ class GrpcConnectionPool:
         )
 
         return (
-            GrpcConnectionPool.ConnectionStubs(address, channel, runtime_name, metrics),
+            GrpcConnectionPool.ConnectionStubs(address, channel, metrics),
             channel,
         )
 
