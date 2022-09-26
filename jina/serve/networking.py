@@ -140,7 +140,7 @@ class ReplicaList:
         use_tls = parsed_address.scheme in TLS_PROTOCOL_SCHEMES
 
         stubs, channel = GrpcConnectionPool.create_async_channel_stub(
-            address, tls=use_tls, summary=self.summary, enable_trace=False
+            address, tls=use_tls, summary=self.summary, enable_trace=True
         )
         return stubs, channel
 
