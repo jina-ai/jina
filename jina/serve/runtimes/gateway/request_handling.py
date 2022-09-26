@@ -82,7 +82,7 @@ class MonitoringRequestMixin:
             self._request_size_metrics = _SummaryDeprecated(
                 old_name='request_size_bytes',
                 name='received_request_bytes',
-                documentation='The size of the request return to the client in Bytes',
+                documentation='The size in bytes of the request returned to the client',
                 namespace='jina',
                 labelnames=('runtime_name',),
                 registry=metrics_registry,
@@ -90,7 +90,7 @@ class MonitoringRequestMixin:
 
             self._sent_response_bytes = Summary(
                 'sent_response_bytes',
-                'The size of the request return to the client in Bytes',
+                'The size in bytes of the request returned to the client',
                 namespace='jina',
                 labelnames=('runtime_name',),
                 registry=metrics_registry,

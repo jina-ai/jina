@@ -75,7 +75,7 @@ class DataRequestHandler:
 
                 self._sent_response_size_metrics = Summary(
                     'sent_response_bytes',
-                    'The size in Bytes of the response',
+                    'The size in bytes of the response sent to the gateway',
                     namespace='jina',
                     labelnames=('executor_endpoint', 'executor', 'runtime_name'),
                     registry=metrics_registry,
