@@ -67,7 +67,7 @@ class DataRequestHandler:
                 self._request_size_metrics = _SummaryDeprecated(
                     old_name='request_size_bytes',
                     name='received_request_bytes',
-                    documentation='The size of the request return to the gateway in Bytes',
+                    documentation='The size in bytes of the request returned to the gateway',
                     namespace='jina',
                     labelnames=('executor_endpoint', 'executor', 'runtime_name'),
                     registry=metrics_registry,
