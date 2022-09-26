@@ -1,7 +1,13 @@
 import os
 from typing import Dict
 
-from jina import __default_executor__, __version__
+from jina import (
+    __default_executor__,
+    __default_grpc_gateway__,
+    __default_http_gateway__,
+    __default_websocket_gateway__,
+    __version__,
+)
 from jina.enums import PodRoleType
 from jina.hubble.helper import parse_hub_uri
 from jina.hubble.hubio import HubIO
@@ -115,7 +121,13 @@ def validate_uses(uses: str):
     :param uses: uses argument
     :return: boolean indicating whether is a valid uses to be used in K8s or docker compose
     """
-    if uses == __default_executor__ or uses.startswith('docker://'):
+    # Allow either a default gateway class, default executor or docker image
+    if uses in [
+        __default_http_gateway__,
+        __default_websocket_gateway__,
+        __default_grpc_gateway__,
+        __default_executor__,
+    ] or uses.startswith('docker://'):
         return True
 
     try:
