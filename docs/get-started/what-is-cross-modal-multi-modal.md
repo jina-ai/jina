@@ -9,26 +9,25 @@ A video version of this chapter is available below.
 
 ## Beyond single modality
 
-The term "Modal" is the shorthand for "Data Modality". Data modality can be thought of as the "type" of data. For example, a tweet is a modal of type "text"; a photo is a modal of type "image"; a video is a modal of type "video"; etc.
+The term "Modal" is shorthand for "Data Modality". Data modality can be thought of as the "type" of data. For example, a tweet is a modal of type "text"; a photo is a modal of type "image"; a video is a modal of type "video"; etc.
 
-In the early days of AI, research was focused on a single modality, such as vision or language. For example, a spam filter is focused on text modality. A photo classifier is focused on image modality. A music recommender is focused on audio modality.  However, it soon became clear that in order to create truly intelligent systems, AI must be able to integrate multiple modalities.As in the real world, data is often multimodal, meaning that it consists of multiple modalities. For example, a tweet often contains not only text, but also images, videos, and links. A video often contains not only video frames, but also audio and text (e.g., subtitles). This led to the development of cross-modality and multi-modality in AI.
-
+In the early days of AI, research was focused on a single modality, such as vision or language. For example, a spam filter is focused on text modality. A photo classifier is focused on image modality. A music recommender is focused on audio modality.  However, it soon became clear that in order to create truly intelligent systems, AI must be able to integrate multiple modalities. In the real world, data is often multimodal, meaning that it consists of multiple modalities. For example, a tweet often contains not only text, but also images, videos, and links. A video often contains not only video frames, but also audio and text (e.g. subtitles). This has led to the development of cross-modality and multi-modality in AI.
 
 **Multi-modal** machine learning is a relatively new field that is concerned with the development of algorithms that can learn from multiple modalities of data.
 
 **Cross-modal** machine learning is a subfield of multi-modal machine learning that is concerned with the development of algorithms that can learn from multiple modalities of data that are not necessarily aligned. For example, learning from images and text where the images and text are not necessarily about the same thing.
 
-Thanks to recent advances in deep neural networks, cross-modal or multi-modal technologies enable advanced intelligence on all kinds of unstructured data, such as images, audio, video, PDF, 3D mesh. 
+Thanks to recent advances in deep neural networks, cross-modal or multi-modal technologies enable advanced intelligence on all kinds of unstructured data, such as images, audio, video, PDF, 3D meshes, and more. 
 
 Cross-modality and multi-modality are two terms that are often used interchangeably, but there is a big difference between the two. Multi-modality refers to the ability of a system to use multiple modalities, or input channels, to achieve a desired goal. For example, a human can use both sight and hearing to identify a person or object. In contrast, cross-modality refers to the ability of a system to use information from one modality to improve performance in another modality. For example, if you see a picture of a dog, you might be able to identify it by its bark when you hear it.
 
 AI systems that are designed to work with multiple modalities are said to be "multi-modal." However, the term "cross-modality" is more accurate when referring to AI systems that use information from one modality to improve performance in another.
 
-In general, cross-modal and multi-modal technologies allow for a more holistic understanding of the data, as well as increased accuracy and efficiency.
+In general, cross-modal and multi-modal technologies allow for a more holistic understanding of data, as well as increased accuracy and efficiency.
 
 ## Applications
 
-There are many potential applications of cross-modal & multi-modal machine learning. For example, a cross-modal machine learning algorithm could be used to automatically generate descriptions of images (e.g., for blind people). A search system could use a cross-modal machine learning algorithm to search for images by text queries (e.g., "find me a picture of a dog"). A text-to-image generation system could use a cross-modal machine learning algorithm to generate images from text descriptions (e.g., "generate an image of a dog").
+There are many potential applications of cross-modal and multi-modal machine learning. For example, a cross-modal machine learning algorithm could be used to automatically generate descriptions of images (e.g. for blind people). A search system could use a cross-modal machine learning algorithm to search for images by text queries (e.g. "find me a picture of a dog"). A text-to-image generation system could use a cross-modal machine learning algorithm to generate images from text descriptions (e.g. "generate an image of a dog").
 
 Cross-modal AI systems have the potential to greatly improve the performance of AI systems by making them more flexible and robust. For example, a cross-modal system could be used to improve the accuracy of facial recognition algorithms by using information from other modalities such as body language or voice. Another potential application is using information from one modality to compensate for the limitations of another. For example, if an image recognition algorithm is having difficulty identifying an object due to poor lighting conditions, information from another modality such as sound could be used to help identify the object.
 
@@ -38,8 +37,7 @@ Under this big umbrella sits two families of applications: neural search and cre
 
 One of the most promising applications of cross-modal machine learning is neural search. The core idea of neural search is to leverage state-of-the-art deep neural networks to build every component of a search system. In short, **neural search is deep neural network-powered information retrieval**. In academia, it’s often called neural IR.
 
-
-Below is an example of image embedding space generated by [DocArray](https://github.com/jina-ai/docarray)(the data structure behind Jina) and used for content-based image retrieval. Notice how similar images are mapped together in the embedding space.
+Below is an example of image embedding space generated by [DocArray](https://github.com/jina-ai/docarray) (the data structure behind Jina) and used for content-based image retrieval. Notice how similar images are mapped together in the embedding space.
 
 ```{figure} https://github.com/jina-ai/docarray/raw/main/.github/README-img/tsne.gif?raw=true
 ```
@@ -64,7 +62,7 @@ left/02262.jpg right/04520.jpg 0.16477376
 ...
 ```
 
-Neural search is particularly well suited to cross-modal search tasks, because it can learn to map the features of one modality (e.g., text) to the features of another modality (e.g., images). This enables neural search engines to search for documents and images by text queries, and to search for text documents by image queries.
+Neural search is particularly well suited to cross-modal search tasks, because it can learn to map the features of one modality (e.g. text) to the features of another modality (e.g. images). This enables neural search engines to search for documents and images by text queries, and to search for text documents by image queries.
 
 
 #### Think outside the (search) box
@@ -81,9 +79,9 @@ Neural search creates a new way to comprehend the world. It is creating new door
 
 ### Creative AI
 
-Another potential application of cross-modal machine learning is creative AI. Creative AI systems use artificial intelligence to generate new content, such as images, videos, or text. For example, Open AI GPT3 is a machine learning platform that can generate text. The system is trained on a large corpus of text, such as books, articles, and websites. Once trained, the system can generate new text that is similar to the training data. This can be used to generate new articles, stories, or even poems.
+Another potential application of cross-modal machine learning is creative AI. Creative AI systems use artificial intelligence to generate new content, such as images, videos, or text. For example, Open AI GPT-3 is a machine learning platform that can generate text. The system is trained on a large corpus of text, such as books, articles, and websites. Once trained, the system can generate new text that is similar to the training data. This can be used to generate new articles, stories, or even poems.
 
-Open AI DALLE is another example of a creative AI system. This system generates images from textual descriptions. For example, given the text "a black cat with green eyes", the system will generate an image of a black cat with green eyes. Below is an example of generating images from a text prompt using [DALL·E Flow](https://github.com/jina-ai/dalle-flow)(a text-to-image system built on top of Jina).
+OpenAI's DALL·E is another example of a creative AI system. This system generates images from textual descriptions. For example, given the text "a black cat with green eyes", the system will generate an image of a black cat with green eyes. Below is an example of generating images from a text prompt using [DALL·E Flow](https://github.com/jina-ai/dalle-flow) (a text-to-image system built on top of Jina).
 
 
 ```python
@@ -104,10 +102,10 @@ da.plot_image_sprites(fig_size=(10, 10), show_index=True)
 
 Creative AI holds great potential for the future.  It has the potential to revolutionize how we interact with machines, helping us create more personalized experiences, e.g.:
 
-- create realistic 3D images and videos of people and objects, which can be used in movies, video games, and other visual media.
-- generate realistic and natural-sounding dialogue, which can be used in movies, video games, and other forms of entertainment.
-- create new and innovative designs for products, which can be used in manufacturing and other industries.
-- create new and innovative marketing campaigns, which can be used in advertising and other industries.
+- Create realistic 3D images and videos of people and objects, which can be used in movies, video games, and other visual media.
+- Generate realistic and natural-sounding dialogue, which can be used in movies, video games, and other forms of entertainment.
+- Create new and innovative designs for products, which can be used in manufacturing and other industries.
+- Create new and innovative marketing campaigns, which can be used in advertising and other industries.
 
 ## Relationship is the key 
 
@@ -115,7 +113,7 @@ So what ties neural search and creative AI together?
 
 **The "relationship" between or within modalities.**
 
-What is the "relationship" are we talking about now? Let's see the following illustration , where we managed to represent text "cat", "dog", "human", "ape" and their images into one embedding space:
+What is this "relationship" are we talking about now? Let's see the following illustration, where we managed to represent text "cat", "dog", "human", "ape" and their images into one embedding space:
 
 ```{figure} relationship.svg
 :scale: 80%
@@ -129,14 +127,14 @@ The "relationship" encodes the following information:
 - The image embedding of "cat" is closer to the image embedding of "dog" (same modality);
 - etc.
 
-Don't underestimate the power of this relationship. It is the foundation of neural search and creative AI. It is like the DNA of species. Once mastered, it can be used to find the closest match to any other species, and create new species!
+Don't underestimate the power of this relationship. It is the foundation of neural search and creative AI. It is like the DNA of a species. Once mastered, it can be used to find the closest match to any other species, and create new species!
 
 ```{figure} dna.png
 :width: 80%
 ```
 
-In summary, the key of cross-modal and multi-modal application is to understand the relationship between modalities. With the relationship, one can use it to **find existing data**, which is **neural search**; or use it to **make new data**, which is **creative AI**.
+In summary, the key of cross-modal and multi-modal applications is to understand the relationship between modalities. With this relationship, one can use it to **find existing data**, which is **neural search**; or use it to **make new data**, which is **creative AI**.
 
-In the {ref}`next chapter<what-is-jina>`, we will see how Jina is the proper tool for building cross-modal and multi-modal applications on the cloud.
+In the {ref}`next chapter<what-is-jina>`, we will see how Jina is the ideal tool for building cross-modal and multi-modal applications on the cloud.
 
 
