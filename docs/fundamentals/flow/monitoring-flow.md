@@ -165,7 +165,7 @@ Because not all Pods have the same role, they expose different kinds of metrics:
 | `jina_failed_requests_total`        | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter)   | Counts the number of failed requests returned by the gateway                                                       |
 | `jina_sent_request_bytes`           | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)   | Measures the size in Bytes of the request send by the Gateway to the Executor or the Head                    |
 | `jina_received_response_bytes`         | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)   | Measures the size in Bytes of the request returned by the Executor                                           |
-| `jina_request_size_bytes`           | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)   | Measures the size of the request in Bytes received at the Gateway level                                            |
+| `jina_received_request_bytes`           | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)   | Measures the size of the request in Bytes received at the Gateway level                                            |
 | `jina_sent_response_bytes`  | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)   | Measures the size of the request in Bytes return from the Gateway to the Client                                    |
 
 ```{seealso} 
@@ -192,7 +192,7 @@ You can find more information on the different type of metrics in Prometheus [he
 | `jina_document_processed_total`  | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter) | Counts the number of Documents processed by an Executor                                                     |
 | `jina_successful_requests_total` | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter) | Total count of successful requests returned by the Executor across all endpoints                            |
 | `jina_failed_requests_total`     | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter) | Total count of failed requests returned by the Executor across all endpoints                                |
-| `jina_request_size_bytes`        | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measures the size of the request in Bytes received at the Executor level                                    |
+| `jina_received_request_bytes`        | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measures the size of the request in Bytes received at the Executor level                                    |
 | `jina_sent_request_bytes`        | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary) | Measures the size of the request in Bytes return from the Executor to the Gateway                           |
 
 sent_request_bytes
