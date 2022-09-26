@@ -540,6 +540,8 @@ def _create_gqlgateway_runtime(graph_description, pod_addresses, port):
                 '--port',
                 str(port),
                 '--expose-graphql-endpoint',
+                '--protocol',
+                'http',
             ]
         )
     ) as runtime:

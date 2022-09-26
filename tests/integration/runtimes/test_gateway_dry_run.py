@@ -29,6 +29,8 @@ def _create_gateway_runtime(graph_description, pod_addresses, port, protocol='gr
                 pod_addresses,
                 '--port',
                 str(port),
+                '--protocol',
+                protocol,
             ]
         )
     ) as runtime:
@@ -65,7 +67,7 @@ def _setup(worker_port, port, protocol):
     return worker_process, gateway_process
 
 
-@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
+@pytest.mark.parametrize('protocol', ['http'])
 def test_dry_run_of_flow(port_generator, protocol):
     worker_port = port_generator()
     port = port_generator()

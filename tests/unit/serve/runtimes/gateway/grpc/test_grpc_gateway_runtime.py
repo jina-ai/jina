@@ -8,7 +8,6 @@ from multiprocessing import Process
 import grpc
 import pytest
 
-from Gateway.gateway import Gateway
 from jina import Document, DocumentArray
 from jina.clients.request import request_generator
 from jina.helper import random_port

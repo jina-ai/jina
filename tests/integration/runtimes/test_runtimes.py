@@ -726,6 +726,8 @@ def _create_gateway_runtime(
                 str(port),
                 '--retries',
                 str(retries),
+                '--protocol',
+                protocol,
             ]
         )
     ) as runtime:
