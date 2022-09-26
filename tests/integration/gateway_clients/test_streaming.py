@@ -179,6 +179,8 @@ def create_runtime(graph_dict: Dict, protocol: str, port: int, prefetch: int = 0
             '{}',
             '--prefetch',
             f'{prefetch}',
+            '--protocol',
+            protocol,
         ]
     )
     with GatewayRuntime(args) as runtime:
