@@ -1065,7 +1065,7 @@ def test_offline_pull(mocker, monkeypatch, tmpfile):
         if fail_meta_fetch:
             raise urllib.error.URLError('Failed fetching meta')
         elif no_image and image_required:
-            raise Exception('No image error')
+            raise RuntimeError('No image error')
         else:
             return HubExecutor(
                 uuid='dummy_mwu_encoder',
