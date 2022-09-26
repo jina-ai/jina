@@ -18,6 +18,7 @@ from jina.excepts import EstablishGrpcConnectionError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2, jina_pb2_grpc
+from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
 
@@ -1060,10 +1061,7 @@ class GrpcConnectionPool:
         Documentation is here https://github.com/grpc/grpc/blob/master/include/grpc/impl/codegen/grpc_types.h
         :returns: list of tuples defining grpc parameters
         """
-        return [
-            ('grpc.max_send_message_length', -1),
-            ('grpc.max_receive_message_length', -1),
-        ]
+        return _get_grpc_server_options({})
 
     @staticmethod
     async def send_request_async(
