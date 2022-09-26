@@ -158,7 +158,6 @@ class ReplicaList:
         stubs, channel = GrpcConnectionPool.create_async_channel_stub(
             address,
             metrics=self._metrics,
-            runtime_name=self.runtime_name,
             tls=use_tls,
         )
         return stubs, channel
@@ -1187,7 +1186,6 @@ class GrpcConnectionPool:
     def create_async_channel_stub(
         address,
         metrics: _NetworkingMetrics,
-        runtime_name: str,
         tls=False,
         root_certificates: Optional[str] = None,
     ) -> Tuple[ConnectionStubs, grpc.aio.Channel]:
@@ -1195,7 +1193,6 @@ class GrpcConnectionPool:
         Creates an async GRPC Channel. This channel has to be closed eventually!
 
         :param address: the address to create the connection to, like 127.0.0.0.1:8080
-        :param runtime_name: name of the current runtime
         :param tls: if True, use tls for the grpc channel
         :param root_certificates: the path to the root certificates for tls, only u
         :param metrics: NetworkingMetrics object that contain optional metrics
