@@ -974,8 +974,8 @@ def test_pull(mocker, monkeypatch, executor_name, build_env):
     def _mock_fetch(
         name,
         tag,
-        image_required=False,
-        rebuild_image=False,
+        image_required=True,
+        rebuild_image=True,
         *,
         secret=None,
         force=False,
@@ -1054,8 +1054,8 @@ def test_offline_pull(mocker, monkeypatch, tmpfile):
     def _mock_fetch(
         name,
         tag,
-        image_required=False,
-        rebuild_image=False,
+        image_required=True,
+        rebuild_image=True,
         *,
         secret=None,
         force=False,

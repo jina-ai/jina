@@ -395,8 +395,8 @@ def test_k8s_yaml_regular_deployment(
     def _mock_fetch(
         name,
         tag,
-        image_required=False,
-        rebuild_image=False,
+        image_required=True,
+        rebuild_image=True,
         *,
         secret=None,
         force=False,

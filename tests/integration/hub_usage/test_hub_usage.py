@@ -70,8 +70,8 @@ def test_use_from_local_hub_deployment_level(mocker, monkeypatch, local_hub_exec
     def _mock_fetch(
         name,
         tag,
-        image_required=False,
-        rebuild_image=False,
+        image_required=True,
+        rebuild_image=True,
         *,
         secret=None,
         force=False,
@@ -104,8 +104,8 @@ def test_use_from_local_hub_flow_level(mocker, monkeypatch, local_hub_executor):
     def _mock_fetch(
         name,
         tag,
-        image_required=False,
-        rebuild_image=False,
+        image_required=True,
+        rebuild_image=True,
         *,
         secret=None,
         force=False,
