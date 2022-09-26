@@ -1,6 +1,6 @@
 import argparse
+import asyncio
 import os
-from abc import ABC
 from typing import TYPE_CHECKING, Optional, Union
 
 from jina import __default_host__
@@ -13,7 +13,6 @@ from jina.serve.runtimes.gateway.http import HTTPGateway
 from jina.serve.runtimes.gateway.websocket import WebSocketGateway
 
 if TYPE_CHECKING:
-    import asyncio
     import multiprocessing
     import threading
 

@@ -6,7 +6,7 @@ from jina import __default_host__
 from jina.importer import ImportExtensions
 
 from ....gateway import BaseGateway
-from . import get_fastapi_app
+from .app import get_fastapi_app
 
 
 class WebSocketGateway(BaseGateway):

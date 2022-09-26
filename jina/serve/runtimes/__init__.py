@@ -21,6 +21,7 @@ def get_runtime(name: str):
     # noqa: DAR201
     """
     from jina.serve.runtimes.base import BaseRuntime
+    from jina.serve.runtimes.gateway import GatewayRuntime
     from jina.serve.runtimes.head import HeadRuntime
     from jina.serve.runtimes.worker import WorkerRuntime
 
