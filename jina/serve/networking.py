@@ -44,7 +44,7 @@ class _NetworkingMetrics:
     """
 
     sending_requests_time_metrics: Optional['Summary']
-    returns_requests_bytes_metrics: Optional['Summary']
+    received_response_bytes: Optional['Summary']
     send_requests_bytes_metrics: Optional['Summary']
 
 
@@ -364,8 +364,8 @@ class GrpcConnectionPool:
                             await call_result,
                         )
 
-                        if self._metrics.returns_requests_bytes_metrics:
-                            self._metrics.returns_requests_bytes_metrics.observe(
+                        if self._metrics.received_response_bytes:
+                            self._metrics.received_response_bytes.observe(
                                 response.nbytes
                             )
                     return response, metadata
@@ -383,8 +383,8 @@ class GrpcConnectionPool:
                         async for response in self.stream_stub.Call(
                             iter(requests), compression=compression, timeout=timeout
                         ):
-                            if self._metrics.returns_requests_bytes_metrics:
-                                self._metrics.returns_requests_bytes_metrics.observe(
+                            if self._metrics.received_response_bytes:
+                                self._metrics.received_response_bytes.observe(
                                     response.nbytes
                                 )
 
@@ -601,7 +601,7 @@ class GrpcConnectionPool:
                 labelnames=('runtime_name',),
             ).labels(runtime_name)
 
-            returns_requests_bytes_metrics = Summary(
+            received_response_bytes = Summary(
                 'received_response_bytes',
                 'Size in Bytes of the request returned by the Pod',
                 registry=metrics_registry,
@@ -618,12 +618,12 @@ class GrpcConnectionPool:
             ).labels(runtime_name)
         else:
             sending_requests_time_metrics = None
-            returns_requests_bytes_metrics = None
+            received_response_bytes = None
             send_requests_bytes_metrics = None
 
         self._metrics = _NetworkingMetrics(
             sending_requests_time_metrics,
-            returns_requests_bytes_metrics,
+            received_response_bytes,
             send_requests_bytes_metrics,
         )
 
