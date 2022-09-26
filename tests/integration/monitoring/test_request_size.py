@@ -60,7 +60,7 @@ def test_requests_size(port_generator, executor):
             measured_request_bytes_sum_init,
             measured_request_bytes_send_sum_init,
         ) = _get_request_bytes_size()
-        f.post('/foo', inputs=DocumentArray.empty(size=1))
+        f.post('/foo', inputs=DocumentArray.empty(1))
         (
             measured_request_bytes_sum,
             measured_request_bytes_send_sum,
