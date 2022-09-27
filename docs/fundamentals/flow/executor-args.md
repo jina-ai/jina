@@ -35,6 +35,10 @@
 | `port_monitoring` | The port on which the prometheus server is exposed, default is a random port between [49152, 65535] | `string` | `random in [49152, 65535]` |
 | `retries` | Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas) | `number` | `-1` |
 | `floating` | If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one. | `boolean` | `False` |
+| `opentelemetry_tracing` | If set, real implementation of the tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided. | `boolean` | `False` |
+| `jaeger_host` | If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent. | `string` | `0.0.0.0` |
+| `jaeger_port` | If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent. | `number` | `6831` |
+| `opentelemetry_metrics` | If set, real implementation of the metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided. | `boolean` | `False` |
 | `install_requirements` | If set, install `requirements.txt` in the Hub Executor bundle to local | `boolean` | `False` |
 | `force_update` | If set, always pull the latest Hub Executor bundle even it exists on local | `boolean` | `False` |
 | `compression` | The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression. | `string` | `None` |

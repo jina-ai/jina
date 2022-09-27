@@ -115,6 +115,10 @@ class Flow(
         *,
         asyncio: Optional[bool] = False,
         host: Optional[str] = '0.0.0.0',
+        jaeger_host: Optional[str] = '0.0.0.0',
+        jaeger_port: Optional[int] = 6831,
+        opentelemetry_metrics: Optional[bool] = False,
+        opentelemetry_tracing: Optional[bool] = False,
         port: Optional[int] = None,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
@@ -125,6 +129,10 @@ class Flow(
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param jaeger_host: If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent.
+        :param jaeger_port: If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent.
+        :param opentelemetry_metrics: If set, real implementation of the metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param opentelemetry_tracing: If set, real implementation of the tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
@@ -165,8 +173,8 @@ class Flow(
         native: Optional[bool] = False,
         no_crud_endpoints: Optional[bool] = False,
         no_debug_endpoints: Optional[bool] = False,
-        opentelemetry_tracing: Optional[bool] = False,
         opentelemetry_metrics: Optional[bool] = False,
+        opentelemetry_tracing: Optional[bool] = False,
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
@@ -212,8 +220,8 @@ class Flow(
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
-        :param jaeger_host: 'If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent.'
-        :param jaeger_port: 'If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent.'
+        :param jaeger_host: If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent.
+        :param jaeger_port: If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent.
         :param log_config: The YAML config of the logger used in this object.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
@@ -230,8 +238,8 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
-        :param opentelemetry_tracing: 'If set, real implementation of the tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.'
-        :param opentelemetry_metrics: 'If set, real implementation of the metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.'
+        :param opentelemetry_metrics: If set, real implementation of the metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param opentelemetry_tracing: If set, real implementation of the tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
@@ -372,6 +380,10 @@ class Flow(
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param jaeger_host: If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent.
+        :param jaeger_port: If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent.
+        :param opentelemetry_metrics: If set, real implementation of the metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param opentelemetry_tracing: If set, real implementation of the tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
@@ -391,6 +403,8 @@ class Flow(
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
+        :param jaeger_host: If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent.
+        :param jaeger_port: If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent.
         :param log_config: The YAML config of the logger used in this object.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
@@ -407,6 +421,8 @@ class Flow(
 
                   Any executor that has `@requests(on=...)` bind with those values will receive data requests.
         :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+        :param opentelemetry_metrics: If set, real implementation of the metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param opentelemetry_tracing: If set, real implementation of the tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
@@ -817,8 +833,8 @@ class Flow(
         monitoring: Optional[bool] = False,
         name: Optional[str] = None,
         native: Optional[bool] = False,
-        opentelemetry_tracing: Optional[bool] = False,
         opentelemetry_metrics: Optional[bool] = False,
+        opentelemetry_tracing: Optional[bool] = False,
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
         port: Optional[int] = None,
@@ -877,8 +893,8 @@ class Flow(
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
-        :param jaeger_host: 'If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent.'
-        :param jaeger_port: 'If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent.'
+        :param jaeger_host: If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent.
+        :param jaeger_port: If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent.
         :param log_config: The YAML config of the logger used in this object.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
@@ -891,8 +907,8 @@ class Flow(
 
               When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
-        :param opentelemetry_tracing: 'If set, real implementation of the tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.'
-        :param opentelemetry_metrics: 'If set, real implementation of the metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.'
+        :param opentelemetry_metrics: If set, real implementation of the metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param opentelemetry_tracing: If set, real implementation of the tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
@@ -1030,6 +1046,8 @@ class Flow(
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
+        :param jaeger_host: If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent.
+        :param jaeger_port: If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent.
         :param log_config: The YAML config of the logger used in this object.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
@@ -1042,6 +1060,8 @@ class Flow(
 
               When not given, then the default naming strategy will apply.
         :param native: If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.
+        :param opentelemetry_metrics: If set, real implementation of the metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param opentelemetry_tracing: If set, real implementation of the tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param output_array_type: The type of array `tensor` and `embedding` will be serialized to.
 
           Supports the same types as `docarray.to_protobuf(.., ndarray_type=...)`, which can be found
