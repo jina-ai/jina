@@ -55,6 +55,8 @@ class GatewayStreamer:
             timeout_send,
             retries,
         )
+        self.runtime_name = runtime_name
+
         self._connection_pool = self._create_connection_pool(
             executor_addresses, compression, metrics_registry, logger
         )
@@ -92,6 +94,7 @@ class GatewayStreamer:
     ):
         # add the connections needed
         connection_pool = GrpcConnectionPool(
+            runtime_name=self.runtime_name,
             logger=logger,
             compression=compression,
             metrics_registry=metrics_registry,
