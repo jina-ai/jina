@@ -27,16 +27,26 @@ docker pull jinaai/jina:latest
 
 Now that you’re set up, let’s create a project:
 
+````{tab} In host
 ```shell
 jina new hello-jina
 cd hello-jina
 jina flow --uses flow.yml
-python client.py
 ```
+````
+````{tab} Inside Docker
+```shell
+docker run -it --entrypoint=/bin/bash jinaai/jina:latest -p 54321:54321
+jina new hello-jina
+cd hello-jina
+jina flow --uses flow.yml
+```
+````
 
-And observe the result from your terminal.
+Run the client on your machine and observe the results from your terminal.
 
 ```shell
+python client.py
 ['hello, world!', 'goodbye, world!']
 ```
 
