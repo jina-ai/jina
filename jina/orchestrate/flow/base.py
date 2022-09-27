@@ -621,18 +621,29 @@ class Flow(
 
     def _get_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
-        for node, v in self._deployment_nodes.items():
+        for node, deployment in self._deployment_nodes.items():
             if node == 'gateway':
                 continue
-            if v.head_args:
+            if deployment.head_args:
                 # add head information
-                graph_dict[node] = [f'{v.protocol}://{v.host}:{v.head_port}']
+                graph_dict[node] = [
+                    f'{deployment.protocol}://{deployment.host}:{deployment.head_port}'
+                ]
             else:
                 # there is no head, add the worker connection information instead
-                host = v.host
-                if host_is_local(host) and in_docker() and v.dockerized_uses:
-                    host = __docker_host__
-                graph_dict[node] = [f'{v.protocol}://{host}:{port}' for port in v.ports]
+                ports = deployment.ports
+                hosts = [
+                    __docker_host__
+                    if host_is_local(host)
+                    and in_docker()
+                    and deployment.dockerized_uses
+                    else host
+                    for host in deployment.hosts
+                ]
+                graph_dict[node] = [
+                    f'{deployment.protocol}://{host}:{port}'
+                    for host, port in zip(hosts, ports)
+                ]
 
         return graph_dict
 
@@ -1479,9 +1490,9 @@ class Flow(
             for k, v in self.args.env.items():
                 os.environ[k] = str(v)
 
-        for k, v in self:
-            if not v.external:
-                self.enter_context(v)
+        for depl_name, deployment in self:
+            if not deployment.external:
+                self.enter_context(deployment)
 
         self._wait_until_all_ready()
 

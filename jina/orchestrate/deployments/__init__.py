@@ -391,6 +391,22 @@ class Deployment(BaseDeployment):
             return ports
 
     @property
+    def hosts(self) -> List[str]:
+        """Returns a list of host addresses exposed by this Deployment.
+        Exposed means these are the host a Client/Gateway is supposed to communicate with.
+        For sharded deployments this will be the head host.
+        For non sharded deployments it will be all replica hosts
+        .. # noqa: DAR201
+        """
+        if self.head_host:
+            return [self.head_host]
+        else:
+            hosts = []
+            for replica in self.pod_args['pods'][0]:
+                hosts.append(replica.host)
+            return hosts
+
+    @property
     def dockerized_uses(self) -> bool:
         """Checks if this Deployment uses a dockerized Executor
 
@@ -674,7 +690,9 @@ class Deployment(BaseDeployment):
 
             selected_devices = []
             if device_str[2:]:
-                for device_num in Deployment._parse_devices(device_str[2:], num_devices):
+                for device_num in Deployment._parse_devices(
+                    device_str[2:], num_devices
+                ):
                     selected_devices.append(device_num)
             else:
                 selected_devices = range(num_devices)
