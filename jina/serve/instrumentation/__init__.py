@@ -1,4 +1,5 @@
 from opentelemetry import metrics, trace
+from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.instrumentation.grpc import (
     client_interceptor as grpc_client_interceptor,
 )
@@ -9,7 +10,7 @@ from opentelemetry.sdk.metrics.export import (
 )
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 from jina.serve.instrumentation._aio_client import (
     StreamStreamAioClientInterceptor,
@@ -33,8 +34,14 @@ class InstrumentationMixin:
         resource = Resource(attributes={SERVICE_NAME: name})
 
         if self.args.opentelemetry_tracing:
+            print(f'--->{self.args.jaeger_host}:{self.args.jaeger_port}')
             provider = TracerProvider(resource=resource)
-            processor = BatchSpanProcessor(ConsoleSpanExporter())
+            processor = BatchSpanProcessor(
+                JaegerExporter(
+                    agent_host_name=self.args.jaeger_host,
+                    agent_port=self.args.jaeger_port,
+                )
+            )
             provider.add_span_processor(processor)
             trace.set_tracer_provider(provider)
             self.tracer = trace.get_tracer(name)

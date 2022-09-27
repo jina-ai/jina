@@ -157,6 +157,8 @@ class Flow(
         grpc_server_options: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
+        jaeger_host: Optional[str] = '0.0.0.0',
+        jaeger_port: Optional[int] = 6831,
         log_config: Optional[str] = None,
         monitoring: Optional[bool] = False,
         name: Optional[str] = 'gateway',
@@ -210,6 +212,8 @@ class Flow(
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
+        :param jaeger_host: 'If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent.'
+        :param jaeger_port: 'If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent.'
         :param log_config: The YAML config of the logger used in this object.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
@@ -807,6 +811,8 @@ class Flow(
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         install_requirements: Optional[bool] = False,
+        jaeger_host: Optional[str] = '0.0.0.0',
+        jaeger_port: Optional[int] = 6831,
         log_config: Optional[str] = None,
         monitoring: Optional[bool] = False,
         name: Optional[str] = None,
@@ -871,6 +877,8 @@ class Flow(
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
+        :param jaeger_host: 'If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent.'
+        :param jaeger_port: 'If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent.'
         :param log_config: The YAML config of the logger used in this object.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.

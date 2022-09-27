@@ -129,6 +129,20 @@ def mixin_pod_parser(parser):
     )
 
     gp.add_argument(
+        '--jaeger-host',
+        type=str,
+        default='0.0.0.0',
+        help='If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent.',
+    )
+
+    gp.add_argument(
+        '--jaeger-port',
+        type=int,
+        default=6831,
+        help='If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent.',
+    )
+
+    gp.add_argument(
         '--opentelemetry-metrics',
         action='store_true',
         default=False,

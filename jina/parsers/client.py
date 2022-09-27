@@ -40,6 +40,20 @@ def mixin_client_features_parser(parser):
     )
 
     parser.add_argument(
+        '--jaeger-host',
+        type=str,
+        default='0.0.0.0',
+        help='If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent.',
+    )
+
+    parser.add_argument(
+        '--jaeger-port',
+        type=int,
+        default=6831,
+        help='If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent.',
+    )
+
+    parser.add_argument(
         '--opentelemetry-metrics',
         action='store_true',
         default=False,
