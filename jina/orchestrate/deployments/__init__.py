@@ -8,7 +8,7 @@ from argparse import Namespace
 from collections import defaultdict
 from contextlib import ExitStack
 from itertools import cycle
-from typing import Dict, List, Optional, Set, Union
+from typing import Dict, List, Optional, Set, Tuple, Union
 
 from jina import __default_executor__, __default_host__, __docker_host__, helper
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
@@ -389,6 +389,22 @@ class Deployment(BaseDeployment):
             for replica in self.pod_args['pods'][0]:
                 ports.append(replica.port)
             return ports
+
+    @property
+    def hosts(self) -> List[str]:
+        """Returns a list of host addresses exposed by this Deployment.
+        Exposed means these are the host a Client/Gateway is supposed to communicate with.
+        For sharded deployments this will be the head host.
+        For non sharded deployments it will be all replica hosts
+        .. # noqa: DAR201
+        """
+        if self.head_host:
+            return [self.head_host]
+        else:
+            hosts = []
+            for replica in self.pod_args['pods'][0]:
+                hosts.append(replica.host)
+            return hosts
 
     @property
     def dockerized_uses(self) -> bool:
