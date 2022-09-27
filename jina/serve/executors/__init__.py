@@ -183,8 +183,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._metrics_buffer = None
 
     def _init_instrumentation(self):
-        self.tracer = trace.get_tracer(self.runtime_args.name)
-        self.meter = metrics.get_meter(self.runtime_args.name)
+        name = self.__class__.__name__
+        if hasattr(self.runtime_args, 'name'):
+            name = self.runtime_args.name
+
+        self.tracer = trace.get_tracer(name)
+        self.meter = metrics.get_meter(name)
 
     def _add_requests(self, _requests: Optional[Dict]):
         if not hasattr(self, 'requests'):
