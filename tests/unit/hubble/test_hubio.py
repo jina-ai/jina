@@ -896,7 +896,7 @@ def test_fetch_with_no_image(mocker, monkeypatch):
 
     monkeypatch.setattr(requests, 'post', _mock_post)
 
-    with pytest.raises(Exception) as exc_info:
+    with pytest.raises(RuntimeError) as exc_info:
         HubIO.fetch_meta('dummy_mwu_encoder', tag=None, force=True)
 
     assert exc_info.match('No image found for executor "dummy_mwu_encoder"')
@@ -973,10 +973,11 @@ def test_pull(mocker, monkeypatch, executor_name, build_env):
 
     def _mock_fetch(
         name,
-        tag=None,
-        secret=None,
+        tag,
         image_required=True,
         rebuild_image=True,
+        *,
+        secret=None,
         force=False,
         build_env=build_env,
     ):
@@ -1036,6 +1037,8 @@ class MockDockerClient:
     def pull(self, repository: str, stream: bool = True, decode: bool = True):
         if self.fail_pull:
             raise docker.errors.APIError('Failed pulling docker image')
+        elif not repository:
+            raise docker.errors.NullResource('Resource ID was not provided')
         else:
             yield {}
 
@@ -1045,25 +1048,32 @@ def test_offline_pull(mocker, monkeypatch, tmpfile):
 
     fail_meta_fetch = True
     version = 'v0'
+    no_image = False
 
     @disk_cache_offline(cache_file=str(tmpfile))
     def _mock_fetch(
         name,
-        tag=None,
-        secret=None,
+        tag,
         image_required=True,
         rebuild_image=True,
+        *,
+        secret=None,
         force=False,
     ):
         mock(name=name)
+        fixed_tag = tag or 'latest'
         if fail_meta_fetch:
             raise urllib.error.URLError('Failed fetching meta')
+        elif no_image and image_required:
+            raise RuntimeError('No image error')
         else:
             return HubExecutor(
                 uuid='dummy_mwu_encoder',
                 name='alias_dummy',
-                tag='v0',
-                image_name=f'jinahub/pod.dummy_mwu_encoder:{version}',
+                tag=fixed_tag,
+                image_name=None
+                if (not image_required or no_image)
+                else f'jinahub/pod.dummy_mwu_encoder:{fixed_tag}:{version}',
                 md5sum=None,
                 visibility=True,
                 archive_url=None,
@@ -1097,24 +1107,77 @@ def test_offline_pull(mocker, monkeypatch, tmpfile):
     monkeypatch.setattr(
         HubIO, '_load_docker_client', _gen_load_docker_client(fail_pull=False)
     )
-    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:v0'
+    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:latest:v0'
 
     version = 'v1'
     # expect successful forced pull because force == True
-    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:v1'
+    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:latest:v1'
 
     # expect successful pull using cached fetch_meta response and saved image
     fail_meta_fetch = True
     monkeypatch.setattr(
         HubIO, '_load_docker_client', _gen_load_docker_client(fail_pull=False)
     )
-    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:v1'
+    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:latest:v1'
 
     args.force_update = False
     fail_meta_fetch = False
     version = 'v2'
     # expect successful but outdated pull because force == False
-    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:v1'
+    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:latest:v1'
+
+    # Tagged image should work similarly
+    args = set_hub_pull_parser().parse_args(
+        ['jinahub+docker://dummy_mwu_encoder/tagged']
+    )
+    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:tagged:v2'
+
+    version = 'v3'
+    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:tagged:v2'
+
+    no_image = True
+    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:tagged:v2'
+
+    # Image may be absent, this should throw RuntimeError from fetch_meta
+    no_image = True
+    args = set_hub_pull_parser().parse_args(
+        ['jinahub+docker://dummy_mwu_encoder/tagged2']
+    )
+    # This exception is raised from fetch_meta
+    with pytest.raises(RuntimeError):
+        HubIO(args).pull()
+
+    no_image = False
+    # The exception should not be cached
+    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:tagged2:v3'
+
+    version = 'v4'
+    args = set_hub_pull_parser().parse_args(
+        ['jinahub+sandbox://dummy_mwu_encoder/tagged3']
+    )
+    # Expect `jinahub+sandbox` not pull-able, but the fetch_meta should succeed and
+    # cache should have been saved properly
+    # So it must raises ValueError instead of RuntimeError
+    with pytest.raises(ValueError):
+        HubIO(args).pull()
+
+    no_image = True
+    args = set_hub_pull_parser().parse_args(
+        ['jinahub+docker://dummy_mwu_encoder/tagged3']
+    )
+    # The cache for `jinahub+sandbox` should not work for `jinahub+docker`
+    # Expect RuntimeError from fetch_meta
+    with pytest.raises(RuntimeError):
+        HubIO(args).pull()
+
+    # After meta fixed the pull should be successful
+    no_image = False
+    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:tagged3:v4'
+
+    no_image = True
+    version = 'v5'
+    # Cache should work after first success
+    assert HubIO(args).pull() == 'docker://jinahub/pod.dummy_mwu_encoder:tagged3:v4'
 
 
 def test_pull_with_progress():
