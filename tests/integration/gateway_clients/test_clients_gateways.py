@@ -152,7 +152,6 @@ def create_runtime(
     import json
 
     graph_description = json.dumps(graph_dict)
-    runtime_cls = None
     if call_counts:
 
         def decompress_wo_data(self):
@@ -202,6 +201,8 @@ def create_runtime(
                 f'{graph_description}',
                 '--deployments-addresses',
                 '{}',
+                '--protocol',
+                protocol,
             ]
         )
     ) as runtime:
