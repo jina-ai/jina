@@ -25,7 +25,7 @@ docker pull jinaai/jina:latest
 ```
 ````
 
-Now that you’re set up, let’s create a project, and start a project to serve:
+Now that you’re set up, let’s create a project:
 
 ````{tab} In host
 ```shell
@@ -43,7 +43,7 @@ jina flow --uses flow.yml
 ```
 ````
 
-Run the client in your machine and observe the result from your terminal.
+Run the client on your machine and observe the results from your terminal.
 
 ```shell
 python client.py
