@@ -36,13 +36,13 @@ docarray>=0.16.4:           core
 jina-hubble-sdk>=0.16.1:    core
 jcloud>=0.0.35:             core
 opentelemetry-api>=1.12.0:  core
+opentelemetry-instrumentation-grpc>=0.33b0:  core 
 uvloop:                     perf,standard,devel
 prometheus_client:          perf,standard,devel
 opentelemetry-sdk>=1.12.0:   perf,standard,devel
 opentelemetry-exporter-otlp>=1.12.0:  perf,standard,devel
 opentelemetry-exporter-prometheus>=1.12.0rc1:  perf,standard,devel
 opentelemetry-semantic-conventions>=0.33b0:    perf,standard,devel
-opentelemetry-instrumentation-grpc>=0.33b0:    perf,standard,devel
 opentelemetry-instrumentation-aiohttp-client>=0.33b0:    perf,standard,devel
 opentelemetry-instrumentation-fastapi>=0.33b0: perf,standard,devel
 opentelemetry-exporter-jaeger>=1.12.0: perf,standrad,devel
