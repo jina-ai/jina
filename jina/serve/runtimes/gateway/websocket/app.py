@@ -13,7 +13,7 @@ from jina.types.request.data import DataRequest
 from jina.types.request.status import StatusMessage
 
 if TYPE_CHECKING:
-    from prometheus_client import CollectorRegistry
+    from jina.serve.streamer import GatewayStreamer
 
 
 def _fits_ws_close_msg(msg: str):
@@ -25,17 +25,15 @@ def _fits_ws_close_msg(msg: str):
 
 def get_fastapi_app(
     args: 'argparse.Namespace',
+    streamer: 'GatewayStreamer',
     logger: 'JinaLogger',
-    timeout_send: Optional[float] = None,
-    metrics_registry: Optional['CollectorRegistry'] = None,
 ):
     """
     Get the app from FastAPI as the Websocket interface.
 
-    :param args: passed arguments.
+    :param args: runtime args
+    :param streamer: gateway streamer object.
     :param logger: Jina logger.
-    :param timeout_send: Timeout to be used when sending to Executors
-    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler
     :return: fastapi app
     """
 
@@ -118,29 +116,6 @@ def get_fastapi_app(
     if args.opentelemetry_tracing:
         FastAPIInstrumentor.instrument_app(app)
 
-    import json
-
-    from jina.serve.bff import GatewayBFF
-
-    graph_description = json.loads(args.graph_description)
-    graph_conditions = json.loads(args.graph_conditions)
-    deployments_addresses = json.loads(args.deployments_addresses)
-    deployments_disable_reduce = json.loads(args.deployments_disable_reduce)
-
-    gateway_bff = GatewayBFF(
-        graph_representation=graph_description,
-        executor_addresses=deployments_addresses,
-        graph_conditions=graph_conditions,
-        deployments_disable_reduce=deployments_disable_reduce,
-        timeout_send=timeout_send,
-        retries=args.retries,
-        compression=args.compression,
-        runtime_name=args.name,
-        prefetch=args.prefetch,
-        logger=logger,
-        metrics_registry=metrics_registry,
-    )
-
     @app.get(
         path='/',
         summary='Get the health of Jina service',
@@ -174,7 +149,7 @@ def get_fastapi_app(
 
     @app.on_event('shutdown')
     async def _shutdown():
-        await gateway_bff.close()
+        await streamer.close()
 
     @app.websocket('/')
     async def websocket_endpoint(
@@ -206,7 +181,7 @@ def get_fastapi_app(
                         yield DataRequest(request)
 
         try:
-            async for msg in gateway_bff.stream(request_iterator=req_iter()):
+            async for msg in streamer.stream(request_iterator=req_iter()):
                 await manager.send(websocket, msg)
         except InternalNetworkError as err:
             import grpc
@@ -236,7 +211,7 @@ def get_fastapi_app(
         :param request_iterator: request iterator, with length of 1
         :return: the first result from the request iterator
         """
-        async for k in gateway_bff.stream(request_iterator=request_iterator):
+        async for k in streamer.stream(request_iterator=request_iterator):
             request_dict = k.to_dict()
             return request_dict
 
@@ -288,7 +263,7 @@ def get_fastapi_app(
 
         da = DocumentArray()
         try:
-            async for _ in gateway_bff.stream(
+            async for _ in streamer.stream(
                 request_iterator=request_generator(
                     exec_endpoint=__dry_run_endpoint__,
                     data=da,

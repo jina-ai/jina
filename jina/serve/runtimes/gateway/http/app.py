@@ -13,22 +13,36 @@ from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 
 if TYPE_CHECKING:
-    from prometheus_client import CollectorRegistry
+    from jina.serve.streamer import GatewayStreamer
 
 
 def get_fastapi_app(
     args: 'argparse.Namespace',
+    streamer: 'GatewayStreamer',
+    title: str,
+    description: str,
+    no_debug_endpoints: bool,
+    no_crud_endpoints: bool,
+    expose_endpoints: bool,
+    expose_graphql_endpoint: bool,
+    cors: bool,
     logger: 'JinaLogger',
-    timeout_send: Optional[float] = None,
-    metrics_registry: Optional['CollectorRegistry'] = None,
 ):
     """
     Get the app from FastAPI as the REST interface.
 
-    :param args: passed arguments.
+    :param args: runtime args
+    :param streamer: gateway streamer object
+    :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
+    :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
+    :param no_debug_endpoints: If set, `/status` `/post` endpoints are removed from HTTP interface.
+    :param no_crud_endpoints: If set, `/index`, `/search`, `/update`, `/delete` endpoints are removed from HTTP interface.
+
+              Any executor that has `@requests(on=...)` bind with those values will receive data requests.
+    :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
+    :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
+    :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
     :param logger: Jina logger.
-    :param timeout_send: Timeout to be used when sending to Executors
-    :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor or from the data request handler
     :return: fastapi app
     """
     with ImportExtensions(required=True):
@@ -42,8 +56,8 @@ def get_fastapi_app(
         )
 
     app = FastAPI(
-        title=args.title or 'My Jina Service',
-        description=args.description
+        title=title or 'My Jina Service',
+        description=description
         or 'This is my awesome service. You can set `title` and `description` in your `Flow` or `Gateway` '
         'to customize the title and description.',
         version=__version__,
@@ -52,7 +66,7 @@ def get_fastapi_app(
     if args.opentelemetry_tracing:
         FastAPIInstrumentor.instrument_app(app)
 
-    if args.cors:
+    if cors:
         app.add_middleware(
             CORSMiddleware,
             allow_origins=['*'],
@@ -62,35 +76,12 @@ def get_fastapi_app(
         )
         logger.warning('CORS is enabled. This service is accessible from any website!')
 
-    import json
-
-    from jina.serve.bff import GatewayBFF
-
-    graph_description = json.loads(args.graph_description)
-    graph_conditions = json.loads(args.graph_conditions)
-    deployments_addresses = json.loads(args.deployments_addresses)
-    deployments_disable_reduce = json.loads(args.deployments_disable_reduce)
-
-    gateway_bff = GatewayBFF(
-        graph_representation=graph_description,
-        executor_addresses=deployments_addresses,
-        graph_conditions=graph_conditions,
-        deployments_disable_reduce=deployments_disable_reduce,
-        timeout_send=timeout_send,
-        retries=args.retries,
-        compression=args.compression,
-        runtime_name=args.name,
-        prefetch=args.prefetch,
-        logger=logger,
-        metrics_registry=metrics_registry,
-    )
-
     @app.on_event('shutdown')
     async def _shutdown():
-        await gateway_bff.close()
+        await streamer.close()
 
     openapi_tags = []
-    if not args.no_debug_endpoints:
+    if not no_debug_endpoints:
         openapi_tags.append(
             {
                 'name': 'Debug',
@@ -286,7 +277,7 @@ def get_fastapi_app(
             )
             return result
 
-    if not args.no_crud_endpoints:
+    if not no_crud_endpoints:
         openapi_tags.append(
             {
                 'name': 'CRUD',
@@ -310,12 +301,12 @@ def get_fastapi_app(
     if openapi_tags:
         app.openapi_tags = openapi_tags
 
-    if args.expose_endpoints:
-        endpoints = json.loads(args.expose_endpoints)  # type: Dict[str, Dict]
+    if expose_endpoints:
+        endpoints = json.loads(expose_endpoints)  # type: Dict[str, Dict]
         for k, v in endpoints.items():
             expose_executor_endpoint(exec_endpoint=k, **v)
 
-    if args.expose_graphql_endpoint:
+    if expose_graphql_endpoint:
         with ImportExtensions(required=True):
             from dataclasses import asdict
 
@@ -393,7 +384,7 @@ def get_fastapi_app(
         :param request_iterator: request iterator, with length of 1
         :return: the first result from the request iterator
         """
-        async for k in gateway_bff.stream(request_iterator=request_iterator):
+        async for k in streamer.stream(request_iterator=request_iterator):
             request_dict = k.to_dict()
             return request_dict
 

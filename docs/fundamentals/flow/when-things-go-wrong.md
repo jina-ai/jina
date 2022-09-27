@@ -19,6 +19,17 @@ If the gRPC or WebSocket protocols are used, the networking stream is not interr
 
 In all cases, the {ref}`Jina Client <client>` will raise an Exception.
 
+## Exit on exceptions
+
+Some exceptions like network errors or request timeouts can be transient and can recover automatically. In some cases there
+can be fatal errors or user defined errors that can put the Executor in an unuseable state. The executor can be restarted to recover from such a 
+state. Locally the flow must to be re-run manually to restore the Executor availability. 
+
+On Kubernetes deployments, the process can be automated by terminating the Exeuctor process which will cause the pod to terminate. The availability
+ is restored by the autoscaler by creating a new pod to replace the terminated pod. The termination can be enabled for one or more errors by using the `exit_on_exceptions` argument when creating the Executor in a Flow. Upon matching the caught exception, the Executor will perform a gracefull termination.
+ 
+A sample Flow can be `Flow().add(uses=MyExecutor, exit_on_exceptions: ['Exception', 'RuntimeException'])`. The `exit_on_exceptions` argument accepts a list of python or user defined custom Exception or Error class names.
+
 ## Network errors
 
 When an {ref}`Executor or Head <architecture-overview>` can't be reached by the {class}`~jina.Flow`'s gateway, it attempts to re-connect

@@ -7,7 +7,7 @@ import json
 import os
 import random
 from pathlib import Path
-from typing import Dict, Optional, Union, List
+from typing import Dict, List, Optional, Union
 from urllib.parse import urljoin
 
 import hubble
@@ -26,6 +26,7 @@ from jina.hubble.helper import (
     get_request_header,
     get_requirements_env_variables,
     parse_hub_uri,
+    status_task,
     upload_file,
 )
 from jina.hubble.hubapi import (
@@ -208,8 +209,16 @@ Meta information helps other users to identify, search and reuse your Executor o
                     f = (
                         fp.read()
                         .replace('{{exec_name}}', exec_name)
-                        .replace('{{exec_description}}', exec_description if exec_description != '{{}}' else '')
-                        .replace('{{exec_keywords}}', str(exec_keywords.split(',')) if exec_keywords != '{{}}' else '[]')
+                        .replace(
+                            '{{exec_description}}',
+                            exec_description if exec_description != '{{}}' else '',
+                        )
+                        .replace(
+                            '{{exec_keywords}}',
+                            str(exec_keywords.split(','))
+                            if exec_keywords != '{{}}'
+                            else '[]',
+                        )
                         .replace('{{exec_url}}', exec_url if exec_url != '{{}}' else '')
                     )
                     fpw.writelines(f)
@@ -242,8 +251,8 @@ Meta information helps other users to identify, search and reuse your Executor o
         # adding the columns in order of `ls` output
         table.add_row(
             'config.yml',
-            'The YAML config file of the Executor. You can define [bold]__init__[/bold] arguments using [bold]with[/bold] keyword.' +\
-            '\nYou can also define metadata for the executor, for better appeal on Jina Hub.',
+            'The YAML config file of the Executor. You can define [bold]__init__[/bold] arguments using [bold]with[/bold] keyword.'
+            + '\nYou can also define metadata for the executor, for better appeal on Jina Hub.',
         )
 
         table.add_row(
@@ -346,6 +355,161 @@ metas:
             expand=False,
         )
         console.print(p)
+
+    def _async_push(
+        self,
+        console,
+        st,
+        req_header,
+        content,
+        form_data,
+        work_path,
+        task_id,
+    ):
+
+        verbose = form_data.get('verbose', False)
+        session_id = req_header.get('jinameta-session-id')
+
+        if task_id and not form_data.get('id'):
+            image = self._status_with_progress(console, st, task_id, False, False)
+
+            if image:
+                new_uuid8 = image['id']
+                form_data['id'] = new_uuid8
+
+                dump_secret(work_path, new_uuid8, form_data.get('secret'), task_id)
+            else:
+                raise Exception(f'Unknown Error, session_id: {session_id}')
+
+        if form_data.get('id'):
+            hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.updateAsync')
+        else:
+            hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.createAsync')
+
+        # upload the archived executor to Jina Hub
+        st.update(f'Async Uploading...')
+        resp = upload_file(
+            hubble_url,
+            'filename',
+            content,
+            dict_data=form_data,
+            headers=req_header,
+            stream=True,
+            method='post',
+        )
+
+        verbose = form_data.get('verbose', False)
+        push_task = None
+        for stream_line in resp.iter_lines():
+            stream_msg = json.loads(stream_line)
+            if stream_msg.get('code') == 202:
+                push_task = stream_msg['data']
+            else:
+                msg = stream_msg.get('message')
+                raise Exception(f'{ msg or "Unknown Error"} session_id: {session_id}')
+
+        new_task_id = push_task.get('_id')
+        if new_task_id:
+
+            dump_secret(
+                work_path, form_data.get('id'), form_data.get('secret'), new_task_id
+            )
+            self._prettyprint_status_usage(console, work_path, new_task_id)
+            st.update(f'Async Uploaded!')
+
+            image = self._status_with_progress(console, st, new_task_id, False, verbose)
+            if image:
+
+                # `new_secret` is always None
+                new_uuid8, new_secret = self._prettyprint_result(console, image)
+                if new_uuid8 != form_data.get('id'):
+                    dump_secret(
+                        work_path, new_uuid8, form_data.get('secret'), new_task_id
+                    )
+
+            else:
+                raise Exception(f'Unknown Error, session_id: {session_id}')
+
+        else:
+            raise Exception(f'Error: can\'t get task_id session_id: {session_id}')
+
+    def _sync_push(
+        self, console, st, req_header, content, form_data, work_path, uuid8, secret
+    ):
+        # upload the archived executor to Jina Hub
+        if form_data.get('id'):
+            hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.update')
+        else:
+            hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.create')
+
+        st.update(f'Uploading...')
+        resp = upload_file(
+            hubble_url,
+            'filename',
+            content,
+            dict_data=form_data,
+            headers=req_header,
+            stream=True,
+            method='post',
+        )
+
+        warnings = []
+        verbose = form_data.get('verbose', False)
+        image = None
+        session_id = req_header.get('jinameta-session-id')
+        for stream_line in resp.iter_lines():
+
+            stream_msg = json.loads(stream_line)
+            t = stream_msg.get('type')
+            subject = stream_msg.get('subject')
+            payload = stream_msg.get('payload', '')
+
+            if t == 'error':
+                msg = stream_msg.get('message')
+                hubble_err = payload
+                overridden_msg = ''
+                detail_msg = ''
+                if isinstance(hubble_err, dict):
+                    (overridden_msg, detail_msg) = get_hubble_error_message(hubble_err)
+                    if not msg:
+                        msg = detail_msg
+
+                if overridden_msg and overridden_msg != detail_msg:
+                    self.logger.warning(overridden_msg)
+
+                raise Exception(
+                    f'{overridden_msg or msg or "Unknown Error"} session_id: {session_id}'
+                )
+            elif t == 'warning':
+                warnings.append(stream_msg.get('message'))
+
+            if t == 'progress' and subject == 'buildWorkspace':
+                legacy_message = stream_msg.get('legacyMessage', {})
+                status = legacy_message.get('status', '')
+                st.update(f'Cloud building ... [dim]{subject}: {t} ({status})[/dim]')
+
+            elif t == 'complete':
+                image = stream_msg['payload']
+                warnings.append(stream_msg.get('warning'))
+                st.update(
+                    f'Cloud building ... [dim]{subject}: {t} ({stream_msg["message"]})[/dim]'
+                )
+                break
+
+            elif t and subject:
+                if verbose and t == 'console':
+                    console.log(f'Cloud building ... [dim]{subject}: {payload}[/dim]')
+                else:
+                    st.update(f'Cloud building ... [dim]{subject}: {t} {payload}[/dim]')
+
+        if image:
+            new_uuid8, new_secret = self._prettyprint_result(
+                console, image, warnings=warnings
+            )
+            if new_uuid8 != uuid8 or new_secret != secret:
+                dump_secret(work_path, new_uuid8, new_secret or '', None)
+        else:
+            raise Exception(f'Unknown Error, session_id: {session_id}')
 
     def push(self) -> None:
         """Push the executor package to Jina Hub."""
@@ -457,91 +621,38 @@ metas:
                 if build_env:
                     form_data['buildEnv'] = json.dumps(build_env)
 
-                uuid8, secret = load_secret(work_path)
+                uuid8, secret, task_id = load_secret(work_path)
                 if self.args.force_update or uuid8:
                     form_data['id'] = self.args.force_update or uuid8
                 if self.args.secret or secret:
                     form_data['secret'] = self.args.secret or secret
 
                 st.update(f'Connecting to Jina Hub ...')
-                if form_data.get('id'):
-                    hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.update')
-                else:
-                    hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.create')
 
-                # upload the archived executor to Jina Hub
-                st.update(f'Uploading...')
-                resp = upload_file(
-                    hubble_url,
-                    'filename',
-                    content,
-                    dict_data=form_data,
-                    headers=req_header,
-                    stream=True,
-                    method='post',
-                )
-
-                image = None
-                warnings = []
-                session_id = req_header.get('jinameta-session-id')
-                for stream_line in resp.iter_lines():
-                    stream_msg = json.loads(stream_line)
-
-                    t = stream_msg.get('type')
-                    subject = stream_msg.get('subject')
-                    payload = stream_msg.get('payload', '')
-                    if t == 'error':
-                        msg = stream_msg.get('message')
-                        hubble_err = payload
-                        overridden_msg = ''
-                        detail_msg = ''
-                        if isinstance(hubble_err, dict):
-                            (overridden_msg, detail_msg) = get_hubble_error_message(
-                                hubble_err
-                            )
-                            if not msg:
-                                msg = detail_msg
-
-                        if overridden_msg and overridden_msg != detail_msg:
-                            self.logger.warning(overridden_msg)
-
-                        raise Exception(
-                            f'{overridden_msg or msg or "Unknown Error"} session_id: {session_id}'
-                        )
-                    elif t == 'warning':
-                        warnings.append(stream_msg.get('message'))
-        
-                    if t == 'progress' and subject == 'buildWorkspace':
-                        legacy_message = stream_msg.get('legacyMessage', {})
-                        status = legacy_message.get('status', '')
-                        st.update(
-                            f'Cloud building ... [dim]{subject}: {t} ({status})[/dim]'
-                        )
-                    elif t == 'complete':
-                        image = stream_msg['payload']
-                        warning = stream_msg.get('warning')
-                        st.update(
-                            f'Cloud building ... [dim]{subject}: {t} ({stream_msg["message"]})[/dim]'
-                        )
-                        break
-                    elif t and subject:
-                        if self.args.verbose and t == 'console':
-                            console.log(
-                                f'Cloud building ... [dim]{subject}: {payload}[/dim]'
-                            )
-                        else:
-                            st.update(
-                                f'Cloud building ... [dim]{subject}: {t} {payload}[/dim]'
-                            )
-
-                if image:
-                    new_uuid8, new_secret = self._prettyprint_result(
-                        console, image, warnings=warnings
+                logged_in = True if hubble.is_logged_in() else False
+                if logged_in:  # if user logged in use async upload api
+                    self._async_push(
+                        console,
+                        st,
+                        req_header,
+                        content,
+                        form_data,
+                        work_path,
+                        task_id,
                     )
-                    if new_uuid8 != uuid8 or new_secret != secret:
-                        dump_secret(work_path, new_uuid8, new_secret or '')
+
                 else:
-                    raise Exception(f'Unknown Error, session_id: {session_id}')
+                    # if user not logged in use async upload api
+                    self._sync_push(
+                        console,
+                        st,
+                        req_header,
+                        content,
+                        form_data,
+                        work_path,
+                        uuid8,
+                        secret,
+                    )
 
             except KeyboardInterrupt:
                 pass
@@ -552,9 +663,9 @@ metas:
                 )
                 raise e
 
-    def _prettyprint_result(self, console, image, *, warnings: Optional[List[str]] = None):
-        # TODO: only support single executor now
-
+    def _prettyprint_result(
+        self, console, image, *, warnings: Optional[List[str]] = None
+    ):
         from rich import box
         from rich.panel import Panel
         from rich.table import Table
@@ -562,7 +673,9 @@ metas:
         uuid8 = image['id']
         secret = image.get('secret')
         visibility = image['visibility']
-        tag = self.args.tag[0] if self.args.tag else None
+        commit = image.get('commit', {})
+        tags = commit.get('tags', None)
+        tag = tags[0] if tags and isinstance(tags, list) else None
 
         table = Table(box=box.SIMPLE, show_header=False)
         table.add_column(no_wrap=True)
@@ -668,15 +781,192 @@ metas:
             )
         )
 
+    def _prettyprint_status_usage(
+        self, console, work_path, task_id=None, usage_kind=None
+    ):
+        from rich import box
+        from rich.panel import Panel
+        from rich.table import Table
+
+        param_str = Table(
+            box=box.SIMPLE,
+        )
+
+        param_str.add_column(
+            'If you don\'t want to wait the executor\'s building status, you can use \'Ctrl + C\', after that you can always get the status of the executor anytime using the command!'
+        )
+        param_str.add_row(
+            f'You can use `jina hub status {work_path}` get the last building status of the executor',
+        )
+
+        if task_id:
+            param_str.add_row('')
+            param_str.add_row(
+                f'Also you can use `jina hub status --id {task_id}` get the specified building state about the executor.',
+            )
+
+        console.print(
+            Panel(
+                param_str,
+                title='Status',
+                expand=False,
+                width=100,
+            )
+        )
+
+    def _status_with_progress(self, console, st, task_id, replay=False, verbose=False):
+
+        req_header = get_request_header()
+        dict_data = {}
+        dict_data['replay'] = replay
+        dict_data['verbose'] = verbose
+
+        session_id = req_header.get('jinameta-session-id')
+        task_progress = status_task(
+            url=urljoin(hubble.utils.get_base_url(), 'executor.queryProgress'),
+            id=task_id,
+            dict_data=dict_data,
+            headers=req_header,
+            stream=True,
+            method='post',
+        )
+
+        image = None
+        for stream_line in task_progress.iter_lines():
+            stream_msg = json.loads(stream_line)
+            t = stream_msg.get('type')
+
+            code = stream_msg.get('code')
+            if code and code >= 400:
+                error = stream_msg.get('message')
+                raise Exception(f'{ error or "Unknown Error"} session_id: {session_id}')
+
+            if t == 'error':
+                error = stream_msg.get('message')
+                raise Exception(f'{ error or "Unknown Error"} session_id: {session_id}')
+
+            elif t == 'report':
+                status = stream_msg.get('status')
+                if status == 'pending':
+                    if replay:
+                        console.log(
+                            f'Cloud pending ... [dim]: {t} {task_id} ({status})[/dim]'
+                        )
+                    else:
+                        st.update(f'Cloud pending ... [dim]: {t} ({status})[/dim]')
+
+                elif status == 'failed':
+                    error = stream_msg.get('error', {})
+                    msg = error.get('message')
+                    message = stream_msg.get('message')
+                    raise Exception(
+                        f'{ msg or message or "Unknown Error"} session_id: {session_id}'
+                    )
+
+                elif status == 'waiting':
+                    error = stream_msg.get('error')
+                    if replay:
+                        task = stream_msg.get('task', {})
+                        task_id = task.get('_id')
+                        console.log(
+                            f'Cloud waiting ... [dim]: {t} task: {task_id} {error or ""} ({status})[/dim]'
+                        )
+                    else:
+                        st.update(
+                            f'Cloud waiting ... [dim]: {t} {error or ""} ({status})[/dim]'
+                        )
+
+                elif status == 'succeeded':
+                    if stream_msg.get('result', None):
+                        image = stream_msg['result']
+                        executor_id = image.get('id')
+                        if replay:
+                            console.log(
+                                f'Cloud succeeded ... [dim]: {t} executor: {executor_id} ({status})[/dim]'
+                            )
+                        else:
+                            st.update(
+                                f'Cloud succeeded ... [dim]: {t} executor: {executor_id} ({status})[/dim]'
+                            )
+                    else:
+                        task = stream_msg.get('task', {})
+                        task_id = task.get('_id')
+                        if replay:
+                            console.log(
+                                f'Cloud succeeded ... [dim]: {t} task: {task_id} ({status})[/dim]'
+                            )
+                        else:
+                            st.update(
+                                f'Cloud succeeded ... [dim]: {t} task: {task_id} ({status})[/dim]'
+                            )
+
+            elif t == 'progress':
+                data = stream_msg.get('data', {})
+                legacy_message = data.get('data', {})
+
+                type = legacy_message.get('type')
+                subject = legacy_message.get('subject')
+                payload = legacy_message.get('payload', '')
+
+                if verbose:
+                    if type == 'console':
+                        console.log(
+                            f'Cloud building ... [dim]{subject}: {t} {payload}[/dim]'
+                        )
+                    else:
+                        console.log(f'Cloud building ... [dim]{subject}: {type} [/dim]')
+                else:
+                    if type == 'console':
+                        st.update(
+                            f'Cloud building ... [dim]{subject}: {t} {payload}[/dim]'
+                        )
+                    else:
+                        st.update(f'Cloud building ... [dim]{subject}: {type} [/dim]')
+
+            else:
+                console.log(f'Cloud succeeded ... [dim]: {t} [/dim]')
+
+        return image
+
+    def status(self) -> None:
+        """Query the building status of the executor."""
+
+        task_id = None
+        if self.args.id:
+            task_id = self.args.id
+        else:
+            work_path = Path(self.args.path)
+            uuid8, secret, exists_task_id = load_secret(work_path)
+            task_id = exists_task_id
+
+        if not task_id:
+            raise Exception(
+                f'Error: can\'t get task_id! You can set `--id your task_id` to get building progress info!'
+            )
+
+        verbose = True if self.args.verbose else False
+        replay = True if self.args.replay else False
+
+        console = get_rich_console()
+        with console.status(f'Querying `{task_id}` ...') as st:
+
+            image = self._status_with_progress(console, st, task_id, replay, verbose)
+
+            if image:
+                self.args.no_usage = False
+                self._prettyprint_result(console, image)
+            else:
+                console.log(f'Waiting `{task_id}` ...')
+
     @staticmethod
     @disk_cache_offline(cache_file=str(get_cache_db()))
     def fetch_meta(
         name: str,
         tag: str,
-        *,
-        secret: Optional[str] = None,
         image_required: bool = True,
         rebuild_image: bool = True,
+        *,
+        secret: Optional[str] = None,
         force: bool = False,
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
@@ -690,7 +980,7 @@ metas:
         :return: meta of executor
 
         .. note::
-            The `name` and `tag` should be passed via ``args`` and `force` and `secret` as ``kwargs``, otherwise,
+            The significant parameters like `name` and `tag` should be passed via ``args`` and `force` and `secret` as ``kwargs``, otherwise,
             cache does not work.
         """
         with ImportExtensions(required=True):
@@ -724,7 +1014,7 @@ metas:
         images = resp['package'].get('containers', [])
         image_name = images[0] if images else None
         if image_required and not image_name:
-            raise Exception(
+            raise RuntimeError(
                 f'No image found for executor "{name}", '
                 f'tag: {tag}, commit: {resp.get("commit", {}).get("id")}, '
                 f'session_id: {req_header.get("jinameta-session-id")}'
@@ -889,8 +1179,8 @@ metas:
                 executor, from_cache = HubIO.fetch_meta(
                     name,
                     tag,
+                    image_required,
                     secret=secret,
-                    image_required=image_required,
                     force=need_pull,
                 )
 
@@ -962,8 +1252,8 @@ metas:
                                 executor, _ = HubIO.fetch_meta(
                                     name,
                                     tag,
+                                    image_required,
                                     secret=secret,
-                                    image_required=False,
                                     force=True,
                                 )
 

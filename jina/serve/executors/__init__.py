@@ -11,13 +11,7 @@ from opentelemetry import metrics, trace
 
 from jina import __args_executor_init__, __cache_path__, __default_endpoint__
 from jina.enums import BetterEnum
-from jina.helper import (
-    ArgNamespace,
-    T,
-    iscoroutinefunction,
-    send_telemetry_event,
-    typename,
-)
+from jina.helper import ArgNamespace, T, iscoroutinefunction, typename
 from jina.importer import ImportExtensions
 from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
@@ -154,7 +148,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             )
         if type(self) == BaseExecutor:
             self.requests[__default_endpoint__] = self._dry_run_func
-        send_telemetry_event(event='start', obj=self)
 
     def _dry_run_func(self, *args, **kwargs):
         pass

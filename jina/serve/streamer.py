@@ -1,38 +1,37 @@
-from typing import Optional, Dict, Union, List, TYPE_CHECKING
-
-from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
-from jina.serve.networking import GrpcConnectionPool
-
-from jina.logging.logger import JinaLogger
-from jina.serve.runtimes.gateway.request_handling import RequestHandler
-from jina.serve.stream import RequestStreamer
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
 
 from docarray import DocumentArray
 
-__all__ = ['GatewayBFF']
+from jina.logging.logger import JinaLogger
+from jina.serve.networking import GrpcConnectionPool
+from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
+from jina.serve.runtimes.gateway.request_handling import RequestHandler
+from jina.serve.stream import RequestStreamer
+
+__all__ = ['GatewayStreamer']
 
 if TYPE_CHECKING:
     from prometheus_client import CollectorRegistry
 
 
-class GatewayBFF:
+class GatewayStreamer:
     """
-    Wrapper object to be used in a BFF or in the Gateway. Naming to be defined
+    Wrapper object to be used in a Custom Gateway. Naming to be defined
     """
 
     def __init__(
-            self,
-            graph_representation: Dict,
-            executor_addresses: Dict[str, Union[str, List[str]]],
-            graph_conditions: Dict = {},
-            deployments_disable_reduce: List[str] = [],
-            timeout_send: Optional[float] = None,
-            retries: int = 0,
-            compression: Optional[str] = None,
-            runtime_name: str = 'gateway_bff',
-            prefetch: int = 0,
-            logger: Optional['JinaLogger'] = None,
-            metrics_registry: Optional['CollectorRegistry'] = None,
+        self,
+        graph_representation: Dict,
+        executor_addresses: Dict[str, Union[str, List[str]]],
+        graph_conditions: Dict = {},
+        deployments_disable_reduce: List[str] = [],
+        timeout_send: Optional[float] = None,
+        retries: int = 0,
+        compression: Optional[str] = None,
+        runtime_name: str = 'custom gateway',
+        prefetch: int = 0,
+        logger: Optional['JinaLogger'] = None,
+        metrics_registry: Optional['CollectorRegistry'] = None,
     ):
         """
         :param graph_representation: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to
@@ -49,9 +48,18 @@ class GatewayBFF:
         :param logger: Optional logger that can be used for logging
         :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics
         """
-        topology_graph = self._create_topology_graph(graph_representation, graph_conditions,
-                                                     deployments_disable_reduce, timeout_send, retries)
-        self._connection_pool = self._create_connection_pool(executor_addresses, compression, metrics_registry, logger)
+        topology_graph = self._create_topology_graph(
+            graph_representation,
+            graph_conditions,
+            deployments_disable_reduce,
+            timeout_send,
+            retries,
+        )
+        self.runtime_name = runtime_name
+
+        self._connection_pool = self._create_connection_pool(
+            executor_addresses, compression, metrics_registry, logger
+        )
         request_handler = RequestHandler(metrics_registry, runtime_name)
 
         self._streamer = RequestStreamer(
@@ -64,8 +72,14 @@ class GatewayBFF:
         )
         self._streamer.Call = self._streamer.stream
 
-    def _create_topology_graph(self, graph_description, graph_conditions, deployments_disable_reduce, timeout_send,
-                               retries):
+    def _create_topology_graph(
+        self,
+        graph_description,
+        graph_conditions,
+        deployments_disable_reduce,
+        timeout_send,
+        retries,
+    ):
         # check if it should be in K8s, maybe ConnectionPoolFactory to be created
         return TopologyGraph(
             graph_representation=graph_description,
@@ -75,9 +89,12 @@ class GatewayBFF:
             retries=retries,
         )
 
-    def _create_connection_pool(self, deployments_addresses, compression, metrics_registry, logger):
+    def _create_connection_pool(
+        self, deployments_addresses, compression, metrics_registry, logger
+    ):
         # add the connections needed
         connection_pool = GrpcConnectionPool(
+            runtime_name=self.runtime_name,
             logger=logger,
             compression=compression,
             metrics_registry=metrics_registry,
@@ -100,9 +117,15 @@ class GatewayBFF:
         """
         return self._streamer.stream(*args, **kwargs)
 
-    async def stream_docs(self, docs: DocumentArray, request_size: int, return_results: bool = False,
-                          exec_endpoint: Optional[str] = None,
-                          target_executor: Optional[str] = None, parameters: Optional[Dict] = None):
+    async def stream_docs(
+        self,
+        docs: DocumentArray,
+        request_size: int,
+        return_results: bool = False,
+        exec_endpoint: Optional[str] = None,
+        target_executor: Optional[str] = None,
+        parameters: Optional[Dict] = None,
+    ):
         """
         stream documents and stream responses back.
 
@@ -115,6 +138,7 @@ class GatewayBFF:
         :yield: Yields DocumentArrays or Responses from the Executors
         """
         from jina.types.request.data import DataRequest
+
         def _req_generator():
             for docs_batch in docs.batch(batch_size=request_size, shuffle=False):
                 req = DataRequest()

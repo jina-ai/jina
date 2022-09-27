@@ -1454,6 +1454,14 @@ class Flow(
 
         self._build_level = FlowBuildLevel.EMPTY
 
+        self._stop_time = time.time()
+        send_telemetry_event(
+            event='stop',
+            obj=self,
+            entity_id=self._entity_id,
+            duration=self._stop_time - self._start_time,
+            exc_type=str(exc_type),
+        )
         self.logger.debug('flow is closed!')
         self.logger.close()
 
@@ -1471,7 +1479,7 @@ class Flow(
 
         :return: this instance
         """
-
+        self._start_time = time.time()
         if self._build_level.value < FlowBuildLevel.GRAPH.value:
             self.build(copy_flow=False)
 
@@ -1495,7 +1503,7 @@ class Flow(
 
         self._build_level = FlowBuildLevel.RUNNING
 
-        send_telemetry_event(event='start', obj=self)
+        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
 
         return self
 
@@ -2423,3 +2431,12 @@ class Flow(
             )
 
         return obj
+
+    @property
+    def _entity_id(self) -> str:
+        import uuid
+
+        if hasattr(self, '_entity_id_'):
+            return self._entity_id_
+        self._entity_id_ = uuid.uuid1().hex
+        return self._entity_id_

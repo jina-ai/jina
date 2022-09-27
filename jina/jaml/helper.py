@@ -188,7 +188,6 @@ def parse_config_source(
     ):
         # possible module.class name
         module_name, cls_name = path.rsplit('.', maxsplit=1)
-        print(module_name, cls_name)
         PathImporter.add_modules(module_name)
         return io.StringIO(f'!{cls_name}'), None
     elif allow_json and isinstance(path, str):

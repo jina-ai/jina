@@ -1,8 +1,8 @@
 import asyncio
-import contextlib
 import ipaddress
 import os
 from collections import defaultdict
+from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Set, Tuple, Union
 from urllib.parse import urlparse
 
@@ -19,6 +19,7 @@ from jina.excepts import EstablishGrpcConnectionError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2, jina_pb2_grpc
+from jina.serve.helper import _get_summary_time_context_or_null
 from jina.serve.instrumentation import InstrumentationMixin
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
@@ -28,7 +29,7 @@ TLS_PROTOCOL_SCHEMES = ['grpcs', 'https', 'wss']
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from prometheus_client import CollectorRegistry
+    from prometheus_client import CollectorRegistry, Summary
 
 
 DEFAULT_MINIMUM_RETRIES = 3
@@ -38,17 +39,34 @@ default_endpoints_proto = jina_pb2.EndpointsProto()
 default_endpoints_proto.endpoints.extend([__default_endpoint__])
 
 
+@dataclass
+class _NetworkingMetrics:
+    """
+    dataclass that contain the metrics used in the networking part
+    """
+
+    sending_requests_time_metrics: Optional['Summary']
+    received_response_bytes: Optional['Summary']
+    send_requests_bytes_metrics: Optional['Summary']
+
+
 class ReplicaList:
     """
     Maintains a list of connections to replicas and uses round robin for selecting a replica
     """
 
-    def __init__(self, summary, logger):
+    def __init__(
+        self,
+        metrics: _NetworkingMetrics,
+        logger,
+        runtine_name: str,
+    ):
+        self.runtime_name = runtine_name
         self._connections = []
         self._address_to_connection_idx = {}
         self._address_to_channel = {}
         self._rr_counter = 0  # round robin counter
-        self.summary = summary
+        self._metrics = metrics
         self._logger = logger
         self._destroyed_event = asyncio.Event()
 
@@ -140,7 +158,7 @@ class ReplicaList:
         use_tls = parsed_address.scheme in TLS_PROTOCOL_SCHEMES
 
         stubs, channel = GrpcConnectionPool.create_async_channel_stub(
-            address, tls=use_tls, summary=self.summary, enable_trace=True
+            address, metrics=self._metrics, tls=use_tls, enable_trace=True
         )
         return stubs, channel
 
@@ -254,10 +272,15 @@ class GrpcConnectionPool:
             'jina.JinaInfoRPC': jina_pb2_grpc.JinaInfoRPCStub,
         }
 
-        def __init__(self, address, channel, summary):
+        def __init__(
+            self,
+            address,
+            channel,
+            metrics: _NetworkingMetrics,
+        ):
             self.address = address
             self.channel = channel
-            self._summary_time = summary
+            self._metrics = metrics
             self._initialized = False
 
         # This has to be done lazily, because the target endpoint may not be available
@@ -328,18 +351,43 @@ class GrpcConnectionPool:
                         compression=compression,
                         timeout=timeout,
                     )
-                    with self._summary_time:
+                    if self._metrics.send_requests_bytes_metrics:
+                        self._metrics.send_requests_bytes_metrics.observe(
+                            requests[0].nbytes
+                        )
+                    with _get_summary_time_context_or_null(
+                        self._metrics.sending_requests_time_metrics
+                    ):
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
                         )
+
+                        if self._metrics.received_response_bytes:
+                            self._metrics.received_response_bytes.observe(
+                                response.nbytes
+                            )
                     return response, metadata
+
                 elif self.stream_stub:
-                    with self._summary_time:
-                        async for resp in self.stream_stub.Call(
+                    if self._metrics.send_requests_bytes_metrics:
+                        for response in requests:
+                            self._metrics.send_requests_bytes_metrics.observe(
+                                response.nbytes
+                            )
+
+                    with _get_summary_time_context_or_null(
+                        self._metrics.sending_requests_time_metrics
+                    ):
+                        async for response in self.stream_stub.Call(
                             iter(requests), compression=compression, timeout=timeout
                         ):
-                            return resp, None
+                            if self._metrics.received_response_bytes:
+                                self._metrics.received_response_bytes.observe(
+                                    response.nbytes
+                                )
+
+                            return response, None
             if request_type == DataRequest and len(requests) > 1:
                 if self.data_list_stub:
                     call_result = self.data_list_stub.process_data(
@@ -348,7 +396,9 @@ class GrpcConnectionPool:
                         compression=compression,
                         timeout=timeout,
                     )
-                    with self._summary_time:
+                    with _get_summary_time_context_or_null(
+                        self._metrics.sending_requests_time_metrics
+                    ):
                         metadata, response = (
                             await call_result.trailing_metadata(),
                             await call_result,
@@ -362,14 +412,19 @@ class GrpcConnectionPool:
                 raise ValueError(f'Unsupported request type {type(requests[0])}')
 
     class _ConnectionPoolMap:
-        def __init__(self, logger: Optional[JinaLogger], summary):
+        def __init__(
+            self,
+            runtime_name: str,
+            logger: Optional[JinaLogger],
+            metrics: _NetworkingMetrics,
+        ):
             self._logger = logger
             # this maps deployments to shards or heads
             self._deployments: Dict[str, Dict[str, Dict[int, ReplicaList]]] = {}
             # dict stores last entity id used for a particular deployment, used for round robin
             self._access_count: Dict[str, int] = {}
-            self.summary = summary
-
+            self._metrics = metrics
+            self.runtime_name = runtime_name
             if os.name != 'nt':
                 os.unsetenv('http_proxy')
                 os.unsetenv('https_proxy')
@@ -472,7 +527,9 @@ class GrpcConnectionPool:
         ):
             self._add_deployment(deployment)
             if entity_id not in self._deployments[deployment][type]:
-                connection_list = ReplicaList(self.summary, self._logger)
+                connection_list = ReplicaList(
+                    self._metrics, self._logger, self.runtime_name
+                )
                 self._deployments[deployment][type][entity_id] = connection_list
 
             if not self._deployments[deployment][type][entity_id].has_connection(
@@ -515,6 +572,7 @@ class GrpcConnectionPool:
 
     def __init__(
         self,
+        runtime_name,
         logger: Optional[JinaLogger] = None,
         compression: Optional[str] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
@@ -534,15 +592,43 @@ class GrpcConnectionPool:
             ):
                 from prometheus_client import Summary
 
-            self._summary_time = Summary(
+            sending_requests_time_metrics = Summary(
                 'sending_request_seconds',
-                'Time spent between sending a request to the Pod and receiving the response',
+                'Time spent between sending a request to the Executor/Head and receiving the response',
                 registry=metrics_registry,
                 namespace='jina',
-            ).time()
+                labelnames=('runtime_name',),
+            ).labels(runtime_name)
+
+            received_response_bytes = Summary(
+                'received_response_bytes',
+                'Size in bytes of the response returned from the Head/Executor',
+                registry=metrics_registry,
+                namespace='jina',
+                labelnames=('runtime_name',),
+            ).labels(runtime_name)
+
+            send_requests_bytes_metrics = Summary(
+                'sent_request_bytes',
+                'Size in bytes of the request sent to the Head/Executor',
+                registry=metrics_registry,
+                namespace='jina',
+                labelnames=('runtime_name',),
+            ).labels(runtime_name)
         else:
-            self._summary_time = contextlib.nullcontext()
-        self._connections = self._ConnectionPoolMap(self._logger, self._summary_time)
+            sending_requests_time_metrics = None
+            received_response_bytes = None
+            send_requests_bytes_metrics = None
+
+        self._metrics = _NetworkingMetrics(
+            sending_requests_time_metrics,
+            received_response_bytes,
+            send_requests_bytes_metrics,
+        )
+
+        self._connections = self._ConnectionPoolMap(
+            runtime_name, self._logger, self._metrics
+        )
         self._deployment_address_map = {}
 
     def send_request(
@@ -1112,9 +1198,23 @@ class GrpcConnectionPool:
         Documentation is here https://github.com/grpc/grpc/blob/master/include/grpc/impl/codegen/grpc_types.h
         :returns: list of tuples defining grpc parameters
         """
+
         return [
             ('grpc.max_send_message_length', -1),
             ('grpc.max_receive_message_length', -1),
+            # for the following see this blog post for the choice of default value https://cs.mcgill.ca/~mxia3/2019/02/23/Using-gRPC-in-Production/
+            ('grpc.keepalive_time_ms', 10000),
+            # send keepalive ping every 10 second, default is 2 hours.
+            ('grpc.keepalive_timeout_ms', 5000),
+            # keepalive ping time out after 5 seconds, default is 20 seconds
+            ('grpc.keepalive_permit_without_calls', True),
+            # allow keepalive pings when there's no gRPC calls
+            ('grpc.http2.max_pings_without_data', 0),
+            # allow unlimited amount of keepalive pings without data
+            ('grpc.http2.min_time_between_pings_ms', 10000),
+            # allow grpc pings from client every 10 seconds
+            ('grpc.http2.min_ping_interval_without_data_ms', 5000),
+            # allow grpc pings from client without data every 5 seconds
         ]
 
     @staticmethod
@@ -1149,9 +1249,9 @@ class GrpcConnectionPool:
     @staticmethod
     def create_async_channel_stub(
         address,
+        metrics: _NetworkingMetrics,
         tls=False,
         root_certificates: Optional[str] = None,
-        summary=None,
         enable_trace: Optional[bool] = False,
     ) -> Tuple[ConnectionStubs, grpc.aio.Channel]:
         """
@@ -1160,10 +1260,8 @@ class GrpcConnectionPool:
         :param address: the address to create the connection to, like 127.0.0.0.1:8080
         :param tls: if True, use tls for the grpc channel
         :param root_certificates: the path to the root certificates for tls, only u
-        :param summary: Optional Prometheus summary object
+        :param metrics: NetworkingMetrics object that contain optional metrics
         :param enable_trace: If True the tracing interceptors are added to the channel otherwise the channel will not be provided with any tracing interceptors.
-        :param
-
         :returns: DataRequest stubs and an async grpc channel
         """
         channel = GrpcConnectionPool.get_grpc_channel(
@@ -1175,7 +1273,7 @@ class GrpcConnectionPool:
         )
 
         return (
-            GrpcConnectionPool.ConnectionStubs(address, channel, summary),
+            GrpcConnectionPool.ConnectionStubs(address, channel, metrics),
             channel,
         )
 

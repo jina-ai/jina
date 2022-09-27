@@ -67,7 +67,8 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
 
         self._setup_monitoring()
         self._setup_instrumentation()
-        send_telemetry_event(event='start', obj=self)
+        send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
+        self._start_time = time.time()
         self._loop.run_until_complete(self.async_setup())
 
     def run_forever(self):
@@ -84,6 +85,13 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         self._loop.stop()
         self._loop.close()
         super().teardown()
+        self._stop_time = time.time()
+        send_telemetry_event(
+            event='stop',
+            obj=self,
+            duration=self._stop_time - self._start_time,
+            entity_id=self._entity_id,
+        )
 
     async def _wait_for_cancel(self):
         """Do NOT override this method when inheriting from :class:`GatewayPod`"""
@@ -195,3 +203,12 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         self.logger.debug(
             f'recv DataRequest at {request.header.exec_endpoint} with id: {request.header.request_id}'
         )
+
+    @property
+    def _entity_id(self):
+        import uuid
+
+        if hasattr(self, '_entity_id_'):
+            return self._entity_id_
+        self._entity_id_ = uuid.uuid1().hex
+        return self._entity_id_
