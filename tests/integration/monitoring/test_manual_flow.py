@@ -29,7 +29,7 @@ def _create_worker_runtime(port, name='', executor=None, port_monitoring=None):
 
 
 def _create_gateway_runtime(
-    graph_description, pod_addresses, port, port_monitoring, protocol='grpc', retries=-1
+    graph_description, pod_addresses, port, port_monitoring, retries=-1
 ):
     with GatewayRuntime(
         set_gateway_parser().parse_args(
