@@ -54,7 +54,9 @@ class DataRequestHandler:
             ):
                 from prometheus_client import Counter, Summary
 
-                self._counter = Counter(
+                from jina.serve.monitoring import _SummaryDeprecated
+
+                self._document_processed_metrics = Counter(
                     'document_processed',
                     'Number of Documents that have been processed by the executor',
                     namespace='jina',
@@ -62,16 +64,26 @@ class DataRequestHandler:
                     registry=metrics_registry,
                 )
 
-                self._request_size_metrics = Summary(
-                    'request_size_bytes',
-                    'The request size in Bytes',
+                self._request_size_metrics = _SummaryDeprecated(
+                    old_name='request_size_bytes',
+                    name='received_request_bytes',
+                    documentation='The size in bytes of the request returned to the gateway',
+                    namespace='jina',
+                    labelnames=('executor_endpoint', 'executor', 'runtime_name'),
+                    registry=metrics_registry,
+                )
+
+                self._sent_response_size_metrics = Summary(
+                    'sent_response_bytes',
+                    'The size in bytes of the response sent to the gateway',
                     namespace='jina',
                     labelnames=('executor_endpoint', 'executor', 'runtime_name'),
                     registry=metrics_registry,
                 )
         else:
-            self._counter = None
+            self._document_processed_metrics = None
             self._request_size_metrics = None
+            self._sent_response_size_metrics = None
 
     def _load_executor(self, metrics_registry: Optional['CollectorRegistry'] = None):
         """
@@ -178,14 +190,21 @@ class DataRequestHandler:
                     f'but getting {return_data!r}'
                 )
 
-        if self._counter:
-            self._counter.labels(
+        if self._document_processed_metrics:
+            self._document_processed_metrics.labels(
                 requests[0].header.exec_endpoint,
                 self._executor.__class__.__name__,
                 self.args.name,
             ).inc(len(docs))
 
         DataRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
+
+        if self._sent_response_size_metrics:
+            self._sent_response_size_metrics.labels(
+                requests[0].header.exec_endpoint,
+                self._executor.__class__.__name__,
+                self.args.name,
+            ).observe(requests[0].nbytes)
 
         return requests[0]
 

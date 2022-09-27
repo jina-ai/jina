@@ -82,6 +82,10 @@ def test_enable_monitoring_gateway(protocol, port_generator, executor):
         assert f'jina_sending_request_seconds' in str(resp.content)
         assert f'jina_successful_requests_total' in str(resp.content)
         assert f'jina_failed_requests_total' in str(resp.content)
+        assert f'jina_received_response_bytes' in str(resp.content)
+        assert f'jina_sent_request_bytes' in str(resp.content)
+        assert f'jina_received_request_bytes' in str(resp.content)
+        assert f'jina_sent_response_bytes' in str(resp.content)
 
 
 def test_monitoring_head(port_generator, executor):
@@ -114,6 +118,8 @@ def test_monitoring_head(port_generator, executor):
         resp = req.get(f'http://localhost:{port_head}/')
         assert f'jina_receiving_request_seconds' in str(resp.content)
         assert f'jina_sending_request_seconds' in str(resp.content)
+        assert f'jina_received_response_bytes' in str(resp.content)
+        assert f'jina_sent_request_bytes' in str(resp.content)
 
 
 def test_monitoring_head_few_port(port_generator, executor):
@@ -275,42 +281,6 @@ def test_disable_monitoring_on_gatway_only(port_generator, executor):
 
         resp = req.get(f'http://localhost:{port1}/')  # enable on port0
         assert resp.status_code == 200
-
-
-def test_requests_size(port_generator, executor):
-    port0 = port_generator()
-    port1 = port_generator()
-
-    with Flow(monitoring=True, port_monitoring=port0).add(
-        uses=executor, port_monitoring=port1
-    ) as f:
-        f.post('/foo', inputs=DocumentArray.empty(size=1))
-
-        resp = req.get(f'http://localhost:{port1}/')  # enable on port0
-        assert resp.status_code == 200
-
-        assert (
-            f'jina_request_size_bytes_count{{executor="DummyExecutor",executor_endpoint="/foo",runtime_name="executor0/rep-0"}} 1.0'
-            in str(resp.content)
-        )
-
-        def _get_request_bytes_size():
-            resp = req.get(f'http://localhost:{port1}/')  # enable on port0
-
-            resp_lines = str(resp.content).split('\\n')
-            byte_line = [
-                line
-                for line in resp_lines
-                if 'jina_request_size_bytes_sum{executor="DummyExecutor"' in line
-            ]
-
-            return float(byte_line[0][-5:])
-
-        measured_request_bytes_sum_init = _get_request_bytes_size()
-        f.post('/foo', inputs=DocumentArray.empty(size=1))
-        measured_request_bytes_sum = _get_request_bytes_size()
-
-        assert measured_request_bytes_sum > measured_request_bytes_sum_init
 
 
 def test_failed_successful_request_count(port_generator, failing_executor):
