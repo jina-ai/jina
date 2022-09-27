@@ -1,7 +1,8 @@
 import pytest
 
-from jina.serve.executors.decorators import store_init_kwargs, requests
 from jina.helper import iscoroutinefunction
+from jina.serve.executors.decorators import requests
+from jina.serve.helper import wrap_func
 
 
 def test_store_init_kwargs():

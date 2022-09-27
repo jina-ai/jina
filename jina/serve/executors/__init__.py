@@ -9,12 +9,7 @@ from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union
 
 from jina import __args_executor_init__, __cache_path__, __default_endpoint__
 from jina.enums import BetterEnum
-from jina.helper import (
-    ArgNamespace,
-    T,
-    iscoroutinefunction,
-    typename,
-)
+from jina.helper import ArgNamespace, T, iscoroutinefunction, typename
 from jina.importer import ImportExtensions
 from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
@@ -22,8 +17,8 @@ from jina.serve.executors.decorators import (
     avoid_concurrent_lock_cls,
     requests,
     store_init_kwargs,
-    wrap_func,
 )
+from jina.serve.helper import wrap_func
 
 if TYPE_CHECKING:
     from prometheus_client import Summary

@@ -25,20 +25,6 @@ def _get_locks_root() -> Path:
     return locks_root
 
 
-def wrap_func(cls, func_lst, wrapper):
-    """Wrapping a class method only once, inherited but not overridden method will not be wrapped again
-
-    :param cls: class
-    :param func_lst: function list to wrap
-    :param wrapper: the wrapper
-    """
-    for f_name in func_lst:
-        if hasattr(cls, f_name) and all(
-            getattr(cls, f_name) != getattr(i, f_name, None) for i in cls.mro()[1:]
-        ):
-            setattr(cls, f_name, wrapper(getattr(cls, f_name)))
-
-
 def store_init_kwargs(func: Callable) -> Callable:
     """Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML
     :param func: the function to decorate
