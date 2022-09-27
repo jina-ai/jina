@@ -1,4 +1,6 @@
 import argparse
+import urllib
+from http import HTTPStatus
 
 from jina.logging.predefined import default_logger
 
@@ -30,14 +32,14 @@ class NetworkChecker:
                         r = WorkerRuntime.is_ready(args.host)
                     elif args.target == 'flow':
                         r = Client(host=args.host).is_flow_ready(timeout=args.timeout)
-                    elif args.target == 'flow':
+                    elif args.target == 'gateway':
+                        r = False
                         if args.protocol == 'grpc':
                             r = WorkerRuntime.is_ready(args.host)
                         else:
-                            import requests
                             try:
-                                _ = requests.get(url=args.host)
-                                r = True
+                                conn = urllib.request.urlopen(url=f'http://{args.host}')
+                                r = (conn.code == HTTPStatus.OK)
                             except:
                                 r = False
                     if not r:
