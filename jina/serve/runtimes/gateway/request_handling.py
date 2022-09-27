@@ -45,6 +45,8 @@ class MonitoringRequestMixin:
             ):
                 from prometheus_client import Counter, Gauge, Summary
 
+                from jina.serve.monitoring import _SummaryDeprecated
+
             self._receiving_request_metrics = Summary(
                 'receiving_request_seconds',
                 'Time spent processing successful request',
@@ -77,13 +79,34 @@ class MonitoringRequestMixin:
                 labelnames=('runtime_name',),
             ).labels(runtime_name)
 
+            self._request_size_metrics = _SummaryDeprecated(
+                old_name='request_size_bytes',
+                name='received_request_bytes',
+                documentation='The size in bytes of the request returned to the client',
+                namespace='jina',
+                labelnames=('runtime_name',),
+                registry=metrics_registry,
+            ).labels(runtime_name)
+
+            self._sent_response_bytes = Summary(
+                'sent_response_bytes',
+                'The size in bytes of the request returned to the client',
+                namespace='jina',
+                labelnames=('runtime_name',),
+                registry=metrics_registry,
+            ).labels(runtime_name)
+
         else:
             self._receiving_request_metrics = None
             self._pending_requests_metrics = None
             self._failed_requests_metrics = None
             self._successful_requests_metrics = None
+            self._request_size_metrics = None
+            self._sent_response_bytes = None
 
     def _update_start_request_metrics(self, request: 'Request'):
+        if self._request_size_metrics:
+            self._request_size_metrics.observe(request.nbytes)
         if self._receiving_request_metrics:
             self._request_init_time[request.request_id] = time.time()
         if self._pending_requests_metrics:
@@ -103,6 +126,9 @@ class MonitoringRequestMixin:
 
         if self._successful_requests_metrics:
             self._successful_requests_metrics.inc()
+
+        if self._sent_response_bytes:
+            self._sent_response_bytes.observe(result.nbytes)
 
     def _update_end_failed_requests_metrics(self, result: 'Request'):
         if self._pending_requests_metrics:
