@@ -602,7 +602,7 @@ class GrpcConnectionPool:
 
             received_response_bytes = Summary(
                 'received_response_bytes',
-                'Size in Bytes of the request returned by the Pod',
+                'Size in bytes of the response returned from the Pod',
                 registry=metrics_registry,
                 namespace='jina',
                 labelnames=('runtime_name',),
