@@ -411,7 +411,9 @@ metas:
         new_task_id = push_task.get('_id')
         if new_task_id:
 
-            dump_secret(work_path, form_data.get('id'), form_data.get('secret'), new_task_id)
+            dump_secret(
+                work_path, form_data.get('id'), form_data.get('secret'), new_task_id
+            )
             self._prettyprint_status_usage(console, work_path, new_task_id)
             st.update(f'Async Uploaded!')
 
@@ -421,7 +423,9 @@ metas:
                 # `new_secret` is always None
                 new_uuid8, new_secret = self._prettyprint_result(console, image)
                 if new_uuid8 != form_data.get('id'):
-                    dump_secret(work_path, new_uuid8, form_data.get('secret'), new_task_id)
+                    dump_secret(
+                        work_path, new_uuid8, form_data.get('secret'), new_task_id
+                    )
 
             else:
                 raise Exception(f'Unknown Error, session_id: {session_id}')
@@ -959,10 +963,10 @@ metas:
     def fetch_meta(
         name: str,
         tag: str,
-        *,
-        secret: Optional[str] = None,
         image_required: bool = True,
         rebuild_image: bool = True,
+        *,
+        secret: Optional[str] = None,
         force: bool = False,
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
@@ -976,7 +980,7 @@ metas:
         :return: meta of executor
 
         .. note::
-            The `name` and `tag` should be passed via ``args`` and `force` and `secret` as ``kwargs``, otherwise,
+            The significant parameters like `name` and `tag` should be passed via ``args`` and `force` and `secret` as ``kwargs``, otherwise,
             cache does not work.
         """
         with ImportExtensions(required=True):
@@ -1010,7 +1014,7 @@ metas:
         images = resp['package'].get('containers', [])
         image_name = images[0] if images else None
         if image_required and not image_name:
-            raise Exception(
+            raise RuntimeError(
                 f'No image found for executor "{name}", '
                 f'tag: {tag}, commit: {resp.get("commit", {}).get("id")}, '
                 f'session_id: {req_header.get("jinameta-session-id")}'
@@ -1175,8 +1179,8 @@ metas:
                 executor, from_cache = HubIO.fetch_meta(
                     name,
                     tag,
+                    image_required,
                     secret=secret,
-                    image_required=image_required,
                     force=need_pull,
                 )
 
@@ -1248,8 +1252,8 @@ metas:
                                 executor, _ = HubIO.fetch_meta(
                                     name,
                                     tag,
+                                    image_required,
                                     secret=secret,
-                                    image_required=False,
                                     force=True,
                                 )
 
