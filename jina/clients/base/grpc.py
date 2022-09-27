@@ -63,7 +63,7 @@ class GRPCBaseClient(BaseClient):
         on_error: Optional['CallbackFnType'] = None,
         on_always: Optional['CallbackFnType'] = None,
         compression: Optional[str] = None,
-        max_attempts: bool = 1,
+        max_attempts: int = 1,
         initial_backoff: float = 0.5,
         max_backoff: float = 0.1,
         backoff_multiplier: float = 1.5,

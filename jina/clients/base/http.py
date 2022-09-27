@@ -142,7 +142,7 @@ class HTTPBaseClient(BaseClient):
                 r_status = response.status
 
                 r_str = await response.json()
-                self._handle_response_status(r_status, r_str, url, self.continue_on_error)
+                self._handle_response_status(r_status, r_str, url)
 
                 da = None
                 if 'data' in r_str and r_str['data'] is not None:
