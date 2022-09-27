@@ -1,0 +1,5 @@
+!DummyGateway
+py_modules: dummy_gateway.py
+with:
+  arg1: hello
+  arg2: world
