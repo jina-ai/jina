@@ -40,8 +40,10 @@ def flow_with_grpc(monkeypatch):
             return self._deny
 
     class AlternativeGRPCGateway(GRPCGateway):
-        def __init__(self, *args, **kwargs):
-            super(AlternativeGRPCGateway, self).__init__(*args, **kwargs)
+        def __init__(self, namespace_args, *args, **kwargs):
+            super(AlternativeGRPCGateway, self).__init__(
+                args=namespace_args, *args, **kwargs
+            )
             self.server = grpc.aio.server(
                 interceptors=(AuthInterceptor('access_key'),),
                 options=_get_grpc_server_options(self.grpc_server_options),
@@ -62,6 +64,7 @@ def flow_with_grpc(monkeypatch):
 
             self.gateway = AlternativeGRPCGateway(
                 name=self.name,
+                namespace_args=self.args,
                 grpc_server_options=self.args.grpc_server_options,
                 port=self.args.port,
                 ssl_keyfile=self.args.ssl_keyfile,
@@ -69,7 +72,6 @@ def flow_with_grpc(monkeypatch):
             )
 
             self.gateway.set_streamer(
-                args=self.args,
                 timeout_send=self.timeout_send,
                 metrics_registry=self.metrics_registry,
                 runtime_name=self.name,
