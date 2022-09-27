@@ -679,10 +679,10 @@ to Exceptions caused by an Executor, but in case of network connectivity issues,
 
 ### Transient fault handling with retries
 
-`client.post()` accepts `max_attempts`, `initial_backoff`, `max_backoff` and `backoff_multiplier` parameters to control the capacity to retry requests, when a transient connectivity error occurs, using an exponential backoff strategy, 
+`client.post()` accepts `max_attempts`, `initial_backoff`, `max_backoff` and `backoff_multiplier` parameters to control the capacity to retry requests, when a transient connectivity error occurs, using an exponential backoff strategy.
 This can help to overcome transient network connectivity issues. 
 
-The `max_attempts` determines the number of sending attempts, including the original request.
+The `max_attempts` parameter determines the number of sending attempts, including the original request.
 The `initial_backoff`, `max_backoff`, and `backoff_multiplier` parameters determine the randomized delay in seconds before retry attempts.
 
 The initial retry attempt will occur at random(0, initial_backoff). In general, the n-th attempt will occur at random(0, min(initial_backoff*backoff_multiplier**(n-1), max_backoff)).
