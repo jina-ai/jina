@@ -68,6 +68,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
                 ssl_keyfile=self.args.ssl_keyfile,
                 ssl_certfile=self.args.ssl_certfile,
                 uvicorn_kwargs=self.args.uvicorn_kwargs,
+                **self.args.uses_with,
             ),
             uses_metas={},
             runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
