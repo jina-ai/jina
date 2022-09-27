@@ -1,16 +1,7 @@
 from opentelemetry import metrics, trace
-from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.instrumentation.grpc import (
     client_interceptor as grpc_client_interceptor,
 )
-from opentelemetry.sdk.metrics import MeterProvider
-from opentelemetry.sdk.metrics.export import (
-    ConsoleMetricExporter,
-    PeriodicExportingMetricReader,
-)
-from opentelemetry.sdk.resources import SERVICE_NAME, Resource
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 from jina.serve.instrumentation._aio_client import (
     StreamStreamAioClientInterceptor,
@@ -31,9 +22,14 @@ class InstrumentationMixin:
         name = self.__class__.__name__
         if hasattr(self, 'name') and self.name:
             name = self.name
-        resource = Resource(attributes={SERVICE_NAME: name})
 
         if self.args.opentelemetry_tracing:
+            from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+            from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+            from opentelemetry.sdk.trace import TracerProvider
+            from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+            resource = Resource(attributes={SERVICE_NAME: name})
             provider = TracerProvider(resource=resource)
             processor = BatchSpanProcessor(
                 JaegerExporter(
@@ -46,6 +42,15 @@ class InstrumentationMixin:
             self.tracer = trace.get_tracer(name)
 
         if self.args.opentelemetry_metrics:
+            from opentelemetry.sdk.metrics import MeterProvider
+            from opentelemetry.sdk.metrics.export import (
+                ConsoleMetricExporter,
+                PeriodicExportingMetricReader,
+            )
+            from opentelemetry.sdk.resources import SERVICE_NAME, Resource
+
+            resource = Resource(attributes={SERVICE_NAME: name})
+
             metric_reader = PeriodicExportingMetricReader(ConsoleMetricExporter())
             meter_provider = MeterProvider(
                 metric_readers=[metric_reader], resource=resource
