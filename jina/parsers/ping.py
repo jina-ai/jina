@@ -35,15 +35,21 @@ Timeout in millisecond of one check
 ''',
     )
     parser.add_argument(
-        '--retries',
-        type=int,
-        default=3,
-        help='The max number of tried health checks before exit with exit code 1',
-    )
-    parser.add_argument(
         '--protocol',
         type=str,
         default='grpc',
         help='The protocol used to serve the gateway which determines how readiness is checked. Options are: `grpc`, `http` and `websocket`. Defaults to `grpc`',
+    )
+    parser.add_argument(
+        '--attempts',
+        type=int,
+        default=1,
+        help='The number of readiness checks to perform',
+    )
+    parser.add_argument(
+        '--min-successful-attempts',
+        type=int,
+        default=1,
+        help='The minimum number of successful readiness checks, before it exits successfully with exit(0)',
     )
     return parser
