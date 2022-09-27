@@ -130,6 +130,7 @@ class HTTPClientlet(AioHttpClientlet):
 
     async def send_dry_run(self, **kwargs):
         """Query the dry_run endpoint from Gateway
+        :param kwargs: keyword arguments to make sure compatible API with other clients
         :return: send get message
         """
         return await self.session.get(url=self.url).__aenter__()
@@ -198,7 +199,7 @@ class WebsocketClientlet(AioHttpClientlet):
 
     async def send_dry_run(self, **kwargs):
         """Query the dry_run endpoint from Gateway
-
+        :param kwargs: keyword arguments to make sure compatible API with other clients
         :return: send dry_run as bytes awaitable
         """
 
