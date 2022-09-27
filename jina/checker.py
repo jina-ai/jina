@@ -30,6 +30,16 @@ class NetworkChecker:
                         r = WorkerRuntime.is_ready(args.host)
                     elif args.target == 'flow':
                         r = Client(host=args.host).is_flow_ready(timeout=args.timeout)
+                    elif args.target == 'flow':
+                        if args.protocol == 'grpc':
+                            r = WorkerRuntime.is_ready(args.host)
+                        else:
+                            import requests
+                            try:
+                                _ = requests.get(url=args.host)
+                                r = True
+                            except:
+                                r = False
                     if not r:
                         default_logger.warning(
                             'not responding, retry (%d/%d) in 1s'

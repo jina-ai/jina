@@ -47,8 +47,10 @@ spec:
               command:
                 - jina
                 - ping
-                - flow
-                - {protocol}://127.0.0.1:{port}
+                - gateway
+                - 127.0.0.1:{port}
+                - protocol
+                - {protocol}
             initialDelaySeconds: 5
             periodSeconds: 20
             timeoutSeconds: 10

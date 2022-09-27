@@ -96,7 +96,7 @@ class DockerComposeConfig:
                 'expose': ports,
                 'ports': [f'{_port}:{_port}' for _port in ports],
                 'healthcheck': {
-                    'test': f'jina ping flow {protocol}://127.0.0.1:{cargs.port}',
+                    'test': f'jina ping gateway 127.0.0.1:{cargs.port} --protocol {protocol}',
                     'interval': '2s',
                 },
                 'environment': envs,
