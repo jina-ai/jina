@@ -34,7 +34,6 @@ class InstrumentationMixin:
         resource = Resource(attributes={SERVICE_NAME: name})
 
         if self.args.opentelemetry_tracing:
-            print(f'--->{self.args.jaeger_host}:{self.args.jaeger_port}')
             provider = TracerProvider(resource=resource)
             processor = BatchSpanProcessor(
                 JaegerExporter(
