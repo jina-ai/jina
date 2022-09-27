@@ -594,7 +594,7 @@ class GrpcConnectionPool:
 
             sending_requests_time_metrics = Summary(
                 'sending_request_seconds',
-                'Time spent between sending a request to the Pod and receiving the response',
+                'Time spent between sending a request to the Executor/Head and receiving the response',
                 registry=metrics_registry,
                 namespace='jina',
                 labelnames=('runtime_name',),
@@ -602,7 +602,7 @@ class GrpcConnectionPool:
 
             received_response_bytes = Summary(
                 'received_response_bytes',
-                'Size in bytes of the response returned from the Pod',
+                'Size in bytes of the response returned from the Head/Executor',
                 registry=metrics_registry,
                 namespace='jina',
                 labelnames=('runtime_name',),
@@ -610,7 +610,7 @@ class GrpcConnectionPool:
 
             send_requests_bytes_metrics = Summary(
                 'sent_request_bytes',
-                'Size in bytes of the request sent to the Pod',
+                'Size in bytes of the request sent to the Head/Executor',
                 registry=metrics_registry,
                 namespace='jina',
                 labelnames=('runtime_name',),
