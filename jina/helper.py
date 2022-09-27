@@ -966,7 +966,8 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'session-id': str(random_uuid(use_uuid1=True)),
             'uptime': __uptime__,
             'ci-vendor': get_ci_vendor() or __unset_msg__,
-            'internal': 'jina-ai' in os.getenv('GITHUB_ACTION_REPOSITORY', __unset_msg__)
+            'internal': 'jina-ai'
+            in os.getenv('GITHUB_ACTION_REPOSITORY', __unset_msg__),
         }
 
         env_info = {k: os.getenv(k, __unset_msg__) for k in __jina_env__}
@@ -1638,7 +1639,7 @@ def _parse_ports(port: str) -> Union[int, List]:
         _parse_port('8000')
         8000
 
-        _parse_port('8001:8002:8005')
+        _parse_port('8001,8002,8005')
         [80001, 8002, 8005]
 
     :param port: the string to parse
@@ -1652,6 +1653,27 @@ def _parse_ports(port: str) -> Union[int, List]:
         else:
             raise e
     return port
+
+
+def _parse_hosts(host: str) -> Union[str, List]:
+    """Parse port
+
+    EXAMPLE USAGE
+
+    .. code-block:: python
+
+
+        _parse_hosts('localhost')
+        'localhost'
+
+        _parse_port('localhost,91.198.174.192')
+        ['localhost', '91.198.174.192']
+
+    :param host: the string to parse
+    :return: the host or the iterable of hosts
+    """
+    hosts = host.split(',')
+    return hosts[0] if len(hosts) == 0 else hosts
 
 
 def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:

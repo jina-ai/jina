@@ -54,6 +54,8 @@ from jina.excepts import (
 from jina.helper import (
     ArgNamespace,
     CatchAllCleanupContextManager,
+    _parse_hosts,
+    _parse_ports,
     download_mermaid_url,
     get_internal_ip,
     get_public_ip,
@@ -1192,6 +1194,17 @@ class Flow(
                 'External Executors with multiple needs have to do auto reduce.'
             )
 
+        args.external_replica_ports = _parse_ports(str(args.port))
+        args.external_replica_hosts = _parse_hosts(str(args.host))
+        multiple_addrs_passed = isinstance(
+            args.external_replica_ports, list
+        ) or isinstance(args.external_replica_hosts, list)
+        if multiple_addrs_passed and len(args.external_replica_ports) != len(
+            args.external_replica_hosts
+        ):
+            raise ValueError('Number of ports does not match number of hosts')
+        if multiple_addrs_passed:
+            args.replicas = len(args.external_replica_ports)
         op_flow._deployment_nodes[deployment_name] = Deployment(args, needs)
 
         if not args.floating:

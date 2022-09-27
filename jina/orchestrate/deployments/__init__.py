@@ -251,6 +251,8 @@ class Deployment(BaseDeployment):
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
 
+        self.ext_repl_ports = getattr(args, 'external_replica_ports', None)
+        self.ext_repl_hosts = getattr(args, 'external_replica_hosts', None)
         self.uses_before_pod = None
         self.uses_after_pod = None
         self.head_pod = None
@@ -281,6 +283,13 @@ class Deployment(BaseDeployment):
             self.pod_args = self.args
         else:
             self.pod_args = self._parse_args(self.args)
+
+        if self.external:
+            for pod, port, host in zip(
+                self.pod_args['pods'][0], self.ext_repl_ports, self.ext_repl_hosts
+            ):
+                pod.port = port
+                pod.host = host
 
     def update_sandbox_args(self):
         """Update args of all its pods based on the host and port returned by Hubble"""

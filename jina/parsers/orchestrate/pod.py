@@ -84,8 +84,8 @@ def mixin_pod_parser(parser):
 
     gp.add_argument(
         '--port',
-        type=int,
-        default=helper.random_port(),
+        type=str,
+        default=str(helper.random_port()),
         help='The port for input data to bind to, default is a random port between [49152, 65535]',
     )
 
