@@ -3,6 +3,7 @@ import urllib
 from http import HTTPStatus
 
 from jina.logging.predefined import default_logger
+from jina.helper import parse_host_scheme
 
 
 class NetworkChecker:
@@ -20,28 +21,31 @@ class NetworkChecker:
         from jina import Client
         from jina.logging.profile import TimeContext
         from jina.serve.runtimes.worker import WorkerRuntime
+        from jina.serve.runtimes.gateway import GatewayRuntime
 
         try:
             total_time = 0
             total_success = 0
             for j in range(args.attempts):
                 with TimeContext(
-                    f'ping {args.host} at {j} round', default_logger
+                    f'ping {args.target} on {args.host} at {j} round', default_logger
                 ) as tc:
                     if args.target == 'executor':
-                        r = WorkerRuntime.is_ready(args.host)
-                    elif args.target == 'flow':
-                        r = Client(host=args.host).is_flow_ready(timeout=args.timeout)
+                        hostname, port, protocol, _ = parse_host_scheme(args.host)
+                        r = WorkerRuntime.is_ready(f'{hostname}:{port}')
                     elif args.target == 'gateway':
+                        hostname, port, protocol, _ = parse_host_scheme(args.host)
                         r = False
-                        if args.protocol == 'grpc':
-                            r = WorkerRuntime.is_ready(args.host)
+                        if protocol is None or protocol == 'grpc':
+                            r = GatewayRuntime.is_ready(f'{hostname}:{port}')
                         else:
                             try:
-                                conn = urllib.request.urlopen(url=f'http://{args.host}')
+                                conn = urllib.request.urlopen(url=f'http://{hostname}:{port}')
                                 r = (conn.code == HTTPStatus.OK)
                             except:
                                 r = False
+                    elif args.target == 'flow':
+                        r = Client(host=args.host).is_flow_ready(timeout=args.timeout)
                     if not r:
                         default_logger.warning(
                             'not responding, attempt (%d/%d) in 1s'

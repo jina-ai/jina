@@ -48,9 +48,7 @@ spec:
                 - jina
                 - ping
                 - gateway
-                - 127.0.0.1:{port}
-                - --protocol
-                - {protocol}
+                - {protocol}://127.0.0.1:{port}
             initialDelaySeconds: 5
             periodSeconds: 20
             timeoutSeconds: 10

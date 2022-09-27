@@ -105,7 +105,7 @@ class HTTPClientlet(AioHttpClientlet):
             req_dict['target_executor'] = req_dict['header']['target_executor']
         return await self.session.post(url=self.url, json=req_dict).__aenter__()
 
-    async def send_dry_run(self):
+    async def send_dry_run(self, **kwargs):
         """Query the dry_run endpoint from Gateway
         :return: send get message
         """
@@ -166,7 +166,7 @@ class WebsocketClientlet(AioHttpClientlet):
         except ConnectionResetError:
             self.logger.critical(f'server connection closed already!')
 
-    async def send_dry_run(self):
+    async def send_dry_run(self, **kwargs):
         """Query the dry_run endpoint from Gateway
 
         :return: send dry_run as bytes awaitable
