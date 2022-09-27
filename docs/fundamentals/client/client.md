@@ -663,10 +663,13 @@ with Flow().add() as f, open('output.txt', 'w') as fp:
     )
 ```
 
-````{admonition} What errors can be handled by the callback
+````{admonition} What errors can be handled by the callback?
 :class: caution
-Callback can handle errors that are caused by Executors raising an Exception.
-It will not receive exceptions or from the Gateway having connectivity errors with the Executors or between the Client and the Gateway.
+Callbacks can handle errors that are caused by Executors raising an Exception.
+
+A callback will not receive exceptions:
+- from the Gateway having connectivity errors with the Executors.
+- between the Client and the Gateway.
 ````
 
 ### Continue streaming when an error occurs
