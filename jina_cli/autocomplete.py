@@ -90,7 +90,6 @@ ac_table = {
             'executor',
             'gateway',
             '--timeout',
-            '--protocol',
             '--attempts',
             '--min-successful-attempts',
         ],
