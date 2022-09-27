@@ -120,11 +120,10 @@ class JinaLogger:
         **kwargs,
     ):
 
-        if not log_config:
-            log_config = os.getenv(
-                'JINA_LOG_CONFIG',
-                'default',
-            )
+        log_config = os.getenv(
+            'JINA_LOG_CONFIG',
+            log_config or 'default',
+        )
 
         if quiet or os.getenv('JINA_LOG_CONFIG', None) == 'QUIET':
             log_config = 'quiet'
