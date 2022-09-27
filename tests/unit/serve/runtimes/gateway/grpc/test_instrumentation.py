@@ -15,12 +15,6 @@ class TestGrpcGatewayTracing(InstrumentationTestBase):
     def tearDown(self):
         super().tearDown()
 
-    @staticmethod
-    def print_spans(spans):
-        for span in spans:
-            print(f'--->span: {span}')
-        print()
-
     def test_http_span_attributes_default_args(self):
         f = Flow(protocol='grpc').add()
 
