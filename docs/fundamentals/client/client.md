@@ -671,12 +671,12 @@ It will not receive exceptions or from the Gateway having connectivity errors wi
 
 ### Continue streaming when an error occurs
 
-`client.post()` accepts `continue_on_error` parameter. When set to True, `Client` will keep trying to send the following requests. `continue_on_error` parameter will only apply
-to Exceptions caused by Executor exceptions, but in case of network connectivity issues, an Exception will be raised.
+`client.post()` accepts a `continue_on_error` parameter. When set to `True`, the Client will keep trying to send the remaining requests. The `continue_on_error` parameter will only apply
+to Exceptions caused by an Executor, but in case of network connectivity issues, an Exception will be raised.
 
 ### Transient fault handling with retries
 
-`client.post()` accepts `max_attempts`, `initial_backoff`, `max_backoff` and `backoff_multiplier` parameters to control the capacity to retry requests, using exponential backoff strategy, when a transient connectivity error occurs.
+`client.post()` accepts `max_attempts`, `initial_backoff`, `max_backoff` and `backoff_multiplier` parameters to control the capacity to retry requests, when a transient connectivity error occurs, using an exponential backoff strategy, 
 This can help to overcome transient network connectivity issues. 
 
 The `max_attempts` determines the number of sending attempts, including the original request.
