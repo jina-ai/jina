@@ -470,7 +470,7 @@ When working with very slow executors and a big amount of data, you must set `pr
 ```python
 from jina import Flow
 
-f = Flow(protocol='http', cors=True)
+f = Flow(protocol='http', cors=True, prefetch=10)
 ```
 ````
 
@@ -479,7 +479,8 @@ f = Flow(protocol='http', cors=True)
 jtype: Flow
 with:
   protocol: 'http'
-  cors: True, 
+  cors: True,
+  prefetch: 10
 ```
 ````
 
