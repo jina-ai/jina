@@ -3,7 +3,7 @@
 ## Scope
 These guidelines serve as a primary document for explaining how GitHub issues are labeled in Jina repos. For community members reading this document, it should explain how a label was assigned to your issue, and what that label means. For Jina maintainers, it describes how to assign labels correctly.
 
-**Note:** These guideline only apply to the following repos; [Jina](https://github.com/jina-ai/jina), [Jina-hub](https://github.com/jina-ai/jina-hub), [Dashboard](https://github.com/jina-ai/dashboard), [docs](https://github.com/jina-ai/docs), [cloud-ops](https://github.com/jina-ai/cloud-ops),  [Jinabox.js](https://github.com/jina-ai/jinabox.js)
+**Note:** These guideline only apply to the following repos; [Jina](https://github.com/jina-ai/jina), [Docarray](https://github.com/jina-ai/docarray), [cloud-ops](https://github.com/jina-ai/cloud-ops)
 
 ## Why is labeling important?
 * Labels provide a good starting point for community members to contribute to Jina.
