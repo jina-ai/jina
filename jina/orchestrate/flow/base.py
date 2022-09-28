@@ -763,6 +763,16 @@ class Flow(
 
         return graph_dict if graph_dict else None
 
+    def _get_k8s_deployments_metadata(self) -> Dict[str, List[str]]:
+        graph_dict = {}
+
+        for node, v in self._deployment_nodes.items():
+            if v.external:
+                graph_dict[node] = v.grpc_metadata
+                return {node: v.grpc_metadata} if v.grpc_metadata else None
+
+        return None
+
     def _get_docker_compose_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
         from jina.orchestrate.deployments.config.docker_compose import port
@@ -1273,9 +1283,6 @@ class Flow(
                 deployment_role=deployment_role,
             )
         )
-
-        print(f'====> add kwargs: {kwargs} to {deployment_name}({deployment_role})')
-
         parser = set_deployment_parser()
         if deployment_role == DeploymentRoleType.GATEWAY:
             parser = set_gateway_parser()
@@ -2425,6 +2432,9 @@ class Flow(
                 k8s_deployments_addresses=self._get_k8s_deployments_addresses(
                     k8s_namespace
                 )
+                if node == 'gateway'
+                else None,
+                k8s_deployments_metadata=self._get_k8s_deployments_metadata()
                 if node == 'gateway'
                 else None,
             )
