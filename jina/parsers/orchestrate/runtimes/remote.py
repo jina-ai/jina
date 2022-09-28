@@ -119,6 +119,13 @@ which should be structured as a python package.
     )
 
     parser.add_argument(
+        '--deployments-metadata',
+        type=str,
+        help='dictionary JSON with the request metadata for each Deployment',
+        default='{}',
+    )
+
+    parser.add_argument(
         '--deployments-disable-reduce',
         type=str,
         help='list JSON disabling the built-in merging mechanism for each Deployment listed',
