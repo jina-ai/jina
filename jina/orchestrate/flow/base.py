@@ -767,11 +767,10 @@ class Flow(
         graph_dict = {}
 
         for node, v in self._deployment_nodes.items():
-            if v.external:
+            if v.external and v.grpc_metadata:
                 graph_dict[node] = v.grpc_metadata
-                return {node: v.grpc_metadata} if v.grpc_metadata else None
 
-        return None
+        return graph_dict or None
 
     def _get_docker_compose_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}

@@ -55,8 +55,6 @@ class TopologyGraph:
             self._retries = retries
             self.result_in_params_returned = None
 
-            print(f'====> req reply node {name} with meta: {self._metadata}')
-
         @property
         def leaf(self):
             return len(self.outgoing_nodes) == 0
