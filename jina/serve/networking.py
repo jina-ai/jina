@@ -1046,6 +1046,9 @@ class GrpcConnectionPool:
             metadata = tuple(metadata.items())
 
         async def task_wrapper():
+            print(
+                f'===> send request to {endpoint} with metadata {metadata} => {requests[0].data.docs}'
+            )
             tried_addresses = set()
             if retries is None or retries < 0:
                 total_num_tries = (
