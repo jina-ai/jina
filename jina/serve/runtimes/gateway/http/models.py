@@ -2,14 +2,16 @@ from collections import defaultdict
 from datetime import datetime
 from enum import Enum
 from types import SimpleNamespace
-from typing import Callable, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Union
 
 from docarray.document.pydantic_model import PydanticDocument, PydanticDocumentArray
 from google.protobuf.descriptor import Descriptor, FieldDescriptor
-from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 from pydantic import BaseConfig, BaseModel, Field, create_model, root_validator
 
 from jina.proto.jina_pb2 import DataRequestProto, JinaInfoProto, RouteProto, StatusProto
+
+if TYPE_CHECKING:
+    from google.protobuf.pyext.cpp_message import GeneratedProtocolMessageType
 
 PROTO_TO_PYDANTIC_MODELS = SimpleNamespace()
 PROTOBUF_TO_PYTHON_TYPE = {
@@ -97,7 +99,7 @@ def _get_oneof_setter(oneof_fields: List, oneof_key: str) -> Callable:
 
 
 def protobuf_to_pydantic_model(
-    protobuf_model: Union[Descriptor, GeneratedProtocolMessageType]
+    protobuf_model: Union[Descriptor, 'GeneratedProtocolMessageType']
 ) -> BaseModel:
     """
     Converts Protobuf messages to Pydantic model for jsonschema creation/validattion
