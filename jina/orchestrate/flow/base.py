@@ -662,6 +662,7 @@ class Flow(
         needs: str,
         graph_description: Dict[str, List[str]],
         deployments_addresses: Dict[str, List[str]],
+        deployments_metadata: Dict[str, Dict[str, str]],
         graph_conditions: Dict[str, Dict],
         deployments_disabled_reduce: List[str],
         **kwargs,
@@ -690,8 +691,20 @@ class Flow(
         args.graph_description = json.dumps(graph_description)
         args.graph_conditions = json.dumps(graph_conditions)
         args.deployments_addresses = json.dumps(deployments_addresses)
+        args.deployments_metadata = json.dumps(deployments_metadata)
         args.deployments_disable_reduce = json.dumps(deployments_disabled_reduce)
         self._deployment_nodes[GATEWAY_NAME] = Deployment(args, needs)
+
+    def _get_deployments_metadata(self) -> Dict[str, Dict[str, str]]:
+        """Get the metadata of all deployments in the Flow
+
+        :return: a dictionary of deployment name and its metadata
+        """
+        return {
+            name: deployment.grpc_metadata
+            for name, deployment in self._deployment_nodes.items()
+            if deployment.grpc_metadata
+        }
 
     def _get_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
@@ -881,6 +894,7 @@ class Flow(
         env: Optional[dict] = None,
         exit_on_exceptions: Optional[List[str]] = [],
         external: Optional[bool] = False,
+        grpc_metadata: Optional[Dict[str, str]] = None,
         floating: Optional[bool] = False,
         force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
@@ -942,6 +956,7 @@ class Flow(
         :param env: The map of environment variables that are available inside runtime
         :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
+        :param grpc_metadata: The metadata to be sent along with the request to the deployment.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
@@ -1097,6 +1112,7 @@ class Flow(
         :param env: The map of environment variables that are available inside runtime
         :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
+        :param grpc_metadata: The metadata to be sent along with the request to the deployment.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
         :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
@@ -1257,6 +1273,8 @@ class Flow(
                 deployment_role=deployment_role,
             )
         )
+
+        print(f'====> add kwargs: {kwargs} to {deployment_name}({deployment_role})')
 
         parser = set_deployment_parser()
         if deployment_role == DeploymentRoleType.GATEWAY:
@@ -1452,6 +1470,7 @@ class Flow(
                 needs={op_flow._last_deployment},
                 graph_description=op_flow._get_graph_representation(),
                 deployments_addresses=op_flow._get_deployments_addresses(),
+                deployments_metadata=op_flow._get_deployments_metadata(),
                 graph_conditions=op_flow._get_graph_conditions(),
                 deployments_disabled_reduce=op_flow._get_disabled_reduce_deployments(),
                 uses=op_flow.args.uses,
