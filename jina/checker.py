@@ -35,15 +35,7 @@ class NetworkChecker:
                         r = WorkerRuntime.is_ready(f'{hostname}:{port}')
                     elif args.target == 'gateway':
                         hostname, port, protocol, _ = parse_host_scheme(args.host)
-                        r = False
-                        if protocol is None or protocol == 'grpc':
-                            r = GatewayRuntime.is_ready(f'{hostname}:{port}')
-                        else:
-                            try:
-                                conn = urllib.request.urlopen(url=f'http://{hostname}:{port}')
-                                r = (conn.code == HTTPStatus.OK)
-                            except:
-                                r = False
+                        r = GatewayRuntime.is_ready(f'{hostname}:{port}', protocol=protocol)
                     elif args.target == 'flow':
                         r = Client(host=args.host).is_flow_ready(timeout=args.timeout)
                     if not r:
