@@ -146,8 +146,8 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
         # does not apply to this types of runtimes
         pass
 
-    @classmethod
-    def is_ready(cls, ctrl_address: str, **kwargs) -> bool:
+    @staticmethod
+    def is_ready(ctrl_address: str, **kwargs) -> bool:
         """
         Check if status is ready.
 

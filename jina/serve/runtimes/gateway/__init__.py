@@ -31,10 +31,8 @@ class GatewayRuntime(AsyncNewLoopRuntime, ABC):
             self.timeout_send /= 1e3  # convert ms to seconds
         super().__init__(args, cancel_event, **kwargs)
 
-    @classmethod
-    def is_ready(
-        cls, ctrl_address: str, protocol: Optional[str] = 'grpc', **kwargs
-    ) -> bool:
+    @staticmethod
+    def is_ready(ctrl_address: str, protocol: Optional[str] = 'grpc', **kwargs) -> bool:
         """
         Check if status is ready.
 
