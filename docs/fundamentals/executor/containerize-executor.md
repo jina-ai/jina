@@ -58,7 +58,7 @@ When a containerized Executor is run inside a Flow,
 under the hood Jina executes `docker run` with extra arguments.
 
 This means that Jina assumes that whatever runs inside the container, also runs like it would in a regular OS process. Therefore, you need to make sure that
-the basic entrypoint of the image calls `jina executor` {ref}`CLI <../api/jina_cli>` command.
+the basic entrypoint of the image calls `jina executor` {ref}`CLI <../../cli>` command.
 
 ```dockerfile
 ENTRYPOINT ["jina", "executor", "--uses", "config.yml"]

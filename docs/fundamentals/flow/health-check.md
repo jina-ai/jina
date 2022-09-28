@@ -334,7 +334,7 @@ And you will get a valid empty response indicating the Gateway's ability to serv
 
 ## Use jina ping to do health checks
 
-Once a Flow is running, you can use `jina ping` CLI (TODO: Add link to documentation) to run readiness check of the complete Flow or of individual Executors or Gateway.
+Once a Flow is running, you can use `jina ping` CLI  {ref}`CLI <../../cli>` to run readiness check of the complete Flow or of individual Executors or Gateway.
 
 Let's start a Flow in the terminal:
 

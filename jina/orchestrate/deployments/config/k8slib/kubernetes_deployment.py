@@ -84,7 +84,7 @@ def get_deployment_yamls(
         'jina_deployment_name': jina_deployment_name,
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
         'pod_type': pod_type,
-        'protocol': protocol,
+        'protocol': protocol.lower(),
     }
 
     if gpus:
