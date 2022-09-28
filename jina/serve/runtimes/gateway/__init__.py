@@ -52,6 +52,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
         if not (is_port_free(__default_host__, self.args.port)):
             raise PortAlreadyUsed(f'port:{self.args.port}')
 
+        uses_with = self.args.uses_with or {}
         self.gateway = BaseGateway.load_config(
             self.args.uses,
             uses_with=dict(
@@ -68,7 +69,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
                 ssl_keyfile=self.args.ssl_keyfile,
                 ssl_certfile=self.args.ssl_certfile,
                 uvicorn_kwargs=self.args.uvicorn_kwargs,
-                **self.args.uses_with,
+                **uses_with,
             ),
             uses_metas={},
             runtime_args={  # these are not parsed to the yaml config file but are pass directly during init
