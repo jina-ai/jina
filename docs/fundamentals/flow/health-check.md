@@ -125,7 +125,7 @@ import os
 
 PROTOCOL = 'grpc'  # it could also be http or websocket
 
-os.setenv[
+os.environ[
     'JINA_LOG_LEVEL'
 ] = 'DEBUG'  # this way we can check what is the PID of the Executor
 
