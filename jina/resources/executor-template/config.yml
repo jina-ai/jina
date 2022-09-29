@@ -1,8 +1,0 @@
-jtype: {{exec_name}}
-py_modules:
-  - executor.py
-metas:
-  name: {{exec_name}}
-  description: {{exec_description}}
-  url: {{exec_url}}
-  keywords: {{exec_keywords}}
