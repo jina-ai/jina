@@ -29,7 +29,7 @@ def mixin_hub_pull_parser(parser):
     """
 
     def hub_uri(uri: str) -> str:
-        from jina.hubble.helper import parse_hub_uri
+        from hubble.executor.helper import parse_hub_uri
 
         parse_hub_uri(uri)
         return uri
