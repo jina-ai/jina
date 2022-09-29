@@ -1,6 +1,9 @@
 import argparse
+import urllib
+from http import HTTPStatus
 
 from jina.logging.predefined import default_logger
+from jina.helper import parse_host_scheme
 
 
 class NetworkChecker:
@@ -18,41 +21,56 @@ class NetworkChecker:
         from jina import Client
         from jina.logging.profile import TimeContext
         from jina.serve.runtimes.worker import WorkerRuntime
+        from jina.serve.runtimes.gateway import GatewayRuntime
 
         try:
             total_time = 0
             total_success = 0
-            for j in range(args.retries):
+            for j in range(args.attempts):
                 with TimeContext(
-                    f'ping {args.host} at {j} round', default_logger
+                    f'ping {args.target} on {args.host} at {j} round', default_logger
                 ) as tc:
                     if args.target == 'executor':
-                        r = WorkerRuntime.is_ready(args.host)
+                        hostname, port, protocol, _ = parse_host_scheme(args.host)
+                        r = WorkerRuntime.is_ready(f'{hostname}:{port}')
+                    elif args.target == 'gateway':
+                        hostname, port, protocol, _ = parse_host_scheme(args.host)
+                        r = GatewayRuntime.is_ready(f'{hostname}:{port}', protocol=protocol)
                     elif args.target == 'flow':
                         r = Client(host=args.host).is_flow_ready(timeout=args.timeout)
                     if not r:
                         default_logger.warning(
-                            'not responding, retry (%d/%d) in 1s'
-                            % (j + 1, args.retries)
+                            'not responding, attempt (%d/%d) in 1s'
+                            % (j + 1, args.attempts)
                         )
                     else:
                         total_success += 1
                 total_time += tc.duration
-                time.sleep(1)
-            if total_success < args.retries:
+                if args.attempts > 0:
+                    time.sleep(1)
+            if total_success < args.attempts:
                 default_logger.warning(
                     'message lost %.0f%% (%d/%d) '
                     % (
-                        (1 - total_success / args.retries) * 100,
-                        args.retries - total_success,
-                        args.retries,
+                        (1 - total_success / args.attempts) * 100,
+                        args.attempts - total_success,
+                        args.attempts,
                     )
                 )
             if total_success > 0:
                 default_logger.info(
                     'avg. latency: %.0f ms' % (total_time / total_success * 1000)
                 )
+
+            if total_success >= args.min_successful_attempts:
+                default_logger.info(
+                    f'readiness check succeeded {total_success} times!!!'
+                )
                 exit(0)
+            else:
+                default_logger.info(
+                    f'readiness check succeeded {total_success} times, less than {args.min_successful_attempts}'
+                )
         except KeyboardInterrupt:
             pass
 

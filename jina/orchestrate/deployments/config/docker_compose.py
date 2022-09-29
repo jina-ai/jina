@@ -96,7 +96,7 @@ class DockerComposeConfig:
                 'expose': ports,
                 'ports': [f'{_port}:{_port}' for _port in ports],
                 'healthcheck': {
-                    'test': f'python -m jina.resources.health_check.gateway localhost:{cargs.port} {protocol}',
+                    'test': f'jina ping gateway {protocol}://127.0.0.1:{cargs.port}',
                     'interval': '2s',
                 },
                 'environment': envs,
@@ -165,7 +165,7 @@ class DockerComposeConfig:
                     'entrypoint': ['jina'],
                     'command': container_args,
                     'healthcheck': {
-                        'test': f'python -m jina.resources.health_check.pod localhost:{cargs.port}',
+                        'test': f'jina ping executor 127.0.0.1:{cargs.port}',
                         'interval': '2s',
                     },
                     'environment': [

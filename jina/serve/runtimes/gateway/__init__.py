@@ -44,7 +44,7 @@ class GatewayRuntime(AsyncNewLoopRuntime, ABC):
         """
 
         if protocol is None or protocol == 'grpc':
-            res = super().is_ready(ctrl_address)
+            res = AsyncNewLoopRuntime.is_ready(ctrl_address)
         else:
             try:
                 conn = urllib.request.urlopen(url=f'http://{ctrl_address}')

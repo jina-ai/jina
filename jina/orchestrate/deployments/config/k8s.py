@@ -93,6 +93,7 @@ class K8sDeploymentConfig:
                 env=cargs.env,
                 monitoring=self.common_args.monitoring,
                 port_monitoring=self.common_args.port_monitoring,
+                protocol=self.common_args.protocol
             )
 
         def _get_image_name(self, uses: Optional[str]):
