@@ -12,7 +12,12 @@ from typing import Dict, List, Optional, Set, Union
 
 from jina import __default_executor__, __default_host__, __docker_host__, helper
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
-from jina.helper import CatchAllCleanupContextManager, _parse_ports
+from jina.helper import (
+    CatchAllCleanupContextManager,
+    _parse_hosts,
+    _parse_ports,
+    make_iterable,
+)
 from jina.hubble.helper import replace_secret_of_hub_uri
 from jina.hubble.hubio import HubIO
 from jina.jaml.helper import complete_path
@@ -251,8 +256,12 @@ class Deployment(BaseDeployment):
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
 
-        self.ext_repl_ports = getattr(args, 'external_replica_ports', None)
-        self.ext_repl_hosts = getattr(args, 'external_replica_hosts', None)
+        (
+            self.ext_repl_hosts,
+            self.ext_repl_ports,
+        ) = self._parse_external_replica_hosts_and_ports()
+        if len(self.ext_repl_ports) > 1:
+            self.args.replicas = len(self.ext_repl_ports)
         self.uses_before_pod = None
         self.uses_after_pod = None
         self.head_pod = None
@@ -264,6 +273,18 @@ class Deployment(BaseDeployment):
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
+
+    def _parse_external_replica_hosts_and_ports(self):
+        ext_repl_ports = make_iterable(_parse_ports(str(self.args.port)))
+        ext_repl_hosts = make_iterable(_parse_hosts(str(self.args.host)))
+        if len(ext_repl_ports) != len(ext_repl_hosts):
+            if (
+                len(ext_repl_hosts) == 1
+            ):  # only one host given, assume replicas are on the same host
+                ext_repl_hosts = ext_repl_hosts * len(ext_repl_ports)
+            else:
+                raise ValueError('Number of ports does not match number of hosts')
+        return ext_repl_hosts, ext_repl_ports
 
     def _update_port_args(self):
         _all_port_monitoring = _parse_ports(self.args.port_monitoring)
