@@ -24,15 +24,14 @@ def num_shards(request):
     return request.param
 
 
-@pytest.fixture(scope='function')
-def external_deployment_args(num_shards):
+def _external_deployment_args(num_shards, port=None):
     args = [
         '--uses',
         'MyExternalExecutor',
         '--name',
         'external_real',
         '--port',
-        str(random_port()),
+        str(port) if port else str(random_port()),
         '--host-in',
         '0.0.0.0',
         '--shards',
@@ -43,6 +42,11 @@ def external_deployment_args(num_shards):
     return set_deployment_parser().parse_args(args)
 
 
+@pytest.fixture(scope='function')
+def external_deployment_args(num_shards, port=None):
+    return _external_deployment_args(num_shards, port)
+
+
 @pytest.fixture
 def external_deployment(external_deployment_args):
     return Deployment(external_deployment_args)
@@ -51,12 +55,13 @@ def external_deployment(external_deployment_args):
 class MyExternalExecutor(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._id = str(uuid.uuid4())
 
     @requests
     def foo(self, docs, *args, **kwargs):
         for doc in docs:
             doc.tags['name'] = self.runtime_args.name
-            doc.tags['uuid'] = uuid.uuid4()
+            doc.tags['uuid'] = self._id
 
 
 @pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
@@ -342,3 +347,23 @@ def test_external_flow_with_target_executor():
             response = f.post(on='/', inputs=d, target_executor='external_executor')
 
     assert response[0].text == 'external'
+
+
+def test_distributed_replicas(input_docs):
+    port1, port2 = random_port(), random_port()
+    args1, args2 = _external_deployment_args(
+        num_shards=1, port=port1
+    ), _external_deployment_args(num_shards=1, port=port2)
+    depl1 = Deployment(args1)
+    depl2 = Deployment(args2)
+    with depl1, depl2:
+        flow = Flow().add(
+            host='localhost,localhost',
+            port=f'{port1},{port2}',
+            external=True,
+        )
+        with flow:
+            resp = flow.index(inputs=input_docs, request_size=2)
+
+        depl1_id = resp[0].tags['uuid']
+        assert any([depl1_id != depl_id for depl_id in resp[1:, 'tags__uuid']])
