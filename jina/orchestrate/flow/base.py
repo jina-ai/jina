@@ -115,8 +115,6 @@ class Flow(
         *,
         asyncio: Optional[bool] = False,
         host: Optional[str] = '0.0.0.0',
-        span_exporter_host: Optional[str] = None,
-        span_exporter_port: Optional[int] = None,
         metrics_exporter_host: Optional[str] = None,
         metrics_exporter_port: Optional[int] = None,
         opentelemetry_metrics: Optional[bool] = False,
@@ -124,6 +122,8 @@ class Flow(
         port: Optional[int] = None,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
+        span_exporter_host: Optional[str] = None,
+        span_exporter_port: Optional[int] = None,
         tls: Optional[bool] = False,
         **kwargs,
     ):
@@ -131,8 +131,6 @@ class Flow(
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
-        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param opentelemetry_metrics: If set, real implementation of the metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
@@ -140,6 +138,8 @@ class Flow(
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
+        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param tls: If set, connect to gateway using tls encryption
 
         .. # noqa: DAR202
@@ -169,11 +169,9 @@ class Flow(
         grpc_server_options: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
-        span_exporter_host: Optional[str] = None,
-        span_exporter_port: Optional[int] = None,
+        log_config: Optional[str] = None,
         metrics_exporter_host: Optional[str] = None,
         metrics_exporter_port: Optional[int] = None,
-        log_config: Optional[str] = None,
         monitoring: Optional[bool] = False,
         name: Optional[str] = 'gateway',
         native: Optional[bool] = False,
@@ -195,6 +193,8 @@ class Flow(
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'GRPCGatewayRuntime',
         shards: Optional[int] = 1,
+        span_exporter_host: Optional[str] = None,
+        span_exporter_port: Optional[int] = None,
         ssl_certfile: Optional[str] = None,
         ssl_keyfile: Optional[str] = None,
         timeout_ctrl: Optional[int] = 60,
@@ -226,11 +226,9 @@ class Flow(
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
-        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
-        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param log_config: The YAML config of the logger used in this object.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
-        :param log_config: The YAML config of the logger used in this object.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
@@ -280,6 +278,8 @@ class Flow(
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
+        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
@@ -388,8 +388,6 @@ class Flow(
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host address of the runtime, by default it is 0.0.0.0.
-        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
-        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param opentelemetry_metrics: If set, real implementation of the metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
@@ -397,6 +395,8 @@ class Flow(
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
+        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param tls: If set, connect to gateway using tls encryption
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
@@ -413,11 +413,9 @@ class Flow(
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
-        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
-        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param log_config: The YAML config of the logger used in this object.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
-        :param log_config: The YAML config of the logger used in this object.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
@@ -467,6 +465,8 @@ class Flow(
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
+        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
@@ -839,11 +839,9 @@ class Flow(
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         install_requirements: Optional[bool] = False,
-        span_exporter_host: Optional[str] = None,
-        span_exporter_port: Optional[int] = None,
+        log_config: Optional[str] = None,
         metrics_exporter_host: Optional[str] = None,
         metrics_exporter_port: Optional[int] = None,
-        log_config: Optional[str] = None,
         monitoring: Optional[bool] = False,
         name: Optional[str] = None,
         native: Optional[bool] = False,
@@ -861,6 +859,8 @@ class Flow(
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'WorkerRuntime',
         shards: Optional[int] = 1,
+        span_exporter_host: Optional[str] = None,
+        span_exporter_port: Optional[int] = None,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
@@ -907,11 +907,9 @@ class Flow(
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
-        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
-        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param log_config: The YAML config of the logger used in this object.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
-        :param log_config: The YAML config of the logger used in this object.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
@@ -953,6 +951,8 @@ class Flow(
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
+        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
@@ -1062,8 +1062,6 @@ class Flow(
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
-        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
-        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param log_config: The YAML config of the logger used in this object.
         :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
         :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
@@ -1108,6 +1106,8 @@ class Flow(
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
+        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
