@@ -1659,7 +1659,7 @@ def _parse_ports(port: str) -> Union[int, List]:
     return port
 
 
-def _parse_hosts(host: str) -> Union[str, List]:
+def _parse_hosts(host: str) -> Union[str, List[str]]:
     """Parse port
 
     EXAMPLE USAGE
