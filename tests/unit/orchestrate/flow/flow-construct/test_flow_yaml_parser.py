@@ -3,15 +3,14 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from docarray.document.generators import from_ndarray
 
-from jina import Executor
-from jina.excepts import BadYAMLVersion
-from jina import Flow
-from jina.jaml import JAML
+from jina import Executor, Flow
 from jina.enums import GatewayProtocolType
+from jina.excepts import BadYAMLVersion
+from jina.jaml import JAML
 from jina.jaml.parsers import get_supported_versions
 from jina.parsers.flow import set_flow_parser
-from docarray.document.generators import from_ndarray
 
 cur_dir = Path(__file__).parent
 
@@ -75,7 +74,7 @@ def test_load_modify_dump_load(tmpdir):
     # assert executor args
     assert f._deployment_nodes['custom1'].args.uses == 'jinahub://CustomExecutor1'
     assert f._deployment_nodes['custom2'].args.uses == 'CustomExecutor2'
-    assert f._deployment_nodes['custom2'].args.port == 23456
+    assert int(f._deployment_nodes['custom2'].args.port) == 23456
 
     # change args inside `with`
     f.port = 12346
@@ -95,7 +94,7 @@ def test_load_modify_dump_load(tmpdir):
     # assert args modified in code
     assert f1.port == 12346
     assert f1.protocol == GatewayProtocolType.WEBSOCKET
-    assert f1._deployment_nodes['custom2'].args.port == 23457
+    assert int(f1._deployment_nodes['custom2'].args.port) == 23457
 
 
 def test_dump_load_build(monkeypatch):
