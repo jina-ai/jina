@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.types package" />
   
@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.9.3 Documentation" />
   
-<meta property="og:description" content="Subpackages: jina.types.request package- Submodules- jina.types.request.data module, jina.types.request.status module., Module contents.. Submodules: jina.types.mixin module. Module contents:" />
+<meta property="og:description" content="Subpackages: jina.types.request package- Submodules- jina.types.request.data module- DataRequest, Response., jina.types.request.status module- StatusMessage.., Module contents- Request- Request.add_exception(), Request.CopyFrom(), Request.MergeFrom(), Request.binary_str(), Request.clear(), Reques..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.types.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.types package - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -401,11 +401,36 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../jina.types.request/">jina.types.request package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.types.request/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/">jina.types.request.data module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/">jina.types.request.status module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.data/">jina.types.request.data module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.DataRequest"><code class="docutils literal notranslate"><span class="pre">DataRequest</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request.data/#jina.types.request.data.Response"><code class="docutils literal notranslate"><span class="pre">Response</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.types.request/#module-jina.types.request">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request.status/">jina.types.request.status module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request.status/#jina.types.request.status.StatusMessage"><code class="docutils literal notranslate"><span class="pre">StatusMessage</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.types.request/#module-jina.types.request">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.request/#jina.types.request.Request"><code class="docutils literal notranslate"><span class="pre">Request</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request/#jina.types.request.Request.add_exception"><code class="docutils literal notranslate"><span class="pre">Request.add_exception()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request/#jina.types.request.Request.CopyFrom"><code class="docutils literal notranslate"><span class="pre">Request.CopyFrom()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request/#jina.types.request.Request.MergeFrom"><code class="docutils literal notranslate"><span class="pre">Request.MergeFrom()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request/#jina.types.request.Request.binary_str"><code class="docutils literal notranslate"><span class="pre">Request.binary_str()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request/#jina.types.request.Request.clear"><code class="docutils literal notranslate"><span class="pre">Request.clear()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request/#jina.types.request.Request.dict"><code class="docutils literal notranslate"><span class="pre">Request.dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request/#jina.types.request.Request.json"><code class="docutils literal notranslate"><span class="pre">Request.json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request/#jina.types.request.Request.nbytes"><code class="docutils literal notranslate"><span class="pre">Request.nbytes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request/#jina.types.request.Request.pop"><code class="docutils literal notranslate"><span class="pre">Request.pop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request/#jina.types.request.Request.proto"><code class="docutils literal notranslate"><span class="pre">Request.proto</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request/#jina.types.request.Request.to_bytes"><code class="docutils literal notranslate"><span class="pre">Request.to_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request/#jina.types.request.Request.to_dict"><code class="docutils literal notranslate"><span class="pre">Request.to_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.types.request/#jina.types.request.Request.to_json"><code class="docutils literal notranslate"><span class="pre">Request.to_json()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -415,7 +440,24 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.types.mixin/">jina.types.mixin module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.types.mixin/">jina.types.mixin module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.to_json"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.to_json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.to_dict"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.to_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.proto"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.proto</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.to_bytes"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.to_bytes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.nbytes"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.nbytes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.MergeFrom"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.MergeFrom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.CopyFrom"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.CopyFrom()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.clear"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.clear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.pop"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.pop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.dict"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.json"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.types.mixin/#jina.types.mixin.ProtoTypeMixin.binary_str"><code class="docutils literal notranslate"><span class="pre">ProtoTypeMixin.binary_str()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -437,7 +479,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -504,6 +546,7 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

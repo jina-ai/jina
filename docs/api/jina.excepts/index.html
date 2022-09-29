@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.excepts module" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.excepts.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.excepts module - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -197,7 +197,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -382,7 +382,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon no-toc"
+                    <label class="toc-overlay-icon toc-content-icon"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -934,7 +934,7 @@ set self.__traceback__ to tb and return self.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -954,8 +954,146 @@ set self.__traceback__ to tb and return self.</p>
                 
             </footer>
         </div>
-        <aside class="toc-drawer no-toc">
+        <aside class="toc-drawer">
             
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">jina.excepts module</a><ul>
+<li><a class="reference internal" href="#jina.excepts.BaseJinaException"><code class="docutils literal notranslate"><span class="pre">BaseJinaException</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.BaseJinaException.args"><code class="docutils literal notranslate"><span class="pre">BaseJinaException.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.BaseJinaException.with_traceback"><code class="docutils literal notranslate"><span class="pre">BaseJinaException.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.RuntimeFailToStart"><code class="docutils literal notranslate"><span class="pre">RuntimeFailToStart</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.RuntimeFailToStart.args"><code class="docutils literal notranslate"><span class="pre">RuntimeFailToStart.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.RuntimeFailToStart.with_traceback"><code class="docutils literal notranslate"><span class="pre">RuntimeFailToStart.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.RuntimeTerminated"><code class="docutils literal notranslate"><span class="pre">RuntimeTerminated</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.RuntimeTerminated.args"><code class="docutils literal notranslate"><span class="pre">RuntimeTerminated.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.RuntimeTerminated.with_traceback"><code class="docutils literal notranslate"><span class="pre">RuntimeTerminated.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.FlowTopologyError"><code class="docutils literal notranslate"><span class="pre">FlowTopologyError</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.FlowTopologyError.args"><code class="docutils literal notranslate"><span class="pre">FlowTopologyError.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.FlowTopologyError.with_traceback"><code class="docutils literal notranslate"><span class="pre">FlowTopologyError.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.FlowMissingDeploymentError"><code class="docutils literal notranslate"><span class="pre">FlowMissingDeploymentError</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.FlowMissingDeploymentError.args"><code class="docutils literal notranslate"><span class="pre">FlowMissingDeploymentError.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.FlowMissingDeploymentError.with_traceback"><code class="docutils literal notranslate"><span class="pre">FlowMissingDeploymentError.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.FlowBuildLevelError"><code class="docutils literal notranslate"><span class="pre">FlowBuildLevelError</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.FlowBuildLevelError.args"><code class="docutils literal notranslate"><span class="pre">FlowBuildLevelError.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.FlowBuildLevelError.with_traceback"><code class="docutils literal notranslate"><span class="pre">FlowBuildLevelError.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.BadConfigSource"><code class="docutils literal notranslate"><span class="pre">BadConfigSource</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.BadConfigSource.args"><code class="docutils literal notranslate"><span class="pre">BadConfigSource.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.BadConfigSource.characters_written"><code class="docutils literal notranslate"><span class="pre">BadConfigSource.characters_written</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.BadConfigSource.errno"><code class="docutils literal notranslate"><span class="pre">BadConfigSource.errno</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.BadConfigSource.filename"><code class="docutils literal notranslate"><span class="pre">BadConfigSource.filename</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.BadConfigSource.filename2"><code class="docutils literal notranslate"><span class="pre">BadConfigSource.filename2</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.BadConfigSource.strerror"><code class="docutils literal notranslate"><span class="pre">BadConfigSource.strerror</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.BadConfigSource.with_traceback"><code class="docutils literal notranslate"><span class="pre">BadConfigSource.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.BadServerFlow"><code class="docutils literal notranslate"><span class="pre">BadServerFlow</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.BadServerFlow.args"><code class="docutils literal notranslate"><span class="pre">BadServerFlow.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.BadServerFlow.with_traceback"><code class="docutils literal notranslate"><span class="pre">BadServerFlow.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.BadClient"><code class="docutils literal notranslate"><span class="pre">BadClient</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.BadClient.args"><code class="docutils literal notranslate"><span class="pre">BadClient.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.BadClient.with_traceback"><code class="docutils literal notranslate"><span class="pre">BadClient.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.BadServer"><code class="docutils literal notranslate"><span class="pre">BadServer</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.BadServer.args"><code class="docutils literal notranslate"><span class="pre">BadServer.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.BadServer.with_traceback"><code class="docutils literal notranslate"><span class="pre">BadServer.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.BadClientCallback"><code class="docutils literal notranslate"><span class="pre">BadClientCallback</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.BadClientCallback.args"><code class="docutils literal notranslate"><span class="pre">BadClientCallback.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.BadClientCallback.with_traceback"><code class="docutils literal notranslate"><span class="pre">BadClientCallback.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.BadClientInput"><code class="docutils literal notranslate"><span class="pre">BadClientInput</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.BadClientInput.args"><code class="docutils literal notranslate"><span class="pre">BadClientInput.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.BadClientInput.with_traceback"><code class="docutils literal notranslate"><span class="pre">BadClientInput.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.BadRequestType"><code class="docutils literal notranslate"><span class="pre">BadRequestType</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.BadRequestType.args"><code class="docutils literal notranslate"><span class="pre">BadRequestType.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.BadRequestType.with_traceback"><code class="docutils literal notranslate"><span class="pre">BadRequestType.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.BadImageNameError"><code class="docutils literal notranslate"><span class="pre">BadImageNameError</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.BadImageNameError.args"><code class="docutils literal notranslate"><span class="pre">BadImageNameError.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.BadImageNameError.with_traceback"><code class="docutils literal notranslate"><span class="pre">BadImageNameError.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.BadYAMLVersion"><code class="docutils literal notranslate"><span class="pre">BadYAMLVersion</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.BadYAMLVersion.args"><code class="docutils literal notranslate"><span class="pre">BadYAMLVersion.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.BadYAMLVersion.with_traceback"><code class="docutils literal notranslate"><span class="pre">BadYAMLVersion.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.NotSupportedError"><code class="docutils literal notranslate"><span class="pre">NotSupportedError</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.NotSupportedError.args"><code class="docutils literal notranslate"><span class="pre">NotSupportedError.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.NotSupportedError.with_traceback"><code class="docutils literal notranslate"><span class="pre">NotSupportedError.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.RuntimeRunForeverEarlyError"><code class="docutils literal notranslate"><span class="pre">RuntimeRunForeverEarlyError</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.RuntimeRunForeverEarlyError.args"><code class="docutils literal notranslate"><span class="pre">RuntimeRunForeverEarlyError.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.RuntimeRunForeverEarlyError.with_traceback"><code class="docutils literal notranslate"><span class="pre">RuntimeRunForeverEarlyError.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.DockerVersionError"><code class="docutils literal notranslate"><span class="pre">DockerVersionError</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.DockerVersionError.args"><code class="docutils literal notranslate"><span class="pre">DockerVersionError.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.DockerVersionError.with_traceback"><code class="docutils literal notranslate"><span class="pre">DockerVersionError.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.NoContainerizedError"><code class="docutils literal notranslate"><span class="pre">NoContainerizedError</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.NoContainerizedError.args"><code class="docutils literal notranslate"><span class="pre">NoContainerizedError.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.NoContainerizedError.with_traceback"><code class="docutils literal notranslate"><span class="pre">NoContainerizedError.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.PortAlreadyUsed"><code class="docutils literal notranslate"><span class="pre">PortAlreadyUsed</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.PortAlreadyUsed.args"><code class="docutils literal notranslate"><span class="pre">PortAlreadyUsed.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.PortAlreadyUsed.with_traceback"><code class="docutils literal notranslate"><span class="pre">PortAlreadyUsed.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.EstablishGrpcConnectionError"><code class="docutils literal notranslate"><span class="pre">EstablishGrpcConnectionError</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.EstablishGrpcConnectionError.args"><code class="docutils literal notranslate"><span class="pre">EstablishGrpcConnectionError.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.EstablishGrpcConnectionError.with_traceback"><code class="docutils literal notranslate"><span class="pre">EstablishGrpcConnectionError.with_traceback()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.excepts.InternalNetworkError"><code class="docutils literal notranslate"><span class="pre">InternalNetworkError</span></code></a><ul>
+<li><a class="reference internal" href="#jina.excepts.InternalNetworkError.code"><code class="docutils literal notranslate"><span class="pre">InternalNetworkError.code()</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.InternalNetworkError.details"><code class="docutils literal notranslate"><span class="pre">InternalNetworkError.details()</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.InternalNetworkError.args"><code class="docutils literal notranslate"><span class="pre">InternalNetworkError.args</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.InternalNetworkError.debug_error_string"><code class="docutils literal notranslate"><span class="pre">InternalNetworkError.debug_error_string()</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.InternalNetworkError.initial_metadata"><code class="docutils literal notranslate"><span class="pre">InternalNetworkError.initial_metadata()</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.InternalNetworkError.trailing_metadata"><code class="docutils literal notranslate"><span class="pre">InternalNetworkError.trailing_metadata()</span></code></a></li>
+<li><a class="reference internal" href="#jina.excepts.InternalNetworkError.with_traceback"><code class="docutils literal notranslate"><span class="pre">InternalNetworkError.with_traceback()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
             
             
         </aside>
@@ -980,6 +1118,7 @@ set self.__traceback__ to tb and return self.</p>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

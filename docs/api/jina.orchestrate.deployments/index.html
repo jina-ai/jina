@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.orchestrate.deployments package" />
   
@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.9.3 Documentation" />
   
-<meta property="og:description" content="Subpackages: jina.orchestrate.deployments.config package- Subpackages- jina.orchestrate.deployments.config.k8slib package- Submodules, Module contents.., Submodules- jina.orchestrate.deployments.config.docker_compose module, jina.orchestrate.deployments.config.helper module, jina.orchestrate.depl..." />
+<meta property="og:description" content="Subpackages: jina.orchestrate.deployments.config package- Subpackages- jina.orchestrate.deployments.config.k8slib package- Submodules, Module contents.., Submodules- jina.orchestrate.deployments.config.docker_compose module- DockerComposeConfig., jina.orchestrate.deployments.config.helper module-..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.orchestrate.deployments.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.orchestrate.deployments package - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -409,9 +409,22 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.deployments.config/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.deployments.config.docker_compose/">jina.orchestrate.deployments.config.docker_compose module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.deployments.config.helper/">jina.orchestrate.deployments.config.helper module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.deployments.config.k8s/">jina.orchestrate.deployments.config.k8s module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.deployments.config.docker_compose/">jina.orchestrate.deployments.config.docker_compose module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.docker_compose/#jina.orchestrate.deployments.config.docker_compose.DockerComposeConfig"><code class="docutils literal notranslate"><span class="pre">DockerComposeConfig</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.deployments.config.helper/">jina.orchestrate.deployments.config.helper module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.helper/#jina.orchestrate.deployments.config.helper.get_image_name"><code class="docutils literal notranslate"><span class="pre">get_image_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.helper/#jina.orchestrate.deployments.config.helper.to_compatible_name"><code class="docutils literal notranslate"><span class="pre">to_compatible_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.helper/#jina.orchestrate.deployments.config.helper.get_base_executor_version"><code class="docutils literal notranslate"><span class="pre">get_base_executor_version()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.helper/#jina.orchestrate.deployments.config.helper.construct_runtime_container_args"><code class="docutils literal notranslate"><span class="pre">construct_runtime_container_args()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.helper/#jina.orchestrate.deployments.config.helper.validate_uses"><code class="docutils literal notranslate"><span class="pre">validate_uses()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.deployments.config.k8s/">jina.orchestrate.deployments.config.k8s module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.orchestrate.deployments.config.k8s/#jina.orchestrate.deployments.config.k8s.K8sDeploymentConfig"><code class="docutils literal notranslate"><span class="pre">K8sDeploymentConfig</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.deployments.config/#module-jina.orchestrate.deployments.config">Module contents</a></li>
@@ -945,7 +958,7 @@ to the method instead of the object itself).</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -979,7 +992,63 @@ to the method instead of the object itself).</p>
                         <ul>
 <li><a class="reference internal" href="#">jina.orchestrate.deployments package</a><ul>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
-<li><a class="reference internal" href="#module-jina.orchestrate.deployments">Module contents</a></li>
+<li><a class="reference internal" href="#module-jina.orchestrate.deployments">Module contents</a><ul>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment"><code class="docutils literal notranslate"><span class="pre">BaseDeployment</span></code></a><ul>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment.start"><code class="docutils literal notranslate"><span class="pre">BaseDeployment.start()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment.role"><code class="docutils literal notranslate"><span class="pre">BaseDeployment.role</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment.name"><code class="docutils literal notranslate"><span class="pre">BaseDeployment.name</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment.head_host"><code class="docutils literal notranslate"><span class="pre">BaseDeployment.head_host</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment.head_port"><code class="docutils literal notranslate"><span class="pre">BaseDeployment.head_port</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment.head_port_monitoring"><code class="docutils literal notranslate"><span class="pre">BaseDeployment.head_port_monitoring</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment.head_args"><code class="docutils literal notranslate"><span class="pre">BaseDeployment.head_args</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment.join"><code class="docutils literal notranslate"><span class="pre">BaseDeployment.join()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment.deployments"><code class="docutils literal notranslate"><span class="pre">BaseDeployment.deployments</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment.callback"><code class="docutils literal notranslate"><span class="pre">BaseDeployment.callback()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment.close"><code class="docutils literal notranslate"><span class="pre">BaseDeployment.close()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment.enter_context"><code class="docutils literal notranslate"><span class="pre">BaseDeployment.enter_context()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment.pop_all"><code class="docutils literal notranslate"><span class="pre">BaseDeployment.pop_all()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.BaseDeployment.push"><code class="docutils literal notranslate"><span class="pre">BaseDeployment.push()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment"><code class="docutils literal notranslate"><span class="pre">Deployment</span></code></a><ul>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.needs"><code class="docutils literal notranslate"><span class="pre">Deployment.needs</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.update_pod_args"><code class="docutils literal notranslate"><span class="pre">Deployment.update_pod_args()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.update_sandbox_args"><code class="docutils literal notranslate"><span class="pre">Deployment.update_sandbox_args()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.update_worker_pod_args"><code class="docutils literal notranslate"><span class="pre">Deployment.update_worker_pod_args()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.is_sandbox"><code class="docutils literal notranslate"><span class="pre">Deployment.is_sandbox</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.tls_enabled"><code class="docutils literal notranslate"><span class="pre">Deployment.tls_enabled</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.external"><code class="docutils literal notranslate"><span class="pre">Deployment.external</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.protocol"><code class="docutils literal notranslate"><span class="pre">Deployment.protocol</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.first_pod_args"><code class="docutils literal notranslate"><span class="pre">Deployment.first_pod_args</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.host"><code class="docutils literal notranslate"><span class="pre">Deployment.host</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.port"><code class="docutils literal notranslate"><span class="pre">Deployment.port</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.ports"><code class="docutils literal notranslate"><span class="pre">Deployment.ports</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.dockerized_uses"><code class="docutils literal notranslate"><span class="pre">Deployment.dockerized_uses</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.head_args"><code class="docutils literal notranslate"><span class="pre">Deployment.head_args</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.uses_before_args"><code class="docutils literal notranslate"><span class="pre">Deployment.uses_before_args</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.uses_after_args"><code class="docutils literal notranslate"><span class="pre">Deployment.uses_after_args</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.all_args"><code class="docutils literal notranslate"><span class="pre">Deployment.all_args</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.num_pods"><code class="docutils literal notranslate"><span class="pre">Deployment.num_pods</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.get_worker_host"><code class="docutils literal notranslate"><span class="pre">Deployment.get_worker_host()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.start"><code class="docutils literal notranslate"><span class="pre">Deployment.start()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.wait_start_success"><code class="docutils literal notranslate"><span class="pre">Deployment.wait_start_success()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.join"><code class="docutils literal notranslate"><span class="pre">Deployment.join()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.is_ready"><code class="docutils literal notranslate"><span class="pre">Deployment.is_ready</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.callback"><code class="docutils literal notranslate"><span class="pre">Deployment.callback()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.close"><code class="docutils literal notranslate"><span class="pre">Deployment.close()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.deployments"><code class="docutils literal notranslate"><span class="pre">Deployment.deployments</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.enter_context"><code class="docutils literal notranslate"><span class="pre">Deployment.enter_context()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.head_host"><code class="docutils literal notranslate"><span class="pre">Deployment.head_host</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.head_port"><code class="docutils literal notranslate"><span class="pre">Deployment.head_port</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.head_port_monitoring"><code class="docutils literal notranslate"><span class="pre">Deployment.head_port_monitoring</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.name"><code class="docutils literal notranslate"><span class="pre">Deployment.name</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.pop_all"><code class="docutils literal notranslate"><span class="pre">Deployment.pop_all()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.push"><code class="docutils literal notranslate"><span class="pre">Deployment.push()</span></code></a></li>
+<li><a class="reference internal" href="#jina.orchestrate.deployments.Deployment.role"><code class="docutils literal notranslate"><span class="pre">Deployment.role</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1011,6 +1080,7 @@ to the method instead of the object itself).</p>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

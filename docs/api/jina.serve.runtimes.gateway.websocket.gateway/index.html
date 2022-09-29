@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.serve.runtimes.gateway.websocket.gateway module" />
   
@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.runtimes.gateway.websocket.gateway.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.serve.runtimes.gateway.websocket.gateway module - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -195,7 +195,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -380,7 +380,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon no-toc"
+                    <label class="toc-overlay-icon toc-content-icon"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -561,7 +561,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -581,8 +581,38 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                 
             </footer>
         </div>
-        <aside class="toc-drawer no-toc">
+        <aside class="toc-drawer">
             
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">jina.serve.runtimes.gateway.websocket.gateway module</a><ul>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway</span></code></a><ul>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway.setup_server"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.setup_server()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway.teardown"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.teardown()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway.stop_server"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.stop_server()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway.run_server"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.run_server()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway.should_exit"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.should_exit</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.is_valid_jaml()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway.load_config"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.load_config()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway.save_config"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.save_config()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway.set_streamer"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway.set_streamer()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
             
             
         </aside>
@@ -607,6 +637,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

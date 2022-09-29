@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.types.request.data module" />
   
@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.types.request.data.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.types.request.data module - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -195,7 +195,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -380,7 +380,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon no-toc"
+                    <label class="toc-overlay-icon toc-content-icon"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -1007,7 +1007,7 @@ will be converted to Python list.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -1027,8 +1027,81 @@ will be converted to Python list.</p>
                 
             </footer>
         </div>
-        <aside class="toc-drawer no-toc">
+        <aside class="toc-drawer">
             
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">jina.types.request.data module</a><ul>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest"><code class="docutils literal notranslate"><span class="pre">DataRequest</span></code></a><ul>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.is_decompressed"><code class="docutils literal notranslate"><span class="pre">DataRequest.is_decompressed</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.is_decompressed_with_data"><code class="docutils literal notranslate"><span class="pre">DataRequest.is_decompressed_with_data</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.is_decompressed_wo_data"><code class="docutils literal notranslate"><span class="pre">DataRequest.is_decompressed_wo_data</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.proto_wo_data"><code class="docutils literal notranslate"><span class="pre">DataRequest.proto_wo_data</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.proto"><code class="docutils literal notranslate"><span class="pre">DataRequest.proto</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.proto_with_data"><code class="docutils literal notranslate"><span class="pre">DataRequest.proto_with_data</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.to_dict"><code class="docutils literal notranslate"><span class="pre">DataRequest.to_dict()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.docs"><code class="docutils literal notranslate"><span class="pre">DataRequest.docs</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.data"><code class="docutils literal notranslate"><span class="pre">DataRequest.data</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.CopyFrom"><code class="docutils literal notranslate"><span class="pre">DataRequest.CopyFrom()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.MergeFrom"><code class="docutils literal notranslate"><span class="pre">DataRequest.MergeFrom()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.add_exception"><code class="docutils literal notranslate"><span class="pre">DataRequest.add_exception()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.binary_str"><code class="docutils literal notranslate"><span class="pre">DataRequest.binary_str()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.clear"><code class="docutils literal notranslate"><span class="pre">DataRequest.clear()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.dict"><code class="docutils literal notranslate"><span class="pre">DataRequest.dict()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.json"><code class="docutils literal notranslate"><span class="pre">DataRequest.json()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.nbytes"><code class="docutils literal notranslate"><span class="pre">DataRequest.nbytes</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.parameters"><code class="docutils literal notranslate"><span class="pre">DataRequest.parameters</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.pop"><code class="docutils literal notranslate"><span class="pre">DataRequest.pop()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.to_bytes"><code class="docutils literal notranslate"><span class="pre">DataRequest.to_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.to_json"><code class="docutils literal notranslate"><span class="pre">DataRequest.to_json()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.response"><code class="docutils literal notranslate"><span class="pre">DataRequest.response</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.status"><code class="docutils literal notranslate"><span class="pre">DataRequest.status</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.request_id"><code class="docutils literal notranslate"><span class="pre">DataRequest.request_id</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.DataRequest.from_proto"><code class="docutils literal notranslate"><span class="pre">DataRequest.from_proto()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.types.request.data.Response"><code class="docutils literal notranslate"><span class="pre">Response</span></code></a><ul>
+<li><a class="reference internal" href="#jina.types.request.data.Response.CopyFrom"><code class="docutils literal notranslate"><span class="pre">Response.CopyFrom()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.MergeFrom"><code class="docutils literal notranslate"><span class="pre">Response.MergeFrom()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.add_exception"><code class="docutils literal notranslate"><span class="pre">Response.add_exception()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.binary_str"><code class="docutils literal notranslate"><span class="pre">Response.binary_str()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.clear"><code class="docutils literal notranslate"><span class="pre">Response.clear()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.dict"><code class="docutils literal notranslate"><span class="pre">Response.dict()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.docs"><code class="docutils literal notranslate"><span class="pre">Response.docs</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.from_proto"><code class="docutils literal notranslate"><span class="pre">Response.from_proto()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.is_decompressed"><code class="docutils literal notranslate"><span class="pre">Response.is_decompressed</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.is_decompressed_with_data"><code class="docutils literal notranslate"><span class="pre">Response.is_decompressed_with_data</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.is_decompressed_wo_data"><code class="docutils literal notranslate"><span class="pre">Response.is_decompressed_wo_data</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.json"><code class="docutils literal notranslate"><span class="pre">Response.json()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.nbytes"><code class="docutils literal notranslate"><span class="pre">Response.nbytes</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.parameters"><code class="docutils literal notranslate"><span class="pre">Response.parameters</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.pop"><code class="docutils literal notranslate"><span class="pre">Response.pop()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.proto"><code class="docutils literal notranslate"><span class="pre">Response.proto</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.proto_with_data"><code class="docutils literal notranslate"><span class="pre">Response.proto_with_data</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.proto_wo_data"><code class="docutils literal notranslate"><span class="pre">Response.proto_wo_data</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.request_id"><code class="docutils literal notranslate"><span class="pre">Response.request_id</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.response"><code class="docutils literal notranslate"><span class="pre">Response.response</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.status"><code class="docutils literal notranslate"><span class="pre">Response.status</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.to_bytes"><code class="docutils literal notranslate"><span class="pre">Response.to_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.to_dict"><code class="docutils literal notranslate"><span class="pre">Response.to_dict()</span></code></a></li>
+<li><a class="reference internal" href="#jina.types.request.data.Response.to_json"><code class="docutils literal notranslate"><span class="pre">Response.to_json()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
             
             
         </aside>
@@ -1053,6 +1126,7 @@ will be converted to Python list.</p>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

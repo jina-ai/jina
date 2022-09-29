@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.logging.logger module" />
   
@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.logging.logger.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.logging.logger module - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -195,7 +195,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -380,7 +380,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon no-toc"
+                    <label class="toc-overlay-icon toc-content-icon"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -990,7 +990,7 @@ specific issues (see SF #1524081).</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -1010,8 +1010,113 @@ specific issues (see SF #1524081).</p>
                 
             </footer>
         </div>
-        <aside class="toc-drawer no-toc">
+        <aside class="toc-drawer">
             
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">jina.logging.logger module</a><ul>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler"><code class="docutils literal notranslate"><span class="pre">RichHandler</span></code></a><ul>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.HIGHLIGHTER_CLASS"><code class="docutils literal notranslate"><span class="pre">RichHandler.HIGHLIGHTER_CLASS</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.KEYWORDS"><code class="docutils literal notranslate"><span class="pre">RichHandler.KEYWORDS</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.acquire"><code class="docutils literal notranslate"><span class="pre">RichHandler.acquire()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.addFilter"><code class="docutils literal notranslate"><span class="pre">RichHandler.addFilter()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.close"><code class="docutils literal notranslate"><span class="pre">RichHandler.close()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.createLock"><code class="docutils literal notranslate"><span class="pre">RichHandler.createLock()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.emit"><code class="docutils literal notranslate"><span class="pre">RichHandler.emit()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.filter"><code class="docutils literal notranslate"><span class="pre">RichHandler.filter()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.flush"><code class="docutils literal notranslate"><span class="pre">RichHandler.flush()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.format"><code class="docutils literal notranslate"><span class="pre">RichHandler.format()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.get_level_text"><code class="docutils literal notranslate"><span class="pre">RichHandler.get_level_text()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.get_name"><code class="docutils literal notranslate"><span class="pre">RichHandler.get_name()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.handle"><code class="docutils literal notranslate"><span class="pre">RichHandler.handle()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.handleError"><code class="docutils literal notranslate"><span class="pre">RichHandler.handleError()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.name"><code class="docutils literal notranslate"><span class="pre">RichHandler.name</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.release"><code class="docutils literal notranslate"><span class="pre">RichHandler.release()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.removeFilter"><code class="docutils literal notranslate"><span class="pre">RichHandler.removeFilter()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.render"><code class="docutils literal notranslate"><span class="pre">RichHandler.render()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.render_message"><code class="docutils literal notranslate"><span class="pre">RichHandler.render_message()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.setFormatter"><code class="docutils literal notranslate"><span class="pre">RichHandler.setFormatter()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.setLevel"><code class="docutils literal notranslate"><span class="pre">RichHandler.setLevel()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.RichHandler.set_name"><code class="docutils literal notranslate"><span class="pre">RichHandler.set_name()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper</span></code></a><ul>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.priority_map"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.priority_map</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_ALERT"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_ALERT</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_AUTH"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_AUTH</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_AUTHPRIV"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_AUTHPRIV</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_CRIT"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_CRIT</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_CRON"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_CRON</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_DAEMON"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_DAEMON</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_DEBUG"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_DEBUG</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_EMERG"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_EMERG</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_ERR"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_ERR</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_FTP"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_FTP</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_INFO"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_INFO</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_KERN"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_KERN</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL0"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LOCAL0</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL1"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LOCAL1</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL2"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LOCAL2</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL3"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LOCAL3</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL4"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LOCAL4</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL5"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LOCAL5</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL6"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LOCAL6</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LOCAL7"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LOCAL7</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_LPR"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_LPR</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_MAIL"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_MAIL</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_NEWS"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_NEWS</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_NOTICE"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_NOTICE</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_SYSLOG"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_SYSLOG</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_USER"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_USER</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_UUCP"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_UUCP</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.LOG_WARNING"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.LOG_WARNING</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.acquire"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.acquire()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.addFilter"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.addFilter()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.append_nul"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.append_nul</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.close"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.close()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.createLock"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.createLock()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.emit"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.emit()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.encodePriority"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.encodePriority()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.facility_names"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.facility_names</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.filter"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.filter()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.flush"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.flush()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.format"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.format()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.get_name"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.get_name()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.handle"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.handle()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.handleError"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.handleError()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.ident"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.ident</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.mapPriority"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.mapPriority()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.name"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.name</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.priority_names"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.priority_names</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.release"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.release()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.removeFilter"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.removeFilter()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.setFormatter"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.setFormatter()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.setLevel"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.setLevel()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.SysLogHandlerWrapper.set_name"><code class="docutils literal notranslate"><span class="pre">SysLogHandlerWrapper.set_name()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.logging.logger.JinaLogger"><code class="docutils literal notranslate"><span class="pre">JinaLogger</span></code></a><ul>
+<li><a class="reference internal" href="#jina.logging.logger.JinaLogger.supported"><code class="docutils literal notranslate"><span class="pre">JinaLogger.supported</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.JinaLogger.handlers"><code class="docutils literal notranslate"><span class="pre">JinaLogger.handlers</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.JinaLogger.close"><code class="docutils literal notranslate"><span class="pre">JinaLogger.close()</span></code></a></li>
+<li><a class="reference internal" href="#jina.logging.logger.JinaLogger.add_handlers"><code class="docutils literal notranslate"><span class="pre">JinaLogger.add_handlers()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
             
             
         </aside>
@@ -1036,6 +1141,7 @@ specific issues (see SF #1524081).</p>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

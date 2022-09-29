@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina_cli package" />
   
@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.9.3 Documentation" />
   
-<meta property="og:description" content="Submodules: jina_cli.api module, jina_cli.autocomplete module, jina_cli.export module, jina_cli.known_plugins module, jina_cli.lookup module. Module contents:" />
+<meta property="og:description" content="Submodules: jina_cli.api module- deployment(), pod(), executor_native(), executor(), worker_runtime(), gateway(), ping(), dryrun(), client(), export(), flow(), hub(), new(), help(), auth(), cloud()., jina_cli.autocomplete module, jina_cli.export module- api_to_dict()., jina_cli.known_plugins modu..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina_cli.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina_cli package - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -399,11 +399,35 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina_cli.api/">jina_cli.api module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina_cli.api/">jina_cli.api module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.api/#jina_cli.api.deployment"><code class="docutils literal notranslate"><span class="pre">deployment()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.api/#jina_cli.api.pod"><code class="docutils literal notranslate"><span class="pre">pod()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.api/#jina_cli.api.executor_native"><code class="docutils literal notranslate"><span class="pre">executor_native()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.api/#jina_cli.api.executor"><code class="docutils literal notranslate"><span class="pre">executor()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.api/#jina_cli.api.worker_runtime"><code class="docutils literal notranslate"><span class="pre">worker_runtime()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.api/#jina_cli.api.gateway"><code class="docutils literal notranslate"><span class="pre">gateway()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.api/#jina_cli.api.ping"><code class="docutils literal notranslate"><span class="pre">ping()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.api/#jina_cli.api.dryrun"><code class="docutils literal notranslate"><span class="pre">dryrun()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.api/#jina_cli.api.client"><code class="docutils literal notranslate"><span class="pre">client()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.api/#jina_cli.api.export"><code class="docutils literal notranslate"><span class="pre">export()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.api/#jina_cli.api.flow"><code class="docutils literal notranslate"><span class="pre">flow()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.api/#jina_cli.api.hub"><code class="docutils literal notranslate"><span class="pre">hub()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.api/#jina_cli.api.new"><code class="docutils literal notranslate"><span class="pre">new()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.api/#jina_cli.api.help"><code class="docutils literal notranslate"><span class="pre">help()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.api/#jina_cli.api.auth"><code class="docutils literal notranslate"><span class="pre">auth()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.api/#jina_cli.api.cloud"><code class="docutils literal notranslate"><span class="pre">cloud()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../jina_cli.autocomplete/">jina_cli.autocomplete module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina_cli.export/">jina_cli.export module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina_cli.export/">jina_cli.export module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.export/#jina_cli.export.api_to_dict"><code class="docutils literal notranslate"><span class="pre">api_to_dict()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../jina_cli.known_plugins/">jina_cli.known_plugins module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina_cli.lookup/">jina_cli.lookup module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina_cli.lookup/">jina_cli.lookup module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina_cli.lookup/#jina_cli.lookup.lookup_and_print"><code class="docutils literal notranslate"><span class="pre">lookup_and_print()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -431,7 +455,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -465,7 +489,10 @@
                         <ul>
 <li><a class="reference internal" href="#">jina_cli package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina_cli">Module contents</a></li>
+<li><a class="reference internal" href="#module-jina_cli">Module contents</a><ul>
+<li><a class="reference internal" href="#jina_cli.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -497,6 +524,7 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

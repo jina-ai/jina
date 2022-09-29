@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="Welcome to Jina!" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="genindex/" /><link rel="search" title="Search" href="search/" /><link rel="next" title="What is Cross-Modal &amp; Multi-Modal?" href="get-started/what-is-cross-modal-multi-modal/" />
         <link rel="canonical" href="https://docs.jina.ai/index.html" />
 
-    <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -445,14 +445,26 @@
 </div>
 </div>
 <p>Now that you’re set up, let’s create a project:</p>
+<div class="tab-set docutils">
+<input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">In host</label><div class="tab-content docutils">
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina new hello-jina
 <span class="nb">cd</span> hello-jina
 jina flow --uses flow.yml
-python client.py
 </pre></div>
 </div>
-<p>And observe the result from your terminal.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="s1">&#39;hello, world!&#39;</span>, <span class="s1">&#39;goodbye, world!&#39;</span><span class="o">]</span>
+</div>
+<input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">Inside Docker</label><div class="tab-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker run -it --entrypoint<span class="o">=</span>/bin/bash jinaai/jina:latest -p <span class="m">54321</span>:54321
+jina new hello-jina
+<span class="nb">cd</span> hello-jina
+jina flow --uses flow.yml
+</pre></div>
+</div>
+</div>
+</div>
+<p>Run the client on your machine and observe the results from your terminal.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python client.py
+<span class="o">[</span><span class="s1">&#39;hello, world!&#39;</span>, <span class="s1">&#39;goodbye, world!&#39;</span><span class="o">]</span>
 </pre></div>
 </div>
 </section>
@@ -572,7 +584,7 @@ and <a class="reference external" href="https://youtube.com/c/jina-ai">live stre
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -642,6 +654,7 @@ and <a class="reference external" href="https://youtube.com/c/jina-ai">live stre
     <script src="_static/underscore.js"></script>
     <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>

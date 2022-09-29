@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.helper module" />
   
@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.helper.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.helper module - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -195,7 +195,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -380,7 +380,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon no-toc"
+                    <label class="toc-overlay-icon toc-content-icon"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -906,7 +906,7 @@ sub context is called, even when there is an Exception in the
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -926,8 +926,55 @@ sub context is called, even when there is an Exception in the
                 
             </footer>
         </div>
-        <aside class="toc-drawer no-toc">
+        <aside class="toc-drawer">
             
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">jina.helper module</a><ul>
+<li><a class="reference internal" href="#jina.helper.batch_iterator"><code class="docutils literal notranslate"><span class="pre">batch_iterator()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.parse_arg"><code class="docutils literal notranslate"><span class="pre">parse_arg()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.random_port"><code class="docutils literal notranslate"><span class="pre">random_port()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.random_identity"><code class="docutils literal notranslate"><span class="pre">random_identity()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.random_uuid"><code class="docutils literal notranslate"><span class="pre">random_uuid()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.expand_env_var"><code class="docutils literal notranslate"><span class="pre">expand_env_var()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.colored"><code class="docutils literal notranslate"><span class="pre">colored()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.ArgNamespace"><code class="docutils literal notranslate"><span class="pre">ArgNamespace</span></code></a><ul>
+<li><a class="reference internal" href="#jina.helper.ArgNamespace.kwargs2list"><code class="docutils literal notranslate"><span class="pre">ArgNamespace.kwargs2list()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.ArgNamespace.kwargs2namespace"><code class="docutils literal notranslate"><span class="pre">ArgNamespace.kwargs2namespace()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.ArgNamespace.get_non_defaults_args"><code class="docutils literal notranslate"><span class="pre">ArgNamespace.get_non_defaults_args()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.ArgNamespace.flatten_to_dict"><code class="docutils literal notranslate"><span class="pre">ArgNamespace.flatten_to_dict()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.helper.is_valid_local_config_source"><code class="docutils literal notranslate"><span class="pre">is_valid_local_config_source()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.cached_property"><code class="docutils literal notranslate"><span class="pre">cached_property</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.typename"><code class="docutils literal notranslate"><span class="pre">typename()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.get_public_ip"><code class="docutils literal notranslate"><span class="pre">get_public_ip()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.get_internal_ip"><code class="docutils literal notranslate"><span class="pre">get_internal_ip()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.convert_tuple_to_list"><code class="docutils literal notranslate"><span class="pre">convert_tuple_to_list()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.run_async"><code class="docutils literal notranslate"><span class="pre">run_async()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.deprecated_alias"><code class="docutils literal notranslate"><span class="pre">deprecated_alias()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.retry"><code class="docutils literal notranslate"><span class="pre">retry()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.countdown"><code class="docutils literal notranslate"><span class="pre">countdown()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.CatchAllCleanupContextManager"><code class="docutils literal notranslate"><span class="pre">CatchAllCleanupContextManager</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.download_mermaid_url"><code class="docutils literal notranslate"><span class="pre">download_mermaid_url()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.get_readable_size"><code class="docutils literal notranslate"><span class="pre">get_readable_size()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.get_or_reuse_loop"><code class="docutils literal notranslate"><span class="pre">get_or_reuse_loop()</span></code></a></li>
+<li><a class="reference internal" href="#jina.helper.get_rich_console"><code class="docutils literal notranslate"><span class="pre">get_rich_console()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
             
             
         </aside>
@@ -952,6 +999,7 @@ sub context is called, even when there is an Exception in the
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

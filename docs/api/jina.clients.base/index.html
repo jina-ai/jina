@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.clients.base package" />
   
@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.9.3 Documentation" />
   
-<meta property="og:description" content="Submodules: jina.clients.base.grpc module, jina.clients.base.helper module, jina.clients.base.http module, jina.clients.base.websocket module. Module contents: Module containing the Base Client for Jina." />
+<meta property="og:description" content="Submodules: jina.clients.base.grpc module- GRPCBaseClient- GRPCBaseClient.check_input(), GRPCBaseClient.client, GRPCBaseClient.inputs.., jina.clients.base.helper module- AioHttpClientlet- AioHttpClientlet.send_message(), AioHttpClientlet.send_dry_run(), AioHttpClientlet.recv_message(), AioHttpCli..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.clients.base.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.clients.base package - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -399,10 +399,67 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.helper/">jina.clients.base.helper module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.http/">jina.clients.base.http module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.grpc/">jina.clients.base.grpc module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient"><code class="docutils literal notranslate"><span class="pre">GRPCBaseClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient.check_input"><code class="docutils literal notranslate"><span class="pre">GRPCBaseClient.check_input()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient.client"><code class="docutils literal notranslate"><span class="pre">GRPCBaseClient.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient.inputs"><code class="docutils literal notranslate"><span class="pre">GRPCBaseClient.inputs</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.helper/">jina.clients.base.helper module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.send_message"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet.send_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.send_dry_run"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet.send_dry_run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.recv_message"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet.recv_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.recv_dry_run"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet.recv_dry_run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.start"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet.start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet.close"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet.close()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet"><code class="docutils literal notranslate"><span class="pre">HTTPClientlet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.send_message"><code class="docutils literal notranslate"><span class="pre">HTTPClientlet.send_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.send_dry_run"><code class="docutils literal notranslate"><span class="pre">HTTPClientlet.send_dry_run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.recv_message"><code class="docutils literal notranslate"><span class="pre">HTTPClientlet.recv_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.recv_dry_run"><code class="docutils literal notranslate"><span class="pre">HTTPClientlet.recv_dry_run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.close"><code class="docutils literal notranslate"><span class="pre">HTTPClientlet.close()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet.start"><code class="docutils literal notranslate"><span class="pre">HTTPClientlet.start()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WsResponseIter"><code class="docutils literal notranslate"><span class="pre">WsResponseIter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.send_message"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.send_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.send_dry_run"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.send_dry_run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.send_eoi"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.send_eoi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.recv_message"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.recv_message()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.recv_dry_run"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.recv_dry_run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.close_message"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close_message</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.close_code"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close_code</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.close"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.close()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet.start"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet.start()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.http/">jina.clients.base.http module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient.check_input"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.check_input()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient.client"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient.inputs"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient.inputs</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.clients.base.websocket/">jina.clients.base.websocket module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient"><code class="docutils literal notranslate"><span class="pre">WebSocketBaseClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient.check_input"><code class="docutils literal notranslate"><span class="pre">WebSocketBaseClient.check_input()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient.client"><code class="docutils literal notranslate"><span class="pre">WebSocketBaseClient.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient.inputs"><code class="docutils literal notranslate"><span class="pre">WebSocketBaseClient.inputs</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -486,7 +543,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -520,7 +577,15 @@
                         <ul>
 <li><a class="reference internal" href="#">jina.clients.base package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.clients.base">Module contents</a></li>
+<li><a class="reference internal" href="#module-jina.clients.base">Module contents</a><ul>
+<li><a class="reference internal" href="#jina.clients.base.BaseClient"><code class="docutils literal notranslate"><span class="pre">BaseClient</span></code></a><ul>
+<li><a class="reference internal" href="#jina.clients.base.BaseClient.check_input"><code class="docutils literal notranslate"><span class="pre">BaseClient.check_input()</span></code></a></li>
+<li><a class="reference internal" href="#jina.clients.base.BaseClient.inputs"><code class="docutils literal notranslate"><span class="pre">BaseClient.inputs</span></code></a></li>
+<li><a class="reference internal" href="#jina.clients.base.BaseClient.client"><code class="docutils literal notranslate"><span class="pre">BaseClient.client</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -552,6 +617,7 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

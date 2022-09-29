@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../../genindex/" /><link rel="search" title="Search" href="../../../../../../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/runtimes/gateway/http/models.html" />
 
-    <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../../../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.serve.runtimes.gateway.http.models - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -365,14 +365,16 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">docarray.document.pydantic_model</span> <span class="kn">import</span> <span class="n">PydanticDocument</span><span class="p">,</span> <span class="n">PydanticDocumentArray</span>
 <span class="kn">from</span> <span class="nn">google.protobuf.descriptor</span> <span class="kn">import</span> <span class="n">Descriptor</span><span class="p">,</span> <span class="n">FieldDescriptor</span>
-<span class="kn">from</span> <span class="nn">google.protobuf.pyext.cpp_message</span> <span class="kn">import</span> <span class="n">GeneratedProtocolMessageType</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseConfig</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">create_model</span><span class="p">,</span> <span class="n">root_validator</span>
 
 <span class="kn">from</span> <span class="nn">jina.proto.jina_pb2</span> <span class="kn">import</span> <span class="n">DataRequestProto</span><span class="p">,</span> <span class="n">JinaInfoProto</span><span class="p">,</span> <span class="n">RouteProto</span><span class="p">,</span> <span class="n">StatusProto</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">google.protobuf.pyext.cpp_message</span> <span class="kn">import</span> <span class="n">GeneratedProtocolMessageType</span>
 
 <span class="n">PROTO_TO_PYDANTIC_MODELS</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">()</span>
 <span class="n">PROTOBUF_TO_PYTHON_TYPE</span> <span class="o">=</span> <span class="p">{</span>
@@ -460,7 +462,7 @@
 
 
 <div class="viewcode-block" id="protobuf_to_pydantic_model"><a class="viewcode-back" href="../../../../../../../api/jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.protobuf_to_pydantic_model">[docs]</a><span class="k">def</span> <span class="nf">protobuf_to_pydantic_model</span><span class="p">(</span>
-    <span class="n">protobuf_model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Descriptor</span><span class="p">,</span> <span class="n">GeneratedProtocolMessageType</span><span class="p">]</span>
+    <span class="n">protobuf_model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Descriptor</span><span class="p">,</span> <span class="s1">&#39;GeneratedProtocolMessageType&#39;</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseModel</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts Protobuf messages to Pydantic model for jsonschema creation/validattion</span>
@@ -675,7 +677,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -721,6 +723,7 @@
     <script src="../../../../../../../_static/underscore.js"></script>
     <script src="../../../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../../../../../_static/doctools.js"></script>
+    <script src="../../../../../../../_static/sphinx_highlight.js"></script>
     <script src="../../../../../../../_static/scripts/furo.js"></script>
     <script src="../../../../../../../_static/clipboard.min.js"></script>
     <script src="../../../../../../../_static/copybutton.js"></script>

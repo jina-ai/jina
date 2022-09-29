@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.serve.runtimes.gateway package" />
   
@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.9.3 Documentation" />
   
-<meta property="og:description" content="Subpackages: jina.serve.runtimes.gateway.graph package- Submodules- jina.serve.runtimes.gateway.graph.topology_graph module., Module contents., jina.serve.runtimes.gateway.grpc package- Submodules- jina.serve.runtimes.gateway.grpc.gateway module., Module contents., jina.serve.runtimes.gateway.htt..." />
+<meta property="og:description" content="Subpackages: jina.serve.runtimes.gateway.graph package- Submodules- jina.serve.runtimes.gateway.graph.topology_graph module- TopologyGraph.., Module contents., jina.serve.runtimes.gateway.grpc package- Submodules- jina.serve.runtimes.gateway.grpc.gateway module- GRPCGateway.., Module contents- GR..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.runtimes.gateway.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.serve.runtimes.gateway package - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -401,7 +401,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway.graph/">jina.serve.runtimes.gateway.graph package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.graph/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.graph.topology_graph/">jina.serve.runtimes.gateway.graph.topology_graph module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.graph.topology_graph/">jina.serve.runtimes.gateway.graph.topology_graph module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.graph.topology_graph/#jina.serve.runtimes.gateway.graph.topology_graph.TopologyGraph"><code class="docutils literal notranslate"><span class="pre">TopologyGraph</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.graph/#module-jina.serve.runtimes.gateway.graph">Module contents</a></li>
@@ -409,29 +412,95 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/">jina.serve.runtimes.gateway.grpc package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc.gateway/">jina.serve.runtimes.gateway.grpc.gateway module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc.gateway/">jina.serve.runtimes.gateway.grpc.gateway module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc.gateway/#jina.serve.runtimes.gateway.grpc.gateway.GRPCGateway"><code class="docutils literal notranslate"><span class="pre">GRPCGateway</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/#module-jina.serve.runtimes.gateway.grpc">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/#module-jina.serve.runtimes.gateway.grpc">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime"><code class="docutils literal notranslate"><span class="pre">GRPCGatewayRuntime</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_setup"><code class="docutils literal notranslate"><span class="pre">GRPCGatewayRuntime.async_setup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_teardown"><code class="docutils literal notranslate"><span class="pre">GRPCGatewayRuntime.async_teardown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_cancel"><code class="docutils literal notranslate"><span class="pre">GRPCGatewayRuntime.async_cancel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.async_run_forever"><code class="docutils literal notranslate"><span class="pre">GRPCGatewayRuntime.async_run_forever()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.activate"><code class="docutils literal notranslate"><span class="pre">GRPCGatewayRuntime.activate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.is_ready"><code class="docutils literal notranslate"><span class="pre">GRPCGatewayRuntime.is_ready()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.run_forever"><code class="docutils literal notranslate"><span class="pre">GRPCGatewayRuntime.run_forever()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.teardown"><code class="docutils literal notranslate"><span class="pre">GRPCGatewayRuntime.teardown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.grpc/#jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime.wait_for_ready_or_shutdown"><code class="docutils literal notranslate"><span class="pre">GRPCGatewayRuntime.wait_for_ready_or_shutdown()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/">jina.serve.runtimes.gateway.http package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.app/">jina.serve.runtimes.gateway.http.app module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.gateway/">jina.serve.runtimes.gateway.http.gateway module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/">jina.serve.runtimes.gateway.http.models module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.app/">jina.serve.runtimes.gateway.http.app module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.app/#jina.serve.runtimes.gateway.http.app.get_fastapi_app"><code class="docutils literal notranslate"><span class="pre">get_fastapi_app()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/#module-jina.serve.runtimes.gateway.http">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.gateway/">jina.serve.runtimes.gateway.http.gateway module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.gateway/#jina.serve.runtimes.gateway.http.gateway.HTTPGateway"><code class="docutils literal notranslate"><span class="pre">HTTPGateway</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/">jina.serve.runtimes.gateway.http.models module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig"><code class="docutils literal notranslate"><span class="pre">CustomConfig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.protobuf_to_pydantic_model"><code class="docutils literal notranslate"><span class="pre">protobuf_to_pydantic_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/#module-jina.serve.runtimes.gateway.http">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.async_setup"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.async_setup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.async_teardown"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.async_teardown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.async_cancel"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.async_cancel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.async_run_forever"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.async_run_forever()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.activate"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.activate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.is_ready"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.is_ready()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.run_forever"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.run_forever()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.teardown"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.teardown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http/#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.wait_for_ready_or_shutdown"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.wait_for_ready_or_shutdown()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/">jina.serve.runtimes.gateway.websocket package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.app/">jina.serve.runtimes.gateway.websocket.app module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.gateway/">jina.serve.runtimes.gateway.websocket.gateway module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.app/">jina.serve.runtimes.gateway.websocket.app module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.app/#jina.serve.runtimes.gateway.websocket.app.get_fastapi_app"><code class="docutils literal notranslate"><span class="pre">get_fastapi_app()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/#module-jina.serve.runtimes.gateway.websocket">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.gateway/">jina.serve.runtimes.gateway.websocket.gateway module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket.gateway/#jina.serve.runtimes.gateway.websocket.gateway.WebSocketGateway"><code class="docutils literal notranslate"><span class="pre">WebSocketGateway</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/#module-jina.serve.runtimes.gateway.websocket">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime"><code class="docutils literal notranslate"><span class="pre">WebSocketGatewayRuntime</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_setup"><code class="docutils literal notranslate"><span class="pre">WebSocketGatewayRuntime.async_setup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_teardown"><code class="docutils literal notranslate"><span class="pre">WebSocketGatewayRuntime.async_teardown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_cancel"><code class="docutils literal notranslate"><span class="pre">WebSocketGatewayRuntime.async_cancel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.async_run_forever"><code class="docutils literal notranslate"><span class="pre">WebSocketGatewayRuntime.async_run_forever()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.activate"><code class="docutils literal notranslate"><span class="pre">WebSocketGatewayRuntime.activate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.is_ready"><code class="docutils literal notranslate"><span class="pre">WebSocketGatewayRuntime.is_ready()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.run_forever"><code class="docutils literal notranslate"><span class="pre">WebSocketGatewayRuntime.run_forever()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.teardown"><code class="docutils literal notranslate"><span class="pre">WebSocketGatewayRuntime.teardown()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.websocket/#jina.serve.runtimes.gateway.websocket.WebSocketGatewayRuntime.wait_for_ready_or_shutdown"><code class="docutils literal notranslate"><span class="pre">WebSocketGatewayRuntime.wait_for_ready_or_shutdown()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -441,7 +510,15 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway.request_handling/">jina.serve.runtimes.gateway.request_handling module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway.request_handling/">jina.serve.runtimes.gateway.request_handling module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.MonitoringRequestMixin"><code class="docutils literal notranslate"><span class="pre">MonitoringRequestMixin</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler"><code class="docutils literal notranslate"><span class="pre">RequestHandler</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_request"><code class="docutils literal notranslate"><span class="pre">RequestHandler.handle_request()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.request_handling/#jina.serve.runtimes.gateway.request_handling.RequestHandler.handle_result"><code class="docutils literal notranslate"><span class="pre">RequestHandler.handle_result()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -452,6 +529,47 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.serve.runtimes.gateway.</span></span><span class="sig-name descname"><span class="pre">GatewayRuntime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/#GatewayRuntime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.GatewayRuntime" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../jina.serve.runtimes.asyncio/#jina.serve.runtimes.asyncio.AsyncNewLoopRuntime" title="jina.serve.runtimes.asyncio.AsyncNewLoopRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncNewLoopRuntime</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>The Runtime from which the GatewayRuntimes need to inherit</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.GatewayRuntime.is_ready">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grpc'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/#GatewayRuntime.is_ready"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.GatewayRuntime.is_ready" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if status is ready.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctrl_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control request needs to be sent</p></li>
+<li><p><strong>protocol</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – protocol of the gateway runtime</p></li>
+<li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if status is ready else False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.GatewayRuntime.wait_for_ready_or_shutdown">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wait_for_ready_or_shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ready_or_shutdown_event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grpc'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/serve/runtimes/gateway/#GatewayRuntime.wait_for_ready_or_shutdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.serve.runtimes.gateway.GatewayRuntime.wait_for_ready_or_shutdown" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if the runtime has successfully started</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – The time to wait before readiness or failure is determined</p></li>
+<li><p><strong>ctrl_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control message needs to be sent</p></li>
+<li><p><strong>ready_or_shutdown_event</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>]) – the multiprocessing event to detect if the process failed or is ready</p></li>
+<li><p><strong>protocol</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – protocol of the gateway runtime</p></li>
+<li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if is ready or it needs to be shutdown</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.GatewayRuntime.activate">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">activate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.GatewayRuntime.activate" title="Permalink to this definition">#</a></dt>
@@ -489,26 +607,6 @@ during async_setup</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.GatewayRuntime.is_ready">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.GatewayRuntime.is_ready" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if status is ready.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ctrl_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control request needs to be sent</p></li>
-<li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if status is ready else False.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.GatewayRuntime.run_forever">
 <span class="sig-name descname"><span class="pre">run_forever</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.GatewayRuntime.run_forever" title="Permalink to this definition">#</a></dt>
 <dd><p>Running method to block the main thread.</p>
@@ -519,25 +617,6 @@ during async_setup</p>
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.GatewayRuntime.teardown">
 <span class="sig-name descname"><span class="pre">teardown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.GatewayRuntime.teardown" title="Permalink to this definition">#</a></dt>
 <dd><p>Call async_teardown() and stop and close the event loop.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="jina.serve.runtimes.gateway.GatewayRuntime.wait_for_ready_or_shutdown">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wait_for_ready_or_shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ready_or_shutdown_event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.GatewayRuntime.wait_for_ready_or_shutdown" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if the runtime has successfully started</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – The time to wait before readiness or failure is determined</p></li>
-<li><p><strong>ctrl_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control message needs to be sent</p></li>
-<li><p><strong>ready_or_shutdown_event</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>]) – the multiprocessing event to detect if the process failed or is ready</p></li>
-<li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if is ready or it needs to be shutdown</p>
-</dd>
-</dl>
 </dd></dl>
 
 </dd></dl>
@@ -558,7 +637,7 @@ during async_setup</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -593,7 +672,21 @@ during async_setup</p>
 <li><a class="reference internal" href="#">jina.serve.runtimes.gateway package</a><ul>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.serve.runtimes.gateway">Module contents</a></li>
+<li><a class="reference internal" href="#module-jina.serve.runtimes.gateway">Module contents</a><ul>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime</span></code></a><ul>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.is_ready"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.is_ready()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.wait_for_ready_or_shutdown"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.wait_for_ready_or_shutdown()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.activate"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.activate()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.async_cancel"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.async_cancel()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.async_run_forever"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.async_run_forever()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.async_setup"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.async_setup()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.async_teardown"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.async_teardown()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.run_forever"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.run_forever()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.GatewayRuntime.teardown"><code class="docutils literal notranslate"><span class="pre">GatewayRuntime.teardown()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -625,6 +718,7 @@ during async_setup</p>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

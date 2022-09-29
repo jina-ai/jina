@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.parsers package" />
   
@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.9.3 Documentation" />
   
-<meta property="og:description" content="Subpackages: jina.parsers.hubble package- Submodules- jina.parsers.hubble.new module, jina.parsers.hubble.pull module, jina.parsers.hubble.push module, jina.parsers.hubble.status module., Module contents., jina.parsers.orchestrate package- Subpackages- jina.parsers.orchestrate.runtimes package- S..." />
+<meta property="og:description" content="Subpackages: jina.parsers.hubble package- Submodules- jina.parsers.hubble.new module- mixin_hub_new_parser()., jina.parsers.hubble.pull module- mixin_hub_pull_options_parser(), mixin_hub_pull_parser()., jina.parsers.hubble.push module- mixin_hub_push_parser()., jina.parsers.hubble.status module- ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.parsers.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.parsers package - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -401,13 +401,34 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../jina.parsers.hubble/">jina.parsers.hubble package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.parsers.hubble/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.hubble.new/">jina.parsers.hubble.new module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.hubble.push/">jina.parsers.hubble.push module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.hubble.status/">jina.parsers.hubble.status module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.hubble.new/">jina.parsers.hubble.new module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.new/#jina.parsers.hubble.new.mixin_hub_new_parser"><code class="docutils literal notranslate"><span class="pre">mixin_hub_new_parser()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.hubble/#module-jina.parsers.hubble">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.hubble.pull/">jina.parsers.hubble.pull module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.pull/#jina.parsers.hubble.pull.mixin_hub_pull_options_parser"><code class="docutils literal notranslate"><span class="pre">mixin_hub_pull_options_parser()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.pull/#jina.parsers.hubble.pull.mixin_hub_pull_parser"><code class="docutils literal notranslate"><span class="pre">mixin_hub_pull_parser()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.hubble.push/">jina.parsers.hubble.push module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.push/#jina.parsers.hubble.push.mixin_hub_push_parser"><code class="docutils literal notranslate"><span class="pre">mixin_hub_push_parser()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.hubble.status/">jina.parsers.hubble.status module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.hubble.status/#jina.parsers.hubble.status.mixin_hub_status_parser"><code class="docutils literal notranslate"><span class="pre">mixin_hub_status_parser()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.hubble/#module-jina.parsers.hubble">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.hubble/#jina.parsers.hubble.mixin_hub_usage_parser"><code class="docutils literal notranslate"><span class="pre">mixin_hub_usage_parser()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.hubble/#jina.parsers.hubble.set_hub_push_parser"><code class="docutils literal notranslate"><span class="pre">set_hub_push_parser()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.hubble/#jina.parsers.hubble.set_hub_pull_parser"><code class="docutils literal notranslate"><span class="pre">set_hub_pull_parser()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.hubble/#jina.parsers.hubble.set_hub_new_parser"><code class="docutils literal notranslate"><span class="pre">set_hub_new_parser()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.hubble/#jina.parsers.hubble.set_hub_status_parser"><code class="docutils literal notranslate"><span class="pre">set_hub_status_parser()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.hubble/#jina.parsers.hubble.set_hub_parser"><code class="docutils literal notranslate"><span class="pre">set_hub_parser()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.parsers.orchestrate/">jina.parsers.orchestrate package</a><ul>
@@ -420,9 +441,19 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.parsers.orchestrate/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.orchestrate.base/">jina.parsers.orchestrate.base module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.orchestrate.deployment/">jina.parsers.orchestrate.deployment module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.orchestrate.pod/">jina.parsers.orchestrate.pod module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.orchestrate.base/">jina.parsers.orchestrate.base module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.orchestrate.base/#jina.parsers.orchestrate.base.mixin_essential_parser"><code class="docutils literal notranslate"><span class="pre">mixin_essential_parser()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.orchestrate.base/#jina.parsers.orchestrate.base.mixin_base_ppr_parser"><code class="docutils literal notranslate"><span class="pre">mixin_base_ppr_parser()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.orchestrate.deployment/">jina.parsers.orchestrate.deployment module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.orchestrate.deployment/#jina.parsers.orchestrate.deployment.mixin_base_deployment_parser"><code class="docutils literal notranslate"><span class="pre">mixin_base_deployment_parser()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.parsers.orchestrate.pod/">jina.parsers.orchestrate.pod module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.parsers.orchestrate.pod/#jina.parsers.orchestrate.pod.mixin_pod_parser"><code class="docutils literal notranslate"><span class="pre">mixin_pod_parser()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.parsers.orchestrate/#module-jina.parsers.orchestrate">Module contents</a></li>
@@ -435,14 +466,46 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.base/">jina.parsers.base module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.client/">jina.parsers.client module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.create/">jina.parsers.create module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.deprecated/">jina.parsers.deprecated module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.export/">jina.parsers.export module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.flow/">jina.parsers.flow module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.helper/">jina.parsers.helper module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.ping/">jina.parsers.ping module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.base/">jina.parsers.base module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.base/#jina.parsers.base.set_base_parser"><code class="docutils literal notranslate"><span class="pre">set_base_parser()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.client/">jina.parsers.client module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.client/#jina.parsers.client.mixin_comm_protocol_parser"><code class="docutils literal notranslate"><span class="pre">mixin_comm_protocol_parser()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.client/#jina.parsers.client.mixin_client_features_parser"><code class="docutils literal notranslate"><span class="pre">mixin_client_features_parser()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.create/">jina.parsers.create module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.create/#jina.parsers.create.set_new_project_parser"><code class="docutils literal notranslate"><span class="pre">set_new_project_parser()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.deprecated/">jina.parsers.deprecated module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.deprecated/#jina.parsers.deprecated.get_deprecated_replacement"><code class="docutils literal notranslate"><span class="pre">get_deprecated_replacement()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.export/">jina.parsers.export module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.export/#jina.parsers.export.set_export_parser"><code class="docutils literal notranslate"><span class="pre">set_export_parser()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.export/#jina.parsers.export.mixin_base_io_parser"><code class="docutils literal notranslate"><span class="pre">mixin_base_io_parser()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.export/#jina.parsers.export.set_export_docker_compose_parser"><code class="docutils literal notranslate"><span class="pre">set_export_docker_compose_parser()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.export/#jina.parsers.export.set_export_k8s_parser"><code class="docutils literal notranslate"><span class="pre">set_export_k8s_parser()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.export/#jina.parsers.export.set_export_flowchart_parser"><code class="docutils literal notranslate"><span class="pre">set_export_flowchart_parser()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.export/#jina.parsers.export.set_export_schema_parser"><code class="docutils literal notranslate"><span class="pre">set_export_schema_parser()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.flow/">jina.parsers.flow module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.flow/#jina.parsers.flow.mixin_flow_features_parser"><code class="docutils literal notranslate"><span class="pre">mixin_flow_features_parser()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.flow/#jina.parsers.flow.set_flow_parser"><code class="docutils literal notranslate"><span class="pre">set_flow_parser()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.helper/">jina.parsers.helper module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.helper/#jina.parsers.helper.add_arg_group"><code class="docutils literal notranslate"><span class="pre">add_arg_group()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.helper/#jina.parsers.helper.KVAppendAction"><code class="docutils literal notranslate"><span class="pre">KVAppendAction</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.parsers.ping/">jina.parsers.ping module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.parsers.ping/#jina.parsers.ping.set_ping_parser"><code class="docutils literal notranslate"><span class="pre">set_ping_parser()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -545,7 +608,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -580,7 +643,15 @@
 <li><a class="reference internal" href="#">jina.parsers package</a><ul>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.parsers">Module contents</a></li>
+<li><a class="reference internal" href="#module-jina.parsers">Module contents</a><ul>
+<li><a class="reference internal" href="#jina.parsers.set_pod_parser"><code class="docutils literal notranslate"><span class="pre">set_pod_parser()</span></code></a></li>
+<li><a class="reference internal" href="#jina.parsers.set_deployment_parser"><code class="docutils literal notranslate"><span class="pre">set_deployment_parser()</span></code></a></li>
+<li><a class="reference internal" href="#jina.parsers.set_gateway_parser"><code class="docutils literal notranslate"><span class="pre">set_gateway_parser()</span></code></a></li>
+<li><a class="reference internal" href="#jina.parsers.set_client_cli_parser"><code class="docutils literal notranslate"><span class="pre">set_client_cli_parser()</span></code></a></li>
+<li><a class="reference internal" href="#jina.parsers.set_help_parser"><code class="docutils literal notranslate"><span class="pre">set_help_parser()</span></code></a></li>
+<li><a class="reference internal" href="#jina.parsers.get_main_parser"><code class="docutils literal notranslate"><span class="pre">get_main_parser()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -612,6 +683,7 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

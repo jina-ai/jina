@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.serve.executors package" />
   
@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.9.3 Documentation" />
   
-<meta property="og:description" content="Submodules: jina.serve.executors.decorators module, jina.serve.executors.metas module. Module contents:" />
+<meta property="og:description" content="Submodules: jina.serve.executors.decorators module- wrap_func(), store_init_kwargs(), avoid_concurrent_lock_cls(), requests(), monitor()., jina.serve.executors.metas module- get_default_metas().. Module contents:" />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.executors.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.serve.executors package - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -399,8 +399,18 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.serve.executors.decorators/">jina.serve.executors.decorators module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.serve.executors.metas/">jina.serve.executors.metas module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.serve.executors.decorators/">jina.serve.executors.decorators module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.executors.decorators/#jina.serve.executors.decorators.wrap_func"><code class="docutils literal notranslate"><span class="pre">wrap_func()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.executors.decorators/#jina.serve.executors.decorators.store_init_kwargs"><code class="docutils literal notranslate"><span class="pre">store_init_kwargs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.executors.decorators/#jina.serve.executors.decorators.avoid_concurrent_lock_cls"><code class="docutils literal notranslate"><span class="pre">avoid_concurrent_lock_cls()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.executors.decorators/#jina.serve.executors.decorators.requests"><code class="docutils literal notranslate"><span class="pre">requests()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.executors.decorators/#jina.serve.executors.decorators.monitor"><code class="docutils literal notranslate"><span class="pre">monitor()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.serve.executors.metas/">jina.serve.executors.metas module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.executors.metas/#jina.serve.executors.metas.get_default_metas"><code class="docutils literal notranslate"><span class="pre">get_default_metas()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -734,7 +744,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -768,7 +778,28 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
                         <ul>
 <li><a class="reference internal" href="#">jina.serve.executors package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.serve.executors">Module contents</a></li>
+<li><a class="reference internal" href="#module-jina.serve.executors">Module contents</a><ul>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor"><code class="docutils literal notranslate"><span class="pre">BaseExecutor</span></code></a><ul>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.close"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.close()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.workspace"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.workspace</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.from_hub"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.from_hub()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.serve"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.serve()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.StandaloneExecutorType"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.StandaloneExecutorType</span></code></a><ul>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.StandaloneExecutorType.EXTERNAL"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.StandaloneExecutorType.EXTERNAL</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.StandaloneExecutorType.SHARED"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.StandaloneExecutorType.SHARED</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.to_kubernetes_yaml"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.to_kubernetes_yaml()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.to_k8s_yaml"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.to_k8s_yaml()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.to_docker_compose_yaml"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.to_docker_compose_yaml()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.monitor"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.monitor()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.is_valid_jaml()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.load_config"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.load_config()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.executors.BaseExecutor.save_config"><code class="docutils literal notranslate"><span class="pre">BaseExecutor.save_config()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -800,6 +831,7 @@ implements <code class="xref py py-class docutils literal notranslate"><span cla
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

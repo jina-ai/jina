@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.jaml.parsers package" />
   
@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.9.3 Documentation" />
   
-<meta property="og:description" content="Subpackages: jina.jaml.parsers.default package- Submodules- jina.jaml.parsers.default.v1 module., Module contents., jina.jaml.parsers.executor package- Submodules- jina.jaml.parsers.executor.legacy module., Module contents., jina.jaml.parsers.flow package- Submodules- jina.jaml.parsers.flow.v1 mo..." />
+<meta property="og:description" content="Subpackages: jina.jaml.parsers.default package- Submodules- jina.jaml.parsers.default.v1 module- V1Parser.., Module contents., jina.jaml.parsers.executor package- Submodules- jina.jaml.parsers.executor.legacy module- LegacyParser.., Module contents., jina.jaml.parsers.flow package- Submodules- ji..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.jaml.parsers.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.jaml.parsers package - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -401,7 +401,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../jina.jaml.parsers.default/">jina.jaml.parsers.default package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers.default/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.default.v1/">jina.jaml.parsers.default.v1 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.default.v1/">jina.jaml.parsers.default.v1 module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.jaml.parsers.default.v1/#jina.jaml.parsers.default.v1.V1Parser"><code class="docutils literal notranslate"><span class="pre">V1Parser</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers.default/#module-jina.jaml.parsers.default">Module contents</a></li>
@@ -409,7 +412,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.jaml.parsers.executor/">jina.jaml.parsers.executor package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers.executor/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.executor.legacy/">jina.jaml.parsers.executor.legacy module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.executor.legacy/">jina.jaml.parsers.executor.legacy module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.jaml.parsers.executor.legacy/#jina.jaml.parsers.executor.legacy.LegacyParser"><code class="docutils literal notranslate"><span class="pre">LegacyParser</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers.executor/#module-jina.jaml.parsers.executor">Module contents</a></li>
@@ -417,7 +423,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.jaml.parsers.flow/">jina.jaml.parsers.flow package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers.flow/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.flow.v1/">jina.jaml.parsers.flow.v1 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.flow.v1/">jina.jaml.parsers.flow.v1 module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.jaml.parsers.flow.v1/#jina.jaml.parsers.flow.v1.V1Parser"><code class="docutils literal notranslate"><span class="pre">V1Parser</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers.flow/#module-jina.jaml.parsers.flow">Module contents</a></li>
@@ -430,7 +439,15 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.jaml.parsers.base/">jina.jaml.parsers.base module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.jaml.parsers.base/">jina.jaml.parsers.base module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser"><code class="docutils literal notranslate"><span class="pre">VersionedYAMLParser</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser.version"><code class="docutils literal notranslate"><span class="pre">VersionedYAMLParser.version</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser.parse"><code class="docutils literal notranslate"><span class="pre">VersionedYAMLParser.parse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser.dump"><code class="docutils literal notranslate"><span class="pre">VersionedYAMLParser.dump()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -488,7 +505,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -523,7 +540,11 @@
 <li><a class="reference internal" href="#">jina.jaml.parsers package</a><ul>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.jaml.parsers">Module contents</a></li>
+<li><a class="reference internal" href="#module-jina.jaml.parsers">Module contents</a><ul>
+<li><a class="reference internal" href="#jina.jaml.parsers.get_parser"><code class="docutils literal notranslate"><span class="pre">get_parser()</span></code></a></li>
+<li><a class="reference internal" href="#jina.jaml.parsers.get_supported_versions"><code class="docutils literal notranslate"><span class="pre">get_supported_versions()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -555,6 +576,7 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

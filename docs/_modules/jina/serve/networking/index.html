@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/serve/networking.html" />
 
-    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.serve.networking - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -362,10 +362,10 @@
                 <article role="main">
                     <h1>Source code for jina.serve.networking</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">contextlib</span>
 <span class="kn">import</span> <span class="nn">ipaddress</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span>
 
@@ -381,6 +381,7 @@
 <span class="kn">from</span> <span class="nn">jina.importer</span> <span class="kn">import</span> <span class="n">ImportExtensions</span>
 <span class="kn">from</span> <span class="nn">jina.logging.logger</span> <span class="kn">import</span> <span class="n">JinaLogger</span>
 <span class="kn">from</span> <span class="nn">jina.proto</span> <span class="kn">import</span> <span class="n">jina_pb2</span><span class="p">,</span> <span class="n">jina_pb2_grpc</span>
+<span class="kn">from</span> <span class="nn">jina.serve.helper</span> <span class="kn">import</span> <span class="n">_get_summary_time_context_or_null</span>
 <span class="kn">from</span> <span class="nn">jina.types.request</span> <span class="kn">import</span> <span class="n">Request</span>
 <span class="kn">from</span> <span class="nn">jina.types.request.data</span> <span class="kn">import</span> <span class="n">DataRequest</span>
 
@@ -389,7 +390,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">CollectorRegistry</span>
+    <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">CollectorRegistry</span><span class="p">,</span> <span class="n">Summary</span>
 
 
 <span class="n">DEFAULT_MINIMUM_RETRIES</span> <span class="o">=</span> <span class="mi">3</span>
@@ -399,17 +400,34 @@
 <span class="n">default_endpoints_proto</span><span class="o">.</span><span class="n">endpoints</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">__default_endpoint__</span><span class="p">])</span>
 
 
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">_NetworkingMetrics</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    dataclass that contain the metrics used in the networking part</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sending_requests_time_metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Summary&#39;</span><span class="p">]</span>
+    <span class="n">received_response_bytes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Summary&#39;</span><span class="p">]</span>
+    <span class="n">send_requests_bytes_metrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;Summary&#39;</span><span class="p">]</span>
+
+
 <div class="viewcode-block" id="ReplicaList"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.ReplicaList">[docs]</a><span class="k">class</span> <span class="nc">ReplicaList</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Maintains a list of connections to replicas and uses round robin for selecting a replica</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">summary</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">_NetworkingMetrics</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">,</span>
+        <span class="n">runtine_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runtime_name</span> <span class="o">=</span> <span class="n">runtine_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_connection_idx</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_address_to_channel</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rr_counter</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># round robin counter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">summary</span> <span class="o">=</span> <span class="n">summary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span> <span class="o">=</span> <span class="n">metrics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_destroyed_event</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
 
@@ -501,7 +519,9 @@
         <span class="n">use_tls</span> <span class="o">=</span> <span class="n">parsed_address</span><span class="o">.</span><span class="n">scheme</span> <span class="ow">in</span> <span class="n">TLS_PROTOCOL_SCHEMES</span>
 
         <span class="n">stubs</span><span class="p">,</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">create_async_channel_stub</span><span class="p">(</span>
-            <span class="n">address</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="n">use_tls</span><span class="p">,</span> <span class="n">summary</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span>
+            <span class="n">address</span><span class="p">,</span>
+            <span class="n">metrics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">,</span>
+            <span class="n">tls</span><span class="o">=</span><span class="n">use_tls</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">stubs</span><span class="p">,</span> <span class="n">channel</span>
 
@@ -615,10 +635,15 @@
             <span class="s1">&#39;jina.JinaInfoRPC&#39;</span><span class="p">:</span> <span class="n">jina_pb2_grpc</span><span class="o">.</span><span class="n">JinaInfoRPCStub</span><span class="p">,</span>
         <span class="p">}</span>
 
-        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">summary</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">address</span><span class="p">,</span>
+            <span class="n">channel</span><span class="p">,</span>
+            <span class="n">metrics</span><span class="p">:</span> <span class="n">_NetworkingMetrics</span><span class="p">,</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span> <span class="o">=</span> <span class="n">summary</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span> <span class="o">=</span> <span class="n">metrics</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_initialized</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># This has to be done lazily, because the target endpoint may not be available</span>
@@ -689,18 +714,43 @@
                         <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
                         <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
                     <span class="p">)</span>
-                    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">send_requests_bytes_metrics</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">send_requests_bytes_metrics</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span>
+                            <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">nbytes</span>
+                        <span class="p">)</span>
+                    <span class="k">with</span> <span class="n">_get_summary_time_context_or_null</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">sending_requests_time_metrics</span>
+                    <span class="p">):</span>
                         <span class="n">metadata</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="p">(</span>
                             <span class="k">await</span> <span class="n">call_result</span><span class="o">.</span><span class="n">trailing_metadata</span><span class="p">(),</span>
                             <span class="k">await</span> <span class="n">call_result</span><span class="p">,</span>
                         <span class="p">)</span>
+
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">received_response_bytes</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">received_response_bytes</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span>
+                                <span class="n">response</span><span class="o">.</span><span class="n">nbytes</span>
+                            <span class="p">)</span>
                     <span class="k">return</span> <span class="n">response</span><span class="p">,</span> <span class="n">metadata</span>
+
                 <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream_stub</span><span class="p">:</span>
-                    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span><span class="p">:</span>
-                        <span class="k">async</span> <span class="k">for</span> <span class="n">resp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream_stub</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">send_requests_bytes_metrics</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">requests</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">send_requests_bytes_metrics</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span>
+                                <span class="n">response</span><span class="o">.</span><span class="n">nbytes</span>
+                            <span class="p">)</span>
+
+                    <span class="k">with</span> <span class="n">_get_summary_time_context_or_null</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">sending_requests_time_metrics</span>
+                    <span class="p">):</span>
+                        <span class="k">async</span> <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream_stub</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span>
                             <span class="nb">iter</span><span class="p">(</span><span class="n">requests</span><span class="p">),</span> <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span>
                         <span class="p">):</span>
-                            <span class="k">return</span> <span class="n">resp</span><span class="p">,</span> <span class="kc">None</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">received_response_bytes</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">received_response_bytes</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span>
+                                    <span class="n">response</span><span class="o">.</span><span class="n">nbytes</span>
+                                <span class="p">)</span>
+
+                            <span class="k">return</span> <span class="n">response</span><span class="p">,</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">request_type</span> <span class="o">==</span> <span class="n">DataRequest</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_list_stub</span><span class="p">:</span>
                     <span class="n">call_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_list_stub</span><span class="o">.</span><span class="n">process_data</span><span class="p">(</span>
@@ -709,7 +759,9 @@
                         <span class="n">compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
                         <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
                     <span class="p">)</span>
-                    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">_get_summary_time_context_or_null</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="o">.</span><span class="n">sending_requests_time_metrics</span>
+                    <span class="p">):</span>
                         <span class="n">metadata</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="p">(</span>
                             <span class="k">await</span> <span class="n">call_result</span><span class="o">.</span><span class="n">trailing_metadata</span><span class="p">(),</span>
                             <span class="k">await</span> <span class="n">call_result</span><span class="p">,</span>
@@ -723,14 +775,19 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unsupported request type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div></div>
 
     <span class="k">class</span> <span class="nc">_ConnectionPoolMap</span><span class="p">:</span>
-        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JinaLogger</span><span class="p">],</span> <span class="n">summary</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">runtime_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JinaLogger</span><span class="p">],</span>
+            <span class="n">metrics</span><span class="p">:</span> <span class="n">_NetworkingMetrics</span><span class="p">,</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span>
             <span class="c1"># this maps deployments to shards or heads</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">ReplicaList</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="c1"># dict stores last entity id used for a particular deployment, used for round robin</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_access_count</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">summary</span> <span class="o">=</span> <span class="n">summary</span>
-
+            <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span> <span class="o">=</span> <span class="n">metrics</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">runtime_name</span> <span class="o">=</span> <span class="n">runtime_name</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;nt&#39;</span><span class="p">:</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">&#39;http_proxy&#39;</span><span class="p">)</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">unsetenv</span><span class="p">(</span><span class="s1">&#39;https_proxy&#39;</span><span class="p">)</span>
@@ -833,7 +890,9 @@
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_add_deployment</span><span class="p">(</span><span class="n">deployment</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">entity_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">]:</span>
-                <span class="n">connection_list</span> <span class="o">=</span> <span class="n">ReplicaList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">)</span>
+                <span class="n">connection_list</span> <span class="o">=</span> <span class="n">ReplicaList</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_name</span>
+                <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">][</span><span class="n">entity_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">connection_list</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployments</span><span class="p">[</span><span class="n">deployment</span><span class="p">][</span><span class="nb">type</span><span class="p">][</span><span class="n">entity_id</span><span class="p">]</span><span class="o">.</span><span class="n">has_connection</span><span class="p">(</span>
@@ -876,6 +935,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
+        <span class="n">runtime_name</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JinaLogger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">compression</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">metrics_registry</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CollectorRegistry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -895,15 +955,43 @@
             <span class="p">):</span>
                 <span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">Summary</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
+            <span class="n">sending_requests_time_metrics</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
                 <span class="s1">&#39;sending_request_seconds&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;Time spent between sending a request to the Pod and receiving the response&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Time spent between sending a request to the Executor/Head and receiving the response&#39;</span><span class="p">,</span>
                 <span class="n">registry</span><span class="o">=</span><span class="n">metrics_registry</span><span class="p">,</span>
                 <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;jina&#39;</span><span class="p">,</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                <span class="n">labelnames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;runtime_name&#39;</span><span class="p">,),</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">runtime_name</span><span class="p">)</span>
+
+            <span class="n">received_response_bytes</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
+                <span class="s1">&#39;received_response_bytes&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Size in bytes of the response returned from the Head/Executor&#39;</span><span class="p">,</span>
+                <span class="n">registry</span><span class="o">=</span><span class="n">metrics_registry</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;jina&#39;</span><span class="p">,</span>
+                <span class="n">labelnames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;runtime_name&#39;</span><span class="p">,),</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">runtime_name</span><span class="p">)</span>
+
+            <span class="n">send_requests_bytes_metrics</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">(</span>
+                <span class="s1">&#39;sent_request_bytes&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Size in bytes of the request sent to the Head/Executor&#39;</span><span class="p">,</span>
+                <span class="n">registry</span><span class="o">=</span><span class="n">metrics_registry</span><span class="p">,</span>
+                <span class="n">namespace</span><span class="o">=</span><span class="s1">&#39;jina&#39;</span><span class="p">,</span>
+                <span class="n">labelnames</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;runtime_name&#39;</span><span class="p">,),</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">runtime_name</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span> <span class="o">=</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">nullcontext</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ConnectionPoolMap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_summary_time</span><span class="p">)</span>
+            <span class="n">sending_requests_time_metrics</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">received_response_bytes</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">send_requests_bytes_metrics</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span> <span class="o">=</span> <span class="n">_NetworkingMetrics</span><span class="p">(</span>
+            <span class="n">sending_requests_time_metrics</span><span class="p">,</span>
+            <span class="n">received_response_bytes</span><span class="p">,</span>
+            <span class="n">send_requests_bytes_metrics</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ConnectionPoolMap</span><span class="p">(</span>
+            <span class="n">runtime_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metrics</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_address_map</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="GrpcConnectionPool.send_request"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_request">[docs]</a>    <span class="k">def</span> <span class="nf">send_request</span><span class="p">(</span>
@@ -1423,9 +1511,23 @@
 <span class="sd">        Documentation is here https://github.com/grpc/grpc/blob/master/include/grpc/impl/codegen/grpc_types.h</span>
 <span class="sd">        :returns: list of tuples defining grpc parameters</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="p">[</span>
             <span class="p">(</span><span class="s1">&#39;grpc.max_send_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;grpc.max_receive_message_length&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+            <span class="c1"># for the following see this blog post for the choice of default value https://cs.mcgill.ca/~mxia3/2019/02/23/Using-gRPC-in-Production/</span>
+            <span class="p">(</span><span class="s1">&#39;grpc.keepalive_time_ms&#39;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">),</span>
+            <span class="c1"># send keepalive ping every 10 second, default is 2 hours.</span>
+            <span class="p">(</span><span class="s1">&#39;grpc.keepalive_timeout_ms&#39;</span><span class="p">,</span> <span class="mi">5000</span><span class="p">),</span>
+            <span class="c1"># keepalive ping time out after 5 seconds, default is 20 seconds</span>
+            <span class="p">(</span><span class="s1">&#39;grpc.keepalive_permit_without_calls&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+            <span class="c1"># allow keepalive pings when there&#39;s no gRPC calls</span>
+            <span class="p">(</span><span class="s1">&#39;grpc.http2.max_pings_without_data&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="c1"># allow unlimited amount of keepalive pings without data</span>
+            <span class="p">(</span><span class="s1">&#39;grpc.http2.min_time_between_pings_ms&#39;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">),</span>
+            <span class="c1"># allow grpc pings from client every 10 seconds</span>
+            <span class="p">(</span><span class="s1">&#39;grpc.http2.min_ping_interval_without_data_ms&#39;</span><span class="p">,</span> <span class="mi">5000</span><span class="p">),</span>
+            <span class="c1"># allow grpc pings from client without data every 5 seconds</span>
         <span class="p">]</span></div>
 
 <div class="viewcode-block" id="GrpcConnectionPool.send_request_async"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.send_request_async">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -1459,7 +1561,10 @@
 
 <div class="viewcode-block" id="GrpcConnectionPool.create_async_channel_stub"><a class="viewcode-back" href="../../../../api/jina.serve.networking/#jina.serve.networking.GrpcConnectionPool.create_async_channel_stub">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">create_async_channel_stub</span><span class="p">(</span>
-        <span class="n">address</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">summary</span><span class="o">=</span><span class="kc">None</span>
+        <span class="n">address</span><span class="p">,</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">_NetworkingMetrics</span><span class="p">,</span>
+        <span class="n">tls</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">root_certificates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ConnectionStubs</span><span class="p">,</span> <span class="n">grpc</span><span class="o">.</span><span class="n">aio</span><span class="o">.</span><span class="n">Channel</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates an async GRPC Channel. This channel has to be closed eventually!</span>
@@ -1467,8 +1572,7 @@
 <span class="sd">        :param address: the address to create the connection to, like 127.0.0.0.1:8080</span>
 <span class="sd">        :param tls: if True, use tls for the grpc channel</span>
 <span class="sd">        :param root_certificates: the path to the root certificates for tls, only u</span>
-<span class="sd">        :param summary: Optional Prometheus summary object</span>
-
+<span class="sd">        :param metrics: NetworkingMetrics object that contain optional metrics</span>
 <span class="sd">        :returns: DataRequest stubs and an async grpc channel</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">channel</span> <span class="o">=</span> <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">get_grpc_channel</span><span class="p">(</span>
@@ -1479,7 +1583,7 @@
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="p">(</span>
-            <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">ConnectionStubs</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">summary</span><span class="p">),</span>
+            <span class="n">GrpcConnectionPool</span><span class="o">.</span><span class="n">ConnectionStubs</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">metrics</span><span class="p">),</span>
             <span class="n">channel</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -1556,7 +1660,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -1602,6 +1706,7 @@
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
     <script src="../../../../_static/scripts/furo.js"></script>
     <script src="../../../../_static/clipboard.min.js"></script>
     <script src="../../../../_static/copybutton.js"></script>

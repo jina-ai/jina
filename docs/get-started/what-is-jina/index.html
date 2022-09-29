@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="What is Jina?" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Comparing to Alternatives" href="../comparing-alternatives/" /><link rel="prev" title="What is Cross-Modal &amp; Multi-Modal?" href="../what-is-cross-modal-multi-modal/" />
         <link rel="canonical" href="https://docs.jina.ai/get-started/what-is-jina.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>What is Jina? - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -403,42 +403,46 @@
 <p>Imagine you are a <strong>machine learning engineer</strong> whose task is to build a shop-the-look service for an e-commerce company, i.e. allowing users to upload a photo and search visually similar items from the stock. Sounds cool and deep learning related, exactly what your expertise is, so let’s get started.</p>
 <section id="prototype">
 <h3>Prototype<a class="headerlink" href="#prototype" title="Permalink to this heading">#</a></h3>
-<p>There are two mode of the system, one is <strong>indexing</strong>, which is to create the visual representation of all stock items, the other is <strong>search</strong>, which is to take a user-uploaded photo and find the visually similar items from stock.</p>
+<p>There are two modes to this system:</p>
+<ul class="simple">
+<li><p><strong>Indexing</strong>, which is to create the visual representation of all items in stock.</p></li>
+<li><p><strong>Search</strong>, which is to take a user-uploaded photo and find the visually similar items in stock.</p></li>
+</ul>
 <p>The indexing part is to create a visual representation of all the stock items. In order to do this, you need to first extract features from the images to create the visual representation. The features could be extracted using a convolutional neural network, and then be stored in a database.</p>
-<p>The search part is to take a user-uploaded photo and find the visually similar items from stock. You first need to extract features from the user-uploaded photo using a convolutional neural network. Then, you can use the similarity metric to find the visually similar items from the stock. The similarity metric could be cosine similarity.</p>
-<p>At this point, you need a deep learning framework such as PyTorch, some key-value database such as MongoDB, and possibly some vector search engine such as FAISS or Elasticsearch. As a machine learning engineer, you are mostly familiar with PyTorch and prototyping. You are smart and full of energy so nothing you can’t learn. You easily glue them together as the first <em>proof of concept</em> (POC).</p>
+<p>The search part is to take a user-uploaded photo and find the visually similar items from stock. You first need to extract features from the user-uploaded photo using a convolutional neural network. Then, you can use a similarity metric to find the visually similar items from the stock. The similarity metric could be cosine similarity.</p>
+<p>At this point, you need a deep learning framework such as PyTorch, some key-value database such as MongoDB, and possibly some vector search engine such as FAISS or Elasticsearch. As a machine learning engineer, you are mostly familiar with PyTorch and prototyping. You are smart and full of energy so there’s nothing you can’t learn. You easily glue them together as the first <em>proof of concept</em> (POC).</p>
 </section>
 <section id="as-a-service">
 <h3>As a service<a class="headerlink" href="#as-a-service" title="Permalink to this heading">#</a></h3>
-<p>Are we done? We just start. Instead of some Python functions, your goal is to make it as a web service so that its IO goes through network. To do that, you need to <em>refactor</em> the above logic in some web framework with some API so that it can be called by other services.</p>
-<p>There are many ways to do this, one example would be to use the Django web framework. You would create an endpoint that accepts user-uploaded photos, then use the above logic to find the visually similar items from stock. Finally, you would return the results to the user in the form of a JSON object.</p>
-<p>At this point, you learned a few new things such as REST API, web service, web framework, which seems to go beyond your scope of a “machine learning engineer”. You started to wonder whether it is worth it to learn them. But a machine learning <strong>engineer</strong> is an engineer after all, and learning new things is always good. But deep down you feel that your engineering may not be sufficient to make it into production. After some time, you managed to glue everything together.</p>
+<p>Are we done? Oh no, we’re just getting started. Instead of some Python functions, your goal is to make it as a web service so that its IO goes through the network. To do that, you need to <em>refactor</em> the above logic in some web framework with some API so that it can be called by other services.</p>
+<p>There are many ways to do this. One example would be to use the Django web framework. You would create an endpoint that accepts user-uploaded photos, then use the above logic to find the visually similar items from stock. Finally, you would return the results to the user in the form of a JSON object.</p>
+<p>At this point, you learned a few new things such as REST API, web service, web framework, which seems to go beyond your scope of a “machine learning engineer”. You’re starting to wonder whether it’s even worth learning them. But a machine learning <strong>engineer</strong> is an engineer after all, and learning new things is always good. But deep down you feel that your engineering may not be sufficient to make it into production. After some time, you managed to glue everything together.</p>
 </section>
 <section id="deployment">
 <h3>Deployment<a class="headerlink" href="#deployment" title="Permalink to this heading">#</a></h3>
-<p>The product team is impressed by the progress and asks you to deploy it on AWS to serve some real traffic. This is exciting because it means your POC will face the public and have real users. You encountered many problems while migrating from local to the cloud, mostly because of dependencies issues, CUDA driver and GPU issues. You finally solved all of them by wrapping everything in a 30GB Docker image. It is a <em>big</em> monolith container, but it is easy to deploy and manage for you.</p>
+<p>The product team is impressed by your progress and asks you to deploy it on AWS to serve some real traffic. This is exciting because it means your POC will face the public and have real users. You encountered many problems while migrating from local to the cloud, mostly because of dependencies issues, CUDA driver and GPU issues. You finally solved all of them by wrapping everything in a 30GB Docker image. It is a <em>big</em> monolith container, but it is easy to deploy and manage for you.</p>
 </section>
 <section id="scalability-and-performance">
 <h3>Scalability and performance<a class="headerlink" href="#scalability-and-performance" title="Permalink to this heading">#</a></h3>
-<p>Are we done now? Not yet. The product team wants to ensure certain scalability of the service in practice, meaning that the feature extraction should be parallelized and concurrent user requests should be handled without lagging. Certain QPS (query per second) is required from the product team.</p>
-<p>You tried the straightforward <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> and <code class="docutils literal notranslate"><span class="pre">threading</span></code>, but nothing works out of the box with your deep learning stacks. You decided to learn more high-performance computing frameworks such as Dask or Ray and try to adopt them. After some trial and error, you finally glued everything together and made them work. At this point you feel exhausted as it diverges too far from your expertise.</p>
+<p>Are we done now? Not yet. The product team wants to ensure certain scalability of the service in practice, meaning that the feature extraction should be parallelized and concurrent user requests should be handled without lag. A certain QPS (query per second) is required from the product team.</p>
+<p>You’ve tried the straightforward <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> and <code class="docutils literal notranslate"><span class="pre">threading</span></code>, but nothing works out of the box with your deep learning stacks. You decide to learn more high-performance computing frameworks such as Dask or Ray and try to adopt them. After some trial and error, you finally glue everything together and make them work. At this point you feel exhausted as it diverges too far from your expertise.</p>
 </section>
 <section id="availability-and-downtime">
 <h3>Availability and downtime<a class="headerlink" href="#availability-and-downtime" title="Permalink to this heading">#</a></h3>
 <p><em>“What if our database is down (due to update) for a short-time?”</em></p>
-<p>So you designed some naive failsafe mechanism that you just learned from a blog post. You also picked up some AWS service in a rush to ensure the availability of the service, hoping it can be fire-and-forget.</p>
+<p>So you design some naive failsafe mechanism that you just learned from a blog post. You also pick up some AWS service in a rush to ensure the availability of the service, hoping it can be fire-and-forget.</p>
 </section>
 <section id="observability">
 <h3>Observability<a class="headerlink" href="#observability" title="Permalink to this heading">#</a></h3>
 <p><em>“How can I see the incoming traffic?”</em></p>
-<p>You changed all <code class="docutils literal notranslate"><span class="pre">print</span></code> to <code class="docutils literal notranslate"><span class="pre">logger.info</span></code> and impatiently spun up a dashboard.</p>
+<p>You change all <code class="docutils literal notranslate"><span class="pre">print</span></code> to <code class="docutils literal notranslate"><span class="pre">logger.info</span></code> and impatiently spun up a dashboard.</p>
 </section>
 <section id="security">
 <h3>Security<a class="headerlink" href="#security" title="Permalink to this heading">#</a></h3>
 <p><em>“Can we add some authentication header to it?”</em></p>
 <p><em>“Is this service prone to attack?”</em></p>
-<p>At this point, you are burnt out. It goes too far away from your expertise. You decided to hand over the project to a senior backend engineer, who is a new hire but has a lot of experience in infrastructure engineering and cloud services. He knows what he is doing and is willing to help you.</p>
-<p>So you sit down with him, scrolling over your glued code and justifying all your tricks, design decisions and explaining all the caveats. He kept nodding and you see it as some kind of recognition. Soon after he took a slow and thoughtful sip of his coffee, he said:</p>
+<p>At this point, you are burning out. It goes too far away from your expertise. You decide to hand over the project to a senior backend engineer, who is a new hire but has a lot of experience in infrastructure engineering and cloud services. He knows what he is doing and is willing to help you.</p>
+<p>So you sit down with him, scrolling over your glued code and justifying all your tricks, design decisions and explaining all the caveats. He keeps nodding and you see it as some kind of recognition. Soon after he takes a slow and thoughtful sip of his coffee and says:</p>
 <p><em>“Why don’t we start to rewrite it?”</em></p>
 </section>
 </section>
@@ -446,19 +450,19 @@
 <h2>Problems and Jina’s solution<a class="headerlink" href="#problems-and-jina-s-solution" title="Permalink to this heading">#</a></h2>
 <p>The above example is quite real, and it reveals some gaps when developing a cross-modal/multi-modal system in production:</p>
 <p><strong>First is the lack of design pattern for such system.</strong> It is unclear how should one represent, compute, store, and transit the data with different modalities in a consistent way; and how can one switch between different tools and avoid glue code.</p>
-<p><strong>Second is the large gap of between a proof-of-concept and a production system.</strong> For a production system, cloud native techniques are often required to ensure the professionalism and scalability of the system. In particular, microservices, orchestration, containerization and observability are four pillars of such system. However, the learning curve is too steep for many machine learning engineers, preventing them to build production ready system.</p>
-<p><strong>Third is the long go-to-market time</strong>. If a company chooses a wrong tech stack, it will take longer to bring the product to market. This is because the company will have to spend more time and resources on developing the product, refactoring it, going back and forth. In addition, a wrong stack can cause problems with the product itself, raising the risk of the product being unsuccessful.</p>
-<p>Jina is a solution to address above problems by providing a consistent design pattern for cross-modal/multi-modal systems with the latest cloud native technologies.</p>
+<p><strong>Second is the large gap of between a proof-of-concept and a production system.</strong> For a production system, cloud-native techniques are often required to ensure the professionalism and scalability of the system. In particular, microservices, orchestration, containerization and observability are four pillars of such a system. However, the learning curve is too steep for many machine learning engineers, preventing them from building production-ready systems.</p>
+<p><strong>Third is the long go-to-market time</strong>. If a company chooses the wrong tech stack, it will take longer to bring the product to market. This is because the company will have to spend more time and resources on developing the product, refactoring it, going back and forth. In addition, the wrong stack can cause problems with the product itself, raising the risk of the product being unsuccessful.</p>
+<p>Jina is a solution to address the above problems by providing a consistent design pattern for cross-modal/multi-modal systems with the latest cloud-native technologies.</p>
 <section id="why-cloud-native">
 <h3>Why cloud native?<a class="headerlink" href="#why-cloud-native" title="Permalink to this heading">#</a></h3>
-<p>At first cloud native seems pretty irrelevant: why a cross-modal/multi-modal system is any related to cloud native?</p>
+<p>At first cloud native seems pretty irrelevant: How is a cross-modal/multi-modal system in any way related to cloud native?</p>
 <p>Cloud native is a term that refers to a system that is designed to run on the cloud. It consists of a group of concepts:</p>
 <ul class="simple">
-<li><p><strong>Microservices</strong>: Microservices are the building blocks of a cloud native system.</p></li>
-<li><p><strong>Orchestration</strong>: Orchestration is the process of managing the microservices.</p></li>
-<li><p><strong>Containerization</strong>: Containerization is the process of packaging the microservices into containers.</p></li>
-<li><p><strong>Observability</strong>: Observability is the process of monitoring the system.</p></li>
-<li><p><strong>DevOps and CI/CD</strong>: DevOps and CI/CD are the process of automating the integration of the system.</p></li>
+<li><p><strong>Microservices</strong>: The building blocks of a cloud native system.</p></li>
+<li><p><strong>Orchestration</strong>: The process of managing the microservices.</p></li>
+<li><p><strong>Containerization</strong>: The process of packaging the microservices into containers.</p></li>
+<li><p><strong>Observability</strong>: The process of monitoring the system.</p></li>
+<li><p><strong>DevOps and CI/CD</strong>: The process of automating the integration of the system.</p></li>
 </ul>
 <p>Sounds cool but irrelevant, so do we really need them?</p>
 <p>Yes!</p>
@@ -466,28 +470,28 @@
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Characteristics of a cross-modal/multi-modal system</p></th>
-<th class="head"><p>How would Cloud-native help</p></th>
+<th class="head"><p>How cloud-native helps</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>Cross-modal/multi-modal system is not a single task, it usually consists of multiple components and forms a workflow or multiple workflows (e.g. indexing and search)</p></td>
+<tr class="row-even"><td><p>A cross-modal/multi-modal system is not a single task, it usually consists of multiple components and forms a workflow or multiple workflows (e.g. indexing and search)</p></td>
 <td><p><strong>Microservice</strong> each task, then <strong>orchestrate</strong> them into workflows.</p></td>
 </tr>
-<tr class="row-odd"><td><p>Cross-modal/multi-modal system involves complicated package dependencies.</p></td>
+<tr class="row-odd"><td><p>A cross-modal/multi-modal system involves complicated package dependencies.</p></td>
 <td><p><strong>Containerization</strong> comes to help to ensure the reproducibility and isolation.</p></td>
 </tr>
-<tr class="row-even"><td><p>Cross-modal/multi-modal system is often a backend/infrastructure service that requires extra stablilty.</p></td>
-<td><p><strong>DevOps and CI/CD</strong> guarantees the integration and <strong>Observability</strong> provides the health information of the system.</p></td>
+<tr class="row-even"><td><p>A Cross-modal/multi-modal system is often a backend/infrastructure service that requires extra stability.</p></td>
+<td><p><strong>DevOps and CI/CD</strong> guarantees the integration and <strong>observability</strong> provides the health information of the system.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>With that, let me reiterate what Jina is: Jina is a framework that provides a unified, cloud native solution for building cross-modal/multi-modal systems from day one. It provides the best developer experience from day one POC to production. It smooths your journey by resolving every challenge mentioned in all subsections of <a class="reference internal" href="#motivate-example"><span class="std std-ref">Motivation example</span></a>. No more tech debt, no more refactoring and back and forth between different systems.</p>
-<p>Now it starts to make sense, right? Let’s get our first taste on how a Jina project looks like and how does it work.</p>
+<p>With that, let me reiterate what Jina is: Jina is a framework that provides a unified, cloud native solution for building cross-modal/multi-modal systems from day one. It provides the best developer experience from day one POC to production. It smooths your journey by resolving every challenge mentioned in all subsections of <a class="reference internal" href="#motivate-example"><span class="std std-ref">Motivation example</span></a>. No more tech debt, no more refactoring and no more back and forth between different systems.</p>
+<p>Now it starts to make sense, right? Let’s get our first taste of how a Jina project looks and works.</p>
 </section>
 </section>
-<section id="taste-of-jina">
-<h2>Taste of Jina<a class="headerlink" href="#taste-of-jina" title="Permalink to this heading">#</a></h2>
+<section id="a-taste-of-jina">
+<h2>A taste of Jina<a class="headerlink" href="#a-taste-of-jina" title="Permalink to this heading">#</a></h2>
 <p>Let’s look at a simple Jina hello world example. We write a function that appends <code class="docutils literal notranslate"><span class="pre">&quot;hello,</span> <span class="pre">world&quot;</span></code> to a Document, we apply the function twice for the two Documents, then return and print their texts.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">With Jina</label><div class="tab-content docutils">
@@ -542,47 +546,47 @@
 </div>
 </div>
 </div>
-<p>It is a pretty straightforward program. It abstracts away the complexity of a real cross-modal &amp; multi-modal system, leaving only the basic logics: make a data structure, operate on it, and return the result.</p>
+<p>It is a pretty straightforward program. It abstracts away the complexity of a real cross-modal and multi-modal system, leaving only the basic logic: Make a data structure, operate on it, and return the result.</p>
 <p>In fact, one can achieve the same in 14 lines of code (<code class="docutils literal notranslate"><span class="pre">black</span></code>ed) with pure Python.</p>
-<p>So does using Jina mean learning some weird design pattern that needs one extra line of code to achieve the same result with pure Python? What’s the deal?</p>
-<p>Here is the deal. The features below come out of the box with the above 15 lines of code:</p>
+<p>So does using Jina mean learning some weird design pattern? Why do that when you could just add one extra line of code to achieve the same result with pure Python? What’s the big deal?</p>
+<p>Here’s the deal. These features come out of the box with the above 15 lines of code:</p>
 <ul class="simple">
-<li><p>Replicas, sharding, scalability in just one line of code;</p></li>
-<li><p>Client/server architecture with duplex streaming;</p></li>
-<li><p>Async non-blocking data workflow;</p></li>
-<li><p>gRPC, Websockets, HTTP, GraphQL gateway support;</p></li>
-<li><p>Microservice from day one, Docker containerization seamlessly;</p></li>
-<li><p>Explicit version and dependency control;</p></li>
-<li><p>Reuse building blocks from Hub marketplace;</p></li>
-<li><p>Immediate observability via Prometheus and Grafana;</p></li>
-<li><p>Kubernetes seamless integration.</p></li>
+<li><p>Replicas, sharding, scalability in just one line of code</p></li>
+<li><p>Client/server architecture with duplex streaming</p></li>
+<li><p>Async non-blocking data workflow</p></li>
+<li><p>gRPC, Websockets, HTTP, GraphQL gateway support</p></li>
+<li><p>Microservice from day one, seamless Docker containerization</p></li>
+<li><p>Explicit version and dependency control</p></li>
+<li><p>Reusable building blocks from <a class="reference external" href="https://hub.jina.ai">Hub marketplace</a></p></li>
+<li><p>Immediate observability via Prometheus and Grafana</p></li>
+<li><p>Seamless Kubernetes integration.</p></li>
 </ul>
-<p>If you think that’s a lot of over-promises, it is not. In fact, they barely scratch the surface of Jina’s capability.</p>
+<p>If you think that’s a lot of overpromising, it is not. In fact, it barely scratches the surface of Jina’s capabilities.</p>
 </section>
 <section id="design-principles">
 <h2>Design principles<a class="headerlink" href="#design-principles" title="Permalink to this heading">#</a></h2>
-<p>With so many powerful features, the learning curve of Jina must be very steep, you might think. But it is not. In fact, you only need to know three concepts to master Jina. They are Document, Executor and Flow, which are introduced in <a class="reference internal" href="../../fundamentals/architecture-overview/#architecture-overview"><span class="std std-ref">Basic Concepts</span></a>.</p>
-<p>A full-fledged cross-modal/multi-modal system is a combination of the following seven layers:</p>
+<p>With so many powerful features, you might the learning curve of Jina must be very steep. But it is not. In fact, you only need to know three concepts to master Jina. They are Document, Executor and Flow, which are introduced in <a class="reference internal" href="../../fundamentals/architecture-overview/#architecture-overview"><span class="std std-ref">Basic Concepts</span></a>.</p>
+<p>A fully-fledged cross-modal/multi-modal system is a combination of seven layers:</p>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/7-layers.png"><img alt="../../_images/7-layers.png" src="../../_images/7-layers.png" style="width: 309.6px; height: 566.0px;" /></a>
 </figure>
-<p>This illustration is not exaggerating, it is a real-world example of a cross-modal/multi-modal system in production.</p>
-<p>Fortunately, as a Jina developer, you don’t need to understand all of them. You only need to know what are relevant to your product logic and let Jina handles the rest. In particular,</p>
+<p>This illustration is not an exaggeration. It’s a real-world example of a cross-modal/multi-modal system in production.</p>
+<p>Fortunately, as a Jina developer, you don’t need to understand all of these layers. You only need to know what’s relevant to your product logic and let Jina handle the rest. In particular:</p>
 <ul class="simple">
 <li><p><strong>The data type</strong>: represents the common data structure across the system; this corresponds to “<strong>Document</strong>” in Jina.</p></li>
 <li><p><strong>The logic</strong>: represents the product logic of each component; this corresponds to “<strong>Executor</strong>” in Jina.</p></li>
 <li><p><strong>The orchestration</strong>: represents the workflow of all components; this corresponds to “<strong>Flow</strong>” in Jina.</p></li>
 </ul>
-<p>are all you need.</p>
+<p>These are all you need.</p>
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../_images/3-layers.png"><img alt="../../_images/3-layers.png" src="../../_images/3-layers.png" style="width: 747.5px; height: 419.5px;" /></a>
 </figure>
-<p>Patterns are nice, cloud native features are cool. But what’s the point if you need to spend months to learn them? Jina’s design principles are simple and clear: flatten the learning curve of cloud native techniques and make all awesome production-level features easily accessible.</p>
+<p>Patterns are nice, cloud-native features are cool. But what’s the point if you need to spend months to learn them? Jina’s design principles are simple and clear: flatten the learning curve of cloud-native techniques and make all awesome production-level features easily accessible.</p>
 </section>
 <section id="relation-to-mlops">
 <h2>Relation to MLOps<a class="headerlink" href="#relation-to-mlops" title="Permalink to this heading">#</a></h2>
-<p>So is Jina a MLOps framework? In some sense, it is, but it goes far beyond. MLOps, or DevOps for machine learning, is the practice of combining DevOps practices and tools with machine learning workflows. The aim is to automate and improve the process of building, training, and deploying machine learning models, which shares the similar principles as Jina.</p>
-<p>Same as MLOps, the benefits of using Jina include:</p>
+<p>So is Jina a MLOps framework? In some sense, it is, but it goes far beyond. MLOps, or DevOps for machine learning, is the practice of combining DevOps practices and tools with machine learning workflows. The aim is to automate and improve the process of building, training, and deploying machine learning models. This aim shares similar principles to Jina.</p>
+<p>Just like MLOps, the benefits of using Jina include:</p>
 <ul class="simple">
 <li><p>Faster and more reliable machine learning model development: Automating machine learning workflows (<a class="reference internal" href="../../fundamentals/architecture-overview/#term-Flow"><span class="xref std std-term">Flow</span></a> in Jina) can help to speed up the process of model development, as well as make it more reliable.</p></li>
 <li><p>Increased collaboration between ML scientists and engineers: Using Jina can help to improve communication and collaboration between ML scientists and engineers, as the latter can be more involved in the machine learning model development process.</p></li>
@@ -629,7 +633,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -676,7 +680,7 @@
 <li><a class="reference internal" href="#why-cloud-native">Why cloud native?</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#taste-of-jina">Taste of Jina</a></li>
+<li><a class="reference internal" href="#a-taste-of-jina">A taste of Jina</a></li>
 <li><a class="reference internal" href="#design-principles">Design principles</a></li>
 <li><a class="reference internal" href="#relation-to-mlops">Relation to MLOps</a></li>
 <li><a class="reference internal" href="#summary">Summary</a></li>
@@ -711,6 +715,7 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.clients package" />
   
@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.9.3 Documentation" />
   
-<meta property="og:description" content="Subpackages: jina.clients.base package- Submodules- jina.clients.base.grpc module, jina.clients.base.helper module, jina.clients.base.http module, jina.clients.base.websocket module., Module contents., jina.clients.request package- Submodules- jina.clients.request.asyncio module, jina.clients.req..." />
+<meta property="og:description" content="Subpackages: jina.clients.base package- Submodules- jina.clients.base.grpc module- GRPCBaseClient., jina.clients.base.helper module- AioHttpClientlet, HTTPClientlet, WsResponseIter, WebsocketClientlet., jina.clients.base.http module- HTTPBaseClient., jina.clients.base.websocket module- WebSocketB..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.clients.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.clients package - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -401,22 +401,51 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../jina.clients.base/">jina.clients.base package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.clients.base/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.grpc/">jina.clients.base.grpc module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/">jina.clients.base.helper module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.http/">jina.clients.base.http module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.websocket/">jina.clients.base.websocket module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.grpc/">jina.clients.base.grpc module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.grpc/#jina.clients.base.grpc.GRPCBaseClient"><code class="docutils literal notranslate"><span class="pre">GRPCBaseClient</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base/#module-jina.clients.base">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.helper/">jina.clients.base.helper module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.AioHttpClientlet"><code class="docutils literal notranslate"><span class="pre">AioHttpClientlet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.HTTPClientlet"><code class="docutils literal notranslate"><span class="pre">HTTPClientlet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WsResponseIter"><code class="docutils literal notranslate"><span class="pre">WsResponseIter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.helper/#jina.clients.base.helper.WebsocketClientlet"><code class="docutils literal notranslate"><span class="pre">WebsocketClientlet</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.http/">jina.clients.base.http module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.http/#jina.clients.base.http.HTTPBaseClient"><code class="docutils literal notranslate"><span class="pre">HTTPBaseClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base.websocket/">jina.clients.base.websocket module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base.websocket/#jina.clients.base.websocket.WebSocketBaseClient"><code class="docutils literal notranslate"><span class="pre">WebSocketBaseClient</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.base/#module-jina.clients.base">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.base/#jina.clients.base.BaseClient"><code class="docutils literal notranslate"><span class="pre">BaseClient</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base/#jina.clients.base.BaseClient.check_input"><code class="docutils literal notranslate"><span class="pre">BaseClient.check_input()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base/#jina.clients.base.BaseClient.inputs"><code class="docutils literal notranslate"><span class="pre">BaseClient.inputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.base/#jina.clients.base.BaseClient.client"><code class="docutils literal notranslate"><span class="pre">BaseClient.client</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../jina.clients.request/">jina.clients.request package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../jina.clients.request/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.clients.request.asyncio/">jina.clients.request.asyncio module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.request.asyncio/">jina.clients.request.asyncio module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.clients.request.asyncio/#jina.clients.request.asyncio.request_generator"><code class="docutils literal notranslate"><span class="pre">request_generator()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../jina.clients.request.helper/">jina.clients.request.helper module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.clients.request/#module-jina.clients.request">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.request/#module-jina.clients.request">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.request/#jina.clients.request.request_generator"><code class="docutils literal notranslate"><span class="pre">request_generator()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -426,11 +455,150 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.clients.grpc/">jina.clients.grpc module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.clients.helper/">jina.clients.helper module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.clients.http/">jina.clients.http module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.clients.mixin/">jina.clients.mixin module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.clients.websocket/">jina.clients.websocket module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.clients.grpc/">jina.clients.grpc module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.GRPCClient"><code class="docutils literal notranslate"><span class="pre">GRPCClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.GRPCClient.check_input"><code class="docutils literal notranslate"><span class="pre">GRPCClient.check_input()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.GRPCClient.client"><code class="docutils literal notranslate"><span class="pre">GRPCClient.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.GRPCClient.delete"><code class="docutils literal notranslate"><span class="pre">GRPCClient.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.GRPCClient.dry_run"><code class="docutils literal notranslate"><span class="pre">GRPCClient.dry_run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.GRPCClient.index"><code class="docutils literal notranslate"><span class="pre">GRPCClient.index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.GRPCClient.inputs"><code class="docutils literal notranslate"><span class="pre">GRPCClient.inputs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.GRPCClient.is_flow_ready"><code class="docutils literal notranslate"><span class="pre">GRPCClient.is_flow_ready()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.GRPCClient.post"><code class="docutils literal notranslate"><span class="pre">GRPCClient.post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.GRPCClient.profiling"><code class="docutils literal notranslate"><span class="pre">GRPCClient.profiling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.GRPCClient.search"><code class="docutils literal notranslate"><span class="pre">GRPCClient.search()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.GRPCClient.update"><code class="docutils literal notranslate"><span class="pre">GRPCClient.update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.AsyncGRPCClient"><code class="docutils literal notranslate"><span class="pre">AsyncGRPCClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.AsyncGRPCClient.check_input"><code class="docutils literal notranslate"><span class="pre">AsyncGRPCClient.check_input()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.AsyncGRPCClient.client"><code class="docutils literal notranslate"><span class="pre">AsyncGRPCClient.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.AsyncGRPCClient.delete"><code class="docutils literal notranslate"><span class="pre">AsyncGRPCClient.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.AsyncGRPCClient.dry_run"><code class="docutils literal notranslate"><span class="pre">AsyncGRPCClient.dry_run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.AsyncGRPCClient.index"><code class="docutils literal notranslate"><span class="pre">AsyncGRPCClient.index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.AsyncGRPCClient.inputs"><code class="docutils literal notranslate"><span class="pre">AsyncGRPCClient.inputs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.AsyncGRPCClient.is_flow_ready"><code class="docutils literal notranslate"><span class="pre">AsyncGRPCClient.is_flow_ready()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.AsyncGRPCClient.post"><code class="docutils literal notranslate"><span class="pre">AsyncGRPCClient.post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.AsyncGRPCClient.search"><code class="docutils literal notranslate"><span class="pre">AsyncGRPCClient.search()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.grpc/#jina.clients.grpc.AsyncGRPCClient.update"><code class="docutils literal notranslate"><span class="pre">AsyncGRPCClient.update()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.clients.helper/">jina.clients.helper module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.helper/#jina.clients.helper.pprint_routes"><code class="docutils literal notranslate"><span class="pre">pprint_routes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.helper/#jina.clients.helper.callback_exec"><code class="docutils literal notranslate"><span class="pre">callback_exec()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.clients.http/">jina.clients.http module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.HTTPClient"><code class="docutils literal notranslate"><span class="pre">HTTPClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.HTTPClient.check_input"><code class="docutils literal notranslate"><span class="pre">HTTPClient.check_input()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.HTTPClient.client"><code class="docutils literal notranslate"><span class="pre">HTTPClient.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.HTTPClient.delete"><code class="docutils literal notranslate"><span class="pre">HTTPClient.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.HTTPClient.dry_run"><code class="docutils literal notranslate"><span class="pre">HTTPClient.dry_run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.HTTPClient.index"><code class="docutils literal notranslate"><span class="pre">HTTPClient.index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.HTTPClient.inputs"><code class="docutils literal notranslate"><span class="pre">HTTPClient.inputs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.HTTPClient.is_flow_ready"><code class="docutils literal notranslate"><span class="pre">HTTPClient.is_flow_ready()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.HTTPClient.mutate"><code class="docutils literal notranslate"><span class="pre">HTTPClient.mutate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.HTTPClient.post"><code class="docutils literal notranslate"><span class="pre">HTTPClient.post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.HTTPClient.profiling"><code class="docutils literal notranslate"><span class="pre">HTTPClient.profiling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.HTTPClient.search"><code class="docutils literal notranslate"><span class="pre">HTTPClient.search()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.HTTPClient.update"><code class="docutils literal notranslate"><span class="pre">HTTPClient.update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.AsyncHTTPClient"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.AsyncHTTPClient.check_input"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.check_input()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.AsyncHTTPClient.client"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.AsyncHTTPClient.delete"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.AsyncHTTPClient.dry_run"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.dry_run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.AsyncHTTPClient.index"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.AsyncHTTPClient.inputs"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.inputs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.AsyncHTTPClient.is_flow_ready"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.is_flow_ready()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.AsyncHTTPClient.mutate"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.mutate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.AsyncHTTPClient.post"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.AsyncHTTPClient.profiling"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.profiling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.AsyncHTTPClient.search"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.search()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.http/#jina.clients.http.AsyncHTTPClient.update"><code class="docutils literal notranslate"><span class="pre">AsyncHTTPClient.update()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.clients.mixin/">jina.clients.mixin module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.MutateMixin"><code class="docutils literal notranslate"><span class="pre">MutateMixin</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.MutateMixin.mutate"><code class="docutils literal notranslate"><span class="pre">MutateMixin.mutate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncMutateMixin"><code class="docutils literal notranslate"><span class="pre">AsyncMutateMixin</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncMutateMixin.mutate"><code class="docutils literal notranslate"><span class="pre">AsyncMutateMixin.mutate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin"><code class="docutils literal notranslate"><span class="pre">HealthCheckMixin</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin.is_flow_ready"><code class="docutils literal notranslate"><span class="pre">HealthCheckMixin.is_flow_ready()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin.dry_run"><code class="docutils literal notranslate"><span class="pre">HealthCheckMixin.dry_run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncHealthCheckMixin"><code class="docutils literal notranslate"><span class="pre">AsyncHealthCheckMixin</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncHealthCheckMixin.is_flow_ready"><code class="docutils literal notranslate"><span class="pre">AsyncHealthCheckMixin.is_flow_ready()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncHealthCheckMixin.dry_run"><code class="docutils literal notranslate"><span class="pre">AsyncHealthCheckMixin.dry_run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.ProfileMixin"><code class="docutils literal notranslate"><span class="pre">ProfileMixin</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.ProfileMixin.profiling"><code class="docutils literal notranslate"><span class="pre">ProfileMixin.profiling()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncProfileMixin"><code class="docutils literal notranslate"><span class="pre">AsyncProfileMixin</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncProfileMixin.profiling"><code class="docutils literal notranslate"><span class="pre">AsyncProfileMixin.profiling()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.PostMixin"><code class="docutils literal notranslate"><span class="pre">PostMixin</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.PostMixin.post"><code class="docutils literal notranslate"><span class="pre">PostMixin.post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.PostMixin.index"><code class="docutils literal notranslate"><span class="pre">PostMixin.index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.PostMixin.search"><code class="docutils literal notranslate"><span class="pre">PostMixin.search()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.PostMixin.update"><code class="docutils literal notranslate"><span class="pre">PostMixin.update()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.PostMixin.delete"><code class="docutils literal notranslate"><span class="pre">PostMixin.delete()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin"><code class="docutils literal notranslate"><span class="pre">AsyncPostMixin</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin.post"><code class="docutils literal notranslate"><span class="pre">AsyncPostMixin.post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin.index"><code class="docutils literal notranslate"><span class="pre">AsyncPostMixin.index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin.search"><code class="docutils literal notranslate"><span class="pre">AsyncPostMixin.search()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin.update"><code class="docutils literal notranslate"><span class="pre">AsyncPostMixin.update()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin.delete"><code class="docutils literal notranslate"><span class="pre">AsyncPostMixin.delete()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.clients.websocket/">jina.clients.websocket module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.WebSocketClient"><code class="docutils literal notranslate"><span class="pre">WebSocketClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.WebSocketClient.check_input"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.check_input()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.WebSocketClient.client"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.WebSocketClient.delete"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.WebSocketClient.dry_run"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.dry_run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.WebSocketClient.index"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.WebSocketClient.inputs"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.inputs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.WebSocketClient.is_flow_ready"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.is_flow_ready()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.WebSocketClient.post"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.WebSocketClient.profiling"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.profiling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.WebSocketClient.search"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.search()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.WebSocketClient.update"><code class="docutils literal notranslate"><span class="pre">WebSocketClient.update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.AsyncWebSocketClient"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.AsyncWebSocketClient.check_input"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.check_input()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.AsyncWebSocketClient.client"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.AsyncWebSocketClient.delete"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.AsyncWebSocketClient.dry_run"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.dry_run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.AsyncWebSocketClient.index"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.AsyncWebSocketClient.inputs"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.inputs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.AsyncWebSocketClient.is_flow_ready"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.is_flow_ready()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.AsyncWebSocketClient.post"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.AsyncWebSocketClient.profiling"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.profiling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.AsyncWebSocketClient.search"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.search()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.clients.websocket/#jina.clients.websocket.AsyncWebSocketClient.update"><code class="docutils literal notranslate"><span class="pre">AsyncWebSocketClient.update()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -490,7 +658,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -525,7 +693,10 @@
 <li><a class="reference internal" href="#">jina.clients package</a><ul>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.clients">Module contents</a></li>
+<li><a class="reference internal" href="#module-jina.clients">Module contents</a><ul>
+<li><a class="reference internal" href="#jina.clients.Client"><code class="docutils literal notranslate"><span class="pre">Client()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -557,6 +728,7 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

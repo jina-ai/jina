@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.jaml package" />
   
@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.9.3 Documentation" />
   
-<meta property="og:description" content="Subpackages: jina.jaml.parsers package- Subpackages- jina.jaml.parsers.default package- Submodules, Module contents., jina.jaml.parsers.executor package- Submodules, Module contents., jina.jaml.parsers.flow package- Submodules, Module contents.., Submodules- jina.jaml.parsers.base module., Module..." />
+<meta property="og:description" content="Subpackages: jina.jaml.parsers package- Subpackages- jina.jaml.parsers.default package- Submodules, Module contents., jina.jaml.parsers.executor package- Submodules, Module contents., jina.jaml.parsers.flow package- Submodules, Module contents.., Submodules- jina.jaml.parsers.base module- Version..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.jaml.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.jaml package - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -419,10 +419,17 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers/#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.base/">jina.jaml.parsers.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers.base/">jina.jaml.parsers.base module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.jaml.parsers.base/#jina.jaml.parsers.base.VersionedYAMLParser"><code class="docutils literal notranslate"><span class="pre">VersionedYAMLParser</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers/#module-jina.jaml.parsers">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.jaml.parsers/#module-jina.jaml.parsers">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers/#jina.jaml.parsers.get_parser"><code class="docutils literal notranslate"><span class="pre">get_parser()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.parsers/#jina.jaml.parsers.get_supported_versions"><code class="docutils literal notranslate"><span class="pre">get_supported_versions()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -432,7 +439,266 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.jaml.helper/">jina.jaml.helper module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.jaml.helper/">jina.jaml.helper module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor"><code class="docutils literal notranslate"><span class="pre">JinaConstructor</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.get_hashable_key"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.get_hashable_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_mapping"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_mapping()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.add_constructor"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.add_constructor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.add_multi_constructor"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.add_multi_constructor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.bool_values"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.bool_values</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.check_data"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.check_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.check_state_key"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.check_state_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_document"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_document()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_object"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_object()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_pairs"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_pairs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_python_bytes"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_python_bytes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_python_complex"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_python_complex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_python_long"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_python_long()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_python_module"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_python_module()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_python_name"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_python_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_python_object"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_python_object()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_python_object_apply"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_python_object_apply()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_python_object_new"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_python_object_new()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_python_str"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_python_str()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_python_tuple"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_python_tuple()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_python_unicode"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_python_unicode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_scalar"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_scalar()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_sequence"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_sequence()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_undefined"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_undefined()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_yaml_binary"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_yaml_binary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_yaml_bool"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_yaml_bool()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_yaml_float"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_yaml_float()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_yaml_int"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_yaml_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_yaml_map"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_yaml_map()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_yaml_null"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_yaml_null()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_yaml_object"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_yaml_object()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_yaml_omap"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_yaml_omap()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_yaml_pairs"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_yaml_pairs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_yaml_seq"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_yaml_seq()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_yaml_set"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_yaml_set()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_yaml_str"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_yaml_str()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.construct_yaml_timestamp"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.construct_yaml_timestamp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.find_python_module"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.find_python_module()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.find_python_name"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.find_python_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.flatten_mapping"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.flatten_mapping()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.get_data"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.get_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.get_single_data"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.get_single_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.get_state_keys_blacklist"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.get_state_keys_blacklist()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.get_state_keys_blacklist_regexp"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.get_state_keys_blacklist_regexp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.inf_value"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.inf_value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.make_python_instance"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.make_python_instance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.nan_value"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.nan_value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.set_python_instance_state"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.set_python_instance_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.timestamp_regexp"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.timestamp_regexp</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.yaml_constructors"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.yaml_constructors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaConstructor.yaml_multi_constructors"><code class="docutils literal notranslate"><span class="pre">JinaConstructor.yaml_multi_constructors</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaResolver"><code class="docutils literal notranslate"><span class="pre">JinaResolver</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaResolver.DEFAULT_MAPPING_TAG"><code class="docutils literal notranslate"><span class="pre">JinaResolver.DEFAULT_MAPPING_TAG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaResolver.DEFAULT_SCALAR_TAG"><code class="docutils literal notranslate"><span class="pre">JinaResolver.DEFAULT_SCALAR_TAG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaResolver.DEFAULT_SEQUENCE_TAG"><code class="docutils literal notranslate"><span class="pre">JinaResolver.DEFAULT_SEQUENCE_TAG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaResolver.add_implicit_resolver"><code class="docutils literal notranslate"><span class="pre">JinaResolver.add_implicit_resolver()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaResolver.add_path_resolver"><code class="docutils literal notranslate"><span class="pre">JinaResolver.add_path_resolver()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaResolver.ascend_resolver"><code class="docutils literal notranslate"><span class="pre">JinaResolver.ascend_resolver()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaResolver.check_resolver_prefix"><code class="docutils literal notranslate"><span class="pre">JinaResolver.check_resolver_prefix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaResolver.descend_resolver"><code class="docutils literal notranslate"><span class="pre">JinaResolver.descend_resolver()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaResolver.resolve"><code class="docutils literal notranslate"><span class="pre">JinaResolver.resolve()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaResolver.yaml_implicit_resolvers"><code class="docutils literal notranslate"><span class="pre">JinaResolver.yaml_implicit_resolvers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaResolver.yaml_path_resolvers"><code class="docutils literal notranslate"><span class="pre">JinaResolver.yaml_path_resolvers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader"><code class="docutils literal notranslate"><span class="pre">JinaLoader</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.DEFAULT_MAPPING_TAG"><code class="docutils literal notranslate"><span class="pre">JinaLoader.DEFAULT_MAPPING_TAG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.DEFAULT_SCALAR_TAG"><code class="docutils literal notranslate"><span class="pre">JinaLoader.DEFAULT_SCALAR_TAG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.DEFAULT_SEQUENCE_TAG"><code class="docutils literal notranslate"><span class="pre">JinaLoader.DEFAULT_SEQUENCE_TAG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.DEFAULT_TAGS"><code class="docutils literal notranslate"><span class="pre">JinaLoader.DEFAULT_TAGS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.ESCAPE_CODES"><code class="docutils literal notranslate"><span class="pre">JinaLoader.ESCAPE_CODES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.ESCAPE_REPLACEMENTS"><code class="docutils literal notranslate"><span class="pre">JinaLoader.ESCAPE_REPLACEMENTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.NON_PRINTABLE"><code class="docutils literal notranslate"><span class="pre">JinaLoader.NON_PRINTABLE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.add_constructor"><code class="docutils literal notranslate"><span class="pre">JinaLoader.add_constructor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.add_implicit_resolver"><code class="docutils literal notranslate"><span class="pre">JinaLoader.add_implicit_resolver()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.add_indent"><code class="docutils literal notranslate"><span class="pre">JinaLoader.add_indent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.add_multi_constructor"><code class="docutils literal notranslate"><span class="pre">JinaLoader.add_multi_constructor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.add_path_resolver"><code class="docutils literal notranslate"><span class="pre">JinaLoader.add_path_resolver()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.ascend_resolver"><code class="docutils literal notranslate"><span class="pre">JinaLoader.ascend_resolver()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.bool_values"><code class="docutils literal notranslate"><span class="pre">JinaLoader.bool_values</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_block_entry"><code class="docutils literal notranslate"><span class="pre">JinaLoader.check_block_entry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_data"><code class="docutils literal notranslate"><span class="pre">JinaLoader.check_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_directive"><code class="docutils literal notranslate"><span class="pre">JinaLoader.check_directive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_document_end"><code class="docutils literal notranslate"><span class="pre">JinaLoader.check_document_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_document_start"><code class="docutils literal notranslate"><span class="pre">JinaLoader.check_document_start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_event"><code class="docutils literal notranslate"><span class="pre">JinaLoader.check_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_key"><code class="docutils literal notranslate"><span class="pre">JinaLoader.check_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_node"><code class="docutils literal notranslate"><span class="pre">JinaLoader.check_node()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_plain"><code class="docutils literal notranslate"><span class="pre">JinaLoader.check_plain()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_printable"><code class="docutils literal notranslate"><span class="pre">JinaLoader.check_printable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_resolver_prefix"><code class="docutils literal notranslate"><span class="pre">JinaLoader.check_resolver_prefix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_state_key"><code class="docutils literal notranslate"><span class="pre">JinaLoader.check_state_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_token"><code class="docutils literal notranslate"><span class="pre">JinaLoader.check_token()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.check_value"><code class="docutils literal notranslate"><span class="pre">JinaLoader.check_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_document"><code class="docutils literal notranslate"><span class="pre">JinaLoader.compose_document()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_mapping_node"><code class="docutils literal notranslate"><span class="pre">JinaLoader.compose_mapping_node()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_node"><code class="docutils literal notranslate"><span class="pre">JinaLoader.compose_node()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_scalar_node"><code class="docutils literal notranslate"><span class="pre">JinaLoader.compose_scalar_node()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.compose_sequence_node"><code class="docutils literal notranslate"><span class="pre">JinaLoader.compose_sequence_node()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_document"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_document()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_mapping"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_mapping()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_object"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_object()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_pairs"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_pairs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_python_bytes"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_python_bytes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_python_complex"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_python_complex()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_python_long"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_python_long()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_python_module"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_python_module()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_python_name"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_python_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_python_object"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_python_object()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_python_object_apply"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_python_object_apply()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_python_object_new"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_python_object_new()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_python_str"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_python_str()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_python_tuple"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_python_tuple()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_python_unicode"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_python_unicode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_scalar"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_scalar()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_sequence"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_sequence()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_undefined"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_undefined()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_yaml_binary"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_yaml_binary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_yaml_bool"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_yaml_bool()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_yaml_float"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_yaml_float()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_yaml_int"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_yaml_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_yaml_map"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_yaml_map()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_yaml_null"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_yaml_null()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_yaml_object"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_yaml_object()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_yaml_omap"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_yaml_omap()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_yaml_pairs"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_yaml_pairs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_yaml_seq"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_yaml_seq()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_yaml_set"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_yaml_set()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_yaml_str"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_yaml_str()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.construct_yaml_timestamp"><code class="docutils literal notranslate"><span class="pre">JinaLoader.construct_yaml_timestamp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.descend_resolver"><code class="docutils literal notranslate"><span class="pre">JinaLoader.descend_resolver()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.determine_encoding"><code class="docutils literal notranslate"><span class="pre">JinaLoader.determine_encoding()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.dispose"><code class="docutils literal notranslate"><span class="pre">JinaLoader.dispose()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_alias"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_alias()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_anchor"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_anchor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_block_entry"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_block_entry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_block_scalar"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_block_scalar()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_directive"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_directive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_document_end"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_document_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_document_indicator"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_document_indicator()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_document_start"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_document_start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_double"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_double()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_flow_collection_end"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_flow_collection_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_flow_collection_start"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_flow_collection_start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_flow_entry"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_flow_entry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_flow_mapping_end"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_flow_mapping_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_flow_mapping_start"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_flow_mapping_start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_flow_scalar"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_flow_scalar()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_flow_sequence_end"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_flow_sequence_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_flow_sequence_start"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_flow_sequence_start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_folded"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_folded()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_key"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_literal"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_literal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_more_tokens"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_more_tokens()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_plain"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_plain()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_single"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_single()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_stream_end"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_stream_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_stream_start"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_stream_start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_tag"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_tag()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.fetch_value"><code class="docutils literal notranslate"><span class="pre">JinaLoader.fetch_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.find_python_module"><code class="docutils literal notranslate"><span class="pre">JinaLoader.find_python_module()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.find_python_name"><code class="docutils literal notranslate"><span class="pre">JinaLoader.find_python_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.flatten_mapping"><code class="docutils literal notranslate"><span class="pre">JinaLoader.flatten_mapping()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.forward"><code class="docutils literal notranslate"><span class="pre">JinaLoader.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.get_data"><code class="docutils literal notranslate"><span class="pre">JinaLoader.get_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.get_event"><code class="docutils literal notranslate"><span class="pre">JinaLoader.get_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.get_hashable_key"><code class="docutils literal notranslate"><span class="pre">JinaLoader.get_hashable_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.get_mark"><code class="docutils literal notranslate"><span class="pre">JinaLoader.get_mark()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.get_node"><code class="docutils literal notranslate"><span class="pre">JinaLoader.get_node()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.get_single_data"><code class="docutils literal notranslate"><span class="pre">JinaLoader.get_single_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.get_single_node"><code class="docutils literal notranslate"><span class="pre">JinaLoader.get_single_node()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.get_state_keys_blacklist"><code class="docutils literal notranslate"><span class="pre">JinaLoader.get_state_keys_blacklist()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.get_state_keys_blacklist_regexp"><code class="docutils literal notranslate"><span class="pre">JinaLoader.get_state_keys_blacklist_regexp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.get_token"><code class="docutils literal notranslate"><span class="pre">JinaLoader.get_token()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.inf_value"><code class="docutils literal notranslate"><span class="pre">JinaLoader.inf_value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.make_python_instance"><code class="docutils literal notranslate"><span class="pre">JinaLoader.make_python_instance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.nan_value"><code class="docutils literal notranslate"><span class="pre">JinaLoader.nan_value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.need_more_tokens"><code class="docutils literal notranslate"><span class="pre">JinaLoader.need_more_tokens()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.next_possible_simple_key"><code class="docutils literal notranslate"><span class="pre">JinaLoader.next_possible_simple_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_block_mapping_first_key"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_block_mapping_first_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_block_mapping_key"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_block_mapping_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_block_mapping_value"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_block_mapping_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_block_node"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_block_node()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_block_node_or_indentless_sequence"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_block_node_or_indentless_sequence()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_block_sequence_entry"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_block_sequence_entry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_block_sequence_first_entry"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_block_sequence_first_entry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_document_content"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_document_content()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_document_end"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_document_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_document_start"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_document_start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_flow_mapping_empty_value"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_flow_mapping_empty_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_flow_mapping_first_key"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_flow_mapping_first_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_flow_mapping_key"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_flow_mapping_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_flow_mapping_value"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_flow_mapping_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_flow_node"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_flow_node()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_flow_sequence_entry"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_flow_sequence_entry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_flow_sequence_entry_mapping_end"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_flow_sequence_entry_mapping_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_flow_sequence_entry_mapping_key"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_flow_sequence_entry_mapping_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_flow_sequence_entry_mapping_value"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_flow_sequence_entry_mapping_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_flow_sequence_first_entry"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_flow_sequence_first_entry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_implicit_document_start"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_implicit_document_start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_indentless_sequence_entry"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_indentless_sequence_entry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_node"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_node()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.parse_stream_start"><code class="docutils literal notranslate"><span class="pre">JinaLoader.parse_stream_start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.peek"><code class="docutils literal notranslate"><span class="pre">JinaLoader.peek()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.peek_event"><code class="docutils literal notranslate"><span class="pre">JinaLoader.peek_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.peek_token"><code class="docutils literal notranslate"><span class="pre">JinaLoader.peek_token()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.prefix"><code class="docutils literal notranslate"><span class="pre">JinaLoader.prefix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.process_directives"><code class="docutils literal notranslate"><span class="pre">JinaLoader.process_directives()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.process_empty_scalar"><code class="docutils literal notranslate"><span class="pre">JinaLoader.process_empty_scalar()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.remove_possible_simple_key"><code class="docutils literal notranslate"><span class="pre">JinaLoader.remove_possible_simple_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.resolve"><code class="docutils literal notranslate"><span class="pre">JinaLoader.resolve()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.save_possible_simple_key"><code class="docutils literal notranslate"><span class="pre">JinaLoader.save_possible_simple_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_anchor"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_anchor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_block_scalar"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_block_scalar()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_block_scalar_breaks"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_block_scalar_breaks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_block_scalar_ignored_line"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_block_scalar_ignored_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_block_scalar_indentation"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_block_scalar_indentation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_block_scalar_indicators"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_block_scalar_indicators()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_directive"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_directive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_directive_ignored_line"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_directive_ignored_line()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_directive_name"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_directive_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_flow_scalar"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_flow_scalar()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_flow_scalar_breaks"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_flow_scalar_breaks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_flow_scalar_non_spaces"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_flow_scalar_non_spaces()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_flow_scalar_spaces"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_flow_scalar_spaces()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_line_break"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_line_break()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_plain"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_plain()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_plain_spaces"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_plain_spaces()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_tag"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_tag()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_tag_directive_handle"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_tag_directive_handle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_tag_directive_prefix"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_tag_directive_prefix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_tag_directive_value"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_tag_directive_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_tag_handle"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_tag_handle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_tag_uri"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_tag_uri()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_to_next_token"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_to_next_token()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_uri_escapes"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_uri_escapes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_yaml_directive_number"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_yaml_directive_number()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.scan_yaml_directive_value"><code class="docutils literal notranslate"><span class="pre">JinaLoader.scan_yaml_directive_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.set_python_instance_state"><code class="docutils literal notranslate"><span class="pre">JinaLoader.set_python_instance_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.stale_possible_simple_keys"><code class="docutils literal notranslate"><span class="pre">JinaLoader.stale_possible_simple_keys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.timestamp_regexp"><code class="docutils literal notranslate"><span class="pre">JinaLoader.timestamp_regexp</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.unwind_indent"><code class="docutils literal notranslate"><span class="pre">JinaLoader.unwind_indent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.update"><code class="docutils literal notranslate"><span class="pre">JinaLoader.update()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.update_raw"><code class="docutils literal notranslate"><span class="pre">JinaLoader.update_raw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.yaml_constructors"><code class="docutils literal notranslate"><span class="pre">JinaLoader.yaml_constructors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.yaml_implicit_resolvers"><code class="docutils literal notranslate"><span class="pre">JinaLoader.yaml_implicit_resolvers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.yaml_multi_constructors"><code class="docutils literal notranslate"><span class="pre">JinaLoader.yaml_multi_constructors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.JinaLoader.yaml_path_resolvers"><code class="docutils literal notranslate"><span class="pre">JinaLoader.yaml_path_resolvers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.get_jina_loader_with_runtime"><code class="docutils literal notranslate"><span class="pre">get_jina_loader_with_runtime()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.parse_config_source"><code class="docutils literal notranslate"><span class="pre">parse_config_source()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.complete_path"><code class="docutils literal notranslate"><span class="pre">complete_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.jaml.helper/#jina.jaml.helper.load_py_modules"><code class="docutils literal notranslate"><span class="pre">load_py_modules()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -813,7 +1079,7 @@ parser errors
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -848,7 +1114,28 @@ parser errors
 <li><a class="reference internal" href="#">jina.jaml package</a><ul>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.jaml">Module contents</a></li>
+<li><a class="reference internal" href="#module-jina.jaml">Module contents</a><ul>
+<li><a class="reference internal" href="#jina.jaml.JAML"><code class="docutils literal notranslate"><span class="pre">JAML</span></code></a><ul>
+<li><a class="reference internal" href="#jina.jaml.JAML.load"><code class="docutils literal notranslate"><span class="pre">JAML.load()</span></code></a></li>
+<li><a class="reference internal" href="#jina.jaml.JAML.escape"><code class="docutils literal notranslate"><span class="pre">JAML.escape()</span></code></a></li>
+<li><a class="reference internal" href="#jina.jaml.JAML.unescape"><code class="docutils literal notranslate"><span class="pre">JAML.unescape()</span></code></a></li>
+<li><a class="reference internal" href="#jina.jaml.JAML.registered_tags"><code class="docutils literal notranslate"><span class="pre">JAML.registered_tags()</span></code></a></li>
+<li><a class="reference internal" href="#jina.jaml.JAML.registered_classes"><code class="docutils literal notranslate"><span class="pre">JAML.registered_classes()</span></code></a></li>
+<li><a class="reference internal" href="#jina.jaml.JAML.cls_from_tag"><code class="docutils literal notranslate"><span class="pre">JAML.cls_from_tag()</span></code></a></li>
+<li><a class="reference internal" href="#jina.jaml.JAML.load_no_tags"><code class="docutils literal notranslate"><span class="pre">JAML.load_no_tags()</span></code></a></li>
+<li><a class="reference internal" href="#jina.jaml.JAML.expand_dict"><code class="docutils literal notranslate"><span class="pre">JAML.expand_dict()</span></code></a></li>
+<li><a class="reference internal" href="#jina.jaml.JAML.dump"><code class="docutils literal notranslate"><span class="pre">JAML.dump()</span></code></a></li>
+<li><a class="reference internal" href="#jina.jaml.JAML.register"><code class="docutils literal notranslate"><span class="pre">JAML.register()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.jaml.JAMLCompatible"><code class="docutils literal notranslate"><span class="pre">JAMLCompatible</span></code></a><ul>
+<li><a class="reference internal" href="#jina.jaml.JAMLCompatible.save_config"><code class="docutils literal notranslate"><span class="pre">JAMLCompatible.save_config()</span></code></a></li>
+<li><a class="reference internal" href="#jina.jaml.JAMLCompatible.load_config"><code class="docutils literal notranslate"><span class="pre">JAMLCompatible.load_config()</span></code></a></li>
+<li><a class="reference internal" href="#jina.jaml.JAMLCompatible.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">JAMLCompatible.is_valid_jaml()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -880,6 +1167,7 @@ parser errors
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

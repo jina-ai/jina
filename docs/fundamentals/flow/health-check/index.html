@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="Readiness & health check" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Handle exceptions" href="../when-things-go-wrong/" /><link rel="prev" title="Monitor" href="../monitoring-flow/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/health-check.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>Readiness &amp; health check - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -509,7 +509,7 @@ WARNI… JINA@92986 message lost 100% (3/3)
 
 <span class="n">PROTOCOL</span> <span class="o">=</span> <span class="s1">&#39;grpc&#39;</span>  <span class="c1"># it could also be http or websocket</span>
 
-<span class="n">os</span><span class="o">.</span><span class="n">setenv</span><span class="p">[</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span>
     <span class="s1">&#39;JINA_LOG_LEVEL&#39;</span>
 <span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DEBUG&#39;</span>  <span class="c1"># this way we can check what is the PID of the Executor</span>
 
@@ -638,7 +638,7 @@ Nevertheless, it is possible to perform these checks as a user.</p>
 </pre></div>
 </div>
 <p>On another terminal, you can use <a class="reference external" href="https://github.com/fullstorydev/grpcurl">grpcurl</a> to send RPC requests to your services.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker pull fullstorydev/grpcurl:latest
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker pull fullstorydev/grpcurl:latest
 docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12346 grpc.health.v1.Health/Check
 </pre></div>
 </div>
@@ -691,6 +691,38 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
 </div>
 </section>
 </section>
+<section id="use-jina-ping-to-do-health-checks">
+<h2>Use jina ping to do health checks<a class="headerlink" href="#use-jina-ping-to-do-health-checks" title="Permalink to this heading">#</a></h2>
+<p>Once a Flow is running, you can use <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">ping</span></code> CLI  <span class="xref std std-ref">CLI</span> to run readiness check of the complete Flow or of individual Executors or Gateway.</p>
+<p>Let’s start a Flow in the terminal by executing the following python code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="k">with</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;grpc&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12346</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We can check the readiness of the Flow:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina ping flow grpc://localhost:12345
+</pre></div>
+</div>
+<p>Also we can check the readiness of an Executor:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina ping executor localhost:12346
+</pre></div>
+</div>
+<p>or the readiness of the Gateway service:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina ping gateway  grpc://localhost:12345
+</pre></div>
+</div>
+<p>When these commands succeed, you will see something like:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO   JINA@28600 readiness check succeeded 1 times!!! 
+</pre></div>
+</div>
+<div class="highlight-admonition notranslate"><div class="highlight"><pre><span></span>:class: note
+This CLI exits with code 1 when the readiness check is not successful, which makes it a good choice to be used as readinessProbe for Executor and Gateway when
+deployed in Kubernetes.
+</pre></div>
+</div>
+</section>
 </section>
 
                 </article>
@@ -724,7 +756,7 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -771,6 +803,7 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
 <li><a class="reference internal" href="#gateway-health-check-with-http-or-websocket">Gateway health check with HTTP or Websocket</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#use-jina-ping-to-do-health-checks">Use jina ping to do health checks</a></li>
 </ul>
 </li>
 </ul>
@@ -802,6 +835,7 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>

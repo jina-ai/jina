@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/hubble/hubio.html" />
 
-    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.hubble.hubio - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -774,7 +774,9 @@
         <span class="n">new_task_id</span> <span class="o">=</span> <span class="n">push_task</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">new_task_id</span><span class="p">:</span>
 
-            <span class="n">dump_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">,</span> <span class="n">form_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">),</span> <span class="n">form_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;secret&#39;</span><span class="p">),</span> <span class="n">new_task_id</span><span class="p">)</span>
+            <span class="n">dump_secret</span><span class="p">(</span>
+                <span class="n">work_path</span><span class="p">,</span> <span class="n">form_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">),</span> <span class="n">form_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;secret&#39;</span><span class="p">),</span> <span class="n">new_task_id</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_prettyprint_status_usage</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">work_path</span><span class="p">,</span> <span class="n">new_task_id</span><span class="p">)</span>
             <span class="n">st</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Async Uploaded!&#39;</span><span class="p">)</span>
 
@@ -784,7 +786,9 @@
                 <span class="c1"># `new_secret` is always None</span>
                 <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">new_secret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prettyprint_result</span><span class="p">(</span><span class="n">console</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">new_uuid8</span> <span class="o">!=</span> <span class="n">form_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">):</span>
-                    <span class="n">dump_secret</span><span class="p">(</span><span class="n">work_path</span><span class="p">,</span> <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">form_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;secret&#39;</span><span class="p">),</span> <span class="n">new_task_id</span><span class="p">)</span>
+                    <span class="n">dump_secret</span><span class="p">(</span>
+                        <span class="n">work_path</span><span class="p">,</span> <span class="n">new_uuid8</span><span class="p">,</span> <span class="n">form_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;secret&#39;</span><span class="p">),</span> <span class="n">new_task_id</span>
+                    <span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unknown Error, session_id: </span><span class="si">{</span><span class="n">session_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -1322,10 +1326,10 @@
     <span class="k">def</span> <span class="nf">fetch_meta</span><span class="p">(</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">image_required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">rebuild_image</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">secret</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HubExecutor</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Fetch the executor meta info from Jina Hub.</span>
@@ -1339,7 +1343,7 @@
 <span class="sd">        :return: meta of executor</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">            The `name` and `tag` should be passed via ``args`` and `force` and `secret` as ``kwargs``, otherwise,</span>
+<span class="sd">            The significant parameters like `name` and `tag` should be passed via ``args`` and `force` and `secret` as ``kwargs``, otherwise,</span>
 <span class="sd">            cache does not work.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">ImportExtensions</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -1373,7 +1377,7 @@
         <span class="n">images</span> <span class="o">=</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;package&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;containers&#39;</span><span class="p">,</span> <span class="p">[])</span>
         <span class="n">image_name</span> <span class="o">=</span> <span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">images</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">image_required</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">image_name</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;No image found for executor &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot;, &#39;</span>
                 <span class="sa">f</span><span class="s1">&#39;tag: </span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s1">, commit: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;commit&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">, &#39;</span>
                 <span class="sa">f</span><span class="s1">&#39;session_id: </span><span class="si">{</span><span class="n">req_header</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;jinameta-session-id&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
@@ -1538,8 +1542,8 @@
                 <span class="n">executor</span><span class="p">,</span> <span class="n">from_cache</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">fetch_meta</span><span class="p">(</span>
                     <span class="n">name</span><span class="p">,</span>
                     <span class="n">tag</span><span class="p">,</span>
+                    <span class="n">image_required</span><span class="p">,</span>
                     <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">,</span>
-                    <span class="n">image_required</span><span class="o">=</span><span class="n">image_required</span><span class="p">,</span>
                     <span class="n">force</span><span class="o">=</span><span class="n">need_pull</span><span class="p">,</span>
                 <span class="p">)</span>
 
@@ -1611,8 +1615,8 @@
                                 <span class="n">executor</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">HubIO</span><span class="o">.</span><span class="n">fetch_meta</span><span class="p">(</span>
                                     <span class="n">name</span><span class="p">,</span>
                                     <span class="n">tag</span><span class="p">,</span>
+                                    <span class="n">image_required</span><span class="p">,</span>
                                     <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">,</span>
-                                    <span class="n">image_required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                     <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                 <span class="p">)</span>
 
@@ -1663,7 +1667,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -1709,6 +1713,7 @@
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
     <script src="../../../../_static/scripts/furo.js"></script>
     <script src="../../../../_static/clipboard.min.js"></script>
     <script src="../../../../_static/copybutton.js"></script>

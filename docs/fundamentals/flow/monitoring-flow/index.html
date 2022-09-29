@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="Monitor" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" /><link rel="next" title="Readiness &amp; health check" href="../health-check/" /><link rel="prev" title="Topology" href="../topologies/" />
         <link rel="canonical" href="https://docs.jina.ai/fundamentals/flow/monitoring-flow.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>Monitor - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -555,6 +555,22 @@ your Prometheus configuration each time you restart your application.</p>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#counter">Counter</a></p></td>
 <td><p>Counts the number of failed requests returned by the gateway</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_sent_request_bytes</span></code></p></td>
+<td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
+<td><p>Measures the size in bytes of the request sent by the Gateway to the Executor or the Head</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_received_response_bytes</span></code></p></td>
+<td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
+<td><p>Measures the size in bytes of the request returned by the Executor</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_received_request_bytes</span></code></p></td>
+<td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
+<td><p>Measures the size of the request in bytes received at the Gateway level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_sent_response_bytes</span></code></p></td>
+<td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
+<td><p>Measures the size in bytes of the response returned from the Gateway to the Client</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -576,11 +592,27 @@ your Prometheus configuration each time you restart your application.</p>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_receiving_request_seconds</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
-<td><p>Measure the time elapsed between receiving a request from the gateway and sending back the response.</p></td>
+<td><p>Measures the time elapsed between receiving a request from the gateway and sending back the response.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_sending_request_seconds</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
-<td><p>Measure the time elapsed between sending a downstream request to an Executor and receiving the response back.</p></td>
+<td><p>Measures the time elapsed between sending a downstream request to an Executor and receiving the response back.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_sending_request_bytes</span></code></p></td>
+<td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
+<td><p>Measures the size of the downstream requests send to an Executor in bytes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_failed_requests_total</span></code></p></td>
+<td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#counter">Counter</a></p></td>
+<td><p>Counts the number of failed requests returned by the gateway</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_sent_request_bytes</span></code></p></td>
+<td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
+<td><p>Measures the size in bytes of the request sent by the Head to the Executor</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_received_response_bytes</span></code></p></td>
+<td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
+<td><p>Measures the size in bytes of the response returned by the Executor</p></td>
 </tr>
 </tbody>
 </table>
@@ -599,11 +631,11 @@ your Prometheus configuration each time you restart your application.</p>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_receiving_request_seconds</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
-<td><p>Measure the time elapsed between receiving a request from the gateway (or the head) and sending back the response.</p></td>
+<td><p>Measures the time elapsed between receiving a request from the gateway (or the head) and sending back the response.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_process_request_seconds</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
-<td><p>Measure the time spend calling the requested method</p></td>
+<td><p>Measures the time spend calling the requested method</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_document_processed_total</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#counter">Counter</a></p></td>
@@ -617,16 +649,20 @@ your Prometheus configuration each time you restart your application.</p>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#counter">Counter</a></p></td>
 <td><p>Total count of failed requests returned by the Executor across all endpoints</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">request_size_bytes</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_received_request_bytes</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
-<td><p>Measures the size of the requests in Bytes</p></td>
+<td><p>Measures the size in bytes of the request received at the Executor level</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_sent_response_bytes</span></code></p></td>
+<td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
+<td><p>Measures the size in bytes of the response returned from the Executor to the Gateway</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p>Beyond monitoring every endpoint of an Executor you can define <a class="reference internal" href="../../executor/monitoring-executor/#monitoring-executor"><span class="std std-ref">custom metrics</span></a>for you
+<p>Beyond monitoring every endpoint of an Executor you can define <a class="reference internal" href="../../executor/monitoring-executor/#monitoring-executor"><span class="std std-ref">custom metrics</span></a> for you
 Executor.</p>
 </div>
 <div class="admonition hint">
@@ -676,7 +712,7 @@ Executor.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -751,6 +787,7 @@ Executor.</p>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>

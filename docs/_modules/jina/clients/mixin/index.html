@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex/" /><link rel="search" title="Search" href="../../../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/clients/mixin.html" />
 
-    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.clients.mixin - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -398,11 +398,11 @@
     <span class="sd">&quot;&quot;&quot;The GraphQL Mutation Mixin for Client and Flow&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="MutateMixin.mutate"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.MutateMixin.mutate">[docs]</a>    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">mutation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">variables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">mutation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">variables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Perform a GraphQL mutation</span>
 
@@ -433,11 +433,11 @@
     <span class="sd">&quot;&quot;&quot;The async GraphQL Mutation Mixin for Client and Flow&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AsyncMutateMixin.mutate"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.AsyncMutateMixin.mutate">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">mutation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">variables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">mutation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">variables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">headers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Perform a GraphQL mutation, asynchronously</span>
 
@@ -481,20 +481,19 @@
 
 
 <span class="k">def</span> <span class="nf">_render_response_table</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">ed</span><span class="p">,</span> <span class="n">show_table</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-
     <span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="nb">print</span>
 
     <span class="n">elapsed</span> <span class="o">=</span> <span class="p">(</span><span class="n">ed</span> <span class="o">-</span> <span class="n">st</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>
     <span class="n">route</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">routes</span>
     <span class="n">gateway_time</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">route</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span> <span class="o">-</span> <span class="n">route</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span>
+            <span class="n">route</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span> <span class="o">-</span> <span class="n">route</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="n">exec_time</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">route</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
             <span class="n">exec_time</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">executor</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">r</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span> <span class="o">-</span> <span class="n">r</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span>
+                    <span class="n">r</span><span class="o">.</span><span class="n">end_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span> <span class="o">-</span> <span class="n">r</span><span class="o">.</span><span class="n">start_time</span><span class="o">.</span><span class="n">ToMilliseconds</span><span class="p">()</span>
             <span class="p">)</span>
     <span class="n">network_time</span> <span class="o">=</span> <span class="n">elapsed</span> <span class="o">-</span> <span class="n">gateway_time</span>
     <span class="n">server_network</span> <span class="o">=</span> <span class="n">gateway_time</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">exec_time</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
@@ -569,19 +568,23 @@
     <span class="sd">&quot;&quot;&quot;The Post Mixin class for Client and Flow&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PostMixin.post"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.PostMixin.post">[docs]</a>    <span class="k">def</span> <span class="nf">post</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">on</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;InputType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">on_done</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">on_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">on_always</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">continue_on_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">return_responses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">on</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;InputType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">on_done</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">on_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">on_always</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">continue_on_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">return_responses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">initial_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+            <span class="n">backoff_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;Response&#39;</span><span class="p">]]]:</span>
         <span class="sd">&quot;&quot;&quot;Post a general data request to the Flow.</span>
 
@@ -594,9 +597,12 @@
 <span class="sd">        :param target_executor: a regex string. Only matching Executors will process the request.</span>
 <span class="sd">        :param request_size: the number of Documents per request. &lt;=0 means all inputs in one request.</span>
 <span class="sd">        :param show_progress: if set, client will show a progress bar on receiving every request.</span>
-<span class="sd">        :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.7</span>
+<span class="sd">        :param continue_on_error: if set, a Request that causes an error will be logged only without blocking the further requests.</span>
 <span class="sd">        :param return_responses: if set to True, the result will come as Response and not as a `DocumentArray`</span>
-
+<span class="sd">        :param max_attempts: Number of sending attempts, including the original request.</span>
+<span class="sd">        :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)</span>
+<span class="sd">        :param max_backoff: The maximum accepted backoff after the exponential incremental delay</span>
+<span class="sd">        :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))</span>
 <span class="sd">        :param kwargs: additional parameters</span>
 <span class="sd">        :return: None or DocumentArray containing all response Documents</span>
 
@@ -635,6 +641,10 @@
             <span class="n">target_executor</span><span class="o">=</span><span class="n">target_executor</span><span class="p">,</span>
             <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
             <span class="n">request_size</span><span class="o">=</span><span class="n">request_size</span><span class="p">,</span>
+            <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span>
+            <span class="n">initial_backoff</span><span class="o">=</span><span class="n">initial_backoff</span><span class="p">,</span>
+            <span class="n">max_backoff</span><span class="o">=</span><span class="n">max_backoff</span><span class="p">,</span>
+            <span class="n">backoff_multiplier</span><span class="o">=</span><span class="n">backoff_multiplier</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -649,19 +659,23 @@
     <span class="sd">&quot;&quot;&quot;The Async Post Mixin class for AsyncClient and AsyncFlow&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AsyncPostMixin.post"><a class="viewcode-back" href="../../../../api/jina.clients.mixin/#jina.clients.mixin.AsyncPostMixin.post">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">post</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">on</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;InputType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">on_done</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">on_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">on_always</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
-        <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">continue_on_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">return_responses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">on</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;InputType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">on_done</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">on_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">on_always</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">target_executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">request_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">continue_on_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">return_responses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">initial_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+            <span class="n">backoff_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="s1">&#39;DocumentArray&#39;</span><span class="p">,</span> <span class="s1">&#39;Response&#39;</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;Async Post a general data request to the Flow.</span>
 
@@ -674,8 +688,12 @@
 <span class="sd">        :param target_executor: a regex string. Only matching Executors will process the request.</span>
 <span class="sd">        :param request_size: the number of Documents per request. &lt;=0 means all inputs in one request.</span>
 <span class="sd">        :param show_progress: if set, client will show a progress bar on receiving every request.</span>
-<span class="sd">        :param continue_on_error: if set, a Request that causes callback error will be logged only without blocking the further requests.</span>
+<span class="sd">        :param continue_on_error: if set, a Request that causes an error will be logged only without blocking the further requests.</span>
 <span class="sd">        :param return_responses: if set to True, the result will come as Response and not as a `DocumentArray`</span>
+<span class="sd">        :param max_attempts: Number of sending attempts, including the original request.</span>
+<span class="sd">        :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)</span>
+<span class="sd">        :param max_backoff: The maximum accepted backoff after the exponential incremental delay</span>
+<span class="sd">        :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))</span>
 <span class="sd">        :param kwargs: additional parameters, can be used to pass metadata or authentication information in the server call</span>
 <span class="sd">        :yield: Response object</span>
 
@@ -689,15 +707,19 @@
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">_include_results_field_in_param</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
 
         <span class="k">async</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">_get_results</span><span class="p">(</span>
-            <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
-            <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
-            <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
-            <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
-            <span class="n">exec_endpoint</span><span class="o">=</span><span class="n">on</span><span class="p">,</span>
-            <span class="n">target_executor</span><span class="o">=</span><span class="n">target_executor</span><span class="p">,</span>
-            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
-            <span class="n">request_size</span><span class="o">=</span><span class="n">request_size</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+                <span class="n">on_done</span><span class="o">=</span><span class="n">on_done</span><span class="p">,</span>
+                <span class="n">on_error</span><span class="o">=</span><span class="n">on_error</span><span class="p">,</span>
+                <span class="n">on_always</span><span class="o">=</span><span class="n">on_always</span><span class="p">,</span>
+                <span class="n">exec_endpoint</span><span class="o">=</span><span class="n">on</span><span class="p">,</span>
+                <span class="n">target_executor</span><span class="o">=</span><span class="n">target_executor</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                <span class="n">request_size</span><span class="o">=</span><span class="n">request_size</span><span class="p">,</span>
+                <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span>
+                <span class="n">initial_backoff</span><span class="o">=</span><span class="n">initial_backoff</span><span class="p">,</span>
+                <span class="n">max_backoff</span><span class="o">=</span><span class="n">max_backoff</span><span class="p">,</span>
+                <span class="n">backoff_multiplier</span><span class="o">=</span><span class="n">backoff_multiplier</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">return_responses</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">docs</span>
@@ -723,7 +745,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -769,6 +791,7 @@
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
     <script src="../../../../_static/scripts/furo.js"></script>
     <script src="../../../../_static/clipboard.min.js"></script>
     <script src="../../../../_static/copybutton.js"></script>

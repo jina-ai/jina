@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.enums module" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.enums.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.enums module - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -197,7 +197,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -382,7 +382,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon no-toc"
+                    <label class="toc-overlay-icon toc-content-icon"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -787,7 +787,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -807,8 +807,100 @@
                 
             </footer>
         </div>
-        <aside class="toc-drawer no-toc">
+        <aside class="toc-drawer">
             
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">jina.enums module</a><ul>
+<li><a class="reference internal" href="#jina.enums.EnumType"><code class="docutils literal notranslate"><span class="pre">EnumType</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.EnumType.register_class"><code class="docutils literal notranslate"><span class="pre">EnumType.register_class()</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.EnumType.mro"><code class="docutils literal notranslate"><span class="pre">EnumType.mro()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.BetterEnum"><code class="docutils literal notranslate"><span class="pre">BetterEnum</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.BetterEnum.from_string"><code class="docutils literal notranslate"><span class="pre">BetterEnum.from_string()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.PollingType"><code class="docutils literal notranslate"><span class="pre">PollingType</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.PollingType.ANY"><code class="docutils literal notranslate"><span class="pre">PollingType.ANY</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.PollingType.ALL"><code class="docutils literal notranslate"><span class="pre">PollingType.ALL</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.PollingType.ALL_ASYNC"><code class="docutils literal notranslate"><span class="pre">PollingType.ALL_ASYNC</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.PollingType.is_push"><code class="docutils literal notranslate"><span class="pre">PollingType.is_push</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.PollingType.is_block"><code class="docutils literal notranslate"><span class="pre">PollingType.is_block</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.LogVerbosity"><code class="docutils literal notranslate"><span class="pre">LogVerbosity</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.LogVerbosity.DEBUG"><code class="docutils literal notranslate"><span class="pre">LogVerbosity.DEBUG</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.LogVerbosity.INFO"><code class="docutils literal notranslate"><span class="pre">LogVerbosity.INFO</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.LogVerbosity.SUCCESS"><code class="docutils literal notranslate"><span class="pre">LogVerbosity.SUCCESS</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.LogVerbosity.WARNING"><code class="docutils literal notranslate"><span class="pre">LogVerbosity.WARNING</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.LogVerbosity.ERROR"><code class="docutils literal notranslate"><span class="pre">LogVerbosity.ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.LogVerbosity.CRITICAL"><code class="docutils literal notranslate"><span class="pre">LogVerbosity.CRITICAL</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.FlowBuildLevel"><code class="docutils literal notranslate"><span class="pre">FlowBuildLevel</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.FlowBuildLevel.EMPTY"><code class="docutils literal notranslate"><span class="pre">FlowBuildLevel.EMPTY</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.FlowBuildLevel.GRAPH"><code class="docutils literal notranslate"><span class="pre">FlowBuildLevel.GRAPH</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.FlowBuildLevel.RUNNING"><code class="docutils literal notranslate"><span class="pre">FlowBuildLevel.RUNNING</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.GatewayProtocolType"><code class="docutils literal notranslate"><span class="pre">GatewayProtocolType</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.GatewayProtocolType.GRPC"><code class="docutils literal notranslate"><span class="pre">GatewayProtocolType.GRPC</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.GatewayProtocolType.HTTP"><code class="docutils literal notranslate"><span class="pre">GatewayProtocolType.HTTP</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.GatewayProtocolType.WEBSOCKET"><code class="docutils literal notranslate"><span class="pre">GatewayProtocolType.WEBSOCKET</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.PodRoleType"><code class="docutils literal notranslate"><span class="pre">PodRoleType</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.PodRoleType.HEAD"><code class="docutils literal notranslate"><span class="pre">PodRoleType.HEAD</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.PodRoleType.WORKER"><code class="docutils literal notranslate"><span class="pre">PodRoleType.WORKER</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.PodRoleType.GATEWAY"><code class="docutils literal notranslate"><span class="pre">PodRoleType.GATEWAY</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.DeploymentRoleType"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.DeploymentRoleType.DEPLOYMENT"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType.DEPLOYMENT</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DeploymentRoleType.JOIN"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType.JOIN</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DeploymentRoleType.INSPECT"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType.INSPECT</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DeploymentRoleType.GATEWAY"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType.GATEWAY</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DeploymentRoleType.INSPECT_AUX_PASS"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType.INSPECT_AUX_PASS</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DeploymentRoleType.JOIN_INSPECT"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType.JOIN_INSPECT</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DeploymentRoleType.is_inspect"><code class="docutils literal notranslate"><span class="pre">DeploymentRoleType.is_inspect</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.FlowInspectType"><code class="docutils literal notranslate"><span class="pre">FlowInspectType</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.FlowInspectType.HANG"><code class="docutils literal notranslate"><span class="pre">FlowInspectType.HANG</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.FlowInspectType.REMOVE"><code class="docutils literal notranslate"><span class="pre">FlowInspectType.REMOVE</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.FlowInspectType.COLLECT"><code class="docutils literal notranslate"><span class="pre">FlowInspectType.COLLECT</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.FlowInspectType.is_keep"><code class="docutils literal notranslate"><span class="pre">FlowInspectType.is_keep</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.DataInputType"><code class="docutils literal notranslate"><span class="pre">DataInputType</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.DataInputType.AUTO"><code class="docutils literal notranslate"><span class="pre">DataInputType.AUTO</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DataInputType.DOCUMENT"><code class="docutils literal notranslate"><span class="pre">DataInputType.DOCUMENT</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DataInputType.CONTENT"><code class="docutils literal notranslate"><span class="pre">DataInputType.CONTENT</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.DataInputType.DICT"><code class="docutils literal notranslate"><span class="pre">DataInputType.DICT</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.WebsocketSubProtocols"><code class="docutils literal notranslate"><span class="pre">WebsocketSubProtocols</span></code></a><ul>
+<li><a class="reference internal" href="#jina.enums.WebsocketSubProtocols.JSON"><code class="docutils literal notranslate"><span class="pre">WebsocketSubProtocols.JSON</span></code></a></li>
+<li><a class="reference internal" href="#jina.enums.WebsocketSubProtocols.BYTES"><code class="docutils literal notranslate"><span class="pre">WebsocketSubProtocols.BYTES</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.enums.replace_enum_to_str"><code class="docutils literal notranslate"><span class="pre">replace_enum_to_str()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
             
             
         </aside>
@@ -833,6 +925,7 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

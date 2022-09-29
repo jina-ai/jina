@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.hubble.helper module" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.hubble.helper.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.hubble.helper module - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -197,7 +197,7 @@
                     </svg>
                 </button>
             </div>
-            <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+            <label class="toc-overlay-icon toc-header-icon" for="__toc">
                 <div class="visually-hidden">Toggle table of contents sidebar</div>
                 <i class="icon">
                     <svg>
@@ -382,7 +382,7 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="toc-overlay-icon toc-content-icon no-toc"
+                    <label class="toc-overlay-icon toc-content-icon"
                            for="__toc">
                         <div class="visually-hidden">Toggle table of contents sidebar</div>
                         <i class="icon">
@@ -896,7 +896,7 @@ to uppercase letter and number and the <cite>_</cite> (underscore).
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -916,8 +916,86 @@ to uppercase letter and number and the <cite>_</cite> (underscore).
                 
             </footer>
         </div>
-        <aside class="toc-drawer no-toc">
+        <aside class="toc-drawer">
             
+            
+            <div class="toc-sticky toc-scroll">
+                <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+                </div>
+                <div class="toc-tree-container">
+                    <div class="toc-tree">
+                        <ul>
+<li><a class="reference internal" href="#">jina.hubble.helper module</a><ul>
+<li><a class="reference internal" href="#jina.hubble.helper.get_hub_packages_dir"><code class="docutils literal notranslate"><span class="pre">get_hub_packages_dir()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.get_cache_db"><code class="docutils literal notranslate"><span class="pre">get_cache_db()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.get_download_cache_dir"><code class="docutils literal notranslate"><span class="pre">get_download_cache_dir()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.get_request_header"><code class="docutils literal notranslate"><span class="pre">get_request_header()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.parse_hub_uri"><code class="docutils literal notranslate"><span class="pre">parse_hub_uri()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.replace_secret_of_hub_uri"><code class="docutils literal notranslate"><span class="pre">replace_secret_of_hub_uri()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.is_valid_huburi"><code class="docutils literal notranslate"><span class="pre">is_valid_huburi()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.md5file"><code class="docutils literal notranslate"><span class="pre">md5file()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.unpack_package"><code class="docutils literal notranslate"><span class="pre">unpack_package()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.archive_package"><code class="docutils literal notranslate"><span class="pre">archive_package()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.download_with_resume"><code class="docutils literal notranslate"><span class="pre">download_with_resume()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.upload_file"><code class="docutils literal notranslate"><span class="pre">upload_file()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.status_task"><code class="docutils literal notranslate"><span class="pre">status_task()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.disk_cache_offline"><code class="docutils literal notranslate"><span class="pre">disk_cache_offline()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.is_requirements_installed"><code class="docutils literal notranslate"><span class="pre">is_requirements_installed()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.get_requirements_env_variables"><code class="docutils literal notranslate"><span class="pre">get_requirements_env_variables()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.check_requirements_env_variable"><code class="docutils literal notranslate"><span class="pre">check_requirements_env_variable()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.replace_requirements_env_variables"><code class="docutils literal notranslate"><span class="pre">replace_requirements_env_variables()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.install_requirements"><code class="docutils literal notranslate"><span class="pre">install_requirements()</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus</span></code></a><ul>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.UNKNOWN_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.UNKNOWN_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.OK"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.OK</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.PARAM_VALIDATION_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.PARAM_VALIDATION_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.SQL_CREATION_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SQL_CREATION_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.DATA_STREAM_BROKEN_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.DATA_STREAM_BROKEN_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.UNEXPECTED_MIME_TYPE_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.UNEXPECTED_MIME_TYPE_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.SSO_LOGIN_REQUIRED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SSO_LOGIN_REQUIRED</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.AUTHENTICATION_FAILED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.AUTHENTICATION_FAILED</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.AUTHENTICATION_REQUIRED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.AUTHENTICATION_REQUIRED</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.OPERATION_NOT_ALLOWED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.OPERATION_NOT_ALLOWED</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.INTERNAL_RESOURCE_NOT_FOUND"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.INTERNAL_RESOURCE_NOT_FOUND</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.RPC_METHOD_NOT_FOUND"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.RPC_METHOD_NOT_FOUND</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.REQUESTED_ENTITY_NOT_FOUND"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.REQUESTED_ENTITY_NOT_FOUND</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.INTERNAL_RESOURCE_METHOD_NOT_ALLOWED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.INTERNAL_RESOURCE_METHOD_NOT_ALLOWED</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.INCOMPATIBLE_METHOD_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.INCOMPATIBLE_METHOD_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.INTERNAL_RESOURCE_ID_CONFLICT"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.INTERNAL_RESOURCE_ID_CONFLICT</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.RESOURCE_POLICY_DENY"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.RESOURCE_POLICY_DENY</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.TOO_LARGE_FILE"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.TOO_LARGE_FILE</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.INTERNAL_DATA_CORRUPTION"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.INTERNAL_DATA_CORRUPTION</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.IDENTIFIER_NAMESPACE_OCCUPIED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.IDENTIFIER_NAMESPACE_OCCUPIED</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.SUBMITTED_DATA_MALFORMED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SUBMITTED_DATA_MALFORMED</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.EXTERNAL_SERVICE_FAILURE"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.EXTERNAL_SERVICE_FAILURE</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.DOWNSTREAM_SERVICE_FAILURE"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.DOWNSTREAM_SERVICE_FAILURE</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.SERVER_INTERNAL_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SERVER_INTERNAL_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.DOWNSTREAM_SERVICE_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.DOWNSTREAM_SERVICE_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.SERVER_SUBPROCESS_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SERVER_SUBPROCESS_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.SANDBOX_BUILD_NOT_FOUND"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.SANDBOX_BUILD_NOT_FOUND</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.NOT_IMPLEMENTED_ERROR"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.NOT_IMPLEMENTED_ERROR</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.HubbleReturnStatus.RESPONSE_STREAM_CLOSED"><code class="docutils literal notranslate"><span class="pre">HubbleReturnStatus.RESPONSE_STREAM_CLOSED</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.hubble.helper.NormalizerErrorCode"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode</span></code></a><ul>
+<li><a class="reference internal" href="#jina.hubble.helper.NormalizerErrorCode.ExecutorNotFound"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode.ExecutorNotFound</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.NormalizerErrorCode.ExecutorExists"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode.ExecutorExists</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.NormalizerErrorCode.IllegalExecutor"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode.IllegalExecutor</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.NormalizerErrorCode.BrokenDependency"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode.BrokenDependency</span></code></a></li>
+<li><a class="reference internal" href="#jina.hubble.helper.NormalizerErrorCode.Others"><code class="docutils literal notranslate"><span class="pre">NormalizerErrorCode.Others</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.hubble.helper.get_hubble_error_message"><code class="docutils literal notranslate"><span class="pre">get_hubble_error_message()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
             
             
         </aside>
@@ -942,6 +1020,7 @@ to uppercase letter and number and the <cite>_</cite> (underscore).
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

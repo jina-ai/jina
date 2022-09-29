@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.orchestrate.flow package" />
   
@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.9.3 Documentation" />
   
-<meta property="og:description" content="Submodules: jina.orchestrate.flow.asyncio module, jina.orchestrate.flow.base module, jina.orchestrate.flow.builder module. Module contents:" />
+<meta property="og:description" content="Submodules: jina.orchestrate.flow.asyncio module- AsyncFlow- AsyncFlow.add(), AsyncFlow.address_private, AsyncFlow.address_public, AsyncFlow.block(), AsyncFlow.build(), AsyncFlow.callback(), AsyncFlow.client, AsyncFlow.client_args, AsyncFlow.close(), AsyncFlow.delete(), AsyncFlow.dry_run(), Async..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.orchestrate.flow.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.orchestrate.flow package - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -399,9 +399,110 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/">jina.orchestrate.flow.asyncio module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.flow.base/">jina.orchestrate.flow.base module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.flow.builder/">jina.orchestrate.flow.builder module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/">jina.orchestrate.flow.asyncio module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow"><code class="docutils literal notranslate"><span class="pre">AsyncFlow</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.add"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.add()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.address_private"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.address_private</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.address_public"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.address_public</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.block"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.block()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.build"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.build()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.callback"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.callback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.client"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.client_args"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.client_args</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.close"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.close()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.delete"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.dry_run"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.dry_run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.enter_context"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.enter_context()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.env"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.env</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.expose_endpoint"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.expose_endpoint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.gateway_args"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.gateway_args</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.gather_inspect"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.gather_inspect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.host"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.host</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.index"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.inspect"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.inspect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.is_flow_ready"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.is_flow_ready()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.is_valid_jaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.load_config"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.load_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.monitoring"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.monitoring</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.needs"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.needs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.needs_all"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.needs_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.num_deployments"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.num_deployments</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.num_pods"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.num_pods</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.plot"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.plot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.pop_all"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.pop_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.port"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.port</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.port_monitoring"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.port_monitoring</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.post"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.profiling"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.profiling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.protocol"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.protocol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.push"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.push()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.save_config"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.save_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.search"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.search()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.start"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.to_docker_compose_yaml"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.to_docker_compose_yaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.to_k8s_yaml"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.to_k8s_yaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.to_kubernetes_yaml"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.to_kubernetes_yaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.update"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.update()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.workspace"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.workspace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.asyncio/#jina.orchestrate.flow.asyncio.AsyncFlow.workspace_id"><code class="docutils literal notranslate"><span class="pre">AsyncFlow.workspace_id</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.flow.base/">jina.orchestrate.flow.base module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow"><code class="docutils literal notranslate"><span class="pre">Flow</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.needs"><code class="docutils literal notranslate"><span class="pre">Flow.needs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.needs_all"><code class="docutils literal notranslate"><span class="pre">Flow.needs_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.add"><code class="docutils literal notranslate"><span class="pre">Flow.add()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.inspect"><code class="docutils literal notranslate"><span class="pre">Flow.inspect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.gather_inspect"><code class="docutils literal notranslate"><span class="pre">Flow.gather_inspect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.build"><code class="docutils literal notranslate"><span class="pre">Flow.build()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.start"><code class="docutils literal notranslate"><span class="pre">Flow.start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.num_deployments"><code class="docutils literal notranslate"><span class="pre">Flow.num_deployments</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.num_pods"><code class="docutils literal notranslate"><span class="pre">Flow.num_pods</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.client"><code class="docutils literal notranslate"><span class="pre">Flow.client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.plot"><code class="docutils literal notranslate"><span class="pre">Flow.plot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.port"><code class="docutils literal notranslate"><span class="pre">Flow.port</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.host"><code class="docutils literal notranslate"><span class="pre">Flow.host</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.monitoring"><code class="docutils literal notranslate"><span class="pre">Flow.monitoring</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.port_monitoring"><code class="docutils literal notranslate"><span class="pre">Flow.port_monitoring</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.address_private"><code class="docutils literal notranslate"><span class="pre">Flow.address_private</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.address_public"><code class="docutils literal notranslate"><span class="pre">Flow.address_public</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.block"><code class="docutils literal notranslate"><span class="pre">Flow.block()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.protocol"><code class="docutils literal notranslate"><span class="pre">Flow.protocol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.workspace"><code class="docutils literal notranslate"><span class="pre">Flow.workspace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.callback"><code class="docutils literal notranslate"><span class="pre">Flow.callback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.close"><code class="docutils literal notranslate"><span class="pre">Flow.close()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.delete"><code class="docutils literal notranslate"><span class="pre">Flow.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.dry_run"><code class="docutils literal notranslate"><span class="pre">Flow.dry_run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.enter_context"><code class="docutils literal notranslate"><span class="pre">Flow.enter_context()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.index"><code class="docutils literal notranslate"><span class="pre">Flow.index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.is_flow_ready"><code class="docutils literal notranslate"><span class="pre">Flow.is_flow_ready()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">Flow.is_valid_jaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.load_config"><code class="docutils literal notranslate"><span class="pre">Flow.load_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.pop_all"><code class="docutils literal notranslate"><span class="pre">Flow.pop_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.post"><code class="docutils literal notranslate"><span class="pre">Flow.post()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.profiling"><code class="docutils literal notranslate"><span class="pre">Flow.profiling()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.push"><code class="docutils literal notranslate"><span class="pre">Flow.push()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.save_config"><code class="docutils literal notranslate"><span class="pre">Flow.save_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.search"><code class="docutils literal notranslate"><span class="pre">Flow.search()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.update"><code class="docutils literal notranslate"><span class="pre">Flow.update()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.workspace_id"><code class="docutils literal notranslate"><span class="pre">Flow.workspace_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.env"><code class="docutils literal notranslate"><span class="pre">Flow.env</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.expose_endpoint"><code class="docutils literal notranslate"><span class="pre">Flow.expose_endpoint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.to_kubernetes_yaml"><code class="docutils literal notranslate"><span class="pre">Flow.to_kubernetes_yaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.to_k8s_yaml"><code class="docutils literal notranslate"><span class="pre">Flow.to_k8s_yaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.to_docker_compose_yaml"><code class="docutils literal notranslate"><span class="pre">Flow.to_docker_compose_yaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.client_args"><code class="docutils literal notranslate"><span class="pre">Flow.client_args</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow.gateway_args"><code class="docutils literal notranslate"><span class="pre">Flow.gateway_args</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.orchestrate.flow.builder/">jina.orchestrate.flow.builder module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.orchestrate.flow.builder/#jina.orchestrate.flow.builder.allowed_levels"><code class="docutils literal notranslate"><span class="pre">allowed_levels()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -423,7 +524,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -489,6 +590,7 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>

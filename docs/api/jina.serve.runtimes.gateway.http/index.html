@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
 <meta property="og:title" content="jina.serve.runtimes.gateway.http package" />
   
@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.9.3 Documentation" />
   
-<meta property="og:description" content="Submodules: jina.serve.runtimes.gateway.http.app module, jina.serve.runtimes.gateway.http.gateway module, jina.serve.runtimes.gateway.http.models module. Module contents:" />
+<meta property="og:description" content="Submodules: jina.serve.runtimes.gateway.http.app module- get_fastapi_app()., jina.serve.runtimes.gateway.http.gateway module- HTTPGateway- HTTPGateway.setup_server(), HTTPGateway.teardown(), HTTPGateway.stop_server(), HTTPGateway.run_server(), HTTPGateway.should_exit, HTTPGateway.is_valid_jaml(),..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/api/jina.serve.runtimes.gateway.http.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.1.1, furo 2022.09.15"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
         <title>jina.serve.runtimes.gateway.http package - Jina 3.9.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
@@ -399,9 +399,172 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.app/">jina.serve.runtimes.gateway.http.app module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.gateway/">jina.serve.runtimes.gateway.http.gateway module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/">jina.serve.runtimes.gateway.http.models module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.app/">jina.serve.runtimes.gateway.http.app module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.app/#jina.serve.runtimes.gateway.http.app.get_fastapi_app"><code class="docutils literal notranslate"><span class="pre">get_fastapi_app()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.gateway/">jina.serve.runtimes.gateway.http.gateway module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.gateway/#jina.serve.runtimes.gateway.http.gateway.HTTPGateway"><code class="docutils literal notranslate"><span class="pre">HTTPGateway</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.gateway/#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.setup_server"><code class="docutils literal notranslate"><span class="pre">HTTPGateway.setup_server()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.gateway/#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.teardown"><code class="docutils literal notranslate"><span class="pre">HTTPGateway.teardown()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.gateway/#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.stop_server"><code class="docutils literal notranslate"><span class="pre">HTTPGateway.stop_server()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.gateway/#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.run_server"><code class="docutils literal notranslate"><span class="pre">HTTPGateway.run_server()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.gateway/#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.should_exit"><code class="docutils literal notranslate"><span class="pre">HTTPGateway.should_exit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.gateway/#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.is_valid_jaml"><code class="docutils literal notranslate"><span class="pre">HTTPGateway.is_valid_jaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.gateway/#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.load_config"><code class="docutils literal notranslate"><span class="pre">HTTPGateway.load_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.gateway/#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.save_config"><code class="docutils literal notranslate"><span class="pre">HTTPGateway.save_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.gateway/#jina.serve.runtimes.gateway.http.gateway.HTTPGateway.set_streamer"><code class="docutils literal notranslate"><span class="pre">HTTPGateway.set_streamer()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/">jina.serve.runtimes.gateway.http.models module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig"><code class="docutils literal notranslate"><span class="pre">CustomConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.use_enum_values"><code class="docutils literal notranslate"><span class="pre">CustomConfig.use_enum_values</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.allow_population_by_field_name"><code class="docutils literal notranslate"><span class="pre">CustomConfig.allow_population_by_field_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.alias_generator"><code class="docutils literal notranslate"><span class="pre">CustomConfig.alias_generator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.allow_inf_nan"><code class="docutils literal notranslate"><span class="pre">CustomConfig.allow_inf_nan</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.allow_mutation"><code class="docutils literal notranslate"><span class="pre">CustomConfig.allow_mutation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.anystr_lower"><code class="docutils literal notranslate"><span class="pre">CustomConfig.anystr_lower</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.anystr_strip_whitespace"><code class="docutils literal notranslate"><span class="pre">CustomConfig.anystr_strip_whitespace</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.anystr_upper"><code class="docutils literal notranslate"><span class="pre">CustomConfig.anystr_upper</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.arbitrary_types_allowed"><code class="docutils literal notranslate"><span class="pre">CustomConfig.arbitrary_types_allowed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.copy_on_model_validation"><code class="docutils literal notranslate"><span class="pre">CustomConfig.copy_on_model_validation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.error_msg_templates"><code class="docutils literal notranslate"><span class="pre">CustomConfig.error_msg_templates</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.extra"><code class="docutils literal notranslate"><span class="pre">CustomConfig.extra</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.fields"><code class="docutils literal notranslate"><span class="pre">CustomConfig.fields</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.frozen"><code class="docutils literal notranslate"><span class="pre">CustomConfig.frozen</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.get_field_info"><code class="docutils literal notranslate"><span class="pre">CustomConfig.get_field_info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.getter_dict"><code class="docutils literal notranslate"><span class="pre">CustomConfig.getter_dict</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.json_dumps"><code class="docutils literal notranslate"><span class="pre">CustomConfig.json_dumps()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.json_encoders"><code class="docutils literal notranslate"><span class="pre">CustomConfig.json_encoders</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.json_loads"><code class="docutils literal notranslate"><span class="pre">CustomConfig.json_loads()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.keep_untouched"><code class="docutils literal notranslate"><span class="pre">CustomConfig.keep_untouched</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.max_anystr_length"><code class="docutils literal notranslate"><span class="pre">CustomConfig.max_anystr_length</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.min_anystr_length"><code class="docutils literal notranslate"><span class="pre">CustomConfig.min_anystr_length</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.orm_mode"><code class="docutils literal notranslate"><span class="pre">CustomConfig.orm_mode</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.post_init_call"><code class="docutils literal notranslate"><span class="pre">CustomConfig.post_init_call</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.prepare_field"><code class="docutils literal notranslate"><span class="pre">CustomConfig.prepare_field()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.schema_extra"><code class="docutils literal notranslate"><span class="pre">CustomConfig.schema_extra</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.smart_union"><code class="docutils literal notranslate"><span class="pre">CustomConfig.smart_union</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.title"><code class="docutils literal notranslate"><span class="pre">CustomConfig.title</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.underscore_attrs_are_private"><code class="docutils literal notranslate"><span class="pre">CustomConfig.underscore_attrs_are_private</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.validate_all"><code class="docutils literal notranslate"><span class="pre">CustomConfig.validate_all</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.CustomConfig.validate_assignment"><code class="docutils literal notranslate"><span class="pre">CustomConfig.validate_assignment</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.protobuf_to_pydantic_model"><code class="docutils literal notranslate"><span class="pre">protobuf_to_pydantic_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel.Config"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel.Config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel.construct"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel.construct()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel.copy"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel.copy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel.dict"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel.dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel.from_orm"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel.from_orm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel.json"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel.json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel.parse_file"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel.parse_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel.parse_obj"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel.parse_obj()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel.parse_raw"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel.parse_raw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel.schema"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel.schema()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel.schema_json"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel.schema_json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel.update_forward_refs"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel.update_forward_refs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaHealthModel.validate"><code class="docutils literal notranslate"><span class="pre">JinaHealthModel.validate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.jina"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.jina</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.envs"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.envs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.Config"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.Config</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.Config.alias_generator"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.Config.alias_generator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.Config.allow_population_by_field_name"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.Config.allow_population_by_field_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.construct"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.construct()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.copy"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.copy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.dict"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.from_orm"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.from_orm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.json"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.parse_file"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.parse_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.parse_obj"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.parse_obj()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.parse_raw"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.parse_raw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.schema"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.schema()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.schema_json"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.schema_json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.update_forward_refs"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.update_forward_refs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaInfoModel.validate"><code class="docutils literal notranslate"><span class="pre">JinaInfoModel.validate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.data"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.target_executor"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.target_executor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.parameters"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.parameters</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.Config</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config.alias_generator"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.Config.alias_generator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.Config.allow_population_by_field_name"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.Config.allow_population_by_field_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.construct"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.construct()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.copy"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.copy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.dict"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.from_orm"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.from_orm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.json"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.parse_file"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.parse_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.parse_obj"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.parse_obj()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.parse_raw"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.parse_raw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.schema"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.schema()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.schema_json"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.schema_json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.update_forward_refs"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.update_forward_refs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaRequestModel.validate"><code class="docutils literal notranslate"><span class="pre">JinaRequestModel.validate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.header"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.header</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.parameters"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.parameters</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.routes"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.routes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.data"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.Config</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config.alias_generator"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.Config.alias_generator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.Config.allow_population_by_field_name"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.Config.allow_population_by_field_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.construct"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.construct()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.copy"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.copy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.dict"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.from_orm"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.from_orm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.json"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.parse_file"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.parse_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.parse_obj"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.parse_obj()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.parse_raw"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.parse_raw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.schema"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.schema()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.schema_json"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.schema_json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.update_forward_refs"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.update_forward_refs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaResponseModel.validate"><code class="docutils literal notranslate"><span class="pre">JinaResponseModel.validate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.exec_endpoint"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.exec_endpoint</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.Config"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.Config</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.Config.alias_generator"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.Config.alias_generator()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.Config.allow_population_by_field_name"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.Config.allow_population_by_field_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.construct"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.construct()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.copy"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.copy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.dict"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.from_orm"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.from_orm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.json"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.parse_file"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.parse_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.parse_obj"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.parse_obj()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.parse_raw"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.parse_raw()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.schema"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.schema()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.schema_json"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.schema_json()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.update_forward_refs"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.update_forward_refs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.validate"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.validate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.data"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.target_executor"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.target_executor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jina.serve.runtimes.gateway.http.models/#jina.serve.runtimes.gateway.http.models.JinaEndpointRequestModel.parameters"><code class="docutils literal notranslate"><span class="pre">JinaEndpointRequestModel.parameters</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -450,12 +613,13 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.is_ready">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.is_ready" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grpc'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.is_ready" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if status is ready.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ctrl_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control request needs to be sent</p></li>
+<li><p><strong>protocol</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – protocol of the gateway runtime</p></li>
 <li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
 </ul>
 </dd>
@@ -483,7 +647,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.wait_for_ready_or_shutdown">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wait_for_ready_or_shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ready_or_shutdown_event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.wait_for_ready_or_shutdown" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wait_for_ready_or_shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ready_or_shutdown_event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctrl_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grpc'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.wait_for_ready_or_shutdown" title="Permalink to this definition">#</a></dt>
 <dd><p>Check if the runtime has successfully started</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -491,6 +655,7 @@
 <li><p><strong>timeout</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – The time to wait before readiness or failure is determined</p></li>
 <li><p><strong>ctrl_address</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the address where the control message needs to be sent</p></li>
 <li><p><strong>ready_or_shutdown_event</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code>]) – the multiprocessing event to detect if the process failed or is ready</p></li>
+<li><p><strong>protocol</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – protocol of the gateway runtime</p></li>
 <li><p><strong>kwargs</strong> – extra keyword arguments</p></li>
 </ul>
 </dd>
@@ -518,7 +683,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 23, 2022</div>
+                            Last updated on Sep 29, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -552,7 +717,21 @@
                         <ul>
 <li><a class="reference internal" href="#">jina.serve.runtimes.gateway.http package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-jina.serve.runtimes.gateway.http">Module contents</a></li>
+<li><a class="reference internal" href="#module-jina.serve.runtimes.gateway.http">Module contents</a><ul>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime</span></code></a><ul>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.async_setup"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.async_setup()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.async_teardown"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.async_teardown()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.async_cancel"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.async_cancel()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.async_run_forever"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.async_run_forever()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.activate"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.activate()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.is_ready"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.is_ready()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.run_forever"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.run_forever()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.teardown"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.teardown()</span></code></a></li>
+<li><a class="reference internal" href="#jina.serve.runtimes.gateway.http.HTTPGatewayRuntime.wait_for_ready_or_shutdown"><code class="docutils literal notranslate"><span class="pre">HTTPGatewayRuntime.wait_for_ready_or_shutdown()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -584,6 +763,7 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/scripts/furo.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
