@@ -14,10 +14,6 @@ from jina.serve.instrumentation._aio_client import (
 class InstrumentationMixin:
     '''Instrumentation mixin for OpenTelemetery Tracing and Metrics handling'''
 
-    def __init__(self) -> None:
-        self.tracer = trace.NoOpTracer()
-        self.meter = metrics.NoOpMeter(name='no-op')
-
     def _setup_instrumentation(self) -> None:
         name = self.__class__.__name__
         if hasattr(self, 'name') and self.name:
@@ -38,8 +34,11 @@ class InstrumentationMixin:
                 )
             )
             provider.add_span_processor(processor)
-            trace.set_tracer_provider(provider)
-            self.tracer = trace.get_tracer(name)
+            self.tracer_provider = provider
+            self.tracer = provider.get_tracer(name)
+        else:
+            self.tracer_provider = trace.NoOpTracerProvider()
+            self.tracer = trace.NoOpTracer()
 
         if self.args.opentelemetry_metrics:
             from opentelemetry.sdk.metrics import MeterProvider
@@ -55,8 +54,11 @@ class InstrumentationMixin:
             meter_provider = MeterProvider(
                 metric_readers=[metric_reader], resource=resource
             )
-            metrics.set_meter_provider(meter_provider)
-            self.meter = metrics.get_meter(name)
+            self.metrics_provider = meter_provider
+            self.meter = self.metrics_provider.get_meter(name)
+        else:
+            self.metrics_provider = metrics.NoOpMeterProvider()
+            self.meter = metrics.NoOpMeter()
 
     def aio_tracing_server_interceptor(self):
         '''Create a gRPC aio server interceptor.
