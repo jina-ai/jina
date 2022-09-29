@@ -29,8 +29,8 @@ class InstrumentationMixin:
             provider = TracerProvider(resource=resource)
             processor = BatchSpanProcessor(
                 JaegerExporter(
-                    agent_host_name=self.args.jaeger_host,
-                    agent_port=self.args.jaeger_port,
+                    agent_host_name=self.args.span_exporter_host,
+                    agent_port=self.args.span_exporter_port,
                 )
             )
             provider.add_span_processor(processor)

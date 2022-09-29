@@ -40,17 +40,17 @@ def mixin_client_features_parser(parser):
     )
 
     parser.add_argument(
-        '--jaeger-host',
+        '--span-exporter-host',
         type=str,
-        default='0.0.0.0',
-        help='If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent.',
+        default=None,
+        help='If tracing is enabled, this hostname will be used to configure the trace exporter agent.',
     )
 
     parser.add_argument(
-        '--jaeger-port',
+        '--span-exporter-port',
         type=int,
-        default=6831,
-        help='If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent.',
+        default=None,
+        help='If tracing is enabled, this port will be used to configure the trace exporter agent.',
     )
 
     parser.add_argument(
@@ -59,4 +59,18 @@ def mixin_client_features_parser(parser):
         default=False,
         help='If set, real implementation of the metrics will be available for default monitoring and custom measurements. '
         'Otherwise a no-op implementation will be provided.',
+    )
+
+    parser.add_argument(
+        '--metrics-exporter-host',
+        type=str,
+        default=None,
+        help='If tracing is enabled, this hostname will be used to configure the metrics exporter agent.',
+    )
+
+    parser.add_argument(
+        '--metrics-exporter-port',
+        type=int,
+        default=None,
+        help='If tracing is enabled, this port will be used to configure the metrics exporter agent.',
     )

@@ -20,8 +20,10 @@ def Client(
     *,
     asyncio: Optional[bool] = False,
     host: Optional[str] = '0.0.0.0',
-    jaeger_host: Optional[str] = '0.0.0.0',
-    jaeger_port: Optional[int] = 6831,
+    span_exporter_host: Optional[str] = None,
+    span_exporter_port: Optional[int] = None,
+    metrics_exporter_host: Optional[str] = None,
+    metrics_exporter_port: Optional[int] = None,
     opentelemetry_metrics: Optional[bool] = False,
     opentelemetry_tracing: Optional[bool] = False,
     port: Optional[int] = None,
@@ -41,8 +43,10 @@ def Client(
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
     :param host: The host address of the runtime, by default it is 0.0.0.0.
-    :param jaeger_host: If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent.
-    :param jaeger_port: If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent.
+    :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+    :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+    :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
+    :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
     :param opentelemetry_metrics: If set, real implementation of the metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
     :param opentelemetry_tracing: If set, real implementation of the tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
     :param port: The port of the Gateway, which the client should connect to.
@@ -89,8 +93,10 @@ def Client(
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
     :param host: The host address of the runtime, by default it is 0.0.0.0.
-    :param jaeger_host: If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent.
-    :param jaeger_port: If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent.
+    :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+    :param span_exporter_host: If tracing is enabled, this port will be used to configure the trace exporter agent.
+    :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
+    :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
     :param opentelemetry_metrics: If set, real implementation of the metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
     :param opentelemetry_tracing: If set, real implementation of the tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
     :param port: The port of the Gateway, which the client should connect to.

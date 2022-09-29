@@ -128,24 +128,38 @@ def mixin_pod_parser(parser):
         'Otherwise a no-op implementation will be provided.',
     )
 
-    gp.add_argument(
-        '--jaeger-host',
+    parser.add_argument(
+        '--span-exporter-host',
         type=str,
-        default='0.0.0.0',
-        help='If tracing is enabled, this hostname will be used to configure the Jaeger trace exporter agent.',
+        default=None,
+        help='If tracing is enabled, this hostname will be used to configure the trace exporter agent.',
     )
 
-    gp.add_argument(
-        '--jaeger-port',
+    parser.add_argument(
+        '--span-exporter-port',
         type=int,
-        default=6831,
-        help='If tracing is enabled, this port will be used to configure the Jaeger trace exporter agent.',
+        default=None,
+        help='If tracing is enabled, this port will be used to configure the trace exporter agent.',
     )
 
-    gp.add_argument(
+    parser.add_argument(
         '--opentelemetry-metrics',
         action='store_true',
         default=False,
         help='If set, real implementation of the metrics will be available for default monitoring and custom measurements. '
         'Otherwise a no-op implementation will be provided.',
+    )
+
+    parser.add_argument(
+        '--metrics-exporter-host',
+        type=str,
+        default=None,
+        help='If tracing is enabled, this hostname will be used to configure the metrics exporter agent.',
+    )
+
+    parser.add_argument(
+        '--metrics-exporter-port',
+        type=int,
+        default=None,
+        help='If tracing is enabled, this port will be used to configure the metrics exporter agent.',
     )
