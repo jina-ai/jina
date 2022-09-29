@@ -296,17 +296,17 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         DataRequestHandler.merge_routes(requests)
 
         uses_before_metadata = None
-        if self.uses_before_address:
-            (
-                response,
-                uses_before_metadata,
-            ) = await self.connection_pool.send_requests_once(
-                requests,
-                deployment='uses_before',
-                timeout=self.timeout_send,
-                retries=self._retries,
-            )
-            requests = [response]
+        # if self.uses_before_address:
+        #     (
+        #         response,
+        #         uses_before_metadata,
+        #     ) = await self.connection_pool.send_requests_once(
+        #         requests,
+        #         deployment='uses_before',
+        #         timeout=self.timeout_send,
+        #         retries=self._retries,
+        #     )
+        #     requests = [response]
 
         worker_send_tasks = self.connection_pool.send_requests(
             requests=requests,
@@ -326,28 +326,28 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         worker_results, metadata = zip(*worker_results)
 
         response_request = worker_results[0]
-        uses_after_metadata = None
-        if self.uses_after_address:
-            (
-                response_request,
-                uses_after_metadata,
-            ) = await self.connection_pool.send_requests_once(
-                worker_results,
-                deployment='uses_after',
-                timeout=self.timeout_send,
-                retries=self._retries,
-            )
-        elif len(worker_results) > 1 and self._reduce:
-            DataRequestHandler.reduce_requests(worker_results)
-        elif len(worker_results) > 1 and not self._reduce:
-            # worker returned multiple responsed, but the head is configured to skip reduction
-            # just concatenate the docs in this case
-            response_request.data.docs = DataRequestHandler.get_docs_from_request(
-                requests, field='docs'
-            )
+        # uses_after_metadata = None
+        # if self.uses_after_address:
+        #     (
+        #         response_request,
+        #         uses_after_metadata,
+        #     ) = await self.connection_pool.send_requests_once(
+        #         worker_results,
+        #         deployment='uses_after',
+        #         timeout=self.timeout_send,
+        #         retries=self._retries,
+        #     )
+        # elif len(worker_results) > 1 and self._reduce:
+        #     DataRequestHandler.reduce_requests(worker_results)
+        # elif len(worker_results) > 1 and not self._reduce:
+        #     # worker returned multiple responsed, but the head is configured to skip reduction
+        #     # just concatenate the docs in this case
+        #     response_request.data.docs = DataRequestHandler.get_docs_from_request(
+        #         requests, field='docs'
+        #     )
 
         merged_metadata = self._merge_metadata(
-            metadata, uses_after_metadata, uses_before_metadata
+            metadata, None, None
         )
 
         return response_request, merged_metadata
