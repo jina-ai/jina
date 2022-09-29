@@ -410,10 +410,7 @@ class Deployment(BaseDeployment):
         if self.head_host:
             return [self.head_host]
         else:
-            hosts = []
-            for replica in self.pod_args['pods'][0]:
-                hosts.append(replica.host)
-            return hosts
+            return [replica.host for replica in self.pod_args['pods'][0]]
 
     @property
     def dockerized_uses(self) -> bool:
