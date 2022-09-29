@@ -1620,7 +1620,11 @@ def _parse_url(host):
     return scheme, host, port
 
 
-def is_port_free(host, port):
+def is_port_free(host: str, port: Union[int, str]) -> bool:
+    try:
+        port = int(port)
+    except ValueError:
+        raise ValueError(f'port {port} is not an integer and cannot be cast to one')
     with socket(AF_INET, SOCK_STREAM) as session:
         if session.connect_ex((host, port)) == 0:
             return False
@@ -1673,7 +1677,7 @@ def _parse_hosts(host: str) -> Union[str, List]:
     :return: the host or the iterable of hosts
     """
     hosts = host.split(',')
-    return hosts[0] if len(hosts) == 0 else hosts
+    return hosts[0] if len(hosts) == 1 else hosts
 
 
 def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
