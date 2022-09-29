@@ -1711,3 +1711,36 @@ def send_telemetry_event(event: str, obj: Any, **kwargs) -> None:
             pass
 
     threading.Thread(target=_telemetry, daemon=True).start()
+
+
+def make_iterable(o: object) -> Iterable:
+    """
+    Make an object an iterable by wrapping it as a singleton list.
+    If the input is already an iterable (except str and bytes), it will be returned as is.
+    Str and bytes are treated as non-iterable, and thus wrapped in a list.
+
+    EXAMPLE USAGE
+
+    .. code-block:: python
+
+
+        make_iter(1)
+        [1]
+
+        make_iter('a')
+        ['a']
+
+        make_iter([1, 2, 3])
+        [1, 2, 3]
+
+        make_iter((1, 2, 3))
+        (1, 2, 3)
+
+
+    :param o: the object to be converted to an iterable
+    :return: the iterable
+    """
+    if isinstance(o, Iterable) and not isinstance(o, (str, bytes)):
+        return o
+    else:
+        return [o]
