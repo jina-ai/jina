@@ -1,4 +1,3 @@
-import argparse
 from typing import Optional
 
 import grpc
@@ -19,7 +18,6 @@ class GRPCGateway(BaseGateway):
 
     def __init__(
         self,
-        args: 'argparse.Namespace',
         port: Optional[int] = None,
         grpc_server_options: Optional[dict] = None,
         ssl_keyfile: Optional[str] = None,
@@ -27,22 +25,19 @@ class GRPCGateway(BaseGateway):
         **kwargs,
     ):
         """Initialize the gateway
-        :param args: runtime args
         :param port: The port of the Gateway, which the client should connect to.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param ssl_keyfile: the path to the key file
         :param ssl_certfile: the path to the certificate file
         :param kwargs: keyword args
         """
-        super().__init__(args=args, **kwargs)
-        self._setup_instrumentation()
+        super().__init__(**kwargs)
         self.port = port
         self.grpc_server_options = grpc_server_options
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
         self.server = grpc.aio.server(
-            options=_get_grpc_server_options(self.grpc_server_options),
-            interceptors=[self.aio_tracing_server_interceptor()],
+            options=_get_grpc_server_options(self.grpc_server_options)
         )
         self.health_servicer = health.HealthServicer(experimental_non_blocking=True)
 

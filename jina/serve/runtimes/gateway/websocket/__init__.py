@@ -20,7 +20,6 @@ class WebSocketGatewayRuntime(GatewayRuntime):
 
         self.gateway = WebSocketGateway(
             name=self.name,
-            args=self.args,
             port=self.args.port,
             ssl_keyfile=self.args.ssl_keyfile,
             ssl_certfile=self.args.ssl_certfile,
@@ -29,6 +28,7 @@ class WebSocketGatewayRuntime(GatewayRuntime):
         )
 
         self.gateway.set_streamer(
+            args=self.args,
             timeout_send=self.timeout_send,
             metrics_registry=self.metrics_registry,
             runtime_name=self.args.name,

@@ -2,8 +2,6 @@ import argparse
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional
 
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-
 from jina import __version__
 from jina.clients.request import request_generator
 from jina.enums import DataInputType
@@ -17,7 +15,6 @@ if TYPE_CHECKING:
 
 
 def get_fastapi_app(
-    args: 'argparse.Namespace',
     streamer: 'GatewayStreamer',
     title: str,
     description: str,
@@ -31,7 +28,6 @@ def get_fastapi_app(
     """
     Get the app from FastAPI as the REST interface.
 
-    :param args: runtime args
     :param streamer: gateway streamer object
     :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
     :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
@@ -62,9 +58,6 @@ def get_fastapi_app(
         'to customize the title and description.',
         version=__version__,
     )
-
-    if args.opentelemetry_tracing:
-        FastAPIInstrumentor.instrument_app(app)
 
     if cors:
         app.add_middleware(

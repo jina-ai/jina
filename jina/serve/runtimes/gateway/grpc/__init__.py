@@ -27,7 +27,6 @@ class GRPCGatewayRuntime(GatewayRuntime):
 
         self.gateway = GRPCGateway(
             name=self.name,
-            args=self.args,
             grpc_server_options=self.args.grpc_server_options,
             port=self.args.port,
             ssl_keyfile=self.args.ssl_keyfile,
@@ -35,6 +34,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
         )
 
         self.gateway.set_streamer(
+            args=self.args,
             timeout_send=self.timeout_send,
             metrics_registry=self.metrics_registry,
             runtime_name=self.name,

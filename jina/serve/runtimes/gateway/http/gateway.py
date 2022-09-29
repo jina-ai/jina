@@ -1,4 +1,3 @@
-import argparse
 import logging
 import os
 from typing import Optional
@@ -15,7 +14,6 @@ class HTTPGateway(BaseGateway):
 
     def __init__(
         self,
-        args: 'argparse.Namespace',
         port: Optional[int] = None,
         title: Optional[str] = None,
         description: Optional[str] = None,
@@ -31,7 +29,6 @@ class HTTPGateway(BaseGateway):
     ):
         """Initialize the gateway
             Get the app from FastAPI as the REST interface.
-        :param args: runtime args
         :param port: The port of the Gateway, which the client should connect to.
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
@@ -47,7 +44,7 @@ class HTTPGateway(BaseGateway):
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
         :param kwargs: keyword args
         """
-        super().__init__(args=args, **kwargs)
+        super().__init__(**kwargs)
         self.port = port
         self.title = title
         self.description = description
@@ -59,7 +56,6 @@ class HTTPGateway(BaseGateway):
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
         self.uvicorn_kwargs = uvicorn_kwargs
-        self._setup_instrumentation()
 
     async def setup_server(self):
         """
@@ -69,7 +65,6 @@ class HTTPGateway(BaseGateway):
 
         self.app = extend_rest_interface(
             get_fastapi_app(
-                args=self.args,
                 streamer=self.streamer,
                 title=self.title,
                 description=self.description,

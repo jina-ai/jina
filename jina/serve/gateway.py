@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Optional
 
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
-from jina.serve.instrumentation import InstrumentationMixin
 from jina.serve.streamer import GatewayStreamer
 
 __all__ = ['BaseGateway']
@@ -13,7 +12,7 @@ if TYPE_CHECKING:
     from prometheus_client import CollectorRegistry
 
 
-class BaseGateway(JAMLCompatible, InstrumentationMixin):
+class BaseGateway(JAMLCompatible):
     """
     The base class of all custom Gateways, can be used to build a custom interface to a Jina Flow that supports
     gateway logic
@@ -23,30 +22,28 @@ class BaseGateway(JAMLCompatible, InstrumentationMixin):
 
     def __init__(
         self,
-        args: 'argparse.Namespace',
         name: Optional[str] = 'gateway',
         **kwargs,
     ):
         """
-        :param args: args created by parsing the arguments
         :param name: Gateway pod name
         :param kwargs: additional extra keyword arguments to avoid failing when extra params ara passed that are not expected
         """
-        self.args = args
         self.streamer = None
         self.name = name
         # TODO: original implementation also passes args, maybe move this to a setter/initializer func
         self.logger = JinaLogger(self.name)
-        super().__init__()
 
     def set_streamer(
         self,
+        args: 'argparse.Namespace' = None,
         timeout_send: Optional[float] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
         runtime_name: Optional[str] = None,
     ):
         """
         Set streamer object by providing runtime parameters.
+        :param args: runtime args
         :param timeout_send: grpc connection timeout
         :param metrics_registry: metric registry when monitoring is enabled
         :param runtime_name: name of the runtime providing the streamer
@@ -55,10 +52,10 @@ class BaseGateway(JAMLCompatible, InstrumentationMixin):
 
         from jina.serve.streamer import GatewayStreamer
 
-        graph_description = json.loads(self.args.graph_description)
-        graph_conditions = json.loads(self.args.graph_conditions)
-        deployments_addresses = json.loads(self.args.deployments_addresses)
-        deployments_disable_reduce = json.loads(self.args.deployments_disable_reduce)
+        graph_description = json.loads(args.graph_description)
+        graph_conditions = json.loads(args.graph_conditions)
+        deployments_addresses = json.loads(args.deployments_addresses)
+        deployments_disable_reduce = json.loads(args.deployments_disable_reduce)
 
         self.streamer = GatewayStreamer(
             graph_representation=graph_description,
@@ -66,10 +63,10 @@ class BaseGateway(JAMLCompatible, InstrumentationMixin):
             graph_conditions=graph_conditions,
             deployments_disable_reduce=deployments_disable_reduce,
             timeout_send=timeout_send,
-            retries=self.args.retries,
-            compression=self.args.compression,
+            retries=args.retries,
+            compression=args.compression,
             runtime_name=runtime_name,
-            prefetch=self.args.prefetch,
+            prefetch=args.prefetch,
             logger=self.logger,
             metrics_registry=metrics_registry,
         )

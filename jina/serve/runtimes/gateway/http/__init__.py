@@ -21,7 +21,6 @@ class HTTPGatewayRuntime(GatewayRuntime):
         """
         self.gateway = HTTPGateway(
             name=self.name,
-            args=self.args,
             port=self.args.port,
             title=self.args.title,
             description=self.args.description,
@@ -36,6 +35,7 @@ class HTTPGatewayRuntime(GatewayRuntime):
         )
 
         self.gateway.set_streamer(
+            args=self.args,
             timeout_send=self.timeout_send,
             metrics_registry=self.metrics_registry,
             runtime_name=self.args.name,

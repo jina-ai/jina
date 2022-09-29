@@ -1,4 +1,3 @@
-import argparse
 import logging
 import os
 from typing import Optional
@@ -15,7 +14,6 @@ class WebSocketGateway(BaseGateway):
 
     def __init__(
         self,
-        args: 'argparse.Namespace',
         port: Optional[int] = None,
         ssl_keyfile: Optional[str] = None,
         ssl_certfile: Optional[str] = None,
@@ -23,19 +21,17 @@ class WebSocketGateway(BaseGateway):
         **kwargs
     ):
         """Initialize the gateway
-        :param args: runtime args
         :param port: The port of the Gateway, which the client should connect to.
         :param ssl_keyfile: the path to the key file
         :param ssl_certfile: the path to the certificate file
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
         :param kwargs: keyword args
         """
-        super().__init__(args=args, **kwargs)
+        super().__init__(**kwargs)
         self.port = port
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
         self.uvicorn_kwargs = uvicorn_kwargs
-        self._setup_instrumentation()
 
     async def setup_server(self):
         """
@@ -45,7 +41,6 @@ class WebSocketGateway(BaseGateway):
 
         self.app = extend_rest_interface(
             get_fastapi_app(
-                args=self.args,
                 streamer=self.streamer,
                 logger=self.logger,
             )
