@@ -23,7 +23,7 @@ def set_ping_parser(parser=None):
     parser.add_argument(
         'host',
         type=str,
-        help='The host address with port of a target Executor, Gateway or a Flow, e.g. 0.0.0.0:8000. For Flow or Gateway, host can also indicate the protocol, grpc will be used if non provided, e.g http://0.0.0.0:8000',
+        help='The host address with port of a target Executor, Gateway or a Flow, e.g. 0.0.0.0:8000. For Flow or Gateway, host can also indicate the protocol, grpc will be used if not provided, e.g http://0.0.0.0:8000',
     )
 
     parser.add_argument(
@@ -45,6 +45,6 @@ Timeout in millisecond of one check
         '--min-successful-attempts',
         type=int,
         default=1,
-        help='The minimum number of successful readiness checks, before it exits successfully with exit(0)',
+        help='The minimum number of successful readiness checks, before exiting successfully with exit(0)',
     )
     return parser
