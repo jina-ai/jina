@@ -3,9 +3,10 @@ from copy import deepcopy
 from functools import partial
 from typing import TYPE_CHECKING
 
+from hubble.executor.helper import is_valid_huburi
+from hubble.executor.hubio import HubIO
+
 from jina.enums import GatewayProtocolType, PodRoleType
-from jina.hubble.helper import is_valid_huburi
-from jina.hubble.hubio import HubIO
 
 if TYPE_CHECKING:
     from argparse import Namespace
