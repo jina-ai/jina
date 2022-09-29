@@ -1199,7 +1199,14 @@ class Flow(
         args.external_replica_hosts = make_iterable(_parse_hosts(str(args.host)))
 
         if len(args.external_replica_ports) != len(args.external_replica_hosts):
-            raise ValueError('Number of ports does not match number of hosts')
+            if (
+                len(args.external_replica_hosts) == 1
+            ):  # only one host given, assume replicas are on the same host
+                args.external_replica_hosts = args.external_replica_hosts * len(
+                    args.external_replica_ports
+                )
+            else:
+                raise ValueError('Number of ports does not match number of hosts')
         if len(args.external_replica_ports) > 1:
             args.replicas = len(args.external_replica_ports)
         op_flow._deployment_nodes[deployment_name] = Deployment(args, needs)

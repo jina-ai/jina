@@ -349,7 +349,8 @@ def test_external_flow_with_target_executor():
     assert response[0].text == 'external'
 
 
-def test_distributed_replicas(input_docs):
+@pytest.mark.parametrize('hosts', ['localhost,localhost', 'localhost'])
+def test_distributed_replicas(input_docs, hosts):
     port1, port2 = random_port(), random_port()
     args1, args2 = _external_deployment_args(
         num_shards=1, port=port1
@@ -358,7 +359,7 @@ def test_distributed_replicas(input_docs):
     depl2 = Deployment(args2)
     with depl1, depl2:
         flow = Flow().add(
-            host='localhost,localhost',
+            host=hosts,
             port=f'{port1},{port2}',
             external=True,
         )
