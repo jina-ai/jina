@@ -35,8 +35,6 @@ There are also a couple of nice to haves:
 * **Environment:** You can find this with ``jina -vf``
 * **Screenshots:** If they're relevant
 
-To understand how our issues are labeled, check out our [issue label guide](.github/github-issue-label-guide.md).
-
 <a name="-making-your-first-submission"></a>
 ## 🥇 Making Your First Submission
 

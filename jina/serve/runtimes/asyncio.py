@@ -170,8 +170,9 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         except RpcError:
             return False
 
-    @staticmethod
+    @classmethod
     def wait_for_ready_or_shutdown(
+        cls,
         timeout: Optional[float],
         ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
         ctrl_address: str,
@@ -189,9 +190,7 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         timeout_ns = 1000000000 * timeout if timeout else None
         now = time.time_ns()
         while timeout_ns is None or time.time_ns() - now < timeout_ns:
-            if ready_or_shutdown_event.is_set() or AsyncNewLoopRuntime.is_ready(
-                ctrl_address
-            ):
+            if ready_or_shutdown_event.is_set() or cls.is_ready(ctrl_address, **kwargs):
                 return True
             time.sleep(0.1)
         return False

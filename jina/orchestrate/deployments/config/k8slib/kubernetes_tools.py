@@ -2,7 +2,8 @@ import os
 from typing import Dict
 
 DEPLOYMENT_FILES = [
-    'deployment',
+    'deployment-executor',
+    'deployment-gateway',
     'deployment-uses-before',
     'deployment-uses-after',
     'deployment-uses-before-after',

@@ -11,7 +11,7 @@ from jina.orchestrate.deployments.config.k8slib.kubernetes_tools import get_yaml
     [
         ('namespace', {'name': 'test-ns'}),
         ('service', {'name': 'test-svc'}),
-        ('deployment', {'name': 'test-dep'}),
+        ('deployment-executor', {'name': 'test-dep'}),
         (
             'configmap',
             {
@@ -33,7 +33,7 @@ def test_get(template: str, params: Dict):
                 assert config['data'][sub_key] == sub_v
 
 
-@pytest.mark.parametrize('template', ['deployment'])
+@pytest.mark.parametrize('template', ['deployment-executor'])
 def test_get_deployment_with_device_plugin(template, monkeypatch):
     params = {
         'name': 'test-name',
@@ -42,7 +42,6 @@ def test_get_deployment_with_device_plugin(template, monkeypatch):
         'replicas': 1,
         'command': 'test-command',
         'args': 'test-args',
-        'port': 1234,
         'port': 1234,
         'port_out': 1234,
         'port_ctrl': 1234,

@@ -25,7 +25,7 @@ spec:
         linkerd.io/inject: enabled
     spec:
       containers:
-        - name: executor
+        - name: gateway
           image: {image}
           imagePullPolicy: {pull_policy}
           command: {command}
@@ -33,18 +33,22 @@ spec:
           ports:
             - containerPort: {port}
           envFrom:
-          - configMapRef:
-              name: {name}-configmap
+            - configMapRef:
+                name: {name}-configmap
           env:
-          - name: POD_UID
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.uid
-          - name: JINA_DEPLOYMENT_NAME
-            value: {jina_deployment_name}
-
+            - name: POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: JINA_DEPLOYMENT_NAME
+              value: {jina_deployment_name}
           readinessProbe:
-            tcpSocket:
-              port: {port}
+            exec:
+              command:
+                - jina
+                - ping
+                - gateway
+                - {protocol}://127.0.0.1:{port}
             initialDelaySeconds: 5
-            periodSeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 10

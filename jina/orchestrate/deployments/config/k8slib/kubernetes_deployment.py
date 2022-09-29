@@ -7,27 +7,28 @@ from jina.serve.networking import GrpcConnectionPool
 
 
 def get_deployment_yamls(
-    name: str,
-    namespace: str,
-    image_name: str,
-    container_cmd: str,
-    container_args: str,
-    replicas: int,
-    pull_policy: str,
-    jina_deployment_name: str,
-    pod_type: str,
-    shard_id: Optional[int] = None,
-    port: Optional[int] = None,
-    env: Optional[Dict] = None,
-    gpus: Optional[Union[int, str]] = None,
-    image_name_uses_before: Optional[str] = None,
-    image_name_uses_after: Optional[str] = None,
-    container_cmd_uses_before: Optional[str] = None,
-    container_cmd_uses_after: Optional[str] = None,
-    container_args_uses_before: Optional[str] = None,
-    container_args_uses_after: Optional[str] = None,
-    monitoring: bool = False,
-    port_monitoring: Optional[int] = None,
+        name: str,
+        namespace: str,
+        image_name: str,
+        container_cmd: str,
+        container_args: str,
+        replicas: int,
+        pull_policy: str,
+        jina_deployment_name: str,
+        pod_type: str,
+        shard_id: Optional[int] = None,
+        port: Optional[int] = None,
+        env: Optional[Dict] = None,
+        gpus: Optional[Union[int, str]] = None,
+        image_name_uses_before: Optional[str] = None,
+        image_name_uses_after: Optional[str] = None,
+        container_cmd_uses_before: Optional[str] = None,
+        container_cmd_uses_after: Optional[str] = None,
+        container_args_uses_before: Optional[str] = None,
+        container_args_uses_after: Optional[str] = None,
+        monitoring: bool = False,
+        port_monitoring: Optional[int] = None,
+        protocol: Optional[str] = None
 ) -> List[Dict]:
     """Get the yaml description of a service on Kubernetes
 
@@ -52,6 +53,7 @@ def get_deployment_yamls(
     :param container_args_uses_after: arguments used for uses_after container on the k8s pod
     :param monitoring: enable monitoring on the deployment
     :param port_monitoring: port which will be exposed, for the prometheus server, by the deployed containers
+    :param protocol: In case of being a Gateway, the protocol used to expose its server
     :return: Return a dictionary with all the yaml configuration needed for a deployment
     """
     # we can always assume the ports are the same for all executors since they run on different k8s pods
@@ -61,7 +63,6 @@ def get_deployment_yamls(
 
     if not port_monitoring:
         port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
-
 
     deployment_params = {
         'name': name,
@@ -83,12 +84,13 @@ def get_deployment_yamls(
         'jina_deployment_name': jina_deployment_name,
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
         'pod_type': pod_type,
+        'protocol': str(protocol).lower() if protocol is not None else '',
     }
 
     if gpus:
         deployment_params['device_plugins'] = {'nvidia.com/gpu': gpus}
 
-    template_name = 'deployment'
+    template_name = 'deployment-executor' if name != 'gateway' else 'deployment-gateway'
 
     if image_name_uses_before and image_name_uses_after:
         template_name = 'deployment-uses-before-after'
@@ -151,7 +153,7 @@ def get_deployment_yamls(
 
 
 def get_cli_params(
-    arguments: Namespace, skip_list: Tuple[str] = (), port: Optional[int] = None
+        arguments: Namespace, skip_list: Tuple[str] = (), port: Optional[int] = None
 ) -> str:
     """Get cli parameters based on the arguments.
 
@@ -163,16 +165,16 @@ def get_cli_params(
     """
     arguments.host = '0.0.0.0'
     skip_attributes = [
-        'uses',  # set manually
-        'uses_with',  # set manually
-        'runtime_cls',  # set manually
-        'workspace',
-        'log_config',
-        'polling_type',
-        'uses_after',
-        'uses_before',
-        'replicas',
-    ] + list(skip_list)
+                          'uses',  # set manually
+                          'uses_with',  # set manually
+                          'runtime_cls',  # set manually
+                          'workspace',
+                          'log_config',
+                          'polling_type',
+                          'uses_after',
+                          'uses_before',
+                          'replicas',
+                      ] + list(skip_list)
     if port:
         arguments.port = port
     arg_list = [
