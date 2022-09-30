@@ -44,10 +44,10 @@ from jina.parsers.hubble import set_hub_parser
 
 class HubIO:
     """:class:`HubIO` provides the way to interact with Jina Hub registry.
-    You can use it with CLI to package a directory into a Jina Hub and publish it to the world.
+    You can use it with CLI to package a directory into a Jina Hub Executor and publish it to the world.
     Examples:
-        - :command:`jina hub push my_executor/` to push the executor package to Jina Hub
-        - :command:`jina hub pull UUID8` to download the executor identified by UUID8
+        - :command:`jina hub push my_executor/` to push your Executor package to Jina Hub
+        - :command:`jina hub pull UUID8` to download the Executor identified by UUID8
 
     To create a :class:`HubIO` object, simply:
 
@@ -75,7 +75,7 @@ class HubIO:
             assert filelock
 
     def new(self) -> None:
-        """Create a new executor folder interactively."""
+        """Create a new Executor folder interactively."""
 
         from rich import box, print
         from rich.panel import Panel
@@ -100,7 +100,7 @@ This guide helps you to create your own Executor in 30 seconds.''',
             self.args.name
             if self.args.name
             else Prompt.ask(
-                ':grey_question: What is the [bold]name[/bold] of your executor?\n'
+                ':grey_question: What is the [bold]name[/bold] of your Executor?\n'
                 '[dim]CamelCase is required[/dim]',
                 default=f'MyExecutor{random.randint(0, 100)}',
             )
@@ -110,7 +110,7 @@ This guide helps you to create your own Executor in 30 seconds.''',
             self.args.path
             if self.args.path
             else Prompt.ask(
-                ':grey_question: [bold]Which folder[/bold] to store your executor?',
+                ':grey_question: [bold]Which folder[/bold] to store your Executor?',
                 default=os.path.join(os.getcwd(), exec_name),
             )
         )
@@ -128,17 +128,17 @@ This guide helps you to create your own Executor in 30 seconds.''',
             print(
                 Panel.fit(
                     '''
-[bold]Dockerfile[/bold] describes how this executor will be built. It is useful when
-your executor has non-trivial dependencies or must be run under certain environment.
+[bold]Dockerfile[/bold] describes how this Executor will be built. It is useful when
+your Executor has non-trivial dependencies or must be run under certain environment.
 
 - If [bold]Dockerfile[/bold] is not given, Jina Cloud automatically generates one.
 - If [bold]Dockerfile[/bold] is provided by you, then Jina Cloud will respect it when building the Executor.
 
 Here are some Dockerfile templates for you to choose from:
-- [b]cpu[/b]: CPU-only executor with Jina as base image;
-- [b]torch-gpu[/b]: GPU enabled executor with PyTorch as the base image;
-- [b]tf-gpu[/b]: GPU enabled executor with Tensorflow as the base image;
-- [b]jax-gpu[/b]: GPU enabled executor with JAX installed.
+- [b]cpu[/b]: CPU-only Executor with Jina as base image;
+- [b]torch-gpu[/b]: GPU enabled Executor with PyTorch as the base image;
+- [b]tf-gpu[/b]: GPU enabled Executor with Tensorflow as the base image;
+- [b]jax-gpu[/b]: GPU enabled Executor with JAX installed.
 ''',
                     title=':package: [bold]Dockerfile[/bold]',
                     width=80,
@@ -166,7 +166,7 @@ Meta information helps other users to identify, search and reuse your Executor o
                 if self.args.description
                 else (
                     Prompt.ask(
-                        ':grey_question: Please give a [bold]short description[/bold] of your executor?\n'
+                        ':grey_question: Please give a [bold]short description[/bold] of your Executor\n'
                         f'[dim]Example: {exec_name} embeds images into 128-dim vectors using ResNet.[/dim]'
                     )
                 )
@@ -177,7 +177,7 @@ Meta information helps other users to identify, search and reuse your Executor o
                 if self.args.keywords
                 else (
                     Prompt.ask(
-                        ':grey_question: Please give some [bold]keywords[/bold] to help people search your executor [dim](separated by comma)[/dim]\n'
+                        ':grey_question: Please give some [bold]keywords[/bold] to help people search for your Executor [dim](separated by commas)[/dim]\n'
                         f'[dim]Example: image cv embedding encoding resnet[/dim]'
                     )
                 )
@@ -188,13 +188,13 @@ Meta information helps other users to identify, search and reuse your Executor o
                 if self.args.url
                 else (
                     Prompt.ask(
-                        ':grey_question: What is the [bold]URL[/bold] for GitHub repo?\n'
+                        ':grey_question: What is the [bold]URL[/bold] for the Executor\'s GitHub repo?\n'
                         f'[dim]Example: https://github.com/yourname/my-executor[/dim]'
                     )
                 )
             )
 
-            print('[green]That\'s all we need to create an Executor![/green]')
+            print('[green]That\'s all we need to create your Executor![/green]')
 
         def mustache_repl(srcs):
             for src in track(
@@ -252,7 +252,7 @@ Meta information helps other users to identify, search and reuse your Executor o
         table.add_row(
             'config.yml',
             'The YAML config file of the Executor. You can define [bold]__init__[/bold] arguments using [bold]with[/bold] keyword.'
-            + '\nYou can also define metadata for the executor, for better appeal on Jina Hub.',
+            + '\nYou can also define metadata for the Executor, for better appeal on Jina Hub.',
         )
 
         table.add_row(
@@ -286,7 +286,7 @@ metas:
         if is_dockerfile != 'none':
             table.add_row(
                 'Dockerfile',
-                'The Dockerfile describes how this executor will be built.',
+                'The Dockerfile describes how this Executor will be built.',
             )
 
         table.add_row('executor.py', 'The main logic file of the Executor.')
@@ -436,7 +436,7 @@ metas:
     def _sync_push(
         self, console, st, req_header, content, form_data, work_path, uuid8, secret
     ):
-        # upload the archived executor to Jina Hub
+        # upload the archived Executor to Jina Hub
         if form_data.get('id'):
             hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.update')
         else:
@@ -512,7 +512,7 @@ metas:
             raise Exception(f'Unknown Error, session_id: {session_id}')
 
     def push(self) -> None:
-        """Push the executor package to Jina Hub."""
+        """Push the Executor package to Jina Hub."""
 
         work_path = Path(self.args.path)
 
@@ -793,16 +793,16 @@ metas:
         )
 
         param_str.add_column(
-            'If you don\'t want to wait the executor\'s building status, you can use \'Ctrl + C\', after that you can always get the status of the executor anytime using the command!'
+            'If you don\'t want to wait for the Executor\'s building status, you can use \'Ctrl + C\'. After that you can always get the status of the Executor anytime using the command!'
         )
         param_str.add_row(
-            f'You can use `jina hub status {work_path}` get the last building status of the executor',
+            f'You can use `jina hub status {work_path}` get the last building status of the Executor',
         )
 
         if task_id:
             param_str.add_row('')
             param_str.add_row(
-                f'Also you can use `jina hub status --id {task_id}` get the specified building state about the executor.',
+                f'Also you can use `jina hub status --id {task_id}` to get the specified building state of the Executor.',
             )
 
         console.print(
@@ -929,7 +929,7 @@ metas:
         return image
 
     def status(self) -> None:
-        """Query the building status of the executor."""
+        """Query the building status of the Executor."""
 
         task_id = None
         if self.args.id:
@@ -969,15 +969,15 @@ metas:
         secret: Optional[str] = None,
         force: bool = False,
     ) -> HubExecutor:
-        """Fetch the executor meta info from Jina Hub.
-        :param name: the UUID/Name of the executor
-        :param tag: the tag of the executor if available, otherwise, use `None` as the value
-        :param secret: the access secret of the executor
-        :param image_required: it indicates whether a Docker image is required or not
-        :param rebuild_image: it indicates whether Jina Hub need to rebuild image or not
+        """Fetch the Executor meta info from Jina Hub.
+        :param name: the UUID/Name of the Executor
+        :param tag: the tags of the Executor if available, otherwise, use `None` as the value
+        :param secret: the access secret of the Executor
+        :param image_required: indicates whether a Docker image is required or not
+        :param rebuild_image: indicates whether Jina Hub needs to rebuild image or not
         :param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default
             to local cache
-        :return: meta of executor
+        :return: meta of Executor
 
         .. note::
             The significant parameters like `name` and `tag` should be passed via ``args`` and `force` and `secret` as ``kwargs``, otherwise,
@@ -1015,7 +1015,7 @@ metas:
         image_name = images[0] if images else None
         if image_required and not image_name:
             raise RuntimeError(
-                f'No image found for executor "{name}", '
+                f'No image found for Executor "{name}", '
                 f'tag: {tag}, commit: {resp.get("commit", {}).get("id")}, '
                 f'session_id: {req_header.get("jinameta-session-id")}'
             )
@@ -1158,7 +1158,7 @@ metas:
                 exit(1)
 
     def pull(self) -> str:
-        """Pull the executor package from Jina Hub.
+        """Pull the Executor package from Jina Hub.
 
         :return: the `uses` string
         """
@@ -1247,7 +1247,7 @@ metas:
                             need_pull = True
 
                         if need_pull:
-                            # pull the latest executor meta, as the cached data would expire
+                            # pull the latest Executor meta, as the cached data would expire
                             if from_cache:
                                 executor, _ = HubIO.fetch_meta(
                                     name,
