@@ -393,13 +393,13 @@ kubectl apply -R -f ./k8s_flow
 :class: seealso
 
 Within Kubernetes, Executors are ordinary Deployments.
-This means that you can use other pathing options provided by Kubernetes:
+This means that you can use other patching options provided by Kubernetes:
 
-- `kubectl replace` to replace an Executor using a complete configuration    file
+- `kubectl replace` to replace an Executor using a complete configuration file
 - `kubectl patch` to patch an Executor using only a partial configuration file
 - `kubectl edit` to edit an Executor configuration on the fly in your editor
 
-You can find more information abou these command in the [official Kubernetes documentation](https://kubernetes.io/docs/concepts/cluster-administration/manage-deployment/).
+You can find more information about these commands in the [official Kubernetes documentation](https://kubernetes.io/docs/concepts/cluster-administration/manage-deployment/).
 ````
 
 ## Key takeaways
