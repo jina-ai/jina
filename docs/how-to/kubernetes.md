@@ -382,11 +382,16 @@ You need to update the `arguments` passed to the `container` inside the `Deploym
         command:
         - jina
 ```
+
 After doing so, you can run:
 
 ```shell script
 kubectl patch deployment encoder --patch-file ./k8s_flow/encoder/encoder.yml -n k8s-namespace
 ```
+
+This will make sure that the Pods are restarted with the new parameters, which will make the Executor to be restarted in a new docker container 
+with the new set of parameters.
+
 ## Key takeaways
 
 To put it succinctly, there are just three key takeaways about deploying a Jina Flow using Kubernetes:
