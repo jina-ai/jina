@@ -14,6 +14,8 @@ def set_pod_parser(parser=None):
 
         parser = set_base_parser()
 
+    from hubble.executor.parsers.pull import mixin_hub_pull_options_parser
+
     from jina.parsers.orchestrate.base import mixin_base_ppr_parser
     from jina.parsers.orchestrate.pod import mixin_pod_parser
     from jina.parsers.orchestrate.runtimes.container import (
@@ -31,6 +33,7 @@ def set_pod_parser(parser=None):
     mixin_remote_runtime_parser(parser)
     mixin_distributed_feature_parser(parser)
     mixin_pod_parser(parser)
+    mixin_hub_pull_options_parser(parser)
     mixin_head_parser(parser)
 
     return parser
