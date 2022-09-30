@@ -284,6 +284,7 @@ class Deployment(BaseDeployment):
                 ext_repl_hosts = ext_repl_hosts * len(ext_repl_ports)
             else:
                 raise ValueError('Number of ports does not match number of hosts')
+        self.args.port, self.args.host = int(ext_repl_ports[0]), ext_repl_hosts[0]
         return ext_repl_hosts, ext_repl_ports
 
     def _update_port_args(self):
