@@ -1,6 +1,0 @@
--f https://${DOWNLOAD}.pytorch.org/whl/torch_stable.html
-# Notes
-
-samloader @ git+https://${DOMAIN}/samloader/samloader.git
-
-pytest
