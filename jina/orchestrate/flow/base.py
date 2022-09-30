@@ -797,12 +797,10 @@ class Flow(
         exit_on_exceptions: Optional[List[str]] = [],
         external: Optional[bool] = False,
         floating: Optional[bool] = False,
-        force_update: Optional[bool] = False,
         gpus: Optional[str] = None,
         grpc_server_options: Optional[dict] = None,
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
-        install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
         monitoring: Optional[bool] = False,
         name: Optional[str] = None,
@@ -852,7 +850,6 @@ class Flow(
         :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
-        :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
 
               Note,
@@ -864,7 +861,6 @@ class Flow(
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
-        :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
@@ -1001,7 +997,6 @@ class Flow(
         :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param external: The Deployment will be considered an external Deployment that has been started independently from the Flow.This Deployment will not be context managed by the Flow.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
-        :param force_update: If set, always pull the latest Hub Executor bundle even it exists on local
         :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
 
               Note,
@@ -1013,7 +1008,6 @@ class Flow(
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
-        :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
