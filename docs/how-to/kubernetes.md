@@ -355,7 +355,7 @@ print(f"Matched documents: {len(matches)}")
 
 In Kubernetes, you can update your Executors by patching the Deployment corresponding to your Executor.
 
-For instance, in the example above, we may want to change set a `batch_size` parameter for the CLIPEncoder.
+For instance, in the example above, you may want to change set a `batch_size` parameter for the CLIPEncoder.
 
 To do this, change the content of the Deployment inside the `executor.yml` dumped by `.to_kubernetes_yaml`.
 
@@ -395,11 +395,11 @@ kubectl apply -R -f ./k8s_flow
 Within Kubernetes, Executors are ordinary Deployments.
 This means that you can use other pathing options provided by Kubernetes:
 
-- `kubectl replace` to replace an Executor using a complete configuration    file
+- `kubectl replace` to replace an Executor using a complete configuration file
 - `kubectl patch` to patch an Executor using only a partial configuration file
 - `kubectl edit` to edit an Executor configuration on the fly in your editor
 
-You can find more information abou these command in the [official Kubernetes documentation](https://kubernetes.io/docs/concepts/cluster-administration/manage-deployment/).
+You can find more information about these commands in the [official Kubernetes documentation](https://kubernetes.io/docs/concepts/cluster-administration/manage-deployment/).
 ````
 
 ## Key takeaways
