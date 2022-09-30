@@ -11,13 +11,6 @@ emphasize-lines: 5-9,12-16
 ---
 jtype: Flow
 executors:
-  - name: indexer
-    uses: jinahub+docker://Indexer
-    jcloud:
-      resources:
-        storage: 
-          type: ebs
-          size: 10G
   - name: encoder
     uses: jinahub+docker://Encoder
     jcloud:
@@ -25,6 +18,13 @@ executors:
         cpu: 2
         memory: 8G
         gpu: 2
+  - name: indexer
+    uses: jinahub+docker://Indexer
+    jcloud:
+      resources:
+        storage: 
+          type: ebs
+          size: 10G
 ```
 
 ## Allocate resources for Executors
