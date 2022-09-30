@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex/" /><link rel="search" title="Search" href="../../../search/" />
         <link rel="canonical" href="https://docs.jina.ai/_modules/jina/parsers.html" />
 
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.15"/>
-        <title>jina.parsers - Jina 3.10.0 documentation</title>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.29"/>
+        <title>jina.parsers - Jina 3.10.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=9ec31e2665bf879c1d47d93a8ec4893870ee1e45" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
@@ -124,13 +124,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="https://www.meetup.com/jina-community-meetup/events/288496227/?isFirstPublish=true">Join our Office Hour on September 29th at 19:00 CET </a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -146,7 +140,7 @@
         </div>
         <div class="header-center">
             <a href="../../../">
-                <div class="brand">Jina 3.10.0 documentation</div>
+                <div class="brand">Jina 3.10.1 documentation</div>
             </a>
         </div>
         <div class="header-right">
@@ -377,7 +371,8 @@
 
         <span class="n">parser</span> <span class="o">=</span> <span class="n">set_base_parser</span><span class="p">()</span>
 
-    <span class="kn">from</span> <span class="nn">jina.parsers.hubble.pull</span> <span class="kn">import</span> <span class="n">mixin_hub_pull_options_parser</span>
+    <span class="kn">from</span> <span class="nn">hubble.executor.parsers.pull</span> <span class="kn">import</span> <span class="n">mixin_hub_pull_options_parser</span>
+
     <span class="kn">from</span> <span class="nn">jina.parsers.orchestrate.base</span> <span class="kn">import</span> <span class="n">mixin_base_ppr_parser</span>
     <span class="kn">from</span> <span class="nn">jina.parsers.orchestrate.pod</span> <span class="kn">import</span> <span class="n">mixin_pod_parser</span>
     <span class="kn">from</span> <span class="nn">jina.parsers.orchestrate.runtimes.container</span> <span class="kn">import</span> <span class="p">(</span>
@@ -516,7 +511,6 @@
     <span class="kn">from</span> <span class="nn">jina.parsers.export</span> <span class="kn">import</span> <span class="n">set_export_parser</span>
     <span class="kn">from</span> <span class="nn">jina.parsers.flow</span> <span class="kn">import</span> <span class="n">set_flow_parser</span>
     <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_SHOW_ALL_ARGS</span><span class="p">,</span> <span class="n">_chf</span>
-    <span class="kn">from</span> <span class="nn">jina.parsers.hubble</span> <span class="kn">import</span> <span class="n">set_hub_parser</span>
     <span class="kn">from</span> <span class="nn">jina.parsers.ping</span> <span class="kn">import</span> <span class="n">set_ping_parser</span>
 
     <span class="c1"># create the top-level parser</span>
@@ -581,9 +575,10 @@
         <span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="kn">from</span> <span class="nn">hubble.parsers</span> <span class="kn">import</span> <span class="n">get_main_parser</span> <span class="k">as</span> <span class="n">get_hubble_parser</span>
+    <span class="kn">from</span> <span class="nn">hubble.executor.parsers</span> <span class="kn">import</span> <span class="n">get_main_parser</span> <span class="k">as</span> <span class="n">get_hub_parser</span>
+    <span class="kn">from</span> <span class="nn">hubble.parsers</span> <span class="kn">import</span> <span class="n">get_main_parser</span> <span class="k">as</span> <span class="n">get_auth_parser</span>
 
-    <span class="n">get_hubble_parser</span><span class="p">(</span>
+    <span class="n">get_auth_parser</span><span class="p">(</span>
         <span class="n">sp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
             <span class="s1">&#39;auth&#39;</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Login to Jina AI with your GitHub/Google/Email account&#39;</span><span class="p">,</span>
@@ -592,7 +587,7 @@
         <span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="n">set_hub_parser</span><span class="p">(</span>
+    <span class="n">get_hub_parser</span><span class="p">(</span>
         <span class="n">sp</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span>
             <span class="s1">&#39;hub&#39;</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Manage Executor on Jina Hub&#39;</span><span class="p">,</span>
@@ -668,7 +663,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 29, 2022</div>
+                            Last updated on Sep 30, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
