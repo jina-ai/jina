@@ -9,12 +9,7 @@ from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union
 
 from jina import __args_executor_init__, __cache_path__, __default_endpoint__
 from jina.enums import BetterEnum
-from jina.helper import (
-    ArgNamespace,
-    T,
-    iscoroutinefunction,
-    typename,
-)
+from jina.helper import ArgNamespace, T, iscoroutinefunction, typename
 from jina.importer import ImportExtensions
 from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
@@ -382,12 +377,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             )
 
         """
-        from jina.hubble.helper import is_valid_huburi
+        from hubble.executor.helper import is_valid_huburi
 
         _source = None
         if is_valid_huburi(uri):
-            from jina.hubble.hubio import HubIO
-            from jina.parsers.hubble import set_hub_pull_parser
+            from hubble.executor.hubio import HubIO
+            from hubble.executor.parsers import set_hub_pull_parser
 
             _args = ArgNamespace.kwargs2namespace(
                 {'no_usage': True, **kwargs},

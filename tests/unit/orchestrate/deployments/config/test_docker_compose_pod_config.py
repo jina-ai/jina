@@ -3,10 +3,10 @@ import os
 from typing import Dict, Tuple, Union
 
 import pytest
+from hubble.executor import HubExecutor
+from hubble.executor.hubio import HubIO
 
 from jina.helper import Namespace
-from jina.hubble import HubExecutor
-from jina.hubble.hubio import HubIO
 from jina.orchestrate.deployments.config.docker_compose import DockerComposeConfig
 from jina.parsers import set_deployment_parser, set_gateway_parser
 

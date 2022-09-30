@@ -181,9 +181,9 @@ def hub(args: 'Namespace'):
     Start a hub builder for push, pull
     :param args: arguments coming from the CLI.
     """
-    from jina.hubble.hubio import HubIO
+    from hubble.executor.hubio import HubIO
 
-    getattr(HubIO(args), args.hub)()
+    getattr(HubIO(args), args.hub_cli)()
 
 
 def new(args: 'Namespace'):
