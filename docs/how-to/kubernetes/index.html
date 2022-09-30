@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Monitor via Prometheus and Grafana" href="../monitoring/" /><link rel="prev" title="Deploy with Docker Compose" href="../docker-compose/" />
         <link rel="canonical" href="https://docs.jina.ai/how-to/kubernetes.html" />
 
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.2, furo 2022.09.29"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><meta name="generator" content="sphinx-5.2.3, furo 2022.09.29"/>
         <title>Deploy with Kubernetes - Jina 3.10.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -679,6 +679,49 @@ Finally, it prints the uri of the closest matches.</p>
 </div>
 </section>
 </section>
+<section id="update-your-executor-in-kubernetes">
+<h2>Update your Executor in Kubernetes<a class="headerlink" href="#update-your-executor-in-kubernetes" title="Permalink to this heading">#</a></h2>
+<p>In Kubernetes, you can update your Executors by patching the Deployment corresponding to your Executor.</p>
+<p>For instance, in the example above, you may want to change set a <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> parameter for the CLIPEncoder.</p>
+<p>To do this, change the content of the Deployment inside the <code class="docutils literal notranslate"><span class="pre">executor.yml</span></code> dumped by <code class="docutils literal notranslate"><span class="pre">.to_kubernetes_yaml</span></code>.</p>
+<p>You need to add <code class="docutils literal notranslate"><span class="pre">--uses_with</span></code> and pass the batch size argument to it. This will be passed to the container inside the Deployment:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">args</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--name</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--k8s-namespace</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">custom-namespace</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--uses</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config.yml</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--port</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;8080&#39;</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--uses-metas</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;{}&#39;</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--uses-with</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;{&quot;batch_size&quot;:</span><span class="nv"> </span><span class="s">64}&#39;</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--native</span><span class="w"></span>
+<span class="w">        </span><span class="nt">command</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jina</span><span class="w"></span>
+</pre></div>
+</div>
+<p>After doing so, you can re-apply your configuration and the new Executor will be deployed without affecting the other unchanged Deployments:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kubectl apply -R -f ./k8s_flow
+</pre></div>
+</div>
+<div class="seealso admonition">
+<p class="admonition-title">Other patching options</p>
+<p>Within Kubernetes, Executors are ordinary Deployments.
+This means that you can use other pathing options provided by Kubernetes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">replace</span></code> to replace an Executor using a complete configuration file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">patch</span></code> to patch an Executor using only a partial configuration file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">edit</span></code> to edit an Executor configuration on the fly in your editor</p></li>
+</ul>
+<p>You can find more information about these commands in the <a class="reference external" href="https://kubernetes.io/docs/concepts/cluster-administration/manage-deployment/">official Kubernetes documentation</a>.</p>
+</div>
+</section>
 <section id="key-takeaways">
 <h2>Key takeaways<a class="headerlink" href="#key-takeaways" title="Permalink to this heading">#</a></h2>
 <p>To put it succinctly, there are just three key takeaways about deploying a Jina Flow using Kubernetes:</p>
@@ -775,6 +818,7 @@ Finally, it prints the uri of the closest matches.</p>
 <li><a class="reference internal" href="#client">Client</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#update-your-executor-in-kubernetes">Update your Executor in Kubernetes</a></li>
 <li><a class="reference internal" href="#key-takeaways">Key takeaways</a></li>
 <li><a class="reference internal" href="#see-also">See also</a></li>
 </ul>
