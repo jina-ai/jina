@@ -355,11 +355,11 @@ print(f"Matched documents: {len(matches)}")
 
 In Kubernetes, you can update your Executors by patching the Deployment corresponding to your Executor.
 
-For instance, in the example above, we may want to change the `batch_size` parameter of the CLIPEncoder.
+For instance, in the example above, we may want to change set a `batch_size` parameter for the CLIPEncoder.
 
 To do this, change the content of the Deployment inside the `executor.yml` dumped by `.to_kubernetes_yaml`.
 
-You need to update the `arguments` passed to the `container` inside the `Deployment` as follows:
+You need to add `--uses_with` and pass the batch size argument to it. This will be passed to the container inside the Deployment:
 
 ```yaml
     spec:
