@@ -31,7 +31,9 @@ class InstrumentationMixin:
         self.opentelemetry_metrics = opentelemetry_metrics
 
         if opentelemetry_tracing:
-            from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+            from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
+                OTLPSpanExporter,
+            )
             from opentelemetry.sdk.resources import SERVICE_NAME, Resource
             from opentelemetry.sdk.trace import TracerProvider
             from opentelemetry.sdk.trace.export import BatchSpanProcessor
@@ -39,9 +41,8 @@ class InstrumentationMixin:
             resource = Resource(attributes={SERVICE_NAME: name})
             provider = TracerProvider(resource=resource)
             processor = BatchSpanProcessor(
-                JaegerExporter(
-                    agent_host_name=span_exporter_host,
-                    agent_port=span_exporter_port,
+                OTLPSpanExporter(
+                    endpoint=f'{span_exporter_host}:{span_exporter_port}', insecure=True
                 )
             )
             provider.add_span_processor(processor)
@@ -52,16 +53,21 @@ class InstrumentationMixin:
             self.tracer = trace.NoOpTracer()
 
         if opentelemetry_metrics:
-            from opentelemetry.sdk.metrics import MeterProvider
-            from opentelemetry.sdk.metrics.export import (
-                ConsoleMetricExporter,
-                PeriodicExportingMetricReader,
+            from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import (
+                OTLPMetricExporter,
             )
+            from opentelemetry.sdk.metrics import MeterProvider
+            from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
             from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 
             resource = Resource(attributes={SERVICE_NAME: name})
 
-            metric_reader = PeriodicExportingMetricReader(ConsoleMetricExporter())
+            metric_reader = PeriodicExportingMetricReader(
+                OTLPMetricExporter(
+                    endpoint=f'{metrics_exporter_host}:{metrics_exporter_port}',
+                    insecure=True,
+                )
+            )
             meter_provider = MeterProvider(
                 metric_readers=[metric_reader], resource=resource
             )
