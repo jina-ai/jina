@@ -1,3 +1,5 @@
+from typing import Optional
+
 from opentelemetry import metrics, trace
 from opentelemetry.instrumentation.grpc import (
     client_interceptor as grpc_client_interceptor,
@@ -14,12 +16,21 @@ from jina.serve.instrumentation._aio_client import (
 class InstrumentationMixin:
     '''Instrumentation mixin for OpenTelemetery Tracing and Metrics handling'''
 
-    def _setup_instrumentation(self) -> None:
-        name = self.__class__.__name__
-        if hasattr(self, 'name') and self.name:
-            name = self.name
+    def _setup_instrumentation(
+        self,
+        name: str,
+        opentelemetry_tracing: Optional[bool] = False,
+        span_exporter_host: Optional[str] = '0.0.0.0',
+        span_exporter_port: Optional[int] = 6831,
+        opentelemetry_metrics: Optional[bool] = False,
+        metrics_exporter_host: Optional[str] = '0.0.0.0',
+        metrics_exporter_port: Optional[int] = 6831,
+    ) -> None:
 
-        if self.args.opentelemetry_tracing:
+        self.opentelemetry_tracing = opentelemetry_tracing
+        self.opentelemetry_metrics = opentelemetry_metrics
+
+        if opentelemetry_tracing:
             from opentelemetry.exporter.jaeger.thrift import JaegerExporter
             from opentelemetry.sdk.resources import SERVICE_NAME, Resource
             from opentelemetry.sdk.trace import TracerProvider
@@ -29,8 +40,8 @@ class InstrumentationMixin:
             provider = TracerProvider(resource=resource)
             processor = BatchSpanProcessor(
                 JaegerExporter(
-                    agent_host_name=self.args.span_exporter_host,
-                    agent_port=self.args.span_exporter_port,
+                    agent_host_name=span_exporter_host,
+                    agent_port=span_exporter_port,
                 )
             )
             provider.add_span_processor(processor)
@@ -40,7 +51,7 @@ class InstrumentationMixin:
             self.tracer_provider = trace.NoOpTracerProvider()
             self.tracer = trace.NoOpTracer()
 
-        if self.args.opentelemetry_metrics:
+        if opentelemetry_metrics:
             from opentelemetry.sdk.metrics import MeterProvider
             from opentelemetry.sdk.metrics.export import (
                 ConsoleMetricExporter,
@@ -54,11 +65,11 @@ class InstrumentationMixin:
             meter_provider = MeterProvider(
                 metric_readers=[metric_reader], resource=resource
             )
-            self.metrics_provider = meter_provider
-            self.meter = self.metrics_provider.get_meter(name)
+            self.meter_provider = meter_provider
+            self.meter = self.meter_provider.get_meter(name)
         else:
-            self.metrics_provider = metrics.NoOpMeterProvider()
-            self.meter = metrics.NoOpMeter()
+            self.meter_provider = metrics.NoOpMeterProvider()
+            self.meter = metrics.NoOpMeter(name='no-op')
 
     def aio_tracing_server_interceptor(self):
         '''Create a gRPC aio server interceptor.
@@ -71,11 +82,15 @@ class InstrumentationMixin:
         return OpenTelemetryAioServerInterceptor(self.tracer)
 
     @staticmethod
-    def aio_tracing_client_interceptors():
+    def aio_tracing_client_interceptors(
+        tracer: Optional[trace.Tracer] = trace.NoOpTracer(),
+    ):
         '''Create a gRPC client aio channel interceptor.
+        :param tracer: Optional tracer that is used to instrument the client interceptors. If absent, a NoOpTracer will be used.
         :returns: An invocation-side list of aio interceptor objects.
         '''
-        tracer = trace.get_tracer(__name__)
+        if not tracer:
+            tracer = trace.NoOpTracer()
 
         return [
             UnaryUnaryAioClientInterceptor(tracer),
@@ -85,8 +100,13 @@ class InstrumentationMixin:
         ]
 
     @staticmethod
-    def tracing_client_interceptor():
+    def tracing_client_interceptor(
+        tracer_provider: Optional[trace.TracerProvider] = trace.NoOpTracerProvider(),
+    ):
         '''
+        :param tracer_provider: Optional tracer provider that is used to instrument the client interceptor. If absent, a NoOpTracer provider will be used.
         :returns: a gRPC client interceptor with the global tracing provider.
         '''
-        return grpc_client_interceptor(trace.get_tracer_provider())
+        if not tracer_provider:
+            tracer_provider = trace.NoOpTracerProvider()
+        return grpc_client_interceptor(tracer_provider)

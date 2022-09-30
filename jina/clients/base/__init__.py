@@ -48,7 +48,17 @@ class BaseClient(InstrumentationMixin, ABC):
             os.unsetenv('https_proxy')
         self._inputs = None
         send_telemetry_event(event='start', obj=self)
-        self._setup_instrumentation()
+        self._setup_instrumentation(
+            name=self.args.name
+            if hasattr(self.args, 'name')
+            else self.__class__.__name__,
+            opentelemetry_tracing=self.args.opentelemetry_tracing,
+            span_exporter_host=self.args.span_exporter_host,
+            span_exporter_port=self.args.span_exporter_port,
+            opentelemetry_metrics=self.args.opentelemetry_metrics,
+            metrics_exporter_host=self.args.metrics_exporter_host,
+            metrics_exporter_port=self.args.metrics_exporter_port,
+        )
 
     @staticmethod
     def check_input(inputs: Optional['InputType'] = None, **kwargs) -> None:

@@ -1,5 +1,6 @@
 import asyncio
 import json
+from cgitb import enable
 from typing import TYPE_CHECKING, Optional
 
 import grpc
@@ -32,7 +33,6 @@ class GRPCBaseClient(BaseClient):
                 f'{self.args.host}:{self.args.port}',
                 asyncio=True,
                 tls=self.args.tls,
-                enable_trace=False,
             ) as channel:
                 stub = jina_pb2_grpc.JinaGatewayDryRunRPCStub(channel)
                 self.logger.debug(f'connected to {self.args.host}:{self.args.port}')
@@ -113,6 +113,9 @@ class GRPCBaseClient(BaseClient):
                 options=options,
                 asyncio=True,
                 tls=self.args.tls,
+                aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(
+                    self.tracer
+                ),
             ) as channel:
                 stub = jina_pb2_grpc.JinaRPCStub(channel)
                 self.logger.debug(f'connected to {self.args.host}:{self.args.port}')

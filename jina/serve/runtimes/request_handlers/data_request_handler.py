@@ -1,7 +1,7 @@
-import copy
-from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 from docarray import DocumentArray
+from opentelemetry import metrics, trace
 from opentelemetry.context.context import Context
 
 from jina import __default_endpoint__
@@ -28,6 +28,8 @@ class DataRequestHandler:
         args: 'argparse.Namespace',
         logger: 'JinaLogger',
         metrics_registry: Optional['CollectorRegistry'] = None,
+        tracer_provider: Optional[trace.TracerProvider] = None,
+        meter_provider: Optional[metrics.MeterProvider] = None,
         **kwargs,
     ):
         """Initialize private parameters and execute private loading functions.
@@ -35,6 +37,8 @@ class DataRequestHandler:
         :param args: args from CLI
         :param logger: the logger provided by the user
         :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics from the executor of from the data request handler
+        :param tracer_provider: Optional tracer_provider that will be provided to the executor for tracing
+        :param meter_provider: Optional meter_provider that will be provided to the executor for metrics
         :param kwargs: extra keyword arguments
         """
         super().__init__()
@@ -42,7 +46,11 @@ class DataRequestHandler:
         self.args.parallel = self.args.shards
         self.logger = logger
         self._is_closed = False
-        self._load_executor(metrics_registry)
+        self._load_executor(
+            metrics_registry=metrics_registry,
+            tracer_provider=tracer_provider,
+            meter_provider=meter_provider,
+        )
         self._init_monitoring(metrics_registry)
 
     def _init_monitoring(self, metrics_registry: Optional['CollectorRegistry'] = None):
@@ -86,10 +94,17 @@ class DataRequestHandler:
             self._request_size_metrics = None
             self._sent_response_size_metrics = None
 
-    def _load_executor(self, metrics_registry: Optional['CollectorRegistry'] = None):
+    def _load_executor(
+        self,
+        metrics_registry: Optional['CollectorRegistry'] = None,
+        tracer_provider: Optional[trace.TracerProvider] = None,
+        meter_provider: Optional[metrics.MeterProvider] = None,
+    ):
         """
         Load the executor to this runtime, specified by ``uses`` CLI argument.
         :param metrics_registry: Optional prometheus metrics registry that will be passed to the executor so that it can expose metrics
+        :param tracer_provider: Optional tracer_provider that will be provided to the executor for tracing
+        :param meter_provider: Optional meter_provider that will be provided to the executor for metrics
         """
         try:
             self._executor: BaseExecutor = BaseExecutor.load_config(
@@ -104,6 +119,8 @@ class DataRequestHandler:
                     'replicas': self.args.replicas,
                     'name': self.args.name,
                     'metrics_registry': metrics_registry,
+                    'tracer_provider': tracer_provider,
+                    'meter_provider': meter_provider,
                 },
                 py_modules=self.args.py_modules,
                 extra_search_paths=self.args.extra_search_paths,

@@ -30,6 +30,7 @@ class AioHttpClientlet(ABC):
         initial_backoff: float = 0.5,
         max_backoff: float = 0.1,
         backoff_multiplier: float = 1.5,
+        tracer_provider: Optional[trace.TracerProvider] = None,
         **kwargs,
     ) -> None:
         """HTTP Client to be used with the streamer
@@ -40,15 +41,14 @@ class AioHttpClientlet(ABC):
         :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
+        :param tracer_provider: Optional tracer_provider that will be used to configure aiohttp tracing.
         :param kwargs: kwargs  which will be forwarded to the `aiohttp.Session` instance. Used to pass headers to requests
         """
         self.url = url
         self.logger = logger
         self.msg_recv = 0
         self.msg_sent = 0
-        self._trace_config = create_trace_config(
-            tracer_provider=trace.get_tracer_provider(),
-        )
+        self._trace_config = create_trace_config(tracer_provider=tracer_provider)
         self.session = None
         self._session_kwargs = {}
         if kwargs.get('headers', None):

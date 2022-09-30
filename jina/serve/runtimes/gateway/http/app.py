@@ -2,6 +2,8 @@ import argparse
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional
 
+from opentelemetry import trace
+
 from jina import __version__
 from jina.clients.request import request_generator
 from jina.enums import DataInputType
@@ -24,6 +26,8 @@ def get_fastapi_app(
     expose_graphql_endpoint: bool,
     cors: bool,
     logger: 'JinaLogger',
+    opentelemetry_tracing: Optional[bool] = None,
+    tracer_provider: Optional[trace.TracerProvider] = None,
 ):
     """
     Get the app from FastAPI as the REST interface.
@@ -39,6 +43,8 @@ def get_fastapi_app(
     :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
     :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
     :param logger: Jina logger.
+    :param opentelemetry_tracing: Enables tracing is set to True.
+    :param tracer_provider: If tracing is enabled the tracer_provider will be used to instrument the code.
     :return: fastapi app
     """
     with ImportExtensions(required=True):
@@ -58,6 +64,11 @@ def get_fastapi_app(
         'to customize the title and description.',
         version=__version__,
     )
+
+    if opentelemetry_tracing:
+        from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
+        FastAPIInstrumentor.instrument_app(app, tracer_provider=tracer_provider)
 
     if cors:
         app.add_middleware(

@@ -25,6 +25,8 @@ class WebSocketGatewayRuntime(GatewayRuntime):
             ssl_certfile=self.args.ssl_certfile,
             uvicorn_kwargs=self.args.uvicorn_kwargs,
             logger=self.logger,
+            opentelemetry_tracing=self.opentelemetry_tracing,
+            tracer_provider=self.tracer_provider,
         )
 
         self.gateway.set_streamer(
@@ -32,6 +34,12 @@ class WebSocketGatewayRuntime(GatewayRuntime):
             timeout_send=self.timeout_send,
             metrics_registry=self.metrics_registry,
             runtime_name=self.args.name,
+            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(
+                self.tracer
+            ),
+            tracing_client_interceptor=self.tracing_client_interceptor(
+                self.tracer_provider
+            ),
         )
         await self.gateway.setup_server()
 

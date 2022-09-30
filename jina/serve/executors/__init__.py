@@ -17,7 +17,6 @@ from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
 from jina.serve.executors.decorators import (
     avoid_concurrent_lock_cls,
-    requests,
     store_init_kwargs,
     wrap_func,
 )
@@ -136,7 +135,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._add_requests(requests)
         self._add_runtime_args(runtime_args)
         self._init_monitoring()
-        self._init_instrumentation()
+        self._init_instrumentation(runtime_args)
         self._init_workspace = workspace
         self.logger = JinaLogger(self.__class__.__name__)
         if __dry_run_endpoint__ not in self.requests:
@@ -182,13 +181,21 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._summary_method = None
             self._metrics_buffer = None
 
-    def _init_instrumentation(self):
-        name = self.__class__.__name__
-        if hasattr(self.runtime_args, 'name'):
-            name = self.runtime_args.name
+    def _init_instrumentation(self, _runtime_args: Optional[Dict]):
+        instrumentating_module_name = (
+            _runtime_args.name
+            if hasattr(_runtime_args, 'name')
+            else self.__class__.__name__
+        )
 
-        self.tracer = trace.get_tracer(name)
-        self.meter = metrics.get_meter(name)
+        self.tracer_provider = _runtime_args.get(
+            'tracer_provider', trace.NoOpTracerProvider()
+        )
+        self.tracer = self.tracer_provider.get_tracer(instrumentating_module_name)
+        self.meter_provider = _runtime_args.get(
+            'meter_provider', metrics.NoOpMeterProvider()
+        )
+        self.meter = self.meter_provider.get_meter(instrumentating_module_name)
 
     def _add_requests(self, _requests: Optional[Dict]):
         if not hasattr(self, 'requests'):

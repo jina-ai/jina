@@ -2,6 +2,8 @@ import logging
 import os
 from typing import Optional
 
+from opentelemetry import trace
+
 from jina import __default_host__
 from jina.importer import ImportExtensions
 
@@ -25,6 +27,8 @@ class HTTPGateway(BaseGateway):
         ssl_keyfile: Optional[str] = None,
         ssl_certfile: Optional[str] = None,
         uvicorn_kwargs: Optional[dict] = None,
+        opentelemetry_tracing: Optional[bool] = None,
+        tracer_provider: Optional[trace.TracerProvider] = None,
         **kwargs
     ):
         """Initialize the gateway
@@ -42,6 +46,8 @@ class HTTPGateway(BaseGateway):
         :param ssl_keyfile: the path to the key file
         :param ssl_certfile: the path to the certificate file
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
+        :param opentelemetry_tracing: Enables tracing if set to True.
+        :param tracer_provider: If tracing is enabled the tracer_provider will be used to instrument the code.
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
@@ -56,6 +62,8 @@ class HTTPGateway(BaseGateway):
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
         self.uvicorn_kwargs = uvicorn_kwargs
+        self.opentelemetery_tracing = opentelemetry_tracing
+        self.tracer_provider = tracer_provider
 
     async def setup_server(self):
         """
@@ -74,6 +82,8 @@ class HTTPGateway(BaseGateway):
                 expose_graphql_endpoint=self.expose_graphql_endpoint,
                 cors=self.cors,
                 logger=self.logger,
+                opentelemetry_tracing=self.opentelemetery_tracing,
+                tracer_provider=self.tracer_provider,
             )
         )
 

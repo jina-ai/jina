@@ -1,6 +1,8 @@
 import argparse
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional, Union
 
+from opentelemetry import trace
+
 from jina.clients.request import request_generator
 from jina.enums import DataInputType, WebsocketSubProtocols
 from jina.excepts import InternalNetworkError
@@ -24,12 +26,16 @@ def _fits_ws_close_msg(msg: str):
 def get_fastapi_app(
     streamer: 'GatewayStreamer',
     logger: 'JinaLogger',
+    opentelemetry_tracing: Optional[bool] = None,
+    tracer_provider: Optional[trace.TracerProvider] = None,
 ):
     """
     Get the app from FastAPI as the Websocket interface.
 
     :param streamer: gateway streamer object.
     :param logger: Jina logger.
+    :param opentelemetry_tracing: Enables tracing is set to True.
+    :param tracer_provider: If tracing is enabled the tracer_provider will be used to instrument the code.
     :return: fastapi app
     """
 
@@ -108,6 +114,11 @@ def get_fastapi_app(
     manager = ConnectionManager()
 
     app = FastAPI()
+
+    if opentelemetry_tracing:
+        from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
+        FastAPIInstrumentor.instrument_app(app, tracer_provider=tracer_provider)
 
     @app.get(
         path='/',

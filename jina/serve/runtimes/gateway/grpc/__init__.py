@@ -28,6 +28,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
         self.gateway = GRPCGateway(
             name=self.name,
             grpc_server_options=self.args.grpc_server_options,
+            grpc_tracing_server_interceptors=[self.aio_tracing_server_interceptor()],
             port=self.args.port,
             ssl_keyfile=self.args.ssl_keyfile,
             ssl_certfile=self.args.ssl_certfile,
@@ -38,6 +39,12 @@ class GRPCGatewayRuntime(GatewayRuntime):
             timeout_send=self.timeout_send,
             metrics_registry=self.metrics_registry,
             runtime_name=self.name,
+            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(
+                self.tracer
+            ),
+            tracing_client_interceptor=self.tracing_client_interceptor(
+                self.tracer_provider
+            ),
         )
         await self.gateway.setup_server()
 

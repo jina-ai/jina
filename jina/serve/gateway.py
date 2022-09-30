@@ -1,6 +1,8 @@
 import abc
 import argparse
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional, Sequence
+
+from opentelemetry import metrics, trace
 
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
@@ -40,6 +42,8 @@ class BaseGateway(JAMLCompatible):
         timeout_send: Optional[float] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
         runtime_name: Optional[str] = None,
+        aio_tracing_client_interceptors: Optional[Sequence[Any]] = None,
+        tracing_client_interceptor: Optional[Any] = None,
     ):
         """
         Set streamer object by providing runtime parameters.
@@ -47,6 +51,8 @@ class BaseGateway(JAMLCompatible):
         :param timeout_send: grpc connection timeout
         :param metrics_registry: metric registry when monitoring is enabled
         :param runtime_name: name of the runtime providing the streamer
+        :param aio_tracing_client_interceptors: List of async io gprc client tracing interceptors for tracing requests if asycnio is True
+        :param tracing_client_interceptor: A gprc client tracing interceptor for tracing requests if asyncio is False
         """
         import json
 
@@ -69,6 +75,8 @@ class BaseGateway(JAMLCompatible):
             prefetch=args.prefetch,
             logger=self.logger,
             metrics_registry=metrics_registry,
+            aio_tracing_client_interceptors=aio_tracing_client_interceptors,
+            tracing_client_interceptor=tracing_client_interceptor,
         )
 
     @abc.abstractmethod

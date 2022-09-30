@@ -33,7 +33,12 @@ class WebSocketBaseClient(BaseClient):
                 proto = 'wss' if self.args.tls else 'ws'
                 url = f'{proto}://{self.args.host}:{self.args.port}/dry_run'
                 iolet = await stack.enter_async_context(
-                    WebsocketClientlet(url=url, logger=self.logger, **kwargs)
+                    WebsocketClientlet(
+                        url=url,
+                        logger=self.logger,
+                        tracer_provider=self.tracer_provider,
+                        **kwargs,
+                    )
                 )
 
                 async def _receive():
@@ -110,8 +115,16 @@ class WebSocketBaseClient(BaseClient):
             proto = 'wss' if self.args.tls else 'ws'
             url = f'{proto}://{self.args.host}:{self.args.port}/'
             iolet = await stack.enter_async_context(
-                WebsocketClientlet(url=url, logger=self.logger, max_attempts=max_attempts, initial_backoff=initial_backoff,
-                                   max_backoff=max_backoff, backoff_multiplier=backoff_multiplier, **kwargs)
+                WebsocketClientlet(
+                    url=url,
+                    logger=self.logger,
+                    tracer_provider=self.tracer_provider,
+                    max_attempts=max_attempts,
+                    initial_backoff=initial_backoff,
+                    max_backoff=max_backoff,
+                    backoff_multiplier=backoff_multiplier,
+                    **kwargs,
+                )
             )
 
             request_buffer: Dict[

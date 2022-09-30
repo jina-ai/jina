@@ -80,7 +80,11 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         # otherwise readiness check is not valid
         # The DataRequestHandler needs to be started BEFORE the grpc server
         self._data_request_handler = DataRequestHandler(
-            self.args, self.logger, self.metrics_registry
+            self.args,
+            self.logger,
+            self.metrics_registry,
+            self.tracer_provider,
+            self.meter_provider,
         )
         await self._async_setup_grpc_server()
 
