@@ -183,7 +183,7 @@ def hub(args: 'Namespace'):
     """
     from hubble.executor.hubio import HubIO
 
-    getattr(HubIO(args), args.hub)()
+    getattr(HubIO(args), args.hub_cli)()
 
 
 def new(args: 'Namespace'):
