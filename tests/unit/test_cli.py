@@ -39,6 +39,13 @@ def test_cli_help():
     subprocess.check_call(['jina', 'help', 'deployment'])
 
 
+def test_cli_hub():
+    subprocess.check_call(['jina', 'hub', '--help'])
+    for cmd in ['new', 'status', 'pull', 'push']:
+        subprocess.check_call(['jina', 'hub', cmd, '--help'])
+    subprocess.check_call(['jina', 'hub', 'pull', 'jinahub://DummyHubExecutor'])
+
+
 def test_cli_warn_unknown_args():
     subprocess.check_call(['jina', 'help', 'deployment', '--abcdefg'])
 
