@@ -292,6 +292,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         self, requests: List[DataRequest], endpoint: Optional[str]
     ) -> Tuple[DataRequest, Dict]:
         self.logger.debug(f'recv {len(requests)} DataRequest(s)')
+        import time
+        start = time.time()
 
         DataRequestHandler.merge_routes(requests)
 
@@ -316,8 +318,10 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             retries=self._retries,
         )
 
+        print(f' length of worker_send_tasks {len(worker_send_tasks)}')
         worker_results = await asyncio.gather(*worker_send_tasks)
-
+        results_collected_time = time.time()
+        print(f' time until results_collected {results_collected_time - start}s => Send + Wait + Return')
         if len(worker_results) == 0:
             raise RuntimeError(
                 f'Head {self.name} did not receive a response when sending message to worker pods'
@@ -326,29 +330,31 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         worker_results, metadata = zip(*worker_results)
 
         response_request = worker_results[0]
-        # uses_after_metadata = None
-        # if self.uses_after_address:
-        #     (
-        #         response_request,
-        #         uses_after_metadata,
-        #     ) = await self.connection_pool.send_requests_once(
-        #         worker_results,
-        #         deployment='uses_after',
-        #         timeout=self.timeout_send,
-        #         retries=self._retries,
-        #     )
-        # elif len(worker_results) > 1 and self._reduce:
-        #     DataRequestHandler.reduce_requests(worker_results)
-        # elif len(worker_results) > 1 and not self._reduce:
-        #     # worker returned multiple responsed, but the head is configured to skip reduction
-        #     # just concatenate the docs in this case
-        #     response_request.data.docs = DataRequestHandler.get_docs_from_request(
-        #         requests, field='docs'
-        #     )
+        uses_after_metadata = None
+        if self.uses_after_address:
+            (
+                response_request,
+                uses_after_metadata,
+            ) = await self.connection_pool.send_requests_once(
+                worker_results,
+                deployment='uses_after',
+                timeout=self.timeout_send,
+                retries=self._retries,
+            )
+        elif len(worker_results) > 1 and self._reduce:
+            DataRequestHandler.reduce_requests(worker_results)
+        elif len(worker_results) > 1 and not self._reduce:
+            # worker returned multiple responsed, but the head is configured to skip reduction
+            # just concatenate the docs in this case
+            response_request.data.docs = DataRequestHandler.get_docs_from_request(
+                requests, field='docs'
+            )
 
         merged_metadata = self._merge_metadata(
             metadata, None, None
         )
+        end = time.time()
+        print(f' time until response ready {end - start}s, time until ready after collection {end - results_collected_time}s')
 
         return response_request, merged_metadata
 
