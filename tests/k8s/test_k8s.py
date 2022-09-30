@@ -124,7 +124,7 @@ async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_si
     import portforward
 
     with portforward.forward(
-        namespace, gateway_pod_name, flow.port, flow.port, config_path
+        namespace, gateway_pod_name, int(flow.port), int(flow.port), config_path
     ):
         client_kwargs = dict(
             host='localhost',
