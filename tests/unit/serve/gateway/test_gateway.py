@@ -11,8 +11,7 @@ from jina.helper import random_port
 from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
-
-from ...helper import (
+from tests.helper import (
     _validate_custom_gateway_process,
     _validate_dummy_custom_gateway_response,
 )
@@ -119,7 +118,9 @@ def test_custom_gateway_no_executors(uses, uses_with, expected):
     worker_port, worker_process = _start_worker_runtime('ProcessExecutor')
     gateway_port, gateway_process = _start_gateway_runtime(uses, uses_with, worker_port)
     _validate_dummy_custom_gateway_response(gateway_port, expected)
-    _validate_custom_gateway_process(gateway_port)
+    _validate_custom_gateway_process(
+        gateway_port, 'hello', {'text': 'helloworld', 'tags': {'processed': True}}
+    )
     gateway_process.terminate()
     gateway_process.join()
     worker_process.terminate()

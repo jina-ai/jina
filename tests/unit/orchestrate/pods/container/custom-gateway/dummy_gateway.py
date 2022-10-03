@@ -4,6 +4,7 @@ from docarray import Document, DocumentArray
 from pydantic import BaseModel
 from uvicorn import Config, Server
 
+from jina import __default_host__
 from jina.clients.request import request_generator
 from jina.serve.gateway import BaseGateway
 
@@ -64,7 +65,7 @@ class DummyGateway(BaseGateway):
                 doc = req.to_dict()['data'][0]
             return {'text': doc['text'], 'tags': doc['tags']}
 
-        self.server = Server(Config(app, port=self.port))
+        self.server = Server(Config(app, host=__default_host__, port=self.port))
 
     async def run_server(self):
         await self.server.serve()

@@ -8,7 +8,7 @@ from jina.excepts import RuntimeFailToStart
 from jina.helper import random_port
 from jina.orchestrate.pods.container import ContainerPod
 from jina.parsers import set_gateway_parser, set_pod_parser
-from tests.unit.helper import _validate_dummy_custom_gateway_response
+from tests.helper import _validate_dummy_custom_gateway_response
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
