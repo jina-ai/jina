@@ -12,7 +12,10 @@ from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 
-from ...yaml.dummy_gateway import DummyGateway
+from ...helper import (
+    _validate_custom_gateway_process,
+    _validate_dummy_custom_gateway_response,
+)
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 _dummy_gateway_yaml_path = os.path.join(cur_dir, '../../yaml/test-custom-gateway.yml')
@@ -81,20 +84,6 @@ def _start_worker_runtime(uses):
     return port, p
 
 
-def _validate_dummy_response(port, expected):
-    import requests
-
-    resp = requests.get(f'http://127.0.0.1:{port}/').json()
-    assert resp == expected
-
-
-def _validate_process(port):
-    import requests
-
-    resp = requests.get(f'http://127.0.0.1:{port}/stream?text=hello').json()
-    assert resp == {'text': 'helloworld', 'tags': {'processed': True}}
-
-
 @pytest.mark.parametrize(
     'uses,uses_with,expected',
     [
@@ -129,8 +118,8 @@ def _validate_process(port):
 def test_custom_gateway_no_executors(uses, uses_with, expected):
     worker_port, worker_process = _start_worker_runtime('ProcessExecutor')
     gateway_port, gateway_process = _start_gateway_runtime(uses, uses_with, worker_port)
-    _validate_dummy_response(gateway_port, expected)
-    _validate_process(gateway_port)
+    _validate_dummy_custom_gateway_response(gateway_port, expected)
+    _validate_custom_gateway_process(gateway_port)
     gateway_process.terminate()
     gateway_process.join()
     worker_process.terminate()

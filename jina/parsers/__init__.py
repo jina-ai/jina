@@ -1,5 +1,6 @@
 from jina.parsers.client import mixin_comm_protocol_parser
 from jina.parsers.helper import _SHOW_ALL_ARGS
+from jina.parsers.orchestrate.runtimes.container import mixin_container_runtime_parser
 from jina.parsers.orchestrate.runtimes.head import mixin_head_parser
 
 
@@ -80,6 +81,7 @@ def set_gateway_parser(parser=None):
     from jina.parsers.orchestrate.runtimes.worker import mixin_worker_runtime_parser
 
     mixin_base_ppr_parser(parser)
+    mixin_container_runtime_parser(parser)
     mixin_prefetch_parser(parser)
     mixin_http_gateway_parser(parser)
     mixin_graphql_parser(parser)

@@ -7,7 +7,7 @@ import re
 import signal
 import threading
 import time
-from typing import TYPE_CHECKING, Dict, Optional, Union
+from typing import TYPE_CHECKING, Callable, Dict, Optional, Union
 
 from jina import __docker_host__, __windows__
 from jina.excepts import BadImageNameError, DockerVersionError
@@ -157,6 +157,7 @@ def run(
     is_started: Union['multiprocessing.Event', 'threading.Event'],
     is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
     is_ready: Union['multiprocessing.Event', 'threading.Event'],
+    readiness_check: Optional[Callable[[str], bool]] = None,
 ):
     """Method to be run in a process that stream logs from a Container
 
@@ -180,6 +181,7 @@ def run(
     :param is_started: concurrency event to communicate runtime is properly started. Used for better logging
     :param is_shutdown: concurrency event to communicate runtime is terminated
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
+    :param readiness_check: function that receives an address string and returns whether a runtime is ready or not
     """
     import docker
 
@@ -224,6 +226,8 @@ def run(
         client.close()
 
         def _is_ready():
+            if readiness_check:
+                return readiness_check(runtime_ctrl_address)
             return AsyncNewLoopRuntime.is_ready(runtime_ctrl_address)
 
         def _is_container_alive(container) -> bool:
