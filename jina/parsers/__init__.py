@@ -88,7 +88,7 @@ def set_gateway_parser(parser=None):
     mixin_graphql_parser(parser)
     mixin_comm_protocol_parser(parser)
     mixin_gateway_parser(parser)
-    mixin_pod_parser(parser)
+    mixin_pod_parser(parser, pod_type='gateway')
 
     from jina.enums import DeploymentRoleType
 
