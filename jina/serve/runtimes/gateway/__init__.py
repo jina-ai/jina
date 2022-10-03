@@ -7,6 +7,7 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING, Optional, Union
 
 from jina import __default_host__
+from jina.enums import GatewayProtocolType
 from jina.excepts import PortAlreadyUsed
 from jina.helper import is_port_free
 from jina.parsers.helper import _set_gateway_uses
@@ -123,7 +124,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
         :return: True if status is ready else False.
         """
 
-        if protocol is None or protocol == 'grpc':
+        if protocol is None or protocol == GatewayProtocolType.GRPC:
             res = AsyncNewLoopRuntime.is_ready(ctrl_address)
         else:
             try:

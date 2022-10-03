@@ -10,6 +10,7 @@ import time
 from typing import TYPE_CHECKING, Callable, Dict, Optional, Union
 
 from jina import __docker_host__, __windows__
+from jina.enums import PodRoleType
 from jina.excepts import BadImageNameError, DockerVersionError
 from jina.helper import random_name, slugify
 from jina.importer import ImportExtensions
@@ -21,6 +22,7 @@ from jina.orchestrate.pods.container_helper import (
     get_gpu_device_requests,
 )
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.gateway import GatewayRuntime
 
 if TYPE_CHECKING:
     from docker.client import DockerClient
@@ -157,7 +159,6 @@ def run(
     is_started: Union['multiprocessing.Event', 'threading.Event'],
     is_shutdown: Union['multiprocessing.Event', 'threading.Event'],
     is_ready: Union['multiprocessing.Event', 'threading.Event'],
-    readiness_check: Optional[Callable[[str], bool]] = None,
 ):
     """Method to be run in a process that stream logs from a Container
 
@@ -181,7 +182,6 @@ def run(
     :param is_started: concurrency event to communicate runtime is properly started. Used for better logging
     :param is_shutdown: concurrency event to communicate runtime is terminated
     :param is_ready: concurrency event to communicate runtime is ready to receive messages
-    :param readiness_check: function that receives an address string and returns whether a runtime is ready or not
     """
     import docker
 
@@ -226,9 +226,12 @@ def run(
         client.close()
 
         def _is_ready():
-            if readiness_check:
-                return readiness_check(runtime_ctrl_address)
-            return AsyncNewLoopRuntime.is_ready(runtime_ctrl_address)
+            if args.pod_role == PodRoleType.GATEWAY:
+                return GatewayRuntime.is_ready(
+                    runtime_ctrl_address, protocol=args.protocol
+                )
+            else:
+                return AsyncNewLoopRuntime.is_ready(runtime_ctrl_address)
 
         def _is_container_alive(container) -> bool:
             import docker.errors
@@ -323,36 +326,10 @@ class ContainerPod(BasePod):
                 ctrl_host = self.args.host
 
             ctrl_address = f'{ctrl_host}:{self.args.port}'
-
-            net_node, runtime_ctrl_address = self._get_network_for_dind_linux(
-                client, ctrl_address
-            )
         finally:
             client.close()
 
-        return net_node, runtime_ctrl_address
-
-    def _get_network_for_dind_linux(self, client: 'DockerClient', ctrl_address: str):
-        import sys
-        from platform import uname
-
-        # Related to potential docker-in-docker communication. If `Runtime` lives already inside a container.
-        # it will need to communicate using the `bridge` network.
-        # In WSL, we need to set ports explicitly
-        net_mode, runtime_ctrl_address = None, ctrl_address
-        if sys.platform in ('linux', 'linux2') and 'microsoft' not in uname().release:
-            net_mode = 'host'
-            try:
-                bridge_network = client.networks.get('bridge')
-                if bridge_network:
-                    runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port}'
-            except Exception as ex:
-                self.logger.warning(
-                    f'Unable to set control address from "bridge" network: {ex!r}'
-                    f' Control address set to {runtime_ctrl_address}'
-                )
-
-        return net_mode, runtime_ctrl_address
+        return 'host', ctrl_address
 
     @property
     def _container(self):
