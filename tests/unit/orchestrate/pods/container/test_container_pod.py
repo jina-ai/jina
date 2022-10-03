@@ -264,12 +264,7 @@ def test_container_pod_custom_gateway(dummy_custom_gateway_docker_image_built):
     port = str(random_port())
     with ContainerPod(
         set_gateway_parser().parse_args(
-            [
-                '--uses',
-                'docker://custom-gateway',
-                '--port',
-                port,
-            ]
+            ['--uses', 'docker://custom-gateway', '--port', port, '--protocol', 'http']
         )
     ) as pod:
         container = pod._container
@@ -286,6 +281,3 @@ def test_container_pod_custom_gateway(dummy_custom_gateway_docker_image_built):
     client = docker.from_env()
     containers = client.containers.list()
     assert container.id not in containers
-    _validate_dummy_custom_gateway_response(
-        port, {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'}
-    )
