@@ -452,9 +452,9 @@ class ProcessDocuments(Executor):
 f = Flow().add(uses=ProcessDocuments).add(uses=PrintDocuments)
 
 with f:
-    f.post(on='/change_in_place', inputs=DocumentArray(Document(text='request')))
+    f.post(on='/change_in_place', inputs=DocumentArray(Document(text='request1')))
     f.post(
-        on='/return_different_docarray', inputs=DocumentArray(Document(text='request'))
+        on='/return_different_docarray', inputs=DocumentArray(Document(text='request2'))
     )
 ```
 
