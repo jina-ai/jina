@@ -63,7 +63,7 @@ async def create_all_flow_deployments_and_wait_ready(
             except Exception as e:
                 # some objects are not successfully created since they exist from previous files
                 logger.info(
-                    f'Did not create ressource from {file} for pod {deployment_name} due to {e} '
+                    f'Did not create resource from {file} for pod {deployment_name} due to {e} '
                 )
                 pass
 
@@ -96,11 +96,11 @@ async def create_all_flow_deployments_and_wait_ready(
                 api_response.status.ready_replicas is not None
                 and api_response.status.ready_replicas == expected_num_replicas
             ):
-                logger.info(f'Deploymnt {deployment_name} is now ready')
+                logger.info(f'Deployment {deployment_name} is now ready')
                 deployments_ready.append(deployment_name)
             else:
                 logger.info(
-                    f'Deploymnt {deployment_name} is not ready yet: ready_replicas is {api_response.status.ready_replicas} not equal to {expected_num_replicas}'
+                    f'Deployment {deployment_name} is not ready yet: ready_replicas is {api_response.status.ready_replicas} not equal to {expected_num_replicas}'
                 )
 
         for deployment_name in deployments_ready:

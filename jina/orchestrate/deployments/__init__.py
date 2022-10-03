@@ -10,11 +10,12 @@ from contextlib import ExitStack
 from itertools import cycle
 from typing import Dict, List, Optional, Set, Union
 
+from hubble.executor.helper import replace_secret_of_hub_uri
+from hubble.executor.hubio import HubIO
+
 from jina import __default_executor__, __default_host__, __docker_host__, helper
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.helper import CatchAllCleanupContextManager, _parse_ports
-from jina.hubble.helper import replace_secret_of_hub_uri
-from jina.hubble.hubio import HubIO
 from jina.jaml.helper import complete_path
 from jina.orchestrate.pods.factory import PodFactory
 from jina.parsers.helper import _set_gateway_uses

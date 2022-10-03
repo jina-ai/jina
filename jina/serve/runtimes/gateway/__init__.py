@@ -1,6 +1,9 @@
 import argparse
 import asyncio
 import os
+import urllib
+from abc import ABC
+from http import HTTPStatus
 from typing import TYPE_CHECKING, Optional, Union
 
 from jina import __default_host__
@@ -107,3 +110,52 @@ class GatewayRuntime(AsyncNewLoopRuntime):
     async def async_run_forever(self):
         """Running method of the server."""
         await self.gateway.run_server()
+
+    @staticmethod
+    def is_ready(ctrl_address: str, protocol: Optional[str] = 'grpc', **kwargs) -> bool:
+        """
+        Check if status is ready.
+
+        :param ctrl_address: the address where the control request needs to be sent
+        :param protocol: protocol of the gateway runtime
+        :param kwargs: extra keyword arguments
+
+        :return: True if status is ready else False.
+        """
+
+        if protocol is None or protocol == 'grpc':
+            res = AsyncNewLoopRuntime.is_ready(ctrl_address)
+        else:
+            try:
+                conn = urllib.request.urlopen(url=f'http://{ctrl_address}')
+                res = conn.code == HTTPStatus.OK
+            except:
+                res = False
+        return res
+
+    @classmethod
+    def wait_for_ready_or_shutdown(
+        cls,
+        timeout: Optional[float],
+        ready_or_shutdown_event: Union['multiprocessing.Event', 'threading.Event'],
+        ctrl_address: str,
+        protocol: Optional[str] = 'grpc',
+        **kwargs,
+    ):
+        """
+        Check if the runtime has successfully started
+
+        :param timeout: The time to wait before readiness or failure is determined
+        :param ctrl_address: the address where the control message needs to be sent
+        :param ready_or_shutdown_event: the multiprocessing event to detect if the process failed or is ready
+        :param protocol: protocol of the gateway runtime
+        :param kwargs: extra keyword arguments
+
+        :return: True if is ready or it needs to be shutdown
+        """
+        return super().wait_for_ready_or_shutdown(
+            timeout=timeout,
+            ready_or_shutdown_event=ready_or_shutdown_event,
+            ctrl_address=ctrl_address,
+            protocol=protocol,
+        )

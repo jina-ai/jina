@@ -351,6 +351,59 @@ matches = queried_docs[0].matches
 print(f"Matched documents: {len(matches)}")
 ```
 
+## Update your Executor in Kubernetes
+
+In Kubernetes, you can update your Executors by patching the Deployment corresponding to your Executor.
+
+
+For instance, in the example above, you may want to change set a `batch_size` parameter for the CLIPEncoder.
+
+To do this, change the content of the Deployment inside the `executor.yml` dumped by `.to_kubernetes_yaml`.
+
+You need to add `--uses_with` and pass the batch size argument to it. This will be passed to the container inside the Deployment:
+
+```yaml
+    spec:
+      containers:
+      - args:
+        - executor
+        - --name
+        - encoder
+        - --k8s-namespace
+        - custom-namespace
+        - --uses
+        - config.yml
+        - --port
+        - '8080'
+        - --uses-metas
+        - '{}'
+        - --uses-with
+        - '{"batch_size": 64}'
+        - --native
+        command:
+        - jina
+```
+
+After doing so, you can re-apply your configuration and the new Executor will be deployed without affecting the other unchanged Deployments:
+
+```shell script
+kubectl apply -R -f ./k8s_flow
+```
+
+````{admonition} Other patching options
+:class: seealso
+
+Within Kubernetes, Executors are ordinary Deployments.
+This means that you can use other patching options provided by Kubernetes:
+
+
+- `kubectl replace` to replace an Executor using a complete configuration file
+- `kubectl patch` to patch an Executor using only a partial configuration file
+- `kubectl edit` to edit an Executor configuration on the fly in your editor
+
+You can find more information about these commands in the [official Kubernetes documentation](https://kubernetes.io/docs/concepts/cluster-administration/manage-deployment/).
+````
+
 ## Key takeaways
 
 To put it succinctly, there are just three key takeaways about deploying a Jina Flow using Kubernetes:

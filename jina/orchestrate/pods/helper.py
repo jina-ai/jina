@@ -3,9 +3,10 @@ from copy import deepcopy
 from functools import partial
 from typing import TYPE_CHECKING
 
-from jina.enums import PodRoleType
-from jina.hubble.helper import is_valid_huburi
-from jina.hubble.hubio import HubIO
+from hubble.executor.helper import is_valid_huburi
+from hubble.executor.hubio import HubIO
+
+from jina.enums import GatewayProtocolType, PodRoleType
 from jina.parsers.helper import _set_gateway_uses
 
 if TYPE_CHECKING:
