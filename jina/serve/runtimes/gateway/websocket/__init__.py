@@ -1,1 +1,1 @@
-from .gateway import WebSocketGateway
+from jina.serve.runtimes.gateway.websocket.gateway import WebSocketGateway

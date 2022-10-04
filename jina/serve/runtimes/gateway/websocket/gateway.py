@@ -4,9 +4,8 @@ from typing import Optional
 
 from jina import __default_host__
 from jina.importer import ImportExtensions
-
-from ....gateway import BaseGateway
-from .app import get_fastapi_app
+from jina.serve.gateway import BaseGateway
+from jina.serve.runtimes.gateway.websocket.app import get_fastapi_app
 
 
 class WebSocketGateway(BaseGateway):
