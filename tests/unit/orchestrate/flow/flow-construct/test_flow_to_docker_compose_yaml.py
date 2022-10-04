@@ -73,8 +73,6 @@ def test_flow_to_docker_compose_yaml(tmpdir, protocol):
         gateway_args[gateway_args.index('--deployments-addresses') + 1]
         == '{"executor0": ["executor0:8081"], "executor1": ["executor1-head:8081"], "executor2": ["executor2-head:8081"]}'
     )
-    assert '--pod-role' in gateway_args
-    assert gateway_args[gateway_args.index('--pod-role') + 1] == 'GATEWAY'
     if protocol == 'http':
         assert '--protocol' in gateway_args
         assert gateway_args[gateway_args.index('--protocol') + 1] == 'HTTP'
