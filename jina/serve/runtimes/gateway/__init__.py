@@ -124,7 +124,11 @@ class GatewayRuntime(AsyncNewLoopRuntime):
         :return: True if status is ready else False.
         """
 
-        if protocol is None or protocol == GatewayProtocolType.GRPC:
+        if (
+            protocol is None
+            or protocol == GatewayProtocolType.GRPC
+            or protocol == 'grpc'
+        ):
             res = AsyncNewLoopRuntime.is_ready(ctrl_address)
         else:
             try:
