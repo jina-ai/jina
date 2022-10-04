@@ -33,15 +33,15 @@ def _get_flow_parser():
 
 
 def _get_exec_parser():
-    from jina.jaml.parsers.executor.legacy import LegacyParser
+    from jina.jaml.parsers.executor.legacy import ExecutorLegacyParser
 
-    return [LegacyParser], LegacyParser
+    return [ExecutorLegacyParser], ExecutorLegacyParser
 
 
 def _get_gateway_parser():
-    from jina.jaml.parsers.gateway.legacy import LegacyParser
+    from jina.jaml.parsers.gateway.legacy import GatewayLegacyParser
 
-    return [LegacyParser], LegacyParser
+    return [GatewayLegacyParser], GatewayLegacyParser
 
 
 def _get_default_parser():

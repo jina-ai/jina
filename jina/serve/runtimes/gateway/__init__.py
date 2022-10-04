@@ -23,9 +23,12 @@ if TYPE_CHECKING:
 
 
 class GatewayRuntime(AsyncNewLoopRuntime):
-    # TODO: more docs here
     """
     The Gateway Runtime that starts a gateway pod.
+    The GatewayRuntime is associated with a Gateway class that inherits :class:`~BaseGateway`.
+    While the Gateway class takes care of server and application logic and serving gRPC/HTTP/Websocket API,
+    The GatewayRuntime is responsible of instantiating the right Gateway class, injecting right parameters to it and
+    running/terminating the Gateway object.
     """
 
     def __init__(

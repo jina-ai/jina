@@ -1,6 +1,6 @@
 import pytest
 
-from jina.jaml.parsers.executor.legacy import LegacyParser
+from jina.jaml.parsers.executor.legacy import ExecutorLegacyParser
 
 
 class A00:
@@ -53,7 +53,7 @@ A_dummy_arguments = {'self', 'args', 'kwargs'}
 )
 def test_get_all_arguments(input_class, expected_arguments):
     """
-    Tests LegacyParser._get_all_arguments retriving all arguments from a class and any class it inherits from
+    Tests ExecutorLegacyParser._get_all_arguments retriving all arguments from a class and any class it inherits from
     """
-    arguments_from_cls = LegacyParser._get_all_arguments(class_=input_class)
+    arguments_from_cls = ExecutorLegacyParser._get_all_arguments(class_=input_class)
     assert arguments_from_cls == expected_arguments
