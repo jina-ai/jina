@@ -7,48 +7,13 @@ from typing import TYPE_CHECKING, Callable, Optional
 from jina.helper import convert_tuple_to_list
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
-from jina.serve.helper import wrap_func
+from jina.serve.helper import store_init_kwargs, wrap_func
 from jina.serve.streamer import GatewayStreamer
 
 __all__ = ['BaseGateway']
 
 if TYPE_CHECKING:
     from prometheus_client import CollectorRegistry
-
-# TODO make this common with jina/serve/executors/decorators.py
-def store_init_kwargs(func: Callable) -> Callable:
-    """Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML
-    :param func: the function to decorate
-    :return: the wrapped function
-    """
-
-    @functools.wraps(func)
-    def arg_wrapper(self, *args, **kwargs):
-        if func.__name__ != '__init__':
-            raise TypeError(
-                'this decorator should only be used on __init__ method of a gateway'
-            )
-        taboo = {'self', 'args', 'kwargs'}
-        all_pars = inspect.signature(func).parameters
-        tmp = {k: v.default for k, v in all_pars.items() if k not in taboo}
-        tmp_list = [k for k in all_pars.keys() if k not in taboo]
-        # set args by aligning tmp_list with arg values
-        for k, v in zip(tmp_list, args):
-            tmp[k] = v
-        # set kwargs
-        for k, v in kwargs.items():
-            if k in tmp:
-                tmp[k] = v
-
-        if hasattr(self, '_init_kwargs_dict'):
-            self._init_kwargs_dict.update(tmp)
-        else:
-            self._init_kwargs_dict = tmp
-        convert_tuple_to_list(self._init_kwargs_dict)
-        f = func(self, *args, **kwargs)
-        return f
-
-    return arg_wrapper
 
 
 class GatewayType(type(JAMLCompatible), type):
@@ -79,7 +44,9 @@ class GatewayType(type(JAMLCompatible), type):
         if cls_id not in reg_cls_set:
             reg_cls_set.add(cls_id)
             setattr(cls, '_registered_class', reg_cls_set)
-            wrap_func(cls, ['__init__'], store_init_kwargs)
+            wrap_func(
+                cls, ['__init__'], store_init_kwargs, taboo={'self', 'args', 'kwargs'}
+            )
         return cls
 
 
