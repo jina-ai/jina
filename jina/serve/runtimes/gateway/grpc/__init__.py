@@ -28,7 +28,7 @@ class GRPCGatewayRuntime(GatewayRuntime):
         self.gateway = GRPCGateway(
             name=self.name,
             grpc_server_options=self.args.grpc_server_options,
-            grpc_tracing_server_interceptors=[self.aio_tracing_server_interceptor()],
+            grpc_tracing_server_interceptors=self.aio_tracing_server_interceptor(),
             port=self.args.port,
             ssl_keyfile=self.args.ssl_keyfile,
             ssl_certfile=self.args.ssl_certfile,

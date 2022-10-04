@@ -62,6 +62,8 @@ class GatewayStreamer:
             retries,
         )
         self.runtime_name = runtime_name
+        self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
+        self.tracing_client_interceptor = tracing_client_interceptor
 
         self._connection_pool = self._create_connection_pool(
             executor_addresses,
