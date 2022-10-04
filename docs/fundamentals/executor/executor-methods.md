@@ -28,11 +28,11 @@ import asyncio
 class RequestExecutor(Executor):
     @requests(
         on=['/index', '/search']
-    )  # foo will be bound to `/index` and `/search` endpoints
+    )  # foo is bound to `/index` and `/search` endpoints
     def foo(self, **kwargs):
         print(f'Calling foo')
 
-    @requests(on='/other')  # bar will be bound to `/other` endpoint
+    @requests(on='/other')  # bar is bound to `/other` endpoint
     async def bar(self, **kwargs):
         await asyncio.sleep(1.0)
         print(f'Calling bar')
@@ -63,7 +63,7 @@ Calling foo
 ### Default binding
 
 A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints.
-This means it is the fallback handler for endpoints that are not found. `f.post(on='/blah', ...)` will invoke `MyExecutor.foo`.
+This means it is the fallback handler for endpoints that are not found. `f.post(on='/blah', ...)` invokes `MyExecutor.foo`.
 
 ```python
 from jina import Executor, requests
@@ -85,7 +85,7 @@ class MyExecutor(Executor):
 ### No binding
 
 A class with no `@requests` binding plays no part in the Flow. 
-The request will simply pass through without any processing.
+The request simply passes through without any processing.
 
 ## Arguments
 
@@ -369,7 +369,7 @@ with f:
   
 ## Exception handling
 
-Exceptions raised inside `@requests`-decorated functions can simply be raised. The Flow will handle it.
+Exceptions raised inside `@requests`-decorated functions can simply be raised. The Flow handles it.
 
 ```python
 from jina import Executor, requests
@@ -431,14 +431,14 @@ class PrintDocuments(Executor):
 class ProcessDocuments(Executor):
     @requests(on='/change_in_place')
     def in_place(self, docs, **kwargs):
-        # This executor will only work on `docs` and will not consider any other arguments
+        # This Executor only works on `docs` and doesn't consider any other arguments
         for doc in docs:
             print(f' ProcessDocuments: received document with text "{doc.text}"')
             doc.text = 'I changed the executor in place'
 
     @requests(on='/return_different_docarray')
     def ret_docs(self, docs, **kwargs):
-        # This executor will only work on `docs` and will not consider any other arguments
+        # This executor only works on `docs` and doesn't consider any other arguments
         ret = DocumentArray()
         for doc in docs:
             print(f' ProcessDocuments: received document with text: "{doc.text}"')

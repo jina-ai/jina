@@ -14,7 +14,7 @@ It encapsulates functions that process `DocumentArray`s. Inside the Executor, th
 1. An Executor should subclass directly from the `jina.Executor` class. An Executor can also be a `dataclass`
 2. An Executor class is a bag of functions with shared state or configuration (via `self`); it can contain an arbitrary number of
 functions with arbitrary names.
-3. Functions decorated by {class}`~jina.requests` will be invoked according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions.
+3. Functions decorated by {class}`~jina.requests` are invoked according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions.
 
 ## Constructor
 
@@ -70,7 +70,7 @@ You might need to execute some logic when your Executor's destructor is called.
 
 For example, if you want to persist data to disk (e.g. in-memory indexed data, fine-tuned model,...) you can overwrite the {meth}`~jina.serve.executors.BaseExecutor.close` method and add your logic.
 
-Jina will ensure the {meth}`~jina.serve.executors.BaseExecutor.close` method is executed when the Executor is terminated inside a {class}`~jina.Flow` or when deployed in any cloud-native environment.
+Jina ensures the {meth}`~jina.serve.executors.BaseExecutor.close` method is executed when the Executor is terminated inside a {class}`~jina.Flow` or when deployed in any cloud-native environment.
 
 You can think of this as Jina using the Executor as a context manager, making sure that the {meth}`~jina.serve.executors.BaseExecutor.close` method is always executed.
 
@@ -108,7 +108,7 @@ Some of these arguments can be used when developing the internal logic of the Ex
 These `special` arguments are `workspace`, `requests`, `metas`, `runtime_args`.
 
 Another alternative is to declare your `Executor` as a [dataclass](https://docs.python.org/3/library/dataclasses.html). In this case, you don't provide a specific constructor. 
-Then, Jina will inject all these `special` arguments without you needing to call any specific method.
+Then, Jina injects all these `special` arguments without you needing to call any specific method.
 
 ```python
 from dataclasses import dataclass
