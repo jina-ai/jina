@@ -27,15 +27,23 @@ flow.to_docker_compose_yaml('docker-compose.yml')
 Jina will generate a `docker-compose.yml` configuration file that you can use directly with 
 `docker-compose` and corresponds to your `Flow`, avoiding the overhead of manually defining all the services needed for the `Flow`.
 
-```{caution}
+````{admonition} Use docker based Executors
+:class: caution
 All Executors in the Flow should be used with `jinahub+docker://...` or `docker://...`.
-```
+````
 
-```{caution}
+````{admonition} Health check available from 3.1.3
+:class: caution
 If you are using Executor which rely on docker image built with a jina version prior to 3.1.3, please remove the 
 health check from the dump yaml file as they are only compatible with 3.1.3+ otherwise your docker compose services will 
 always be `unhealthy`
-```
+````
+
+````{admonition} Matching jina versions
+:class: caution
+If you alter the docker compose generated file to adapt the docker images used in the solution, try to make sure that all the services included
+the gateway are built with the same jina version to guarantee compatibility.
+````
 ## Example: Indexing and searching images using CLIPEncoder and ANNLiteIndexer
 
 To follow this how-to, you should first ensure that [`Docker Compose`](https://docs.docker.com/compose/install/) is installed locally.
