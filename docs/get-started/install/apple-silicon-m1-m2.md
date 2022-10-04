@@ -1,6 +1,6 @@
 # On Apple Silicon
 
-If you own a MacOS device with an Apple Silicon M1/M2 chip, you can run Jina **natively** on it (instead of running under Rosetta) and enjoy up to 10x faster performance. This chapter summarizes how to install Jina.
+If you own a macOS device with an Apple Silicon M1/M2 chip, you can run Jina **natively** on it (instead of running under Rosetta) and enjoy up to 10x faster performance. This chapter summarizes how to install Jina.
 
 ## Check terminal and device
 
