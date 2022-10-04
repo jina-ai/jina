@@ -386,8 +386,6 @@ def test_docker_compose_gateway(deployments_addresses, custom_gateway):
     assert '--port' in args
     assert args[args.index('--port') + 1] == '32465'
     assert '--env' not in args
-    assert '--pod-role' in args
-    assert args[args.index('--pod-role') + 1] == 'GATEWAY'
     if deployments_addresses is not None:
         assert '--deployments-addresses' in args
         assert args[args.index('--deployments-addresses') + 1] == json.dumps(
