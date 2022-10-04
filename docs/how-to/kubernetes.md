@@ -221,6 +221,11 @@ Instead, you may want to disable Jina level retries by setting `Flow(retries=0)`
 YAML `with` block.
 ````
 
+````{admonition} Matching jina versions
+:class: caution
+If you change the Docker images in your Docker Compose generated file, ensure that all the services included in the gateway are built with the same Jina version to guarantee compatibility.
+````
+
 ### Deploy your Flow with shards and replicas
 
 After your service mesh is installed, your cluster is ready to run a Flow with scaled Executors.
