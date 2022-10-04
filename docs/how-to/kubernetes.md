@@ -223,8 +223,7 @@ YAML `with` block.
 
 ````{admonition} Matching jina versions
 :class: caution
-If you alter the Kubernetes generated files to adapt the docker images used in the solution, try to make sure that all the services included
-the gateway are built with the same jina version to guarantee compatibility.
+If you change the Docker images in your Docker Compose generated file, ensure that all the services included in the gateway are built with the same Jina version to guarantee compatibility.
 ````
 
 ### Deploy your Flow with shards and replicas
