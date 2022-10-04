@@ -49,10 +49,6 @@ class GatewayRuntime(AsyncNewLoopRuntime):
 
         Setup the uvicorn server.
         """
-        if not self.args.proxy and os.name != 'nt':
-            os.unsetenv('http_proxy')
-            os.unsetenv('https_proxy')
-
         if not (is_port_free(__default_host__, self.args.port)):
             raise PortAlreadyUsed(f'port:{self.args.port}')
 
@@ -73,6 +69,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
                 ssl_keyfile=self.args.ssl_keyfile,
                 ssl_certfile=self.args.ssl_certfile,
                 uvicorn_kwargs=self.args.uvicorn_kwargs,
+                proxy=self.args.proxy,
                 **uses_with,
             ),
             uses_metas={},
