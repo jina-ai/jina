@@ -326,10 +326,36 @@ class ContainerPod(BasePod):
                 ctrl_host = self.args.host
 
             ctrl_address = f'{ctrl_host}:{self.args.port}'
+
+            net_node, runtime_ctrl_address = self._get_network_for_dind_linux(
+                client, ctrl_address
+            )
         finally:
             client.close()
 
-        return 'host', ctrl_address
+        return net_node, runtime_ctrl_address
+
+    def _get_network_for_dind_linux(self, client: 'DockerClient', ctrl_address: str):
+        import sys
+        from platform import uname
+
+        # Related to potential docker-in-docker communication. If `Runtime` lives already inside a container.
+        # it will need to communicate using the `bridge` network.
+        # In WSL, we need to set ports explicitly
+        net_mode, runtime_ctrl_address = None, ctrl_address
+        if sys.platform in ('linux', 'linux2') and 'microsoft' not in uname().release:
+            net_mode = 'host'
+            try:
+                bridge_network = client.networks.get('bridge')
+                if bridge_network:
+                    runtime_ctrl_address = f'{bridge_network.attrs["IPAM"]["Config"][0]["Gateway"]}:{self.args.port}'
+            except Exception as ex:
+                self.logger.warning(
+                    f'Unable to set control address from "bridge" network: {ex!r}'
+                    f' Control address set to {runtime_ctrl_address}'
+                )
+
+        return net_mode, runtime_ctrl_address
 
     @property
     def _container(self):
