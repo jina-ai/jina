@@ -2,12 +2,12 @@ import os
 
 import yaml
 
+from jina import Gateway
 from jina.jaml import JAML
 from jina.serve.executors import BaseExecutor
-from jina.serve.gateway import BaseGateway
 
 
-class MyDummyGateway(BaseGateway):
+class MyDummyGateway(Gateway):
     async def setup_server(self):
         self.server = 'dummy server'
 
@@ -31,14 +31,14 @@ def test_cls_from_tag():
 def test_base_jtype(tmpdir):
     gateway_path = os.path.join(tmpdir, 'gateway.yml')
 
-    g = BaseGateway()
+    g = Gateway()
     g.save_config(gateway_path)
     with open(gateway_path, 'r') as file:
         conf = yaml.safe_load(file)
         assert 'jtype' in conf
-        assert conf['jtype'] == 'BaseGateway'
+        assert conf['jtype'] == 'Gateway'
 
-    assert type(BaseGateway.load_config(gateway_path)) == BaseGateway
+    assert type(Gateway.load_config(gateway_path)) == Gateway
 
 
 def test_custom_jtype(tmpdir):
@@ -51,4 +51,4 @@ def test_custom_jtype(tmpdir):
         assert 'jtype' in conf
         assert conf['jtype'] == 'MyDummyGateway'
 
-    assert type(BaseGateway.load_config(gateway_path)) == MyDummyGateway
+    assert type(Gateway.load_config(gateway_path)) == MyDummyGateway

@@ -4,9 +4,8 @@ from docarray import Document, DocumentArray
 from pydantic import BaseModel
 from uvicorn import Config, Server
 
-from jina import __default_host__
+from jina import Gateway, __default_host__
 from jina.clients.request import request_generator
-from jina.serve.gateway import BaseGateway
 
 
 class DummyResponseModel(BaseModel):
@@ -20,7 +19,7 @@ class ProcessedResponseModel(BaseModel):
     tags: Optional[dict]
 
 
-class DummyGateway(BaseGateway):
+class DummyGateway(Gateway):
     def __init__(
         self,
         port: int = None,
