@@ -36,7 +36,7 @@ def Client(
     """Create a Client. Client is how user interact with Flow
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
-    :param host: The host address of the runtime, by default it is 0.0.0.0.
+    :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
     :param port: The port of the Gateway, which the client should connect to.
     :param protocol: Communication protocol between server and client.
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
@@ -80,7 +80,7 @@ def Client(
         c.post(on='/index', inputs=Document(text='hello!'))
 
     :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
-    :param host: The host address of the runtime, by default it is 0.0.0.0.
+    :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
     :param port: The port of the Gateway, which the client should connect to.
     :param protocol: Communication protocol between server and client.
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy

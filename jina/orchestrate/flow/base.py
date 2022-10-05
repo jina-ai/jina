@@ -127,7 +127,7 @@ class Flow(
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
@@ -226,7 +226,7 @@ class Flow(
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
@@ -257,7 +257,7 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535]
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
@@ -385,7 +385,7 @@ class Flow(
                     f.bock()  # serve Flow
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
@@ -417,7 +417,7 @@ class Flow(
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
@@ -448,7 +448,7 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535]
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
@@ -911,7 +911,7 @@ class Flow(
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
@@ -939,7 +939,7 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535]
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param py_modules: The customized python modules need to be imported before loading the executor
 
@@ -1060,7 +1060,7 @@ class Flow(
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
@@ -1088,7 +1088,7 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535]
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param py_modules: The customized python modules need to be imported before loading the executor
 
