@@ -4,6 +4,8 @@ import functools
 import inspect
 from typing import TYPE_CHECKING, Any, Callable, Optional, Sequence
 
+from opentelemetry import trace
+
 from jina.helper import convert_tuple_to_list
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
@@ -72,12 +74,15 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         # TODO: original implementation also passes args, maybe move this to a setter/initializer func
         self.logger = JinaLogger(self.name)
 
-    def set_streamer(
+    def inject_dependencies(
         self,
         args: 'argparse.Namespace' = None,
         timeout_send: Optional[float] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
         runtime_name: Optional[str] = None,
+        opentelemetry_tracing: Optional[bool] = False,
+        tracer_provider: Optional[trace.TracerProvider] = None,
+        grpc_tracing_server_interceptors: Optional[Sequence[Any]] = None,
         aio_tracing_client_interceptors: Optional[Sequence[Any]] = None,
         tracing_client_interceptor: Optional[Any] = None,
     ):
@@ -87,9 +92,15 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         :param timeout_send: grpc connection timeout
         :param metrics_registry: metric registry when monitoring is enabled
         :param runtime_name: name of the runtime providing the streamer
-        :param aio_tracing_client_interceptors: List of async io gprc client tracing interceptors for tracing requests if asycnio is True
-        :param tracing_client_interceptor: A gprc client tracing interceptor for tracing requests if asyncio is False
+        :param opentelemetry_tracing: Enables tracing is set to True.
+        :param tracer_provider: If tracing is enabled the tracer_provider will be used to instrument the code.
+        :param grpc_tracing_server_interceptors: List of async io gprc server tracing interceptors for tracing requests.
+        :param aio_tracing_client_interceptors: List of async io gprc client tracing interceptors for tracing requests if asycnio is True.
+        :param tracing_client_interceptor: A gprc client tracing interceptor for tracing requests if asyncio is False.
         """
+        self.opentelemetry_tracing = opentelemetry_tracing
+        self.tracer_provider = tracer_provider
+        self.grpc_tracing_server_interceptors = grpc_tracing_server_interceptors
         import json
 
         from jina.serve.streamer import GatewayStreamer

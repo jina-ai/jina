@@ -72,8 +72,6 @@ class GatewayRuntime(AsyncNewLoopRuntime):
                 ssl_certfile=self.args.ssl_certfile,
                 uvicorn_kwargs=self.args.uvicorn_kwargs,
                 proxy=self.args.proxy,
-                opentelemetry_tracing=self.opentelemetry_tracing,
-                tracer_provider=self.tracer_provider,
                 **uses_with,
             ),
             uses_metas={},
@@ -84,11 +82,14 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             extra_search_paths=self.args.extra_search_paths,
         )
 
-        self.gateway.set_streamer(
+        self.gateway.inject_dependencies(
             args=self.args,
             timeout_send=self.timeout_send,
             metrics_registry=self.metrics_registry,
             runtime_name=self.args.name,
+            opentelemetry_tracing=self.opentelemetry_tracing,
+            tracer_provider=self.tracer_provider,
+            grpc_tracing_server_interceptors=self.aio_tracing_server_interceptor(),
             aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(
                 self.tracer
             ),

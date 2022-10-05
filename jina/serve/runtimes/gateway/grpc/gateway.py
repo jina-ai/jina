@@ -20,7 +20,6 @@ class GRPCGateway(BaseGateway):
         self,
         port: Optional[int] = None,
         grpc_server_options: Optional[dict] = None,
-        grpc_tracing_server_interceptors: Optional[Sequence[Any]] = None,
         ssl_keyfile: Optional[str] = None,
         ssl_certfile: Optional[str] = None,
         **kwargs,
@@ -28,7 +27,6 @@ class GRPCGateway(BaseGateway):
         """Initialize the gateway
         :param port: The port of the Gateway, which the client should connect to.
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
-        :param grpc_tracing_server_interceptors: Optional list of aio grpc tracing server interceptors.
         :param ssl_keyfile: the path to the key file
         :param ssl_certfile: the path to the certificate file
         :param kwargs: keyword args
@@ -38,16 +36,17 @@ class GRPCGateway(BaseGateway):
         self.grpc_server_options = grpc_server_options
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
-        self.server = grpc.aio.server(
-            options=_get_grpc_server_options(self.grpc_server_options),
-            interceptors=grpc_tracing_server_interceptors,
-        )
         self.health_servicer = health.HealthServicer(experimental_non_blocking=True)
 
     async def setup_server(self):
         """
         setup GRPC server
         """
+        self.server = grpc.aio.server(
+            options=_get_grpc_server_options(self.grpc_server_options),
+            interceptors=self.grpc_tracing_server_interceptors,
+        )
+
         jina_pb2_grpc.add_JinaRPCServicer_to_server(
             self.streamer._streamer, self.server
         )
