@@ -86,7 +86,9 @@ def mixin_pod_parser(parser):
         '--port',
         type=str,
         default=str(helper.random_port()),
-        help='The port for input data to bind to, default is a random port between [49152, 65535]',
+        help='The port for input data to bind to, default is a random port between [49152, 65535].'
+        ' In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.'
+        ' Then, every resulting address will be considered as one replica of the Executor.',
     )
 
     gp.add_argument(

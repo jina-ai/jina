@@ -99,7 +99,9 @@ def _add_host(arg_group):
         '--host',
         type=str,
         default=__default_host__,
-        help=f'The host address of the runtime, by default it is {__default_host__}.',
+        help=f'The host address of the runtime, by default it is {__default_host__}.'
+        ' In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas.'
+        ' Then, every resulting address will be considered as one replica of the Executor.',
     )
 
 
