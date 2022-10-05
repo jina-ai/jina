@@ -181,24 +181,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._summary_method = None
             self._metrics_buffer = None
 
-    def _init_instrumentation(self, _runtime_args: Optional[Dict]):
-        instrumentating_module_name = (
-            _runtime_args.name
-            if hasattr(_runtime_args, 'name')
-            else self.__class__.__name__
-        )
+    def _init_instrumentation(self, _runtime_args: Optional[Dict] = {}):
+        instrumentating_module_name = _runtime_args.get('name', self.__class__.__name__)
 
-        self.tracer_provider = (
-            _runtime_args['tracer_provider']
-            if hasattr(_runtime_args, 'tracer_provider')
-            else trace.NoOpTracerProvider()
+        self.tracer_provider = _runtime_args.get(
+            'tracer_provider', trace.NoOpTracerProvider()
         )
 
         self.tracer = self.tracer_provider.get_tracer(instrumentating_module_name)
-        self.meter_provider = (
-            _runtime_args['meter_provider']
-            if hasattr(_runtime_args, 'meter_provider')
-            else metrics.NoOpMeterProvider()
+        self.meter_provider = _runtime_args.get(
+            'meter_provider', metrics.NoOpMeterProvider()
         )
         self.meter = self.meter_provider.get_meter(instrumentating_module_name)
 
