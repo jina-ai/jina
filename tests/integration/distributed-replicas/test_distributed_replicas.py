@@ -87,6 +87,27 @@ def test_distributed_replicas(input_docs, hosts):
         assert any([depl1_id != depl_id for depl_id in resp[1:, 'tags__uuid']])
 
 
+def test_distributed_replicas_host_parsing(input_docs):
+    port1, port2 = random_port(), random_port()
+    args1, args2 = _external_deployment_args(
+        num_shards=1, port=port1
+    ), _external_deployment_args(num_shards=1, port=port2)
+    depl1 = Deployment(args1)
+    depl2 = Deployment(args2)
+    hosts = f'localhost:{port1},localhost:{port2}'
+    with depl1, depl2:
+        flow = Flow().add(
+            host=hosts,
+            port=f'{port1},{port2}',
+            external=True,
+        )
+        with flow:
+            resp = flow.index(inputs=input_docs, request_size=2)
+
+        depl1_id = resp[0].tags['uuid']
+        assert any([depl1_id != depl_id for depl_id in resp[1:, 'tags__uuid']])
+
+
 @pytest.mark.parametrize('hosts', ['localhost,localhost', 'localhost'])
 def test_distributed_replicas_docker(input_docs, hosts, replica_docker_image_built):
     port1, port2 = random_port(), random_port()
