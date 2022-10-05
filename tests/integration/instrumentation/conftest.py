@@ -6,12 +6,7 @@ import pytest
 from jina.logging.logger import JinaLogger
 
 
-@pytest.fixture
-def logger():
-    return JinaLogger('instrumentation-testing')
-
-
-@pytest.fixture(scope='module')
+@pytest.fixture()
 def otlp_collector():
     file_dir = os.path.dirname(__file__)
     os.system(

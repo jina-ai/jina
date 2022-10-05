@@ -14,9 +14,9 @@ from tests.integration.instrumentation import (
 
 
 @pytest.mark.skip
-def test_websocket_gateway_instrumentation(logger, otlp_collector):
+def test_websocket_gateway_instrumentation(otlp_collector):
     f = Flow(
-        protocol='websocket',
+        protocol='grpc',
         opentelemetry_tracing=True,
         span_exporter_host='localhost',
         span_exporter_port=4317,
@@ -27,24 +27,15 @@ def test_websocket_gateway_instrumentation(logger, otlp_collector):
         span_exporter_port=4317,
     )
 
-    f.start()
+    with f:
+        # f.post(
+        #     f'/index',
+        #     {'data': [{'text': 'text_input'}]},
+        # )
 
-    c = Client(
-        host=f'ws://localhost:{f.port}',
-        opentelemetry_tracing=True,
-        span_exporter_host='localhost',
-        span_exporter_port=4317,
-    )
-    c.post(
-        f'/index',
-        {'data': [{'text': 'text_input'}]},
-    )
-
-    # give some time for the tracing and metrics exporters to finish exporting.
-    # the client is slow to export the data
-    logger.info('waiting until traces and metrics are exported...')
-    time.sleep(8)
-    f.close()
+        # give some time for the tracing and metrics exporters to finish exporting.
+        # the client is slow to export the data
+        time.sleep(8)
 
     services = get_services()
     expected_services = ['executor0/rep-0', 'gateway/rep-0', 'WebSocketClient']
