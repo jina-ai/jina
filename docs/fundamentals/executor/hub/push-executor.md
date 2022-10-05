@@ -1,14 +1,14 @@
 (push-executor)=
 # Publish
 
-If you want to share your {class}`~jina.Executor`s, you can push it to Jina Hub.
+If you want to share your {class}`~jina.Executor`, you can push it to Jina Hub.
 
-There are two types of sharing:
+There are two ways to share:
 - **Public** (default): Anyone can use public Executors without any restrictions.
-- **Private**: Only people that have the `secret` can use private Executors. 
+- **Private**: Only people with the `secret` can use private Executors. 
 
 (jina-hub-usage)=
-## First publish
+## Publishing for the first time
 
 ```bash
 jina hub push [--public/--private] <path_to_executor_folder>
@@ -16,20 +16,20 @@ jina hub push [--public/--private] <path_to_executor_folder>
 
 <script id="asciicast-tpvuZ9u0lU2IumRyLlly3JI93" src="https://asciinema.org/a/tpvuZ9u0lU2IumRyLlly3JI93.js" async></script>
 
-If you have logged in Jina, it will return `TASK_ID`. You need that to get build status and logs. 
+If you have logged into Jina, it will return a `TASK_ID`. You need that to get your Executor's build status and logs. 
 
-If you haven't logged in Jina, it will return `NAME` and `SECRET`. You will need them to use (if the Executor is private) or update the Executor. **Please keep them carefully.**
+If you haven't logged into Jina, it will return `NAME` and `SECRET`. You need them to use (if the Executor is private) or update the Executor. **Please keep them safe.**
 
 ````{admonition} Note
 :class: note
-If you are logged in to the Hub using our CLI tools (`jina auth login` or `jcloud login`), you can push and pull your executors without `SECRET`.
+If you are logged into the Hub using our CLI tools (`jina auth login` or `jcloud login`), you can push and pull your Executors without `SECRET`.
 ````
 
-You can then visit [the Hub portal](https://hub.jina.ai), click on the "Recent" tab and see your published Executor.
+You can then visit [Jina Hub](https://hub.jina.ai), select the "Recent" tab and see your published Executor.
 
 ````{admonition} Note
 :class: note
-If no `--public` or `--private` argument is provided, then it is **public** by default.
+If no `--public` or `--private` argument is provided, then an Executor is **public** by default.
 ````
 
 ````{admonition} Important
@@ -40,7 +40,7 @@ Anyone can use public Executors, but to use a private Executor you must know its
 
 ## Update published Executors
 
-To override or update a published Executor, you must have both `NAME` and `SECRET`.
+To override or update a published Executor, you must have both its `NAME` and `SECRET`.
 
 ```bash
 jina hub push [--public/--private] --force-update <NAME> --secret <SECRET> <path_to_executor_folder>
@@ -74,25 +74,25 @@ jina hub push [--public/--private] --force-update <NAME> --secret <SECRET> -t TA
 
 ### Protected tags
 
-If you don’t want some tags to be later overwritten to keep a stable, consistent behavior, 
-protected tags are the exact thing you are looking for.
+Protected tags prevent some tags being overwritten and ensures stable, consistent behavior.
 
-You can leverage the `--protected-tag` option to create protected tags. 
-After being pushed for the first time, the protected tags can not be pushed again.
+You can use the `--protected-tag` option to create protected tags. 
+After pushing for the first time, the protected tags cannot be pushed again.
 
 ```bash
 jina hub push [--public/--private] --force-update <NAME> --secret <SECRET> --protected-tag <PROTECTED_TAG_1> --protected-tag <PROTECTED_TAG_2> <path_to_executor_folder>
 ```
+
 ## Use environment variables
 
-Sometimes you might want to use private token in `requirements.txt` to install private dependencies. For security reasons, you don't want to expose this token to anyone else. The `--build-env` parameter could help with this situation. For example, now we have `requirements.txt` like below: 
+The `--build-env` parameter manages environment variables, letting you use a private token in `requirements.txt` to install private dependencies. For security reasons, you don't want to expose this token to anyone else. For example, we have the following `requirements.txt`: 
 
 ```txt
 # requirements.txt
 git+http://${YOUR_TOKEN}@github.com/your_private_repo 
 ```
 
-When doing `jina hub push`, you can pass the `--build-env` parameter:
+When running `jina hub push`, you can pass the `--build-env` parameter:
 
 ```bash
 jina hub push --build-env YOUR_TOKEN=foo
@@ -100,30 +100,29 @@ jina hub push --build-env YOUR_TOKEN=foo
 
 ````{admonition} Note
 :class: note
-There are restrictions in terms of naming environment variables:
-- `{` and `}` is required when using environment variables in `requirements.txt`. e.g `$YOUR_TOKEN` doesn't work as expected. 
-- Environment variables are limited to the uppercase letter and numbers and the `_` (underscore), not start with `_`. 
+There are restrictions when naming environment variables:
+- Environment variables must be wrapped in `{` and `}` in `requirements.txt`. i.e. `${YOUR_TOKEN}`, not `$YOUR_TOKEN`.  
+- Environment variables are limited to numbers, uppercase letters and `_` (underscore), and cannot start with `_`. 
 ````
 
 ````{admonition} Limitations
 :class: attention
 
-There are limitations if you push Executors via `--build-env` and pull/use it as source code (but doesn't matter if you use docker image): 
+There are limitations if you push Executors via `--build-env` and pull/use it as source code (this doesn't matter if you use a Docker image): 
 
-- When you use `jina hub pull jinahub://YOUR_EXECUTOR`, you must set the corresponding environment variable according to the prompt.
+- When you use `jina hub pull jinahub://YOUR_EXECUTOR`, you must set the corresponding environment variable according to the prompt:
 
   ```bash
   export YOUR_TOKEN=foo
   ```
 
-- When you use `.add(uses='jinahub://YOUR_EXECUTOR')` in Flow, you must set the corresponding environment variable also. 
-For example:
+- When you use `.add(uses='jinahub://YOUR_EXECUTOR')` in a Flow, you must set the corresponding environment variable:
 
     ```python
     from jina import Flow, Executor, requests, Document
     import os
 
-    os.environ["YOUR_TOKEN"] = 'foo'
+    os.environ['YOUR_TOKEN'] = 'foo'
     f = Flow().add(uses='jinahub://YOUR_EXECUTOR')
 
     with f:
@@ -131,7 +130,7 @@ For example:
     ```
 ````
 
-For multiple environment variables, we can pass it in this way:
+For multiple environment variables:
 
 ```bash
 jina hub push --build-env FIRST=foo --build-env SECOND=bar
@@ -139,16 +138,14 @@ jina hub push --build-env FIRST=foo --build-env SECOND=bar
 
 ## Building status of an Executor 
 
-You can query the build status of a pushed Executor by doing:
+To query the build status of a pushed Executor:
 
 ```bash
 jina hub status [<path_to_executor_folder>] [--id TASK_ID] [--verbose] [--replay]
 ```
 
-If set `--id TASK_ID`, you can get the build status of a specific build task.
-
-If set `--verbose`, verbose build logs will be printed.
-
-If set `--replay`, will print build status from the beginning.
+- The parameter `--id TASK_ID` gets the build status of a specific build task
+- The parameter `--verbose` prints verbose build logs.
+- The parameter `--replay`, prints build status from the beginning.
 
 <script id="asciicast-Asd8bQ9YqsuJBVV1V7EfWmCu3" src="https://asciinema.org/a/Asd8bQ9YqsuJBVV1V7EfWmCu3.js" async></script>
