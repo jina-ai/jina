@@ -24,7 +24,7 @@ class MyDummyGateway(Gateway):
 def test_cls_from_tag():
     assert JAML.cls_from_tag('MyDummyGateway') == MyDummyGateway
     assert JAML.cls_from_tag('!MyDummyGateway') == MyDummyGateway
-    assert JAML.cls_from_tag('BaseGateway') == BaseGateway
+    assert JAML.cls_from_tag('BaseGateway') == Gateway
     assert JAML.cls_from_tag('Nonexisting') is None
 
 
@@ -36,7 +36,7 @@ def test_base_jtype(tmpdir):
     with open(gateway_path, 'r') as file:
         conf = yaml.safe_load(file)
         assert 'jtype' in conf
-        assert conf['jtype'] == 'Gateway'
+        assert conf['jtype'] == 'BaseGateway'
 
     assert type(Gateway.load_config(gateway_path)) == Gateway
 
