@@ -58,14 +58,17 @@ If an external Executor needs multiple predecessors, reducing needs to be enable
 ````
 
 
-## Starting standalone Executors
+## Starting shared Executors
 
 The example above assumes that there already is an Executor running, and you just want to access
 it from your Flow.
 
 
 You can, however, also start your own standalone Executors, which can then be accessed from anywhere.
-In the following sections we will describe how to run standalone Executors via the Jina command line interface (CLI). For more options to run your Executor, including in Kubernetes and Docker Compose, please read the {ref}`Executor API section <serve-executor-standalone>`.
+In the following sections we will describe how to run shared Executors via the Jina command line interface (CLI).
+For more options to run your Executor, including in Kubernetes and Docker Compose, please read the {ref}`Executor API section <serve-executor-standalone>`.
+
+Though not part of this how-to, {ref}`served Executors <serve-executor-standalone>` can also be used as external Executors.
 
 
 ````{admonition} Advanced deployment options

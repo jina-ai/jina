@@ -109,3 +109,21 @@ The above example runs the `DummyHubExecutor` from Jina Hub locally on your comp
 The Executor you use needs to be already containerized and stored in an accessible registry. We recommend Jina Hub for this.
 ````
 
+````{admonition} Served vs. shared Executor
+:class: hint
+
+In Jina there are two ways of running standalone Executors: *Served Executors* and *shared Executors*.
+
+- A **served Executor* is launched by one of the means described above (`.serve()`, `to_kubernetes_yaml()`, or `to_docker_compose_yaml()`).
+It resides behind a {ref}`Gateway <architecture-overview>` and can thus be directly accessed by a {ref}`Client <client>`.
+It can also be used as part of a Flow.
+
+- A **shared Executor** is launched using the [Jina CLI](../cli/index.rst) and does *not* sit behind a Gateway.
+It is intended to be used in one or more Flows.
+Because a shared Executor does not reside behid a Gataway, it can not be directly accessed by a Client, but it requires
+fewer networking hops when used inside of a Flow.
+
+Both served and shared Executors can be used as part of a Flow, by adding them as an {ref}`external Executor <external-executors>`.
+
+````
+

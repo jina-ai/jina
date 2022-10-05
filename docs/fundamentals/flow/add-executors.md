@@ -113,7 +113,10 @@ from jina import Flow
 Flow().add(host='123.45.67.89', port=12345, external=True)
 ```
 
-This is adding an external Executor to the Flow. The Flow will not start or stop this Executor and assumes that is externally managed and available at `123.45.67.89:12345`
+This is adding an external Executor to the Flow.
+The Flow will not start or stop this Executor and assumes that is externally managed and available at `123.45.67.89:12345`.
+
+Both {ref}`served and shared Executors <serve-executor-standalone>` can be used as external Executors.
 
 You can also use external Executors with `tls` enabled.
 
