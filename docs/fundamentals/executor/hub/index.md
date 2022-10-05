@@ -1,16 +1,6 @@
 (jina-hub)=
 # Hub
 
-```{figure} https://docs.jina.ai/_images/hub-banner.png
-:width: 0 %
-:scale: 0 %
-```
-
-```{figure} img/hub-banner.png
-:scale: 0 %
-:width: 0 %
-```
-
 Now that you understand that {class}`~jina.Executor` is a building block in Jina, the following questions may arise:
 
 - Can I reuse my Executor in another project?
