@@ -1,16 +1,24 @@
+import functools
+
 import pytest
 
-from jina.serve.executors.decorators import store_init_kwargs, requests
 from jina.helper import iscoroutinefunction
+from jina.serve.executors import get_default_metas, get_executor_taboo
+from jina.serve.executors.decorators import requests
+from jina.serve.helper import store_init_kwargs, wrap_func
 
 
 def test_store_init_kwargs():
+    store_init_kwargs_decorator = functools.partial(
+        store_init_kwargs, taboo=get_executor_taboo()
+    )
+
     class A:
-        @store_init_kwargs
+        @store_init_kwargs_decorator
         def __init__(self, a, b, c, *args, **kwargs):
             pass
 
-        @store_init_kwargs
+        @store_init_kwargs_decorator
         def f(self, a, b, *args, **kwargs):
             pass
 

@@ -800,6 +800,7 @@ class ArgNamespace:
         """
         args = []
         from jina.serve.executors import BaseExecutor
+        from jina.serve.gateway import BaseGateway
 
         for k, v in kwargs.items():
             k = k.replace('_', '-')
@@ -812,6 +813,8 @@ class ArgNamespace:
                 elif isinstance(v, dict):
                     args.extend([f'--{k}', json.dumps(v)])
                 elif isinstance(v, type) and issubclass(v, BaseExecutor):
+                    args.extend([f'--{k}', v.__name__])
+                elif isinstance(v, type) and issubclass(v, BaseGateway):
                     args.extend([f'--{k}', v.__name__])
                 else:
                     args.extend([f'--{k}', str(v)])
@@ -1569,7 +1572,7 @@ def _parse_kwargs(kwargs: Dict[str, Any]) -> Dict[str, Any]:
             return_scheme['port'],
             return_scheme['protocol'],
             return_scheme['tls'],
-        ) = _parse_host_scheme(kwargs['host'])
+        ) = parse_host_scheme(kwargs['host'])
 
         for key, value in return_scheme.items():
             if value:
@@ -1592,7 +1595,7 @@ def _delete_host_slash(kwargs: Dict[str, Any]) -> Dict[str, Any]:
     return kwargs
 
 
-def _parse_host_scheme(host: str) -> Tuple[str, str, str, bool]:
+def parse_host_scheme(host: str) -> Tuple[str, str, str, bool]:
     scheme, _hostname, port = _parse_url(host)
 
     tls = None

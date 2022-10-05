@@ -4,6 +4,7 @@ from typing import List, Optional, Type
 from jina.excepts import BadYAMLVersion
 from jina.jaml import JAMLCompatible
 from jina.jaml.parsers.base import VersionedYAMLParser
+from jina.serve.gateway import BaseGateway
 
 
 def _get_all_parser(cls: Type['JAMLCompatible']):
@@ -19,6 +20,8 @@ def _get_all_parser(cls: Type['JAMLCompatible']):
         return _get_flow_parser()
     elif issubclass(cls, BaseExecutor):
         return _get_exec_parser()
+    elif issubclass(cls, BaseGateway):
+        return _get_gateway_parser()
     else:
         return _get_default_parser()
 
@@ -30,9 +33,15 @@ def _get_flow_parser():
 
 
 def _get_exec_parser():
-    from jina.jaml.parsers.executor.legacy import LegacyParser
+    from jina.jaml.parsers.executor.legacy import ExecutorLegacyParser
 
-    return [LegacyParser], LegacyParser
+    return [ExecutorLegacyParser], ExecutorLegacyParser
+
+
+def _get_gateway_parser():
+    from jina.jaml.parsers.gateway.legacy import GatewayLegacyParser
+
+    return [GatewayLegacyParser], GatewayLegacyParser
 
 
 def _get_default_parser():

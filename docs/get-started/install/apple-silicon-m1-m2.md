@@ -1,16 +1,16 @@
 # On Apple Silicon
 
-If you own a MacOS device with an Apple Silicon M1/M2 chip, you can run Jina **natively** on it (instead of running under Rosetta) and enjoy up to 10x faster performance. This chapter summarizes how to install Jina.
+If you own a macOS device with an Apple Silicon M1/M2 chip, you can run Jina **natively** on it (instead of running under Rosetta) and enjoy up to 10x faster performance. This chapter summarizes how to install Jina.
 
 ## Check terminal and device
 
-To make sure you are using the right terminal, run
+To ensure you are using the right terminal, run:
 
 ```bash
 uname -m
 ```
 
-and it should return
+It should return:
 
 ```text
 arm64
@@ -19,7 +19,7 @@ arm64
 
 ## Install Homebrew
 
-`brew` is a package manager for macOS. If you already install it you need to confirm it is actually installed for Apple Silicon not for Rosetta. To check that, run
+`brew` is a package manager for macOS. If you have already installed it, you need to confirm it is actually installed for Apple Silicon not for Rosetta. To check that, run:
 
 ```bash
 which brew
@@ -29,23 +29,23 @@ which brew
 /opt/homebrew/bin/brew
 ```
 
-If you find it is installed under `/usr/local/` instead of `/opt/homebrew/`, it means your `brew` is installed for Rosetta not for Apple Silicon. You need to reinstall it. [Here is an article on how to do it](https://apple.stackexchange.com/a/410829).
+If it's installed under `/usr/local/` instead of `/opt/homebrew/`, it means your `brew` is installed for Rosetta not for Apple Silicon. You need to [reinstall it](https://apple.stackexchange.com/a/410829).
 
 ```{danger}
-Reinstalling `brew` can be a destructive operation. Please make sure you have backed up your data before proceeding.
+Reinstalling `brew` can be a destructive operation. Ensure you have backed up your data before proceeding.
 ```
 
-To (re)install brew, run
+To (re)install brew, run:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-You may want to observe the output to check if it contains `/opt/homebrew` to make sure you are installing for Apple Silicon.
+You can observe the output to check if it contains `/opt/homebrew` to ensure you are installing for Apple Silicon.
 
 ## Install Python
 
-Python has to be installed for Apple Silicon as well. It is possible it is installed for Rosetta, and you are not aware of that. To confirm, run
+Python also has to be installed for Apple Silicon. It is possible it is installed for Rosetta, and you are not aware of that. To confirm, run:
 
 ```python
 import platform
@@ -53,26 +53,26 @@ import platform
 platform.machine()
 ```
 
-which should give
+This should output:
 
 ```text
 'arm64'
 ```
 
-If not, then you are using Python under Rosetta, and you need to install Python for Apple Silicon with `brew`.
+If not, then you are using Python under Rosetta, and you need to install Python for Apple Silicon with `brew`:
 
 
 ```bash
 brew install python3
 ```
 
-As of Aug 2022, this will install Python 3.10 natively for Apple Silicon.
+As of August 2022, this will install Python 3.10 natively for Apple Silicon.
 
-Make sure to note down where `python` and `pip` are installed to. In this example, they are installed to `/opt/homebrew/bin/python3` and `/opt/homebrew/opt/python@3.10/libexec/bin/pip` respectively.
+Ensure you note down where `python` and `pip` are installed. In this example, they are installed to `/opt/homebrew/bin/python3` and `/opt/homebrew/opt/python@3.10/libexec/bin/pip` respectively.
 
 ## Install dependencies wheels
 
-There are some core dependencies that Jina needs to run, whose wheels are not available on PyPI but fortunately are available on wheel. To install them, run
+There are some core dependencies that Jina needs to run, whose wheels are not available on PyPI but fortunately are available as wheels. To install them, run:
 
 ```bash
 brew install protobuf numpy
@@ -80,7 +80,7 @@ brew install protobuf numpy
 
 ## Install Jina
 
-Now we can install Jina via `pip`. Note you need to use the right one:
+Now we can install Jina via `pip`. Ensure you use the correct `pip`:
 
 ```bash
 /opt/homebrew/opt/python@3.10/libexec/bin/pip install jina
@@ -143,7 +143,7 @@ Congratulations! You have successfully installed Jina on Apple Silicon.
 
 ````{tip}
 
-To install MPS-enabled PyTorch, run
+To install MPS-enabled PyTorch, run:
 
 ```bash
 /opt/homebrew/opt/python@3.10/libexec/bin/pip install -U --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu

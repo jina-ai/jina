@@ -7,9 +7,10 @@ import re
 import signal
 import threading
 import time
-from typing import TYPE_CHECKING, Dict, Optional, Union
+from typing import TYPE_CHECKING, Callable, Dict, Optional, Union
 
 from jina import __docker_host__, __windows__
+from jina.enums import PodRoleType
 from jina.excepts import BadImageNameError, DockerVersionError
 from jina.helper import random_name, slugify
 from jina.importer import ImportExtensions
@@ -21,6 +22,7 @@ from jina.orchestrate.pods.container_helper import (
     get_gpu_device_requests,
 )
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.gateway import GatewayRuntime
 
 if TYPE_CHECKING:
     from docker.client import DockerClient
@@ -224,7 +226,12 @@ def run(
         client.close()
 
         def _is_ready():
-            return AsyncNewLoopRuntime.is_ready(runtime_ctrl_address)
+            if args.pod_role == PodRoleType.GATEWAY:
+                return GatewayRuntime.is_ready(
+                    runtime_ctrl_address, protocol=args.protocol
+                )
+            else:
+                return AsyncNewLoopRuntime.is_ready(runtime_ctrl_address)
 
         def _is_container_alive(container) -> bool:
             import docker.errors

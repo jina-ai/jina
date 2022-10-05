@@ -315,13 +315,12 @@ def test_failed_successful_request_count(port_generator, failing_executor):
         resp = req.get(f'http://localhost:{port0}/')
 
         assert (
-            f'jina_successful_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 5.0'
+            f'jina_successful_requests_total{{runtime_name="gateway/rep-0"}} 5.0'
             in str(resp.content)
         )
 
-        assert (
-            f'jina_failed_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 5.0'
-            in str(resp.content)
+        assert f'jina_failed_requests_total{{runtime_name="gateway/rep-0"}} 5.0' in str(
+            resp.content
         )
 
 
@@ -346,11 +345,10 @@ def test_timeout_send(port_generator, failing_executor):
         resp = req.get(f'http://localhost:{port0}/')
 
         assert (
-            f'jina_successful_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 0.0'
+            f'jina_successful_requests_total{{runtime_name="gateway/rep-0"}} 0.0'
             in str(resp.content)
         )
 
-        assert (
-            f'jina_failed_requests_total{{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}} 1.0'
-            in str(resp.content)
+        assert f'jina_failed_requests_total{{runtime_name="gateway/rep-0"}} 1.0' in str(
+            resp.content
         )

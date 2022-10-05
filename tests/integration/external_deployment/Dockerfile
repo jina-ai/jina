@@ -1,4 +1,4 @@
-FROM jinaai/jina:master
+FROM jinaai/jina:test-pip
 
 COPY . /executor_root/
 

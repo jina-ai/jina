@@ -5,9 +5,6 @@ def list_all_runtimes():
     # noqa: DAR201
     """
     from jina.serve.runtimes.base import BaseRuntime
-    from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
-    from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
-    from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
     from jina.serve.runtimes.worker import WorkerRuntime
 
     return [
@@ -24,11 +21,9 @@ def get_runtime(name: str):
     # noqa: DAR201
     """
     from jina.serve.runtimes.base import BaseRuntime
-    from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
-    from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
-    from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
-    from jina.serve.runtimes.worker import WorkerRuntime
+    from jina.serve.runtimes.gateway import GatewayRuntime
     from jina.serve.runtimes.head import HeadRuntime
+    from jina.serve.runtimes.worker import WorkerRuntime
 
     s = locals()[name]
     if isinstance(s, type) and issubclass(s, BaseRuntime):
