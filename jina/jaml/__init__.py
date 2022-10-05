@@ -142,7 +142,7 @@ class JAML:
 
 
     .. note::
-        :class:`BaseFlow`, :class:`BaseExecutor`, :class:`BaseDriver`
+        :class:`BaseFlow`, :class:`BaseExecutor`, :class:`BaseGateway`
         and all their subclasses have already implemented JAML interfaces,
         to load YAML config into objects, please use :meth:`Flow.load_config`,
         :meth:`BaseExecutor.load_config`, etc.
@@ -159,7 +159,7 @@ class JAML:
         """Parse the first YAML document in a stream and produce the corresponding Python object.
 
         .. note::
-            :class:`BaseFlow`, :class:`BaseExecutor`, :class:`BaseDriver`
+            :class:`BaseFlow`, :class:`BaseExecutor`, :class:`BaseGateway`
             and all their subclasses have already implemented JAML interfaces,
             to load YAML config into objects, please use :meth:`Flow.load_config`,
             :meth:`BaseExecutor.load_config`, etc.
@@ -620,7 +620,7 @@ class JAMLCompatible(metaclass=JAMLCompatibleType):
         """A high-level interface for loading configuration with features
         of loading extra py_modules, substitute env & context variables. Any class that
         implements :class:`JAMLCompatible` mixin can enjoy this feature, e.g. :class:`BaseFlow`,
-        :class:`BaseExecutor`, :class:`BaseDriver` and all their subclasses.
+        :class:`BaseExecutor`, :class:`BaseGateway` and all their subclasses.
 
         Support substitutions in YAML:
             - Environment variables: ``${{ ENV.VAR }}`` (recommended), ``$VAR`` (deprecated).

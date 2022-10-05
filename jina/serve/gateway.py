@@ -1,9 +1,13 @@
 import abc
 import argparse
-from typing import TYPE_CHECKING, Optional
+import functools
+import inspect
+from typing import TYPE_CHECKING, Callable, Optional
 
+from jina.helper import convert_tuple_to_list
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
+from jina.serve.helper import store_init_kwargs, wrap_func
 from jina.serve.streamer import GatewayStreamer
 
 __all__ = ['BaseGateway']
@@ -12,7 +16,41 @@ if TYPE_CHECKING:
     from prometheus_client import CollectorRegistry
 
 
-class BaseGateway(JAMLCompatible):
+class GatewayType(type(JAMLCompatible), type):
+    """The class of Gateway type, which is the metaclass of :class:`BaseGateway`."""
+
+    def __new__(cls, *args, **kwargs):
+        """
+        # noqa: DAR101
+        # noqa: DAR102
+
+        :return: Gateway class
+        """
+        _cls = super().__new__(cls, *args, **kwargs)
+        return cls.register_class(_cls)
+
+    @staticmethod
+    def register_class(cls):
+        """
+        Register a class.
+
+        :param cls: The class.
+        :return: The class, after being registered.
+        """
+
+        reg_cls_set = getattr(cls, '_registered_class', set())
+
+        cls_id = f'{cls.__module__}.{cls.__name__}'
+        if cls_id not in reg_cls_set:
+            reg_cls_set.add(cls_id)
+            setattr(cls, '_registered_class', reg_cls_set)
+            wrap_func(
+                cls, ['__init__'], store_init_kwargs, taboo={'self', 'args', 'kwargs'}
+            )
+        return cls
+
+
+class BaseGateway(JAMLCompatible, metaclass=GatewayType):
     """
     The base class of all custom Gateways, can be used to build a custom interface to a Jina Flow that supports
     gateway logic
@@ -99,3 +137,9 @@ class BaseGateway(JAMLCompatible):
         :return: boolean flag
         """
         return False
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass

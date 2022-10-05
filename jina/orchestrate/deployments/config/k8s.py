@@ -2,7 +2,12 @@ import copy
 from argparse import Namespace
 from typing import Dict, List, Optional, Tuple, Union
 
-from jina import __default_executor__
+from jina import (
+    __default_executor__,
+    __default_grpc_gateway__,
+    __default_http_gateway__,
+    __default_websocket_gateway__,
+)
 from jina.enums import PodRoleType
 from jina.excepts import NoContainerizedError
 from jina.orchestrate.deployments import BaseDeployment
@@ -52,10 +57,6 @@ class K8sDeploymentConfig:
         ) -> List[Dict]:
             import os
 
-            image_name = os.getenv(
-                'JINA_GATEWAY_IMAGE', f'jinaai/jina:{self.version}-py38-standard'
-            )
-
             cargs = copy.copy(self.deployment_args)
             cargs.deployments_addresses = self.k8s_deployments_addresses
             from jina.helper import ArgNamespace
@@ -73,6 +74,14 @@ class K8sDeploymentConfig:
                 'noblock_on_start',
                 'env',
             }
+
+            image_name = self._get_image_name(cargs.uses)
+            if cargs.uses not in [
+                __default_http_gateway__,
+                __default_websocket_gateway__,
+                __default_grpc_gateway__,
+            ]:
+                cargs.uses = 'config.yml'
 
             non_defaults = ArgNamespace.get_non_defaults_args(
                 cargs, set_gateway_parser(), taboo=taboo
@@ -93,7 +102,7 @@ class K8sDeploymentConfig:
                 env=cargs.env,
                 monitoring=self.common_args.monitoring,
                 port_monitoring=self.common_args.port_monitoring,
-                protocol=self.common_args.protocol
+                protocol=self.common_args.protocol,
             )
 
         def _get_image_name(self, uses: Optional[str]):
@@ -102,8 +111,12 @@ class K8sDeploymentConfig:
             image_name = os.getenv(
                 'JINA_GATEWAY_IMAGE', f'jinaai/jina:{self.version}-py38-standard'
             )
-
-            if uses is not None and uses != __default_executor__:
+            if uses is not None and uses not in [
+                __default_executor__,
+                __default_http_gateway__,
+                __default_websocket_gateway__,
+                __default_grpc_gateway__,
+            ]:
                 image_name = get_image_name(uses)
 
             return image_name

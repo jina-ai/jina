@@ -7,6 +7,7 @@ from hubble.executor.helper import is_valid_huburi
 from hubble.executor.hubio import HubIO
 
 from jina.enums import GatewayProtocolType, PodRoleType
+from jina.parsers.helper import _set_gateway_uses
 
 if TYPE_CHECKING:
     from argparse import Namespace
@@ -74,11 +75,7 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
     :return: runtime class as a string
     """
     _args = deepcopy(args) if copy else args
-    gateway_runtime_dict = {
-        GatewayProtocolType.GRPC: 'GRPCGatewayRuntime',
-        GatewayProtocolType.WEBSOCKET: 'WebSocketGatewayRuntime',
-        GatewayProtocolType.HTTP: 'HTTPGatewayRuntime',
-    }
+
     if _args.runtime_cls == 'WorkerRuntime' and is_valid_huburi(_args.uses):
         _hub_args = deepcopy(_args)
         _hub_args.uri = _args.uses
@@ -86,7 +83,7 @@ def update_runtime_cls(args, copy=False) -> 'Namespace':
         _args.uses = HubIO(_hub_args).pull()
 
     if hasattr(_args, 'protocol'):
-        _args.runtime_cls = gateway_runtime_dict[_args.protocol]
+        _set_gateway_uses(_args)
     if _args.pod_role == PodRoleType.HEAD:
         _args.runtime_cls = 'HeadRuntime'
 

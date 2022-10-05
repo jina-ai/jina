@@ -15,7 +15,7 @@ from jina.parsers import set_gateway_parser
 from jina.serve import networking
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
+from jina.serve.runtimes.gateway import GatewayRuntime
 
 
 def test_grpc_gateway_runtime_init_close():
@@ -24,7 +24,7 @@ def test_grpc_gateway_runtime_init_close():
     port = random_port()
 
     def _create_runtime():
-        with GRPCGatewayRuntime(
+        with GatewayRuntime(
             set_gateway_parser().parse_args(
                 [
                     '--port',
@@ -171,7 +171,7 @@ def test_grpc_gateway_runtime_handle_messages_linear(linear_graph_dict, monkeypa
         )
         port = random_port()
 
-        with GRPCGatewayRuntime(
+        with GatewayRuntime(
             set_gateway_parser().parse_args(
                 [
                     '--port',
@@ -223,7 +223,7 @@ def test_grpc_gateway_runtime_handle_messages_bifurcation(
         )
         port = random_port()
 
-        with GRPCGatewayRuntime(
+        with GatewayRuntime(
             set_gateway_parser().parse_args(
                 [
                     '--port',
@@ -277,7 +277,7 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_gateway(
         )
         port = random_port()
 
-        with GRPCGatewayRuntime(
+        with GatewayRuntime(
             set_gateway_parser().parse_args(
                 [
                     '--port',
@@ -334,7 +334,7 @@ def test_grpc_gateway_runtime_handle_messages_merge_in_last_deployment(
         )
         port = random_port()
 
-        with GRPCGatewayRuntime(
+        with GatewayRuntime(
             set_gateway_parser().parse_args(
                 [
                     '--port',
@@ -391,7 +391,7 @@ def test_grpc_gateway_runtime_handle_messages_complete_graph_dict(
         )
         port = random_port()
 
-        with GRPCGatewayRuntime(
+        with GatewayRuntime(
             set_gateway_parser().parse_args(
                 [
                     '--port',
@@ -441,7 +441,7 @@ def test_grpc_gateway_runtime_handle_empty_graph():
     def process_wrapper():
         port = random_port()
 
-        with GRPCGatewayRuntime(
+        with GatewayRuntime(
             set_gateway_parser().parse_args(
                 [
                     '--port',
@@ -481,7 +481,7 @@ async def test_grpc_gateway_runtime_reflection():
     port = random_port()
 
     def _create_runtime():
-        with GRPCGatewayRuntime(
+        with GatewayRuntime(
             set_gateway_parser().parse_args(
                 [
                     '--port',

@@ -5,8 +5,10 @@ import pytest
 
 from jina import __cache_path__
 from jina.excepts import RuntimeFailToStart
+from jina.helper import random_port
 from jina.orchestrate.pods.container import ContainerPod
 from jina.parsers import set_gateway_parser, set_pod_parser
+from tests.helper import _validate_dummy_custom_gateway_response
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -242,12 +244,12 @@ def test_pass_arbitrary_kwargs(monkeypatch, mocker):
 
 
 @pytest.fixture(scope='module')
-def gateway_runtime_docker_image_built():
+def dummy_custom_gateway_docker_image_built():
     import docker
 
     client = docker.from_env()
     client.images.build(
-        path=os.path.join(cur_dir, 'gateway-runtime/'), tag='gateway-runtime'
+        path=os.path.join(cur_dir, 'custom-gateway/'), tag='custom-gateway'
     )
     client.close()
     yield
@@ -256,27 +258,21 @@ def gateway_runtime_docker_image_built():
     client.containers.prune()
 
 
-@pytest.mark.skip('ContainerPod is not ready to handle `Gateway`')
-@pytest.mark.parametrize('protocol', ['grpc', 'http', 'websocket'])
-def test_container_pod_gateway_runtime(protocol, gateway_runtime_docker_image_built):
+def test_container_pod_custom_gateway(dummy_custom_gateway_docker_image_built):
     import docker
 
+    port = str(random_port())
     with ContainerPod(
         set_gateway_parser().parse_args(
-            [
-                '--uses',
-                'docker://gateway-runtime',
-                '--graph-description',
-                '{"start-gateway": ["pod0"], "pod0": ["end-gateway"]}',
-                '--deployments-addresses',
-                '{"pod0": ["0.0.0.0:1234"]}',
-                '--protocol',
-                protocol,
-            ]
+            ['--uses', 'docker://custom-gateway', '--port', port, '--protocol', 'http']
         )
     ) as pod:
         container = pod._container
         status = pod._container.status
+        _validate_dummy_custom_gateway_response(
+            port, {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'}
+        )
+
         time.sleep(
             2
         )  # to avoid desync between the start and close process which could lead to container never get terminated
@@ -285,5 +281,3 @@ def test_container_pod_gateway_runtime(protocol, gateway_runtime_docker_image_bu
     client = docker.from_env()
     containers = client.containers.list()
     assert container.id not in containers
-    with pytest.raises(docker.errors.NotFound):
-        pod._container

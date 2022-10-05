@@ -18,6 +18,7 @@ from jina.enums import DeploymentRoleType, PodRoleType, PollingType
 from jina.helper import CatchAllCleanupContextManager, _parse_ports
 from jina.jaml.helper import complete_path
 from jina.orchestrate.pods.factory import PodFactory
+from jina.parsers.helper import _set_gateway_uses
 from jina.serve.networking import host_is_local, in_docker
 
 WRAPPED_SLICE_BASE = r'\[[-\d:]+\]'
@@ -277,6 +278,8 @@ class Deployment(BaseDeployment):
 
     def update_pod_args(self):
         """Update args of all its pods based on Deployment args. Including head/tail"""
+        if self.args.runtime_cls == 'GatewayRuntime':
+            _set_gateway_uses(self.args)
         if isinstance(self.args, Dict):
             # This is used when a Deployment is created in a remote context, where pods & their connections are already given.
             self.pod_args = self.args
@@ -305,7 +308,7 @@ class Deployment(BaseDeployment):
 
         :return: True if this deployment is provided as a sandbox, False otherwise
         """
-        uses = getattr(self.args, 'uses', '')
+        uses = getattr(self.args, 'uses') or ''
         is_sandbox = uses.startswith('jinahub+sandbox://')
         return is_sandbox
 

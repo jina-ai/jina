@@ -2,8 +2,9 @@ import argparse
 import urllib
 from http import HTTPStatus
 
-from jina.logging.predefined import default_logger
+from jina.enums import GatewayProtocolType
 from jina.helper import parse_host_scheme
+from jina.logging.predefined import default_logger
 
 
 class NetworkChecker:
@@ -20,8 +21,8 @@ class NetworkChecker:
 
         from jina import Client
         from jina.logging.profile import TimeContext
-        from jina.serve.runtimes.worker import WorkerRuntime
         from jina.serve.runtimes.gateway import GatewayRuntime
+        from jina.serve.runtimes.worker import WorkerRuntime
 
         try:
             total_time = 0
@@ -35,7 +36,10 @@ class NetworkChecker:
                         r = WorkerRuntime.is_ready(f'{hostname}:{port}')
                     elif args.target == 'gateway':
                         hostname, port, protocol, _ = parse_host_scheme(args.host)
-                        r = GatewayRuntime.is_ready(f'{hostname}:{port}', protocol=protocol)
+                        r = GatewayRuntime.is_ready(
+                            f'{hostname}:{port}',
+                            protocol=GatewayProtocolType.from_string(protocol),
+                        )
                     elif args.target == 'flow':
                         r = Client(host=args.host).is_flow_ready(timeout=args.timeout)
                     if not r:

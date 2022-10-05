@@ -4,9 +4,8 @@ from typing import Optional
 
 from jina import __default_host__
 from jina.importer import ImportExtensions
-
-from ....gateway import BaseGateway
-from . import get_fastapi_app
+from jina.serve.gateway import BaseGateway
+from jina.serve.runtimes.gateway.websocket.app import get_fastapi_app
 
 
 class WebSocketGateway(BaseGateway):
@@ -18,6 +17,7 @@ class WebSocketGateway(BaseGateway):
         ssl_keyfile: Optional[str] = None,
         ssl_certfile: Optional[str] = None,
         uvicorn_kwargs: Optional[dict] = None,
+        proxy: Optional[bool] = None,
         **kwargs
     ):
         """Initialize the gateway
@@ -25,6 +25,8 @@ class WebSocketGateway(BaseGateway):
         :param ssl_keyfile: the path to the key file
         :param ssl_certfile: the path to the certificate file
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
+        :param proxy: If set, respect the http_proxy and https_proxy environment variables, otherwise, it will unset
+            these proxy variables before start. gRPC seems to prefer no proxy
         :param kwargs: keyword args
         """
         super().__init__(**kwargs)
@@ -32,6 +34,10 @@ class WebSocketGateway(BaseGateway):
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
         self.uvicorn_kwargs = uvicorn_kwargs
+
+        if not proxy and os.name != 'nt':
+            os.unsetenv('http_proxy')
+            os.unsetenv('https_proxy')
 
     async def setup_server(self):
         """
