@@ -1,7 +1,7 @@
 (jina-hub)=
 # Hub
 
-Now that you understand that {class}`~jina.Executor` is a building block in Jina, the following questions may arise:
+Now that you understand that {class}`~jina.Executor` is a building block in Jina, you may also wonder:
 
 - Can I reuse my Executor in another project?
 - Can I share my Executor with my colleagues?
@@ -17,7 +17,7 @@ Basically, something like the following:
 Executors to dramatically reduce the effort and complexity needed in your search system, or push your own custom
 Executors to share privately or publicly.
 
-A Hub Executor is an Executor that is published in Jina Hub. Such an Executor can be easily used in a Flow:
+A Hub Executor is an Executor published on Jina Hub. You can use such an Executor in a Flow:
 
 ```python
 from jina import Flow
