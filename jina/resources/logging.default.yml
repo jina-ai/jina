@@ -1,5 +1,5 @@
 handlers:  # enabled handlers, order does not matter
-  - StreamHandler
+  - RichHandler
 level: INFO  # set verbose level
 configs:
   FileHandler:
@@ -18,6 +18,6 @@ configs:
   RichHandler:
     format: '{name}@%(process)2d %(message)s'
     markup: false
-    rich_tracebacks: true
+    rich_tracebacks: false
     show_path: false
     log_time_format: '[%x %X]'
