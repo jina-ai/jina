@@ -1,5 +1,5 @@
 handlers:  # enabled handlers, order does not matter
-  - RichHandler
+  - StreamHandler
 level: INFO  # set verbose level
 configs:
   FileHandler:
