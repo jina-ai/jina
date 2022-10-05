@@ -65,7 +65,7 @@ elif _sys.version_info >= (3, 8, 0) and _platform.system() == 'Darwin':
 # this is managed by git tag and updated on every release
 # NOTE: this represents the NEXT release version
 
-__version__ = '3.9.3'
+__version__ = '3.10.1'
 
 # do not change this line manually
 # this is managed by proto/build-proto.sh and updated on every execution
@@ -110,6 +110,10 @@ __default_host__ = _os.environ.get(
 )
 __docker_host__ = 'host.docker.internal'
 __default_executor__ = 'BaseExecutor'
+__default_gateway__ = 'BaseGateway'
+__default_http_gateway__ = 'HTTPGateway'
+__default_websocket_gateway__ = 'WebSocketGateway'
+__default_grpc_gateway__ = 'GRPCGateway'
 __default_endpoint__ = '/default'
 __ready_msg__ = 'ready and listening'
 __stop_msg__ = 'terminated'
@@ -204,6 +208,9 @@ from jina.orchestrate.flow.base import Flow
 # Executor
 from jina.serve.executors import BaseExecutor as Executor
 from jina.serve.executors.decorators import monitor, requests
+
+# Custom Gateway
+from jina.serve.gateway import BaseGateway as Gateway
 
 __all__ = [_s for _s in dir() if not _s.startswith('_')]
 __all__.extend(_names_with_underscore)

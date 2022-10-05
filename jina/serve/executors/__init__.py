@@ -15,11 +15,9 @@ from jina.helper import ArgNamespace, T, iscoroutinefunction, typename
 from jina.importer import ImportExtensions
 from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
-from jina.serve.executors.decorators import (
-    avoid_concurrent_lock_cls,
-    store_init_kwargs,
-    wrap_func,
-)
+from jina.serve.executors.decorators import avoid_concurrent_lock_cls, requests
+from jina.serve.executors.metas import get_default_metas, get_executor_taboo
+from jina.serve.helper import store_init_kwargs, wrap_func
 
 if TYPE_CHECKING:
     from prometheus_client import Summary
@@ -64,7 +62,9 @@ class ExecutorType(type(JAMLCompatible), type):
                     f'{cls.__init__} does not follow the full signature of `Executor.__init__`, '
                     f'please add `**kwargs` to your __init__ function'
                 )
-            wrap_func(cls, ['__init__'], store_init_kwargs)
+            taboo = get_executor_taboo()
+
+            wrap_func(cls, ['__init__'], store_init_kwargs, taboo=taboo)
             wrap_func(cls, ['__init__'], avoid_concurrent_lock_cls(cls))
 
             reg_cls_set.add(cls_id)
@@ -400,12 +400,12 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             )
 
         """
-        from jina.hubble.helper import is_valid_huburi
+        from hubble.executor.helper import is_valid_huburi
 
         _source = None
         if is_valid_huburi(uri):
-            from jina.hubble.hubio import HubIO
-            from jina.parsers.hubble import set_hub_pull_parser
+            from hubble.executor.hubio import HubIO
+            from hubble.executor.parsers import set_hub_pull_parser
 
             _args = ArgNamespace.kwargs2namespace(
                 {'no_usage': True, **kwargs},

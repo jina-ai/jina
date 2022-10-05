@@ -800,6 +800,7 @@ class ArgNamespace:
         """
         args = []
         from jina.serve.executors import BaseExecutor
+        from jina.serve.gateway import BaseGateway
 
         for k, v in kwargs.items():
             k = k.replace('_', '-')
@@ -812,6 +813,8 @@ class ArgNamespace:
                 elif isinstance(v, dict):
                     args.extend([f'--{k}', json.dumps(v)])
                 elif isinstance(v, type) and issubclass(v, BaseExecutor):
+                    args.extend([f'--{k}', v.__name__])
+                elif isinstance(v, type) and issubclass(v, BaseGateway):
                     args.extend([f'--{k}', v.__name__])
                 else:
                     args.extend([f'--{k}', str(v)])
@@ -966,7 +969,8 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'session-id': str(random_uuid(use_uuid1=True)),
             'uptime': __uptime__,
             'ci-vendor': get_ci_vendor() or __unset_msg__,
-            'internal': 'jina-ai' in os.getenv('GITHUB_ACTION_REPOSITORY', __unset_msg__)
+            'internal': 'jina-ai'
+            in os.getenv('GITHUB_ACTION_REPOSITORY', __unset_msg__),
         }
 
         env_info = {k: os.getenv(k, __unset_msg__) for k in __jina_env__}

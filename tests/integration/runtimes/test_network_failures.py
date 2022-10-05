@@ -8,7 +8,7 @@ from docarray import DocumentArray
 from jina import Client, Executor, requests
 from jina.parsers import set_gateway_parser, set_pod_parser
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
+from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.serve.runtimes.worker import WorkerRuntime
 
 from .test_runtimes import _create_gateway_runtime, _create_head_runtime
@@ -530,7 +530,7 @@ def _test_gql_error(gateway_port, error_port):
 
 
 def _create_gqlgateway_runtime(graph_description, pod_addresses, port):
-    with HTTPGatewayRuntime(
+    with GatewayRuntime(
         set_gateway_parser().parse_args(
             [
                 '--graph-description',
@@ -540,6 +540,8 @@ def _create_gqlgateway_runtime(graph_description, pod_addresses, port):
                 '--port',
                 str(port),
                 '--expose-graphql-endpoint',
+                '--protocol',
+                'http',
             ]
         )
     ) as runtime:

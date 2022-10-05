@@ -7,9 +7,9 @@ from grpc_reflection.v1alpha import reflection
 from jina import __default_host__
 from jina.helper import get_full_version
 from jina.proto import jina_pb2, jina_pb2_grpc
+from jina.serve.gateway import BaseGateway
 from jina.types.request.status import StatusMessage
 
-from ....gateway import BaseGateway
 from ...helper import _get_grpc_server_options
 
 

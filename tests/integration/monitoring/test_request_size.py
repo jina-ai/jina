@@ -95,20 +95,20 @@ def test_request_size_increasing(port_generator, executor):
         'jina_received_request_bytes_sum{executor="IncreaseSizeExecutor",executor_endpoint="/",runtime_name="executor0/rep-0"}'
     ]
     size_send_by_gateway = metrics_gateway[
-        'jina_sent_request_bytes_sum{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}'
+        'jina_sent_request_bytes_sum{runtime_name="gateway/rep-0"}'
     ]
     size_return_from_exec_at_gateway = metrics_gateway[
-        'jina_received_response_bytes_sum{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}'
+        'jina_received_response_bytes_sum{runtime_name="gateway/rep-0"}'
     ]
     size_received_at_gateway = metrics_gateway[
-        'jina_received_request_bytes_sum{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}'
+        'jina_received_request_bytes_sum{runtime_name="gateway/rep-0"}'
     ]
     size_send_by_executor = metrics_executor[
         'jina_sent_response_bytes_sum{executor="IncreaseSizeExecutor",executor_endpoint="/",runtime_name="executor0/rep-0"}'
     ]
 
     size_return_to_the_client = metrics_gateway[
-        'jina_sent_response_bytes_sum{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}'
+        'jina_sent_response_bytes_sum{runtime_name="gateway/rep-0"}'
     ]
 
     assert size_received_at_gateway > 0
@@ -148,11 +148,9 @@ def test_deprecated_metric_byte_size(executor, port_generator):
     metrics_gateway = get_metric_values(raw_metrics_gateway)
 
     assert (
-        metrics_gateway[
-            'jina_request_size_bytes_sum{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}'
-        ]
+        metrics_gateway['jina_request_size_bytes_sum{runtime_name="gateway/rep-0"}']
         == metrics_gateway[
-            'jina_received_request_bytes_sum{runtime_name="gateway/rep-0/GRPCGatewayRuntime"}'
+            'jina_received_request_bytes_sum{runtime_name="gateway/rep-0"}'
         ]
     )
     assert (

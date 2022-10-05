@@ -9,6 +9,10 @@ import pytest
 import requests as req
 
 from jina import Document, Flow
+from tests.helper import (
+    _validate_custom_gateway_process,
+    _validate_dummy_custom_gateway_response,
+)
 
 
 class DockerComposeFlow:
@@ -301,7 +305,9 @@ async def test_flow_with_configmap(flow_configmap, docker_images, tmpdir):
     indirect=True,
 )
 async def test_flow_with_workspace(logger, docker_images, tmpdir):
-    flow = Flow(name='k8s_flow-with_workspace', port=9090, protocol='http').add(
+    flow = Flow(
+        name='docker-compose-flow-with_workspace', port=9090, protocol='http'
+    ).add(
         name='test_executor',
         uses=f'docker://{docker_images[0]}',
         workspace='/shared',
@@ -320,3 +326,44 @@ async def test_flow_with_workspace(logger, docker_images, tmpdir):
     assert len(docs) == 10
     for doc in docs:
         assert doc.tags['workspace'] == '/shared/TestExecutor/0'
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['custom-gateway', 'test-executor']],
+    indirect=True,
+)
+async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
+    flow = Flow(
+        name='docker-compose-flow-custom-gateway',
+        port=9090,
+        protocol='http',
+        uses=f'docker://{docker_images[0]}',
+    ).add(
+        name='test_executor',
+        uses=f'docker://{docker_images[1]}',
+    )
+
+    dump_path = os.path.join(str(tmpdir), 'docker-compose-flow-custom-gateway.yml')
+    flow.to_docker_compose_yaml(dump_path)
+
+    with DockerComposeFlow(dump_path):
+
+        _validate_dummy_custom_gateway_response(
+            flow.port, {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'}
+        )
+        _validate_custom_gateway_process(
+            flow.port,
+            'hello',
+            {
+                'text': 'hello',
+                'tags': {
+                    'traversed-executors': ['test_executor'],
+                    'shard_id': 0,
+                    'shards': 1,
+                    'parallel': 1,
+                },
+            },
+        )

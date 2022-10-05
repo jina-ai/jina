@@ -150,6 +150,7 @@ def image_name_tag_map():
         'set-text-executor': '0.1.1',
         'failing-executor': '0.1.1',
         'jinaai/jina': 'test-pip',
+        'custom-gateway': '0.1.1',
     }
 
 

@@ -12,7 +12,7 @@
 <p align=center>
 <a href="https://pypi.org/project/jina/"><img alt="PyPI" src="https://img.shields.io/pypi/v/jina?label=Release&style=flat-square"></a>
 <a href="https://codecov.io/gh/jina-ai/jina"><img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/jina-ai/jina/master?&logo=Codecov&logoColor=white&style=flat-square"></a>
-<a href="https://slack.jina.ai"><img src="https://img.shields.io/badge/Slack-3.6k-blueviolet?logo=slack&amp;logoColor=white&style=flat-square"></a>
+<a href="https://jina.ai/slack"><img src="https://img.shields.io/badge/Slack-3.6k-blueviolet?logo=slack&amp;logoColor=white&style=flat-square"></a>
 <a href="https://pypistats.org/packages/jina"><img alt="PyPI - Downloads from official pypistats" src="https://img.shields.io/pypi/dm/jina?style=flat-square"></a>
 <a href="https://github.com/jina-ai/jina/actions/workflows/cd.yml"><img alt="Github CD status" src="https://github.com/jina-ai/jina/actions/workflows/cd.yml/badge.svg"></a>
 </p>
@@ -21,7 +21,7 @@
 
 Jina is a MLOps framework that empowers anyone to build cross-modal and multi-modal applications on the cloud. It uplifts a PoC into a production-ready service. Jina handles the infrastructure complexity, making advanced solution engineering and cloud-native technologies accessible to every developer. 
 
-Applications built with Jina enjoy the following features out-of-the-box:
+Applications built with Jina enjoy the following features out of the box:
 
 🌌 **Universal**
   - Build applications that deliver fresh insights from multiple data types such as text, image, audio, video, 3D mesh, PDF with [Jina AI's DocArray](https://docarray.jina.ai).
@@ -208,7 +208,7 @@ Running it gives you:
 At the last line we see its output `['hello, world!hello, world!', 'hello, world!hello, world!']`.
 
 
-While one could use standard Python with the same number of lines and get the same output, Jina accelerates time to market of your application by making it more scalable and cloud-native. Jina also handles the infrastructure complexity in production and other Day-2 operations so that you can focus on the data application itself.  
+While you could use standard Python with the same number of lines and get the same output, Jina accelerates time to market of your application by making it more scalable and cloud-native. Jina also handles the infrastructure complexity in production and other Day-2 operations so that you can focus on the data application itself.  
 
 ---
 
@@ -417,7 +417,7 @@ What cloud-native technology is still challenging to you? [Tell us](https://gith
 
 ## Support
 
-- Join our [Slack community](https://slack.jina.ai) and chat with other community members about ideas.
+- Join our [Slack community](https://jina.ai/slack) and chat with other community members about ideas.
 - Join our [Engineering All Hands](https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne) meet-up to discuss your use case and learn Jina's new features.
     - **When?** The second Tuesday of every month
     - **Where?**

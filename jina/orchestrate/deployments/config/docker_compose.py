@@ -3,7 +3,12 @@ import os
 from argparse import Namespace
 from typing import Dict, List, Optional, Tuple, Union
 
-from jina import __default_executor__
+from jina import (
+    __default_executor__,
+    __default_grpc_gateway__,
+    __default_http_gateway__,
+    __default_websocket_gateway__,
+)
 from jina.enums import PodRoleType
 from jina.excepts import NoContainerizedError
 from jina.orchestrate.deployments import BaseDeployment
@@ -52,10 +57,10 @@ class DockerComposeConfig:
         ) -> Dict:
             import os
 
-            image_name = os.getenv(
-                'JINA_GATEWAY_IMAGE', f'jinaai/jina:{self.version}-py38-standard'
-            )
             cargs = copy.copy(self.service_args)
+
+            image_name = self._get_image_name(cargs.uses)
+
             cargs.deployments_addresses = self.deployments_addresses
             from jina.helper import ArgNamespace
             from jina.parsers import set_gateway_parser
@@ -73,10 +78,18 @@ class DockerComposeConfig:
                 'env',
             }
 
+            if cargs.uses not in [
+                __default_http_gateway__,
+                __default_websocket_gateway__,
+                __default_grpc_gateway__,
+            ]:
+                cargs.uses = 'config.yml'
+
             non_defaults = ArgNamespace.get_non_defaults_args(
                 cargs, set_gateway_parser(), taboo=taboo
             )
             _args = ArgNamespace.kwargs2list(non_defaults)
+
             container_args = ['gateway'] + _args
 
             protocol = str(non_defaults.get('protocol', 'grpc')).lower()
@@ -109,7 +122,12 @@ class DockerComposeConfig:
                 'JINA_GATEWAY_IMAGE', f'jinaai/jina:{self.version}-py38-standard'
             )
 
-            if uses is not None and uses != __default_executor__:
+            if uses is not None and uses not in [
+                __default_executor__,
+                __default_http_gateway__,
+                __default_websocket_gateway__,
+                __default_grpc_gateway__,
+            ]:
                 image_name = get_image_name(uses)
 
             return image_name

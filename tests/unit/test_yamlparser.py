@@ -3,11 +3,10 @@ import os
 import pytest
 import yaml
 
-from jina import __default_executor__
-from jina.serve.executors import BaseExecutor
-from jina.helper import expand_dict
-from jina.helper import expand_env_var
+from jina import Gateway, __default_executor__
+from jina.helper import expand_dict, expand_env_var
 from jina.jaml import JAML
+from jina.serve.executors import BaseExecutor
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -169,3 +168,22 @@ def test_load_from_dict():
     assert isinstance(b1, BaseExecutor)
 
     assert b1.metas.name == 'hello123'
+
+
+def test_load_gateway_external_success():
+    with Gateway.load_config('yaml/test-custom-gateway.yml') as gateway:
+        assert gateway.__class__.__name__ == 'DummyGateway'
+        assert gateway.arg1 == 'hello'
+        assert gateway.arg2 == 'world'
+        assert gateway.arg3 == 'default-arg3'
+
+
+def test_load_gateway_override_with():
+    with Gateway.load_config(
+        'yaml/test-custom-gateway.yml',
+        uses_with={'arg1': 'arg1', 'arg2': 'arg2', 'arg3': 'arg3'},
+    ) as gateway:
+        assert gateway.__class__.__name__ == 'DummyGateway'
+        assert gateway.arg1 == 'arg1'
+        assert gateway.arg2 == 'arg2'
+        assert gateway.arg3 == 'arg3'
