@@ -176,7 +176,7 @@ Then, you can add them by specifying their hosts, ports, and `external=True`:
 ```python
 from jina import Flow
 
-Flow().add(host='localhost,91.198.174.192', port='12345,12346', external=True)
+Flow().add(host='localhost:1234,91.198.174.192:12346', external=True)
 ```
 
 This will connect to `grpc://localhost:12345` and `grpc://91.198.174.192:12346` as two replicas of the same Executor.

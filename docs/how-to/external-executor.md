@@ -32,6 +32,14 @@ exec_host, exec_port = 'localhost', 12345
 f = Flow().add(host=exec_host, port=exec_port, external=True)
 ```
 
+Alternatively, you can pass the entire network address to the `host` parameter:
+
+```python
+from jina import Flow
+
+f = Flow().add(host='localhost:12345', external=True)
+```
+
 After that, the external Executor will behave just like an internal one. And you can even add the same Executor to multiple
 Flows!
 
@@ -46,6 +54,9 @@ from jina import Flow
 
 replica_hosts, replica_ports = 'localhost,91.198.174.192', '12345,12346'
 f = Flow().add(host=replica_hosts, port=replica_ports, external=True)
+
+# alternative syntax
+# f = Flow().add(host='localhost:12345,91.198.174.192:12346', external=True)
 ```
 
 This will connect to `grpc://localhost:12345` and `grpc://91.198.174.192:12346` as two replicas of the same Executor.
