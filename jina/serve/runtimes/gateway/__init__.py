@@ -13,12 +13,16 @@ from jina.helper import is_port_free
 from jina.parsers.helper import _set_gateway_uses
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.gateway.grpc import GRPCGateway
-from jina.serve.runtimes.gateway.http import HTTPGateway
 
 if TYPE_CHECKING:
     import multiprocessing
     import threading
+
+
+# Keep these imports even if not used, since YAML parser needs to find them in imported modules
+from jina.serve.runtimes.gateway.grpc import GRPCGateway
+from jina.serve.runtimes.gateway.http import HTTPGateway
+from jina.serve.runtimes.gateway.websocket import WebSocketGateway
 
 
 class GatewayRuntime(AsyncNewLoopRuntime):
