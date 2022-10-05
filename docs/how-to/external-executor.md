@@ -35,10 +35,28 @@ f = Flow().add(host=exec_host, port=exec_port, external=True)
 After that, the external Executor will behave just like an internal one. And you can even add the same Executor to multiple
 Flows!
 
-````{admonition} Note
+````{admonition} Distributed replicas
+:class: hint
+
+In much the same way, you can also add multiple replicas of the same Executor.
+To do this, just specify all the respective hosts and ports:
+
+```python
+from jina import Flow
+
+replica_hosts, replica_ports = 'localhost,91.198.174.192', '12345,12346'
+f = Flow().add(host=replica_hosts, port=replica_ports, external=True)
+```
+
+This will connect to `grpc://localhost:12345` and `grpc://91.198.174.192:12346` as two replicas of the same Executor.
+
+````
+
+````{admonition} Reducing
 :class: hint
 If an external Executor needs multiple predecessors, reducing needs to be enabled. So setting disable_reduce=True is not allowed for these cases. 
 ````
+
 
 ## Starting standalone Executors
 
