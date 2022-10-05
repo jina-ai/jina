@@ -10,9 +10,7 @@ from jina import Document, DocumentArray
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
 from jina.serve import networking
-from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
-from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
-from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
+from jina.serve.runtimes.gateway import GatewayRuntime
 from jina.types.request.data import DataRequest
 
 
@@ -154,7 +152,6 @@ def create_runtime(
     import json
 
     graph_description = json.dumps(graph_dict)
-    runtime_cls = None
     if call_counts:
 
         def decompress_wo_data(self):
@@ -195,13 +192,7 @@ def create_runtime(
             '_decompress_wo_data',
             decompress_wo_data,
         )
-    if protocol == 'grpc':
-        runtime_cls = GRPCGatewayRuntime
-    elif protocol == 'http':
-        runtime_cls = HTTPGatewayRuntime
-    elif protocol == 'websocket':
-        runtime_cls = WebSocketGatewayRuntime
-    with runtime_cls(
+    with GatewayRuntime(
         set_gateway_parser().parse_args(
             [
                 '--port',
@@ -210,6 +201,8 @@ def create_runtime(
                 f'{graph_description}',
                 '--deployments-addresses',
                 '{}',
+                '--protocol',
+                protocol,
             ]
         )
     ) as runtime:

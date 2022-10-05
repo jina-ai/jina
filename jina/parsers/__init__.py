@@ -1,5 +1,6 @@
 from jina.parsers.client import mixin_comm_protocol_parser
 from jina.parsers.helper import _SHOW_ALL_ARGS
+from jina.parsers.orchestrate.runtimes.container import mixin_container_runtime_parser
 from jina.parsers.orchestrate.runtimes.head import mixin_head_parser
 
 
@@ -14,7 +15,8 @@ def set_pod_parser(parser=None):
 
         parser = set_base_parser()
 
-    from jina.parsers.hubble.pull import mixin_hub_pull_options_parser
+    from hubble.executor.parsers.pull import mixin_hub_pull_options_parser
+
     from jina.parsers.orchestrate.base import mixin_base_ppr_parser
     from jina.parsers.orchestrate.pod import mixin_pod_parser
     from jina.parsers.orchestrate.runtimes.container import (
@@ -80,19 +82,19 @@ def set_gateway_parser(parser=None):
     from jina.parsers.orchestrate.runtimes.worker import mixin_worker_runtime_parser
 
     mixin_base_ppr_parser(parser)
-    mixin_worker_runtime_parser(parser)
+    mixin_container_runtime_parser(parser)
     mixin_prefetch_parser(parser)
     mixin_http_gateway_parser(parser)
     mixin_graphql_parser(parser)
     mixin_comm_protocol_parser(parser)
     mixin_gateway_parser(parser)
-    mixin_pod_parser(parser)
+    mixin_pod_parser(parser, pod_type='gateway')
 
     from jina.enums import DeploymentRoleType
 
     parser.set_defaults(
         name='gateway',
-        runtime_cls='GRPCGatewayRuntime',
+        runtime_cls='GatewayRuntime',
         deployment_role=DeploymentRoleType.GATEWAY,
     )
 
@@ -153,7 +155,6 @@ def get_main_parser():
     from jina.parsers.export import set_export_parser
     from jina.parsers.flow import set_flow_parser
     from jina.parsers.helper import _SHOW_ALL_ARGS, _chf
-    from jina.parsers.hubble import set_hub_parser
     from jina.parsers.ping import set_ping_parser
 
     # create the top-level parser
@@ -218,9 +219,10 @@ def get_main_parser():
         )
     )
 
-    from hubble.parsers import get_main_parser as get_hubble_parser
+    from hubble.executor.parsers import get_main_parser as get_hub_parser
+    from hubble.parsers import get_main_parser as get_auth_parser
 
-    get_hubble_parser(
+    get_auth_parser(
         sp.add_parser(
             'auth',
             description='Login to Jina AI with your GitHub/Google/Email account',
@@ -229,7 +231,7 @@ def get_main_parser():
         )
     )
 
-    set_hub_parser(
+    get_hub_parser(
         sp.add_parser(
             'hub',
             help='Manage Executor on Jina Hub',

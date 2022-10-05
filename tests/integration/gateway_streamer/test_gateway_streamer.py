@@ -9,7 +9,7 @@ from jina.serve.runtimes.worker import WorkerRuntime
 from jina.serve.streamer import GatewayStreamer
 
 
-class BffTestExecutor(Executor):
+class StreamerTestExecutor(Executor):
     @requests
     def foo(self, docs, parameters, **kwargs):
         text_to_add = parameters.get('text_to_add', 'default ')
@@ -21,7 +21,7 @@ def _create_worker_runtime(port, name=''):
     args = set_pod_parser().parse_args([])
     args.port = port
     args.name = name
-    args.uses = 'BffTestExecutor'
+    args.uses = 'StreamerTestExecutor'
     with WorkerRuntime(args) as runtime:
         runtime.run_forever()
 

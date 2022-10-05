@@ -1,4 +1,5 @@
-from helper import foo
+from utils import foo
+
 from jina import Executor
 
 

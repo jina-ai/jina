@@ -2,9 +2,10 @@ from argparse import Namespace
 from copy import deepcopy
 from typing import TYPE_CHECKING, Type
 
+from hubble.executor.helper import is_valid_huburi
+from hubble.executor.hubio import HubIO
+
 from jina.enums import PodRoleType
-from jina.hubble.helper import is_valid_huburi
-from jina.hubble.hubio import HubIO
 from jina.orchestrate.pods import Pod
 from jina.orchestrate.pods.container import ContainerPod
 

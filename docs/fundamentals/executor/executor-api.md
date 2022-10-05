@@ -5,30 +5,30 @@
 
 
 ```{tip}
-Executor uses `docarray.DocumentArray` as input and output data structure. Please first [read DocArray's docs](https://docarray.jina.ai) to get an impression how does it work.   
+Executor uses `docarray.DocumentArray` as input and output data structure. Please [read DocArray's docs](https://docarray.jina.ai) to get an impression how it works.
 ```
 
 {class}`~jina.Executor` is a self-contained component and performs a group of tasks on a `DocumentArray`. 
-It encapsulates functions that process `DocumentArray`s. Inside the Executor, these functions are decorated with `@requests`. To create an Executor, you only need to follow three principles:
+It encapsulates functions that process `DocumentArray`s. Inside the Executor, these functions are decorated with `@requests`. To create an Executor, you need to follow three principles:
 
-1. An Executor should subclass directly from the `jina.Executor` class. Executor can also be a `dataclass`
+1. An Executor should subclass directly from the `jina.Executor` class. An Executor can also be a `dataclass`
 2. An Executor class is a bag of functions with shared state or configuration (via `self`); it can contain an arbitrary number of
 functions with arbitrary names.
-3. Functions decorated by {class}`~jina.requests` will be invoked according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions.
+3. Functions decorated by {class}`~jina.requests` are invoked according to their `on=` endpoint. These functions can be coroutines (`async def`) or regular functions.
 
 ## Constructor
 
 ### Subclass
 
-Every new executor should be a subclass of {class}`~jina.Executor`.
+Every new Executor should be a subclass of {class}`~jina.Executor`.
 
-You can name your executor class freely.
+You can name your Executor class freely.
 
 ### `__init__`
 
-No need to implement `__init__` if your Executor does not contain initial states or if it is a [dataclass](https://docs.python.org/3/library/dataclasses.html)
+You don't need to implement `__init__` if your Executor doesn't contain initial states or if it's a [dataclass](https://docs.python.org/3/library/dataclasses.html)
 
-If your executor has `__init__`, it needs to carry `**kwargs` in the signature and call `super().__init__(**kwargs)` 
+If your Executor has `__init__`, it needs to carry `**kwargs` in the signature and call `super().__init__(**kwargs)` 
 in the body:
 ````{tab} Executor
 ```python
@@ -68,10 +68,9 @@ or modify their values before passing them to `super().__init__()`.
 
 You might need to execute some logic when your Executor's destructor is called.
 
-For example, you want to persist data to the disk (e.g. in-memory indexed data, fine-tuned model,...). 
-To do so, you can overwrite the {meth}`~jina.serve.executors.BaseExecutor.close` method and add your logic.
+For example, if you want to persist data to disk (e.g. in-memory indexed data, fine-tuned model,...) you can overwrite the {meth}`~jina.serve.executors.BaseExecutor.close` method and add your logic.
 
-Jina will make sure that the {meth}`~jina.serve.executors.BaseExecutor.close` method is executed when the Executor is terminated inside a {class}`~jina.Flow` or when deployed in any cloud-native environment.
+Jina ensures the {meth}`~jina.serve.executors.BaseExecutor.close` method is executed when the Executor is terminated inside a {class}`~jina.Flow` or when deployed in any cloud-native environment.
 
 You can think of this as Jina using the Executor as a context manager, making sure that the {meth}`~jina.serve.executors.BaseExecutor.close` method is always executed.
 
@@ -103,13 +102,13 @@ class MyExecutor(Executor):
         self.foo = foo
 ```
 
-This is important because when an Executor is instantiated in the context of a Flow, Jina is adding extra arguments.
-Some of these `arguments` can be used when developing the internal logic of the Executor.
+This is important because when an Executor is instantiated in the context of a Flow, Jina adds extra arguments.
+Some of these arguments can be used when developing the internal logic of the Executor.
 
 These `special` arguments are `workspace`, `requests`, `metas`, `runtime_args`.
 
-Another alternative, is to declare your `Executor` as a [dataclass](https://docs.python.org/3/library/dataclasses.html). In this case, user does not provide an specific constructor. 
-Then, Jina will inject all these `special` arguments without the need of the user to call any specific method.
+Another alternative is to declare your `Executor` as a [dataclass](https://docs.python.org/3/library/dataclasses.html). In this case, you don't provide a specific constructor. 
+Then, Jina injects all these `special` arguments without you needing to call any specific method.
 
 ```python
 from dataclasses import dataclass
@@ -135,7 +134,7 @@ This can be provided to the Executor via the {ref}`Python or YAML API <executor-
 
 `````{dropdown} Default workspace
 
-If the user hasn't provided a workspace, the Executor uses a default workspace, which is defined in the `~/.cache/jina/`.
+If you haven't provided a workspace, the Executor uses a default workspace, defined in `~/.cache/jina/`.
 `````
 
 (executor-requests)=
@@ -172,7 +171,7 @@ The list of the `runtime_args` is:
 - `workspace`: Path to be used by the Executor. Note that the actual workspace directory used by the Executor is obtained by appending `'/<executor_name>/<shard_id>/'` to this value.
 - `py_modules`: Python package path e.g. `foo.bar.package.module` or file path to the modules needed to import the Executor. This is another way to pass `py-modules` to the Executor from the Flow
 
-These can **not** be provided by the user through any API. They are generated by the Flow orchestration.
+You **cannot** provide these through any API. They are generated by the Flow orchestration.
 
 ## See further
 

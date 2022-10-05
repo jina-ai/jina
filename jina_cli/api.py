@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING
 
+from jina.parsers.helper import _set_gateway_uses
+
 if TYPE_CHECKING:
     from argparse import Namespace
 
@@ -99,20 +101,14 @@ def gateway(args: 'Namespace'):
 
     :param args: arguments coming from the CLI.
     """
-    from jina.enums import GatewayProtocolType
     from jina.serve.runtimes import get_runtime
 
-    gateway_runtime_dict = {
-        GatewayProtocolType.GRPC: 'GRPCGatewayRuntime',
-        GatewayProtocolType.WEBSOCKET: 'WebSocketGatewayRuntime',
-        GatewayProtocolType.HTTP: 'HTTPGatewayRuntime',
-    }
-    runtime_cls = get_runtime(gateway_runtime_dict[args.protocol])
+    _set_gateway_uses(args)
+
+    runtime_cls = get_runtime('GatewayRuntime')
 
     with runtime_cls(args) as runtime:
-        runtime.logger.info(
-            f'Gateway with protocol {gateway_runtime_dict[args.protocol]} started'
-        )
+        runtime.logger.info(f'Gateway started')
         runtime.run_forever()
 
 
@@ -181,9 +177,9 @@ def hub(args: 'Namespace'):
     Start a hub builder for push, pull
     :param args: arguments coming from the CLI.
     """
-    from jina.hubble.hubio import HubIO
+    from hubble.executor.hubio import HubIO
 
-    getattr(HubIO(args), args.hub)()
+    getattr(HubIO(args), args.hub_cli)()
 
 
 def new(args: 'Namespace'):
