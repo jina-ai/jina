@@ -53,7 +53,6 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             raise PortAlreadyUsed(f'port:{self.args.port}')
 
         uses_with = self.args.uses_with or {}
-        print(f'--->args: {self.args}')
         self.gateway = BaseGateway.load_config(
             self.args.uses,
             uses_with=dict(
