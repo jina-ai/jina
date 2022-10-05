@@ -105,6 +105,8 @@ External Executors are not started and stopped by the current Flow object but by
 
 This is useful to share expensive Executors between Flows. Often these Executors are stateless, GPU based Encoders.
 
+Both {ref}`served and shared Executors <serve-executor-standalone>` can be used as external Executors.
+
 When you add such Executor to a Flow, you have to provide a `host` and `port`, and enable the `external` flag:
 
 ```python
@@ -115,8 +117,6 @@ Flow().add(host='123.45.67.89', port=12345, external=True)
 
 This is adding an external Executor to the Flow.
 The Flow will not start or stop this Executor and assumes that is externally managed and available at `123.45.67.89:12345`.
-
-Both {ref}`served and shared Executors <serve-executor-standalone>` can be used as external Executors.
 
 You can also use external Executors with `tls` enabled.
 

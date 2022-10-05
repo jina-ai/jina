@@ -9,6 +9,24 @@ There are different options for deploying and running a standalone Executor:
 * Run the static {meth}`~jina.serve.executors.BaseExecutor.to_kubernetes_yaml()` method to generate K8s deployment configuration files
 * Run the static {meth}`~jina.serve.executors.BaseExecutor.to_docker_compose_yaml()` method to generate a Docker Compose service file
 
+````{admonition} Served vs. shared Executor
+:class: hint
+
+In Jina there are two ways of running standalone Executors: *Served Executors* and *shared Executors*.
+
+- A **served Executor** is launched by one of the methods described here (`.serve()`, `to_kubernetes_yaml()`, or `to_docker_compose_yaml()`).
+It resides behind a {ref}`Gateway <architecture-overview>` and can thus be directly accessed by a {ref}`Client <client>`.
+It can also be used as part of a Flow.
+
+- A **shared Executor** is launched using the [Jina CLI](../cli/index.rst) and does *not* sit behind a Gateway.
+It is intended to be used in one or more Flows.
+Because a shared Executor does not reside behid a Gataway, it can not be directly accessed by a Client, but it requires
+fewer networking hops when used inside of a Flow.
+
+Both served and shared Executors can be used as part of a Flow, by adding them as an {ref}`external Executor <external-executors>`.
+
+````
+
 ## Serve directly
 An {class}`~jina.Executor` can be served using the {meth}`~jina.serve.executors.BaseExecutor.serve` method:
 
@@ -107,23 +125,5 @@ The above example runs the `DummyHubExecutor` from Jina Hub locally on your comp
 ````{admonition} Hint
 :class: hint
 The Executor you use needs to be already containerized and stored in an accessible registry. We recommend Jina Hub for this.
-````
-
-````{admonition} Served vs. shared Executor
-:class: hint
-
-In Jina there are two ways of running standalone Executors: *Served Executors* and *shared Executors*.
-
-- A **served Executor* is launched by one of the means described above (`.serve()`, `to_kubernetes_yaml()`, or `to_docker_compose_yaml()`).
-It resides behind a {ref}`Gateway <architecture-overview>` and can thus be directly accessed by a {ref}`Client <client>`.
-It can also be used as part of a Flow.
-
-- A **shared Executor** is launched using the [Jina CLI](../cli/index.rst) and does *not* sit behind a Gateway.
-It is intended to be used in one or more Flows.
-Because a shared Executor does not reside behid a Gataway, it can not be directly accessed by a Client, but it requires
-fewer networking hops when used inside of a Flow.
-
-Both served and shared Executors can be used as part of a Flow, by adding them as an {ref}`external Executor <external-executors>`.
-
 ````
 
