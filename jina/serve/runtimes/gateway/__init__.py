@@ -13,6 +13,8 @@ from jina.helper import is_port_free
 from jina.parsers.helper import _set_gateway_uses
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
+from jina.serve.runtimes.gateway.grpc import GRPCGateway
+from jina.serve.runtimes.gateway.http import HTTPGateway
 
 if TYPE_CHECKING:
     import multiprocessing
