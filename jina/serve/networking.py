@@ -1229,7 +1229,7 @@ class GrpcConnectionPool:
         """
         Lists available services by name, exposed at target address
 
-        :param channel: the channel to use
+        :param channel: the channel to be used
 
         :returns: List of services offered
         """
