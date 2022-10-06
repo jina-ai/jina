@@ -116,7 +116,7 @@ Flow().add(host='123.45.67.89', port=12345, external=True)
 ```
 
 This is adding an external Executor to the Flow.
-The Flow will not start or stop this Executor and assumes that is externally managed and available at `123.45.67.89:12345`.
+The Flow will not start or stop this Executor and assumes that it is externally managed and available at `123.45.67.89:12345`.
 
 You can also use external Executors with `tls` enabled.
 
