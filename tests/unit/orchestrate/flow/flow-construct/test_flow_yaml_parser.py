@@ -3,15 +3,14 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from docarray.document.generators import from_ndarray
 
-from jina import Executor
-from jina.excepts import BadYAMLVersion
-from jina import Flow
-from jina.jaml import JAML
+from jina import Executor, Flow
 from jina.enums import GatewayProtocolType
+from jina.excepts import BadYAMLVersion
+from jina.jaml import JAML
 from jina.jaml.parsers import get_supported_versions
 from jina.parsers.flow import set_flow_parser
-from docarray.document.generators import from_ndarray
 
 cur_dir = Path(__file__).parent
 
@@ -75,7 +74,7 @@ def test_load_modify_dump_load(tmpdir):
     # assert executor args
     assert f._deployment_nodes['custom1'].args.uses == 'jinahub://CustomExecutor1'
     assert f._deployment_nodes['custom2'].args.uses == 'CustomExecutor2'
-    assert f._deployment_nodes['custom2'].args.port == 23456
+    assert int(f._deployment_nodes['custom2'].args.port) == 23456
 
     # change args inside `with`
     f.port = 12346
@@ -95,7 +94,7 @@ def test_load_modify_dump_load(tmpdir):
     # assert args modified in code
     assert f1.port == 12346
     assert f1.protocol == GatewayProtocolType.WEBSOCKET
-    assert f1._deployment_nodes['custom2'].args.port == 23457
+    assert int(f1._deployment_nodes['custom2'].args.port) == 23457
 
 
 def test_dump_load_build(monkeypatch):
@@ -123,30 +122,30 @@ def test_dump_load_build(monkeypatch):
     # these were passed by the user
     assert f.port == f1.port
     assert f.protocol == f1.protocol
-    assert f['executor1'].args.port == f1['executor1'].args.port
+    assert int(f['executor1'].args.port) == int(f1['executor1'].args.port)
     assert f['executor2'].args.host == f1['executor2'].args.host
     # this was set during `load_config`
-    assert f['executor2'].args.port == f1['executor2'].args.port
+    assert int(f['executor2'].args.port) == int(f1['executor2'].args.port)
 
     monkeypatch.setenv('JINA_FULL_CLI', 'true')
     f2: Flow = Flow.load_config(JAML.dump(f)).build()
     # these were passed by the user
-    assert f.port == f2.port
+    assert int(f.port) == int(f2.port)
     # validate gateway args (set during build)
-    assert f['gateway'].args.port == f2['gateway'].args.port
+    assert int(f['gateway'].args.port) == int(f2['gateway'].args.port)
 
 
 def test_load_flow_with_port():
     f = Flow.load_config('yaml/test-flow-port.yml')
     with f:
-        assert f.port == 12345
+        assert int(f.port) == 12345
 
 
 def test_load_flow_from_cli():
     a = set_flow_parser().parse_args(['--uses', 'yaml/test-flow-port.yml'])
     f = Flow.load_config(a.uses)
     with f:
-        assert f.port == 12345
+        assert int(f.port) == 12345
 
 
 def test_load_flow_from_yaml():

@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 
 from jina import Document, DocumentArray, Executor, Flow, requests
@@ -22,15 +24,14 @@ def num_shards(request):
     return request.param
 
 
-@pytest.fixture(scope='function')
-def external_deployment_args(num_shards):
+def _external_deployment_args(num_shards, port=None):
     args = [
         '--uses',
         'MyExternalExecutor',
         '--name',
         'external_real',
         '--port',
-        str(random_port()),
+        str(port) if port else str(random_port()),
         '--host-in',
         '0.0.0.0',
         '--shards',
@@ -41,6 +42,11 @@ def external_deployment_args(num_shards):
     return set_deployment_parser().parse_args(args)
 
 
+@pytest.fixture(scope='function')
+def external_deployment_args(num_shards, port=None):
+    return _external_deployment_args(num_shards, port)
+
+
 @pytest.fixture
 def external_deployment(external_deployment_args):
     return Deployment(external_deployment_args)
@@ -49,16 +55,18 @@ def external_deployment(external_deployment_args):
 class MyExternalExecutor(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._id = str(uuid.uuid4())
 
     @requests
     def foo(self, docs, *args, **kwargs):
         for doc in docs:
             doc.tags['name'] = self.runtime_args.name
+            doc.tags['uuid'] = self._id
 
 
 @pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
 def test_flow_with_external_deployment(
-        external_deployment, external_deployment_args, input_docs, num_shards
+    external_deployment, external_deployment_args, input_docs, num_shards
 ):
     with external_deployment:
         external_args = vars(external_deployment_args)
@@ -80,7 +88,7 @@ def test_flow_with_external_deployment(
 
 @pytest.mark.parametrize('num_shards', [2], indirect=True)
 def test_two_flow_with_shared_external_deployment(
-        external_deployment, external_deployment_args, input_docs, num_shards
+    external_deployment, external_deployment_args, input_docs, num_shards
 ):
     external_deployment.head_args.disable_reduce = True
     with external_deployment:
@@ -96,8 +104,8 @@ def test_two_flow_with_shared_external_deployment(
 
         flow2 = (
             Flow()
-                .add(name='foo')
-                .add(
+            .add(name='foo')
+            .add(
                 **external_args,
                 name='external_fake',
                 external=True,
@@ -161,12 +169,12 @@ def external_deployment_shards_2(external_deployment_shards_2_args):
 
 @pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
 def test_flow_with_external_deployment_shards(
-        external_deployment_shards_1,
-        external_deployment_shards_2,
-        external_deployment_shards_1_args,
-        external_deployment_shards_2_args,
-        input_docs,
-        num_shards,
+    external_deployment_shards_1,
+    external_deployment_shards_2,
+    external_deployment_shards_1_args,
+    external_deployment_shards_2_args,
+    input_docs,
+    num_shards,
 ):
     with external_deployment_shards_1, external_deployment_shards_2:
         external_args_1 = vars(external_deployment_shards_1_args)
@@ -179,20 +187,20 @@ def test_flow_with_external_deployment_shards(
         del external_args_2['deployment_role']
         flow = (
             Flow()
-                .add(name='executor1')
-                .add(
+            .add(name='executor1')
+            .add(
                 **external_args_1,
                 name='external_fake_1',
                 external=True,
                 needs=['executor1'],
             )
-                .add(
+            .add(
                 **external_args_2,
                 name='external_fake_2',
                 external=True,
                 needs=['executor1'],
             )
-                .needs(needs=['external_fake_1', 'external_fake_2'], port=random_port())
+            .needs(needs=['external_fake_1', 'external_fake_2'], port=random_port())
         )
 
         with flow:
@@ -226,10 +234,10 @@ def external_deployment_pre_shards(external_deployment_pre_shards_args):
 
 @pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
 def test_flow_with_external_deployment_pre_shards(
-        external_deployment_pre_shards,
-        external_deployment_pre_shards_args,
-        input_docs,
-        num_shards,
+    external_deployment_pre_shards,
+    external_deployment_pre_shards_args,
+    input_docs,
+    num_shards,
 ):
     with external_deployment_pre_shards:
         external_args = vars(external_deployment_pre_shards_args)
@@ -238,20 +246,20 @@ def test_flow_with_external_deployment_pre_shards(
         del external_args['deployment_role']
         flow = (
             Flow()
-                .add(
+            .add(
                 **external_args,
                 name='external_fake',
                 external=True,
             )
-                .add(
+            .add(
                 name='executor1',
                 needs=['external_fake'],
             )
-                .add(
+            .add(
                 name='executor2',
                 needs=['external_fake'],
             )
-                .needs(['executor1', 'executor2'])
+            .needs(['executor1', 'executor2'])
         )
         with flow:
             resp = flow.index(inputs=input_docs)
@@ -286,10 +294,10 @@ def external_deployment_join(external_deployment_join_args):
 
 @pytest.mark.parametrize('num_shards', [1, 2], indirect=True)
 def test_flow_with_external_deployment_join(
-        external_deployment_join,
-        external_deployment_join_args,
-        input_docs,
-        num_shards,
+    external_deployment_join,
+    external_deployment_join_args,
+    input_docs,
+    num_shards,
 ):
     with external_deployment_join:
         external_args = vars(external_deployment_join_args)
@@ -298,19 +306,19 @@ def test_flow_with_external_deployment_join(
         del external_args['deployment_role']
         flow = (
             Flow()
-                .add(
+            .add(
                 **external_args,
                 external=True,
             )
-                .add(
+            .add(
                 name='executor1',
                 needs=['executor0'],
             )
-                .add(
+            .add(
                 name='executor2',
                 needs=['executor0'],
             )
-                .needs(
+            .needs(
                 **external_args,
                 external=True,
                 needs=['executor1', 'executor2'],
@@ -325,7 +333,6 @@ def test_flow_with_external_deployment_join(
 
 def test_external_flow_with_target_executor():
     class ExtExecutor(Executor):
-
         @requests
         def foo(self, docs, **kwargs):
             for doc in docs:
@@ -338,6 +345,5 @@ def test_external_flow_with_target_executor():
         f = Flow().add(port=external_flow.port, external=True, name='external_executor')
         with f:
             response = f.post(on='/', inputs=d, target_executor='external_executor')
-
 
     assert response[0].text == 'external'

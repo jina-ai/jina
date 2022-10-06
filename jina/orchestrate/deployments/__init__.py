@@ -15,7 +15,13 @@ from hubble.executor.hubio import HubIO
 
 from jina import __default_executor__, __default_host__, __docker_host__, helper
 from jina.enums import DeploymentRoleType, PodRoleType, PollingType
-from jina.helper import CatchAllCleanupContextManager, _parse_ports
+from jina.helper import (
+    CatchAllCleanupContextManager,
+    _parse_hosts,
+    _parse_ports,
+    make_iterable,
+    parse_host_scheme,
+)
 from jina.jaml.helper import complete_path
 from jina.orchestrate.pods.factory import PodFactory
 from jina.parsers.helper import _set_gateway_uses
@@ -253,6 +259,18 @@ class Deployment(BaseDeployment):
             needs or set()
         )  #: used in the :class:`jina.flow.Flow` to build the graph
 
+        # parse addresses for distributed replicas
+        (
+            self.ext_repl_hosts,
+            self.ext_repl_ports,
+            self.ext_repl_schemes,
+            self.ext_repl_tls,
+        ) = ([], [], [], [])
+        self._parse_external_replica_hosts_and_ports()
+        self._parse_addresses_into_host_and_port()
+        if len(self.ext_repl_ports) > 1:
+            self.args.replicas = len(self.ext_repl_ports)
+
         self.uses_before_pod = None
         self.uses_after_pod = None
         self.head_pod = None
@@ -264,6 +282,52 @@ class Deployment(BaseDeployment):
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         super().__exit__(exc_type, exc_val, exc_tb)
         self.join()
+
+    def _parse_addresses_into_host_and_port(self):
+        # splits addresses passed to `host` into separate `host` and `port`
+        _hostname, port, scheme, tls = parse_host_scheme(self.args.host)
+        if _hostname != self.args.host:  # more than just hostname was passed to `host`
+            self.args.host = _hostname
+            self.args.port = port
+            self.args.scheme = scheme
+            self.args.tls = tls
+        for i, repl_host in enumerate(self.ext_repl_hosts):
+            _hostname, port, scheme, tls = parse_host_scheme(repl_host)
+            if (
+                _hostname != self.ext_repl_hosts[i]
+            ):  # more than just hostname was passed to `host`
+                self.ext_repl_hosts[i] = _hostname
+                self.ext_repl_ports[i] = port
+                self.ext_repl_schemes[i] = scheme
+                self.ext_repl_tls[i] = tls
+
+    def _parse_external_replica_hosts_and_ports(self):
+        # splits user provided lists of hosts and ports into a host and port for every distributed replica
+        ext_repl_ports = make_iterable(_parse_ports(str(self.args.port)))
+        ext_repl_hosts = make_iterable(_parse_hosts(str(self.args.host)))
+        if len(ext_repl_hosts) < len(ext_repl_ports):
+            if (
+                len(ext_repl_hosts) == 1
+            ):  # only one host given, assume replicas are on the same host
+                ext_repl_hosts = ext_repl_hosts * len(ext_repl_ports)
+        elif len(ext_repl_hosts) > len(ext_repl_ports):
+            if (
+                len(ext_repl_ports) == 1
+            ):  # only one port given, assume replicas are on the same port
+                ext_repl_ports = ext_repl_ports * len(ext_repl_hosts)
+        if len(ext_repl_hosts) != len(ext_repl_ports):
+            raise ValueError(
+                f'Number of hosts ({len(ext_repl_hosts)}) does not match the number of ports ({len(ext_repl_ports)})'
+            )
+        self.args.port, self.args.host = int(ext_repl_ports[0]), ext_repl_hosts[0]
+        self.ext_repl_hosts, self.ext_repl_ports = ext_repl_hosts, ext_repl_ports
+        # varying tls and schemes other than 'grpc' only implemented if the entire address is passed to `host`
+        self.ext_repl_schemes = [
+            getattr(self.args, 'scheme', None) for _ in self.ext_repl_ports
+        ]
+        self.ext_repl_tls = [
+            getattr(self.args, 'tls', None) for _ in self.ext_repl_ports
+        ]
 
     def _update_port_args(self):
         _all_port_monitoring = _parse_ports(self.args.port_monitoring)
@@ -285,6 +349,19 @@ class Deployment(BaseDeployment):
             self.pod_args = self.args
         else:
             self.pod_args = self._parse_args(self.args)
+
+        if self.external:
+            for pod, port, host, scheme, tls in zip(
+                self.pod_args['pods'][0],
+                self.ext_repl_ports,
+                self.ext_repl_hosts,
+                self.ext_repl_schemes,
+                self.ext_repl_tls,
+            ):
+                pod.port = port
+                pod.host = host
+                pod.scheme = scheme
+                pod.tls = tls
 
     def update_sandbox_args(self):
         """Update args of all its pods based on the host and port returned by Hubble"""
@@ -393,6 +470,19 @@ class Deployment(BaseDeployment):
             for replica in self.pod_args['pods'][0]:
                 ports.append(replica.port)
             return ports
+
+    @property
+    def hosts(self) -> List[str]:
+        """Returns a list of host addresses exposed by this Deployment.
+        Exposed means these are the host a Client/Gateway is supposed to communicate with.
+        For sharded deployments this will be the head host.
+        For non sharded deployments it will be all replica hosts
+        .. # noqa: DAR201
+        """
+        if self.head_host:
+            return [self.head_host]
+        else:
+            return [replica.host for replica in self.pod_args['pods'][0]]
 
     @property
     def dockerized_uses(self) -> bool:
