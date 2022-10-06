@@ -14,7 +14,7 @@ There are different options for deploying and running a standalone Executor:
 
 In Jina there are two ways of running standalone Executors: *Served Executors* and *shared Executors*.
 
-- A **served Executor** is launched by one of the methods described here (`.serve()`, `to_kubernetes_yaml()`, or `to_docker_compose_yaml()`).
+- A **served Executor** is launched by one of the following methods: `.serve()`, `to_kubernetes_yaml()`, or `to_docker_compose_yaml()`.
 It resides behind a {ref}`Gateway <architecture-overview>` and can thus be directly accessed by a {ref}`Client <client>`.
 It can also be used as part of a Flow.
 
