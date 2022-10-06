@@ -235,6 +235,7 @@
 
 
 
+
 # Change Logs
 
 Jina is released on every Friday evening. The PyPi package and Docker Image will be updated, the changes of the release will be tracked by this file.
@@ -15167,4 +15168,45 @@ Jina is released on every Friday evening. The PyPi package and Docker Image will
 
  - [[```b8957a39```](https://github.com/jina-ai/jina/commit/b8957a392330a7dc9dd19fd50674df8b9c5749d3)] __-__ bump version (#5228) (*Joan Fontanals*)
  - [[```c838a67d```](https://github.com/jina-ai/jina/commit/c838a67df98866fa01fac2f5214f2de01c1f1b03)] __-__ __version__: the next version will be 3.9.4 (*Jina Dev Bot*)
+
+<a name=release-note-3-10-1></a>
+## Release Note (`3.10.1`)
+
+> Release time: 2022-10-06 15:05:48
+
+
+
+🙇 We'd like to thank all contributors for this new release! In particular,
+ Girish Chandrashekar,  Joan Fontanals,  Johannes Messner,  Alex Cureton-Griffiths,  samsja,  AlaeddineAbdessalem,  Jackmin801,  Jina Dev Bot,  Delgermurun,  🙇
+
+
+### 🆕 New Features
+
+ - [[```82960f10```](https://github.com/jina-ai/jina/commit/82960f105149c478e4fc88e8b4fef8bbe2454429)] __-__ distributed replicas across different hosts (#5217) (*Johannes Messner*)
+ - [[```cdaf7f87```](https://github.com/jina-ai/jina/commit/cdaf7f87ececf9e13b517379ca183b17f0d7b007)] __-__ allow passing custom gateway in Flow (#5189) (*AlaeddineAbdessalem*)
+
+### 🐞 Bug fixes
+
+ - [[```c20cbbe3```](https://github.com/jina-ai/jina/commit/c20cbbe31011bad8f5a1c3469f9f32485803e0a2)] __-__ __orchestrate__: enable grpc fork support (#5250) (*Girish Chandrashekar*)
+ - [[```e083dc88```](https://github.com/jina-ai/jina/commit/e083dc88cca0170e4b170e25627388a5bc082538)] __-__ avoid having a lambda in logger (#5249) (*Joan Fontanals*)
+ - [[```d2142dc0```](https://github.com/jina-ai/jina/commit/d2142dc0b81f9256140232fe1f7a4f5dd25efdd0)] __-__ disable rich traceback in logging (#5242) (*samsja*)
+
+### 🧼 Code Refactoring
+
+ - [[```379a7342```](https://github.com/jina-ai/jina/commit/379a7342a8a220dc155f653ca043ed2c4e5b6031)] __-__ move hubble related code to hubble-sdk (#5227) (*Delgermurun*)
+
+### 📗 Documentation
+
+ - [[```86178f49```](https://github.com/jina-ai/jina/commit/86178f49f68fc120e7df29d97a1fd8bd550a752d)] __-__ polish (2022/10/04) (#5240) (*Alex Cureton-Griffiths*)
+ - [[```bfdb22e4```](https://github.com/jina-ai/jina/commit/bfdb22e44539ba60027c1f38ddf6cf174bb2a926)] __-__ add note about keeping same jina versions (#5239) (*Joan Fontanals*)
+ - [[```d6da86bc```](https://github.com/jina-ai/jina/commit/d6da86bc419951ebe95335f5818076b136520a1f)] __-__ __executor__: add missing request numbers in sample code (#5237) (*Jackmin801*)
+ - [[```58d0e108```](https://github.com/jina-ai/jina/commit/58d0e10825fe1eb78c9adca7582dc46060b83943)] __-__ fix typos (#5236) (*Johannes Messner*)
+ - [[```d6954ab2```](https://github.com/jina-ai/jina/commit/d6954ab20d895701be04df606c3e8b16a70b65ca)] __-__ explain executor patching in kubernetes (#5235) (*Johannes Messner*)
+
+### 🍹 Other Improvements
+
+ - [[```1a0e06b4```](https://github.com/jina-ai/jina/commit/1a0e06b48a7afffdde32830b31d05c9af35bc679)] __-__ docs polish 2022 10 05 (#5244) (*Alex Cureton-Griffiths*)
+ - [[```fc83fa29```](https://github.com/jina-ai/jina/commit/fc83fa299fcd1cdb7523d38d791c912a31580b25)] __-__ update announcement in readme and docs (*Jina Dev Bot*)
+ - [[```1810f178```](https://github.com/jina-ai/jina/commit/1810f178ba000cda2a4f6d98d590132c51338f87)] __-__ __docs__: update TOC (*Jina Dev Bot*)
+ - [[```d2760cdd```](https://github.com/jina-ai/jina/commit/d2760cddec14c28693e1bab5926965d1fc3e49d7)] __-__ __version__: the next version will be 3.10.1 (*Jina Dev Bot*)
 
