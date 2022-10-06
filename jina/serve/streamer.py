@@ -1,10 +1,8 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Union
 
 from docarray import DocumentArray
-from opentelemetry import metrics, trace
 
 from jina.logging.logger import JinaLogger
-from jina.serve.instrumentation import InstrumentationMixin
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.gateway.graph.topology_graph import TopologyGraph
 from jina.serve.runtimes.gateway.request_handling import RequestHandler

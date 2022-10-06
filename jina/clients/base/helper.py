@@ -1,13 +1,9 @@
-import argparse
 import asyncio
 import random
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from aiohttp import WSMsgType
-from opentelemetry import trace
-from opentelemetry.instrumentation.aiohttp_client import create_trace_config
-from opentelemetry.propagate import inject
 
 from jina.enums import WebsocketSubProtocols
 from jina.importer import ImportExtensions
@@ -30,7 +26,7 @@ class AioHttpClientlet(ABC):
         initial_backoff: float = 0.5,
         max_backoff: float = 0.1,
         backoff_multiplier: float = 1.5,
-        tracer_provider: Optional[trace.TracerProvider] = None,
+        tracer_provider: Optional[Any] = None,
         **kwargs,
     ) -> None:
         """HTTP Client to be used with the streamer
@@ -48,7 +44,12 @@ class AioHttpClientlet(ABC):
         self.logger = logger
         self.msg_recv = 0
         self.msg_sent = 0
-        self._trace_config = create_trace_config(tracer_provider=tracer_provider)
+        if tracer_provider:
+            from opentelemetry.instrumentation.aiohttp_client import create_trace_config
+
+            self._trace_config = [create_trace_config(tracer_provider=tracer_provider)]
+        else:
+            self._trace_config = None
         self.session = None
         self._session_kwargs = {}
         if kwargs.get('headers', None):
@@ -101,7 +102,7 @@ class AioHttpClientlet(ABC):
             import aiohttp
 
         self.session = aiohttp.ClientSession(
-            **self._session_kwargs, trace_configs=[self._trace_config]
+            **self._session_kwargs, trace_configs=self._trace_config
         )
         await self.session.__aenter__()
         return self

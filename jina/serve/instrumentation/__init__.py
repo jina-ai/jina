@@ -1,17 +1,4 @@
-from typing import Optional
-
-from opentelemetry import metrics as opentelmetry_metrics
-from opentelemetry import trace
-from opentelemetry.instrumentation.grpc import (
-    client_interceptor as grpc_client_interceptor,
-)
-
-from jina.serve.instrumentation._aio_client import (
-    StreamStreamAioClientInterceptor,
-    StreamUnaryAioClientInterceptor,
-    UnaryStreamAioClientInterceptor,
-    UnaryUnaryAioClientInterceptor,
-)
+from typing import Any, Optional
 
 
 class InstrumentationMixin:
@@ -32,6 +19,7 @@ class InstrumentationMixin:
         self.metrics = metrics
 
         if tracing:
+            from opentelemetry import trace
             from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
                 OTLPSpanExporter,
             )
@@ -50,10 +38,13 @@ class InstrumentationMixin:
             self.tracer_provider = provider
             self.tracer = provider.get_tracer(name)
         else:
+            from opentelemetry import trace
+
             self.tracer_provider = trace.NoOpTracerProvider()
             self.tracer = trace.NoOpTracer()
 
         if metrics:
+            from opentelemetry import metrics as opentelmetry_metrics
             from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import (
                 OTLPMetricExporter,
             )
@@ -75,6 +66,8 @@ class InstrumentationMixin:
             self.meter_provider = meter_provider
             self.meter = self.meter_provider.get_meter(name)
         else:
+            from opentelemetry import metrics as opentelmetry_metrics
+
             self.meter_provider = opentelmetry_metrics.NoOpMeterProvider()
             self.meter = opentelmetry_metrics.NoOpMeter(name='no-op')
 
@@ -93,14 +86,23 @@ class InstrumentationMixin:
 
     @staticmethod
     def aio_tracing_client_interceptors(
-        tracer: Optional[trace.Tracer] = trace.NoOpTracer(),
+        tracer: Optional[Any],
     ):
         '''Create a gRPC client aio channel interceptor.
         :param tracer: Optional tracer that is used to instrument the client interceptors. If absent, a NoOpTracer will be used.
         :returns: An invocation-side list of aio interceptor objects.
         '''
+        from opentelemetry import trace
+
         if not tracer:
             tracer = trace.NoOpTracer()
+
+        from jina.serve.instrumentation._aio_client import (
+            StreamStreamAioClientInterceptor,
+            StreamUnaryAioClientInterceptor,
+            UnaryStreamAioClientInterceptor,
+            UnaryUnaryAioClientInterceptor,
+        )
 
         return [
             UnaryUnaryAioClientInterceptor(tracer),
@@ -111,12 +113,18 @@ class InstrumentationMixin:
 
     @staticmethod
     def tracing_client_interceptor(
-        tracer_provider: Optional[trace.TracerProvider] = trace.NoOpTracerProvider(),
+        tracer_provider: Optional[Any] = None,
     ):
         '''
         :param tracer_provider: Optional tracer provider that is used to instrument the client interceptor. If absent, a NoOpTracer provider will be used.
         :returns: a gRPC client interceptor with the global tracing provider.
         '''
+        from opentelemetry import trace
+        from opentelemetry.instrumentation.grpc import (
+            client_interceptor as grpc_client_interceptor,
+        )
+
         if not tracer_provider:
             tracer_provider = trace.NoOpTracerProvider()
+
         return grpc_client_interceptor(tracer_provider)
