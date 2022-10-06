@@ -160,6 +160,28 @@ You can also restrict the visible devices in round-robin assignment by assigning
 | 1          | 4          |
 
 
+## Distributed replicas
+
+Replicas of the same Executor can run on different machines.
+
+To add distributed replicas to a Flow, the Executor replicas must be running on their respective machines already.
+
+````{admonition} External Executors
+:class: seealso
+For more information about starting Executors outside of a Flow, see our {ref}`how-to on external Executors <external-executor>`.
+````
+
+Then, you can add them by specifying their hosts, ports, and `external=True`:
+
+```python
+from jina import Flow
+
+Flow().add(host='localhost:1234,91.198.174.192:12346', external=True)
+```
+
+This will connect to `grpc://localhost:12345` and `grpc://91.198.174.192:12346` as two replicas of the same Executor.
+
+
 (partition-data-by-using-shards)=
 ## Partition data with shards
 

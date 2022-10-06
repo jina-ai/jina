@@ -9,6 +9,24 @@ There are different options for deploying and running a standalone Executor:
 * Run the static {meth}`~jina.serve.executors.BaseExecutor.to_kubernetes_yaml()` method to generate K8s deployment configuration files
 * Run the static {meth}`~jina.serve.executors.BaseExecutor.to_docker_compose_yaml()` method to generate a Docker Compose service file
 
+````{admonition} Served vs. shared Executor
+:class: hint
+
+In Jina there are two ways of running standalone Executors: *Served Executors* and *shared Executors*.
+
+- A **served Executor** is launched by one of the following methods: `.serve()`, `to_kubernetes_yaml()`, or `to_docker_compose_yaml()`.
+It resides behind a {ref}`Gateway <architecture-overview>` and can thus be directly accessed by a {ref}`Client <client>`.
+It can also be used as part of a Flow.
+
+- A **shared Executor** is launched using the [Jina CLI](../cli/index.rst) and does *not* sit behind a Gateway.
+It is intended to be used in one or more Flows.
+Because a shared Executor does not reside behind a Gataway, it cannot be directly accessed by a Client, but it requires
+fewer networking hops when used inside of a Flow.
+
+Both served and shared Executors can be used as part of a Flow, by adding them as an {ref}`external Executor <external-executors>`.
+
+````
+
 ## Serve directly
 An {class}`~jina.Executor` can be served using the {meth}`~jina.serve.executors.BaseExecutor.serve` method:
 

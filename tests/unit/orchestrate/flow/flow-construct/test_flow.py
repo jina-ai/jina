@@ -349,17 +349,19 @@ def test_return_results_sync_flow(protocol, on_done):
 
 
 @pytest.mark.parametrize(
-    'input',
+    'input,expected_host,expected_port',
     [
-        '0.0.0.0',
-        '0.0.0.0:12345',
-        '123.124.125.0:45678',
-        'api.jina.ai:45678',
+        ('0.0.0.0', '0.0.0.0', None),
+        ('0.0.0.0:12345', '0.0.0.0', '12345'),
+        ('123.124.125.0:45678', '123.124.125.0', '45678'),
+        ('api.jina.ai:45678', 'api.jina.ai', '45678'),
     ],
 )
-def test_flow_host_expose_shortcut(input):
+def test_flow_host_expose_shortcut(input, expected_host, expected_port):
     f = Flow().add(host=input).build()
-    assert f['executor0'].args.host == input
+    assert f['executor0'].args.host == expected_host
+    if expected_port:
+        assert f['executor0'].args.port == expected_port
 
 
 def test_flow_workspace_id():
@@ -613,5 +615,5 @@ def _validate_flow(f):
 def test_set_port_deployment(port_generator):
     port = port_generator()
     with Flow().add(uses=Executor, port=port) as f:
-        assert f._deployment_nodes['executor0'].pod_args['pods'][0][0].port == port
+        assert int(f._deployment_nodes['executor0'].pod_args['pods'][0][0].port) == port
         f.index(inputs=[])

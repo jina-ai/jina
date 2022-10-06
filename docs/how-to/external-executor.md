@@ -32,22 +32,54 @@ exec_host, exec_port = 'localhost', 12345
 f = Flow().add(host=exec_host, port=exec_port, external=True)
 ```
 
+Alternatively, you can pass the entire network address to the `host` parameter:
+
+```python
+from jina import Flow
+
+f = Flow().add(host='localhost:12345', external=True)
+```
+
 After that, the external Executor will behave just like an internal one. And you can even add the same Executor to multiple
 Flows!
 
-````{admonition} Note
+````{admonition} Distributed replicas
+:class: hint
+
+In much the same way, you can also add multiple replicas of the same Executor.
+To do this, just specify all the respective hosts and ports:
+
+```python
+from jina import Flow
+
+replica_hosts, replica_ports = 'localhost,91.198.174.192', '12345,12346'
+f = Flow().add(host=replica_hosts, port=replica_ports, external=True)
+
+# alternative syntax
+# f = Flow().add(host='localhost:12345,91.198.174.192:12346', external=True)
+```
+
+This will connect to `grpc://localhost:12345` and `grpc://91.198.174.192:12346` as two replicas of the same Executor.
+
+````
+
+````{admonition} Reducing
 :class: hint
 If an external Executor needs multiple predecessors, reducing needs to be enabled. So setting disable_reduce=True is not allowed for these cases. 
 ````
 
-## Starting standalone Executors
+
+## Starting shared Executors
 
 The example above assumes that there already is an Executor running, and you just want to access
 it from your Flow.
 
 
 You can, however, also start your own standalone Executors, which can then be accessed from anywhere.
-In the following sections we will describe how to run standalone Executors via the Jina command line interface (CLI). For more options to run your Executor, including in Kubernetes and Docker Compose, please read the {ref}`Executor API section <serve-executor-standalone>`.
+In the following sections we will describe how to run shared Executors via the Jina command line interface (CLI).
+For more options to run your Executor, including in Kubernetes and Docker Compose, please read the {ref}`Executor API section <serve-executor-standalone>`.
+
+Though not part of this how-to, {ref}`served Executors <serve-executor-standalone>` can also be used as external Executors.
 
 
 ````{admonition} Advanced deployment options
