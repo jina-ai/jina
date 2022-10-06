@@ -2,7 +2,7 @@
 # Use
 
 
-We provide three ways of using Hub {class}`~jina.Executor`s in your project. Each has its own use case and benefits.
+There are three ways to use Hub {class}`~jina.Executor`s in your project. Each has its own use case and benefits.
 
 ## Use as-is
 
@@ -40,7 +40,7 @@ from jina import Flow
 f = Flow().add(uses='jinahub+docker://<UUID>[:<SECRET>][/<TAG>]')
 ```
 
-If you do not provide a `/<TAG>`, it defaults to `/latest`, which means using the `latest` tag.
+If you do not provide a `/<TAG>`, it defaults to `/latest`.
 
 ````{important}
 To use a private Executor, you must provide the `SECRET` which is generated after `jina hub push`.
@@ -74,12 +74,12 @@ with f:
 ````
 
 
-When `jinahub+docker://` executors are not loading properly or are having issues during initialization, please ensure sufficient Docker resources are allocated.
+If `jinahub+docker://` Executors don't load properly or have issues during initialization, ensure you have sufficient Docker resources allocated.
 
 
 ### Mount local volumes
 
-You can mount volumes into your dockerized Executor by passing a list of volumes to the `volumes` argument:
+You can mount volumes into your dockerized Executor by passing a list of volumes with the `volumes` argument:
 
 ```python
 f = Flow().add(
@@ -93,17 +93,17 @@ f = Flow().add(
 If you want your containerized Executor to operate inside one of these volumes, remember to set its {ref}`workspace <executor-workspace>` accordingly!
 ````
 
-If you do not specify `volumes`, Jina will automatically mount a volume into the container.
-In this case, the volume source will be your {ref}`default Executor workspace <executor-workspace>`, and the volume destination will
-be `/app`. Additionally, automatic volume setting will try to move the Executor's workspace into the volume destination.
-Depending on the default executor workspace on your system this may not always succeed, so explicitly mounting a volume and setting
+If you do not specify `volumes`, Jina automatically mounts a volume into the container.
+In this case, the volume source is your {ref}`default Executor workspace <executor-workspace>`, and the volume destination 
+is `/app`. Additionally, automatic volume setting tries to move the Executor's workspace into the volume destination.
+Depending on the default Executor workspace on your system this may not always succeed, so explicitly mounting a volume and setting
 a workspace is recommended.
 
 You can disable automatic volume setting by passing `f.add(..., disable_auto_volume=True)`.
 
 ## Use in Flow via source code
 
-Use the source code from `Hubble` in your Python code:
+Use the source code from Jina Hub in your Python code:
 
 ```python
 from jina import Flow
@@ -113,8 +113,8 @@ f = Flow().add(uses='jinahub://<UUID>[:<SECRET>][/<TAG>]')
 
 ## Set/override default parameters
 
-The default parameters of the published Executor may not be ideal for your use case. You can override
-any of these by passing `uses_with` and `uses_metas` as parameters.
+The default parameters of the published Executor may not be ideal for your use case. You can 
+pass `uses_with` and `uses_metas` as parameters to override this:
 
 ```python
 from jina import Flow
@@ -139,7 +139,7 @@ jina hub pull jinahub+docker://<UUID>[:<SECRET>][/<TAG>]
 ```
 
 
-You can find the Executor by running `docker images`. You can also indicate which version of the Executor you want to use by naming the `/<TAG>`.
+You can find the Executor by running `docker images`. You can also indicate which version of the Executor you want to use by specifying the `/<TAG>`.
 
 ```bash
 jina hub pull jinahub+docker://DummyExecutor/v1.0.0
@@ -153,4 +153,3 @@ jina hub pull jinahub://<UUID>[:<SECRET>][/<TAG>]
 
 
 The source code of the Executor will be stored at `~/.jina/hub-packages`.
-

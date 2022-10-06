@@ -20,7 +20,7 @@ It can also be used as part of a Flow.
 
 - A **shared Executor** is launched using the [Jina CLI](../cli/index.rst) and does *not* sit behind a Gateway.
 It is intended to be used in one or more Flows.
-Because a shared Executor does not reside behid a Gataway, it can not be directly accessed by a Client, but it requires
+Because a shared Executor does not reside behind a Gataway, it cannot be directly accessed by a Client, but it requires
 fewer networking hops when used inside of a Flow.
 
 Both served and shared Executors can be used as part of a Flow, by adding them as an {ref}`external Executor <external-executors>`.
