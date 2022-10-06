@@ -10,6 +10,10 @@ os.environ['JINA_GRPC_RECV_BYTES'] = '0'
 
 @pytest.mark.parametrize('inputs', [None, DocumentArray.empty(10)])
 def test_grpc_census(inputs):
+    import multiprocessing
+
+    multiprocessing.set_start_method('spawn', force=True)
+
     assert int(os.environ.get('JINA_GRPC_SEND_BYTES', 0)) == 0
     assert int(os.environ.get('JINA_GRPC_RECV_BYTES', 0)) == 0
     with Flow().add().add() as f:
