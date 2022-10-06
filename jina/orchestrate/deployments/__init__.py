@@ -315,6 +315,10 @@ class Deployment(BaseDeployment):
                 len(ext_repl_ports) == 1
             ):  # only one port given, assume replicas are on the same port
                 ext_repl_ports = ext_repl_ports * len(ext_repl_hosts)
+        if len(ext_repl_hosts) != len(ext_repl_ports):
+            raise ValueError(
+                f'Number of hosts ({len(ext_repl_hosts)}) does not match the number of ports ({len(ext_repl_ports)})'
+            )
         self.args.port, self.args.host = int(ext_repl_ports[0]), ext_repl_hosts[0]
         self.ext_repl_hosts, self.ext_repl_ports = ext_repl_hosts, ext_repl_ports
         # varying tls and schemes other than 'grpc' only implemented if the entire address is passed to `host`
