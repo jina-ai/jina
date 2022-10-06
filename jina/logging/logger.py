@@ -19,15 +19,15 @@ class _MyLogRender(_LogRender):
     """Override the original rich log record for more compact layout."""
 
     def __call__(
-        self,
-        console,
-        renderables,
-        log_time=None,
-        time_format=None,
-        level=None,
-        path=None,
-        line_no=None,
-        link_path=None,
+            self,
+            console,
+            renderables,
+            log_time=None,
+            time_format=None,
+            level=None,
+            path=None,
+            line_no=None,
+            link_path=None,
     ):
         from rich.containers import Renderables
         from rich.table import Table
@@ -112,12 +112,12 @@ class JinaLogger:
     supported = {'FileHandler', 'StreamHandler', 'SysLogHandler', 'RichHandler'}
 
     def __init__(
-        self,
-        context: str,
-        name: Optional[str] = None,
-        log_config: Optional[str] = None,
-        quiet: bool = False,
-        **kwargs,
+            self,
+            context: str,
+            name: Optional[str] = None,
+            log_config: Optional[str] = None,
+            quiet: bool = False,
+            **kwargs,
     ):
 
         log_config = os.getenv(
@@ -145,7 +145,6 @@ class JinaLogger:
         }
 
         self.add_handlers(log_config, **context_vars)
-        self.success = lambda *x: self.logger.log(LogVerbosity.SUCCESS, *x)
         self.debug = self.logger.debug
         self.warning = self.logger.warning
         self.critical = self.logger.critical
@@ -153,6 +152,14 @@ class JinaLogger:
         self.info = self.logger.info
         self._is_closed = False
         self.debug_enabled = self.logger.isEnabledFor(logging.DEBUG)
+
+    def success(self, *args):
+        """
+        Provides an API to print success messages
+
+        :param args: the args to be forwarded to the log
+        """
+        self.logger.log(LogVerbosity.SUCCESS, *args)
 
     @property
     def handlers(self):
