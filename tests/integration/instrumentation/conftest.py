@@ -3,8 +3,6 @@ import time
 
 import pytest
 
-from jina.logging.logger import JinaLogger
-
 
 @pytest.fixture()
 def otlp_collector():

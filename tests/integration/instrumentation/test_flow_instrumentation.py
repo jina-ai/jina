@@ -2,7 +2,7 @@ import time
 
 import pytest
 
-from jina import Client, Flow
+from jina import Flow
 from tests.integration.instrumentation import (
     ExecutorTestWithTracing,
     get_services,
@@ -13,24 +13,17 @@ from tests.integration.instrumentation import (
 
 
 @pytest.mark.parametrize(
-    'test_args',
+    'protocol, client_type, num_internal_spans',
     [
-        {'protocol': 'grpc', 'client_type': 'GRPCClient', 'num_internal_spans': 1},
-        {'protocol': 'http', 'client_type': 'HTTPClient', 'num_internal_spans': 4},
-        {
-            'protocol': 'websocket',
-            'client_type': 'WebSocketClient',
-            'num_internal_spans': 6,
-        },
+        ('grpc', 'GRPCClient', 1),
+        ('http', 'HTTPClient', 4),
+        ('websocket', 'WebSocketClient', 6)
     ],
 )
-def test_grpc_gateway_instrumentation(otlp_collector, test_args):
+def test_gateway_instrumentation(otlp_collector, protocol, client_type, num_internal_spans):
     import multiprocessing
 
     multiprocessing.set_start_method('spawn', force=True)
-    protocol = test_args['protocol']
-    client_type = test_args['client_type']
-    num_internal_spans = test_args['num_internal_spans']
 
     f = Flow(
         protocol=protocol,
