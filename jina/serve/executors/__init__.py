@@ -135,7 +135,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._add_requests(requests)
         self._add_runtime_args(runtime_args)
         self._init_monitoring()
-        self._init_instrumentation(runtime_args)
+        self._init_instrumentation(runtime_args or {})
         self._init_workspace = workspace
         self.logger = JinaLogger(self.__class__.__name__)
         if __dry_run_endpoint__ not in self.requests:
@@ -181,7 +181,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._summary_method = None
             self._metrics_buffer = None
 
-    def _init_instrumentation(self, _runtime_args: Optional[Dict] = {}):
+    def _init_instrumentation(self, _runtime_args: Dict = {}):
         instrumentating_module_name = _runtime_args.get('name', self.__class__.__name__)
 
         self.tracer_provider = _runtime_args.get(
