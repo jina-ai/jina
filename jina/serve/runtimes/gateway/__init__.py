@@ -91,7 +91,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             timeout_send=self.timeout_send,
             metrics_registry=self.metrics_registry,
             runtime_name=self.args.name,
-            opentelemetry_tracing=self.opentelemetry_tracing,
+            tracing=self.tracing,
             tracer_provider=self.tracer_provider,
             grpc_tracing_server_interceptors=self.aio_tracing_server_interceptor(),
             aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(

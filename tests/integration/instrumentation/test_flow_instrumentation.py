@@ -34,12 +34,12 @@ def test_grpc_gateway_instrumentation(otlp_collector, test_args):
 
     f = Flow(
         protocol=protocol,
-        opentelemetry_tracing=True,
+        tracing=True,
         span_exporter_host='localhost',
         span_exporter_port=4317,
     ).add(
         uses=ExecutorTestWithTracing,
-        opentelemetry_tracing=True,
+        tracing=True,
         span_exporter_host='localhost',
         span_exporter_port=4317,
     )

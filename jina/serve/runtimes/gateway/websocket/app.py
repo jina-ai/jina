@@ -26,7 +26,7 @@ def _fits_ws_close_msg(msg: str):
 def get_fastapi_app(
     streamer: 'GatewayStreamer',
     logger: 'JinaLogger',
-    opentelemetry_tracing: Optional[bool] = None,
+    tracing: Optional[bool] = None,
     tracer_provider: Optional[trace.TracerProvider] = None,
 ):
     """
@@ -34,7 +34,7 @@ def get_fastapi_app(
 
     :param streamer: gateway streamer object.
     :param logger: Jina logger.
-    :param opentelemetry_tracing: Enables tracing is set to True.
+    :param tracing: Enables tracing is set to True.
     :param tracer_provider: If tracing is enabled the tracer_provider will be used to instrument the code.
     :return: fastapi app
     """
@@ -115,7 +115,7 @@ def get_fastapi_app(
 
     app = FastAPI()
 
-    if opentelemetry_tracing:
+    if tracing:
         from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 
         FastAPIInstrumentor.instrument_app(app, tracer_provider=tracer_provider)

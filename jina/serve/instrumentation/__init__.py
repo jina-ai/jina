@@ -1,6 +1,7 @@
 from typing import Optional
 
-from opentelemetry import metrics, trace
+from opentelemetry import metrics as opentelmetry_metrics
+from opentelemetry import trace
 from opentelemetry.instrumentation.grpc import (
     client_interceptor as grpc_client_interceptor,
 )
@@ -19,18 +20,18 @@ class InstrumentationMixin:
     def _setup_instrumentation(
         self,
         name: str,
-        opentelemetry_tracing: Optional[bool] = False,
+        tracing: Optional[bool] = False,
         span_exporter_host: Optional[str] = '0.0.0.0',
         span_exporter_port: Optional[int] = 6831,
-        opentelemetry_metrics: Optional[bool] = False,
+        metrics: Optional[bool] = False,
         metrics_exporter_host: Optional[str] = '0.0.0.0',
         metrics_exporter_port: Optional[int] = 6831,
     ) -> None:
 
-        self.opentelemetry_tracing = opentelemetry_tracing
-        self.opentelemetry_metrics = opentelemetry_metrics
+        self.tracing = tracing
+        self.metrics = metrics
 
-        if opentelemetry_tracing:
+        if tracing:
             from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
                 OTLPSpanExporter,
             )
@@ -52,7 +53,7 @@ class InstrumentationMixin:
             self.tracer_provider = trace.NoOpTracerProvider()
             self.tracer = trace.NoOpTracer()
 
-        if opentelemetry_metrics:
+        if metrics:
             from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import (
                 OTLPMetricExporter,
             )
@@ -74,14 +75,14 @@ class InstrumentationMixin:
             self.meter_provider = meter_provider
             self.meter = self.meter_provider.get_meter(name)
         else:
-            self.meter_provider = metrics.NoOpMeterProvider()
-            self.meter = metrics.NoOpMeter(name='no-op')
+            self.meter_provider = opentelmetry_metrics.NoOpMeterProvider()
+            self.meter = opentelmetry_metrics.NoOpMeter(name='no-op')
 
     def aio_tracing_server_interceptor(self):
         '''Create a gRPC aio server interceptor.
         :returns: A service-side aio interceptor object.
         '''
-        if self.opentelemetry_tracing:
+        if self.tracing:
             from jina.serve.instrumentation._aio_server import (
                 OpenTelemetryAioServerInterceptor,
             )

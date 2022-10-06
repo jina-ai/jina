@@ -52,10 +52,10 @@ class BaseClient(InstrumentationMixin, ABC):
             name=self.args.name
             if hasattr(self.args, 'name')
             else self.__class__.__name__,
-            opentelemetry_tracing=self.args.opentelemetry_tracing,
+            tracing=self.args.tracing,
             span_exporter_host=self.args.span_exporter_host,
             span_exporter_port=self.args.span_exporter_port,
-            opentelemetry_metrics=self.args.opentelemetry_metrics,
+            metrics=self.args.metrics,
             metrics_exporter_host=self.args.metrics_exporter_host,
             metrics_exporter_port=self.args.metrics_exporter_port,
         )
