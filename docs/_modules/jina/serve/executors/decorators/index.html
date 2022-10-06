@@ -243,8 +243,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -265,7 +263,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -380,57 +378,6 @@
         <span class="n">locks_root</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">locks_root</span>
-
-
-<div class="viewcode-block" id="wrap_func"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.wrap_func">[docs]</a><span class="k">def</span> <span class="nf">wrap_func</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">func_lst</span><span class="p">,</span> <span class="n">wrapper</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Wrapping a class method only once, inherited but not overridden method will not be wrapped again</span>
-
-<span class="sd">    :param cls: class</span>
-<span class="sd">    :param func_lst: function list to wrap</span>
-<span class="sd">    :param wrapper: the wrapper</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">f_name</span> <span class="ow">in</span> <span class="n">func_lst</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">f_name</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span>
-            <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">f_name</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">f_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mro</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span>
-        <span class="p">):</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">f_name</span><span class="p">,</span> <span class="n">wrapper</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">f_name</span><span class="p">)))</span></div>
-
-
-<div class="viewcode-block" id="store_init_kwargs"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.store_init_kwargs">[docs]</a><span class="k">def</span> <span class="nf">store_init_kwargs</span><span class="p">(</span><span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Mark the args and kwargs of :func:`__init__` later to be stored via :func:`save_config` in YAML</span>
-<span class="sd">    :param func: the function to decorate</span>
-<span class="sd">    :return: the wrapped function</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">arg_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s1">&#39;this decorator should only be used on __init__ method of an executor&#39;</span>
-            <span class="p">)</span>
-        <span class="n">taboo</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;self&#39;</span><span class="p">,</span> <span class="s1">&#39;args&#39;</span><span class="p">,</span> <span class="s1">&#39;kwargs&#39;</span><span class="p">,</span> <span class="s1">&#39;metas&#39;</span><span class="p">,</span> <span class="s1">&#39;requests&#39;</span><span class="p">,</span> <span class="s1">&#39;runtime_args&#39;</span><span class="p">}</span>
-        <span class="n">_defaults</span> <span class="o">=</span> <span class="n">get_default_metas</span><span class="p">()</span>
-        <span class="n">taboo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_defaults</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="n">all_pars</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span>
-        <span class="n">tmp</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">default</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">all_pars</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">taboo</span><span class="p">}</span>
-        <span class="n">tmp_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">all_pars</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">taboo</span><span class="p">]</span>
-        <span class="c1"># set args by aligning tmp_list with arg values</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tmp_list</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-            <span class="n">tmp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
-        <span class="c1"># set kwargs</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">tmp</span><span class="p">:</span>
-                <span class="n">tmp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
-
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_init_kwargs_dict&#39;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_init_kwargs_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_init_kwargs_dict</span> <span class="o">=</span> <span class="n">tmp</span>
-        <span class="n">convert_tuple_to_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_kwargs_dict</span><span class="p">)</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">f</span>
-
-    <span class="k">return</span> <span class="n">arg_wrapper</span></div>
 
 
 <div class="viewcode-block" id="avoid_concurrent_lock_cls"><a class="viewcode-back" href="../../../../../api/jina.serve.executors.decorators/#jina.avoid_concurrent_lock_cls">[docs]</a><span class="k">def</span> <span class="nf">avoid_concurrent_lock_cls</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
@@ -689,7 +636,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

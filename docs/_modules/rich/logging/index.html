@@ -243,8 +243,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -265,7 +263,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -360,10 +358,12 @@
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">Handler</span><span class="p">,</span> <span class="n">LogRecord</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">ModuleType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">rich._null_file</span> <span class="kn">import</span> <span class="n">NullFile</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">get_console</span>
-<span class="kn">from</span> <span class="nn">._log_render</span> <span class="kn">import</span> <span class="n">LogRender</span><span class="p">,</span> <span class="n">FormatTimeCallable</span>
+<span class="kn">from</span> <span class="nn">._log_render</span> <span class="kn">import</span> <span class="n">FormatTimeCallable</span><span class="p">,</span> <span class="n">LogRender</span>
 <span class="kn">from</span> <span class="nn">.console</span> <span class="kn">import</span> <span class="n">Console</span><span class="p">,</span> <span class="n">ConsoleRenderable</span>
 <span class="kn">from</span> <span class="nn">.highlighter</span> <span class="kn">import</span> <span class="n">Highlighter</span><span class="p">,</span> <span class="n">ReprHighlighter</span>
 <span class="kn">from</span> <span class="nn">.text</span> <span class="kn">import</span> <span class="n">Text</span>
@@ -515,16 +515,23 @@
         <span class="n">log_renderable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
             <span class="n">record</span><span class="o">=</span><span class="n">record</span><span class="p">,</span> <span class="n">traceback</span><span class="o">=</span><span class="n">traceback</span><span class="p">,</span> <span class="n">message_renderable</span><span class="o">=</span><span class="n">message_renderable</span>
         <span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">log_renderable</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">handleError</span><span class="p">(</span><span class="n">record</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">file</span><span class="p">,</span> <span class="n">NullFile</span><span class="p">):</span>
+            <span class="c1"># Handles pythonw, where stdout/stderr are null, and we return NullFile</span>
+            <span class="c1"># instance from Console.file. In this case, we still want to make a log record</span>
+            <span class="c1"># even though we won&#39;t be writing anything to a file.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handleError</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">log_renderable</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">handleError</span><span class="p">(</span><span class="n">record</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RichHandler.render_message"><a class="viewcode-back" href="../../../api/jina.logging.logger/#jina.logging.logger.RichHandler.render_message">[docs]</a>    <span class="k">def</span> <span class="nf">render_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">LogRecord</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ConsoleRenderable&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Render message text in to Text.</span>
 
-<span class="sd">        record (LogRecord): logging Record.</span>
-<span class="sd">        message (str): String containing log message.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            record (LogRecord): logging Record.</span>
+<span class="sd">            message (str): String containing log message.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            ConsoleRenderable: Renderable to display log message.</span>
@@ -649,7 +656,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

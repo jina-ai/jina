@@ -276,8 +276,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +296,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -403,21 +401,26 @@ orchestrated by your favorite tools. One of the simplest is Docker Compose which
 <span class="hll"><span class="n">flow</span><span class="o">.</span><span class="n">to_docker_compose_yaml</span><span class="p">(</span><span class="s1">&#39;docker-compose.yml&#39;</span><span class="p">)</span>
 </span></pre></div>
 </div>
-<p>Jina will generate a <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> configuration file that you can use directly with
-<code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> and corresponds to your <code class="docutils literal notranslate"><span class="pre">Flow</span></code>, avoiding the overhead of manually defining all the services needed for the <code class="docutils literal notranslate"><span class="pre">Flow</span></code>.</p>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
+<p>Jina will generate a <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> configuration file corresponding with your Flow. You can use this directly with
+Docker Compose, avoiding the overhead of manually defining all the services needed for the Flow.</p>
+<div class="caution admonition">
+<p class="admonition-title">Use docker based Executors</p>
 <p>All Executors in the Flow should be used with <code class="docutils literal notranslate"><span class="pre">jinahub+docker://...</span></code> or <code class="docutils literal notranslate"><span class="pre">docker://...</span></code>.</p>
 </div>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>If you are using Executor which rely on docker image built with a jina version prior to 3.1.3, please remove the
-health check from the dump yaml file as they are only compatible with 3.1.3+ otherwise your docker compose services will
-always be <code class="docutils literal notranslate"><span class="pre">unhealthy</span></code></p>
+<div class="caution admonition">
+<p class="admonition-title">Health check available from 3.1.3</p>
+<p>If you use Executors that rely on Docker images built with a version of Jina prior to 3.1.3, remove the
+health check from the dumped YAML file, otherwise your Docker Compose services will
+always be “unhealthy.”</p>
+</div>
+<div class="caution admonition">
+<p class="admonition-title">Matching jina versions</p>
+<p>If you change the Docker images in your Docker Compose generated file, ensure that all the services included in
+the gateway are built with the same Jina version to guarantee compatibility.</p>
 </div>
 <section id="example-indexing-and-searching-images-using-clipencoder-and-annliteindexer">
 <h2>Example: Indexing and searching images using CLIPEncoder and ANNLiteIndexer<a class="headerlink" href="#example-indexing-and-searching-images-using-clipencoder-and-annliteindexer" title="Permalink to this heading">#</a></h2>
-<p>To follow this how-to, you should first ensure that <a class="reference external" href="https://docs.docker.com/compose/install/"><code class="docutils literal notranslate"><span class="pre">Docker</span> <span class="pre">Compose</span></code></a> is installed locally.</p>
+<p>Install <a class="reference external" href="https://docs.docker.com/compose/install/"><code class="docutils literal notranslate"><span class="pre">Docker</span> <span class="pre">Compose</span></code></a> locally to follow this how-to.</p>
 <p>This example shows how to build and deploy a Flow with Docker Compose, using <a class="reference external" href="https://hub.jina.ai/executor/0hnlmu3q"><code class="docutils literal notranslate"><span class="pre">CLIPImageEncoder</span></code></a>
 as an image encoder and <a class="reference external" href="https://hub.jina.ai/executor/7yypg8qk"><code class="docutils literal notranslate"><span class="pre">ANNLiteIndexer</span></code></a> as an indexer to perform fast nearest
 neighbor retrieval on image embeddings.</p>
@@ -577,7 +580,7 @@ adapt it to your own needs.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

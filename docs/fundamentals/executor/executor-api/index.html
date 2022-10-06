@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.10.1 Documentation" />
   
-<meta property="og:description" content="Executor is a self-contained component and performs a group of tasks on a DocumentArray. It encapsulates functions that process DocumentArray s. Inside the Executor, these functions are decorated with@requests. To create an Executor, you only need to follow three principles: An Executor should su..." />
+<meta property="og:description" content="Executor is a self-contained component and performs a group of tasks on a DocumentArray. It encapsulates functions that process DocumentArray s. Inside the Executor, these functions are decorated with@requests. To create an Executor, you need to follow three principles: An Executor should subclas..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -276,8 +276,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +296,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -391,27 +389,27 @@
 <span id="executor"></span><h1>Basics<a class="headerlink" href="#basics" title="Permalink to this heading">#</a></h1>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Executor uses <code class="docutils literal notranslate"><span class="pre">docarray.DocumentArray</span></code> as input and output data structure. Please first <a class="reference external" href="https://docarray.jina.ai">read DocArray’s docs</a> to get an impression how does it work.</p>
+<p>Executor uses <code class="docutils literal notranslate"><span class="pre">docarray.DocumentArray</span></code> as input and output data structure. Please <a class="reference external" href="https://docarray.jina.ai">read DocArray’s docs</a> to get an impression how it works.</p>
 </div>
 <p><a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> is a self-contained component and performs a group of tasks on a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>.
-It encapsulates functions that process <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>s. Inside the Executor, these functions are decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>. To create an Executor, you only need to follow three principles:</p>
+It encapsulates functions that process <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>s. Inside the Executor, these functions are decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>. To create an Executor, you need to follow three principles:</p>
 <ol class="arabic simple">
-<li><p>An Executor should subclass directly from the <code class="docutils literal notranslate"><span class="pre">jina.Executor</span></code> class. Executor can also be a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code></p></li>
+<li><p>An Executor should subclass directly from the <code class="docutils literal notranslate"><span class="pre">jina.Executor</span></code> class. An Executor can also be a <code class="docutils literal notranslate"><span class="pre">dataclass</span></code></p></li>
 <li><p>An Executor class is a bag of functions with shared state or configuration (via <code class="docutils literal notranslate"><span class="pre">self</span></code>); it can contain an arbitrary number of
 functions with arbitrary names.</p></li>
-<li><p>Functions decorated by <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> will be invoked according to their <code class="docutils literal notranslate"><span class="pre">on=</span></code> endpoint. These functions can be coroutines (<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code>) or regular functions.</p></li>
+<li><p>Functions decorated by <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> are invoked according to their <code class="docutils literal notranslate"><span class="pre">on=</span></code> endpoint. These functions can be coroutines (<code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code>) or regular functions.</p></li>
 </ol>
 <section id="constructor">
 <h2>Constructor<a class="headerlink" href="#constructor" title="Permalink to this heading">#</a></h2>
 <section id="subclass">
 <h3>Subclass<a class="headerlink" href="#subclass" title="Permalink to this heading">#</a></h3>
-<p>Every new executor should be a subclass of <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>.</p>
-<p>You can name your executor class freely.</p>
+<p>Every new Executor should be a subclass of <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>.</p>
+<p>You can name your Executor class freely.</p>
 </section>
 <section id="init">
 <h3><code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#init" title="Permalink to this heading">#</a></h3>
-<p>No need to implement <code class="docutils literal notranslate"><span class="pre">__init__</span></code> if your Executor does not contain initial states or if it is a <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html">dataclass</a></p>
-<p>If your executor has <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, it needs to carry <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in the signature and call <code class="docutils literal notranslate"><span class="pre">super().__init__(**kwargs)</span></code>
+<p>You don’t need to implement <code class="docutils literal notranslate"><span class="pre">__init__</span></code> if your Executor doesn’t contain initial states or if it’s a <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html">dataclass</a></p>
+<p>If your Executor has <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, it needs to carry <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> in the signature and call <code class="docutils literal notranslate"><span class="pre">super().__init__(**kwargs)</span></code>
 in the body:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Executor</label><div class="tab-content docutils">
@@ -450,9 +448,8 @@ or modify their values before passing them to <code class="docutils literal notr
 <section id="destructor">
 <h2>Destructor<a class="headerlink" href="#destructor" title="Permalink to this heading">#</a></h2>
 <p>You might need to execute some logic when your Executor’s destructor is called.</p>
-<p>For example, you want to persist data to the disk (e.g. in-memory indexed data, fine-tuned model,…).
-To do so, you can overwrite the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close" title="jina.serve.executors.BaseExecutor.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method and add your logic.</p>
-<p>Jina will make sure that the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close" title="jina.serve.executors.BaseExecutor.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method is executed when the Executor is terminated inside a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> or when deployed in any cloud-native environment.</p>
+<p>For example, if you want to persist data to disk (e.g. in-memory indexed data, fine-tuned model,…) you can overwrite the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close" title="jina.serve.executors.BaseExecutor.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method and add your logic.</p>
+<p>Jina ensures the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close" title="jina.serve.executors.BaseExecutor.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method is executed when the Executor is terminated inside a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> or when deployed in any cloud-native environment.</p>
 <p>You can think of this as Jina using the Executor as a context manager, making sure that the <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.close" title="jina.serve.executors.BaseExecutor.close"><code class="xref py py-meth docutils literal notranslate"><span class="pre">close()</span></code></a> method is always executed.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
 
@@ -476,11 +473,11 @@ To do so, you can overwrite the <a class="reference internal" href="../../../api
         <span class="bp">self</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="n">foo</span>
 </pre></div>
 </div>
-<p>This is important because when an Executor is instantiated in the context of a Flow, Jina is adding extra arguments.
-Some of these <code class="docutils literal notranslate"><span class="pre">arguments</span></code> can be used when developing the internal logic of the Executor.</p>
+<p>This is important because when an Executor is instantiated in the context of a Flow, Jina adds extra arguments.
+Some of these arguments can be used when developing the internal logic of the Executor.</p>
 <p>These <code class="docutils literal notranslate"><span class="pre">special</span></code> arguments are <code class="docutils literal notranslate"><span class="pre">workspace</span></code>, <code class="docutils literal notranslate"><span class="pre">requests</span></code>, <code class="docutils literal notranslate"><span class="pre">metas</span></code>, <code class="docutils literal notranslate"><span class="pre">runtime_args</span></code>.</p>
-<p>Another alternative, is to declare your <code class="docutils literal notranslate"><span class="pre">Executor</span></code> as a <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html">dataclass</a>. In this case, user does not provide an specific constructor.
-Then, Jina will inject all these <code class="docutils literal notranslate"><span class="pre">special</span></code> arguments without the need of the user to call any specific method.</p>
+<p>Another alternative is to declare your <code class="docutils literal notranslate"><span class="pre">Executor</span></code> as a <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html">dataclass</a>. In this case, you don’t provide a specific constructor.
+Then, Jina injects all these <code class="docutils literal notranslate"><span class="pre">special</span></code> arguments without you needing to call any specific method.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span>
 
@@ -505,7 +502,7 @@ Default workspace<div class="sd-summary-down docutils">
 <div class="sd-summary-up docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
-<p class="sd-card-text">If the user hasn’t provided a workspace, the Executor uses a default workspace, which is defined in the <code class="docutils literal notranslate"><span class="pre">~/.cache/jina/</span></code>.</p>
+<p class="sd-card-text">If you haven’t provided a workspace, the Executor uses a default workspace, defined in <code class="docutils literal notranslate"><span class="pre">~/.cache/jina/</span></code>.</p>
 </div>
 </details></section>
 <section id="requests">
@@ -536,14 +533,14 @@ As the name suggests, <code class="docutils literal notranslate"><span class="pr
 <li><p><code class="docutils literal notranslate"><span class="pre">workspace</span></code>: Path to be used by the Executor. Note that the actual workspace directory used by the Executor is obtained by appending <code class="docutils literal notranslate"><span class="pre">'/&lt;executor_name&gt;/&lt;shard_id&gt;/'</span></code> to this value.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">py_modules</span></code>: Python package path e.g. <code class="docutils literal notranslate"><span class="pre">foo.bar.package.module</span></code> or file path to the modules needed to import the Executor. This is another way to pass <code class="docutils literal notranslate"><span class="pre">py-modules</span></code> to the Executor from the Flow</p></li>
 </ul>
-<p>These can <strong>not</strong> be provided by the user through any API. They are generated by the Flow orchestration.</p>
+<p>You <strong>cannot</strong> provide these through any API. They are generated by the Flow orchestration.</p>
 </section>
 </section>
 <section id="see-further">
 <h2>See further<a class="headerlink" href="#see-further" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><span class="xref std std-ref">Executor in Flow</span></p></li>
-<li><p><a class="reference internal" href="../../../how-to/debug-executor/#debug-executor"><span class="std std-ref">Debugging an Executor</span></a></p></li>
+<li><p><a class="reference internal" href="../hub/debug-executor/#debug-executor"><span class="std std-ref">Debugging an Executor</span></a></p></li>
 <li><p><a class="reference internal" href="../../../how-to/gpu-executor/#gpu-executor"><span class="std std-ref">Using an Executor on a GPU</span></a></p></li>
 <li><p><a class="reference internal" href="../../../how-to/external-executor/#external-executor"><span class="std std-ref">How to use external Executors</span></a></p></li>
 </ul>
@@ -581,7 +578,7 @@ As the name suggests, <code class="docutils literal notranslate"><span class="pr
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

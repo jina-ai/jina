@@ -276,8 +276,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +296,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -390,11 +388,30 @@
                     <section id="module-jina.parsers.orchestrate.pod">
 <span id="jina-parsers-orchestrate-pod-module"></span><h1>jina.parsers.orchestrate.pod module<a class="headerlink" href="#module-jina.parsers.orchestrate.pod" title="Permalink to this heading">#</a></h1>
 <p>Argparser module for Pod runtimes</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.parsers.orchestrate.pod.PodTypeParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.parsers.orchestrate.pod.</span></span><span class="sig-name descname"><span class="pre">PodTypeParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">runtime_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/parsers/orchestrate/pod/#PodTypeParams"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.parsers.orchestrate.pod.PodTypeParams" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Data Class representing possible parameters for each pod type</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.parsers.orchestrate.pod.PodTypeParams.runtime_cls">
+<span class="sig-name descname"><span class="pre">runtime_cls</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#jina.parsers.orchestrate.pod.PodTypeParams.runtime_cls" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.parsers.orchestrate.pod.PodTypeParams.role_type">
+<span class="sig-name descname"><span class="pre">role_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../jina.enums/#jina.enums.PodRoleType" title="jina.enums.PodRoleType"><span class="pre">PodRoleType</span></a></em><a class="headerlink" href="#jina.parsers.orchestrate.pod.PodTypeParams.role_type" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="jina.parsers.orchestrate.pod.mixin_pod_parser">
-<span class="sig-prename descclassname"><span class="pre">jina.parsers.orchestrate.pod.</span></span><span class="sig-name descname"><span class="pre">mixin_pod_parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/parsers/orchestrate/pod/#mixin_pod_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.parsers.orchestrate.pod.mixin_pod_parser" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">jina.parsers.orchestrate.pod.</span></span><span class="sig-name descname"><span class="pre">mixin_pod_parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pod_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'worker'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/jina/parsers/orchestrate/pod/#mixin_pod_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.parsers.orchestrate.pod.mixin_pod_parser" title="Permalink to this definition">#</a></dt>
 <dd><p>Mixing in arguments required by <code class="xref py py-class docutils literal notranslate"><span class="pre">Pod</span></code> into the given parser.
-:param parser: the parser instance to which we add arguments</p>
+:param parser: the parser instance to which we add arguments
+:type pod_type: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>
+:param pod_type: the pod_type configured by the parser. Can be either ‘worker’ for WorkerRuntime or ‘gateway’ for GatewayRuntime</p>
 </dd></dl>
 
 </section>
@@ -412,7 +429,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -445,6 +462,11 @@
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">jina.parsers.orchestrate.pod module</a><ul>
+<li><a class="reference internal" href="#jina.parsers.orchestrate.pod.PodTypeParams"><code class="docutils literal notranslate"><span class="pre">PodTypeParams</span></code></a><ul>
+<li><a class="reference internal" href="#jina.parsers.orchestrate.pod.PodTypeParams.runtime_cls"><code class="docutils literal notranslate"><span class="pre">PodTypeParams.runtime_cls</span></code></a></li>
+<li><a class="reference internal" href="#jina.parsers.orchestrate.pod.PodTypeParams.role_type"><code class="docutils literal notranslate"><span class="pre">PodTypeParams.role_type</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#jina.parsers.orchestrate.pod.mixin_pod_parser"><code class="docutils literal notranslate"><span class="pre">mixin_pod_parser()</span></code></a></li>
 </ul>
 </li>

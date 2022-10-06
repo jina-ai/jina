@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.10.1 Documentation" />
   
-<meta property="og:description" content="Besides organizing your Executor code inline, you can also write it as an “external” module and then use it via YAML. This is useful when your Executor’s logic is too complicated to fit into a single file. Single Python file + YAML: When you are only working with a single python file (let’s call ..." />
+<meta property="og:description" content="Besides organizing your Executor code inline, you can also write it as an “external” module and then use it via YAML. This is useful when your Executor’s logic is too complicated to fit into a single file. Single Python file + YAML: When you are only working with a single Python file (let’s call ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -276,8 +276,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +296,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -396,7 +394,7 @@
 </div>
 <section id="single-python-file-yaml">
 <h2>Single Python file + YAML<a class="headerlink" href="#single-python-file-yaml" title="Permalink to this heading">#</a></h2>
-<p>When you are only working with a single python file (let’s call it <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code>), you can simply put it at the root of the repository, and import it directly in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code></p>
+<p>When you are only working with a single Python file (let’s call it <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code>), you can put it at the root of your repository, and import it directly in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
 <span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_executor.py</span><span class="w"></span>
@@ -405,16 +403,16 @@
 </section>
 <section id="multiple-python-files-yaml">
 <h2>Multiple Python files + YAML<a class="headerlink" href="#multiple-python-files-yaml" title="Permalink to this heading">#</a></h2>
-<p>When you are working with multiple python files, you should organize them as a <strong>Python package</strong> and put them in a special folder inside
+<p>When you are working with multiple Python files, you should organize them as a <strong>Python package</strong> and put them in a special folder inside
 your repository (as you would normally do with Python packages). Specifically, you should do the following:</p>
 <ul class="simple">
-<li><p>put all your Python files inside a special folder (call it <code class="docutils literal notranslate"><span class="pre">executor</span></code>, as a convention), and put an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file inside it</p>
+<li><p>Put all Python files (as well as an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>) inside a special folder (called <code class="docutils literal notranslate"><span class="pre">executor</span></code> by convention.)</p>
 <ul>
-<li><p>because of how Jina registers executors, make sure to import your executor in this file (see the contents of <code class="docutils literal notranslate"><span class="pre">executor/__init__.py</span></code> in the example below).</p></li>
+<li><p>Because of how Jina registers Executors, ensure you import your Executor in this <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> (see the contents of <code class="docutils literal notranslate"><span class="pre">executor/__init__.py</span></code> in the example below).</p></li>
 </ul>
 </li>
-<li><p>use relative imports (<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">.bar</span> <span class="pre">import</span> <span class="pre">foo</span></code>, and not <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">bar</span> <span class="pre">import</span> <span class="pre">foo</span></code>) inside the python modules in this folder</p></li>
-<li><p>Only list <code class="docutils literal notranslate"><span class="pre">executor/__init__.py</span></code> under <code class="docutils literal notranslate"><span class="pre">py_modules</span></code> in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> - this way Python knows that you are importing a package, and makes sure that all the relative imports within your package work properly</p></li>
+<li><p>Use relative imports (<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">.bar</span> <span class="pre">import</span> <span class="pre">foo</span></code>, and not <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">bar</span> <span class="pre">import</span> <span class="pre">foo</span></code>) inside the Python modules in this folder.</p></li>
+<li><p>Only list <code class="docutils literal notranslate"><span class="pre">executor/__init__.py</span></code> under <code class="docutils literal notranslate"><span class="pre">py_modules</span></code> in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> - this way Python knows that you are importing a package, and ensures that all relative imports within your package work properly.</p></li>
 </ul>
 <p>To make things more specific, take this repository structure as an example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
@@ -425,16 +423,16 @@ your repository (as you would normally do with Python packages). Specifically, y
     └── my_executor.py
 </pre></div>
 </div>
-<p>The contents of <code class="docutils literal notranslate"><span class="pre">executor/__init__.py</span></code> is</p>
+<p>The contents of <code class="docutils literal notranslate"><span class="pre">executor/__init__.py</span></code> is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">.my_executor</span> <span class="kn">import</span> <span class="n">MyExecutor</span>
 </pre></div>
 </div>
-<p>the contents of <code class="docutils literal notranslate"><span class="pre">executor/helper.py</span></code> is</p>
+<p>the contents of <code class="docutils literal notranslate"><span class="pre">executor/helper.py</span></code> is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">print_something</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;something&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>and the contents of <code class="docutils literal notranslate"><span class="pre">executor/my_executor.py</span></code> is</p>
+<p>and the contents of <code class="docutils literal notranslate"><span class="pre">executor/my_executor.py</span></code> is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
 <span class="kn">from</span> <span class="nn">.helper</span> <span class="kn">import</span> <span class="n">print_something</span>
@@ -446,13 +444,14 @@ your repository (as you would normally do with Python packages). Specifically, y
         <span class="n">print_something</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Finally, the contents of <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> - notice that only the <code class="docutils literal notranslate"><span class="pre">executor/__init__.py</span></code> file needs to be listed under <code class="docutils literal notranslate"><span class="pre">py_modules</span></code></p>
+<p>Finally, the contents of <code class="docutils literal notranslate"><span class="pre">config.yml</span></code>:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
 <span class="nt">py_modules</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor/__init__.py</span><span class="w"></span>
 </pre></div>
 </div>
-<p>This was a relatively simple example, but this way of structuring python modules works for any python package structure, however complex. Consider this slightly more complicated example</p>
+<p>Note that only <code class="docutils literal notranslate"><span class="pre">executor/__init__.py</span></code> needs to be listed under <code class="docutils literal notranslate"><span class="pre">py_modules</span></code></p>
+<p>This is a relatively simple example, but this way of structuring Python modules works for any Python package structure, however complex. Consider this slightly more complicated example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
 ├── config.yml           # Remains exactly the same as before
 └── executor
@@ -465,8 +464,8 @@ your repository (as you would normally do with Python packages). Specifically, y
         └── io.py
 </pre></div>
 </div>
-<p>Here you can then import from <code class="docutils literal notranslate"><span class="pre">utils/data.py</span></code> in <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code> like this: <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">.utils.data</span> <span class="pre">import</span> <span class="pre">foo</span></code>, and do any other kinds of relative imports that python enables.</p>
-<p>The best thing is that no matter how complicated your package structure, “importing” it in your <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> file is super easy - you always put only <code class="docutils literal notranslate"><span class="pre">executor/__init__.py</span></code> under <code class="docutils literal notranslate"><span class="pre">py_modules</span></code>.</p>
+<p>You can then import from <code class="docutils literal notranslate"><span class="pre">utils/data.py</span></code> in <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code> like this: <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">.utils.data</span> <span class="pre">import</span> <span class="pre">foo</span></code>, and perform any other kinds of relative imports that Python enables.</p>
+<p>The best thing is that no matter how complicated your package structure, “importing” it in your <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> file is simple - you always put only <code class="docutils literal notranslate"><span class="pre">executor/__init__.py</span></code> under <code class="docutils literal notranslate"><span class="pre">py_modules</span></code>.</p>
 </section>
 </section>
 
@@ -501,7 +500,7 @@ your repository (as you would normally do with Python packages). Specifically, y
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

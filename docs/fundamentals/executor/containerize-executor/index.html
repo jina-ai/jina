@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.10.1 Documentation" />
   
-<meta property="og:description" content="Once you have understood what an Executor is and how it can be used inside a Flow, you may be interested in wrapping this Executor into a container so that you can isolate its dependencies and make it ready to run in the cloud or in Kubernetes. You can also build a Docker image yourself and use i..." />
+<meta property="og:description" content="Once you understand what an Executor is and how to use it inside a Flow, you may want to wrap it into a container so you can isolate its dependencies and make it ready to run in the cloud or Kubernetes. You can also build a Docker image yourself and use it like any other Executor. There are some ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -276,8 +276,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +296,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -389,44 +387,43 @@
                 <article role="main">
                     <section id="containerize">
 <span id="dockerize-exec"></span><h1>Containerize<a class="headerlink" href="#containerize" title="Permalink to this heading">#</a></h1>
-<p>Once you have understood what an <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> is and how it can be used inside a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>, you may be interested in wrapping this Executor into a container so that you can isolate its dependencies and make it ready to run in the cloud or in Kubernetes.</p>
+<p>Once you understand what an <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> is and how to use it inside a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>, you may want to wrap it into a container so you can isolate its dependencies and make it ready to run in the cloud or Kubernetes.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>The recommended way of containerizing an Executor is to leverage <a class="reference internal" href="../hub/#jina-hub"><span class="std std-ref">Jina Hub</span></a> to make sure your Executor can run as a container. It handles auto-provisioning, building, version controlling etc.</p>
-<p>Simply:</p>
+<p>The recommended way to containerize an Executor is to leverage <a class="reference internal" href="../hub/#jina-hub"><span class="std std-ref">Jina Hub</span></a> to ensure your Executor can run as a container. It handles auto-provisioning, building, version control, etc:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub new
 
-<span class="c1"># work on the executor</span>
+<span class="c1"># work on the Executor</span>
 
 jina hub push .
 </pre></div>
 </div>
-<p>The image building will happen on the cloud, and available immedidately for other to use.</p>
+<p>The image building happens on the cloud, and once done the image is available immediately for anyone to use.</p>
 </div>
 <p>You can also build a Docker image yourself and use it like any other Executor. There are some requirements
-on how this image needs to be built, the main ones being:</p>
+on how this image needs to be built:</p>
 <ul class="simple">
 <li><p>Jina must be installed inside the image.</p></li>
-<li><p>The Jina CLI command to start the Executor has to be the default entrypoint.</p></li>
+<li><p>The Jina CLI command to start the Executor must be the default entrypoint.</p></li>
 </ul>
 <section id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading">#</a></h2>
 <p>To understand how a container image for an Executor is built, you need a basic understanding of <a class="reference external" href="https://docs.docker.com/">Docker</a>, both of how to write
 a <a class="reference external" href="https://docs.docker.com/engine/reference/builder/">Dockerfile</a>, and how to build a Docker image.</p>
-<p>To reproduce the example below it is required to have Docker installed locally.</p>
+<p>You need Docker installed locally to reproduce the example below.</p>
 </section>
 <section id="install-jina-in-the-docker-image">
 <h2>Install Jina in the Docker image<a class="headerlink" href="#install-jina-in-the-docker-image" title="Permalink to this heading">#</a></h2>
 <p>Jina <strong>must</strong> be installed inside the Docker image. This can be achieved in one of two ways:</p>
 <ul class="simple">
 <li><p>Use a <a class="reference external" href="https://hub.docker.com/r/jinaai/jina">Jina based image</a> as the base image in your Dockerfile.
-This will make sure that everything needed for Jina to run the Executor is installed.</p></li>
+This ensures that everything needed for Jina to run the Executor is installed.</p></li>
 </ul>
 <div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">jinaai/jina:3-py37-perf</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>Install Jina like any other Python package. You can do this by specifying Jina in the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>,
+<li><p>Install Jina like any other Python package. You can do this by specifying Jina in <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>,
 or by including the <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">jina</span></code> command as part of the image building process.</p></li>
 </ul>
 <div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">RUN</span><span class="w"> </span>pip install jina
@@ -436,26 +433,26 @@ or by including the <code class="docutils literal notranslate"><span class="pre"
 <section id="set-jina-executor-cli-as-entrypoint">
 <h2>Set Jina Executor CLI as entrypoint<a class="headerlink" href="#set-jina-executor-cli-as-entrypoint" title="Permalink to this heading">#</a></h2>
 <p>When a containerized Executor is run inside a Flow,
-under the hood Jina executes <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> with extra arguments.</p>
-<p>This means that Jina assumes that whatever runs inside the container, also runs like it would in a regular OS process. Therefore, you need to make sure that
+Jina executes <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> with extra arguments under the hood.</p>
+<p>This means that Jina assumes that whatever runs inside the container also runs like it would in a regular OS process. Therefore, ensure that
 the basic entrypoint of the image calls <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">executor</span></code> <span class="xref std std-ref">CLI</span> command.</p>
 <div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;jina&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;executor&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--uses&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;config.yml&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>We <strong>strongly encourage</strong> you to name the Executor YAML as <code class="docutils literal notranslate"><span class="pre">config.yml</span></code>, otherwise using your containerize Executor with Kubernetes will require extra step.
-When using <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.to_kubernetes_yaml" title="jina.serve.executors.BaseExecutor.to_kubernetes_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code></a> or <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.to_docker_compose_yaml" title="jina.serve.executors.BaseExecutor.to_docker_compose_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code></a>, Jina will add <code class="docutils literal notranslate"><span class="pre">--uses</span> <span class="pre">config.yml</span></code> in the entrypoint.
-In order to change that, you will need to manually alter the generated files.</p>
+<p>We <strong>strongly encourage</strong> you to name the Executor YAML as <code class="docutils literal notranslate"><span class="pre">config.yml</span></code>, otherwise using your containerized Executor with Kubernetes requires an extra step.
+When using <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.to_kubernetes_yaml" title="jina.serve.executors.BaseExecutor.to_kubernetes_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_kubernetes_yaml()</span></code></a> or <a class="reference internal" href="../../../api/jina.serve.executors/#jina.serve.executors.BaseExecutor.to_docker_compose_yaml" title="jina.serve.executors.BaseExecutor.to_docker_compose_yaml"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_docker_compose_yaml()</span></code></a>, Jina adds <code class="docutils literal notranslate"><span class="pre">--uses</span> <span class="pre">config.yml</span></code> in the entrypoint.
+To change that you need to manually edit the generated files.</p>
 </div>
 </section>
 <section id="example-dockerized-executor">
 <h2>Example: Dockerized Executor<a class="headerlink" href="#example-dockerized-executor" title="Permalink to this heading">#</a></h2>
-<p>Here we will show how to build a basic Executor with a dependency on another external package</p>
+<p>Here we show how to build a basic Executor with a dependency on another external package.</p>
 <section id="write-the-executor">
 <h3>Write the Executor<a class="headerlink" href="#write-the-executor" title="Permalink to this heading">#</a></h3>
-<p>You can define your soon-to-be-Dockerized Executor exactly like any other Executor.
-We do this here in the <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code> file.</p>
+<p>You can define your soon-to-be-Dockerized Executor exactly like any other Executor.</p>
+<p>We do this here in the <code class="docutils literal notranslate"><span class="pre">my_executor.py</span></code> file:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch</span>  <span class="c1"># Our Executor has dependency on torch</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
@@ -474,7 +471,7 @@ We do this here in the <code class="docutils literal notranslate"><span class="p
 <p>The YAML configuration, as a minimal working example, is required to point to the file containing the Executor.</p>
 <div class="seealso admonition">
 <p class="admonition-title">More YAML options</p>
-<p>To discover what else can be configured using Jina’s YAML interface, see <span class="xref std std-ref">here</span>.</p>
+<p>To see what else can be configured using Jina’s YAML interface, see <span class="xref std std-ref">here</span>.</p>
 </div>
 <p>This is necessary for the Executor to be put inside the Docker image,
 and we can define such a configuration in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code>:</p>
@@ -486,8 +483,8 @@ and we can define such a configuration in <code class="docutils literal notransl
 </section>
 <section id="write-requirements-txt">
 <h3>Write <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code><a class="headerlink" href="#write-requirements-txt" title="Permalink to this heading">#</a></h3>
-<p>In this case, our Executor has only one requirement besides Jina: <code class="docutils literal notranslate"><span class="pre">torch</span></code>.</p>
-<p>In <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>, we specify a single requirement:</p>
+<p>In our case, our Executor has only one requirement besides Jina: <code class="docutils literal notranslate"><span class="pre">torch</span></code>.</p>
+<p>Specify a single requirement in <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>torch
 </pre></div>
 </div>
@@ -522,7 +519,7 @@ and we can define such a configuration in <code class="docutils literal notransl
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker build -t my_containerized_executor .
 </pre></div>
 </div>
-<p>Once the build is successful, this is what you should see under <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">images</span></code>:</p>
+<p>Once the build is successful, you should see the following output when you run <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">images</span></code>:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>REPOSITORY                       TAG                IMAGE ID       CREATED          SIZE
 my_containerized_executor        latest             5cead0161cb5   <span class="m">13</span> seconds ago   <span class="m">2</span>.21GB
 </pre></div>
@@ -583,7 +580,7 @@ Document embedding of shape torch.Size<span class="o">([</span><span class="m">1
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

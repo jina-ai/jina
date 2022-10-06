@@ -243,8 +243,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -265,7 +263,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -411,10 +409,13 @@
 <span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ArgNamespace</span><span class="p">,</span>
     <span class="n">CatchAllCleanupContextManager</span><span class="p">,</span>
+    <span class="n">_parse_hosts</span><span class="p">,</span>
+    <span class="n">_parse_ports</span><span class="p">,</span>
     <span class="n">download_mermaid_url</span><span class="p">,</span>
     <span class="n">get_internal_ip</span><span class="p">,</span>
     <span class="n">get_public_ip</span><span class="p">,</span>
     <span class="n">is_port_free</span><span class="p">,</span>
+    <span class="n">make_iterable</span><span class="p">,</span>
     <span class="n">send_telemetry_event</span><span class="p">,</span>
     <span class="n">typename</span><span class="p">,</span>
 <span class="p">)</span>
@@ -481,7 +482,7 @@
         <span class="sd">&quot;&quot;&quot;Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.</span>
 
 <span class="sd">        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
-<span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
+<span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param port: The port of the Gateway, which the client should connect to.</span>
 <span class="sd">        :param protocol: Communication protocol between server and client.</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
@@ -504,11 +505,15 @@
         <span class="n">deployments_addresses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="n">deployments_disable_reduce</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;[]&#39;</span><span class="p">,</span>
         <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">disable_auto_volume</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">docker_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">entrypoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">env</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">exit_on_exceptions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">expose_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">expose_graphql_endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">floating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">gpus</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">graph_conditions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="n">graph_description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="n">grpc_server_options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -522,7 +527,7 @@
         <span class="n">no_debug_endpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span>
-        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">prefetch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
         <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GRPC&#39;</span><span class="p">,</span>
@@ -532,7 +537,7 @@
         <span class="n">quiet_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">replicas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">retries</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GRPCGatewayRuntime&#39;</span><span class="p">,</span>
+        <span class="n">runtime_cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GatewayRuntime&#39;</span><span class="p">,</span>
         <span class="n">shards</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">ssl_certfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">ssl_keyfile</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -540,11 +545,10 @@
         <span class="n">timeout_ready</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">600000</span><span class="p">,</span>
         <span class="n">timeout_send</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;BaseExecutor&#39;</span><span class="p">,</span>
-        <span class="n">uses_metas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">uses_requests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">uses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;BaseExecutor&#39;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">uses_with</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">uvicorn_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">volumes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">workspace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
@@ -555,15 +559,29 @@
 <span class="sd">        :param deployments_addresses: dictionary JSON with the input addresses of each Deployment</span>
 <span class="sd">        :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed</span>
 <span class="sd">        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
+<span class="sd">        :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.</span>
+<span class="sd">        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker &#39;</span>
+<span class="sd">          container.</span>
+
+<span class="sd">          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/</span>
+<span class="sd">        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</span>
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
 <span class="sd">        :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.</span>
 <span class="sd">        :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.</span>
 <span class="sd">        :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.</span>
 <span class="sd">        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.</span>
+<span class="sd">        :param gpus: This argument allows dockerized Jina executor discover local gpu devices.</span>
+
+<span class="sd">              Note,</span>
+<span class="sd">              - To access all gpus, use `--gpus all`.</span>
+<span class="sd">              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.</span>
+<span class="sd">              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`</span>
+<span class="sd">              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`</span>
+<span class="sd">              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</span>
 <span class="sd">        :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.</span>
 <span class="sd">        :param graph_description: Routing graph for the gateway</span>
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
-<span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
+<span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param host_in: The host address for binding to, by default it is 0.0.0.0</span>
 <span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
 <span class="sd">        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics</span>
@@ -594,19 +612,18 @@
 <span class="sd">              Define per Endpoint:</span>
 <span class="sd">              JSON dict, {endpoint: PollingType}</span>
 <span class="sd">              {&#39;/custom&#39;: &#39;ALL&#39;, &#39;/search&#39;: &#39;ANY&#39;, &#39;*&#39;: &#39;ANY&#39;}</span>
-<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]</span>
+<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.</span>
 
 <span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)</span>
 <span class="sd">        :param protocol: Communication protocol between server and client.</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
-<span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
+<span class="sd">        :param py_modules: The customized python modules need to be imported before loading the gateway</span>
 
 <span class="sd">          Note that the recommended way is to only import a single module - a simple python file, if your</span>
-<span class="sd">          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,</span>
-<span class="sd">          which should be structured as a python package. For more details, please see the</span>
-<span class="sd">          `Executor cookbook &lt;https://docs.jina.ai/fundamentals/executor/executor-files/&gt;`__</span>
+<span class="sd">          gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,</span>
+<span class="sd">          which should be structured as a python package.</span>
 <span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
 <span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
 <span class="sd">        :param replicas: The number of replicas in the deployment</span>
@@ -619,10 +636,9 @@
 <span class="sd">        :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever</span>
 <span class="sd">        :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</span>
 <span class="sd">        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
-<span class="sd">        :param uses: The config of the executor, it could be one of the followings:</span>
-<span class="sd">                  * the string literal of an Executor class name</span>
-<span class="sd">                  * an Executor YAML file (.yml, .yaml, .jaml)</span>
-<span class="sd">                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)</span>
+<span class="sd">        :param uses: The config of the gateway, it could be one of the followings:</span>
+<span class="sd">                  * the string literal of an Gateway class name</span>
+<span class="sd">                  * a Gateway YAML file (.yml, .yaml, .jaml)</span>
 <span class="sd">                  * a docker image (must start with `docker://`)</span>
 <span class="sd">                  * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
 <span class="sd">                  * the string literal of a JSON config</span>
@@ -630,12 +646,16 @@
 <span class="sd">                  When use it under Python, one can use the following values additionally:</span>
 <span class="sd">                  - a Python dict that represents the config</span>
 <span class="sd">                  - a text file stream has `.read()` interface</span>
-<span class="sd">        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`</span>
-<span class="sd">        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`</span>
 <span class="sd">        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`</span>
 <span class="sd">        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server</span>
 
 <span class="sd">          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/</span>
+<span class="sd">        :param volumes: The path on the host to be mounted inside the container.</span>
+
+<span class="sd">          Note,</span>
+<span class="sd">          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.</span>
+<span class="sd">          - If no split provided, then the basename of that directory will be mounted into container&#39;s root path, e.g. `--volumes=&quot;/user/test/my-workspace&quot;` will be mounted into `/my-workspace` inside the container.</span>
+<span class="sd">          - All volumes are mounted with read-write mode.</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
 
 <span class="sd">        .. # noqa: DAR202</span>
@@ -720,7 +740,7 @@
 <span class="sd">                    f.bock()  # serve Flow</span>
 
 <span class="sd">        :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.</span>
-<span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
+<span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param port: The port of the Gateway, which the client should connect to.</span>
 <span class="sd">        :param protocol: Communication protocol between server and client.</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
@@ -730,15 +750,29 @@
 <span class="sd">        :param deployments_addresses: dictionary JSON with the input addresses of each Deployment</span>
 <span class="sd">        :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed</span>
 <span class="sd">        :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
+<span class="sd">        :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.</span>
+<span class="sd">        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker &#39;</span>
+<span class="sd">          container.</span>
+
+<span class="sd">          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/</span>
+<span class="sd">        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</span>
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
 <span class="sd">        :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.</span>
 <span class="sd">        :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.</span>
 <span class="sd">        :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.</span>
 <span class="sd">        :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.</span>
+<span class="sd">        :param gpus: This argument allows dockerized Jina executor discover local gpu devices.</span>
+
+<span class="sd">              Note,</span>
+<span class="sd">              - To access all gpus, use `--gpus all`.</span>
+<span class="sd">              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.</span>
+<span class="sd">              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`</span>
+<span class="sd">              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`</span>
+<span class="sd">              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</span>
 <span class="sd">        :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.</span>
 <span class="sd">        :param graph_description: Routing graph for the gateway</span>
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
-<span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
+<span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param host_in: The host address for binding to, by default it is 0.0.0.0</span>
 <span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
 <span class="sd">        :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics</span>
@@ -769,19 +803,18 @@
 <span class="sd">              Define per Endpoint:</span>
 <span class="sd">              JSON dict, {endpoint: PollingType}</span>
 <span class="sd">              {&#39;/custom&#39;: &#39;ALL&#39;, &#39;/search&#39;: &#39;ANY&#39;, &#39;*&#39;: &#39;ANY&#39;}</span>
-<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]</span>
+<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param prefetch: Number of requests fetched from the client before feeding into the first Executor.</span>
 
 <span class="sd">              Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)</span>
 <span class="sd">        :param protocol: Communication protocol between server and client.</span>
 <span class="sd">        :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</span>
-<span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
+<span class="sd">        :param py_modules: The customized python modules need to be imported before loading the gateway</span>
 
 <span class="sd">          Note that the recommended way is to only import a single module - a simple python file, if your</span>
-<span class="sd">          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,</span>
-<span class="sd">          which should be structured as a python package. For more details, please see the</span>
-<span class="sd">          `Executor cookbook &lt;https://docs.jina.ai/fundamentals/executor/executor-files/&gt;`__</span>
+<span class="sd">          gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,</span>
+<span class="sd">          which should be structured as a python package.</span>
 <span class="sd">        :param quiet: If set, then no log will be emitted from this object.</span>
 <span class="sd">        :param quiet_error: If set, then exception stack information will not be added to the log</span>
 <span class="sd">        :param replicas: The number of replicas in the deployment</span>
@@ -794,10 +827,9 @@
 <span class="sd">        :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever</span>
 <span class="sd">        :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default</span>
 <span class="sd">        :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.</span>
-<span class="sd">        :param uses: The config of the executor, it could be one of the followings:</span>
-<span class="sd">                  * the string literal of an Executor class name</span>
-<span class="sd">                  * an Executor YAML file (.yml, .yaml, .jaml)</span>
-<span class="sd">                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)</span>
+<span class="sd">        :param uses: The config of the gateway, it could be one of the followings:</span>
+<span class="sd">                  * the string literal of an Gateway class name</span>
+<span class="sd">                  * a Gateway YAML file (.yml, .yaml, .jaml)</span>
 <span class="sd">                  * a docker image (must start with `docker://`)</span>
 <span class="sd">                  * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
 <span class="sd">                  * the string literal of a JSON config</span>
@@ -805,12 +837,16 @@
 <span class="sd">                  When use it under Python, one can use the following values additionally:</span>
 <span class="sd">                  - a Python dict that represents the config</span>
 <span class="sd">                  - a text file stream has `.read()` interface</span>
-<span class="sd">        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`</span>
-<span class="sd">        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`</span>
 <span class="sd">        :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`</span>
 <span class="sd">        :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server</span>
 
 <span class="sd">          More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/</span>
+<span class="sd">        :param volumes: The path on the host to be mounted inside the container.</span>
+
+<span class="sd">          Note,</span>
+<span class="sd">          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.</span>
+<span class="sd">          - If no split provided, then the basename of that directory will be mounted into container&#39;s root path, e.g. `--volumes=&quot;/user/test/my-workspace&quot;` will be mounted into `/my-workspace` inside the container.</span>
+<span class="sd">          - All volumes are mounted with read-write mode.</span>
 <span class="sd">        :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.</span>
 <span class="sd">        :param env: The map of environment variables that are available inside runtime</span>
 <span class="sd">        :param inspect: The strategy on those inspect deployments in the flow.</span>
@@ -978,18 +1014,29 @@
 
     <span class="k">def</span> <span class="nf">_get_deployments_addresses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
         <span class="n">graph_dict</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deployment_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="s1">&#39;gateway&#39;</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">head_args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">deployment</span><span class="o">.</span><span class="n">head_args</span><span class="p">:</span>
                 <span class="c1"># add head information</span>
-                <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">head_port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+                <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">head_port</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># there is no head, add the worker connection information instead</span>
-                <span class="n">host</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">host</span>
-                <span class="k">if</span> <span class="n">host_is_local</span><span class="p">(</span><span class="n">host</span><span class="p">)</span> <span class="ow">and</span> <span class="n">in_docker</span><span class="p">()</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">dockerized_uses</span><span class="p">:</span>
-                    <span class="n">host</span> <span class="o">=</span> <span class="n">__docker_host__</span>
-                <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">ports</span><span class="p">]</span>
+                <span class="n">ports</span> <span class="o">=</span> <span class="n">deployment</span><span class="o">.</span><span class="n">ports</span>
+                <span class="n">hosts</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">__docker_host__</span>
+                    <span class="k">if</span> <span class="n">host_is_local</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">in_docker</span><span class="p">()</span>
+                    <span class="ow">and</span> <span class="n">deployment</span><span class="o">.</span><span class="n">dockerized_uses</span>
+                    <span class="k">else</span> <span class="n">host</span>
+                    <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">deployment</span><span class="o">.</span><span class="n">hosts</span>
+                <span class="p">]</span>
+                <span class="n">graph_dict</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">deployment</span><span class="o">.</span><span class="n">protocol</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="k">for</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">hosts</span><span class="p">,</span> <span class="n">ports</span><span class="p">)</span>
+                <span class="p">]</span>
 
         <span class="k">return</span> <span class="n">graph_dict</span>
 
@@ -1166,7 +1213,7 @@
         <span class="n">native</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">output_array_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">polling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span>
-        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">port</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">port_monitoring</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">py_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">quiet</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1219,7 +1266,7 @@
 <span class="sd">              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`</span>
 <span class="sd">              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</span>
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
-<span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
+<span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param host_in: The host address for binding to, by default it is 0.0.0.0</span>
 <span class="sd">        :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local</span>
 <span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
@@ -1247,7 +1294,7 @@
 <span class="sd">              Define per Endpoint:</span>
 <span class="sd">              JSON dict, {endpoint: PollingType}</span>
 <span class="sd">              {&#39;/custom&#39;: &#39;ALL&#39;, &#39;/search&#39;: &#39;ANY&#39;, &#39;*&#39;: &#39;ANY&#39;}</span>
-<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]</span>
+<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
 
@@ -1368,7 +1415,7 @@
 <span class="sd">              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`</span>
 <span class="sd">              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</span>
 <span class="sd">        :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {&#39;grpc.max_send_message_length&#39;: -1}</span>
-<span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0.</span>
+<span class="sd">        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param host_in: The host address for binding to, by default it is 0.0.0.0</span>
 <span class="sd">        :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local</span>
 <span class="sd">        :param log_config: The YAML config of the logger used in this object.</span>
@@ -1396,7 +1443,7 @@
 <span class="sd">              Define per Endpoint:</span>
 <span class="sd">              JSON dict, {endpoint: PollingType}</span>
 <span class="sd">              {&#39;/custom&#39;: &#39;ALL&#39;, &#39;/search&#39;: &#39;ANY&#39;, &#39;*&#39;: &#39;ANY&#39;}</span>
-<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]</span>
+<span class="sd">        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</span>
 <span class="sd">        :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</span>
 <span class="sd">        :param py_modules: The customized python modules need to be imported before loading the executor</span>
 
@@ -1689,6 +1736,8 @@
 
 <span class="sd">        .. # noqa: DAR401</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">get_start_method</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;fork&#39;</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;GRPC_ENABLE_FORK_SUPPORT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span>
 
         <span class="n">op_flow</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">if</span> <span class="n">copy_flow</span> <span class="k">else</span> <span class="bp">self</span>
 
@@ -1706,6 +1755,7 @@
                 <span class="n">deployments_addresses</span><span class="o">=</span><span class="n">op_flow</span><span class="o">.</span><span class="n">_get_deployments_addresses</span><span class="p">(),</span>
                 <span class="n">graph_conditions</span><span class="o">=</span><span class="n">op_flow</span><span class="o">.</span><span class="n">_get_graph_conditions</span><span class="p">(),</span>
                 <span class="n">deployments_disabled_reduce</span><span class="o">=</span><span class="n">op_flow</span><span class="o">.</span><span class="n">_get_disabled_reduce_deployments</span><span class="p">(),</span>
+                <span class="n">uses</span><span class="o">=</span><span class="n">op_flow</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="n">removed_deployments</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1836,9 +1886,9 @@
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">depl_name</span><span class="p">,</span> <span class="n">deployment</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">deployment</span><span class="o">.</span><span class="n">external</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">enter_context</span><span class="p">(</span><span class="n">deployment</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_wait_until_all_ready</span><span class="p">()</span>
 
@@ -2795,7 +2845,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

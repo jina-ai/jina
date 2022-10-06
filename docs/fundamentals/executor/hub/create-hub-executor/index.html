@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.10.1 Documentation" />
   
-<meta property="og:description" content="To create your Hub Executor, you just need to run: For the basic configuration (advanced configuration is optional but rarely necessary), you will be asked for two things: Name of your Executor, Path to the folder where it should be saved.. After running the command, a project with the following ..." />
+<meta property="og:description" content="To create your Hub Executor, run: For basic configuration (advanced configuration is optional but rarely necessary), you will be asked for: Your Executor’s name, The path to the folder where it should be saved. After running the command, a project with the following structure will be generated: e..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -276,8 +276,6 @@
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +296,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -389,15 +387,15 @@
                 <article role="main">
                     <section id="create">
 <span id="create-executor"></span><h1>Create<a class="headerlink" href="#create" title="Permalink to this heading">#</a></h1>
-<p>To create your Hub <a class="reference internal" href="../../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>, you just need to run:</p>
+<p>To create your Hub <a class="reference internal" href="../../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>, run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina hub new
 </pre></div>
 </div>
 <script id="asciicast-T98aWaJLe0r0ul3cXGk7AzqUs" src="https://asciinema.org/a/T98aWaJLe0r0ul3cXGk7AzqUs.js" async></script>
-<p>For the basic configuration (advanced configuration is optional but rarely necessary), you will be asked for two things:</p>
+<p>For basic configuration (advanced configuration is optional but rarely necessary), you will be asked for:</p>
 <ul class="simple">
-<li><p>Name of your Executor</p></li>
-<li><p>Path to the folder where it should be saved.</p></li>
+<li><p>Your Executor’s name</p></li>
+<li><p>The path to the folder where it should be saved</p></li>
 </ul>
 <p>After running the command, a project with the following structure will be generated:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>MyExecutor/
@@ -409,34 +407,33 @@
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">executor.py</span></code> should contain your Executor’s main logic.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">config.yml</span></code> is the Executor’s <a class="reference internal" href="../../yaml-spec/#executor-yaml-spec"><span class="std std-ref">configuration</span></a> file, where you can define <code class="docutils literal notranslate"><span class="pre">__init__</span></code> arguments using <code class="docutils literal notranslate"><span class="pre">with</span></code> keyword. You can also define meta annotations relevant to the executor, for getting better exposer on Jina Hub.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">executor.py</span></code> contains your Executor’s main logic.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config.yml</span></code> is the Executor’s <a class="reference internal" href="../../yaml-spec/#executor-yaml-spec"><span class="std std-ref">configuration</span></a> file, where you can define <code class="docutils literal notranslate"><span class="pre">__init__</span></code> arguments using the <code class="docutils literal notranslate"><span class="pre">with</span></code> keyword. You can also define meta annotations relevant to the Executor, for getting better exposure on Jina Hub.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> describes the Executor’s Python dependencies.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">README.md</span></code> should describe how to use your Executor.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> will only be generated once you request advanced configuration.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">README.md</span></code> describes how to use your Executor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> is only generated if you choose advanced configuration.</p></li>
 </ul>
 <section id="tips">
 <h2>Tips<a class="headerlink" href="#tips" title="Permalink to this heading">#</a></h2>
-<p>When developing Hub <a class="reference internal" href="../../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s, make sure to follow these tips:</p>
 <ul>
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">new</span></code> CLI to create an Executor</p>
-<p>To get started, always use the command and follow the instructions. This will ensure you follow the right file
+<p>To create an Executor, always use this command and follow the instructions. This ensures the correct file
 structure.</p>
 </li>
-<li><p>No need to write Dockerfile manually</p>
-<p>Most of the time, you do not need to create <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> manually. Build system will generate a well-optimized Dockerfile according to your Executor package.</p>
+<li><p>You don’t need to manually write a Dockerfile</p>
+<p>The build system automatically generates an optimized Dockerfile according to your Executor package.</p>
 </li>
 </ul>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>In the wizard of <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">new</span></code>, you can choose from four Dockerfile templates: <code class="docutils literal notranslate"><span class="pre">cpu</span></code>, <code class="docutils literal notranslate"><span class="pre">tf-gpu</span></code>, <code class="docutils literal notranslate"><span class="pre">torch-gpu</span></code>, and <code class="docutils literal notranslate"><span class="pre">jax-gpu</span></code>.</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">hub</span> <span class="pre">new</span></code> wizard you can choose from four Dockerfile templates: <code class="docutils literal notranslate"><span class="pre">cpu</span></code>, <code class="docutils literal notranslate"><span class="pre">tf-gpu</span></code>, <code class="docutils literal notranslate"><span class="pre">torch-gpu</span></code>, and <code class="docutils literal notranslate"><span class="pre">jax-gpu</span></code>.</p>
 </div>
 <ul>
-<li><p>No need to bump Jina version</p>
-<p>Hub executors are version-agnostic. When you pull an Executor from Hub, Hubble will always select the right Jina version for you. No worries about Jina version upgrade!</p>
+<li><p>You don’t need need to bump the Jina version</p>
+<p>Hub Executors are version-agnostic. When you pull an Executor from Jina Hub, it will select the right Jina version for you. You don’t need to upgrade your version of Jina.</p>
 </li>
 <li><p>Fill in metadata of your Executor correctly</p>
-<p>Information you include under the <code class="docutils literal notranslate"><span class="pre">metas</span></code> key, in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code>, will be displayed on our website. Want to make your Executor eye-catching on our website? Fill all <code class="docutils literal notranslate"><span class="pre">metas</span></code> fields in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> with heart &amp; love! <span class="xref std std-ref">Its specification can be found here</span>.</p>
+<p>Information you include under the <code class="docutils literal notranslate"><span class="pre">metas</span></code> key in <code class="docutils literal notranslate"><span class="pre">config.yml</span></code> is displayed on Jina Hub. <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">specification</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">found</span> <span class="pre">here&lt;config.yml&gt;</span></code>.</p>
 </li>
 </ul>
 </section>
@@ -473,7 +470,7 @@ structure.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

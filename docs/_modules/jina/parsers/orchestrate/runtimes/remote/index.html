@@ -243,8 +243,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -265,7 +263,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -359,6 +357,7 @@
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span><span class="p">,</span> <span class="n">helper</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">KVAppendAction</span><span class="p">,</span> <span class="n">add_arg_group</span>
+<span class="kn">from</span> <span class="nn">jina.parsers.orchestrate.runtimes.runtime</span> <span class="kn">import</span> <span class="n">mixin_base_runtime_parser</span>
 
 
 <div class="viewcode-block" id="mixin_remote_runtime_parser"><a class="viewcode-back" href="../../../../../../api/jina.parsers.orchestrate.runtimes.remote/#jina.parsers.orchestrate.runtimes.remote.mixin_remote_runtime_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_remote_runtime_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
@@ -399,6 +398,51 @@
     <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Gateway&#39;</span><span class="p">)</span>
     <span class="n">_add_host</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
     <span class="n">_add_proxy</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--uses&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="c1"># TODO: add Jina Hub Gateway</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        The config of the gateway, it could be one of the followings:</span>
+<span class="s1">        * the string literal of an Gateway class name</span>
+<span class="s1">        * a Gateway YAML file (.yml, .yaml, .jaml)</span>
+<span class="s1">        * a docker image (must start with `docker://`)</span>
+<span class="s1">        * the string literal of a YAML config (must start with `!` or `jtype: `)</span>
+<span class="s1">        * the string literal of a JSON config</span>
+
+<span class="s1">        When use it under Python, one can use the following values additionally:</span>
+<span class="s1">        - a Python dict that represents the config</span>
+<span class="s1">        - a text file stream has `.read()` interface</span>
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--uses-with&#39;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="n">KVAppendAction</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;KEY: VALUE&#39;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    Dictionary of keyword arguments that will override the `with` configuration in `uses`</span>
+<span class="s1">    &#39;&#39;&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--py-modules&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span>
+        <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PATH&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">The customized python modules need to be imported before loading the gateway</span>
+
+<span class="s1">Note that the recommended way is to only import a single module - a simple python file, if your</span>
+<span class="s1">gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,</span>
+<span class="s1">which should be structured as a python package.</span>
+<span class="s1">&#39;&#39;&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">mixin_base_runtime_parser</span><span class="p">(</span><span class="n">gp</span><span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--port-expose&#39;</span><span class="p">,</span>
@@ -456,7 +500,9 @@
         <span class="s1">&#39;--host&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="n">__default_host__</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;The host address of the runtime, by default it is </span><span class="si">{</span><span class="n">__default_host__</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;The host address of the runtime, by default it is </span><span class="si">{</span><span class="n">__default_host__</span><span class="si">}</span><span class="s1">.&#39;</span>
+        <span class="s1">&#39; In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas.&#39;</span>
+        <span class="s1">&#39; Then, every resulting address will be considered as one replica of the Executor.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
 
@@ -602,7 +648,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

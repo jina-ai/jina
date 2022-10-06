@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.10.1 Documentation" />
   
-<meta property="og:description" content="Methods of Executor can be named and written freely. Methods decorated with@requests are mapped to network endpoints while serving. Decorator: Executor methods decorated with requests are bound to specific network requests, and respond to network queries. Both def or async def function can be dec..." />
+<meta property="og:description" content="Executor methods can be named and written freely. Methods decorated with@requests are mapped to network endpoints while serving. Decorator: Executor methods decorated with requests are bound to specific network requests, and respond to network queries. Both def or async def functions can be decor..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -276,8 +276,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +296,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -389,17 +387,17 @@
                 <article role="main">
                     <section id="requests-methods">
 <span id="exec-endpoint"></span><h1><code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> methods<a class="headerlink" href="#requests-methods" title="Permalink to this heading">#</a></h1>
-<p>Methods of <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> can be named and written freely.</p>
+<p><a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> methods can be named and written freely.</p>
 <p>Methods decorated with <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> are mapped to network endpoints while serving.</p>
 <section id="decorator">
 <span id="executor-requests"></span><h2>Decorator<a class="headerlink" href="#decorator" title="Permalink to this heading">#</a></h2>
 <p>Executor methods decorated with <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> are bound to specific network requests, and respond to network queries.</p>
-<p>Both <code class="docutils literal notranslate"><span class="pre">def</span></code> or <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> function can be decorated with <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a>.</p>
+<p>Both <code class="docutils literal notranslate"><span class="pre">def</span></code> or <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> functions can be decorated with <a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a>.</p>
 <p>You can import the <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> decorator via</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span>
 </pre></div>
 </div>
-<p><a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> is a decorator that takes an optional parameter: <code class="docutils literal notranslate"><span class="pre">on=</span></code>. It binds the decorated method of the Executor to the specified route.</p>
+<p><a class="reference internal" href="../../../api/jina/#jina.requests" title="jina.requests"><code class="xref py py-class docutils literal notranslate"><span class="pre">requests</span></code></a> is a decorator that takes an optional <code class="docutils literal notranslate"><span class="pre">on=</span></code> parameter. It binds the decorated method of the Executor to the specified route.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 
@@ -407,11 +405,11 @@
 <span class="k">class</span> <span class="nc">RequestExecutor</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span><span class="p">(</span>
         <span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/index&#39;</span><span class="p">,</span> <span class="s1">&#39;/search&#39;</span><span class="p">]</span>
-    <span class="p">)</span>  <span class="c1"># foo will be bound to `/index` and `/search` endpoints</span>
+    <span class="p">)</span>  <span class="c1"># foo is bound to `/index` and `/search` endpoints</span>
     <span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Calling foo&#39;</span><span class="p">)</span>
 
-    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/other&#39;</span><span class="p">)</span>  <span class="c1"># bar will be bound to `/other` endpoint</span>
+    <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/other&#39;</span><span class="p">)</span>  <span class="c1"># bar is bound to `/other` endpoint</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Calling bar&#39;</span><span class="p">)</span>
@@ -440,7 +438,7 @@ Calling foo
 <section id="default-binding">
 <h3>Default binding<a class="headerlink" href="#default-binding" title="Permalink to this heading">#</a></h3>
 <p>A class method decorated with plain <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> (without <code class="docutils literal notranslate"><span class="pre">on=</span></code>) is the default handler for all endpoints.
-That means it is the fallback handler for endpoints that are not found. <code class="docutils literal notranslate"><span class="pre">f.post(on='/blah',</span> <span class="pre">...)</span></code> will invoke <code class="docutils literal notranslate"><span class="pre">MyExecutor.foo</span></code>.</p>
+This means it is the fallback handler for endpoints that are not found. <code class="docutils literal notranslate"><span class="pre">f.post(on='/blah',</span> <span class="pre">...)</span></code> invokes <code class="docutils literal notranslate"><span class="pre">MyExecutor.foo</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 
@@ -460,12 +458,12 @@ That means it is the fallback handler for endpoints that are not found. <code cl
 <section id="no-binding">
 <h3>No binding<a class="headerlink" href="#no-binding" title="Permalink to this heading">#</a></h3>
 <p>A class with no <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> binding plays no part in the Flow.
-The request will simply pass through without any processing.</p>
+The request simply passes through without any processing.</p>
 </section>
 </section>
 <section id="arguments">
 <h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this heading">#</a></h2>
-<p>All Executor methods decorated by <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> need to follow the signature below in order to be usable as a microservice inside a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>.
+<p>All Executor methods decorated by <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> need to follow the signature below to be usable as a microservice inside a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>.
 The <code class="docutils literal notranslate"><span class="pre">async</span></code> definition is optional.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span>
@@ -485,12 +483,12 @@ The <code class="docutils literal notranslate"><span class="pre">async</span></c
         <span class="k">pass</span>
 </pre></div>
 </div>
-<p>Let’s take a look at all these arguments:</p>
+<p>Let’s take a look at these arguments:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">docs</span></code>: A DocumentArray that is part of the request. Since the nature of Executor is to wrap functionality related to <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>, it is usually the main processing unit inside Executor methods. It is important to notice that these <code class="docutils literal notranslate"><span class="pre">docs</span></code> can be also changed in place, just like it could happen with
+<li><p><code class="docutils literal notranslate"><span class="pre">docs</span></code>: A DocumentArray that is part of the request. Since the nature of Executor is to wrap functionality related to <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code>, it’s usually the main processing unit inside Executor methods. It’s important to notice that these <code class="docutils literal notranslate"><span class="pre">docs</span></code> can be also changed in place, just like
 any other <code class="docutils literal notranslate"><span class="pre">list</span></code>-like object in a Python function.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">parameters</span></code>: A Dict object that can be used to pass extra parameters to the Executor functions.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code>:  This is the least common parameter to be used for an Executor. This argument is needed when an Executor is used inside a Flow to merge or reduce the output of more than one other Executor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">parameters</span></code>: A Dict object that passes extra parameters to Executor functions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code>:  This is the least common parameter to be used for an Executor. This is needed when an Executor is used inside a Flow to merge or reduce the output of more than one other Executor.</p></li>
 </ul>
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
@@ -519,9 +517,8 @@ any other <code class="docutils literal notranslate"><span class="pre">list</spa
 <section id="multiple-documentarrays-as-input-argument">
 <h3>Multiple DocumentArrays as input argument<a class="headerlink" href="#multiple-documentarrays-as-input-argument" title="Permalink to this heading">#</a></h3>
 <p>You have seen that <code class="docutils literal notranslate"><span class="pre">Executor</span></code> methods can receive three types of parameters: <code class="docutils literal notranslate"><span class="pre">docs</span></code>, <code class="docutils literal notranslate"><span class="pre">parameters</span></code> and <code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code> is a parameter that is only used in some special cases.</p>
-<p>One case is when an Executor receives messages from more than one upstream Executor in the Flow.</p>
-<p>Let’s see an example:</p>
+<p><code class="docutils literal notranslate"><span class="pre">docs_matrix</span></code> is only used in some special cases.</p>
+<p>One case is when an Executor receives messages from more than one upstream Executor in the Flow:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 
@@ -590,9 +587,8 @@ Python to write concurrent code.</p>
         <span class="k">await</span> <span class="n">some_coroutines</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>In this example we have a heavy lifting API for which we want to call several times, and we want to leverage the
-async Python features to speed up the <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>’s call by calling the API multiples times concurrently. As a counterpart, in an example without using <code class="docutils literal notranslate"><span class="pre">coroutines</span></code>, all of the 50 API calls will be queued and nothing will be done
-concurrently.</p>
+<p>This example has a heavy lifting API which we call several times, and we leverage the
+async Python features to speed up the <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>’s call by calling the API multiple times concurrently. As a counterpart, in an example without <code class="docutils literal notranslate"><span class="pre">coroutines</span></code>, all 50 API calls are queued and nothing is done concurrently.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Async coroutines</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
@@ -661,10 +657,10 @@ concurrently.</p>
 </div>
 </div>
 </div>
-<p>The processing of the data is 50 faster when using <code class="docutils literal notranslate"><span class="pre">coroutines</span></code> because it happens concurrently.</p>
+<p>Processing the data is 50x faster when using <code class="docutils literal notranslate"><span class="pre">coroutines</span></code> because it happens concurrently.</p>
 <section id="call-another-jina-flow">
 <h3>Call another Jina Flow<a class="headerlink" href="#call-another-jina-flow" title="Permalink to this heading">#</a></h3>
-<p>To call other another Jina Flow using <code class="docutils literal notranslate"><span class="pre">Client</span></code> from an <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, you will also need to use <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> and async Client.</p>
+<p>To call other another Jina Flow using <code class="docutils literal notranslate"><span class="pre">Client</span></code> from an <code class="docutils literal notranslate"><span class="pre">Executor</span></code>, you also need to use <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> and async Client.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 
@@ -681,11 +677,11 @@ concurrently.</p>
 </section>
 <section id="returns">
 <h2>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">#</a></h2>
-<p>Every Executor method can <code class="docutils literal notranslate"><span class="pre">return</span></code> in 3 ways:</p>
+<p>Every Executor method can <code class="docutils literal notranslate"><span class="pre">return</span></code> in three ways:</p>
 <ul class="simple">
-<li><p>If you return a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object, then it will be sent over to the next Executor.</p></li>
-<li><p>If you return <code class="docutils literal notranslate"><span class="pre">None</span></code> or if you don’t have a <code class="docutils literal notranslate"><span class="pre">return</span></code> in your method, then the original <code class="docutils literal notranslate"><span class="pre">docs</span></code> object (potentially mutated by your function) will be sent over to the next Executor.</p></li>
-<li><p>If you return a <code class="docutils literal notranslate"><span class="pre">dict</span></code> object, then it will be considered as a result and returned on <code class="docutils literal notranslate"><span class="pre">parameters['__results__']</span></code> to the client. <code class="docutils literal notranslate"><span class="pre">__results__</span></code> key will not be available in subsequent Executors. The original <code class="docutils literal notranslate"><span class="pre">docs</span></code> object (potentially mutated by your function) will be sent over to the next Executor.</p></li>
+<li><p>If you return a <code class="docutils literal notranslate"><span class="pre">DocumentArray</span></code> object, then it will be sent to the next Executor.</p></li>
+<li><p>If you return <code class="docutils literal notranslate"><span class="pre">None</span></code> or don’t have a <code class="docutils literal notranslate"><span class="pre">return</span></code> in your method, then the original <code class="docutils literal notranslate"><span class="pre">docs</span></code> object (potentially mutated by your function) will be sent to the next Executor.</p></li>
+<li><p>If you return a <code class="docutils literal notranslate"><span class="pre">dict</span></code> object, it will be considered as a result and returned on <code class="docutils literal notranslate"><span class="pre">parameters['__results__']</span></code> to the client. <code class="docutils literal notranslate"><span class="pre">__results__</span></code> key will not be available in subsequent Executors. The original <code class="docutils literal notranslate"><span class="pre">docs</span></code> object (potentially mutated by your function) will be sent to the next Executor.</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span>
 
@@ -708,7 +704,7 @@ concurrently.</p>
 </section>
 <section id="exception-handling">
 <h2>Exception handling<a class="headerlink" href="#exception-handling" title="Permalink to this heading">#</a></h2>
-<p>Exceptions raised inside <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>-decorated functions can simply be raised. The Flow will handle it.</p>
+<p>Exceptions raised inside <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code>-decorated functions can simply be raised. The Flow handles it.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
 
 
@@ -754,7 +750,7 @@ NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&
 </details></section>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h2>
-<p>Let’s understand how Executor’s process DocumentArray’s inside a Flow, and how the changes are chained and applied, affecting downstream Executors in the Flow.</p>
+<p>Let’s understand how Executor’s process DocumentArray’s inside a Flow, and how changes are chained and applied, affecting downstream Executors in the Flow.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 
 
@@ -768,14 +764,14 @@ NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&
 <span class="k">class</span> <span class="nc">ProcessDocuments</span><span class="p">(</span><span class="n">Executor</span><span class="p">):</span>
     <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/change_in_place&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">in_place</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="c1"># This executor will only work on `docs` and will not consider any other arguments</span>
+        <span class="c1"># This Executor only works on `docs` and doesn&#39;t consider any other arguments</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; ProcessDocuments: received document with text &quot;</span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
             <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;I changed the executor in place&#39;</span>
 
     <span class="nd">@requests</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/return_different_docarray&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">ret_docs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="c1"># This executor will only work on `docs` and will not consider any other arguments</span>
+        <span class="c1"># This executor only works on `docs` and doesn&#39;t consider any other arguments</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="n">DocumentArray</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; ProcessDocuments: received document with text: &quot;</span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
@@ -786,9 +782,9 @@ NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">ProcessDocuments</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">PrintDocuments</span><span class="p">)</span>
 
 <span class="k">with</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/change_in_place&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;request&#39;</span><span class="p">)))</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;/change_in_place&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;request1&#39;</span><span class="p">)))</span>
     <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-        <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/return_different_docarray&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;request&#39;</span><span class="p">))</span>
+        <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/return_different_docarray&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">(</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;request2&#39;</span><span class="p">))</span>
     <span class="p">)</span>
 </pre></div>
 </div>
@@ -837,7 +833,7 @@ NotImplementedError<span class="o">(</span><span class="s1">&#39;no time for it&
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

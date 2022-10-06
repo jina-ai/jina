@@ -243,8 +243,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -265,7 +263,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -356,6 +354,8 @@
                 <article role="main">
                     <h1>Source code for jina_cli.api</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_set_gateway_uses</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
@@ -456,20 +456,14 @@
 
 <span class="sd">    :param args: arguments coming from the CLI.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">GatewayProtocolType</span>
     <span class="kn">from</span> <span class="nn">jina.serve.runtimes</span> <span class="kn">import</span> <span class="n">get_runtime</span>
 
-    <span class="n">gateway_runtime_dict</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">GRPC</span><span class="p">:</span> <span class="s1">&#39;GRPCGatewayRuntime&#39;</span><span class="p">,</span>
-        <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">WEBSOCKET</span><span class="p">:</span> <span class="s1">&#39;WebSocketGatewayRuntime&#39;</span><span class="p">,</span>
-        <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">:</span> <span class="s1">&#39;HTTPGatewayRuntime&#39;</span><span class="p">,</span>
-    <span class="p">}</span>
-    <span class="n">runtime_cls</span> <span class="o">=</span> <span class="n">get_runtime</span><span class="p">(</span><span class="n">gateway_runtime_dict</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">])</span>
+    <span class="n">_set_gateway_uses</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="n">runtime_cls</span> <span class="o">=</span> <span class="n">get_runtime</span><span class="p">(</span><span class="s1">&#39;GatewayRuntime&#39;</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="n">runtime_cls</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">as</span> <span class="n">runtime</span><span class="p">:</span>
-        <span class="n">runtime</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Gateway with protocol </span><span class="si">{</span><span class="n">gateway_runtime_dict</span><span class="p">[</span><span class="n">args</span><span class="o">.</span><span class="n">protocol</span><span class="p">]</span><span class="si">}</span><span class="s1"> started&#39;</span>
-        <span class="p">)</span>
+        <span class="n">runtime</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Gateway started&#39;</span><span class="p">)</span>
         <span class="n">runtime</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span></div>
 
 
@@ -601,7 +595,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

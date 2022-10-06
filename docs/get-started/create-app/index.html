@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.10.1 Documentation" />
   
-<meta property="og:description" content="Create First Project: Let’s build a toy application with Jina. To start, we use Jina CLI to make a new project for us: This will create a new project folder called hello-jina with the following file structure: flow.yml is the configuration file for the Jina Flow., executor1/ is where we’ll write ..." />
+<meta property="og:description" content="Create First Project: Let’s build a toy application with Jina. To start, use Jina CLI to make a new project: This creates a new project folder called hello-jina with the following file structure: flow.yml is the configuration file for the Flow., executor1/ is where you write your Executor code., ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_images/deploy-jcloud-ongoing.png" />
   
@@ -276,8 +276,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +296,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -389,11 +387,11 @@
                 <article role="main">
                     <section id="svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-milestone-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m7-75-0a-75-75-0-01-75-75v3h3-634c-414-0-814-147-1-13-414l2-07-1-75a1-75-1-75-0-010-2-672l-2-07-1-75a1-75-1-75-0-01-1-13-414h8-5v5-25a-75-75-0-11-1-5-0v10h2-75a1-75-1-75-0-011-8-25v-3-5c1-3-784-1-784-3-2-75-3h7v-75a-75-75-0-017-75-0zm0-8-5h4-384a-25-25-0-00-161-06l2-07-1-75a-25-25-0-000-38l-2-07-1-75a-25-25-0-00-161-06h2-75a-25-25-0-00-25-25v3-5c0-138-112-25-25-25h5z-path-svg-create-first-project">
 <h1><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-milestone" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M7.75 0a.75.75 0 01.75.75V3h3.634c.414 0 .814.147 1.13.414l2.07 1.75a1.75 1.75 0 010 2.672l-2.07 1.75a1.75 1.75 0 01-1.13.414H8.5v5.25a.75.75 0 11-1.5 0V10H2.75A1.75 1.75 0 011 8.25v-3.5C1 3.784 1.784 3 2.75 3H7V.75A.75.75 0 017.75 0zm0 8.5h4.384a.25.25 0 00.161-.06l2.07-1.75a.25.25 0 000-.38l-2.07-1.75a.25.25 0 00-.161-.06H2.75a.25.25 0 00-.25.25v3.5c0 .138.112.25.25.25h5z"></path></svg> Create First Project<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-milestone-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m7-75-0a-75-75-0-01-75-75v3h3-634c-414-0-814-147-1-13-414l2-07-1-75a1-75-1-75-0-010-2-672l-2-07-1-75a1-75-1-75-0-01-1-13-414h8-5v5-25a-75-75-0-11-1-5-0v10h2-75a1-75-1-75-0-011-8-25v-3-5c1-3-784-1-784-3-2-75-3h7v-75a-75-75-0-017-75-0zm0-8-5h4-384a-25-25-0-00-161-06l2-07-1-75a-25-25-0-000-38l-2-07-1-75a-25-25-0-00-161-06h2-75a-25-25-0-00-25-25v3-5c0-138-112-25-25-25h5z-path-svg-create-first-project" title="Permalink to this heading">#</a></h1>
-<p>Let’s build a toy application with Jina. To start, we use Jina CLI to make a new project for us:</p>
+<p>Let’s build a toy application with Jina. To start, use Jina CLI to make a new project:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina new hello-jina
 </pre></div>
 </div>
-<p>This will create a new project folder called <code class="docutils literal notranslate"><span class="pre">hello-jina</span></code> with the following file structure:</p>
+<p>This creates a new project folder called <code class="docutils literal notranslate"><span class="pre">hello-jina</span></code> with the following file structure:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>hello-jina/
     |- client.py
     |- flow.yml
@@ -403,13 +401,13 @@
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> is the configuration file for the Jina Flow.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">executor1/</span></code> is where we’ll write our <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> code.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">config.yml</span></code> is the config file for the <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. It’s where you keep metadata for your Executor, as well as dependencies.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flow.yml</span></code> is the configuration file for the <a class="reference internal" href="../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">executor1/</span></code> is where you write your <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> code.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config.yml</span></code> is the configuration file for the <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. It stores metadata for your Executor, as well as dependencies.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">client.py</span></code> is the entrypoint of your Jina project. You can run it via <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">app.py</span></code>.</p></li>
 </ul>
-<p>There may be some other files like <code class="docutils literal notranslate"><span class="pre">README.md</span></code>, <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> to provide extra metadata about that <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. More information <a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/#create-executor"><span class="std std-ref">can be found here</span></a>.</p>
-<p>Now run it and observe the output of the server and client.</p>
+<p>There are some other files like <code class="docutils literal notranslate"><span class="pre">README.md</span></code> and <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> to provide extra metadata about that <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. More information <a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/#create-executor"><span class="std std-ref">can be found here</span></a>.</p>
+<p>Now run it and observe the output of the server and client:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Run server</label><div class="tab-content docutils">
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jina flow --uses flow.yml
@@ -434,10 +432,10 @@
 </div>
 </div>
 </div>
-<section id="add-logics">
-<h2>Add logics<a class="headerlink" href="#add-logics" title="Permalink to this heading">#</a></h2>
-<p>You can use any Python library in <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. For example, let’s add <code class="docutils literal notranslate"><span class="pre">pytorch</span></code> to <code class="docutils literal notranslate"><span class="pre">executor1/requirements.txt</span></code> and crunch some numbers.</p>
-<p>In <code class="docutils literal notranslate"><span class="pre">executor.py</span></code>, let’s add another endpoint <code class="docutils literal notranslate"><span class="pre">/get-tensor</span></code> as follows:</p>
+<section id="add-logic">
+<h2>Add logic<a class="headerlink" href="#add-logic" title="Permalink to this heading">#</a></h2>
+<p>You can use any Python library in <a class="reference internal" href="../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. For example, add <code class="docutils literal notranslate"><span class="pre">pytorch</span></code> to <code class="docutils literal notranslate"><span class="pre">executor1/requirements.txt</span></code> and crunch some numbers.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">executor.py</span></code>, add another endpoint <code class="docutils literal notranslate"><span class="pre">/get-tensor</span></code> as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 
@@ -456,11 +454,11 @@
 </span><span class="hll">            <span class="n">doc</span><span class="o">.</span><span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
 </span></pre></div>
 </div>
-<p>Kill the last server by <code class="docutils literal notranslate"><span class="pre">ctrl-C</span></code> and restart the server by <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">flow</span> <span class="pre">--uses</span> <span class="pre">flow.yml</span></code>.</p>
+<p>Kill the last server with <code class="docutils literal notranslate"><span class="pre">Ctrl-C</span></code> and restart the server with <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">flow</span> <span class="pre">--uses</span> <span class="pre">flow.yml</span></code>.</p>
 </section>
 <section id="call-crunch-number-endpoint">
 <h2>Call <code class="docutils literal notranslate"><span class="pre">/crunch-number</span></code> endpoint<a class="headerlink" href="#call-crunch-number-endpoint" title="Permalink to this heading">#</a></h2>
-<p>Modify <code class="docutils literal notranslate"><span class="pre">client.py</span></code> to call <code class="docutils literal notranslate"><span class="pre">/crunch-numbers</span></code> endpoint:</p>
+<p>Modify <code class="docutils literal notranslate"><span class="pre">client.py</span></code> to call the <code class="docutils literal notranslate"><span class="pre">/crunch-numbers</span></code> endpoint:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
@@ -469,7 +467,7 @@
     <span class="nb">print</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">tensors</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Once we save that, we can run our new client:</p>
+<p>After you save that, you can run your new client:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python client.py
 </pre></div>
 </div>
@@ -499,11 +497,11 @@
 </section>
 <section id="deploy-to-jcloud">
 <h2>Deploy to JCloud<a class="headerlink" href="#deploy-to-jcloud" title="Permalink to this heading">#</a></h2>
-<p>JCloud offers free CPU and GPU instances to host Jina project. Let’s deploy our first project to JCloud.</p>
+<p>JCloud offers free CPU and GPU instances to host Jina project. Let’s deploy your first project to JCloud:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina auth login
 </pre></div>
 </div>
-<p>Log in with your Github, Google or Email account.</p>
+<p>Log in with your GitHub, Google or Email account.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina cloud deploy ./
 </pre></div>
 </div>
@@ -520,7 +518,7 @@
 ╰───────────────────────────────────────────────────╯
 </pre></div>
 </div>
-<p>Now let’s change the Client’s code to use the deployed endpoint shown above:</p>
+<p>Now change the Client’s code to use the deployed endpoint shown above:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
@@ -559,14 +557,14 @@
 </section>
 <section id="delete-the-deployed-project">
 <h2>Delete the deployed project<a class="headerlink" href="#delete-the-deployed-project" title="Permalink to this heading">#</a></h2>
-<p>Don’t forget to delete a Flow if you are not using it anymore.</p>
+<p>Don’t forget to delete a Flow if you’re not using it any more:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina cloud remove 1655d050ad
 </pre></div>
 </div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Successfully removed Flow 1655d050ad.
 </pre></div>
 </div>
-<p>You just finished your first Jina toy project, congrats! You can now start your own project.</p>
+<p>You’ve just finished your first toy Jina project, congratulations! You can now start your own project.</p>
 </section>
 </section>
 
@@ -601,7 +599,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -634,7 +632,7 @@
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-milestone" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M7.75 0a.75.75 0 01.75.75V3h3.634c.414 0 .814.147 1.13.414l2.07 1.75a1.75 1.75 0 010 2.672l-2.07 1.75a1.75 1.75 0 01-1.13.414H8.5v5.25a.75.75 0 11-1.5 0V10H2.75A1.75 1.75 0 011 8.25v-3.5C1 3.784 1.784 3 2.75 3H7V.75A.75.75 0 017.75 0zm0 8.5h4.384a.25.25 0 00.161-.06l2.07-1.75a.25.25 0 000-.38l-2.07-1.75a.25.25 0 00-.161-.06H2.75a.25.25 0 00-.25.25v3.5c0 .138.112.25.25.25h5z"></path></svg> Create First Project</a><ul>
-<li><a class="reference internal" href="#add-logics">Add logics</a></li>
+<li><a class="reference internal" href="#add-logic">Add logic</a></li>
 <li><a class="reference internal" href="#call-crunch-number-endpoint">Call <code class="docutils literal notranslate"><span class="pre">/crunch-number</span></code> endpoint</a></li>
 <li><a class="reference internal" href="#deploy-to-jcloud">Deploy to JCloud</a></li>
 <li><a class="reference internal" href="#delete-the-deployed-project">Delete the deployed project</a></li>

@@ -243,8 +243,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -265,7 +263,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -357,15 +355,35 @@
                     <h1>Source code for jina.parsers.orchestrate.pod</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Argparser module for Pod runtimes&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">helper</span>
 <span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">PodRoleType</span>
 <span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_SHOW_ALL_ARGS</span><span class="p">,</span> <span class="n">KVAppendAction</span><span class="p">,</span> <span class="n">add_arg_group</span>
 
 
-<div class="viewcode-block" id="mixin_pod_parser"><a class="viewcode-back" href="../../../../../api/jina.parsers.orchestrate.pod/#jina.parsers.orchestrate.pod.mixin_pod_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_pod_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+<div class="viewcode-block" id="PodTypeParams"><a class="viewcode-back" href="../../../../../api/jina.parsers.orchestrate.pod/#jina.parsers.orchestrate.pod.PodTypeParams">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">PodTypeParams</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Data Class representing possible parameters for each pod type&quot;&quot;&quot;</span>
+
+    <span class="n">runtime_cls</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">role_type</span><span class="p">:</span> <span class="n">PodRoleType</span></div>
+
+
+<span class="n">POD_PARAMS_MAPPING</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">PodTypeParams</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;worker&#39;</span><span class="p">:</span> <span class="n">PodTypeParams</span><span class="p">(</span><span class="n">runtime_cls</span><span class="o">=</span><span class="s1">&#39;WorkerRuntime&#39;</span><span class="p">,</span> <span class="n">role_type</span><span class="o">=</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">WORKER</span><span class="p">),</span>
+    <span class="s1">&#39;head&#39;</span><span class="p">:</span> <span class="n">PodTypeParams</span><span class="p">(</span><span class="n">runtime_cls</span><span class="o">=</span><span class="s1">&#39;HeadRuntime&#39;</span><span class="p">,</span> <span class="n">role_type</span><span class="o">=</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">HEAD</span><span class="p">),</span>
+    <span class="s1">&#39;gateway&#39;</span><span class="p">:</span> <span class="n">PodTypeParams</span><span class="p">(</span>
+        <span class="n">runtime_cls</span><span class="o">=</span><span class="s1">&#39;GatewayRuntime&#39;</span><span class="p">,</span> <span class="n">role_type</span><span class="o">=</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">GATEWAY</span>
+    <span class="p">),</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="mixin_pod_parser"><a class="viewcode-back" href="../../../../../api/jina.parsers.orchestrate.pod/#jina.parsers.orchestrate.pod.mixin_pod_parser">[docs]</a><span class="k">def</span> <span class="nf">mixin_pod_parser</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">pod_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;worker&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Mixing in arguments required by :class:`Pod` into the given parser.</span>
 <span class="sd">    :param parser: the parser instance to which we add arguments</span>
+<span class="sd">    :param pod_type: the pod_type configured by the parser. Can be either &#39;worker&#39; for WorkerRuntime or &#39;gateway&#39; for GatewayRuntime</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">gp</span> <span class="o">=</span> <span class="n">add_arg_group</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Pod&#39;</span><span class="p">)</span>
@@ -373,7 +391,7 @@
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--runtime-cls&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;WorkerRuntime&#39;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">POD_PARAMS_MAPPING</span><span class="p">[</span><span class="n">pod_type</span><span class="p">]</span><span class="o">.</span><span class="n">runtime_cls</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The runtime class to run inside the Pod&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -408,7 +426,7 @@
         <span class="s1">&#39;--pod-role&#39;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">from_string</span><span class="p">,</span>
         <span class="n">choices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">PodRoleType</span><span class="p">),</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">PodRoleType</span><span class="o">.</span><span class="n">WORKER</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">POD_PARAMS_MAPPING</span><span class="p">[</span><span class="n">pod_type</span><span class="p">]</span><span class="o">.</span><span class="n">role_type</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The role of this Pod in a Deployment&#39;</span>
         <span class="k">if</span> <span class="n">_SHOW_ALL_ARGS</span>
         <span class="k">else</span> <span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
@@ -441,9 +459,11 @@
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--port&#39;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">(),</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The port for input data to bind to, default is a random port between [49152, 65535]&#39;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">helper</span><span class="o">.</span><span class="n">random_port</span><span class="p">()),</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The port for input data to bind to, default is a random port between [49152, 65535].&#39;</span>
+        <span class="s1">&#39; In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.&#39;</span>
+        <span class="s1">&#39; Then, every resulting address will be considered as one replica of the Executor.&#39;</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">gp</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -490,7 +510,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

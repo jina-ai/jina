@@ -276,8 +276,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +296,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -534,7 +532,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 60034</p>
+<p>Default: 60198</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -598,7 +596,7 @@ container.</p>
 <h4>RemoteRuntime arguments<a class="headerlink" href="#RemoteRuntime arguments" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--host</kbd></dt>
-<dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
+<dd><p>The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
 <p>Default: “0.0.0.0”</p>
 </dd>
 </dl>
@@ -645,8 +643,8 @@ Python files, data files.</p>
 <p>Default: 1</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
-<dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 63789</p>
+<dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
+<p>Default: “49923”</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -654,7 +652,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “51069”</p>
+<p>Default: “56524”</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -944,20 +942,20 @@ Python files, data files.</p>
 <h3>gateway<a class="headerlink" href="#gateway" title="Permalink to this heading">#</a></h3>
 <p>Start a Gateway that receives client Requests via gRPC/REST interface</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jina</span> <span class="n">gateway</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">name</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">workspace</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">config</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">quiet</span><span class="o">-</span><span class="n">error</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ctrl</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">polling</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">entrypoint</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">docker</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">volumes</span> <span class="p">[</span><span class="n">DIR</span> <span class="p">[</span><span class="n">DIR</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">gpus</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">disable</span><span class="o">-</span><span class="n">auto</span><span class="o">-</span><span class="n">volume</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">title</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cors</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">crud</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">uvicorn</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssl</span><span class="o">-</span><span class="n">certfile</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">ssl</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">graphql</span><span class="o">-</span><span class="n">endpoint</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="k">with</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">metas</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">uses</span><span class="o">-</span><span class="n">requests</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">py</span><span class="o">-</span><span class="n">modules</span> <span class="p">[</span><span class="n">PATH</span> <span class="p">[</span><span class="n">PATH</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="o">-</span><span class="ow">in</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">native</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">array</span><span class="o">-</span><span class="nb">type</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">grpc</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="n">options</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">exceptions</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefetch</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">title</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cors</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">debug</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">crud</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">endpoints</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">uvicorn</span><span class="o">-</span><span class="n">kwargs</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="p">[</span><span class="n">KEY</span><span class="p">:</span> <span class="n">VALUE</span> <span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">ssl</span><span class="o">-</span><span class="n">certfile</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">ssl</span><span class="o">-</span><span class="n">keyfile</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">expose</span><span class="o">-</span><span class="n">graphql</span><span class="o">-</span><span class="n">endpoint</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">protocol</span> <span class="p">{</span><span class="n">GRPC</span><span class="p">,</span> <span class="n">HTTP</span><span class="p">,</span> <span class="n">WEBSOCKET</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">host</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">proxy</span><span class="p">]</span>
-             <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">conditions</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">exit</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">exceptions</span> <span class="p">[[</span><span class="o">...</span><span class="p">]]]</span> <span class="p">[</span><span class="o">--</span><span class="n">port</span><span class="o">-</span><span class="n">expose</span><span class="p">]</span>
+             <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">description</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">graph</span><span class="o">-</span><span class="n">conditions</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">addresses</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">deployments</span><span class="o">-</span><span class="n">disable</span><span class="o">-</span><span class="n">reduce</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">compression</span> <span class="p">{</span><span class="n">NoCompression</span><span class="p">,</span> <span class="n">Deflate</span><span class="p">,</span> <span class="n">Gzip</span><span class="p">}]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">send</span><span class="p">]</span>
              <span class="p">[</span><span class="o">--</span><span class="n">runtime</span><span class="o">-</span><span class="bp">cls</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">timeout</span><span class="o">-</span><span class="n">ready</span><span class="p">]</span>
@@ -1046,70 +1044,38 @@ JSON dict, {endpoint: PollingType}
 </dd>
 </dl>
 </section>
-<section id="WorkerRuntime arguments_repeat1">
-<h4>WorkerRuntime arguments<a class="headerlink" href="#WorkerRuntime arguments_repeat1" title="Permalink to this heading">#</a></h4>
+<section id="ContainerRuntime arguments_repeat1">
+<h4>ContainerRuntime arguments<a class="headerlink" href="#ContainerRuntime arguments_repeat1" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
-<dt><kbd>--uses</kbd></dt>
-<dd><blockquote>
-<div><p>The config of the executor, it could be one of the followings:
-* the string literal of an Executor class name
-* an Executor YAML file (.yml, .yaml, .jaml)
-* a Jina Hub Executor (must start with <cite>jinahub://</cite> or <cite>jinahub+docker://</cite>)
-* a docker image (must start with <cite>docker://</cite>)
-* the string literal of a YAML config (must start with <cite>!</cite> or <a href="#id1"><span class="problematic" id="id2">`</span></a>jtype: <a href="#id3"><span class="problematic" id="id4">`</span></a>)
-* the string literal of a JSON config</p>
-<p>When use it under Python, one can use the following values additionally:
-- a Python dict that represents the config
-- a text file stream has <cite>.read()</cite> interface</p>
-</div></blockquote>
-<p>Default: “BaseExecutor”</p>
+<dt><kbd>--entrypoint</kbd></dt>
+<dd><p>The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</p>
 </dd>
-<dt><kbd>--uses-with</kbd></dt>
-<dd><blockquote>
-<div><p>Dictionary of keyword arguments that will override the <cite>with</cite> configuration in <cite>uses</cite></p>
-</div></blockquote>
+<dt><kbd>--docker-kwargs</kbd></dt>
+<dd><p>Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker ‘
+container.</p>
+<p>More details can be found in the Docker SDK docs:  <a class="reference external" href="https://docker-py.readthedocs.io/en/stable/">https://docker-py.readthedocs.io/en/stable/</a></p>
 </dd>
-<dt><kbd>--uses-metas</kbd></dt>
-<dd><blockquote>
-<div><p>Dictionary of keyword arguments that will override the <cite>metas</cite> configuration in <cite>uses</cite></p>
-</div></blockquote>
+<dt><kbd>--volumes</kbd></dt>
+<dd><p>The path on the host to be mounted inside the container.</p>
+<p>Note,
+- If separated by <cite>:</cite>, then the first part will be considered as the local host path and the second part is the path in the container system.
+- If no split provided, then the basename of that directory will be mounted into container’s root path, e.g. <cite>–volumes=”/user/test/my-workspace”</cite> will be mounted into <cite>/my-workspace</cite> inside the container.
+- All volumes are mounted with read-write mode.</p>
 </dd>
-<dt><kbd>--uses-requests</kbd></dt>
+<dt><kbd>--gpus</kbd></dt>
 <dd><blockquote>
-<div><p>Dictionary of keyword arguments that will override the <cite>requests</cite> configuration in <cite>uses</cite></p>
+<div><p>This argument allows dockerized Jina executor discover local gpu devices.</p>
+<p>Note,
+- To access all gpus, use <cite>–gpus all</cite>.
+- To access multiple gpus, e.g. make use of 2 gpus, use <cite>–gpus 2</cite>.
+- To access specified gpus based on device id, use <cite>–gpus device=[YOUR-GPU-DEVICE-ID]</cite>
+- To access specified gpus based on multiple device id, use <cite>–gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]</cite>
+- To specify more parameters, use <a href="#id1"><span class="problematic" id="id2">`</span></a>–gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display</p>
 </div></blockquote>
 </dd>
-<dt><kbd>--py-modules</kbd></dt>
-<dd><p>The customized python modules need to be imported before loading the executor</p>
-<p>Note that the recommended way is to only import a single module - a simple python file, if your
-executor can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
-which should be structured as a python package. For more details, please see the
-<a class="reference external" href="https://docs.jina.ai/fundamentals/executor/executor-files/">Executor cookbook</a></p>
-</dd>
-<dt><kbd>--port-in</kbd></dt>
-<dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 62748</p>
-</dd>
-<dt><kbd>--host-in</kbd></dt>
-<dd><p>The host address for binding to, by default it is 0.0.0.0</p>
-<p>Default: “0.0.0.0”</p>
-</dd>
-<dt><kbd>--native</kbd></dt>
-<dd><p>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</p>
+<dt><kbd>--disable-auto-volume</kbd></dt>
+<dd><p>Do not automatically mount a volume for dockerized Executors.</p>
 <p>Default: False</p>
-</dd>
-<dt><kbd>--output-array-type</kbd></dt>
-<dd><p>The type of array <cite>tensor</cite> and <cite>embedding</cite> will be serialized to.</p>
-<p>Supports the same types as <cite>docarray.to_protobuf(.., ndarray_type=…)</cite>, which can be found
-<cite>here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;</cite>.
-Defaults to retaining whatever type is returned by the Executor.</p>
-</dd>
-<dt><kbd>--grpc-server-options</kbd></dt>
-<dd><p>Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {‘grpc.max_send_message_length’: -1}</p>
-</dd>
-<dt><kbd>--exit-on-exceptions</kbd></dt>
-<dd><p>List of exceptions that will cause the Executor to shut down.</p>
-<p>Default: []</p>
 </dd>
 </dl>
 </section>
@@ -1185,16 +1151,65 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 <h4>Gateway arguments<a class="headerlink" href="#Gateway arguments" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--host</kbd></dt>
-<dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
+<dd><p>The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
 <p>Default: “0.0.0.0”</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
 <dd><p>If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy</p>
 <p>Default: False</p>
 </dd>
+<dt><kbd>--uses</kbd></dt>
+<dd><blockquote>
+<div><p>The config of the gateway, it could be one of the followings:
+* the string literal of an Gateway class name
+* a Gateway YAML file (.yml, .yaml, .jaml)
+* a docker image (must start with <cite>docker://</cite>)
+* the string literal of a YAML config (must start with <cite>!</cite> or <a href="#id1"><span class="problematic" id="id2">`</span></a>jtype: <a href="#id3"><span class="problematic" id="id4">`</span></a>)
+* the string literal of a JSON config</p>
+<p>When use it under Python, one can use the following values additionally:
+- a Python dict that represents the config
+- a text file stream has <cite>.read()</cite> interface</p>
+</div></blockquote>
+</dd>
+<dt><kbd>--uses-with</kbd></dt>
+<dd><blockquote>
+<div><p>Dictionary of keyword arguments that will override the <cite>with</cite> configuration in <cite>uses</cite></p>
+</div></blockquote>
+</dd>
+<dt><kbd>--py-modules</kbd></dt>
+<dd><p>The customized python modules need to be imported before loading the gateway</p>
+<p>Note that the recommended way is to only import a single module - a simple python file, if your
+gateway can be defined in a single file, or an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file if you have multiple files,
+which should be structured as a python package.</p>
+</dd>
+<dt><kbd>--port-in</kbd></dt>
+<dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
+<p>Default: 55322</p>
+</dd>
+<dt><kbd>--host-in</kbd></dt>
+<dd><p>The host address for binding to, by default it is 0.0.0.0</p>
+<p>Default: “0.0.0.0”</p>
+</dd>
+<dt><kbd>--native</kbd></dt>
+<dd><p>If set, only native Executors is allowed, and the Executor is always run inside WorkerRuntime.</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--output-array-type</kbd></dt>
+<dd><p>The type of array <cite>tensor</cite> and <cite>embedding</cite> will be serialized to.</p>
+<p>Supports the same types as <cite>docarray.to_protobuf(.., ndarray_type=…)</cite>, which can be found
+<cite>here &lt;https://docarray.jina.ai/fundamentals/document/serialization/#from-to-protobuf&gt;</cite>.
+Defaults to retaining whatever type is returned by the Executor.</p>
+</dd>
+<dt><kbd>--grpc-server-options</kbd></dt>
+<dd><p>Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {‘grpc.max_send_message_length’: -1}</p>
+</dd>
+<dt><kbd>--exit-on-exceptions</kbd></dt>
+<dd><p>List of exceptions that will cause the Executor to shut down.</p>
+<p>Default: []</p>
+</dd>
 <dt><kbd>--port-expose</kbd></dt>
 <dd><p>The port that the gateway exposes for clients for GRPC connections.</p>
-<p>Default: 58671</p>
+<p>Default: 51582</p>
 </dd>
 <dt><kbd>--compression</kbd></dt>
 <dd><p>Possible choices: NoCompression, Deflate, Gzip</p>
@@ -1210,7 +1225,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 <dl class="option-list">
 <dt><kbd>--runtime-cls</kbd></dt>
 <dd><p>The runtime class to run inside the Pod</p>
-<p>Default: “GRPCGatewayRuntime”</p>
+<p>Default: “GatewayRuntime”</p>
 </dd>
 <dt><kbd>--timeout-ready</kbd></dt>
 <dd><p>The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever</p>
@@ -1228,8 +1243,8 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 <p>Default: 1</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
-<dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 57937</p>
+<dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
+<p>Default: “62906”</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1237,7 +1252,7 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “58838”</p>
+<p>Default: “61372”</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -1802,8 +1817,8 @@ JSON dict, {endpoint: PollingType}
 </dd>
 </dl>
 </section>
-<section id="WorkerRuntime arguments_repeat2">
-<h4>WorkerRuntime arguments<a class="headerlink" href="#WorkerRuntime arguments_repeat2" title="Permalink to this heading">#</a></h4>
+<section id="WorkerRuntime arguments_repeat1">
+<h4>WorkerRuntime arguments<a class="headerlink" href="#WorkerRuntime arguments_repeat1" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--uses</kbd></dt>
 <dd><blockquote>
@@ -1844,7 +1859,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 49177</p>
+<p>Default: 56564</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -1869,8 +1884,8 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 </dl>
 </section>
-<section id="ContainerRuntime arguments_repeat1">
-<h4>ContainerRuntime arguments<a class="headerlink" href="#ContainerRuntime arguments_repeat1" title="Permalink to this heading">#</a></h4>
+<section id="ContainerRuntime arguments_repeat2">
+<h4>ContainerRuntime arguments<a class="headerlink" href="#ContainerRuntime arguments_repeat2" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--entrypoint</kbd></dt>
 <dd><p>The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</p>
@@ -1908,7 +1923,7 @@ container.</p>
 <h4>RemoteRuntime arguments<a class="headerlink" href="#RemoteRuntime arguments_repeat1" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--host</kbd></dt>
-<dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
+<dd><p>The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
 <p>Default: “0.0.0.0”</p>
 </dd>
 </dl>
@@ -1955,8 +1970,8 @@ Python files, data files.</p>
 <p>Default: 1</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
-<dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 59067</p>
+<dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
+<p>Default: “54670”</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -1964,7 +1979,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “52377”</p>
+<p>Default: “58980”</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2095,8 +2110,8 @@ JSON dict, {endpoint: PollingType}
 </dd>
 </dl>
 </section>
-<section id="WorkerRuntime arguments_repeat3">
-<h4>WorkerRuntime arguments<a class="headerlink" href="#WorkerRuntime arguments_repeat3" title="Permalink to this heading">#</a></h4>
+<section id="WorkerRuntime arguments_repeat2">
+<h4>WorkerRuntime arguments<a class="headerlink" href="#WorkerRuntime arguments_repeat2" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--uses</kbd></dt>
 <dd><blockquote>
@@ -2137,7 +2152,7 @@ which should be structured as a python package. For more details, please see the
 </dd>
 <dt><kbd>--port-in</kbd></dt>
 <dd><p>The port for input data to bind to, default a random port between [49152, 65535]</p>
-<p>Default: 57297</p>
+<p>Default: 62526</p>
 </dd>
 <dt><kbd>--host-in</kbd></dt>
 <dd><p>The host address for binding to, by default it is 0.0.0.0</p>
@@ -2162,8 +2177,8 @@ Defaults to retaining whatever type is returned by the Executor.</p>
 </dd>
 </dl>
 </section>
-<section id="ContainerRuntime arguments_repeat2">
-<h4>ContainerRuntime arguments<a class="headerlink" href="#ContainerRuntime arguments_repeat2" title="Permalink to this heading">#</a></h4>
+<section id="ContainerRuntime arguments_repeat3">
+<h4>ContainerRuntime arguments<a class="headerlink" href="#ContainerRuntime arguments_repeat3" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--entrypoint</kbd></dt>
 <dd><p>The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.</p>
@@ -2201,7 +2216,7 @@ container.</p>
 <h4>RemoteRuntime arguments<a class="headerlink" href="#RemoteRuntime arguments_repeat2" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--host</kbd></dt>
-<dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
+<dd><p>The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
 <p>Default: “0.0.0.0”</p>
 </dd>
 </dl>
@@ -2248,8 +2263,8 @@ Python files, data files.</p>
 <p>Default: 1</p>
 </dd>
 <dt><kbd>--port</kbd></dt>
-<dd><p>The port for input data to bind to, default is a random port between [49152, 65535]</p>
-<p>Default: 63670</p>
+<dd><p>The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
+<p>Default: “52063”</p>
 </dd>
 <dt><kbd>--monitoring</kbd></dt>
 <dd><p>If set, spawn an http server with a prometheus endpoint to expose metrics</p>
@@ -2257,7 +2272,7 @@ Python files, data files.</p>
 </dd>
 <dt><kbd>--port-monitoring</kbd></dt>
 <dd><p>The port on which the prometheus server is exposed, default is a random port between [49152, 65535]</p>
-<p>Default: “57157”</p>
+<p>Default: “65214”</p>
 </dd>
 <dt><kbd>--retries</kbd></dt>
 <dd><p>Number of retries per gRPC call. If &lt;0 it defaults to max(3, num_replicas)</p>
@@ -2355,7 +2370,7 @@ Python files, data files.</p>
 <h4>ClientGateway arguments<a class="headerlink" href="#ClientGateway arguments" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>--host</kbd></dt>
-<dd><p>The host address of the runtime, by default it is 0.0.0.0.</p>
+<dd><p>The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (<cite>–external</cite> or <cite>external=True</cite>) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.</p>
 <p>Default: “0.0.0.0”</p>
 </dd>
 <dt><kbd>--proxy</kbd></dt>
@@ -2406,7 +2421,7 @@ Python files, data files.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -2498,7 +2513,7 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#Named Arguments_repeat6">Named Arguments</a></li>
 <li><a class="reference internal" href="#Essential arguments_repeat2">Essential arguments</a></li>
 <li><a class="reference internal" href="#Base Deployment arguments_repeat1">Base Deployment arguments</a></li>
-<li><a class="reference internal" href="#WorkerRuntime arguments_repeat1">WorkerRuntime arguments</a></li>
+<li><a class="reference internal" href="#ContainerRuntime arguments_repeat1">ContainerRuntime arguments</a></li>
 <li><a class="reference internal" href="#Prefetch arguments">Prefetch arguments</a></li>
 <li><a class="reference internal" href="#HTTP Gateway arguments">HTTP Gateway arguments</a></li>
 <li><a class="reference internal" href="#GraphQL arguments">GraphQL arguments</a></li>
@@ -2606,8 +2621,8 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#pod">pod</a><ul>
 <li><a class="reference internal" href="#Essential arguments_repeat3">Essential arguments</a></li>
 <li><a class="reference internal" href="#Base Deployment arguments_repeat2">Base Deployment arguments</a></li>
-<li><a class="reference internal" href="#WorkerRuntime arguments_repeat2">WorkerRuntime arguments</a></li>
-<li><a class="reference internal" href="#ContainerRuntime arguments_repeat1">ContainerRuntime arguments</a></li>
+<li><a class="reference internal" href="#WorkerRuntime arguments_repeat1">WorkerRuntime arguments</a></li>
+<li><a class="reference internal" href="#ContainerRuntime arguments_repeat2">ContainerRuntime arguments</a></li>
 <li><a class="reference internal" href="#RemoteRuntime arguments_repeat1">RemoteRuntime arguments</a></li>
 <li><a class="reference internal" href="#Distributed arguments_repeat1">Distributed arguments</a></li>
 <li><a class="reference internal" href="#Pod arguments_repeat2">Pod arguments</a></li>
@@ -2618,8 +2633,8 @@ Python files, data files.</p>
 <li><a class="reference internal" href="#deployment">deployment</a><ul>
 <li><a class="reference internal" href="#Essential arguments_repeat4">Essential arguments</a></li>
 <li><a class="reference internal" href="#Base Deployment arguments_repeat3">Base Deployment arguments</a></li>
-<li><a class="reference internal" href="#WorkerRuntime arguments_repeat3">WorkerRuntime arguments</a></li>
-<li><a class="reference internal" href="#ContainerRuntime arguments_repeat2">ContainerRuntime arguments</a></li>
+<li><a class="reference internal" href="#WorkerRuntime arguments_repeat2">WorkerRuntime arguments</a></li>
+<li><a class="reference internal" href="#ContainerRuntime arguments_repeat3">ContainerRuntime arguments</a></li>
 <li><a class="reference internal" href="#RemoteRuntime arguments_repeat2">RemoteRuntime arguments</a></li>
 <li><a class="reference internal" href="#Distributed arguments_repeat2">Distributed arguments</a></li>
 <li><a class="reference internal" href="#Pod arguments_repeat3">Pod arguments</a></li>

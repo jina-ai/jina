@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.10.1 Documentation" />
   
-<meta property="og:description" content="How-To: Jina is a very powerful framework that can help you build distributed multi-modal and cross-modal applications, from start to finish. In order to get you started on your more ambitious projects, we compiled a list of how-to tutorials that guide you through some of Jina’s more advanced fea..." />
+<meta property="og:description" content="How-To: Jina is a powerful framework for building distributed multi-modal and cross-modal applications, from start to finish. Executor: On top of the basics, the Executor has a few more tricks up its sleeve. Scaling out: Often, running a single Executor for a given task is just not enough. This t..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -276,8 +276,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +296,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -389,39 +387,36 @@
                 <article role="main">
                     <section id="svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-book-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m0-1-75a-75-75-0-01-75-1h4-253c1-227-0-2-317-59-3-1-501a3-744-3-744-0-0111-006-1h4-245a-75-75-0-01-75-75v10-5a-75-75-0-01-75-75h-4-507a2-25-2-25-0-00-1-591-659l-622-621a-75-75-0-01-1-06-0l-622-621a2-25-2-25-0-005-258-13h-75a-75-75-0-01-75-75v1-75zm8-755-3a2-25-2-25-0-012-25-2-25h14-5v9h-3-757c-71-0-1-4-201-1-992-572l-004-7-322zm-1-504-7-324l-004-5-073-002-2-253a2-25-2-25-0-005-003-2-5h1-5v9h3-757a3-75-3-75-0-011-994-574z-path-svg-how-to">
 <h1><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-book" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z"></path></svg> How-To<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-book-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m0-1-75a-75-75-0-01-75-1h4-253c1-227-0-2-317-59-3-1-501a3-744-3-744-0-0111-006-1h4-245a-75-75-0-01-75-75v10-5a-75-75-0-01-75-75h-4-507a2-25-2-25-0-00-1-591-659l-622-621a-75-75-0-01-1-06-0l-622-621a2-25-2-25-0-005-258-13h-75a-75-75-0-01-75-75v1-75zm8-755-3a2-25-2-25-0-012-25-2-25h14-5v9h-3-757c-71-0-1-4-201-1-992-572l-004-7-322zm-1-504-7-324l-004-5-073-002-2-253a2-25-2-25-0-005-003-2-5h1-5v9h3-757a3-75-3-75-0-011-994-574z-path-svg-how-to" title="Permalink to this heading">#</a></h1>
-<p>Jina is a very powerful framework that can help you build distributed multi-modal and cross-modal applications, from start to finish.</p>
+<p>Jina is a powerful framework for building distributed multi-modal and cross-modal applications, from start to finish.</p>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
-<p>If you are completely new to Jina, you should check out its <a class="reference internal" href="../fundamentals/architecture-overview/#architecture-overview"><span class="std std-ref">overview</span></a> first.
-You may also find the <a class="reference external" href="https://learn.jina.ai/">learning portal</a> useful to get off the ground.</p>
+<p>If you are new to Jina, first check its <a class="reference internal" href="../fundamentals/architecture-overview/#architecture-overview"><span class="std std-ref">overview</span></a> for more background.</p>
 </div>
-<p>In order to get you started on your more ambitious projects, we compiled a list of how-to tutorials that guide you through some of Jina’s more advanced features. Happy coding!</p>
 <section id="executor">
 <h2>Executor<a class="headerlink" href="#executor" title="Permalink to this heading">#</a></h2>
 <p>On top of the <a class="reference internal" href="../fundamentals/executor/#executor-cookbook"><span class="std std-ref">basics</span></a>, the <a class="reference internal" href="../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> has a few more tricks up its sleeve.</p>
 <p><br />
-<strong>Scaling out</strong>: In many scenarios, running a single Executor for a given task is just not enough. Whether you need more
-throughput or to partition your data, we’ve got you covered. <a class="reference internal" href="scale-out/#scale-out"><span class="std std-ref">This tutorial</span></a> will show you how to
-easily scale out using Jina.</p>
+<strong>Scaling out</strong>: Often, running a single Executor for a given task is just not enough.
+<a class="reference internal" href="scale-out/#scale-out"><span class="std std-ref">This tutorial</span></a> covers
+scaling out using Jina, including increasing throughput and partitioning data.</p>
 <p><br />
 <strong>Executors on GPU</strong>: Machine Learning models are only as fast as the metal they run on, and for maximum performance you
-want that metal to be a GPU. For a guide on how to run Executors on GPU and accelerate your code, see
+want that metal to be a GPU. To run Executors on GPU and accelerate your code, see
 <a class="reference internal" href="gpu-executor/#gpu-executor"><span class="std std-ref">this tutorial</span></a>.</p>
 <p><br />
-<strong>External Executors</strong>: Executors need not be tied to a specific Flow. If you want to learn how to spawn Executors on
+<strong>External Executors</strong>: Executors don’t need to be tied to a specific Flow. If you want to spawn Executors on
 their own, use them in various Flows, even from a different machine or from inside a Docker container, then follow along
 <a class="reference internal" href="external-executor/#external-executor"><span class="std std-ref">here</span></a>.</p>
 </section>
 <section id="deployment">
 <h2>Deployment<a class="headerlink" href="#deployment" title="Permalink to this heading">#</a></h2>
-<p>Once you have built your search app using Jina, naturally you want to deploy it. Luckily, Jina plays nice with your
-favorite tools for the job.</p>
+<p>Once you’ve built your search app using Jina, you want to deploy it. Jina plays nice with your
+favorite tools for the job:</p>
 <p><br />
-<strong>Docker Compose</strong>: If you want to learn about Jina’s native support for Docker Compose, including deployment, look no
-further than <a class="reference internal" href="docker-compose/#docker-compose"><span class="std std-ref">this guide</span></a>.</p>
+<strong>Docker Compose</strong>: To learn about Jina’s native support for Docker Compose, including deployment,
+check <a class="reference internal" href="docker-compose/#docker-compose"><span class="std std-ref">this guide</span></a>.</p>
 <p><br />
-<strong>Kubernetes</strong>: If your weapon of choice is Kubernetes then fear not, because it is supported by Jina natively. How you
-can put that into practice you can find <a class="reference internal" href="kubernetes/#kubernetes"><span class="std std-ref">here</span></a>.</p>
+<strong>Kubernetes</strong>: Jina supports Kubernetes natively. Check the guide <a class="reference internal" href="kubernetes/#kubernetes"><span class="std std-ref">here</span></a>.</p>
 <div class="toctree-wrapper compound">
 </div>
 </section>
@@ -458,7 +453,7 @@ can put that into practice you can find <a class="reference internal" href="kube
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

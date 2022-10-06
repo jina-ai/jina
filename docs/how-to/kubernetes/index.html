@@ -276,8 +276,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +296,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -560,6 +558,10 @@ Jina’s own <a class="reference internal" href="../../fundamentals/flow/when-th
 <p>Instead, you may want to disable Jina level retries by setting <code class="docutils literal notranslate"><span class="pre">Flow(retries=0)</span></code> in Python, or <code class="docutils literal notranslate"><span class="pre">retries:</span> <span class="pre">0</span></code> in the Flow
 YAML <code class="docutils literal notranslate"><span class="pre">with</span></code> block.</p>
 </div>
+<div class="caution admonition">
+<p class="admonition-title">Matching jina versions</p>
+<p>If you change the Docker images in your Docker Compose generated file, ensure that all the services included in the gateway are built with the same Jina version to guarantee compatibility.</p>
+</div>
 </section>
 <section id="deploy-your-flow-with-shards-and-replicas">
 <h3>Deploy your Flow with shards and replicas<a class="headerlink" href="#deploy-your-flow-with-shards-and-replicas" title="Permalink to this heading">#</a></h3>
@@ -713,7 +715,7 @@ Finally, it prints the uri of the closest matches.</p>
 <div class="seealso admonition">
 <p class="admonition-title">Other patching options</p>
 <p>Within Kubernetes, Executors are ordinary Deployments.
-This means that you can use other pathing options provided by Kubernetes:</p>
+This means that you can use other patching options provided by Kubernetes:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">replace</span></code> to replace an Executor using a complete configuration file</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">patch</span></code> to patch an Executor using only a partial configuration file</p></li>
@@ -772,7 +774,7 @@ This means that you can use other pathing options provided by Kubernetes:</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

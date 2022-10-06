@@ -60,7 +60,7 @@ python client.py
 ::::{grid-item-card} {octicon}`cross-reference;1.5em` Learn DocArray API
 :link: https://docarray.jina.ai
 
-DocArray is the foundational data structure of Jina. Before starting Jina, first learn DocArray to quickly build a POC. 
+DocArray is the foundational data structure of Jina. Before starting Jina, first learn DocArray to quickly build a PoC. 
 ::::
 
 ::::{grid-item-card} {octicon}`gear;1.5em` Understand Executor
@@ -101,7 +101,7 @@ JCloud is a free CPU/GPU hosting platform for Jina projects.
 
 
 
-::::{grid-item-card} {octicon}`squirrel;1.5em` Read more in-depth tutorials
+::::{grid-item-card} {octicon}`squirrel;1.5em` Read in-depth tutorials
 :link: how-to/index
 :link-type: doc
 
@@ -150,7 +150,7 @@ how-to/index
 
 
 ```{toctree}
-:caption: Developer References
+:caption: Developer Reference
 :hidden:
 :maxdepth: 1
 

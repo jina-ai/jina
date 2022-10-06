@@ -274,8 +274,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -296,7 +294,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -440,6 +438,52 @@
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="jina.jaml.parsers.base.BaseLegacyParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jina.jaml.parsers.base.</span></span><span class="sig-name descname"><span class="pre">BaseLegacyParser</span></span><a class="reference internal" href="../../_modules/jina/jaml/parsers/base/#BaseLegacyParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jina.jaml.parsers.base.BaseLegacyParser" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#jina.jaml.parsers.base.VersionedYAMLParser" title="jina.jaml.parsers.base.VersionedYAMLParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionedYAMLParser</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>BaseLegacyParser for classes that need parameter injection and that will be managed inside a runtime
+for instance, <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseGateway</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.jaml.parsers.base.BaseLegacyParser.dump">
+<span class="sig-name descname"><span class="pre">dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.jaml.parsers.base.BaseLegacyParser.dump" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the dictionary given a versioned flow object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow" title="jina.orchestrate.flow.base.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>, <a class="reference internal" href="../jina.serve.executors/#jina.serve.executors.BaseExecutor" title="jina.serve.executors.BaseExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code></a>]) – versioned flow object</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jina.jaml.parsers.base.BaseLegacyParser.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#jina.jaml.parsers.base.BaseLegacyParser.parse" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the Flow YAML parser given the syntax version number</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cls</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code>) – target class type to parse into, must be a <code class="xref py py-class docutils literal notranslate"><span class="pre">JAMLCompatible</span></code> type</p></li>
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>) – flow yaml file loaded as python dict</p></li>
+<li><p><strong>runtime_args</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]) – Optional runtime_args to be directly passed without being parsed into a yaml config</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../jina.orchestrate.flow.base/#jina.orchestrate.flow.base.Flow" title="jina.orchestrate.flow.base.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>, <a class="reference internal" href="../jina.serve.executors/#jina.serve.executors.BaseExecutor" title="jina.serve.executors.BaseExecutor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseExecutor</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="jina.jaml.parsers.base.BaseLegacyParser.version">
+<span class="sig-name descname"><span class="pre">version</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'legacy'</span></em><a class="headerlink" href="#jina.jaml.parsers.base.BaseLegacyParser.version" title="Permalink to this definition">#</a></dt>
+<dd><p>the version number this parser designed for</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
                 </article>
@@ -455,7 +499,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -492,6 +536,12 @@
 <li><a class="reference internal" href="#jina.jaml.parsers.base.VersionedYAMLParser.version"><code class="docutils literal notranslate"><span class="pre">VersionedYAMLParser.version</span></code></a></li>
 <li><a class="reference internal" href="#jina.jaml.parsers.base.VersionedYAMLParser.parse"><code class="docutils literal notranslate"><span class="pre">VersionedYAMLParser.parse()</span></code></a></li>
 <li><a class="reference internal" href="#jina.jaml.parsers.base.VersionedYAMLParser.dump"><code class="docutils literal notranslate"><span class="pre">VersionedYAMLParser.dump()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#jina.jaml.parsers.base.BaseLegacyParser"><code class="docutils literal notranslate"><span class="pre">BaseLegacyParser</span></code></a><ul>
+<li><a class="reference internal" href="#jina.jaml.parsers.base.BaseLegacyParser.dump"><code class="docutils literal notranslate"><span class="pre">BaseLegacyParser.dump()</span></code></a></li>
+<li><a class="reference internal" href="#jina.jaml.parsers.base.BaseLegacyParser.parse"><code class="docutils literal notranslate"><span class="pre">BaseLegacyParser.parse()</span></code></a></li>
+<li><a class="reference internal" href="#jina.jaml.parsers.base.BaseLegacyParser.version"><code class="docutils literal notranslate"><span class="pre">BaseLegacyParser.version</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -94,9 +94,20 @@ f = Flow(extra_search_paths=['../executor']).add(uses='config1.yml').add(uses='c
 (external-executors)=
 ## External Executors
 
-Usually a Flow will manage all of its Executors. External Executors are not managed by the current Flow object but by others. For example, one may want to share expensive Executors between Flows. Often these Executors are stateless, GPU based Encoders.
+````{admonition} How-To chapter
+:class: seealso
+For a more detailed look at this feature, see our {ref}`how-to on external Executors <external-executor>`.
+The how-to also covers how to launch an Executor that can then be used as an External Executor in a Flow.
+````
 
-Those Executors are marked with the `external` keyword when added to a `Flow`:
+Usually a Flow starts and stops all of its Executors.
+External Executors are not started and stopped by the current Flow object but by others, which means that they can reside on any machine.
+
+This is useful to share expensive Executors between Flows. Often these Executors are stateless, GPU based Encoders.
+
+Both {ref}`served and shared Executors <serve-executor-standalone>` can be used as external Executors.
+
+When you add such Executor to a Flow, you have to provide a `host` and `port`, and enable the `external` flag:
 
 ```python
 from jina import Flow
@@ -104,7 +115,8 @@ from jina import Flow
 Flow().add(host='123.45.67.89', port=12345, external=True)
 ```
 
-This is adding an external Executor to the Flow. The Flow will not start or stop this Executor and assumes that is externally managed and available at `123.45.67.89:12345`
+This is adding an external Executor to the Flow.
+The Flow will not start or stop this Executor and assumes that it is externally managed and available at `123.45.67.89:12345`.
 
 You can also use external Executors with `tls` enabled.
 

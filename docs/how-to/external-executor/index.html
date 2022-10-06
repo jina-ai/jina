@@ -276,8 +276,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +296,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -414,19 +412,42 @@ it does not need to start the Executor itself.:</p>
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">exec_host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">exec_port</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Alternatively, you can pass the entire network address to the <code class="docutils literal notranslate"><span class="pre">host</span></code> parameter:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;localhost:12345&#39;</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>After that, the external Executor will behave just like an internal one. And you can even add the same Executor to multiple
 Flows!</p>
 <div class="hint admonition">
-<p class="admonition-title">Note</p>
+<p class="admonition-title">Distributed replicas</p>
+<p>In much the same way, you can also add multiple replicas of the same Executor.
+To do this, just specify all the respective hosts and ports:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">replica_hosts</span><span class="p">,</span> <span class="n">replica_ports</span> <span class="o">=</span> <span class="s1">&#39;localhost,91.198.174.192&#39;</span><span class="p">,</span> <span class="s1">&#39;12345,12346&#39;</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">replica_hosts</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">replica_ports</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># alternative syntax</span>
+<span class="c1"># f = Flow().add(host=&#39;localhost:12345,91.198.174.192:12346&#39;, external=True)</span>
+</pre></div>
+</div>
+<p>This will connect to <code class="docutils literal notranslate"><span class="pre">grpc://localhost:12345</span></code> and <code class="docutils literal notranslate"><span class="pre">grpc://91.198.174.192:12346</span></code> as two replicas of the same Executor.</p>
+</div>
+<div class="hint admonition">
+<p class="admonition-title">Reducing</p>
 <p>If an external Executor needs multiple predecessors, reducing needs to be enabled. So setting disable_reduce=True is not allowed for these cases.</p>
 </div>
 </section>
-<section id="starting-standalone-executors">
-<h2>Starting standalone Executors<a class="headerlink" href="#starting-standalone-executors" title="Permalink to this heading">#</a></h2>
+<section id="starting-shared-executors">
+<h2>Starting shared Executors<a class="headerlink" href="#starting-shared-executors" title="Permalink to this heading">#</a></h2>
 <p>The example above assumes that there already is an Executor running, and you just want to access
 it from your Flow.</p>
 <p>You can, however, also start your own standalone Executors, which can then be accessed from anywhere.
-In the following sections we will describe how to run standalone Executors via the Jina command line interface (CLI). For more options to run your Executor, including in Kubernetes and Docker Compose, please read the <a class="reference internal" href="../../fundamentals/executor/executor-serve/#serve-executor-standalone"><span class="std std-ref">Executor API section</span></a>.</p>
+In the following sections we will describe how to run shared Executors via the Jina command line interface (CLI).
+For more options to run your Executor, including in Kubernetes and Docker Compose, please read the <a class="reference internal" href="../../fundamentals/executor/executor-serve/#serve-executor-standalone"><span class="std std-ref">Executor API section</span></a>.</p>
+<p>Though not part of this how-to, <a class="reference internal" href="../../fundamentals/executor/executor-serve/#serve-executor-standalone"><span class="std std-ref">served Executors</span></a> can also be used as external Executors.</p>
 <div class="seealso admonition">
 <p class="admonition-title">Advanced deployment options</p>
 <p>This tutorial walks through the basics of spawing a standalone (external) Executor. For more advanced options, refer to the
@@ -565,7 +586,7 @@ Received: <span class="s2">&quot;Greetings from Flow2&quot;</span>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -599,7 +620,7 @@ Received: <span class="s2">&quot;Greetings from Flow2&quot;</span>
                         <ul>
 <li><a class="reference internal" href="#">Include external Executors in a Flow</a><ul>
 <li><a class="reference internal" href="#adding-external-executors">Adding external Executors</a></li>
-<li><a class="reference internal" href="#starting-standalone-executors">Starting standalone Executors</a></li>
+<li><a class="reference internal" href="#starting-shared-executors">Starting shared Executors</a></li>
 <li><a class="reference internal" href="#using-jina-hub">Using Jina Hub</a></li>
 <li><a class="reference internal" href="#using-a-custom-executor">Using a custom Executor</a></li>
 </ul>

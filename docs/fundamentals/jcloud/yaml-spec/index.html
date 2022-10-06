@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.10.1 Documentation" />
   
-<meta property="og:description" content="YAML specification: Built on top of Flow YAML specification, JCloud YAML extends it by introducing a special field jcloud. With it, one can define resources and scaling policies for each Executor and Gateway. Here’s a Flow with 2 Executors with specific resource needs. indexer demands for 10G ebs..." />
+<meta property="og:description" content="YAML specification: JCloud extends Jina’s Flow YAML specification by introducing the special field jcloud. This lets you define resources and scaling policies for each Executor and gateway. Here’s a Flow with two Executors that have specific resource needs. indexer demands 10G ebs disk, whereas e..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_images/external-executor.png" />
   
@@ -276,8 +276,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">JCloud</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -298,7 +296,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -389,33 +387,33 @@
                 <article role="main">
                     <section id="svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-file-code-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m4-1-75c4-784-4-784-0-5-75-0h5-586c-464-0-909-184-1-237-513l2-914-2-914c-329-328-513-773-513-1-237v8-586a1-75-1-75-0-0114-25-15h-9a-75-75-0-010-1-5h9a-25-25-0-00-25-25v6h-2-75a1-75-1-75-0-0110-4-25v1-5h5-75a-25-25-0-00-25-25v2-5a-75-75-0-01-1-5-0v-2-5zm7-5-188v4-25c0-138-112-25-25-25h2-688a-252-252-0-00-011-013l-2-914-2-914a-272-272-0-00-013-011zm5-72-6-72a-75-75-0-000-1-06l1-47-1-47-1-47-1-47a-75-75-0-101-06-1-06l2-2a-75-75-0-000-1-06l-2-2a-75-75-0-00-1-06-0zm3-28-7-78a-75-75-0-00-1-06-1-06l-2-2a-75-75-0-000-1-06l2-2a-75-75-0-001-06-1-06l1-81-9-25l1-47-1-47z-path-svg-yaml-specification">
 <span id="jcloud-yaml-spec"></span><h1><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-file-code" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z"></path></svg> YAML specification<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-file-code-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m4-1-75c4-784-4-784-0-5-75-0h5-586c-464-0-909-184-1-237-513l2-914-2-914c-329-328-513-773-513-1-237v8-586a1-75-1-75-0-0114-25-15h-9a-75-75-0-010-1-5h9a-25-25-0-00-25-25v6h-2-75a1-75-1-75-0-0110-4-25v1-5h5-75a-25-25-0-00-25-25v2-5a-75-75-0-01-1-5-0v-2-5zm7-5-188v4-25c0-138-112-25-25-25h2-688a-252-252-0-00-011-013l-2-914-2-914a-272-272-0-00-013-011zm5-72-6-72a-75-75-0-000-1-06l1-47-1-47-1-47-1-47a-75-75-0-101-06-1-06l2-2a-75-75-0-000-1-06l-2-2a-75-75-0-00-1-06-0zm3-28-7-78a-75-75-0-00-1-06-1-06l-2-2a-75-75-0-000-1-06l2-2a-75-75-0-001-06-1-06l1-81-9-25l1-47-1-47z-path-svg-yaml-specification" title="Permalink to this heading">#</a></h1>
-<p>Built on top of <a class="reference internal" href="../../flow/yaml-spec/#flow-yaml-spec"><span class="std std-ref">Flow YAML specification</span></a>, JCloud YAML extends it by introducing a special field <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>. With it, one can define resources and scaling policies for each Executor and Gateway.</p>
-<p>Here’s a Flow with 2 Executors with specific resource needs. <code class="docutils literal notranslate"><span class="pre">indexer</span></code> demands for 10G <code class="docutils literal notranslate"><span class="pre">ebs</span></code> disk, whereas <code class="docutils literal notranslate"><span class="pre">encoder</span></code> demands for 2 cores, 8G RAM &amp; 2 dedicated GPUs.</p>
+<p>JCloud extends Jina’s <a class="reference internal" href="../../flow/yaml-spec/#flow-yaml-spec"><span class="std std-ref">Flow YAML specification</span></a> by introducing the special field <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>. This lets you define resources and scaling policies for each Executor and gateway.</p>
+<p>Here’s a Flow with two Executors that have specific resource needs. <code class="docutils literal notranslate"><span class="pre">indexer</span></code> demands 10G <code class="docutils literal notranslate"><span class="pre">ebs</span></code> disk, whereas <code class="docutils literal notranslate"><span class="pre">encoder</span></code> demands two cores, 8G RAM and two dedicated GPUs.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer</span><span class="w"></span>
-<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Indexer</span><span class="w"></span>
-<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
-</span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
-</span><span class="hll"><span class="w">        </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span>
-</span><span class="hll"><span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ebs</span><span class="w"></span>
-</span><span class="hll"><span class="w">          </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10G</span><span class="w"></span>
-</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">encoder</span><span class="w"></span>
 <span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Encoder</span><span class="w"></span>
 <span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
 </span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
 </span><span class="hll"><span class="w">        </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
 </span><span class="hll"><span class="w">        </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8G</span><span class="w"></span>
 </span><span class="hll"><span class="w">        </span><span class="nt">gpu</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"></span>
+</span><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">indexer</span><span class="w"></span>
+<span class="w">    </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jinahub+docker://Indexer</span><span class="w"></span>
+<span class="hll"><span class="w">    </span><span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w"></span>
+</span><span class="hll"><span class="w">        </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span>
+</span><span class="hll"><span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ebs</span><span class="w"></span>
+</span><span class="hll"><span class="w">          </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10G</span><span class="w"></span>
 </span></pre></div>
 </div>
-<section id="allocate-resources-for-executors">
-<h2>Allocate resources for Executors<a class="headerlink" href="#allocate-resources-for-executors" title="Permalink to this heading">#</a></h2>
-<p>Since each Executor has its own business logic, it might require different Cloud resources. One might need a higher RAM, whereas another might need a bigger disk.</p>
-<p>In JCloud, we allow users to pass highly customizable, fine-grained resource requests for each Executor using <code class="docutils literal notranslate"><span class="pre">jcloud.resources</span></code> argument in your Flow YAML.</p>
+<section id="allocate-executor-resources">
+<h2>Allocate Executor resources<a class="headerlink" href="#allocate-executor-resources" title="Permalink to this heading">#</a></h2>
+<p>Since each Executor has its own business logic, it may require different cloud resources. One Executor might need more RAM, whereas another might need a bigger disk.</p>
+<p>In JCloud, you can pass highly customizable, finely-grained resource requests for each Executor using the <code class="docutils literal notranslate"><span class="pre">jcloud.resources</span></code> argument in your Flow YAML.</p>
 <section id="cpu">
 <h3>CPU<a class="headerlink" href="#cpu" title="Permalink to this heading">#</a></h3>
-<p>By default, <code class="docutils literal notranslate"><span class="pre">0.1</span> <span class="pre">(1/10</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">core)</span></code> CPU is allocated to each Executor. You can use <code class="docutils literal notranslate"><span class="pre">cpu</span></code> arg under <code class="docutils literal notranslate"><span class="pre">resources</span></code> to customise it.</p>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">0.1</span> <span class="pre">(1/10</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">core)</span></code> CPU is allocated to each Executor. You can use the <code class="docutils literal notranslate"><span class="pre">cpu</span></code> argument under <code class="docutils literal notranslate"><span class="pre">resources</span></code> to change it.</p>
 <p>JCloud offers the general Intel Xeon processor (Skylake 8175M or Cascade Lake 8259CL) by default.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
@@ -441,8 +439,8 @@
 </div>
 <section id="shared-gpu">
 <h4>Shared GPU<a class="headerlink" href="#shared-gpu" title="Permalink to this heading">#</a></h4>
-<p>An executor using a <code class="docutils literal notranslate"><span class="pre">shared</span></code> GPU shares this GPU with up to 4 other Executors.
-This enables a time-slicing, which allows workloads that land on oversubscribed GPUs to interleave with one another.</p>
+<p>An Executor using a <code class="docutils literal notranslate"><span class="pre">shared</span></code> GPU shares this GPU with up to four other Executors.
+This enables time-slicing, which allows workloads that land on oversubscribed GPUs to interleave with one another.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
@@ -454,12 +452,12 @@ This enables a time-slicing, which allows workloads that land on oversubscribed 
 </div>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
-<p>The tradeoffs with <code class="docutils literal notranslate"><span class="pre">shared</span></code> GPU are increased latency, jitter, and potential out-of-memory (OOM) conditions when many different applications are time-slicing on the GPU. If your application is memory consuming, we suggest using a dedicated GPU.</p>
+<p>The tradeoffs with a <code class="docutils literal notranslate"><span class="pre">shared</span></code> GPU are increased latency, jitter, and potential out-of-memory (OOM) conditions when many different applications are time-slicing on the GPU. If your application is memory consuming, we suggest using a dedicated GPU.</p>
 </div>
 </section>
 <section id="dedicated-gpu">
 <h4>Dedicated GPU<a class="headerlink" href="#dedicated-gpu" title="Permalink to this heading">#</a></h4>
-<p>Using a dedicated GPU is the default way to provision GPU for the Executor. This will automatically create nodes or assign the Executor to land on a GPU node. In this case, executor owns the whole GPU. You can assign between 1 and 4 GPUs.</p>
+<p>Using a dedicated GPU is the default way to provision GPU for an Executor. This automatically creates nodes or assigns the Executor to land on a GPU node. In this case, the Executor owns the whole GPU. You can assign between 1 and 4 GPUs.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
@@ -473,7 +471,7 @@ This enables a time-slicing, which allows workloads that land on oversubscribed 
 </section>
 <section id="spot-vs-on-demand-instance">
 <h3>Spot vs on-demand instance<a class="headerlink" href="#spot-vs-on-demand-instance" title="Permalink to this heading">#</a></h3>
-<p>For cost optimization, <code class="docutils literal notranslate"><span class="pre">jcloud</span></code> tries to deploy all Executors on <code class="docutils literal notranslate"><span class="pre">spot</span></code> capacity. These are ideal for stateless Executors, which can withstand interruptions &amp; restarts. It is recommended to use <code class="docutils literal notranslate"><span class="pre">on-demand</span></code> capacity for stateful Executors (e.g.- indexers) though.</p>
+<p>For cost optimization, JCloud tries to deploy all Executors on <code class="docutils literal notranslate"><span class="pre">spot</span></code> capacity. This is ideal for stateless Executors, which can withstand interruptions and restarts. It is recommended to use <code class="docutils literal notranslate"><span class="pre">on-demand</span></code> capacity for stateful Executors (e.g. indexers) however.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
@@ -485,7 +483,7 @@ This enables a time-slicing, which allows workloads that land on oversubscribed 
 </section>
 <section id="memory">
 <h3>Memory<a class="headerlink" href="#memory" title="Permalink to this heading">#</a></h3>
-<p>By default, <code class="docutils literal notranslate"><span class="pre">100M</span></code> of RAM is allocated to each Executor. You can use <code class="docutils literal notranslate"><span class="pre">memory</span></code> arg under <code class="docutils literal notranslate"><span class="pre">resources</span></code> to customise it.</p>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">100M</span></code> of RAM is allocated to each Executor. You can use the <code class="docutils literal notranslate"><span class="pre">memory</span></code> argument under <code class="docutils literal notranslate"><span class="pre">resources</span></code> to change it.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>Maximum of 16G RAM is allowed per Executor.</p>
@@ -502,22 +500,22 @@ This enables a time-slicing, which allows workloads that land on oversubscribed 
 </section>
 <section id="storage">
 <h3>Storage<a class="headerlink" href="#storage" title="Permalink to this heading">#</a></h3>
-<p>JCloud supports 2 kinds of Storage types <a class="reference external" href="https://aws.amazon.com/efs/">efs</a> (default) and <a class="reference external" href="https://aws.amazon.com/ebs/">ebs</a>. The former one is a network file storage, whereas the latter is a block device.</p>
+<p>JCloud supports two kinds of storage types: <a class="reference external" href="https://aws.amazon.com/efs/">efs</a> (default) and <a class="reference external" href="https://aws.amazon.com/ebs/">ebs</a>. The former is a network file storage, whereas the latter is a block device.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>By default, we attach an <code class="docutils literal notranslate"><span class="pre">efs</span></code> to all the Executors in a Flow. The benefits of doing so are</p>
+<p>By default, we attach an <code class="docutils literal notranslate"><span class="pre">efs</span></code> to all Executors in a Flow. The benefits of doing so are:</p>
 <ul class="simple">
-<li><p>It can grow in size dynamically, so you don’t need to shrink/grow volumes as &amp; when necessary.</p></li>
+<li><p>It can grow dynamically, so you don’t need to shrink/grow volumes as and when necessary.</p></li>
 <li><p>All Executors in the Flow can share a disk.</p></li>
 <li><p>The same disk can also be shared with another Flow by passing a workspace-id while deploying a Flow.</p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jc deploy flow.yml --workspace-id &lt;prev-flow-id&gt;
 </pre></div>
 </div>
-<p>If your Executor needs high IO, you can use <code class="docutils literal notranslate"><span class="pre">ebs</span></code> instead. Please note that,</p>
+<p>If your Executor needs high IO, you can use <code class="docutils literal notranslate"><span class="pre">ebs</span></code> instead. Please note that:</p>
 <ul class="simple">
-<li><p>The disk cannot be shared with other Executors / Flows.</p></li>
-<li><p>You must pass a size of storage (default: <code class="docutils literal notranslate"><span class="pre">1G</span></code>, max <code class="docutils literal notranslate"><span class="pre">10G</span></code>).</p></li>
+<li><p>The disk cannot be shared with other Executors or Flows.</p></li>
+<li><p>You must pass a storage size parameter (default: <code class="docutils literal notranslate"><span class="pre">1G</span></code>, max <code class="docutils literal notranslate"><span class="pre">10G</span></code>).</p></li>
 </ul>
 </div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
@@ -544,7 +542,7 @@ This enables a time-slicing, which allows workloads that land on oversubscribed 
 <p>On JCloud, demand-based autoscaling functionality is naturally offered thanks to the underlying Kubernetes architecture. This means that you can maintain <a class="reference external" href="https://en.wikipedia.org/wiki/Serverless_computing">serverless</a> deployments in a cost-effective way with no headache of setting the <a class="reference external" href="https://docs.jina.ai/how-to/scale-out/#scale-out-your-executor">right number of replicas</a> anymore!</p>
 <section id="autoscaling-with-jinahub-serveless">
 <h3>Autoscaling with <code class="docutils literal notranslate"><span class="pre">jinahub+serveless://</span></code><a class="headerlink" href="#autoscaling-with-jinahub-serveless" title="Permalink to this heading">#</a></h3>
-<p>The easiest way to scale out your Executor is to use Serverless Executor. This can be enabled by simply use <code class="docutils literal notranslate"><span class="pre">jinahub+serverless://</span></code> instead of <code class="docutils literal notranslate"><span class="pre">jinahub+docker://</span></code> in Executor’s <code class="docutils literal notranslate"><span class="pre">uses</span></code>, such as:</p>
+<p>The easiest way to scale out your Executor is to use a Serverless Executor. This can be enabled by using <code class="docutils literal notranslate"><span class="pre">jinahub+serverless://</span></code> instead of <code class="docutils literal notranslate"><span class="pre">jinahub+docker://</span></code> in Executor’s <code class="docutils literal notranslate"><span class="pre">uses</span></code>, such as:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
@@ -554,12 +552,12 @@ This enables a time-slicing, which allows workloads that land on oversubscribed 
 <p>JCloud autoscaling leverages <a class="reference external" href="https://knative.dev/docs/">Knative</a> behind the scenes, and <code class="docutils literal notranslate"><span class="pre">jinahub+serverless</span></code> uses a set of Knative configurations as defaults.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>For more information about the Knative Autoscaling configurations, please visit <a class="reference external" href="https://knative.dev/docs/serving/autoscaling/">Knative Autoscaling</a>.</p>
+<p>For more information about the Knative autoscaling configurations, please visit <a class="reference external" href="https://knative.dev/docs/serving/autoscaling/">Knative autoscaling</a>.</p>
 </div>
 </section>
 <section id="scale-out-manually">
 <h3>Scale-out manually<a class="headerlink" href="#scale-out-manually" title="Permalink to this heading">#</a></h3>
-<p>If <code class="docutils literal notranslate"><span class="pre">jinahub+serverless://</span></code> doesn’t meet your requirements, you can further customize Autoscaling configurations by using the <code class="docutils literal notranslate"><span class="pre">autoscale</span></code> argument on a per-Executor basis in the Flow YAML, such as:</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">jinahub+serverless://</span></code> doesn’t meet your requirements, you can further customize autoscaling configurations by using the <code class="docutils literal notranslate"><span class="pre">autoscale</span></code> argument on a per-Executor basis in the Flow YAML, such as:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">executors</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor1</span><span class="w"></span>
@@ -586,7 +584,7 @@ This enables a time-slicing, which allows workloads that land on oversubscribed 
 <tr class="row-even"><td><p>min</p></td>
 <td><p>1</p></td>
 <td><p>int</p></td>
-<td><p>Minimum number of replicas (0 means serverless)</p></td>
+<td><p>Minimum number of replicas (<code class="docutils literal notranslate"><span class="pre">0</span></code> means serverless)</p></td>
 </tr>
 <tr class="row-odd"><td><p>max</p></td>
 <td><p>2</p></td>
@@ -606,21 +604,20 @@ This enables a time-slicing, which allows workloads that land on oversubscribed 
 </tbody>
 </table>
 </div>
-<p>After JCloud deployment using the Autoscaling configurations, the Flow serving part is just the same; the only difference you would probably notice is it may take extra seconds
-to handle the initial requests since it may need to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you should only worry about the code!</p>
+<p>After JCloud deployment using the autoscaling configuration, the Flow serving part is just the same; the only difference you may notice is it takes a few extra seconds to handle the initial requests since it needs to scale the deployments behind the scenes. Let JCloud handle the scaling from now on, and you should only worry about the code!</p>
 </section>
 </section>
-<section id="config-gateway">
-<h2>Config Gateway<a class="headerlink" href="#config-gateway" title="Permalink to this heading">#</a></h2>
-<p>To expose users’ Flows to the public Internet with TLS, JCloud provides support Ingress Gateways.</p>
+<section id="configure-gateway">
+<h2>Configure gateway<a class="headerlink" href="#configure-gateway" title="Permalink to this heading">#</a></h2>
+<p>JCloud provides support Ingress gateways to expose your Flows to the public internet with TLS.</p>
 <p>In JCloud. We use <a class="reference external" href="https://letsencrypt.org/">Let’s Encrypt</a> for TLS.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>The JCloud gateway is different from Jina’s Gateway. In JCloud, a gateway works as a proxy to distribute internet traffic between Flows, each of which has a Jina Gateway (which is responsible for managing external gRPC/HTTP/Websocket traffic to your Executors)</p>
+<p>The JCloud gateway is different from Jina’s gateway. In JCloud, a gateway works as a proxy to distribute internet traffic between Flows, each of which has a Jina gateway (which is responsible for managing external gRPC/HTTP/Websocket traffic to your Executors)</p>
 </div>
 <section id="set-timeout">
 <h3>Set timeout<a class="headerlink" href="#set-timeout" title="Permalink to this heading">#</a></h3>
-<p>By default, JCloud gateway will close connections that have been idle for over <code class="docutils literal notranslate"><span class="pre">600</span></code> seconds. If you want longer connection timeout threshold, you can consider changing the <code class="docutils literal notranslate"><span class="pre">timeout</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">gateway</span></code>.</p>
+<p>By default, the JCloud gateway will close connections that have been idle for over 600 seconds. If you want longer a connection timeout threshold, you can change the <code class="docutils literal notranslate"><span class="pre">timeout</span></code> parameter under <code class="docutils literal notranslate"><span class="pre">gateway</span></code>.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
@@ -631,9 +628,9 @@ to handle the initial requests since it may need to scale the deployments behind
 </pre></div>
 </div>
 </section>
-<section id="control-resources-of-the-gateway">
-<h3>Control resources of the Gateway<a class="headerlink" href="#control-resources-of-the-gateway" title="Permalink to this heading">#</a></h3>
-<p>If you’d like to customize the Gateway’s CPU or memory, <code class="docutils literal notranslate"><span class="pre">memory</span></code> / <code class="docutils literal notranslate"><span class="pre">cpu</span></code> arg needs to be specified under <code class="docutils literal notranslate"><span class="pre">jcloud.gateway.resources</span></code> as follows:</p>
+<section id="control-gateway-resources">
+<h3>Control gateway resources<a class="headerlink" href="#control-gateway-resources" title="Permalink to this heading">#</a></h3>
+<p>If you’d like to customize the gateway’s CPU or memory, you can specify the <code class="docutils literal notranslate"><span class="pre">memory</span></code> and/or <code class="docutils literal notranslate"><span class="pre">cpu</span></code> argument under <code class="docutils literal notranslate"><span class="pre">jcloud.gateway.resources</span></code>:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
 <span class="hll"><span class="w">  </span><span class="nt">gateway</span><span class="p">:</span><span class="w"></span>
@@ -647,8 +644,8 @@ to handle the initial requests since it may need to scale the deployments behind
 </div>
 </section>
 <section id="disable-gateway">
-<h3>Disable Gateway<a class="headerlink" href="#disable-gateway" title="Permalink to this heading">#</a></h3>
-<p>A Flow deployment without a Gateway is often used as <a class="reference internal" href="../../flow/add-executors/#external-executors"><span class="std std-ref">External Executors</span></a>, which can be shared over different Flows. One can disable Gateway by setting <code class="docutils literal notranslate"><span class="pre">expose_gateway:</span> <span class="pre">false</span></code>:</p>
+<h3>Disable gateway<a class="headerlink" href="#disable-gateway" title="Permalink to this heading">#</a></h3>
+<p>A Flow deployment without a gateway is often used for <a class="reference internal" href="../../flow/add-executors/#external-executors"><span class="std std-ref">External Executors</span></a>, which can be shared over different Flows. You can disable a gateway by setting <code class="docutils literal notranslate"><span class="pre">expose_gateway:</span> <span class="pre">false</span></code>:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
 <span class="hll"><span class="w">  </span><span class="nt">expose_gateway</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
@@ -660,7 +657,7 @@ to handle the initial requests since it may need to scale the deployments behind
 <figure class="align-default">
 <a class="reference internal image-reference" href="../../../_images/external-executor.png"><img alt="../../../_images/external-executor.png" src="../../../_images/external-executor.png" style="width: 70%;" /></a>
 </figure>
-<p>You can also deploy &amp; expose multiple External Executors.</p>
+<p>You can also deploy and expose multiple external Executors:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">expose_gateway</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
@@ -680,7 +677,7 @@ to handle the initial requests since it may need to scale the deployments behind
 <h2>Other deployment options<a class="headerlink" href="#other-deployment-options" title="Permalink to this heading">#</a></h2>
 <section id="specify-jina-version">
 <h3>Specify Jina version<a class="headerlink" href="#specify-jina-version" title="Permalink to this heading">#</a></h3>
-<p>To control Jina’s version while deploying a Flow to <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>, you can pass <code class="docutils literal notranslate"><span class="pre">version</span></code> arg in the Flow yaml.</p>
+<p>To control Jina’s version while deploying a Flow to <code class="docutils literal notranslate"><span class="pre">jcloud</span></code>, you can pass the <code class="docutils literal notranslate"><span class="pre">version</span></code> argument in the Flow YAML:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.4.11</span><span class="w"></span>
@@ -692,7 +689,7 @@ to handle the initial requests since it may need to scale the deployments behind
 </section>
 <section id="add-labels">
 <h3>Add Labels<a class="headerlink" href="#add-labels" title="Permalink to this heading">#</a></h3>
-<p>You can use <code class="docutils literal notranslate"><span class="pre">labels</span></code> (as key-value pairs) to attach metadata to your Flows.</p>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">labels</span></code> (as key-value pairs) to attach metadata to your Flows:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">jcloud</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"> </span>
@@ -705,15 +702,15 @@ to handle the initial requests since it may need to scale the deployments behind
 </div>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>Keys in <code class="docutils literal notranslate"><span class="pre">labels</span></code> have the following restrictions.</p>
+<p>Keys in <code class="docutils literal notranslate"><span class="pre">labels</span></code> have the following restrictions:</p>
 <ul class="simple">
-<li><p>Must be 63 characters or less.</p></li>
+<li><p>Must be 63 characters or fewer.</p></li>
 <li><p>Must begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and alphanumerics between.</p></li>
-<li><p>Following keys are skipped if passed in the Flow YAML.</p>
+<li><p>The following keys are skipped if passed in the Flow YAML.</p>
 <ul>
-<li><p>user</p></li>
-<li><p>jina-version</p></li>
-<li><p>retention-days</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">user</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">jina</span></code>-version</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">retention</span></code>-days</p></li>
 </ul>
 </li>
 </ul>
@@ -753,7 +750,7 @@ to handle the initial requests since it may need to scale the deployments behind
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -786,7 +783,7 @@ to handle the initial requests since it may need to scale the deployments behind
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-file-code" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z"></path></svg> YAML specification</a><ul>
-<li><a class="reference internal" href="#allocate-resources-for-executors">Allocate resources for Executors</a><ul>
+<li><a class="reference internal" href="#allocate-executor-resources">Allocate Executor resources</a><ul>
 <li><a class="reference internal" href="#cpu">CPU</a></li>
 <li><a class="reference internal" href="#gpu">GPU</a><ul>
 <li><a class="reference internal" href="#shared-gpu">Shared GPU</a></li>
@@ -803,10 +800,10 @@ to handle the initial requests since it may need to scale the deployments behind
 <li><a class="reference internal" href="#scale-out-manually">Scale-out manually</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#config-gateway">Config Gateway</a><ul>
+<li><a class="reference internal" href="#configure-gateway">Configure gateway</a><ul>
 <li><a class="reference internal" href="#set-timeout">Set timeout</a></li>
-<li><a class="reference internal" href="#control-resources-of-the-gateway">Control resources of the Gateway</a></li>
-<li><a class="reference internal" href="#disable-gateway">Disable Gateway</a></li>
+<li><a class="reference internal" href="#control-gateway-resources">Control gateway resources</a></li>
+<li><a class="reference internal" href="#disable-gateway">Disable gateway</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#other-deployment-options">Other deployment options</a><ul>

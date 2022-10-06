@@ -276,8 +276,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +296,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -586,6 +584,22 @@ The Flow will then assign each available GPU to replicas in a round-robin fashio
 </table>
 </div>
 </section>
+<section id="distributed-replicas">
+<h2>Distributed replicas<a class="headerlink" href="#distributed-replicas" title="Permalink to this heading">#</a></h2>
+<p>Replicas of the same Executor can run on different machines.</p>
+<p>To add distributed replicas to a Flow, the Executor replicas must be running on their respective machines already.</p>
+<div class="seealso admonition">
+<p class="admonition-title">External Executors</p>
+<p>For more information about starting Executors outside of a Flow, see our <a class="reference internal" href="../../../how-to/external-executor/#external-executor"><span class="std std-ref">how-to on external Executors</span></a>.</p>
+</div>
+<p>Then, you can add them by specifying their hosts, ports, and <code class="docutils literal notranslate"><span class="pre">external=True</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
+
+<span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;localhost:1234,91.198.174.192:12346&#39;</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will connect to <code class="docutils literal notranslate"><span class="pre">grpc://localhost:12345</span></code> and <code class="docutils literal notranslate"><span class="pre">grpc://91.198.174.192:12346</span></code> as two replicas of the same Executor.</p>
+</section>
 <section id="partition-data-with-shards">
 <span id="partition-data-by-using-shards"></span><h2>Partition data with shards<a class="headerlink" href="#partition-data-with-shards" title="Permalink to this heading">#</a></h2>
 <p>Sharding can be used to partition data (like an Index) into several parts. This enables the distribution of data across multiple machines.
@@ -788,7 +802,7 @@ This means that you can not only use this feature to build complex logic, but al
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -823,6 +837,7 @@ This means that you can not only use this feature to build complex logic, but al
 <li><a class="reference internal" href="#">Topology</a><ul>
 <li><a class="reference internal" href="#replicate-executors">Replicate Executors</a></li>
 <li><a class="reference internal" href="#replicate-on-multiple-gpus">Replicate on multiple GPUs</a></li>
+<li><a class="reference internal" href="#distributed-replicas">Distributed replicas</a></li>
 <li><a class="reference internal" href="#partition-data-with-shards">Partition data with shards</a></li>
 <li><a class="reference internal" href="#filter-by-condition">Filter by condition</a></li>
 </ul>

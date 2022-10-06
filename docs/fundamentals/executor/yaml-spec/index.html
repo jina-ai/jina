@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.10.1 Documentation" />
   
-<meta property="og:description" content="YAML specification: This page outlines the specification for valid Executor YAML files. Such YAML configurations can be used in a Flow via Flow().add(uses='exec.yml'), or loaded directly via Executor.load_config('exec.yml'). Note that Executor YAML configurations always refer back to an Executor ..." />
+<meta property="og:description" content="YAML specification: This page outlines the Executor YAML file specification. Such configurations can be used in a Flow via Flow().add(uses='exec.yml'), or loaded directly via Executor.load_config('exec.yml'). Note that Executor YAML configuration always refers back to an Executor defined in a Pyt..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -276,8 +276,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +296,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -389,12 +387,12 @@
                 <article role="main">
                     <section id="svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-file-code-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m4-1-75c4-784-4-784-0-5-75-0h5-586c-464-0-909-184-1-237-513l2-914-2-914c-329-328-513-773-513-1-237v8-586a1-75-1-75-0-0114-25-15h-9a-75-75-0-010-1-5h9a-25-25-0-00-25-25v6h-2-75a1-75-1-75-0-0110-4-25v1-5h5-75a-25-25-0-00-25-25v2-5a-75-75-0-01-1-5-0v-2-5zm7-5-188v4-25c0-138-112-25-25-25h2-688a-252-252-0-00-011-013l-2-914-2-914a-272-272-0-00-013-011zm5-72-6-72a-75-75-0-000-1-06l1-47-1-47-1-47-1-47a-75-75-0-101-06-1-06l2-2a-75-75-0-000-1-06l-2-2a-75-75-0-00-1-06-0zm3-28-7-78a-75-75-0-00-1-06-1-06l-2-2a-75-75-0-000-1-06l2-2a-75-75-0-001-06-1-06l1-81-9-25l1-47-1-47z-path-svg-yaml-specification">
 <span id="executor-yaml-spec"></span><h1><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-file-code" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z"></path></svg> YAML specification<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-file-code-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m4-1-75c4-784-4-784-0-5-75-0h5-586c-464-0-909-184-1-237-513l2-914-2-914c-329-328-513-773-513-1-237v8-586a1-75-1-75-0-0114-25-15h-9a-75-75-0-010-1-5h9a-25-25-0-00-25-25v6h-2-75a1-75-1-75-0-0110-4-25v1-5h5-75a-25-25-0-00-25-25v2-5a-75-75-0-01-1-5-0v-2-5zm7-5-188v4-25c0-138-112-25-25-25h2-688a-252-252-0-00-011-013l-2-914-2-914a-272-272-0-00-013-011zm5-72-6-72a-75-75-0-000-1-06l1-47-1-47-1-47-1-47a-75-75-0-101-06-1-06l2-2a-75-75-0-000-1-06l-2-2a-75-75-0-00-1-06-0zm3-28-7-78a-75-75-0-00-1-06-1-06l-2-2a-75-75-0-000-1-06l2-2a-75-75-0-001-06-1-06l1-81-9-25l1-47-1-47z-path-svg-yaml-specification" title="Permalink to this heading">#</a></h1>
-<p>This page outlines the specification for valid Executor YAML files.</p>
-<p>Such YAML configurations can be used in a Flow via <code class="docutils literal notranslate"><span class="pre">Flow().add(uses='exec.yml')</span></code>, or loaded directly via <code class="docutils literal notranslate"><span class="pre">Executor.load_config('exec.yml')</span></code>.</p>
-<p>Note that Executor YAML configurations always refer back to an Executor defined in a Python file.</p>
+<p>This page outlines the Executor YAML file specification.</p>
+<p>Such configurations can be used in a Flow via <code class="docutils literal notranslate"><span class="pre">Flow().add(uses='exec.yml')</span></code>, or loaded directly via <code class="docutils literal notranslate"><span class="pre">Executor.load_config('exec.yml')</span></code>.</p>
+<p>Note that Executor YAML configuration always refers back to an Executor defined in a Python file.</p>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h2>
-<p>The following constitutes an example <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> configuration:</p>
+<p>The following is an example <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> configuration:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MyExecutor</span><span class="w"></span>
 <span class="nt">with</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">match_args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>
@@ -402,9 +400,9 @@
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">executor.py</span><span class="w"></span>
 <span class="nt">metas</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Indexer</span><span class="w"></span>
-<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Indexes all documents</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Indexes all Documents</span><span class="w"></span>
 <span class="w">  </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://github.com/janedoe/indexer</span><span class="w"></span>
-<span class="w">  </span><span class="nt">keywords</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;indexer&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;executor&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">keywords</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;indexer&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;executor&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
@@ -412,7 +410,7 @@
 <h2>Keywords<a class="headerlink" href="#keywords" title="Permalink to this heading">#</a></h2>
 <section id="jtype">
 <h3><code class="docutils literal notranslate"><span class="pre">jtype</span></code><a class="headerlink" href="#jtype" title="Permalink to this heading">#</a></h3>
-<p>String specifying the Python type of the Executor. Used to locate the correct class in the Python files given by <code class="docutils literal notranslate"><span class="pre">py_modules</span></code>.</p>
+<p>String specifying the Executor’s Python type. Used to locate the correct class in the Python files given by <code class="docutils literal notranslate"><span class="pre">py_modules</span></code>.</p>
 </section>
 <section id="with">
 <h3><code class="docutils literal notranslate"><span class="pre">with</span></code><a class="headerlink" href="#with" title="Permalink to this heading">#</a></h3>
@@ -420,12 +418,12 @@
 </section>
 <section id="py-modules">
 <h3><code class="docutils literal notranslate"><span class="pre">py_modules</span></code><a class="headerlink" href="#py-modules" title="Permalink to this heading">#</a></h3>
-<p>List of strings defining the Python dependencies of the Executor. Most notably this must include the Python file that contains the Executor definition itself, as well as any other files imported by this.</p>
+<p>List of strings defining the Executor’s Python dependencies. Most notably this must include the Python file containing the Executor definition itself, as well as any other files it imports.</p>
 </section>
 <section id="metas">
 <h3><code class="docutils literal notranslate"><span class="pre">metas</span></code><a class="headerlink" href="#metas" title="Permalink to this heading">#</a></h3>
-<p>Collection containing meta information about the Executor.</p>
-<p>Your executor will also be annoted with this information when publishing to Jina Hub. To get better appeal on Jina Hub, you may want to carefully set the <code class="docutils literal notranslate"><span class="pre">metas</span></code> fields to the correct values:</p>
+<p>Collection containing meta-information about the Executor.</p>
+<p>Your Executor is annotated with this information when publishing to Jina Hub. To get better appeal on Jina Hub, set the <code class="docutils literal notranslate"><span class="pre">metas</span></code> fields to the correct values:</p>
 <ul class="simple">
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">name</span></code></strong>: Human-readable name of the Executor.</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">description</span></code></strong>: Human-readable description of the Executor.</p></li>
@@ -467,7 +465,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -243,8 +243,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/executor/hub/create-hub-executor/">Create</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/executor/hub/push-executor/">Publish</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/executor/hub/use-hub-executor/">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/sandbox/">Sandbox</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../how-to/debug-executor/">Debug</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../fundamentals/jcloud/">JCloud</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -265,7 +263,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Developer References</span></p>
+<p class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../api-rst/"><span class="fab fa-python"></span> Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli/"><svg aria-hidden="true" class="sd-octicon sd-octicon-terminal" height="1.0em" version="1.1" viewbox="0 0 16 16" width="1.0em"><path d="M0 2.75C0 1.784.784 1 1.75 1h12.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0114.25 15H1.75A1.75 1.75 0 010 13.25V2.75zm1.75-.25a.25.25 0 00-.25.25v10.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V2.75a.25.25 0 00-.25-.25H1.75zM7.25 8a.75.75 0 01-.22.53l-2.25 2.25a.75.75 0 11-1.06-1.06L5.44 8 3.72 6.28a.75.75 0 111.06-1.06l2.25 2.25c.141.14.22.331.22.53zm1.5 1.5a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" fill-rule="evenodd"></path></svg> Command-Line Interface</a></li>
@@ -356,22 +354,36 @@
                 <article role="main">
                     <h1>Source code for jina.serve.runtimes.gateway</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">urllib</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
 <span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">__default_host__</span>
+<span class="kn">from</span> <span class="nn">jina.enums</span> <span class="kn">import</span> <span class="n">GatewayProtocolType</span>
+<span class="kn">from</span> <span class="nn">jina.excepts</span> <span class="kn">import</span> <span class="n">PortAlreadyUsed</span>
+<span class="kn">from</span> <span class="nn">jina.helper</span> <span class="kn">import</span> <span class="n">is_port_free</span>
+<span class="kn">from</span> <span class="nn">jina.parsers.helper</span> <span class="kn">import</span> <span class="n">_set_gateway_uses</span>
+<span class="kn">from</span> <span class="nn">jina.serve.gateway</span> <span class="kn">import</span> <span class="n">BaseGateway</span>
 <span class="kn">from</span> <span class="nn">jina.serve.runtimes.asyncio</span> <span class="kn">import</span> <span class="n">AsyncNewLoopRuntime</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.grpc</span> <span class="kn">import</span> <span class="n">GRPCGateway</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.http</span> <span class="kn">import</span> <span class="n">HTTPGateway</span>
+<span class="kn">from</span> <span class="nn">jina.serve.runtimes.gateway.websocket</span> <span class="kn">import</span> <span class="n">WebSocketGateway</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">asyncio</span>
     <span class="kn">import</span> <span class="nn">multiprocessing</span>
     <span class="kn">import</span> <span class="nn">threading</span>
 
 
-<div class="viewcode-block" id="GatewayRuntime"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime">[docs]</a><span class="k">class</span> <span class="nc">GatewayRuntime</span><span class="p">(</span><span class="n">AsyncNewLoopRuntime</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<div class="viewcode-block" id="GatewayRuntime"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime">[docs]</a><span class="k">class</span> <span class="nc">GatewayRuntime</span><span class="p">(</span><span class="n">AsyncNewLoopRuntime</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The Runtime from which the GatewayRuntimes need to inherit</span>
+<span class="sd">    The Gateway Runtime that starts a gateway pod.</span>
+<span class="sd">    The GatewayRuntime is associated with a Gateway class that inherits :class:`~BaseGateway`.</span>
+<span class="sd">    While the Gateway class takes care of server and application logic and serving gRPC/HTTP/Websocket API,</span>
+<span class="sd">    The GatewayRuntime is responsible of instantiating the right Gateway class, injecting right parameters to it and</span>
+<span class="sd">    running/terminating the Gateway object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -386,7 +398,74 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">timeout_send</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span> <span class="o">/=</span> <span class="mf">1e3</span>  <span class="c1"># convert ms to seconds</span>
+        <span class="n">_set_gateway_uses</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">cancel_event</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GatewayRuntime.async_setup"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.async_setup">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The async method setup the runtime.</span>
+
+<span class="sd">        Setup the uvicorn server.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">is_port_free</span><span class="p">(</span><span class="n">__default_host__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">PortAlreadyUsed</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;port:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">uses_with</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses_with</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span> <span class="o">=</span> <span class="n">BaseGateway</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uses</span><span class="p">,</span>
+            <span class="n">uses_with</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">grpc_server_options</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">grpc_server_options</span><span class="p">,</span>
+                <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+                <span class="n">no_debug_endpoints</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_debug_endpoints</span><span class="p">,</span>
+                <span class="n">no_crud_endpoints</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">no_crud_endpoints</span><span class="p">,</span>
+                <span class="n">expose_endpoints</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">expose_endpoints</span><span class="p">,</span>
+                <span class="n">expose_graphql_endpoint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">expose_graphql_endpoint</span><span class="p">,</span>
+                <span class="n">cors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">cors</span><span class="p">,</span>
+                <span class="n">ssl_keyfile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssl_keyfile</span><span class="p">,</span>
+                <span class="n">ssl_certfile</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">ssl_certfile</span><span class="p">,</span>
+                <span class="n">uvicorn_kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">uvicorn_kwargs</span><span class="p">,</span>
+                <span class="n">proxy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">proxy</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">uses_with</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">uses_metas</span><span class="o">=</span><span class="p">{},</span>
+            <span class="n">runtime_args</span><span class="o">=</span><span class="p">{</span>  <span class="c1"># these are not parsed to the yaml config file but are pass directly during init</span>
+                <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">py_modules</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">py_modules</span><span class="p">,</span>
+            <span class="n">extra_search_paths</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">extra_search_paths</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">set_streamer</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span>
+            <span class="n">timeout_send</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout_send</span><span class="p">,</span>
+            <span class="n">metrics_registry</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics_registry</span><span class="p">,</span>
+            <span class="n">runtime_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">setup_server</span><span class="p">()</span></div>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_wait_for_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Do NOT override this method when inheriting from :class:`GatewayPod`&quot;&quot;&quot;</span>
+        <span class="c1"># handle terminate signals</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cancel</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">should_exit</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GatewayRuntime.async_teardown"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.async_teardown">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shutdown the server.&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">async_cancel</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GatewayRuntime.async_cancel"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.async_cancel">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stop the server.&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">stop_server</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GatewayRuntime.async_run_forever"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.async_run_forever">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">async_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Running method of the server.&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">run_server</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GatewayRuntime.is_ready"><a class="viewcode-back" href="../../../../../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime.is_ready">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">protocol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;grpc&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -400,7 +479,11 @@
 <span class="sd">        :return: True if status is ready else False.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="n">protocol</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">protocol</span> <span class="o">==</span> <span class="s1">&#39;grpc&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">protocol</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">or</span> <span class="n">protocol</span> <span class="o">==</span> <span class="n">GatewayProtocolType</span><span class="o">.</span><span class="n">GRPC</span>
+            <span class="ow">or</span> <span class="n">protocol</span> <span class="o">==</span> <span class="s1">&#39;grpc&#39;</span>
+        <span class="p">):</span>
             <span class="n">res</span> <span class="o">=</span> <span class="n">AsyncNewLoopRuntime</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(</span><span class="n">ctrl_address</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -450,7 +533,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Sep 30, 2022</div>
+                            Last updated on Oct 06, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
