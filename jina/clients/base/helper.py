@@ -1,4 +1,5 @@
 import asyncio
+import random
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
@@ -17,11 +18,21 @@ if TYPE_CHECKING:
 class AioHttpClientlet(ABC):
     """aiohttp session manager"""
 
-    def __init__(self, url: str, logger: 'JinaLogger', **kwargs) -> None:
+    def __init__(self, url: str,
+                 logger: 'JinaLogger',
+                 max_attempts: int = 1,
+                 initial_backoff: float = 0.5,
+                 max_backoff: float = 0.1,
+                 backoff_multiplier: float = 1.5,
+                 **kwargs) -> None:
         """HTTP Client to be used with the streamer
 
         :param url: url to send http/websocket request to
         :param logger: jina logger
+        :param max_attempts: Number of sending attempts, including the original request.
+        :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
+        :param max_backoff: The maximum accepted backoff after the exponential incremental delay
+        :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
         :param kwargs: kwargs  which will be forwarded to the `aiohttp.Session` instance. Used to pass headers to requests
         """
         self.url = url
@@ -36,6 +47,10 @@ class AioHttpClientlet(ABC):
             self._session_kwargs['auth'] = kwargs.get('auth')
         if kwargs.get('cookies', None):
             self._session_kwargs['cookies'] = kwargs.get('cookies')
+        self.max_attempts = max_attempts
+        self.initial_backoff = initial_backoff
+        self.max_backoff = max_backoff
+        self.backoff_multiplier = backoff_multiplier
 
     @abstractmethod
     async def send_message(self, **kwargs):
@@ -103,10 +118,19 @@ class HTTPClientlet(AioHttpClientlet):
         req_dict['exec_endpoint'] = req_dict['header']['exec_endpoint']
         if 'target_executor' in req_dict['header']:
             req_dict['target_executor'] = req_dict['header']['target_executor']
-        return await self.session.post(url=self.url, json=req_dict).__aenter__()
+        for retry in range(1, self.max_attempts + 1):
+            try:
+                return await self.session.post(url=self.url, json=req_dict).__aenter__()
+            except:
+                if retry == self.max_attempts:
+                    raise
+                else:
+                    wait_time = random.uniform(0, min(self.initial_backoff*self.backoff_multiplier**(retry-1), self.max_backoff))
+                    await asyncio.sleep(wait_time)
 
-    async def send_dry_run(self):
+    async def send_dry_run(self, **kwargs):
         """Query the dry_run endpoint from Gateway
+        :param kwargs: keyword arguments to make sure compatible API with other clients
         :return: send get message
         """
         return await self.session.get(url=self.url).__aenter__()
@@ -161,14 +185,21 @@ class WebsocketClientlet(AioHttpClientlet):
         :param request: request object
         :return: send request as bytes awaitable
         """
-        try:
-            return await self.websocket.send_bytes(request.SerializeToString())
-        except ConnectionResetError:
-            self.logger.critical(f'server connection closed already!')
+        # we have to send here `retries` information
+        for retry in range(1, self.max_attempts + 1):
+            try:
+                return await self.websocket.send_bytes(request.SerializeToString())
+            except ConnectionResetError:
+                if retry == self.max_attempts:
+                    self.logger.critical(f'server connection closed already!')
+                    raise
+                else:
+                    wait_time = random.uniform(0, min(self.initial_backoff*self.backoff_multiplier**(retry-1), self.max_backoff))
+                    await asyncio.sleep(wait_time)
 
-    async def send_dry_run(self):
+    async def send_dry_run(self, **kwargs):
         """Query the dry_run endpoint from Gateway
-
+        :param kwargs: keyword arguments to make sure compatible API with other clients
         :return: send dry_run as bytes awaitable
         """
 

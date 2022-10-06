@@ -266,12 +266,12 @@ def test_pod_activates_shards():
     'but locally it SHOULD work fine',
 )
 @pytest.mark.parametrize(
-    'protocol, runtime_cls',
+    'protocol, uses',
     [
-        ('grpc', 'GRPCGatewayRuntime'),
+        ('grpc', 'GRPCGateway'),
     ],
 )
-def test_gateway_pod(protocol, runtime_cls, graph_description):
+def test_gateway_pod(protocol, uses, graph_description):
     args = set_gateway_parser().parse_args(
         [
             '--graph-description',
@@ -284,7 +284,7 @@ def test_gateway_pod(protocol, runtime_cls, graph_description):
     )
     with Deployment(args) as p:
         assert len(p.all_args) == 1
-        assert p.all_args[0].runtime_cls == runtime_cls
+        assert p.all_args[0].uses == uses
 
     Deployment(args).start().close()
 

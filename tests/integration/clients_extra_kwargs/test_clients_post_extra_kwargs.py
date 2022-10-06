@@ -8,7 +8,6 @@ from jina.clients import Client
 from jina.excepts import PortAlreadyUsed
 from jina.helper import is_port_free
 from jina.serve.runtimes.gateway.grpc import GRPCGateway
-from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime as _GRPCGatewayRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
 from tests import random_docs
 
@@ -47,40 +46,7 @@ def flow_with_grpc(monkeypatch):
                 options=_get_grpc_server_options(self.grpc_server_options),
             )
 
-    class AlternativeGRPCGatewayRuntime(_GRPCGatewayRuntime):
-        async def async_setup(self):
-            """
-            The async method to setup.
-            Create the gRPC server and expose the port for communication.
-            """
-            if not self.args.proxy and os.name != 'nt':
-                os.unsetenv('http_proxy')
-                os.unsetenv('https_proxy')
-
-            if not (is_port_free(__default_host__, self.args.port)):
-                raise PortAlreadyUsed(f'port:{self.args.port}')
-
-            self.gateway = AlternativeGRPCGateway(
-                name=self.name,
-                grpc_server_options=self.args.grpc_server_options,
-                port=self.args.port,
-                ssl_keyfile=self.args.ssl_keyfile,
-                ssl_certfile=self.args.ssl_certfile,
-            )
-
-            self.gateway.set_streamer(
-                args=self.args,
-                timeout_send=self.timeout_send,
-                metrics_registry=self.metrics_registry,
-                runtime_name=self.name,
-            )
-            await self.gateway.setup_server()
-
-    monkeypatch.setattr(
-        'jina.serve.runtimes.gateway.grpc.GRPCGatewayRuntime',
-        AlternativeGRPCGatewayRuntime,
-    )
-    return Flow(protocol='grpc').add()
+    return Flow(protocol='grpc', uses=AlternativeGRPCGateway).add()
 
 
 def test_client_grpc_kwargs(flow_with_grpc):

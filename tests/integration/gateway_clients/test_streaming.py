@@ -14,9 +14,7 @@ from jina.clients import Client
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
 from jina.serve import networking
-from jina.serve.runtimes.gateway.grpc import GRPCGatewayRuntime
-from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
-from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
+from jina.serve.runtimes.gateway import GatewayRuntime
 
 INPUT_LEN = 4
 INPUT_GEN_SLEEP_TIME = 1
@@ -170,13 +168,7 @@ def create_runtime(graph_dict: Dict, protocol: str, port: int, prefetch: int = 0
     import json
 
     graph_description = json.dumps(graph_dict)
-    runtime_cls = None
-    if protocol == 'grpc':
-        runtime_cls = GRPCGatewayRuntime
-    elif protocol == 'http':
-        runtime_cls = HTTPGatewayRuntime
-    elif protocol == 'websocket':
-        runtime_cls = WebSocketGatewayRuntime
+
     args = set_gateway_parser().parse_args(
         [
             '--port',
@@ -187,9 +179,11 @@ def create_runtime(graph_dict: Dict, protocol: str, port: int, prefetch: int = 0
             '{}',
             '--prefetch',
             f'{prefetch}',
+            '--protocol',
+            protocol,
         ]
     )
-    with runtime_cls(args) as runtime:
+    with GatewayRuntime(args) as runtime:
         runtime.run_forever()
 
 

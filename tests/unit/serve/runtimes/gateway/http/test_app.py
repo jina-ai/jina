@@ -10,8 +10,7 @@ from docarray import Document, DocumentArray
 from jina import Client, Executor, Flow, requests
 from jina.helper import random_port
 from jina.parsers import set_gateway_parser
-from jina.serve.runtimes.gateway.http import HTTPGatewayRuntime
-from jina.serve.runtimes.gateway.websocket import WebSocketGatewayRuntime
+from jina.serve.runtimes.gateway import GatewayRuntime
 
 
 class ExecutorTest(Executor):
@@ -154,24 +153,28 @@ xZ36Vrgc4hfaUiifsIiDwA==
     os.unlink(tmp.name)
 
 
-@pytest.mark.parametrize('runtime_cls', [HTTPGatewayRuntime, WebSocketGatewayRuntime])
-def test_uvicorn_ssl_deprecated(cert_pem, key_pem, runtime_cls):
+@pytest.mark.parametrize('uses', ['HTTPGateway', 'WebSocketGateway'])
+def test_uvicorn_ssl_deprecated(cert_pem, key_pem, uses):
     args = set_gateway_parser().parse_args(
         [
+            '--uses',
+            uses,
             '--uvicorn-kwargs',
             f'ssl_certfile: {cert_pem}',  # deprecated
             f'ssl_keyfile: {key_pem}',  # deprecated
             'ssl_keyfile_password: abcd',
         ]
     )
-    with runtime_cls(args):
+    with GatewayRuntime(args):
         pass
 
 
-@pytest.mark.parametrize('runtime_cls', [HTTPGatewayRuntime, WebSocketGatewayRuntime])
-def test_uvicorn_ssl(cert_pem, key_pem, runtime_cls):
+@pytest.mark.parametrize('uses', ['HTTPGateway', 'WebSocketGateway'])
+def test_uvicorn_ssl(cert_pem, key_pem, uses):
     args = set_gateway_parser().parse_args(
         [
+            '--uses',
+            uses,
             '--uvicorn-kwargs',
             'ssl_keyfile_password: abcd',
             '--ssl-certfile',
@@ -180,14 +183,16 @@ def test_uvicorn_ssl(cert_pem, key_pem, runtime_cls):
             f'{key_pem}',
         ]
     )
-    with runtime_cls(args):
+    with GatewayRuntime(args):
         pass
 
 
-@pytest.mark.parametrize('runtime_cls', [HTTPGatewayRuntime, WebSocketGatewayRuntime])
-def test_uvicorn_ssl_wrong_password(cert_pem, key_pem, runtime_cls):
+@pytest.mark.parametrize('uses', ['HTTPGateway', 'WebSocketGateway'])
+def test_uvicorn_ssl_wrong_password(cert_pem, key_pem, uses):
     args = set_gateway_parser().parse_args(
         [
+            '--uses',
+            uses,
             '--uvicorn-kwargs',
             'ssl_keyfile_password: abcde',
             '--ssl-certfile ',
@@ -197,14 +202,16 @@ def test_uvicorn_ssl_wrong_password(cert_pem, key_pem, runtime_cls):
         ]
     )
     with pytest.raises(ssl.SSLError):
-        with runtime_cls(args):
+        with GatewayRuntime(args):
             pass
 
 
-@pytest.mark.parametrize('runtime_cls', [HTTPGatewayRuntime, WebSocketGatewayRuntime])
-def test_uvicorn_ssl_wrong_password(cert_pem, key_pem, runtime_cls):
+@pytest.mark.parametrize('uses', ['HTTPGateway', 'WebSocketGateway'])
+def test_uvicorn_ssl_wrong_password(cert_pem, key_pem, uses):
     args = set_gateway_parser().parse_args(
         [
+            '--uses',
+            uses,
             '--uvicorn-kwargs',
             'ssl_keyfile_password: abcde',
             '--ssl-certfile',
@@ -214,7 +221,7 @@ def test_uvicorn_ssl_wrong_password(cert_pem, key_pem, runtime_cls):
         ]
     )
     with pytest.raises(ssl.SSLError):
-        with runtime_cls(args):
+        with GatewayRuntime(args):
             pass
 
 

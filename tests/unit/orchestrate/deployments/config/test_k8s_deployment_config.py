@@ -3,10 +3,10 @@ import os
 from typing import Dict, Tuple, Union
 
 import pytest
+from hubble.executor import HubExecutor
+from hubble.executor.hubio import HubIO
 
 from jina.helper import Namespace
-from jina.hubble import HubExecutor
-from jina.hubble.hubio import HubIO
 from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
 from jina.parsers import set_deployment_parser, set_gateway_parser
 from jina.serve.networking import GrpcConnectionPool
@@ -342,7 +342,7 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway):
     containers = spec['containers']
     assert len(containers) == 1
     container = containers[0]
-    assert container['name'] == 'executor'
+    assert container['name'] == 'gateway'
     assert (
         container['image'] == custom_gateway
         if custom_gateway
@@ -357,8 +357,6 @@ def test_k8s_yaml_gateway(deployments_addresses, custom_gateway):
     assert '--port' in args
     assert args[args.index('--port') + 1] == '32465'
     assert '--env' not in args
-    assert '--pod-role' in args
-    assert args[args.index('--pod-role') + 1] == 'GATEWAY'
     if deployments_addresses is not None:
         assert '--deployments-addresses' in args
         assert args[args.index('--deployments-addresses') + 1] == json.dumps(
@@ -394,10 +392,11 @@ def test_k8s_yaml_regular_deployment(
 ):
     def _mock_fetch(
         name,
-        tag=None,
-        secret=None,
+        tag,
         image_required=True,
         rebuild_image=True,
+        *,
+        secret=None,
         force=False,
     ):
         return (

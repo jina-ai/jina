@@ -54,10 +54,13 @@ from jina.excepts import (
 from jina.helper import (
     ArgNamespace,
     CatchAllCleanupContextManager,
+    _parse_hosts,
+    _parse_ports,
     download_mermaid_url,
     get_internal_ip,
     get_public_ip,
     is_port_free,
+    make_iterable,
     send_telemetry_event,
     typename,
 )
@@ -124,7 +127,7 @@ class Flow(
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
@@ -147,11 +150,15 @@ class Flow(
         deployments_addresses: Optional[str] = '{}',
         deployments_disable_reduce: Optional[str] = '[]',
         description: Optional[str] = None,
+        disable_auto_volume: Optional[bool] = False,
+        docker_kwargs: Optional[dict] = None,
+        entrypoint: Optional[str] = None,
         env: Optional[dict] = None,
         exit_on_exceptions: Optional[List[str]] = [],
         expose_endpoints: Optional[str] = None,
         expose_graphql_endpoint: Optional[bool] = False,
         floating: Optional[bool] = False,
+        gpus: Optional[str] = None,
         graph_conditions: Optional[str] = '{}',
         graph_description: Optional[str] = '{}',
         grpc_server_options: Optional[dict] = None,
@@ -165,7 +172,7 @@ class Flow(
         no_debug_endpoints: Optional[bool] = False,
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
-        port: Optional[int] = None,
+        port: Optional[str] = None,
         port_monitoring: Optional[str] = None,
         prefetch: Optional[int] = 1000,
         protocol: Optional[str] = 'GRPC',
@@ -175,7 +182,7 @@ class Flow(
         quiet_error: Optional[bool] = False,
         replicas: Optional[int] = 1,
         retries: Optional[int] = -1,
-        runtime_cls: Optional[str] = 'GRPCGatewayRuntime',
+        runtime_cls: Optional[str] = 'GatewayRuntime',
         shards: Optional[int] = 1,
         ssl_certfile: Optional[str] = None,
         ssl_keyfile: Optional[str] = None,
@@ -183,11 +190,10 @@ class Flow(
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
         title: Optional[str] = None,
-        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
-        uses_metas: Optional[dict] = None,
-        uses_requests: Optional[dict] = None,
+        uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_with: Optional[dict] = None,
         uvicorn_kwargs: Optional[dict] = None,
+        volumes: Optional[List[str]] = None,
         workspace: Optional[str] = None,
         **kwargs,
     ):
@@ -198,15 +204,29 @@ class Flow(
         :param deployments_addresses: dictionary JSON with the input addresses of each Deployment
         :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
+        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
+          container.
+
+          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
+        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
         :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
+        :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
+
+              Note,
+              - To access all gpus, use `--gpus all`.
+              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.
+              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
+              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
+              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
@@ -237,19 +257,18 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535]
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
-        :param py_modules: The customized python modules need to be imported before loading the executor
+        :param py_modules: The customized python modules need to be imported before loading the gateway
 
           Note that the recommended way is to only import a single module - a simple python file, if your
-          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
-          which should be structured as a python package. For more details, please see the
-          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__
+          gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
+          which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param replicas: The number of replicas in the deployment
@@ -262,10 +281,9 @@ class Flow(
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
-        :param uses: The config of the executor, it could be one of the followings:
-                  * the string literal of an Executor class name
-                  * an Executor YAML file (.yml, .yaml, .jaml)
-                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
+        :param uses: The config of the gateway, it could be one of the followings:
+                  * the string literal of an Gateway class name
+                  * a Gateway YAML file (.yml, .yaml, .jaml)
                   * a docker image (must start with `docker://`)
                   * the string literal of a YAML config (must start with `!` or `jtype: `)
                   * the string literal of a JSON config
@@ -273,12 +291,16 @@ class Flow(
                   When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
-        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
-        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
 
           More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
+        :param volumes: The path on the host to be mounted inside the container.
+
+          Note,
+          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.
+          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
+          - All volumes are mounted with read-write mode.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
 
         .. # noqa: DAR202
@@ -363,7 +385,7 @@ class Flow(
                     f.bock()  # serve Flow
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
@@ -373,15 +395,29 @@ class Flow(
         :param deployments_addresses: dictionary JSON with the input addresses of each Deployment
         :param deployments_disable_reduce: list JSON disabling the built-in merging mechanism for each Deployment listed
         :param description: The description of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param disable_auto_volume: Do not automatically mount a volume for dockerized Executors.
+        :param docker_kwargs: Dictionary of kwargs arguments that will be passed to Docker SDK when starting the docker '
+          container.
+
+          More details can be found in the Docker SDK docs:  https://docker-py.readthedocs.io/en/stable/
+        :param entrypoint: The entrypoint command overrides the ENTRYPOINT in Docker image. when not set then the Docker image ENTRYPOINT takes effective.
         :param env: The map of environment variables that are available inside runtime
         :param exit_on_exceptions: List of exceptions that will cause the Executor to shut down.
         :param expose_endpoints: A JSON string that represents a map from executor endpoints (`@requests(on=...)`) to HTTP endpoints.
         :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
         :param floating: If set, the current Pod/Deployment can not be further chained, and the next `.add()` will chain after the last Pod/Deployment not this current one.
+        :param gpus: This argument allows dockerized Jina executor discover local gpu devices.
+
+              Note,
+              - To access all gpus, use `--gpus all`.
+              - To access multiple gpus, e.g. make use of 2 gpus, use `--gpus 2`.
+              - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
+              - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
+              - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param graph_conditions: Dictionary stating which filtering conditions each Executor in the graph requires to receive Documents.
         :param graph_description: Routing graph for the gateway
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
@@ -412,19 +448,18 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535]
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param prefetch: Number of requests fetched from the client before feeding into the first Executor.
 
               Used to control the speed of data input into a Flow. 0 disables prefetch (1000 requests is the default)
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
-        :param py_modules: The customized python modules need to be imported before loading the executor
+        :param py_modules: The customized python modules need to be imported before loading the gateway
 
           Note that the recommended way is to only import a single module - a simple python file, if your
-          executor can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
-          which should be structured as a python package. For more details, please see the
-          `Executor cookbook <https://docs.jina.ai/fundamentals/executor/executor-files/>`__
+          gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
+          which should be structured as a python package.
         :param quiet: If set, then no log will be emitted from this object.
         :param quiet_error: If set, then exception stack information will not be added to the log
         :param replicas: The number of replicas in the deployment
@@ -437,10 +472,9 @@ class Flow(
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
-        :param uses: The config of the executor, it could be one of the followings:
-                  * the string literal of an Executor class name
-                  * an Executor YAML file (.yml, .yaml, .jaml)
-                  * a Jina Hub Executor (must start with `jinahub://` or `jinahub+docker://`)
+        :param uses: The config of the gateway, it could be one of the followings:
+                  * the string literal of an Gateway class name
+                  * a Gateway YAML file (.yml, .yaml, .jaml)
                   * a docker image (must start with `docker://`)
                   * the string literal of a YAML config (must start with `!` or `jtype: `)
                   * the string literal of a JSON config
@@ -448,12 +482,16 @@ class Flow(
                   When use it under Python, one can use the following values additionally:
                   - a Python dict that represents the config
                   - a text file stream has `.read()` interface
-        :param uses_metas: Dictionary of keyword arguments that will override the `metas` configuration in `uses`
-        :param uses_requests: Dictionary of keyword arguments that will override the `requests` configuration in `uses`
         :param uses_with: Dictionary of keyword arguments that will override the `with` configuration in `uses`
         :param uvicorn_kwargs: Dictionary of kwargs arguments that will be passed to Uvicorn server when starting the server
 
           More details can be found in Uvicorn docs: https://www.uvicorn.org/settings/
+        :param volumes: The path on the host to be mounted inside the container.
+
+          Note,
+          - If separated by `:`, then the first part will be considered as the local host path and the second part is the path in the container system.
+          - If no split provided, then the basename of that directory will be mounted into container's root path, e.g. `--volumes="/user/test/my-workspace"` will be mounted into `/my-workspace` inside the container.
+          - All volumes are mounted with read-write mode.
         :param workspace: The working directory for any IO operations in this object. If not set, then derive from its parent `workspace`.
         :param env: The map of environment variables that are available inside runtime
         :param inspect: The strategy on those inspect deployments in the flow.
@@ -621,18 +659,29 @@ class Flow(
 
     def _get_deployments_addresses(self) -> Dict[str, List[str]]:
         graph_dict = {}
-        for node, v in self._deployment_nodes.items():
+        for node, deployment in self._deployment_nodes.items():
             if node == 'gateway':
                 continue
-            if v.head_args:
+            if deployment.head_args:
                 # add head information
-                graph_dict[node] = [f'{v.protocol}://{v.host}:{v.head_port}']
+                graph_dict[node] = [
+                    f'{deployment.protocol}://{deployment.host}:{deployment.head_port}'
+                ]
             else:
                 # there is no head, add the worker connection information instead
-                host = v.host
-                if host_is_local(host) and in_docker() and v.dockerized_uses:
-                    host = __docker_host__
-                graph_dict[node] = [f'{v.protocol}://{host}:{port}' for port in v.ports]
+                ports = deployment.ports
+                hosts = [
+                    __docker_host__
+                    if host_is_local(host)
+                    and in_docker()
+                    and deployment.dockerized_uses
+                    else host
+                    for host in deployment.hosts
+                ]
+                graph_dict[node] = [
+                    f'{deployment.protocol}://{host}:{port}'
+                    for host, port in zip(hosts, ports)
+                ]
 
         return graph_dict
 
@@ -809,7 +858,7 @@ class Flow(
         native: Optional[bool] = False,
         output_array_type: Optional[str] = None,
         polling: Optional[str] = 'ANY',
-        port: Optional[int] = None,
+        port: Optional[str] = None,
         port_monitoring: Optional[str] = None,
         py_modules: Optional[List[str]] = None,
         quiet: Optional[bool] = False,
@@ -862,7 +911,7 @@ class Flow(
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
@@ -890,7 +939,7 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535]
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param py_modules: The customized python modules need to be imported before loading the executor
 
@@ -1011,7 +1060,7 @@ class Flow(
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
-        :param host: The host address of the runtime, by default it is 0.0.0.0.
+        :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
@@ -1039,7 +1088,7 @@ class Flow(
               Define per Endpoint:
               JSON dict, {endpoint: PollingType}
               {'/custom': 'ALL', '/search': 'ANY', '*': 'ANY'}
-        :param port: The port for input data to bind to, default is a random port between [49152, 65535]
+        :param port: The port for input data to bind to, default is a random port between [49152, 65535]. In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param port_monitoring: The port on which the prometheus server is exposed, default is a random port between [49152, 65535]
         :param py_modules: The customized python modules need to be imported before loading the executor
 
@@ -1332,6 +1381,8 @@ class Flow(
 
         .. # noqa: DAR401
         """
+        if multiprocessing.get_start_method().lower() == 'fork':
+            os.environ['GRPC_ENABLE_FORK_SUPPORT'] = '1'
 
         op_flow = copy.deepcopy(self) if copy_flow else self
 
@@ -1349,6 +1400,7 @@ class Flow(
                 deployments_addresses=op_flow._get_deployments_addresses(),
                 graph_conditions=op_flow._get_graph_conditions(),
                 deployments_disabled_reduce=op_flow._get_disabled_reduce_deployments(),
+                uses=op_flow.args.uses,
             )
 
         removed_deployments = []
@@ -1479,9 +1531,9 @@ class Flow(
             for k, v in self.args.env.items():
                 os.environ[k] = str(v)
 
-        for k, v in self:
-            if not v.external:
-                self.enter_context(v)
+        for depl_name, deployment in self:
+            if not deployment.external:
+                self.enter_context(deployment)
 
         self._wait_until_all_ready()
 

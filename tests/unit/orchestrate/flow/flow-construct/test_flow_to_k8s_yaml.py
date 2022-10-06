@@ -107,8 +107,6 @@ def test_flow_to_k8s_yaml(tmpdir, protocol, flow_port):
         gateway_args[gateway_args.index('--deployments-addresses') + 1]
         == '{"executor0": ["grpc://executor0.test-flow-ns.svc:8080"], "executor1": ["grpc://executor1-head.test-flow-ns.svc:8080"], "executor2": ["grpc://executor2-head.test-flow-ns.svc:8080"]}'
     )
-    assert '--pod-role' in gateway_args
-    assert gateway_args[gateway_args.index('--pod-role') + 1] == 'GATEWAY'
     if protocol == 'http':
         assert '--protocol' in gateway_args
         assert gateway_args[gateway_args.index('--protocol') + 1] == 'HTTP'

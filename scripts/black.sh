@@ -7,7 +7,6 @@ excluded_files=(
    jina/proto/pb/jina_pb2_grpc.py
    jina/proto/pb2/jina_pb2.py
    jina/proto/pb2/jina_pb2_grpc.py
-   jina/resources/executor-template/executor.py
    docs/conf.py
 )
 for changed_file in $CHANGED_FILES; do

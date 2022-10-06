@@ -15,6 +15,10 @@ from jina.orchestrate.deployments import Deployment
 from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
 from jina.parsers import set_deployment_parser
 from jina.serve.networking import GrpcConnectionPool
+from tests.helper import (
+    _validate_custom_gateway_process,
+    _validate_dummy_custom_gateway_response,
+)
 
 cluster.KIND_VERSION = 'v0.11.1'
 
@@ -63,7 +67,7 @@ async def create_all_flow_deployments_and_wait_ready(
             except Exception as e:
                 # some objects are not successfully created since they exist from previous files
                 logger.info(
-                    f'Did not create ressource from {file} for pod {deployment_name} due to {e} '
+                    f'Did not create resource from {file} for pod {deployment_name} due to {e} '
                 )
                 pass
 
@@ -96,11 +100,11 @@ async def create_all_flow_deployments_and_wait_ready(
                 api_response.status.ready_replicas is not None
                 and api_response.status.ready_replicas == expected_num_replicas
             ):
-                logger.info(f'Deploymnt {deployment_name} is now ready')
+                logger.info(f'Deployment {deployment_name} is now ready')
                 deployments_ready.append(deployment_name)
             else:
                 logger.info(
-                    f'Deploymnt {deployment_name} is not ready yet: ready_replicas is {api_response.status.ready_replicas} not equal to {expected_num_replicas}'
+                    f'Deployment {deployment_name} is not ready yet: ready_replicas is {api_response.status.ready_replicas} not equal to {expected_num_replicas}'
                 )
 
         for deployment_name in deployments_ready:
@@ -124,7 +128,7 @@ async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_si
     import portforward
 
     with portforward.forward(
-        namespace, gateway_pod_name, flow.port, flow.port, config_path
+        namespace, gateway_pod_name, int(flow.port), int(flow.port), config_path
     ):
         client_kwargs = dict(
             host='localhost',
@@ -756,5 +760,73 @@ async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
     pods = core_client.list_namespaced_pod(namespace=namespace).items
     pod_phases = [item.status.phase for item in pods]
     assert all([phase == 'Running' for phase in pod_phases])
+
+    core_client.delete_namespace(namespace)
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
+@pytest.mark.parametrize(
+    'docker_images',
+    [['custom-gateway', 'test-executor']],
+    indirect=True,
+)
+async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
+    flow = Flow(
+        name='flow_with_custom_gateway',
+        port=9090,
+        protocol='http',
+        uses=f'docker://{docker_images[0]}',
+    ).add(
+        name='test_executor',
+        uses=f'docker://{docker_images[1]}',
+    )
+
+    dump_path = os.path.join(str(tmpdir), 'k8s-flow-custom-gateway.yml')
+    namespace = 'flow-custom-gateway'.lower()
+    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    await create_all_flow_deployments_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'test-executor': 1,
+        },
+        logger=logger,
+    )
+
+    gateway_pod_name = (
+        core_client.list_namespaced_pod(
+            namespace=namespace, label_selector='app=gateway'
+        )
+        .items[0]
+        .metadata.name
+    )
+    config_path = os.environ['KUBECONFIG']
+    import portforward
+
+    with portforward.forward(
+        namespace, gateway_pod_name, flow.port, flow.port, config_path
+    ):
+        _validate_dummy_custom_gateway_response(
+            flow.port, {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'}
+        )
+        import requests
+
+        resp = requests.get(f'http://127.0.0.1:{flow.port}/stream?text=hello').json()
+        assert resp['text'] == 'hello'
+        tags = resp['tags']
+        assert tags['traversed-executors'] == ['test_executor']
+        assert tags['shards'] == 1
+        assert tags['shard_id'] == 0
 
     core_client.delete_namespace(namespace)

@@ -51,9 +51,9 @@ def test_pod_runtime_env_setting(fake_env):
 @pytest.mark.parametrize(
     'protocol, expected',
     [
-        ('grpc', 'GRPCGatewayRuntime'),
-        ('websocket', 'WebSocketGatewayRuntime'),
-        ('http', 'HTTPGatewayRuntime'),
+        ('grpc', 'GRPCGateway'),
+        ('websocket', 'WebSocketGateway'),
+        ('http', 'HTTPGateway'),
     ],
 )
 def test_gateway_args(protocol, expected):
@@ -68,15 +68,15 @@ def test_gateway_args(protocol, expected):
         ]
     )
     p = Pod(args)
-    assert p.runtime_cls.__name__ == expected
+    assert p.args.uses == expected
 
 
 @pytest.mark.parametrize(
     'protocol, expected',
     [
-        ('grpc', 'GRPCGatewayRuntime'),
-        ('websocket', 'WebSocketGatewayRuntime'),
-        ('http', 'HTTPGatewayRuntime'),
+        ('grpc', 'GRPCGateway'),
+        ('websocket', 'WebSocketGateway'),
+        ('http', 'HTTPGateway'),
     ],
 )
 def test_gateway_runtimes(protocol, expected):
@@ -92,7 +92,7 @@ def test_gateway_runtimes(protocol, expected):
     )
 
     with Pod(args) as p:
-        assert p.runtime_cls.__name__ == expected
+        assert p.args.uses == expected
 
 
 @pytest.mark.parametrize(
@@ -133,9 +133,9 @@ def test_failing_executor():
 @pytest.mark.parametrize(
     'protocol, expected',
     [
-        ('grpc', 'GRPCGatewayRuntime'),
-        ('websocket', 'WebSocketGatewayRuntime'),
-        ('http', 'HTTPGatewayRuntime'),
+        ('grpc', 'GRPCGateway'),
+        ('websocket', 'WebSocketGateway'),
+        ('http', 'HTTPGateway'),
     ],
 )
 def test_failing_gateway_runtimes(protocol, expected):

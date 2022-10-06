@@ -125,7 +125,7 @@ import os
 
 PROTOCOL = 'grpc'  # it could also be http or websocket
 
-os.setenv[
+os.environ[
     'JINA_LOG_LEVEL'
 ] = 'DEBUG'  # this way we can check what is the PID of the Executor
 
@@ -266,7 +266,7 @@ with f:
 
 On another terminal, you can use [grpcurl](https://github.com/fullstorydev/grpcurl) to send RPC requests to your services.
 
-```bash
+```shell
 docker pull fullstorydev/grpcurl:latest
 docker run --network='host' fullstorydev/grpcurl -plaintext 127.0.0.1:12346 grpc.health.v1.Health/Check
 ```
@@ -330,4 +330,47 @@ curl http://localhost:12345
 And you will get a valid empty response indicating the Gateway's ability to serve.
 ```json
 {}
+```
+
+## Use jina ping to do health checks
+
+Once a Flow is running, you can use `jina ping` CLI  {ref}`CLI <../api/jina_cli>` to run readiness check of the complete Flow or of individual Executors or Gateway.
+
+Let's start a Flow in the terminal by executing the following python code:
+
+```python
+from jina import Flow
+
+with Flow(protocol='grpc', port=12345).add(port=12346) as f:
+    f.block()
+```
+
+We can check the readiness of the Flow:
+
+```bash
+jina ping flow grpc://localhost:12345
+```
+
+Also we can check the readiness of an Executor:
+
+```bash
+jina ping executor localhost:12346
+```
+
+or the readiness of the Gateway service:
+
+```bash
+jina ping gateway  grpc://localhost:12345
+```
+
+When these commands succeed, you will see something like:
+
+```text
+INFO   JINA@28600 readiness check succeeded 1 times!!! 
+```
+
+```admonition Use it in Kubernetes
+:class: note
+This CLI exits with code 1 when the readiness check is not successful, which makes it a good choice to be used as readinessProbe for Executor and Gateway when
+deployed in Kubernetes.
 ```

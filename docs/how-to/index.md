@@ -1,48 +1,44 @@
 # {octicon}`book` How-To
 
-Jina is a very powerful framework that can help you build distributed multi-modal and cross-modal applications, from start to finish.
+Jina is a powerful framework for building distributed multi-modal and cross-modal applications, from start to finish.
 
 ```{admonition} See Also
 :class: seealso
-If you are completely new to Jina, you should check out its {ref}`overview <architecture-overview>` first.
-You may also find the [learning portal](https://learn.jina.ai/) useful to get off the ground.
+If you are new to Jina, first check its {ref}`overview <architecture-overview>` for more background.
 ```
-
-In order to get you started on your more ambitious projects, we compiled a list of how-to tutorials that guide you through some of Jina's more advanced features. Happy coding!
 
 ## Executor
 
 On top of the {ref}`basics <executor-cookbook>`, the {class}`~jina.Executor` has a few more tricks up its sleeve.
 
 \
-**Scaling out**: In many scenarios, running a single Executor for a given task is just not enough. Whether you need more
-throughput or to partition your data, we've got you covered. {ref}`This tutorial <scale-out>` will show you how to
-easily scale out using Jina.
+**Scaling out**: Often, running a single Executor for a given task is just not enough. 
+{ref}`This tutorial <scale-out>` covers
+scaling out using Jina, including increasing throughput and partitioning data.
 
 
 \
 **Executors on GPU**: Machine Learning models are only as fast as the metal they run on, and for maximum performance you
-want that metal to be a GPU. For a guide on how to run Executors on GPU and accelerate your code, see
+want that metal to be a GPU. To run Executors on GPU and accelerate your code, see
 {ref}`this tutorial <gpu-executor>`.
 
 \
-**External Executors**: Executors need not be tied to a specific Flow. If you want to learn how to spawn Executors on
+**External Executors**: Executors don't need to be tied to a specific Flow. If you want to spawn Executors on
 their own, use them in various Flows, even from a different machine or from inside a Docker container, then follow along
 {ref}`here <external-executor>`.
 
 
 ## Deployment
 
-Once you have built your search app using Jina, naturally you want to deploy it. Luckily, Jina plays nice with your
-favorite tools for the job.
+Once you've built your search app using Jina, you want to deploy it. Jina plays nice with your
+favorite tools for the job:
 
 \
-**Docker Compose**: If you want to learn about Jina's native support for Docker Compose, including deployment, look no
-further than {ref}`this guide <docker-compose>`.
+**Docker Compose**: To learn about Jina's native support for Docker Compose, including deployment, 
+check {ref}`this guide <docker-compose>`.
 
 \
-**Kubernetes**: If your weapon of choice is Kubernetes then fear not, because it is supported by Jina natively. How you
-can put that into practice you can find {ref}`here <kubernetes>`.
+**Kubernetes**: Jina supports Kubernetes natively. Check the guide {ref}`here <kubernetes>`.
 
 
 ```{toctree}

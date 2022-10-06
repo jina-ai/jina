@@ -2,10 +2,10 @@ import json
 import os
 
 import pytest
+from hubble.executor import HubExecutor
+from hubble.executor.hubio import HubIO
 
 from jina import __version__
-from jina.hubble import HubExecutor
-from jina.hubble.hubio import HubIO
 from jina.orchestrate.deployments.config.helper import (
     get_base_executor_version,
     get_image_name,
@@ -47,10 +47,11 @@ def test_get_image_name(mocker, monkeypatch):
 
     def _mock_fetch(
         name,
-        tag=None,
-        secret=None,
+        tag,
         image_required=True,
         rebuild_image=True,
+        *,
+        secret=None,
         force=False,
     ):
         mock(name=name, rebuild_image=rebuild_image)

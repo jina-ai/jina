@@ -1,7 +1,7 @@
 (exec-endpoint)=
 # `@requests` methods
 
-Methods of {class}`~jina.Executor` can be named and written freely. 
+{class}`~jina.Executor` methods can be named and written freely. 
 
 Methods decorated with `@requests` are mapped to network endpoints while serving.
 
@@ -10,7 +10,7 @@ Methods decorated with `@requests` are mapped to network endpoints while serving
 
 Executor methods decorated with {class}`~jina.requests` are bound to specific network requests, and respond to network queries.
 
-Both `def` or `async def` function can be decorated with {class}`~jina.requests`.
+Both `def` or `async def` functions can be decorated with {class}`~jina.requests`.
 
 You can import the `@requests` decorator via
 
@@ -18,7 +18,7 @@ You can import the `@requests` decorator via
 from jina import requests
 ```
 
-{class}`~jina.requests` is a decorator that takes an optional parameter: `on=`. It binds the decorated method of the Executor to the specified route. 
+{class}`~jina.requests` is a decorator that takes an optional `on=` parameter. It binds the decorated method of the Executor to the specified route. 
 
 ```python
 from jina import Executor, requests
@@ -28,11 +28,11 @@ import asyncio
 class RequestExecutor(Executor):
     @requests(
         on=['/index', '/search']
-    )  # foo will be bound to `/index` and `/search` endpoints
+    )  # foo is bound to `/index` and `/search` endpoints
     def foo(self, **kwargs):
         print(f'Calling foo')
 
-    @requests(on='/other')  # bar will be bound to `/other` endpoint
+    @requests(on='/other')  # bar is bound to `/other` endpoint
     async def bar(self, **kwargs):
         await asyncio.sleep(1.0)
         print(f'Calling bar')
@@ -63,7 +63,7 @@ Calling foo
 ### Default binding
 
 A class method decorated with plain `@requests` (without `on=`) is the default handler for all endpoints.
-That means it is the fallback handler for endpoints that are not found. `f.post(on='/blah', ...)` will invoke `MyExecutor.foo`.
+This means it is the fallback handler for endpoints that are not found. `f.post(on='/blah', ...)` invokes `MyExecutor.foo`.
 
 ```python
 from jina import Executor, requests
@@ -85,11 +85,11 @@ class MyExecutor(Executor):
 ### No binding
 
 A class with no `@requests` binding plays no part in the Flow. 
-The request will simply pass through without any processing.
+The request simply passes through without any processing.
 
 ## Arguments
 
-All Executor methods decorated by `@requests` need to follow the signature below in order to be usable as a microservice inside a {class}`~jina.Flow`.
+All Executor methods decorated by `@requests` need to follow the signature below to be usable as a microservice inside a {class}`~jina.Flow`.
 The `async` definition is optional.
 
 ```python
@@ -111,14 +111,14 @@ class MyExecutor(Executor):
         pass
 ```
 
-Let's take a look at all these arguments:
+Let's take a look at these arguments:
 
-- `docs`: A DocumentArray that is part of the request. Since the nature of Executor is to wrap functionality related to `DocumentArray`, it is usually the main processing unit inside Executor methods. It is important to notice that these `docs` can be also changed in place, just like it could happen with 
+- `docs`: A DocumentArray that is part of the request. Since the nature of Executor is to wrap functionality related to `DocumentArray`, it's usually the main processing unit inside Executor methods. It's important to notice that these `docs` can be also changed in place, just like
 any other `list`-like object in a Python function.
 
-- `parameters`: A Dict object that can be used to pass extra parameters to the Executor functions.
+- `parameters`: A Dict object that passes extra parameters to Executor functions.
 
-- `docs_matrix`:  This is the least common parameter to be used for an Executor. This argument is needed when an Executor is used inside a Flow to merge or reduce the output of more than one other Executor.
+- `docs_matrix`:  This is the least common parameter to be used for an Executor. This is needed when an Executor is used inside a Flow to merge or reduce the output of more than one other Executor.
 
  
 
@@ -158,11 +158,9 @@ class MyExecutor(Executor):
 
 You have seen that `Executor` methods can receive three types of parameters: `docs`, `parameters` and `docs_matrix`.
 
-`docs_matrix` is a parameter that is only used in some special cases.
+`docs_matrix` is only used in some special cases.
 
-One case is when an Executor receives messages from more than one upstream Executor in the Flow.
-
-Let's see an example:
+One case is when an Executor receives messages from more than one upstream Executor in the Flow:
 
 ```python
 from jina import Flow, Executor, requests, Document, DocumentArray
@@ -240,9 +238,8 @@ class MyExecutor(Executor):
 
 
 
-In this example we have a heavy lifting API for which we want to call several times, and we want to leverage the
-async Python features to speed up the {class}`~jina.Executor`'s call by calling the API multiples times concurrently. As a counterpart, in an example without using `coroutines`, all of the 50 API calls will be queued and nothing will be done 
-concurrently.
+This example has a heavy lifting API which we call several times, and we leverage the
+async Python features to speed up the {class}`~jina.Executor`'s call by calling the API multiple times concurrently. As a counterpart, in an example without `coroutines`, all 50 API calls are queued and nothing is done concurrently.
 
 
 
@@ -317,11 +314,11 @@ with f:
 ```
 ````
 
-The processing of the data is 50 faster when using `coroutines` because it happens concurrently.
+Processing the data is 50x faster when using `coroutines` because it happens concurrently.
 
 
 ### Call another Jina Flow 
-To call other another Jina Flow using `Client` from an `Executor`, you will also need to use `async def` and async Client.
+To call other another Jina Flow using `Client` from an `Executor`, you also need to use `async def` and async Client.
 
 
 ```python
@@ -343,11 +340,11 @@ class DummyExecutor(Executor):
 
 ## Returns
 
-Every Executor method can `return` in 3 ways: 
+Every Executor method can `return` in three ways: 
 
-- If you return a `DocumentArray` object, then it will be sent over to the next Executor.
-- If you return `None` or if you don't have a `return` in your method, then the original `docs` object (potentially mutated by your function) will be sent over to the next Executor.
-- If you return a `dict` object, then it will be considered as a result and returned on `parameters['__results__']` to the client. `__results__` key will not be available in subsequent Executors. The original `docs` object (potentially mutated by your function) will be sent over to the next Executor.
+- If you return a `DocumentArray` object, then it will be sent to the next Executor.
+- If you return `None` or don't have a `return` in your method, then the original `docs` object (potentially mutated by your function) will be sent to the next Executor.
+- If you return a `dict` object, it will be considered as a result and returned on `parameters['__results__']` to the client. `__results__` key will not be available in subsequent Executors. The original `docs` object (potentially mutated by your function) will be sent to the next Executor.
 
 
 ```python
@@ -372,7 +369,7 @@ with f:
   
 ## Exception handling
 
-Exceptions raised inside `@requests`-decorated functions can simply be raised. The Flow will handle it.
+Exceptions raised inside `@requests`-decorated functions can simply be raised. The Flow handles it.
 
 ```python
 from jina import Executor, requests
@@ -417,7 +414,7 @@ NotImplementedError('no time for it')
 
 ## Example
 
-Let's understand how Executor's process DocumentArray's inside a Flow, and how the changes are chained and applied, affecting downstream Executors in the Flow.
+Let's understand how Executor's process DocumentArray's inside a Flow, and how changes are chained and applied, affecting downstream Executors in the Flow.
 
 
 ```python 
@@ -434,14 +431,14 @@ class PrintDocuments(Executor):
 class ProcessDocuments(Executor):
     @requests(on='/change_in_place')
     def in_place(self, docs, **kwargs):
-        # This executor will only work on `docs` and will not consider any other arguments
+        # This Executor only works on `docs` and doesn't consider any other arguments
         for doc in docs:
             print(f' ProcessDocuments: received document with text "{doc.text}"')
             doc.text = 'I changed the executor in place'
 
     @requests(on='/return_different_docarray')
     def ret_docs(self, docs, **kwargs):
-        # This executor will only work on `docs` and will not consider any other arguments
+        # This executor only works on `docs` and doesn't consider any other arguments
         ret = DocumentArray()
         for doc in docs:
             print(f' ProcessDocuments: received document with text: "{doc.text}"')
@@ -452,9 +449,9 @@ class ProcessDocuments(Executor):
 f = Flow().add(uses=ProcessDocuments).add(uses=PrintDocuments)
 
 with f:
-    f.post(on='/change_in_place', inputs=DocumentArray(Document(text='request')))
+    f.post(on='/change_in_place', inputs=DocumentArray(Document(text='request1')))
     f.post(
-        on='/return_different_docarray', inputs=DocumentArray(Document(text='request'))
+        on='/return_different_docarray', inputs=DocumentArray(Document(text='request2'))
     )
 ```
 

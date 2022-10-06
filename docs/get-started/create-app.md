@@ -1,12 +1,12 @@
 # {octicon}`milestone` Create First Project
 
-Let's build a toy application with Jina. To start, we use Jina CLI to make a new project for us:
+Let's build a toy application with Jina. To start, use Jina CLI to make a new project:
 
 ```bash
 jina new hello-jina
 ```
 
-This will create a new project folder called `hello-jina` with the following file structure:
+This creates a new project folder called `hello-jina` with the following file structure:
 
 ```text
 hello-jina/
@@ -17,15 +17,15 @@ hello-jina/
             |- executor.py
 ```
 
-- `flow.yml` is the configuration file for the Jina Flow.
-- `executor1/` is where we'll write our {class}`~jina.Executor` code.
-- `config.yml` is the config file for the {class}`~jina.Executor`. It’s where you keep metadata for your Executor, as well as dependencies.
+- `flow.yml` is the configuration file for the {class}`~jina.Flow`.
+- `executor1/` is where you write your {class}`~jina.Executor` code.
+- `config.yml` is the configuration file for the {class}`~jina.Executor`. It stores metadata for your Executor, as well as dependencies.
 - `client.py` is the entrypoint of your Jina project. You can run it via `python app.py`.
 
-There may be some other files like `README.md`, `requirements.txt` to provide extra metadata about that {class}`~jina.Executor`. More information {ref}`can be found here<create-executor>`.
+There are some other files like `README.md` and `requirements.txt` to provide extra metadata about that {class}`~jina.Executor`. More information {ref}`can be found here<create-executor>`.
 
 
-Now run it and observe the output of the server and client.
+Now run it and observe the output of the server and client:
 
 
 ````{tab} Run server
@@ -56,11 +56,11 @@ python client.py
 ````
 
 
-## Add logics
+## Add logic
 
-You can use any Python library in {class}`~jina.Executor`. For example, let's add `pytorch` to `executor1/requirements.txt` and crunch some numbers. 
+You can use any Python library in {class}`~jina.Executor`. For example, add `pytorch` to `executor1/requirements.txt` and crunch some numbers. 
 
-In `executor.py`, let's add another endpoint `/get-tensor` as follows:
+In `executor.py`, add another endpoint `/get-tensor` as follows:
 
 ```{code-block} python
 ---
@@ -84,11 +84,11 @@ class MyExecutor(Executor):
             doc.tensor = torch.tensor(np.random.random([10, 2]))
 ```
 
-Kill the last server by `ctrl-C` and restart the server by `jina flow --uses flow.yml`.
+Kill the last server with `Ctrl-C` and restart the server with `jina flow --uses flow.yml`.
 
 ## Call `/crunch-number` endpoint
 
-Modify `client.py` to call `/crunch-numbers` endpoint:
+Modify `client.py` to call the `/crunch-numbers` endpoint:
 
 ```python
 from jina import Client, DocumentArray
@@ -99,7 +99,7 @@ if __name__ == '__main__':
     print(da.tensors)
 ```
 
-Once we save that, we can run our new client:
+After you save that, you can run your new client:
 
 ```bash
 python client.py
@@ -131,13 +131,13 @@ tensor([[[0.9594, 0.9373],
 
 ## Deploy to JCloud
 
-JCloud offers free CPU and GPU instances to host Jina project. Let's deploy our first project to JCloud.
+JCloud offers free CPU and GPU instances to host Jina project. Let's deploy your first project to JCloud:
 
 ```bash
 jina auth login
 ```
 
-Log in with your Github, Google or Email account.
+Log in with your GitHub, Google or Email account.
 
 ```bash
 jina cloud deploy ./
@@ -161,7 +161,7 @@ After it is done, you should see the following message in the terminal.
 ```
 
 
-Now let's change the Client's code to use the deployed endpoint shown above:
+Now change the Client's code to use the deployed endpoint shown above:
 
 ```{code-block} python
 ---
@@ -205,7 +205,7 @@ tensor([[[0.4254, 0.4305],
 
 ## Delete the deployed project
 
-Don't forget to delete a Flow if you are not using it anymore.
+Don't forget to delete a Flow if you're not using it any more:
 
 ```bash
 jina cloud remove 1655d050ad
@@ -216,4 +216,4 @@ jina cloud remove 1655d050ad
 Successfully removed Flow 1655d050ad.
 ```
 
-You just finished your first Jina toy project, congrats! You can now start your own project.
+You've just finished your first toy Jina project, congratulations! You can now start your own project.

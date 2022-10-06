@@ -2,6 +2,7 @@
 
 from jina import __default_host__, helper
 from jina.parsers.helper import KVAppendAction, add_arg_group
+from jina.parsers.orchestrate.runtimes.runtime import mixin_base_runtime_parser
 
 
 def mixin_remote_runtime_parser(parser):
@@ -42,6 +43,51 @@ def mixin_gateway_parser(parser):
     gp = add_arg_group(parser, title='Gateway')
     _add_host(gp)
     _add_proxy(gp)
+
+    gp.add_argument(
+        '--uses',
+        type=str,
+        default=None,
+        # TODO: add Jina Hub Gateway
+        help='''
+        The config of the gateway, it could be one of the followings:
+        * the string literal of an Gateway class name
+        * a Gateway YAML file (.yml, .yaml, .jaml)
+        * a docker image (must start with `docker://`)
+        * the string literal of a YAML config (must start with `!` or `jtype: `)
+        * the string literal of a JSON config
+
+        When use it under Python, one can use the following values additionally:
+        - a Python dict that represents the config
+        - a text file stream has `.read()` interface
+        ''',
+    )
+
+    gp.add_argument(
+        '--uses-with',
+        action=KVAppendAction,
+        metavar='KEY: VALUE',
+        nargs='*',
+        help='''
+    Dictionary of keyword arguments that will override the `with` configuration in `uses`
+    ''',
+    )
+
+    gp.add_argument(
+        '--py-modules',
+        type=str,
+        nargs='*',
+        metavar='PATH',
+        help='''
+The customized python modules need to be imported before loading the gateway
+
+Note that the recommended way is to only import a single module - a simple python file, if your
+gateway can be defined in a single file, or an ``__init__.py`` file if you have multiple files,
+which should be structured as a python package.
+''',
+    )
+
+    mixin_base_runtime_parser(gp)
 
     gp.add_argument(
         '--port-expose',
@@ -99,7 +145,9 @@ def _add_host(arg_group):
         '--host',
         type=str,
         default=__default_host__,
-        help=f'The host address of the runtime, by default it is {__default_host__}.',
+        help=f'The host address of the runtime, by default it is {__default_host__}.'
+        ' In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas.'
+        ' Then, every resulting address will be considered as one replica of the Executor.',
     )
 
 

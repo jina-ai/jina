@@ -1,14 +1,34 @@
 """Argparser module for Pod runtimes"""
 import argparse
+from dataclasses import dataclass
+from typing import Dict
 
 from jina import helper
 from jina.enums import PodRoleType
 from jina.parsers.helper import _SHOW_ALL_ARGS, KVAppendAction, add_arg_group
 
 
-def mixin_pod_parser(parser):
+@dataclass
+class PodTypeParams:
+    """Data Class representing possible parameters for each pod type"""
+
+    runtime_cls: str
+    role_type: PodRoleType
+
+
+POD_PARAMS_MAPPING: Dict[str, PodTypeParams] = {
+    'worker': PodTypeParams(runtime_cls='WorkerRuntime', role_type=PodRoleType.WORKER),
+    'head': PodTypeParams(runtime_cls='HeadRuntime', role_type=PodRoleType.HEAD),
+    'gateway': PodTypeParams(
+        runtime_cls='GatewayRuntime', role_type=PodRoleType.GATEWAY
+    ),
+}
+
+
+def mixin_pod_parser(parser, pod_type: str = 'worker'):
     """Mixing in arguments required by :class:`Pod` into the given parser.
     :param parser: the parser instance to which we add arguments
+    :param pod_type: the pod_type configured by the parser. Can be either 'worker' for WorkerRuntime or 'gateway' for GatewayRuntime
     """
 
     gp = add_arg_group(parser, title='Pod')
@@ -16,7 +36,7 @@ def mixin_pod_parser(parser):
     gp.add_argument(
         '--runtime-cls',
         type=str,
-        default='WorkerRuntime',
+        default=POD_PARAMS_MAPPING[pod_type].runtime_cls,
         help='The runtime class to run inside the Pod',
     )
 
@@ -51,7 +71,7 @@ def mixin_pod_parser(parser):
         '--pod-role',
         type=PodRoleType.from_string,
         choices=list(PodRoleType),
-        default=PodRoleType.WORKER,
+        default=POD_PARAMS_MAPPING[pod_type].role_type,
         help='The role of this Pod in a Deployment'
         if _SHOW_ALL_ARGS
         else argparse.SUPPRESS,
@@ -84,9 +104,11 @@ def mixin_pod_parser(parser):
 
     gp.add_argument(
         '--port',
-        type=int,
-        default=helper.random_port(),
-        help='The port for input data to bind to, default is a random port between [49152, 65535]',
+        type=str,
+        default=str(helper.random_port()),
+        help='The port for input data to bind to, default is a random port between [49152, 65535].'
+        ' In the case of an external Executor (`--external` or `external=True`) this can be a list of ports, separated by commas.'
+        ' Then, every resulting address will be considered as one replica of the Executor.',
     )
 
     gp.add_argument(
