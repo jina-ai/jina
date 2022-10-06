@@ -1381,6 +1381,8 @@ class Flow(
 
         .. # noqa: DAR401
         """
+        if multiprocessing.get_start_method().lower() == 'fork':
+            os.environ['GRPC_ENABLE_FORK_SUPPORT'] = '1'
 
         op_flow = copy.deepcopy(self) if copy_flow else self
 
