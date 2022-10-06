@@ -122,7 +122,8 @@ class BasePod(ABC):
 
         # arguments needed to create `runtime` and communicate with it in the `run` in the stack of the new process
         # or thread.f
-        test_worker = multiprocessing.Process()
+        self._spawn_context = multiprocessing.get_context('spawn')
+        test_worker = self._spawn_context.Process()
         self.is_ready = _get_event(test_worker)
         self.is_shutdown = _get_event(test_worker)
         self.cancel_event = _get_event(test_worker)
@@ -303,7 +304,7 @@ class Pod(BasePod):
     def __init__(self, args: 'argparse.Namespace'):
         super().__init__(args)
         self.runtime_cls = self._get_runtime_cls()
-        self.worker = multiprocessing.Process(
+        self.worker = self._spawn_context.Process(
             target=run,
             kwargs={
                 'args': args,

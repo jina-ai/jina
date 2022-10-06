@@ -374,7 +374,7 @@ class ContainerPod(BasePod):
         This method calls :meth:`start` in :class:`threading.Thread` or :class:`multiprocesssing.Process`.
         .. #noqa: DAR201
         """
-        self.worker = multiprocessing.Process(
+        self.worker = self._spawn_context.Process(
             target=run,
             kwargs={
                 'args': self.args,
