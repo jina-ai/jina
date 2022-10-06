@@ -17,14 +17,12 @@ from tests.integration.instrumentation import (
     [
         ('grpc', 'GRPCClient', 1),
         ('http', 'HTTPClient', 4),
-        ('websocket', 'WebSocketClient', 6)
+        ('websocket', 'WebSocketClient', 6),
     ],
 )
-def test_gateway_instrumentation(otlp_collector, protocol, client_type, num_internal_spans):
-    import multiprocessing
-
-    multiprocessing.set_start_method('spawn', force=True)
-
+def test_gateway_instrumentation(
+    otlp_collector, protocol, client_type, num_internal_spans
+):
     f = Flow(
         protocol=protocol,
         tracing=True,
