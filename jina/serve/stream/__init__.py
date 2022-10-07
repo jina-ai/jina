@@ -112,6 +112,9 @@ class RequestStreamer:
         async def end_future():
             raise self._EndOfStreaming
 
+        async def exception_raise(exception):
+            raise exception
+
         def callback(future: 'asyncio.Future'):
             """callback to be run after future is completed.
             1. Put the future in the result queue.
@@ -187,7 +190,7 @@ class RequestStreamer:
                 except self._EndOfStreaming:
                     pass
 
-        asyncio.create_task(iterate_requests())
+        iterate_requests_task = asyncio.create_task(iterate_requests())
         handle_floating_task = asyncio.create_task(handle_floating_responses())
         self.total_num_floating_tasks_alive += 1
 
@@ -195,6 +198,14 @@ class RequestStreamer:
             self.total_num_floating_tasks_alive -= 1
 
         handle_floating_task.add_done_callback(floating_task_done)
+
+        def iterating_task_done(task):
+            if task.exception() is not None:
+                all_requests_handled.set()
+                future_cancel = asyncio.ensure_future(exception_raise(task.exception()))
+                result_queue.put_nowait(future_cancel)
+
+        iterate_requests_task.add_done_callback(iterating_task_done)
 
         while not all_requests_handled.is_set():
             future = await result_queue.get()
