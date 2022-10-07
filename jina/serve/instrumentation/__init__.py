@@ -1,4 +1,10 @@
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Optional, Sequence
+
+if TYPE_CHECKING:
+    from grpc.aio._interceptor import ClientInterceptor, ServerInterceptor
+    from opentelemetry.instrumentation.grpc._client import (
+        OpenTelemetryClientInterceptor,
+    )
 
 
 class InstrumentationMixin:
@@ -71,7 +77,7 @@ class InstrumentationMixin:
             self.meter_provider = opentelmetry_metrics.NoOpMeterProvider()
             self.meter = opentelmetry_metrics.NoOpMeter(name='no-op')
 
-    def aio_tracing_server_interceptor(self):
+    def aio_tracing_server_interceptor(self) -> Optional[Sequence['ServerInterceptor']]:
         '''Create a gRPC aio server interceptor.
         :returns: A service-side aio interceptor object.
         '''
@@ -84,14 +90,14 @@ class InstrumentationMixin:
         else:
             return None
 
-    def aio_tracing_client_interceptors(self):
+    def aio_tracing_client_interceptors(
+        self,
+    ) -> Optional[Sequence['ClientInterceptor']]:
         '''Create a gRPC client aio channel interceptor.
         :returns: An invocation-side list of aio interceptor objects.
         '''
 
         if self.tracing:
-            from opentelemetry import trace
-
             from jina.serve.instrumentation._aio_client import (
                 StreamStreamAioClientInterceptor,
                 StreamUnaryAioClientInterceptor,
@@ -108,12 +114,11 @@ class InstrumentationMixin:
         else:
             return None
 
-    def tracing_client_interceptor(self):
+    def tracing_client_interceptor(self) -> Optional['OpenTelemetryClientInterceptor']:
         '''
         :returns: a gRPC client interceptor with the global tracing provider.
         '''
         if self.tracing:
-            from opentelemetry import trace
             from opentelemetry.instrumentation.grpc import (
                 client_interceptor as grpc_client_interceptor,
             )

@@ -1,12 +1,11 @@
 import argparse
 import contextlib
 from abc import ABC
-from typing import List
+from typing import TYPE_CHECKING, List
 
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha import reflection
-from opentelemetry.propagate import Context, extract
 
 from jina.excepts import RuntimeTerminated
 from jina.helper import get_full_version
@@ -16,6 +15,9 @@ from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest
+
+if TYPE_CHECKING:
+    from opentelemetry.propagate import Context
 
 
 class WorkerRuntime(AsyncNewLoopRuntime, ABC):
@@ -172,7 +174,9 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         return endpointsProto
 
     @staticmethod
-    def _extract_tracing_context(metadata: grpc.aio.Metadata) -> Context:
+    def _extract_tracing_context(metadata: grpc.aio.Metadata) -> 'Context':
+        from opentelemetry.propagate import extract
+
         context = extract(dict(metadata))
         return context
 

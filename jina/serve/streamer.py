@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
 from docarray import DocumentArray
 
@@ -11,6 +11,10 @@ from jina.serve.stream import RequestStreamer
 __all__ = ['GatewayStreamer']
 
 if TYPE_CHECKING:
+    from grpc.aio._interceptor import ClientInterceptor
+    from opentelemetry.instrumentation.grpc._client import (
+        OpenTelemetryClientInterceptor,
+    )
     from prometheus_client import CollectorRegistry
 
 
@@ -32,8 +36,8 @@ class GatewayStreamer:
         prefetch: int = 0,
         logger: Optional['JinaLogger'] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
-        aio_tracing_client_interceptors: Optional[Sequence[Any]] = None,
-        tracing_client_interceptor: Optional[Any] = None,
+        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
+        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
     ):
         """
         :param graph_representation: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to

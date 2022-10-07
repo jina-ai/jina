@@ -7,16 +7,14 @@ import warnings
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any, Dict, Optional, Type, Union
 
-from opentelemetry import metrics, trace
-
 from jina import __args_executor_init__, __cache_path__, __default_endpoint__
 from jina.enums import BetterEnum
 from jina.helper import ArgNamespace, T, iscoroutinefunction, typename
 from jina.importer import ImportExtensions
 from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
-from jina.serve.executors.decorators import avoid_concurrent_lock_cls, requests
-from jina.serve.executors.metas import get_default_metas, get_executor_taboo
+from jina.serve.executors.decorators import avoid_concurrent_lock_cls
+from jina.serve.executors.metas import get_executor_taboo
 from jina.serve.helper import store_init_kwargs, wrap_func
 
 if TYPE_CHECKING:
@@ -182,6 +180,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._metrics_buffer = None
 
     def _init_instrumentation(self, _runtime_args: Dict = {}):
+        from opentelemetry import metrics, trace
+
         instrumentating_module_name = _runtime_args.get('name', self.__class__.__name__)
 
         args_tracer_provider = _runtime_args.get('tracer_provider', None)

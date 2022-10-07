@@ -50,15 +50,8 @@ def partition_spans_by_kind(traces):
 
 
 class ExecutorTestWithTracing(Executor):
-    def __init__(
-        self,
-        metas: Optional[Dict] = None,
-        requests: Optional[Dict] = None,
-        runtime_args: Optional[Dict] = None,
-        workspace: Optional[str] = None,
-        **kwargs,
-    ):
-        super().__init__(metas, requests, runtime_args, workspace, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.docs_counter = self.meter.create_counter(name='docs_counter')
 
     @requests(on='/index')

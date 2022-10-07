@@ -3,7 +3,7 @@ import ipaddress
 import os
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Sequence, Set, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Set, Tuple, Union
 from urllib.parse import urlparse
 
 import grpc
@@ -11,7 +11,6 @@ from grpc.aio import AioRpcError
 from grpc_health.v1 import health_pb2, health_pb2_grpc
 from grpc_reflection.v1alpha.reflection_pb2 import ServerReflectionRequest
 from grpc_reflection.v1alpha.reflection_pb2_grpc import ServerReflectionStub
-from opentelemetry.instrumentation.grpc.grpcext import intercept_channel
 
 from jina import __default_endpoint__
 from jina.enums import PollingType
@@ -20,7 +19,6 @@ from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.helper import _get_summary_time_context_or_null
-from jina.serve.instrumentation import InstrumentationMixin
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
 
@@ -29,6 +27,10 @@ TLS_PROTOCOL_SCHEMES = ['grpcs', 'https', 'wss']
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from grpc.aio._interceptor import ClientInterceptor
+    from opentelemetry.instrumentation.grpc._client import (
+        OpenTelemetryClientInterceptor,
+    )
     from prometheus_client import CollectorRegistry, Summary
 
 
@@ -60,8 +62,8 @@ class ReplicaList:
         metrics: _NetworkingMetrics,
         logger,
         runtine_name: str,
-        aio_tracing_client_interceptors: Optional[Sequence[Any]] = None,
-        tracing_client_interceptor: Optional[Any] = None,
+        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
+        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
     ):
         self.runtime_name = runtine_name
         self._connections = []
@@ -426,8 +428,12 @@ class GrpcConnectionPool:
             runtime_name: str,
             logger: Optional[JinaLogger],
             metrics: _NetworkingMetrics,
-            aio_tracing_client_interceptors: Optional[Sequence[Any]] = None,
-            tracing_client_interceptor: Optional[Any] = None,
+            aio_tracing_client_interceptors: Optional[
+                Sequence['ClientInterceptor']
+            ] = None,
+            tracing_client_interceptor: Optional[
+                'OpenTelemetryClientInterceptor'
+            ] = None,
         ):
             self._logger = logger
             # this maps deployments to shards or heads
@@ -593,8 +599,8 @@ class GrpcConnectionPool:
         logger: Optional[JinaLogger] = None,
         compression: Optional[str] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
-        aio_tracing_client_interceptors: Optional[Sequence[Any]] = None,
-        tracing_client_interceptor: Optional[Any] = None,
+        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
+        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
     ):
         self._logger = logger or JinaLogger(self.__class__.__name__)
 
@@ -1045,6 +1051,8 @@ class GrpcConnectionPool:
             channel = grpc.insecure_channel(address, options=options)
 
         if interceptor:
+            from opentelemetry.instrumentation.grpc.grpcext import intercept_channel
+
             return intercept_channel(
                 channel,
                 interceptor,
@@ -1059,8 +1067,8 @@ class GrpcConnectionPool:
         asyncio: bool = False,
         tls: bool = False,
         root_certificates: Optional[str] = None,
-        aio_tracing_client_interceptors: Optional[Sequence[Any]] = None,
-        tracing_client_interceptor: Optional[Any] = None,
+        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
+        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
     ) -> grpc.Channel:
         """
         Creates a grpc channel to the given address
@@ -1269,7 +1277,7 @@ class GrpcConnectionPool:
         metrics: _NetworkingMetrics,
         tls=False,
         root_certificates: Optional[str] = None,
-        aio_tracing_client_interceptors: Optional[Sequence[Any]] = None,
+        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
     ) -> Tuple[ConnectionStubs, grpc.aio.Channel]:
         """
         Creates an async GRPC Channel. This channel has to be closed eventually!

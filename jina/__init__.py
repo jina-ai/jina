@@ -102,7 +102,6 @@ __jina_env__ = (
     'JINA_OPTOUT_TELEMETRY',
     'JINA_RANDOM_PORT_MAX',
     'JINA_RANDOM_PORT_MIN',
-    'JINA_ENABLE_OTEL_TRACING',
 )
 
 __default_host__ = _os.environ.get(

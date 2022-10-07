@@ -1,4 +1,4 @@
-from typing import Any, Optional, Sequence
+from typing import Optional
 
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
@@ -8,9 +8,8 @@ from jina import __default_host__
 from jina.helper import get_full_version
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.gateway import BaseGateway
+from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.types.request.status import StatusMessage
-
-from ...helper import _get_grpc_server_options
 
 
 class GRPCGateway(BaseGateway):

@@ -1,10 +1,7 @@
 import abc
 import argparse
-import functools
-import inspect
-from typing import TYPE_CHECKING, Any, Callable, Optional, Sequence
+from typing import TYPE_CHECKING, Optional, Sequence
 
-from jina.helper import convert_tuple_to_list
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
 from jina.serve.helper import store_init_kwargs, wrap_func
@@ -13,7 +10,11 @@ from jina.serve.streamer import GatewayStreamer
 __all__ = ['BaseGateway']
 
 if TYPE_CHECKING:
+    from grpc.aio._interceptor import ClientInterceptor, ServerInterceptor
     from opentelemetry import trace
+    from opentelemetry.instrumentation.grpc._client import (
+        OpenTelemetryClientInterceptor,
+    )
     from prometheus_client import CollectorRegistry
 
 
@@ -81,9 +82,11 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         runtime_name: Optional[str] = None,
         tracing: Optional[bool] = False,
         tracer_provider: Optional['trace.TracerProvider'] = None,
-        grpc_tracing_server_interceptors: Optional[Sequence[Any]] = None,
-        aio_tracing_client_interceptors: Optional[Sequence[Any]] = None,
-        tracing_client_interceptor: Optional[Any] = None,
+        grpc_tracing_server_interceptors: Optional[
+            Sequence['ServerInterceptor']
+        ] = None,
+        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
+        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
     ):
         """
         Set streamer object by providing runtime parameters.
