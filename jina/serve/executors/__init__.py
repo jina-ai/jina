@@ -184,14 +184,18 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     def _init_instrumentation(self, _runtime_args: Dict = {}):
         instrumentating_module_name = _runtime_args.get('name', self.__class__.__name__)
 
-        self.tracer_provider = _runtime_args.get(
-            'tracer_provider', trace.NoOpTracerProvider()
-        )
-
+        args_tracer_provider = _runtime_args.get('tracer_provider', None)
+        if args_tracer_provider:
+            self.tracer_provider = args_tracer_provider
+        else:
+            self.tracer_provider = trace.NoOpTracerProvider()
         self.tracer = self.tracer_provider.get_tracer(instrumentating_module_name)
-        self.meter_provider = _runtime_args.get(
-            'meter_provider', metrics.NoOpMeterProvider()
-        )
+
+        args_meter_provider = _runtime_args.get('meter_provider', None)
+        if args_meter_provider:
+            self.meter_provider = args_meter_provider
+        else:
+            self.meter_provider = metrics.NoOpMeterProvider()
         self.meter = self.meter_provider.get_meter(instrumentating_module_name)
 
     def _add_requests(self, _requests: Optional[Dict]):

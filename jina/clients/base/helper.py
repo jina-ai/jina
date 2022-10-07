@@ -12,6 +12,8 @@ from jina.types.request.data import DataRequest
 from jina.types.request.status import StatusMessage
 
 if TYPE_CHECKING:
+    from opentelemetry import trace
+
     from jina.logging.logger import JinaLogger
 
 
@@ -26,7 +28,7 @@ class AioHttpClientlet(ABC):
         initial_backoff: float = 0.5,
         max_backoff: float = 0.1,
         backoff_multiplier: float = 1.5,
-        tracer_provider: Optional[Any] = None,
+        tracer_provider: Optional['trace.TraceProvider'] = None,
         **kwargs,
     ) -> None:
         """HTTP Client to be used with the streamer

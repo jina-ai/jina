@@ -2,8 +2,6 @@ import argparse
 import json
 from typing import TYPE_CHECKING, Dict, List, Optional
 
-from opentelemetry import trace
-
 from jina import __version__
 from jina.clients.request import request_generator
 from jina.enums import DataInputType
@@ -13,6 +11,8 @@ from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 
 if TYPE_CHECKING:
+    from opentelemetry import trace
+
     from jina.serve.streamer import GatewayStreamer
 
 
@@ -27,7 +27,7 @@ def get_fastapi_app(
     cors: bool,
     logger: 'JinaLogger',
     tracing: Optional[bool] = None,
-    tracer_provider: Optional[trace.TracerProvider] = None,
+    tracer_provider: Optional['trace.TracerProvider'] = None,
 ):
     """
     Get the app from FastAPI as the REST interface.

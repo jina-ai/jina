@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Dict, List, Optional
 
 from docarray import DocumentArray
-from opentelemetry import metrics, trace
 from opentelemetry.context.context import Context
 
 from jina import __default_endpoint__
@@ -13,6 +12,7 @@ from jina.types.request.data import DataRequest
 if TYPE_CHECKING:
     import argparse
 
+    from opentelemetry import metrics, trace
     from prometheus_client import CollectorRegistry
 
     from jina.logging.logger import JinaLogger
@@ -28,8 +28,8 @@ class DataRequestHandler:
         args: 'argparse.Namespace',
         logger: 'JinaLogger',
         metrics_registry: Optional['CollectorRegistry'] = None,
-        tracer_provider: Optional[trace.TracerProvider] = None,
-        meter_provider: Optional[metrics.MeterProvider] = None,
+        tracer_provider: Optional['trace.TracerProvider'] = None,
+        meter_provider: Optional['metrics.MeterProvider'] = None,
         **kwargs,
     ):
         """Initialize private parameters and execute private loading functions.
@@ -97,8 +97,8 @@ class DataRequestHandler:
     def _load_executor(
         self,
         metrics_registry: Optional['CollectorRegistry'] = None,
-        tracer_provider: Optional[trace.TracerProvider] = None,
-        meter_provider: Optional[metrics.MeterProvider] = None,
+        tracer_provider: Optional['trace.TracerProvider'] = None,
+        meter_provider: Optional['metrics.MeterProvider'] = None,
     ):
         """
         Load the executor to this runtime, specified by ``uses`` CLI argument.
