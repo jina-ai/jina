@@ -133,7 +133,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._add_requests(requests)
         self._add_runtime_args(runtime_args)
         self._init_monitoring()
-        self._init_instrumentation(runtime_args or {})
+        self._init_instrumentation(runtime_args)
         self._init_workspace = workspace
         self.logger = JinaLogger(self.__class__.__name__)
         if __dry_run_endpoint__ not in self.requests:
@@ -179,24 +179,27 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._summary_method = None
             self._metrics_buffer = None
 
-    def _init_instrumentation(self, _runtime_args: Dict = {}):
+    def _init_instrumentation(self, _runtime_args: Optional[Dict] = None):
         from opentelemetry import metrics, trace
 
-        instrumentating_module_name = _runtime_args.get('name', self.__class__.__name__)
+        if not _runtime_args:
+            _runtime_args = {}
+
+        instrumenting_module_name = _runtime_args.get('name', self.__class__.__name__)
 
         args_tracer_provider = _runtime_args.get('tracer_provider', None)
         if args_tracer_provider:
             self.tracer_provider = args_tracer_provider
         else:
             self.tracer_provider = trace.NoOpTracerProvider()
-        self.tracer = self.tracer_provider.get_tracer(instrumentating_module_name)
+        self.tracer = self.tracer_provider.get_tracer(instrumenting_module_name)
 
         args_meter_provider = _runtime_args.get('meter_provider', None)
         if args_meter_provider:
             self.meter_provider = args_meter_provider
         else:
             self.meter_provider = metrics.NoOpMeterProvider()
-        self.meter = self.meter_provider.get_meter(instrumentating_module_name)
+        self.meter = self.meter_provider.get_meter(instrumenting_module_name)
 
     def _add_requests(self, _requests: Optional[Dict]):
         if not hasattr(self, 'requests'):

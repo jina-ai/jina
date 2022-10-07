@@ -89,7 +89,7 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
     ):
         """
-        Set streamer object by providing runtime parameters.
+        Set additional dependencies by providing runtime parameters.
         :param args: runtime args
         :param timeout_send: grpc connection timeout
         :param metrics_registry: metric registry when monitoring is enabled

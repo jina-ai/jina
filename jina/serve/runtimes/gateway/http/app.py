@@ -43,7 +43,7 @@ def get_fastapi_app(
     :param expose_graphql_endpoint: If set, /graphql endpoint is added to HTTP interface.
     :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
     :param logger: Jina logger.
-    :param tracing: Enables tracing is set to True.
+    :param tracing: Enables tracing if set to True.
     :param tracer_provider: If tracing is enabled the tracer_provider will be used to instrument the code.
     :return: fastapi app
     """
