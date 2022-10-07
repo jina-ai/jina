@@ -11,7 +11,7 @@
 ## General PR process  
 
 - The scope of PR should be simple, unique and well-defined. PR should not contain unrelated changes
-- Approve PR only if you are sure about the scope
+- The PR will be approved PR only if you are sure about the scope
 - Be respectful and reply asap
 - Avoid spending too much time on trivial changes
 - Avoid premature optimisation
