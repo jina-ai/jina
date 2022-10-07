@@ -312,7 +312,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         elif __default_endpoint__ in self.requests:
             return await self.__acall_endpoint__(__default_endpoint__, **kwargs)
 
-    async def __acall_endpoint__(self, req_endpoint, **kwargs):
+    async def __acall_endpoint__(self, req_endpoint, otel_context, **kwargs):
         func = self.requests[req_endpoint]
 
         runtime_name = (
@@ -327,11 +327,18 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             else contextlib.nullcontext()
         )
 
-        with _summary:
-            if iscoroutinefunction(func):
-                return await func(self, **kwargs)
-            else:
-                return func(self, **kwargs)
+        with self.tracer.start_as_current_span(req_endpoint, context=otel_context) as span:
+            try:
+                with _summary:
+                    if iscoroutinefunction(func):
+                        return await func(self, **kwargs)
+                    else:
+                        return func(self, **kwargs)
+                #put span to be SUCCESS
+            except Exception as ex:
+                #put span to be NOT SUCCESS
+                raise
+
 
     @property
     def workspace(self) -> Optional[str]:

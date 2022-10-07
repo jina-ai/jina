@@ -182,16 +182,20 @@ class DataRequestHandler:
         )
 
         # executor logic
-        return_data = await self._executor.__acall__(
-            req_endpoint=requests[0].header.exec_endpoint,
-            docs=docs,
-            parameters=params,
-            docs_matrix=DataRequestHandler.get_docs_matrix_from_request(
-                requests,
-                field='docs',
-            ),
-            otel_context=otel_context,
-        )
+        with self._executor.tracer.start_as_current_span(requests[0].header.exec_endpoint, context=otel_context) as span:
+            try:
+                return_data = await self._executor.__acall__(
+                    req_endpoint=requests[0].header.exec_endpoint,
+                    docs=docs,
+                    parameters=params,
+                    docs_matrix=DataRequestHandler.get_docs_matrix_from_request(
+                        requests,
+                        field='docs',
+                    ),
+                    otel_context=otel_context,
+                )
+            except:
+                span.
         # assigning result back to request
         if return_data is not None:
             if isinstance(return_data, DocumentArray):
