@@ -87,8 +87,24 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
         """
         self._loop.run_until_complete(self._loop_body())
 
+    def _teardown_instrumentation(self):
+        try:
+            if self.tracing:
+                if hasattr(self.tracer_provider, 'force_flush'):
+                    self.tracer_provider.force_flush()
+                if hasattr(self.tracer_provider, 'shutdown'):
+                    self.tracer_provider.shutdown()
+            if self.metrics:
+                if hasattr(self.meter_provider, 'force_flush'):
+                    self.meter_provider.force_flush()
+                if hasattr(self.meter_provider, 'shutdown'):
+                    self.meter_provider.shutdown()
+        except Exception as ex:
+            self.logger.warning(f'Exception during instrumentation teardown, {str(ex)}')
+
     def teardown(self):
         """Call async_teardown() and stop and close the event loop."""
+        self._teardown_instrumentation()
         self._loop.run_until_complete(self.async_teardown())
         self._loop.stop()
         self._loop.close()
