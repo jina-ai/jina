@@ -164,6 +164,7 @@ class GRPCBaseClient(BaseClient):
             self.logger.warning('user cancel the process')
         except asyncio.CancelledError as ex:
             self.logger.warning(f'process error: {ex!r}')
+            raise
         except:
             # Not sure why, adding this line helps in fixing a hanging test
             raise

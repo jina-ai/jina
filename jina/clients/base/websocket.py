@@ -72,16 +72,16 @@ class WebSocketBaseClient(BaseClient):
             return False
 
     async def _get_results(
-        self,
-        inputs: 'InputType',
-        on_done: 'CallbackFnType',
-        on_error: Optional['CallbackFnType'] = None,
-        on_always: Optional['CallbackFnType'] = None,
-        max_attempts: int = 1,
-        initial_backoff: float = 0.5,
-        max_backoff: float = 0.1,
-        backoff_multiplier: float = 1.5,
-        **kwargs,
+            self,
+            inputs: 'InputType',
+            on_done: 'CallbackFnType',
+            on_error: Optional['CallbackFnType'] = None,
+            on_always: Optional['CallbackFnType'] = None,
+            max_attempts: int = 1,
+            initial_backoff: float = 0.5,
+            max_backoff: float = 0.1,
+            backoff_multiplier: float = 1.5,
+            **kwargs,
     ):
         """
         :param inputs: the callable
@@ -110,7 +110,8 @@ class WebSocketBaseClient(BaseClient):
             proto = 'wss' if self.args.tls else 'ws'
             url = f'{proto}://{self.args.host}:{self.args.port}/'
             iolet = await stack.enter_async_context(
-                WebsocketClientlet(url=url, logger=self.logger, max_attempts=max_attempts, initial_backoff=initial_backoff,
+                WebsocketClientlet(url=url, logger=self.logger, max_attempts=max_attempts,
+                                   initial_backoff=initial_backoff,
                                    max_backoff=max_backoff, backoff_multiplier=backoff_multiplier, **kwargs)
             )
 
@@ -149,7 +150,7 @@ class WebSocketBaseClient(BaseClient):
                 asyncio.create_task(iolet.send_eoi())
 
             def _request_handler(
-                request: 'Request',
+                    request: 'Request',
             ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
                 """
                 For each request in the iterator, we send the `Message` using `iolet.send_message()`.
@@ -176,6 +177,8 @@ class WebSocketBaseClient(BaseClient):
 
             receive_task = asyncio.create_task(_receive())
 
+            exception_raised = None
+
             if receive_task.done():
                 raise RuntimeError('receive task not running, can not send messages')
             try:
@@ -191,7 +194,19 @@ class WebSocketBaseClient(BaseClient):
                     if self.show_progress:
                         p_bar.update()
                     yield response
+            except Exception as ex:
+                exception_raised = ex
+                try:
+                    receive_task.cancel()
+                except:
+                    raise ex
             finally:
                 if iolet.close_code == status.WS_1011_INTERNAL_ERROR:
                     raise ConnectionError(iolet.close_message)
-                await receive_task
+                try:
+                    await receive_task
+                except asyncio.CancelledError:
+                    if exception_raised is not None:
+                        raise exception_raised
+                    else:
+                        raise
