@@ -88,3 +88,8 @@ def event_loop(request):
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
+
+
+@pytest.fixture(autouse=True)
+def set_start_method():
+    os.environ['JINA_MP_START_METHOD'] = 'spawn'
