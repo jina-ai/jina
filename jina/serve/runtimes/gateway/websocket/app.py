@@ -1,8 +1,6 @@
 import argparse
 from typing import TYPE_CHECKING, Any, AsyncIterator, Dict, List, Optional, Union
 
-from opentelemetry import trace
-
 from jina.clients.request import request_generator
 from jina.enums import DataInputType, WebsocketSubProtocols
 from jina.excepts import InternalNetworkError
@@ -13,6 +11,8 @@ from jina.types.request.data import DataRequest
 from jina.types.request.status import StatusMessage
 
 if TYPE_CHECKING:
+    from opentelemetry import trace
+
     from jina.serve.streamer import GatewayStreamer
 
 
@@ -27,7 +27,7 @@ def get_fastapi_app(
     streamer: 'GatewayStreamer',
     logger: 'JinaLogger',
     tracing: Optional[bool] = None,
-    tracer_provider: Optional[trace.TracerProvider] = None,
+    tracer_provider: Optional['trace.TracerProvider'] = None,
 ):
     """
     Get the app from FastAPI as the Websocket interface.

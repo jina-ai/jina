@@ -4,8 +4,6 @@ import functools
 import inspect
 from typing import TYPE_CHECKING, Any, Callable, Optional, Sequence
 
-from opentelemetry import trace
-
 from jina.helper import convert_tuple_to_list
 from jina.jaml import JAMLCompatible
 from jina.logging.logger import JinaLogger
@@ -15,6 +13,7 @@ from jina.serve.streamer import GatewayStreamer
 __all__ = ['BaseGateway']
 
 if TYPE_CHECKING:
+    from opentelemetry import trace
     from prometheus_client import CollectorRegistry
 
 
@@ -81,7 +80,7 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         metrics_registry: Optional['CollectorRegistry'] = None,
         runtime_name: Optional[str] = None,
         tracing: Optional[bool] = False,
-        tracer_provider: Optional[trace.TracerProvider] = None,
+        tracer_provider: Optional['trace.TracerProvider'] = None,
         grpc_tracing_server_interceptors: Optional[Sequence[Any]] = None,
         aio_tracing_client_interceptors: Optional[Sequence[Any]] = None,
         tracing_client_interceptor: Optional[Any] = None,
