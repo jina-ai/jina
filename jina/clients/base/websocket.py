@@ -191,6 +191,8 @@ class WebSocketBaseClient(BaseClient):
                     if self.show_progress:
                         p_bar.update()
                     yield response
+            except:
+                receive_task.cancel()
             finally:
                 if iolet.close_code == status.WS_1011_INTERNAL_ERROR:
                     raise ConnectionError(iolet.close_message)
