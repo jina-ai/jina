@@ -68,6 +68,10 @@ html_theme_options = {
 
     # start-announce
 
+    "announcement": '''
+    <a href="fast">Learn more about Lightning</a>
+    ''',
+        
     # end-announce
 }
 
