@@ -1,8 +1,8 @@
 (flow)=
-# Basic
+# Basics
 
 
-{class}`~jina.Flow` defines how your Executors are connected together and how your data *flows* through them.
+A {class}`~jina.Flow` defines how your Executors are connected together and how your data *flows* through them.
 
 
 ## Create
@@ -32,14 +32,14 @@ An empty Flow contains only {ref}`the Gateway<flow>`.
 :scale: 70%
 ```
 
-For production, it is recommended to define the Flows with YAML. This is because YAML files are independent of Python logic code and easy to maintain.
+For production, you should define your Flows with YAML. This is because YAML files are independent of the Python logic code and easier to maintain.
 
 
 ### Conversion between Python and YAML
 
-Python Flow definition can be easily converted to/from YAML definition.
+A Python Flow definition can be easily converted to/from a YAML definition.
 
-To load a Flow from a YAML file, use the {meth}`~jina.Flow.load_config`:
+To load a Flow from a YAML file, use {meth}`~jina.Flow.load_config`:
 
 ```python
 from jina import Flow
@@ -61,12 +61,12 @@ f.save_config('flow.yml')
 
 When a {class}`~jina.Flow` starts, all its {ref}`added Executors <flow-add-executors>` will start as well, making it possible to {ref}`reach the service through its API <access-flow-api>`.
 
-There are three ways to start a Flow. Depending on the use case, you can start a Flow either in Python, or from a YAML file, or from the terminal.
+There are three ways to start a Flow: In Python, from a YAML file, or from the terminal.
 
 - Generally in Python: use Flow as a context manager in Python.
-- As an entrypoint from terminal: use Jina CLI and a Flow YAML.
+- As an entrypoint from terminal: use `Jina CLI <cli>` and a Flow YAML file.
 - As an entrypoint from Python code: use Flow as a context manager inside `if __name__ == '__main__'`
-- No context manager: manually call {meth}`~jina.Flow.start`  and {meth}`~jina.Flow.close`.
+- No context manager: manually call {meth}`~jina.Flow.start` and {meth}`~jina.Flow.close`.
 
 
 ````{tab} General in Python
@@ -119,14 +119,14 @@ A successful start of a Flow looks like this:
 :scale: 70%
 ```
 
-Your addresses and entrypoints can be found in the output. When enabling more features such as monitoring, HTTP gateway, TLS encryption, this display will also expand to contain more information.
+Your addresses and entrypoints can be found in the output. When you enable more features such as monitoring, HTTP gateway, TLS encryption, this display expands to contain more information.
 
 
 ### Set multiprocessing `spawn` 
 
-Some cornet cases require to force `spawn` start method for multiprocessing, e.g. if you encounter "Cannot re-initialize CUDA in forked subprocess". 
+Some corner cases require forcing a `spawn` start method for multiprocessing, for example if you encounter "Cannot re-initialize CUDA in forked subprocess". 
 
-You may try `JINA_MP_START_METHOD=spawn` before starting the Python script to enable this.
+You can use `JINA_MP_START_METHOD=spawn` before starting the Python script to enable this.
 
 ```bash
 JINA_MP_START_METHOD=spawn python app.py
@@ -139,8 +139,7 @@ There's no need to set this for Windows, as it only supports spawn method for mu
 ## Serve forever
 
 In most scenarios, a Flow should remain reachable for prolonged periods of time.
-This can be achieved by `jina flow --uses flow.yml` from terminal.
-
+This can be achieved by `jina flow --uses flow.yml` from the terminal.
 
 Or if you are serving a Flow from Python:
 
@@ -153,7 +152,7 @@ with f:
     f.block()
 ```
 
-The `.block()` method blocks the execution of the current thread or process, which enables external clients to access the Flow.
+The `.block()` method blocks the execution of the current thread or process, enabling external clients to access the Flow.
 
 In this case, the Flow can be stopped by interrupting the thread or process. 
 
@@ -186,7 +185,7 @@ e.set()  # set event and stop (unblock) the Flow
 
 ## Visualize
 
-A {class}`~jina.Flow` has a built-in `.plot()` function which can be used to visualize a `Flow`:
+A {class}`~jina.Flow` has a built-in `.plot()` function which can be used to visualize the `Flow`:
 ```python
 from jina import Flow
 
@@ -210,13 +209,13 @@ f.plot('flow-2.svg')
 :width: 70%
 ```
 
-One can also do it in the terminal via:
+You can also do it in the terminal:
 
 ```bash
 jina export flowchart flow.yml flow.svg 
 ```
 
-One can also visualize a remote Flow by passing the URL to `jina export flowchart`.
+You can also visualize a remote Flow by passing the URL to `jina export flowchart`.
 
 ## Export
 
@@ -230,7 +229,7 @@ f = Flow().add()
 f.to_docker_compose_yaml()
 ```
 
-One can also do it in the terminal via:
+You can also do it in the terminal:
 
 ```shell
 jina export docker-compose flow.yml docker-compose.yml 
@@ -250,16 +249,16 @@ f = Flow().add()
 f.to_kubernetes_yaml('flow_k8s_configuration')
 ```
 
-One can also do it in the terminal via:
+You can also do it in the terminal:
 
 ```shell
 jina export kubernetes flow.yml ./my-k8s 
 ```
 
-This will generate the necessary Kubernetes configuration files for all the {class}`~jina.Executor`s of the Flow.
+This generates the Kubernetes configuration files for all the {class}`~jina.Executor`s in the Flow.
 The generated folder can be used directly with `kubectl` to deploy the Flow to an existing Kubernetes cluster.
 
-For an advance utilisation of Kubernetes with jina please refer to this {ref}`How to <kubernetes>` 
+For advanced utilisation of Kubernetes with Jina please refer to {ref}`How to <kubernetes>` 
 
 
 ```{tip}
@@ -270,7 +269,7 @@ If you do not wish to rebuild the image, set the environment variable `JINA_HUB_
 
 ```{admonition} See also
 :class: seealso
-For more in-depth guides on Flow deployment, take a look at our how-tos for {ref}`Docker compose <docker-compose>` and
+For more in-depth guides on Flow deployment, check our how-tos for {ref}`Docker compose <docker-compose>` and
 {ref}`Kubernetes <kubernetes>`.
 ```
 
