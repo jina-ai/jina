@@ -194,11 +194,11 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 if self.logger.debug_enabled:
                     self._log_data_request(requests[0])
 
-                otel_context = WorkerRuntime._extract_tracing_context(
+                tracing_context = WorkerRuntime._extract_tracing_context(
                     context.invocation_metadata()
                 )
                 result = await self._data_request_handler.handle(
-                    requests=requests, otel_context=otel_context
+                    requests=requests, tracing_context=tracing_context
                 )
                 if self._successful_requests_metrics:
                     self._successful_requests_metrics.inc()

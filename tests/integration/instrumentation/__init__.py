@@ -55,8 +55,10 @@ class ExecutorTestWithTracing(Executor):
         self.docs_counter = self.meter.create_counter(name='docs_counter')
 
     @requests(on='/index')
-    def empty(self, docs: 'DocumentArray', otel_context: Context, **kwargs):
-        with self.tracer.start_as_current_span('dummy', context=otel_context) as span:
+    def empty(self, docs: 'DocumentArray', tracing_context: Context, **kwargs):
+        with self.tracer.start_as_current_span(
+            'dummy', context=tracing_context
+        ) as span:
             span.set_attribute('len_docs', len(docs))
             self.docs_counter.add(len(docs))
             return docs

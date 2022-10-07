@@ -147,12 +147,12 @@ class DataRequestHandler:
         return parsed_params
 
     async def handle(
-        self, requests: List['DataRequest'], otel_context: Context = None
+        self, requests: List['DataRequest'], tracing_context: Context = None
     ) -> DataRequest:
         """Initialize private parameters and execute private loading functions.
 
         :param requests: The messages to handle containing a DataRequest
-        :param otel_context: OpenTelemetry Context from the originating request.
+        :param tracing_context: OpenTelemetry tracing context from the originating request.
         :returns: the processed message
         """
         # skip executor if endpoints mismatch
@@ -190,7 +190,7 @@ class DataRequestHandler:
                 requests,
                 field='docs',
             ),
-            otel_context=otel_context,
+            tracing_context=tracing_context,
         )
         # assigning result back to request
         if return_data is not None:
