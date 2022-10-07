@@ -113,9 +113,7 @@ class GRPCBaseClient(BaseClient):
                 options=options,
                 asyncio=True,
                 tls=self.args.tls,
-                aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(
-                    self.tracer
-                ),
+                aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
             ) as channel:
                 stub = jina_pb2_grpc.JinaRPCStub(channel)
                 self.logger.debug(f'connected to {self.args.host}:{self.args.port}')

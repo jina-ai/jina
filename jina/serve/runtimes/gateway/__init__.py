@@ -94,12 +94,8 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             tracing=self.tracing,
             tracer_provider=self.tracer_provider,
             grpc_tracing_server_interceptors=self.aio_tracing_server_interceptor(),
-            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(
-                self.tracer
-            ),
-            tracing_client_interceptor=self.tracing_client_interceptor(
-                self.tracer_provider
-            ),
+            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
+            tracing_client_interceptor=self.tracing_client_interceptor(),
         )
         await self.gateway.setup_server()
 
