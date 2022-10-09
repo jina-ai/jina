@@ -37,3 +37,4 @@ UnicodeEncodeError: 'charmap' codec can't encode character '\u25ae' in position 
 ```
 Set environment variable `PYTHONIOENCODING='utf-8'` before starting your Python script.
 
+# Happy Jina'ing:)

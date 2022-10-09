@@ -296,3 +296,10 @@ You can now see docs website on [http://localhost:8000](http://localhost:8000) o
 ## 🙏 Thank You
 
 Once again, thanks so much for your interest in contributing to Jina. We're excited to see your contributions!
+
+
+Here's a quick summary of contributing ethics:
+1) use descriptive titles which are easily comprehensible by others.
+2) dont use caps in titles and be respectful and precise in your titles
+
+and as always......every contribution matters:)
