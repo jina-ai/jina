@@ -3,9 +3,9 @@ import functools
 import pytest
 
 from jina.helper import iscoroutinefunction
-from jina.serve.executors import get_default_metas, get_executor_taboo
+from jina.serve.executors import get_executor_taboo
 from jina.serve.executors.decorators import requests
-from jina.serve.helper import store_init_kwargs, wrap_func
+from jina.serve.helper import store_init_kwargs
 
 
 def test_store_init_kwargs():
