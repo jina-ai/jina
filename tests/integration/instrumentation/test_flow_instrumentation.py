@@ -15,9 +15,9 @@ from tests.integration.instrumentation import (
 @pytest.mark.parametrize(
     'protocol, client_type, num_internal_spans',
     [
-        ('grpc', 'GRPCClient', 1),
-        ('http', 'HTTPClient', 4),
-        ('websocket', 'WebSocketClient', 6),
+        ('grpc', 'GRPCClient', 2),
+        ('http', 'HTTPClient', 5),
+        ('websocket', 'WebSocketClient', 7),
     ],
 )
 def test_gateway_instrumentation(

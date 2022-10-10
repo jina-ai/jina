@@ -54,11 +54,14 @@ class ExecutorTestWithTracing(Executor):
         super().__init__(*args, **kwargs)
 
     @requests(on='/index')
-    def empty(self, docs: 'DocumentArray', tracing_context: Context, **kwargs):
-        with self.tracer.start_as_current_span(
-            'dummy', context=tracing_context
-        ) as span:
-            span.set_attribute('len_docs', len(docs))
+    def empty(
+        self, docs: 'DocumentArray', tracing_context: Optional[Context], **kwargs
+    ):
+        if self.tracer:
+            with self.tracer.start_span('dummy', context=tracing_context) as span:
+                span.set_attribute('len_docs', len(docs))
+                return docs
+        else:
             return docs
 
 

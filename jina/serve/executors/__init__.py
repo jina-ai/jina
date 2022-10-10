@@ -18,6 +18,7 @@ from jina.serve.executors.metas import get_executor_taboo
 from jina.serve.helper import store_init_kwargs, wrap_func
 
 if TYPE_CHECKING:
+    from opentelemetry.context.context import Context
     from prometheus_client import Summary
 
 __dry_run_endpoint__ = '_jina_dry_run_'
@@ -315,7 +316,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         elif __default_endpoint__ in self.requests:
             return await self.__acall_endpoint__(__default_endpoint__, **kwargs)
 
-    async def __acall_endpoint__(self, req_endpoint, **kwargs):
+    async def __acall_endpoint__(
+        self, req_endpoint, tracing_context: Optional['Context'], **kwargs
+    ):
+        async def exec_func(summary, tracing_context):
+            with summary:
+                if iscoroutinefunction(func):
+                    return await func(self, tracing_context=tracing_context, **kwargs)
+                else:
+                    return func(self, tracing_context=tracing_context, **kwargs)
+
         func = self.requests[req_endpoint]
 
         runtime_name = (
@@ -330,11 +340,18 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             else contextlib.nullcontext()
         )
 
-        with _summary:
-            if iscoroutinefunction(func):
-                return await func(self, **kwargs)
-            else:
-                return func(self, **kwargs)
+        if self.tracer:
+            with self.tracer.start_span(req_endpoint, context=tracing_context) as _:
+                from opentelemetry.propagate import extract
+                from opentelemetry.trace.propagation.tracecontext import (
+                    TraceContextTextMapPropagator,
+                )
+
+                tracing_carrier_context = {}
+                TraceContextTextMapPropagator().inject(tracing_carrier_context)
+                return await exec_func(_summary, extract(tracing_carrier_context))
+        else:
+            return await exec_func(_summary, None)
 
     @property
     def workspace(self) -> Optional[str]:

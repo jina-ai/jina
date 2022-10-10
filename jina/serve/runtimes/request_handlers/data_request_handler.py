@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Dict, List, Optional
 
 from docarray import DocumentArray
-from opentelemetry.context.context import Context
 
 from jina import __default_endpoint__
 from jina.excepts import BadConfigSource
@@ -13,6 +12,7 @@ if TYPE_CHECKING:
     import argparse
 
     from opentelemetry import metrics, trace
+    from opentelemetry.context.context import Context
     from prometheus_client import CollectorRegistry
 
     from jina.logging.logger import JinaLogger
@@ -147,7 +147,7 @@ class DataRequestHandler:
         return parsed_params
 
     async def handle(
-        self, requests: List['DataRequest'], tracing_context: Context = None
+        self, requests: List['DataRequest'], tracing_context: 'Context' = None
     ) -> DataRequest:
         """Initialize private parameters and execute private loading functions.
 
