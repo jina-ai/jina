@@ -135,7 +135,7 @@ jobs:
       - name: Test
         id: test
         run: |
-          pytest --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
+          pytest --forked --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml --timeout=600 -v -s --ignore-glob='tests/integration/hub_usage/dummyhub*' ${{ matrix.test-path }}
           echo "flag it as jina for codeoverage"
           echo "::set-output name=codecov_flag::jina"
         timeout-minutes: 30
@@ -269,7 +269,7 @@ jobs:
         run: |
           export LINKERD2_VERSION=stable-2.11.4
           curl --proto '=https' --tlsv1.2 -sSfL https://run.linkerd.io/install | sh
-          pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s.py ./tests/k8s/test_graceful_request_handling.py
+          pytest --forked -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s.py ./tests/k8s/test_graceful_request_handling.py
         timeout-minutes: 30
         env:
           JINA_K8S_USE_TEST_PIP: 1
@@ -311,7 +311,7 @@ jobs:
           export LINKERD2_VERSION=stable-2.11.4
           curl --proto '=https' --tlsv1.2 -sSfL https://run.linkerd.io/install | sh
           curl --proto '=https' --tlsv1.2 -sSfL https://linkerd.github.io/linkerd-smi/install | sh
-          pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s_failures.py
+          pytest --forked -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/k8s/test_k8s_failures.py
         timeout-minutes: 30
         env:
           JINA_K8S_USE_TEST_PIP: 1
@@ -350,7 +350,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Test docker compose
         run: |
-          pytest -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/docker_compose/test_*.py
+          pytest --forked -v -s --suppress-no-test-exit-code --force-flaky --min-passes 1 --max-runs 5 --cov=jina --cov-report=xml ./tests/docker_compose/test_*.py
         timeout-minutes: 30
       - name: Check codecov file
         id: check_files
