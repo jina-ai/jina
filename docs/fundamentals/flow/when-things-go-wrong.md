@@ -120,7 +120,7 @@ Depending on the client-to-gateway protocol, and the type of error, the error me
 
 - **gRPC**: A response with the gRPC status code 14 (*UNAVAILABLE*) is issued, and the error message is contained in the `details` field.
 - **HTTP**: A response with the HTTP status code 503 (*SERVICE_UNAVAILABLE*) is issued, and the error message is contained in `response['header']['status']['description']`.
-- **WebSockets**: The stream closes with close code 1011 (*INTERNAL_ERROR*) and the message is contained in the WebSockets close message.
+- **WebSockets**: The stream closes with close code 1011 (*INTERNAL_ERROR*) and the message is contained in the WebSocket close message.
 
 **Call to Executor timed out:**
 
