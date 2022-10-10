@@ -1,60 +1,57 @@
 (flow-error-handling)=
 # Handle exceptions
 
-When building a complex solution, unfortunately things go wrong sometimes.
+When building a complex solution, things sometimes go wrong.
 Jina does its best to recover from failures, handle them gracefully, and report useful failure information to the user.
 
-The following outlines a number of (more or less) common failure cases, and explains how Jina responds to each one of them.
+The following outlines (more or less) common failure cases, and explains how Jina responds to each.
 
 ## Executor errors
 
-In general there are two places where an Executor level error can be introduced.
+In general there are two places where an Executor level error can be introduced:
 
-If an {class}`~jina.Executor`'s `__init__` method raises and Exception, the {class}`~jina.Flow` cannot start.
-In this case this Exception is gets raised by the Executor runtime, and the Flow throws a `RuntimeFailToStart` Exception.
+- If an {class}`~jina.Executor`'s `__init__` method raises an Exception, the {class}`~jina.Flow` cannot start.
+In this case this Executor runtime raises the Exception, and the Flow throws a `RuntimeFailToStart` Exception.
+- If one of the Executor's `@requests` methods raises an Exception, the error message is added to the response
+and sent back to the client. If the gRPC or WebSockets protocols are used, the networking stream is not interrupted and can accept further requests.
 
-If one of the Executor's `@requests` methods raises and Exception, the offending error message gets added to the response
-and is sent back to the client.
-If the gRPC or WebSocket protocols are used, the networking stream is not interrupted and can accept further requests.
-
-In all cases, the {ref}`Jina Client <client>` will raise an Exception.
+In both cases, the {ref}`Jina Client <client>` raises an Exception.
 
 ## Exit on exceptions
 
-Some exceptions like network errors or request timeouts can be transient and can recover automatically. In some cases there
-can be fatal errors or user defined errors that can put the Executor in an unuseable state. The executor can be restarted to recover from such a 
-state. Locally the flow must to be re-run manually to restore the Executor availability. 
+Some exceptions like network errors or request timeouts can be transient and can recover automatically. Sometimes 
+fatal errors or user-defined errors put the Executor in an unusable state, in which case it can be restarted. Locally the Flow must be re-run manually to restore Executor availability. 
 
-On Kubernetes deployments, the process can be automated by terminating the Exeuctor process which will cause the pod to terminate. The availability
- is restored by the autoscaler by creating a new pod to replace the terminated pod. The termination can be enabled for one or more errors by using the `exit_on_exceptions` argument when creating the Executor in a Flow. Upon matching the caught exception, the Executor will perform a gracefull termination.
+On Kubernetes deployments, this can be automated by terminating the Executor process, causing the Pod to terminate. The autoscaler restores availability
+ by creating a new Pod to replace the terminated one. Termination can be enabled for one or more errors by using the `exit_on_exceptions` argument when adding the Executor to a Flow. When it matches the caught exception, the Executor terminates gracefully.
  
-A sample Flow can be `Flow().add(uses=MyExecutor, exit_on_exceptions: ['Exception', 'RuntimeException'])`. The `exit_on_exceptions` argument accepts a list of python or user defined custom Exception or Error class names.
+A sample Flow can be `Flow().add(uses=MyExecutor, exit_on_exceptions: ['Exception', 'RuntimeException'])`. The `exit_on_exceptions` argument accepts a list of Python or user-defined Exception or Error class names.
 
 ## Network errors
 
-When an {ref}`Executor or Head <architecture-overview>` can't be reached by the {class}`~jina.Flow`'s gateway, it attempts to re-connect
+When a {class}`~jina.Flow`'s gateway can't reach an {ref}`Executor or Head <architecture-overview>`, the Flow attempts to re-connect
 to the faulty deployment according to a retry policy.
 The same applies to calls to Executors that time out.
-The specifics of this policy depend on the environment the Flow find itself in, and are outlined below.
+The specifics of this policy depend on the Flow's environment, as outlined below.
 
 
 ````{admonition} Hint: Prevent Executor timeouts
 :class: hint
-If you regularly experience timouts on Executor calls, you may want to consider setting the Flow's `timeout_send` attribute to a larger value.
-You can do this by setting `Flow(timeout_send=time_in_ms)` in Python
+If you regularly experience Executor call timeouts, set the Flow's `timeout_send` attribute to a larger value 
+by setting `Flow(timeout_send=time_in_ms)` in Python
 or `timeout_send: time_in_ms` in your Flow YAML with-block.
 
-Especially neural network forward passes on CPU (and other unusually expensive operations) can lead to timeouts with the default setting.
+Neural network forward passes on CPU (and other unusually expensive operations) commonly lead to timeouts with the default setting.
 ````
 
 ````{admonition} Hint: Custom retry policy
 :class: hint
-You can override the default retry policy and instead choose a number of retries performed for each Executor.
-To perform `n` retries, set `Flow(retries=n)` in Python, or `retries: n` in the Flow
+You can override the default retry policy and instead choose a number of retries performed for each Executor
+with `Flow(retries=n)` in Python, or `retries: n` in the Flow
 YAML `with` block.
 ````
 
-If, during the complete execution of this policy, no successful call to any Executor replica could be made, the request is aborted
+If, during the complete execution of this policy, no successful call to any Executor replica can be made, the request is aborted
 and the failure is {ref}`reported to the client <failure-reporting>`.
 
 ### Request retries: Local deployment
@@ -62,8 +59,8 @@ and the failure is {ref}`reported to the client <failure-reporting>`.
 If a Flow is deployed locally (with or without {ref}`containerized Executors <dockerize-exec>`), the following policy
 for failed requests applies on a per-Executor basis:
 
-- If there are multiple replicas of the target Executor, try each replica at least once, or until the request succeeds
-- Irrespective of the number of replicas, try the request at least 3 times, or until it succeeds. If there are fewer than 3 replicas, try them in a round-robin fashion
+- If there are multiple replicas of the target Executor, try each replica at least once, or until the request succeeds.
+- Irrespective of the number of replicas, try the request at least three times, or until it succeeds. If there are fewer than three replicas, try them in a round-robin fashion.
 
 ### Request retries: Deployment with Kubernetes
 
@@ -73,18 +70,18 @@ If a Flow is {ref}`deployed in Kubernetes <kubernetes>` without a service mesh, 
 :class: seealso
 
 The impossibility of retries across different replicas is a limitation of Kubernetes in combination with gRPC.
-If you want to learn more about this limitation, see [this](https://kubernetes.io/blog/2018/11/07/grpc-load-balancing-on-kubernetes-without-tears/) Kubernetes Blog post.
+If you want to learn more about this limitation, see [this](https://kubernetes.io/blog/2018/11/07/grpc-load-balancing-on-kubernetes-without-tears/) Kubernetes blog post.
 
 An easy way to overcome this limitation is to use a service mesh like [Linkerd](https://linkerd.io/).
 ````
 
 Concretely, this results in the following per-Executor retry policy:
 
-- Try the request 3 times, or until it succeeds, always on the same replica of the Executor
+- Try the request three times, or until it succeeds, always on the same replica of the Executor
 
 ### Request retries: Deployment with Kubernetes and service mesh
 
-A Kubernetes service mesh can enable load balancing, and thus retries, between replicas of an Executor.
+A Kubernetes service mesh can enable load balancing, and thus retries, between an Executor's replicas.
 
 ````{admonition} Hint
 :class: hint
@@ -93,7 +90,7 @@ While Jina supports any service mesh, the output of `f.to_kubernetes_yaml()` alr
 
 If a service mesh is installed alongside Jina in the Kubernetes cluster, the following retry policy applies for each Executor:
 
-- Try the request at least 3 times, or until it succeeds
+- Try the request at least three times, or until it succeeds
 - Distribute the requests to the replicas according to the service mesh's configuration
 
 
@@ -113,29 +110,29 @@ YAML `with` block.
 
 If the retry policy is exhausted for a given request, the error is reported back to the corresponding client.
 
-The resulting error message will contain the *network address* of the failing Executor.
-If multiple replicas are present, all addresses will be reported - unless the Flow is deployed using Kubernetes, in which
-case the replicas are managed by k8s and only a single address is available.
+The resulting error message contains the *network address* of the failing Executor.
+If multiple replicas are present, all addresses are reported - unless the Flow is deployed using Kubernetes, in which
+case the replicas are managed by Kubernetes and only a single address is available.
 
-Depending on the client-to-gateway protocol, and they type of error, the error message will be returned in one of the following ways:
+Depending on the client-to-gateway protocol, and the type of error, the error message is returned in one of the following ways:
 
 **Could not connect to Executor:**
 
-- **gRPC**: A response with the gRPC status code 14 (*UNAVAILABLE*) is issued, and the error message is contained in the `details` field
-- **HTTP**: A response with the HTTP status code 503 (*SERVICE_UNAVAILABLE*) is issued, and the error message is contained in `response['header']['status']['description']`
-- **WebSocket**: The stream closes with close code 1011 (*INTERNAL_ERROR*) and the message is contained in the WS close message
+- **gRPC**: A response with the gRPC status code 14 (*UNAVAILABLE*) is issued, and the error message is contained in the `details` field.
+- **HTTP**: A response with the HTTP status code 503 (*SERVICE_UNAVAILABLE*) is issued, and the error message is contained in `response['header']['status']['description']`.
+- **WebSockets**: The stream closes with close code 1011 (*INTERNAL_ERROR*) and the message is contained in the WebSocket close message.
 
 **Call to Executor timed out:**
 
-- **gRPC**: A response with the gRPC status code 4 (*DEADLINE_EXCEEDED*) is issued, and the error message is contained in the `details` field
-- **HTTP**: A response with the HTTP status code 504 (*GATEWAY_TIMEOUT*) is issued, and the error message is contained in `response['header']['status']['description']`
-- **WebSocket**: The stream closes with close code 1011 (*INTERNAL_ERROR*) and the message is contained in the WS close message
+- **gRPC**: A response with the gRPC status code 4 (*DEADLINE_EXCEEDED*) is issued, and the error message is contained in the `details` field.
+- **HTTP**: A response with the HTTP status code 504 (*GATEWAY_TIMEOUT*) is issued, and the error message is contained in `response['header']['status']['description']`.
+- **WebSockets**: The stream closes with close code 1011 (*INTERNAL_ERROR*) and the message is contained in the WebSockets close message.
 
-For any of these scenarios, the {ref}`Jina Client <client>` will raise a `ConnectionError` containing the error message.
+For any of these scenarios, the {ref}`Jina Client <client>` raises a `ConnectionError` containing the error message.
 
 ## Debug via breakpoint
 
-Standard Python breakpoints will not work inside `Executor` methods when called inside a Flow context manager. Nevertheless, `import epdb; epdb.set_trace()` will work just as a native python breakpoint. Note that you need to `pip install epdb` to have access to this type of breakpoints.
+Standard Python breakpoints don't work inside `Executor` methods when called inside a Flow context manager. Nevertheless, `import epdb; epdb.set_trace()` works just like a native Python breakpoint. Note that you need to `pip install epdb` to access this type of breakpoints.
 
 
 ````{tab} ✅ Do

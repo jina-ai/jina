@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.10.2 Documentation" />
   
-<meta property="og:description" content="A Jina Flow exposes several core metrics that allow you to have a deeper look at what is happening inside it. Metrics allow you to, for example, monitor the overall performance of your Flow, detect bottlenecks, or alert your team when some component of your Flow is down. Jina Flows expose metrics..." />
+<meta property="og:description" content="A Jina Flow exposes several core metrics that let you have a deeper look at what is happening inside. Metrics allow you to, for example, monitor the overall performance of your Flow, detect bottlenecks, or alert your team when some component of your Flow is down. Jina Flows expose metrics in the ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -157,13 +157,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="fast">Learn more about Lightning</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -260,7 +254,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Flow</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../create-flow/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../topologies/">Topology</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Monitor</a></li>
@@ -393,8 +387,8 @@
                 <article role="main">
                     <section id="monitor">
 <span id="monitoring-flow"></span><h1>Monitor<a class="headerlink" href="#monitor" title="Permalink to this heading">#</a></h1>
-<p>A Jina <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> exposes several core metrics that allow you to have a deeper look
-at what is happening inside it. Metrics allow you to, for example, monitor the overall performance
+<p>A Jina <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> exposes several core metrics that let you have a deeper look
+at what is happening inside. Metrics allow you to, for example, monitor the overall performance
 of your Flow, detect bottlenecks, or alert your team when some component of your Flow is down.</p>
 <p>Jina Flows expose metrics in the <a class="reference external" href="https://prometheus.io/docs/instrumenting/exposition_formats/">Prometheus format</a>. This is a plain text format that is understandable by both humans and machines. These metrics are intended to be scraped by
 <a class="reference external" href="https://prometheus.io/">Prometheus</a>, an industry-standard tool for collecting and monitoring metrics.</p>
@@ -409,10 +403,10 @@ your monitoring stack.</p>
 <h2>Enable monitoring<a class="headerlink" href="#enable-monitoring" title="Permalink to this heading">#</a></h2>
 <p>A <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is composed of several Pods, namely the <a class="reference internal" href="../../../api/jina.serve.runtimes.gateway/#jina.serve.runtimes.gateway.GatewayRuntime" title="jina.serve.runtimes.gateway.GatewayRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">GatewayRuntime</span></code></a>, the <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s, and potentially a <a class="reference internal" href="../../../api/jina.serve.runtimes.head/#jina.serve.runtimes.head.HeadRuntime" title="jina.serve.runtimes.head.HeadRuntime"><code class="xref py py-class docutils literal notranslate"><span class="pre">HeadRuntime</span></code></a> (see the <a class="reference internal" href="../../architecture-overview/#architecture-overview"><span class="std std-ref">architecture overview</span></a> for more details). Each of these Pods is its own microservice. These services expose their own metrics using the <a class="reference external" href="https://prometheus.io/docs/instrumenting/clientlibs/">Prometheus client</a>.
 This means that they are as many metrics endpoints as there are Pods in your Flow.</p>
-<p>Let’s give an example to illustrate it :</p>
+<p>Let’s see an example:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">via Python API</label><div class="tab-content docutils">
-<p>This example shows how to start a Flow with monitoring enabled via the Python API:</p>
+<p>Start a Flow with monitoring using the Python API:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="k">with</span> <span class="n">Flow</span><span class="p">(</span><span class="n">monitoring</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">port_monitoring</span><span class="o">=</span><span class="mi">9090</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
@@ -423,7 +417,7 @@ This means that they are as many metrics endpoints as there are Pods in your Flo
 </div>
 </div>
 <input class="tab-input" id="tab-set--0-input--2" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--2">via YAML</label><div class="tab-content docutils">
-<p>This example shows how to start a Flow with monitoring enabled via yaml:</p>
+<p>Start a Flow with monitoring using YAML:</p>
 <p>In a <code class="docutils literal notranslate"><span class="pre">flow.yaml</span></code> file</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">with</span><span class="p">:</span><span class="w"></span>
@@ -439,35 +433,35 @@ This means that they are as many metrics endpoints as there are Pods in your Flo
 </div>
 </div>
 </div>
-<p>This Flow will create two Pods, one for the Gateway, and one for the SimpleIndexer Executor, therefore it will create two
+<p>This Flow creates two Pods: one for the Gateway, and one for the SimpleIndexer Executor. Therefore it creates two
 metrics endpoints:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">http://localhost:9090</span></code> for the gateway</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">http://localhost:9090</span></code> for the Gateway</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">http://localhost:9091</span></code> for the SimpleIndexer</p></li>
 </ul>
 <div class="caution admonition">
-<p class="admonition-title">Change the default monitoring port</p>
-<p>When Jina is used locally, all of the <code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code> will be random by default (within the range [49152, 65535]). However we
-strongly encourage you to precise these ports for the Gateway and for all of the Executors. Otherwise it will change at
-restart and you will have to change your Prometheus configuration file.</p>
+<p class="admonition-title">Changing the default monitoring port</p>
+<p>When Jina is used locally, all of the <code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code> is random by default (within the range [49152, 65535]). We
+strongly encourage you to explicitly set these ports for the Gateway and for all Executors. Failing to do so means ports will change on
+restart and you would need to change your Prometheus configuration file accordingly.</p>
 </div>
-<p>Because each Pod in a Flow exposes its own metrics, the monitoring feature can be used independently on each Pod.
-This means that you are not forced to always monitor every Pod of your Flow. For example, you could be only interested in
-metrics coming from the Gateway, and therefore you only activate the monitoring on it. On the other hand, you might be only
-interested in monitoring a single Executor. Note that by default the monitoring is disabled everywhere.</p>
-<p>To enable the monitoring you need to pass <code class="docutils literal notranslate"><span class="pre">monitoring</span> <span class="pre">=</span> <span class="pre">True</span></code> when creating the Flow.</p>
+<p>Because each Pod in a Flow exposes its own metrics, monitoring can be used independently on each Pod.
+This means that you are not forced to always monitor every Pod of your Flow. For example, you may only be interested in
+metrics coming from the Gateway, and therefore you only activate that monitoring. On the other hand, you may only
+be interested in monitoring a single Executor. Note that monitoring is disabled everywhere by default.</p>
+<p>Pass <code class="docutils literal notranslate"><span class="pre">monitoring</span> <span class="pre">=</span> <span class="pre">True</span></code> when you create the Flow to enable monitoring.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Flow</span><span class="p">(</span><span class="n">monitoring</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="hint admonition">
 <p class="admonition-title">Enabling Flow</p>
-<p>Passing <code class="docutils literal notranslate"><span class="pre">monitoring</span> <span class="pre">=</span> <span class="pre">True</span></code> when creating the Flow will enable the monitoring on <strong>all the Pods</strong> of your Flow.</p>
+<p>Passing <code class="docutils literal notranslate"><span class="pre">monitoring</span> <span class="pre">=</span> <span class="pre">True</span></code> when you create the Flow enables monitoring of <strong>all the Pods</strong> of your Flow.</p>
 </div>
-<p>If you want to enable the monitoring only on the Gateway, you need to first enable the feature for the entire Flow, and then disable it for the Executor which you are not interested in.</p>
+<p>To enable monitoring only on the Gateway, first enable the feature for the entire Flow, then disable it for the Executors which you do not want monitored.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Flow</span><span class="p">(</span><span class="n">monitoring</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">monitoring</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">monitoring</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>On the other hand, If you want to only enable the monitoring on a given Executor you should do:</p>
+<p>To enable the monitoring on just a given Executor:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">...</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">uses</span><span class="o">=</span><span class="n">MyExecutor</span><span class="p">,</span> <span class="n">monitoring</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -475,11 +469,10 @@ interested in monitoring a single Executor. Note that by default the monitoring 
 <h3>Enable monitoring with replicas and shards<a class="headerlink" href="#enable-monitoring-with-replicas-and-shards" title="Permalink to this heading">#</a></h3>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>This section is only relevant if you deploy your Flow natively. When deploying your Flow with Kubernetes or Docker Compose
-all of the <code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code> will be set to default : <code class="docutils literal notranslate"><span class="pre">9090</span></code>.</p>
+<p>This is only relevant if you deploy your Flow natively. When deploying your Flow with Kubernetes or Docker Compose
+all <code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code> is set to a default of <code class="docutils literal notranslate"><span class="pre">9090</span></code>.</p>
 </div>
-<p>To enable monitoring with replicas and shards when deploying natively, you need to pass a list of <code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code> separated by a comma to your Flow.</p>
-<p>Example:</p>
+<p>To monitor replicas and shards when deploying natively, pass a comma-separated string to <code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code>:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">via Python API</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -492,7 +485,7 @@ all of the <code class="docutils literal notranslate"><span class="pre">port_mon
 </div>
 </div>
 <input class="tab-input" id="tab-set--1-input--2" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--2">via YAML</label><div class="tab-content docutils">
-<p>This example shows how to start a Flow with monitoring enabled via yaml:</p>
+<p>To start a Flow with monitoring via YAML:</p>
 <p>In a <code class="docutils literal notranslate"><span class="pre">flow.yaml</span></code> file</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">with</span><span class="p">:</span><span class="w"></span>
@@ -511,16 +504,16 @@ all of the <code class="docutils literal notranslate"><span class="pre">port_mon
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>Monitoring with shards
-When using shards, an extra head will be created and you will need to pass a list of N+1 ports to <code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code>, N beeing the number of shards you desire</p>
+When using shards, an extra head is created and you need to pass a list of N+1 ports to <code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code>, N being the number of shards you desire.</p>
 </div>
-<p>If you precise fewer <code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code> than you have replicas of your Executor (or even not passing any at all), the unknown ports
-will be assigned randomly. It is a better practice to precise a port for every replica, otherwise you will have to change
+<p>If you specify fewer <code class="docutils literal notranslate"><span class="pre">port_monitoring</span></code> values than you have Executor replicas (or even not passing any at all), unknown ports
+are assigned randomly. It is better practice to specify a port for every replica, otherwise you will have to change
 your Prometheus configuration each time you restart your application.</p>
 </section>
 </section>
 <section id="available-metrics">
 <h2>Available metrics<a class="headerlink" href="#available-metrics" title="Permalink to this heading">#</a></h2>
-<p>A <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> supports different metrics out of the box, in addition to allowing the user to define their own custom metrics.</p>
+<p>A <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> supports different metrics out of the box, also letting you define your own custom metrics.</p>
 <p>Because not all Pods have the same role, they expose different kinds of metrics:</p>
 <section id="gateway-pods">
 <h3>Gateway Pods<a class="headerlink" href="#gateway-pods" title="Permalink to this heading">#</a></h3>
@@ -535,39 +528,39 @@ your Prometheus configuration each time you restart your application.</p>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_receiving_request_seconds</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
-<td><p>Measures the time elapsed between receiving a request from the client and sending back the response.</p></td>
+<td><p>Measures time elapsed between receiving a request from the client and sending back the response.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_sending_request_seconds</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
-<td><p>Measures the time elapsed between sending a downstream request to an Executor/Head and receiving the response back.</p></td>
+<td><p>Measures time elapsed between sending a downstream request to an Executor/Head and receiving the response back.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_number_of_pending_requests</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#gauge">Gauge</a></p></td>
-<td><p>Counts the number of pending requests</p></td>
+<td><p>Counts the number of pending requests.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_successful_requests_total</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#counter">Counter</a></p></td>
-<td><p>Counts the number of successful requests returned by the gateway</p></td>
+<td><p>Counts the number of successful requests returned by the Gateway.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_failed_requests_total</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#counter">Counter</a></p></td>
-<td><p>Counts the number of failed requests returned by the gateway</p></td>
+<td><p>Counts the number of failed requests returned by the Gateway.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_sent_request_bytes</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
-<td><p>Measures the size in bytes of the request sent by the Gateway to the Executor or the Head</p></td>
+<td><p>Measures the size in bytes of the request sent by the Gateway to the Executor or the Head.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_received_response_bytes</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
-<td><p>Measures the size in bytes of the request returned by the Executor</p></td>
+<td><p>Measures the size in bytes of the request returned by the Executor.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_received_request_bytes</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
-<td><p>Measures the size of the request in bytes received at the Gateway level</p></td>
+<td><p>Measures the size of the request in bytes received at the Gateway level.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_sent_response_bytes</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
-<td><p>Measures the size in bytes of the response returned from the Gateway to the Client</p></td>
+<td><p>Measures the size in bytes of the response returned from the Gateway to the Client.</p></td>
 </tr>
 </tbody>
 </table>
@@ -582,15 +575,15 @@ your Prometheus configuration each time you restart your application.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Metrics name</p></th>
-<th class="head"><p>Metrics type</p></th>
+<tr class="row-odd"><th class="head"><p>Metric name</p></th>
+<th class="head"><p>Metric type</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_receiving_request_seconds</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
-<td><p>Measures the time elapsed between receiving a request from the gateway and sending back the response.</p></td>
+<td><p>Measures the time elapsed between receiving a request from the Gateway and sending back the response.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_sending_request_seconds</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
@@ -598,19 +591,19 @@ your Prometheus configuration each time you restart your application.</p>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_sending_request_bytes</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
-<td><p>Measures the size of the downstream requests send to an Executor in bytes</p></td>
+<td><p>Measures the size of the downstream requests send to an Executor in bytes.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_failed_requests_total</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#counter">Counter</a></p></td>
-<td><p>Counts the number of failed requests returned by the gateway</p></td>
+<td><p>Counts the number of failed requests returned by the Gateway.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_sent_request_bytes</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
-<td><p>Measures the size in bytes of the request sent by the Head to the Executor</p></td>
+<td><p>Measures the size in bytes of the request sent by the Head to the Executor.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_received_response_bytes</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
-<td><p>Measures the size in bytes of the response returned by the Executor</p></td>
+<td><p>Measures the size in bytes of the response returned by the Executor.</p></td>
 </tr>
 </tbody>
 </table>
@@ -621,15 +614,15 @@ your Prometheus configuration each time you restart your application.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Metrics name</p></th>
-<th class="head"><p>Metrics type</p></th>
+<tr class="row-odd"><th class="head"><p>Metric name</p></th>
+<th class="head"><p>Metric type</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jina_receiving_request_seconds</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
-<td><p>Measures the time elapsed between receiving a request from the gateway (or the head) and sending back the response.</p></td>
+<td><p>Measures the time elapsed between receiving a request from the Gateway (or the head) and sending back the response.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jina_process_request_seconds</span></code></p></td>
 <td><p><a class="reference external" href="https://prometheus.io/docs/concepts/metric_types/#summary">Summary</a></p></td>
@@ -710,7 +703,7 @@ Executor.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 07, 2022</div>
+                            Last updated on Oct 10, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

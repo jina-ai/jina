@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.10.2 Documentation" />
   
-<meta property="og:description" content="Flow s are not restricted to sequential execution. Internally they are modelled as graphs and as such can represent any complex, non-cyclic topology. A typical use case for such a Flow is a topology with a common pre-processing part, but different indexers separating embeddings and data. To defin..." />
+<meta property="og:description" content="Flow s are not restricted to sequential execution. Internally they are modeled as graphs, so they can represent any complex, non-cyclic topology. A typical use case for such a Flow is a topology with a common pre-processing part, but different indexers separating embeddings and data. To define a ..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -157,13 +157,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="fast">Learn more about Lightning</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -260,7 +254,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Flow</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../create-flow/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../add-executors/">Add Executors</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../monitoring-flow/">Monitor</a></li>
@@ -393,9 +387,9 @@
                 <article role="main">
                     <section id="topology">
 <span id="flow-complex-topologies"></span><h1>Topology<a class="headerlink" href="#topology" title="Permalink to this heading">#</a></h1>
-<p><a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>s are not restricted to sequential execution. Internally they are modelled as graphs and as such can represent any complex, non-cyclic topology.
+<p><a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>s are not restricted to sequential execution. Internally they are modeled as graphs, so they can represent any complex, non-cyclic topology.
 A typical use case for such a Flow is a topology with a common pre-processing part, but different indexers separating embeddings and data.
-To define a custom Flow topology you can use the <code class="docutils literal notranslate"><span class="pre">needs</span></code> keyword when adding an <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. By default, a Flow assumes that every Executor needs the previously added Executor.</p>
+To define a custom topology you can use the <code class="docutils literal notranslate"><span class="pre">needs</span></code> keyword when adding an <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. By default, a Flow assumes that every Executor needs the previously added Executor.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">requests</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentArray</span>
 
 
@@ -425,7 +419,7 @@ To define a custom Flow topology you can use the <code class="docutils literal n
     <span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">needs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;barExecutor&#39;</span><span class="p">,</span> <span class="s1">&#39;bazExecutor&#39;</span><span class="p">])</span>
 <span class="p">)</span>
 
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># Using it as a Context Manager will start the Flow</span>
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># Using it as a Context Manager starts the Flow</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
         <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/search&#39;</span>
     <span class="p">)</span>  <span class="c1"># This sends a request to the /search endpoint of the Flow</span>
@@ -435,21 +429,21 @@ To define a custom Flow topology you can use the <code class="docutils literal n
 <figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="../../../_images/needs-flow.svg"><img alt="../../../_images/needs-flow.svg" src="../../../_images/needs-flow.svg" width="70%" /></a>
 <figcaption>
-<p><span class="caption-text">Complex Flow where one Executor requires two Executors to process Documents before</span><a class="headerlink" href="#id2" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">Complex Flow where one Executor requires two Executors to process Documents beforehand</span><a class="headerlink" href="#id2" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<p>This will get you the following output:</p>
+<p>This gives the output:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[&#39;foo was here and got 0 document&#39;, &#39;bar was here and got 1 document&#39;, &#39;baz was here and got 1 document&#39;]
 </pre></div>
 </div>
-<p>So both <code class="docutils literal notranslate"><span class="pre">BarExecutor</span></code> and <code class="docutils literal notranslate"><span class="pre">BazExecutor</span></code> only received a single <code class="docutils literal notranslate"><span class="pre">Document</span></code> from <code class="docutils literal notranslate"><span class="pre">FooExecutor</span></code> as they are run in parallel. The last Executor <code class="docutils literal notranslate"><span class="pre">executor3</span></code> will receive both DocumentArrays and merges them automatically.
-The automated merging can be disabled by setting <code class="docutils literal notranslate"><span class="pre">disable_reduce=True</span></code>. This can be useful when you need to provide your custom merge logic in a separate Executor. In this case the last <code class="docutils literal notranslate"><span class="pre">.add()</span></code> call would like <code class="docutils literal notranslate"><span class="pre">.add(needs=['barExecutor',</span> <span class="pre">'bazExecutor'],</span> <span class="pre">uses=CustomMergeExecutor,</span> <span class="pre">disable_reduce=True)</span></code>. This feature requires Jina &gt;= 3.0.2.</p>
+<p>Both <code class="docutils literal notranslate"><span class="pre">BarExecutor</span></code> and <code class="docutils literal notranslate"><span class="pre">BazExecutor</span></code> only received a single <code class="docutils literal notranslate"><span class="pre">Document</span></code> from <code class="docutils literal notranslate"><span class="pre">FooExecutor</span></code> because they are run in parallel. The last Executor <code class="docutils literal notranslate"><span class="pre">executor3</span></code> receives both DocumentArrays and merges them automatically.
+This automated merging can be disabled with <code class="docutils literal notranslate"><span class="pre">disable_reduce=True</span></code>. This is useful for providing custom merge logic in a separate Executor. In this case the last <code class="docutils literal notranslate"><span class="pre">.add()</span></code> call would look like <code class="docutils literal notranslate"><span class="pre">.add(needs=['barExecutor',</span> <span class="pre">'bazExecutor'],</span> <span class="pre">uses=CustomMergeExecutor,</span> <span class="pre">disable_reduce=True)</span></code>. This feature requires Jina &gt;= 3.0.2.</p>
 <section id="replicate-executors">
 <span id="id1"></span><h2>Replicate Executors<a class="headerlink" href="#replicate-executors" title="Permalink to this heading">#</a></h2>
-<p>Replication can be used to create multiple copies of the same <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s. Each request in the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is then passed to only one replica (instance) of your Executor. This can be useful for a couple of challenges like performance and availability:</p>
+<p>Replication creates multiple copies of the same <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>. Each request in the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> is then passed to only one replica (instance) of that Executor. This is useful for performance and availability:</p>
 <ul class="simple">
-<li><p>If you have slow Executors (like some Encoders) you may want to scale up the number of instances of this particular Executor so that you can process multiple requests in parallel</p></li>
-<li><p>Executors might need to be taken offline from time to time (updates, failures, etc.), but you may want your Flow to be able to process requests without downtimes. In this case Replicas can be used as well so that any Replica of an Executor can be taken offline as long as there is still one running Replica online. Using this technique it is possible to create a High availability setup for your Flow.</p></li>
+<li><p>If you have slow Executors (like some Encoders) you can scale up the number of instances to process multiple requests in parallel.</p></li>
+<li><p>Executors might need to be taken offline occasionally (for updates, failures, etc.), but you may want your Flow to be able to process requests without downtime. Using Replicas, any single replica of an Executor can be taken offline as long as there is still at least one running online. This ensures high availability for your Flow.</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
@@ -459,26 +453,25 @@ The automated merging can be disabled by setting <code class="docutils literal n
 <figure class="align-center" id="id3">
 <a class="reference internal image-reference" href="../../../_images/replicas-flow.svg"><img alt="../../../_images/replicas-flow.svg" src="../../../_images/replicas-flow.svg" width="70%" /></a>
 <figcaption>
-<p><span class="caption-text">Flow with 3 replicas of slow_encoder and 1 replica of fast_indexer</span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">Flow with three replicas of slow_encoder and one replica of fast_indexer</span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<p>The above Flow will create a topology with three Replicas of Executor <code class="docutils literal notranslate"><span class="pre">slow_encoder</span></code>. The <code class="docutils literal notranslate"><span class="pre">Flow</span></code> will send every
-request to exactly one of the three instances. Then the replica will send its result to <code class="docutils literal notranslate"><span class="pre">fast_indexer</span></code>.</p>
+<p>The above Flow creates a topology with three replicas of the Executor <code class="docutils literal notranslate"><span class="pre">slow_encoder</span></code>. The <code class="docutils literal notranslate"><span class="pre">Flow</span></code> sends every
+request to exactly one of the three instances. Then the replica sends its result to <code class="docutils literal notranslate"><span class="pre">fast_indexer</span></code>.</p>
 </section>
 <section id="replicate-on-multiple-gpus">
 <h2>Replicate on multiple GPUs<a class="headerlink" href="#replicate-on-multiple-gpus" title="Permalink to this heading">#</a></h2>
-<p>In certain situations, you may want to replicate your <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s so that each replica uses a different GPU on your machine.
-To achieve this, you need to tell the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> to leverage multiple GPUs, by passing <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR</span></code> as an environment variable.
-The Flow will then assign each available GPU to replicas in a round-robin fashion.</p>
+<p>To replicate your <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>s so that each replica uses a different GPU on your machine, you can tell the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> to use multiple GPUs by passing <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR</span></code> as an environment variable.
+The Flow then assigns each available GPU to replicas in a round-robin fashion.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
-<p>Replicate on multiple GPUs by using <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR</span></code> should only be used locally.</p>
+<p>You should only replicate on multiple GPUs with <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR</span></code> locally.</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>When working in Kubernetes or with Docker Compose you shoud allocate GPU ressources to each replica directly in the configuration files.</p>
+<p>In Kubernetes or with Docker Compose you should allocate GPU resources to each replica directly in the configuration files.</p>
 </div>
-<p>For example, if you have 3 GPUs and one of your Executor has 5 replicas then</p>
+<p>For example, if you have three GPUs and one of your Executor has five replicas then:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">Python</label><div class="tab-content docutils">
 <p>In a <code class="docutils literal notranslate"><span class="pre">flow.py</span></code> file</p>
@@ -508,7 +501,7 @@ The Flow will then assign each available GPU to replicas in a round-robin fashio
 </div>
 </div>
 </div>
-<p>The Flow will assign GPU devices in the following round-robin fashion:</p>
+<p>The Flow assigns GPU devices in the following round-robin fashion:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -535,7 +528,7 @@ The Flow will then assign each available GPU to replicas in a round-robin fashio
 </tbody>
 </table>
 </div>
-<p>You can also restrict the visible devices in round-robin assignment by <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR0:2</span></code>, where <code class="docutils literal notranslate"><span class="pre">0:2</span></code> has the same meaning as Python slice. This will create the following assignment:</p>
+<p>You can restrict the visible devices in round-robin assignment using <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR0:2</span></code>, where <code class="docutils literal notranslate"><span class="pre">0:2</span></code> corresponds to a Python slice. This creates the following assignment:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -562,7 +555,7 @@ The Flow will then assign each available GPU to replicas in a round-robin fashio
 </tbody>
 </table>
 </div>
-<p>You can also restrict the visible devices in round-robin assignment by assigning a list of devices ids <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR1,3</span></code>. This will create the following assignment:</p>
+<p>You can restrict the visible devices in round-robin assignment by assigning a list of devices ids <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES=RR1,3</span></code>. This creates the following assignment:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -592,11 +585,11 @@ The Flow will then assign each available GPU to replicas in a round-robin fashio
 </section>
 <section id="distributed-replicas">
 <h2>Distributed replicas<a class="headerlink" href="#distributed-replicas" title="Permalink to this heading">#</a></h2>
-<p>Replicas of the same Executor can run on different machines.</p>
-<p>To add distributed replicas to a Flow, the Executor replicas must be running on their respective machines already.</p>
+<p>You can run replicas of the same Executor on different machines.</p>
+<p>To add distributed replicas to a Flow, the Executor replicas must already be running on their respective machines.</p>
 <div class="seealso admonition">
 <p class="admonition-title">External Executors</p>
-<p>For more information about starting Executors outside of a Flow, see our <a class="reference internal" href="../../../how-to/external-executor/#external-executor"><span class="std std-ref">how-to on external Executors</span></a>.</p>
+<p>To start Executors outside a Flow, see our <a class="reference internal" href="../../../how-to/external-executor/#external-executor"><span class="std std-ref">how-to on external Executors</span></a>.</p>
 </div>
 <p>Then, you can add them by specifying their hosts, ports, and <code class="docutils literal notranslate"><span class="pre">external=True</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -604,18 +597,18 @@ The Flow will then assign each available GPU to replicas in a round-robin fashio
 <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;localhost:1234,91.198.174.192:12346&#39;</span><span class="p">,</span> <span class="n">external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This will connect to <code class="docutils literal notranslate"><span class="pre">grpc://localhost:12345</span></code> and <code class="docutils literal notranslate"><span class="pre">grpc://91.198.174.192:12346</span></code> as two replicas of the same Executor.</p>
+<p>This connects to <code class="docutils literal notranslate"><span class="pre">grpc://localhost:12345</span></code> and <code class="docutils literal notranslate"><span class="pre">grpc://91.198.174.192:12346</span></code> as two replicas of the same Executor.</p>
 </section>
 <section id="partition-data-with-shards">
 <span id="partition-data-by-using-shards"></span><h2>Partition data with shards<a class="headerlink" href="#partition-data-with-shards" title="Permalink to this heading">#</a></h2>
-<p>Sharding can be used to partition data (like an Index) into several parts. This enables the distribution of data across multiple machines.
-This is helpful in two situations:</p>
+<p>Sharding partitions data (like an index) into several parts. This distributes the data across multiple machines.
+This is helpful when:</p>
 <ul class="simple">
-<li><p>When the full data does not fit on one machine</p></li>
-<li><p>When the latency of a single request becomes too large.</p></li>
+<li><p>The full data does not fit on one machine.</p></li>
+<li><p>The latency of a single request becomes too large.</p></li>
 </ul>
-<p>Then splitting the load across two or more machines yields better results.</p>
-<p>For Shards, you can define which shard (instance) will receive the request from its predecessor. This behaviour is called <code class="docutils literal notranslate"><span class="pre">polling</span></code>. <code class="docutils literal notranslate"><span class="pre">ANY</span></code> means only one shard will receive a request and <code class="docutils literal notranslate"><span class="pre">ALL</span></code> means that all Shards will receive a request.
+<p>In these cases splitting the load across two or more machines yields better results.</p>
+<p>For shards, you can define which shard (instance) receives the request from its predecessor. This behaviour is called <code class="docutils literal notranslate"><span class="pre">polling</span></code>. <code class="docutils literal notranslate"><span class="pre">ANY</span></code> means only one shard receives a request, while  <code class="docutils literal notranslate"><span class="pre">ALL</span></code> means that all shards receive a request.
 Polling can be configured per endpoint (like <code class="docutils literal notranslate"><span class="pre">/index</span></code>) and <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>.
 By default the following <code class="docutils literal notranslate"><span class="pre">polling</span></code> is applied:</p>
 <ul class="simple">
@@ -625,38 +618,38 @@ By default the following <code class="docutils literal notranslate"><span class=
 </ul>
 <p>When you shard your index, the request handling usually differs between index and search requests:</p>
 <ul class="simple">
-<li><p>Index (and update, delete) will just be handled by a single shard =&gt; <code class="docutils literal notranslate"><span class="pre">polling='any'</span></code></p></li>
-<li><p>Search requests are handled by all Shards =&gt; <code class="docutils literal notranslate"><span class="pre">polling='all'</span></code></p></li>
+<li><p>Index (and update, delete) are handled by a single shard =&gt; <code class="docutils literal notranslate"><span class="pre">polling='any'</span></code></p></li>
+<li><p>Search requests are handled by all shards =&gt; <code class="docutils literal notranslate"><span class="pre">polling='all'</span></code></p></li>
 </ul>
 <p>For indexing, you only want a single shard to receive a request, because this is sufficient to add it to the index.
-For searching, you probably need to send the search request to all Shards, because the requested data could be on any shard.</p>
+For searching, you probably need to send the search request to all shards, because the requested data could be on any shard.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;ExecutorWithShards&#39;</span><span class="p">,</span> <span class="n">shards</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">polling</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;/custom&#39;</span><span class="p">:</span> <span class="s1">&#39;ALL&#39;</span><span class="p">,</span> <span class="s1">&#39;/search&#39;</span><span class="p">:</span> <span class="s1">&#39;ANY&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">:</span> <span class="s1">&#39;ANY&#39;</span><span class="p">})</span>
 </pre></div>
 </div>
-<p>The example above will result in a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> having the Executor <code class="docutils literal notranslate"><span class="pre">ExecutorWithShards</span></code> with the following polling options configured</p>
+<p>The above example results in a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> having the Executor <code class="docutils literal notranslate"><span class="pre">ExecutorWithShards</span></code> with the following polling options:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">/index</span></code> has polling <code class="docutils literal notranslate"><span class="pre">ANY</span></code> (the default value is not changed here)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">/search</span></code> has polling <code class="docutils literal notranslate"><span class="pre">ANY</span></code> as it is explicitly set (usually that should not be necessary)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">/custom</span></code> has polling <code class="docutils literal notranslate"><span class="pre">ALL</span></code></p></li>
-<li><p>all other endpoints will have polling <code class="docutils literal notranslate"><span class="pre">ANY</span></code> due to the usage of <code class="docutils literal notranslate"><span class="pre">*</span></code> as a wildcard to catch all other cases</p></li>
+<li><p>All other endpoints have polling <code class="docutils literal notranslate"><span class="pre">ANY</span></code> due to using <code class="docutils literal notranslate"><span class="pre">*</span></code> as a wildcard to catch all other cases</p></li>
 </ul>
 </section>
 <section id="filter-by-condition">
 <span id="flow-filter"></span><h2>Filter by condition<a class="headerlink" href="#filter-by-condition" title="Permalink to this heading">#</a></h2>
-<p>To define a filter condition, you can use <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions">DocArrays rich query language</a>.
-You can set a filter for each individual <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>, and every Document that does not satisfy the filter condition will be
+<p>To define a filter condition, use <a class="reference external" href="https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions">DocArrays rich query language</a>.
+You can set a filter for each individual <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>, and every Document that does not satisfy the filter condition is
 removed before reaching that Executor.</p>
-<p>To add a filter condition to an Executor, you pass it to the <code class="docutils literal notranslate"><span class="pre">when</span></code> parameter of <a class="reference internal" href="../../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> method of the Flow.
-This then defines <em>when</em> a document will be processed by the Executor:</p>
+<p>To add a filter condition to an Executor, pass it to the <code class="docutils literal notranslate"><span class="pre">when</span></code> parameter of <a class="reference internal" href="../../../api/jina/#jina.Flow.add" title="jina.Flow.add"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add()</span></code></a> method of the Flow.
+This then defines <em>when</em> a document is processed by the Executor:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--1-input--1" name="tab-set--1" type="radio"><label class="tab-label" for="tab-set--1-input--1">Python</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">when</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;tags__key&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$eq&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}})</span>  <span class="c1"># Create the empty Flow, add condition</span>
 <span class="hll">
-</span><span class="k">with</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># Using it as a Context Manager will start the Flow</span>
+</span><span class="k">with</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># Using it as a Context Manager starts the Flow</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
         <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/search&#39;</span><span class="p">,</span>
         <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}),</span> <span class="n">Document</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">})]),</span>
@@ -664,7 +657,7 @@ This then defines <em>when</em> a document will be processed by the Executor:</p
 </span>
 <span class="nb">print</span><span class="p">(</span>
     <span class="n">ret</span><span class="p">[:,</span> <span class="s1">&#39;tags&#39;</span><span class="p">]</span>
-<span class="p">)</span>  <span class="c1"># only the Document fullfilling the condition is processed and therefore returned.</span>
+<span class="p">)</span>  <span class="c1"># only the Document fulfilling the condition is processed and therefore returned.</span>
 </pre></div>
 </div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[{</span><span class="s1">&#39;key&#39;</span>: <span class="m">5</span>.0<span class="o">}]</span>
@@ -686,7 +679,7 @@ This then defines <em>when</em> a document will be processed by the Executor:</p
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s1">&#39;flow.yml&#39;</span><span class="p">)</span>  <span class="c1"># Load the Flow definition from Yaml file</span>
 
-<span class="k">with</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># Using it as a Context Manager will start the Flow</span>
+<span class="k">with</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># Using it as a Context Manager starts the Flow</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
         <span class="n">on</span><span class="o">=</span><span class="s1">&#39;/search&#39;</span><span class="p">,</span>
 <span class="hll">        <span class="n">inputs</span><span class="o">=</span><span class="n">DocumentArray</span><span class="p">([</span><span class="n">Document</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}),</span> <span class="n">Document</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">})]),</span>
@@ -694,7 +687,7 @@ This then defines <em>when</em> a document will be processed by the Executor:</p
 
 <span class="nb">print</span><span class="p">(</span>
     <span class="n">ret</span><span class="p">[:,</span> <span class="s1">&#39;tags&#39;</span><span class="p">]</span>
-<span class="p">)</span>  <span class="c1"># only the Document fullfilling the condition is processed and therefore returned.</span>
+<span class="p">)</span>  <span class="c1"># only the Document fulfilling the condition is processed and therefore returned.</span>
 </pre></div>
 </div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[{</span><span class="s1">&#39;key&#39;</span>: <span class="m">5</span>.0<span class="o">}]</span>
@@ -702,11 +695,11 @@ This then defines <em>when</em> a document will be processed by the Executor:</p
 </div>
 </div>
 </div>
-<p>Note that whenever a Document does not satisfy the <code class="docutils literal notranslate"><span class="pre">when</span></code> condition of a filter, the filter removes it <em>for the entire branch of the Flow</em>.
-This means that every Executor that is located behind a filter is affected by this, not just the specific Executor that defines the condition.
-Like with a real-life filter, once something does not pass through it, it will not re-appear behind the filter.</p>
+<p>Note that if a Document does not satisfy the <code class="docutils literal notranslate"><span class="pre">when</span></code> condition of a filter, the filter removes the Document <em>for the entire branch of the Flow</em>.
+This means that every Executor located behind a filter is affected by this, not just the specific Executor that defines the condition.
+As with a real-life filter, once something fails to pass through it, it no longer continues down the pipeline.</p>
 <p>Naturally, parallel branches in a Flow do not affect each other. So if a Document gets filtered out in only one branch, it can
-still be used in the other branch, and also after the branches are re-joined together:</p>
+still be used in the other branch, and also after the branches are re-joined:</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--2-input--1" name="tab-set--2" type="radio"><label class="tab-label" for="tab-set--2-input--1">Parallel Executors</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">DocumentArray</span><span class="p">,</span> <span class="n">Document</span>
@@ -765,14 +758,14 @@ still be used in the other branch, and also after the branches are re-joined tog
 </div>
 </div>
 <p>This feature is useful to prevent some specialized Executors from processing certain Documents.
-It can also be used to build <em>switch-like nodes</em>, where some Documents pass through one parallel branch of the Flow,
-while other Documents pass through a different branch.</p>
-<p>Also note that whenever a Document does not satisfy the condition of an Executor, it will not even be sent to that Executor.
-Instead, only a lightweight Request without any payload will be transferred.
+It can also be used to build <em>switch-like nodes</em>, where some Documents pass through one branch of the Flow,
+while other Documents pass through a different parallel branch.</p>
+<p>Note that whenever a Document does not satisfy the condition of an Executor, it is not even sent to that Executor.
+Instead, only a lightweight Request without any payload is transferred.
 This means that you can not only use this feature to build complex logic, but also to minimize your networking overhead.</p>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
-<p>For a hands-on example on how to leverage these filter conditions, see <a class="reference internal" href="../../../how-to/flow-switch/#flow-switch"><span class="std std-ref">this how-to</span></a>.</p>
+<p>For a hands-on example of leveraging filter conditions, see <a class="reference internal" href="../../../how-to/flow-switch/#flow-switch"><span class="std std-ref">this how-to</span></a>.</p>
 </div>
 </section>
 </section>
@@ -808,7 +801,7 @@ This means that you can not only use this feature to build complex logic, but al
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 07, 2022</div>
+                            Last updated on Oct 10, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

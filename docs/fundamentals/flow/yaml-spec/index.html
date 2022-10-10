@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.10.2 Documentation" />
   
-<meta property="og:description" content="YAML specification: This page outlines the specification for valid Executor YAML files. Such YAML configurations can be used to generate a Executor object via load_config(). To generate a YAML configuration from a Flow Python object, use save_config(). YAML completion in IDE: We provide a JSON Sc..." />
+<meta property="og:description" content="YAML specification: To generate a YAML configuration from a Flow Python object, use save_config(). YAML completion in IDE: We provide a JSON Schema for your IDE to enable code completion, syntax validation, members listing and displaying help text. PyCharm users: Click menu Preferences-> JSON Sch..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -157,13 +157,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="fast">Learn more about Lightning</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -260,7 +254,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Flow</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../create-flow/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../monitoring-flow/">Monitor</a></li>
@@ -393,13 +387,10 @@
                 <article role="main">
                     <section id="svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-file-code-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m4-1-75c4-784-4-784-0-5-75-0h5-586c-464-0-909-184-1-237-513l2-914-2-914c-329-328-513-773-513-1-237v8-586a1-75-1-75-0-0114-25-15h-9a-75-75-0-010-1-5h9a-25-25-0-00-25-25v6h-2-75a1-75-1-75-0-0110-4-25v1-5h5-75a-25-25-0-00-25-25v2-5a-75-75-0-01-1-5-0v-2-5zm7-5-188v4-25c0-138-112-25-25-25h2-688a-252-252-0-00-011-013l-2-914-2-914a-272-272-0-00-013-011zm5-72-6-72a-75-75-0-000-1-06l1-47-1-47-1-47-1-47a-75-75-0-101-06-1-06l2-2a-75-75-0-000-1-06l-2-2a-75-75-0-00-1-06-0zm3-28-7-78a-75-75-0-00-1-06-1-06l-2-2a-75-75-0-000-1-06l2-2a-75-75-0-001-06-1-06l1-81-9-25l1-47-1-47z-path-svg-yaml-specification">
 <span id="flow-yaml-spec"></span><h1><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-file-code" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4 1.75C4 .784 4.784 0 5.75 0h5.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v8.586A1.75 1.75 0 0114.25 15h-9a.75.75 0 010-1.5h9a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 0110 4.25V1.5H5.75a.25.25 0 00-.25.25v2.5a.75.75 0 01-1.5 0v-2.5zm7.5-.188V4.25c0 .138.112.25.25.25h2.688a.252.252 0 00-.011-.013l-2.914-2.914a.272.272 0 00-.013-.011zM5.72 6.72a.75.75 0 000 1.06l1.47 1.47-1.47 1.47a.75.75 0 101.06 1.06l2-2a.75.75 0 000-1.06l-2-2a.75.75 0 00-1.06 0zM3.28 7.78a.75.75 0 00-1.06-1.06l-2 2a.75.75 0 000 1.06l2 2a.75.75 0 001.06-1.06L1.81 9.25l1.47-1.47z"></path></svg> YAML specification<a class="headerlink" href="#svg-version-1-1-width-1-0em-height-1-0em-class-sd-octicon-sd-octicon-file-code-viewbox-0-0-16-16-aria-hidden-true-path-fill-rule-evenodd-d-m4-1-75c4-784-4-784-0-5-75-0h5-586c-464-0-909-184-1-237-513l2-914-2-914c-329-328-513-773-513-1-237v8-586a1-75-1-75-0-0114-25-15h-9a-75-75-0-010-1-5h9a-25-25-0-00-25-25v6h-2-75a1-75-1-75-0-0110-4-25v1-5h5-75a-25-25-0-00-25-25v2-5a-75-75-0-01-1-5-0v-2-5zm7-5-188v4-25c0-138-112-25-25-25h2-688a-252-252-0-00-011-013l-2-914-2-914a-272-272-0-00-013-011zm5-72-6-72a-75-75-0-000-1-06l1-47-1-47-1-47-1-47a-75-75-0-101-06-1-06l2-2a-75-75-0-000-1-06l-2-2a-75-75-0-00-1-06-0zm3-28-7-78a-75-75-0-00-1-06-1-06l-2-2a-75-75-0-000-1-06l2-2a-75-75-0-001-06-1-06l1-81-9-25l1-47-1-47z-path-svg-yaml-specification" title="Permalink to this heading">#</a></h1>
-<p>This page outlines the specification for valid <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> YAML files.</p>
-<p>Such YAML configurations can be used to generate a <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a> object via <a class="reference internal" href="../../../api/jina.jaml/#jina.jaml.JAMLCompatible.load_config" title="jina.jaml.JAMLCompatible.load_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_config()</span></code></a>.</p>
 <p>To generate a YAML configuration from a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> Python object, use <a class="reference internal" href="../../../api/jina.jaml/#jina.jaml.JAMLCompatible.save_config" title="jina.jaml.JAMLCompatible.save_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_config()</span></code></a>.</p>
 <section id="yaml-completion-in-ide">
 <h2>YAML completion in IDE<a class="headerlink" href="#yaml-completion-in-ide" title="Permalink to this heading">#</a></h2>
-<p>We provide a <a class="reference external" href="https://json-schema.org/">JSON Schema</a> for your IDE to enable code completion, syntax validation, members listing and displaying help text. Here is a <a class="reference external" href="https://youtu.be/qOD-6mihUzQ">video tutorial</a> to walk you through the setup.</p>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/qOD-6mihUzQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<p>We provide a <a class="reference external" href="https://json-schema.org/">JSON Schema</a> for your IDE to enable code completion, syntax validation, members listing and displaying help text.</p>
 <section id="pycharm-users">
 <h3>PyCharm users<a class="headerlink" href="#pycharm-users" title="Permalink to this heading">#</a></h3>
 <ol class="arabic simple">
@@ -424,7 +415,6 @@
 </section>
 <section id="example-yaml">
 <h2>Example YAML<a class="headerlink" href="#example-yaml" title="Permalink to this heading">#</a></h2>
-<p>The following constitutes an example Flow YAML:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">jtype</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Flow</span><span class="w"></span>
 <span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1&#39;</span><span class="w"></span>
 <span class="nt">with</span><span class="p">:</span><span class="w"></span>
@@ -458,7 +448,7 @@
 </section>
 <section id="with">
 <h3><code class="docutils literal notranslate"><span class="pre">with</span></code><a class="headerlink" href="#with" title="Permalink to this heading">#</a></h3>
-<p>Keyword arguments passed to Flow <code class="docutils literal notranslate"><span class="pre">__init__()</span></code> method. You can set Flow-specific arguments and Gateway-specific arguments here:</p>
+<p>Keyword arguments are passed to a Flow’s <code class="docutils literal notranslate"><span class="pre">__init__()</span></code> method. You can set Flow-specific arguments and Gateway-specific arguments here:</p>
 <section id="flow-arguments">
 <h4>Flow arguments<a class="headerlink" href="#flow-arguments" title="Permalink to this heading">#</a></h4>
 <div class="table-wrapper colwidths-auto docutils container">
@@ -1019,8 +1009,7 @@ Each item in the collection corresponds to on <a class="reference internal" href
 </section>
 <section id="variables">
 <h2>Variables<a class="headerlink" href="#variables" title="Permalink to this heading">#</a></h2>
-<p>Jina Flow YAMLs support variables and variable substitution according to the <a class="reference external" href="https://docs.github.com/en/actions/learn-github-actions/environment-variables">Github Actions syntax</a>.</p>
-<p>This means that the following variable substitutions are supported:</p>
+<p>Jina Flow YAML supports variables and variable substitution according to the <a class="reference external" href="https://docs.github.com/en/actions/learn-github-actions/environment-variables">Github Actions syntax</a>:</p>
 <section id="environment-variables">
 <h3>Environment variables<a class="headerlink" href="#environment-variables" title="Permalink to this heading">#</a></h3>
 <p>Use <code class="docutils literal notranslate"><span class="pre">${{</span> <span class="pre">ENV.VAR</span> <span class="pre">}}</span></code> to refer to the environment variable <code class="docutils literal notranslate"><span class="pre">VAR</span></code>. You can find all <a class="reference internal" href="../../../envs/#jina-env-vars"><span class="std std-ref">Jina environment variables here</span></a>.</p>
@@ -1069,7 +1058,7 @@ Note that the only difference between environment variable syntax and relative p
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 07, 2022</div>
+                            Last updated on Oct 10, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

@@ -124,13 +124,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="fast">Learn more about Lightning</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -227,7 +221,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/create-flow/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
@@ -433,16 +427,16 @@
             <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_results</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">inputs</span><span class="p">:</span> <span class="s1">&#39;InputType&#39;</span><span class="p">,</span>
-        <span class="n">on_done</span><span class="p">:</span> <span class="s1">&#39;CallbackFnType&#39;</span><span class="p">,</span>
-        <span class="n">on_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">on_always</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">initial_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
-        <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
-        <span class="n">backoff_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="p">:</span> <span class="s1">&#39;InputType&#39;</span><span class="p">,</span>
+            <span class="n">on_done</span><span class="p">:</span> <span class="s1">&#39;CallbackFnType&#39;</span><span class="p">,</span>
+            <span class="n">on_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">on_always</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;CallbackFnType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">initial_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">max_backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+            <span class="n">backoff_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param inputs: the callable</span>
@@ -471,7 +465,8 @@
             <span class="n">proto</span> <span class="o">=</span> <span class="s1">&#39;wss&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">tls</span> <span class="k">else</span> <span class="s1">&#39;ws&#39;</span>
             <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">proto</span><span class="si">}</span><span class="s1">://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s1">/&#39;</span>
             <span class="n">iolet</span> <span class="o">=</span> <span class="k">await</span> <span class="n">stack</span><span class="o">.</span><span class="n">enter_async_context</span><span class="p">(</span>
-                <span class="n">WebsocketClientlet</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span> <span class="n">initial_backoff</span><span class="o">=</span><span class="n">initial_backoff</span><span class="p">,</span>
+                <span class="n">WebsocketClientlet</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">max_attempts</span><span class="o">=</span><span class="n">max_attempts</span><span class="p">,</span>
+                                   <span class="n">initial_backoff</span><span class="o">=</span><span class="n">initial_backoff</span><span class="p">,</span>
                                    <span class="n">max_backoff</span><span class="o">=</span><span class="n">max_backoff</span><span class="p">,</span> <span class="n">backoff_multiplier</span><span class="o">=</span><span class="n">backoff_multiplier</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="p">)</span>
 
@@ -510,7 +505,7 @@
                 <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">iolet</span><span class="o">.</span><span class="n">send_eoi</span><span class="p">())</span>
 
             <span class="k">def</span> <span class="nf">_request_handler</span><span class="p">(</span>
-                <span class="n">request</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">,</span>
+                    <span class="n">request</span><span class="p">:</span> <span class="s1">&#39;Request&#39;</span><span class="p">,</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Tuple[asyncio.Future, Optional[asyncio.Future]]&#39;</span><span class="p">:</span>
                 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                For each request in the iterator, we send the `Message` using `iolet.send_message()`.</span>
@@ -537,6 +532,8 @@
 
             <span class="n">receive_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">_receive</span><span class="p">())</span>
 
+            <span class="n">exception_raised</span> <span class="o">=</span> <span class="kc">None</span>
+
             <span class="k">if</span> <span class="n">receive_task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;receive task not running, can not send messages&#39;</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
@@ -552,10 +549,22 @@
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_progress</span><span class="p">:</span>
                         <span class="n">p_bar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
                     <span class="k">yield</span> <span class="n">response</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">exception_raised</span> <span class="o">=</span> <span class="n">ex</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">receive_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">ex</span>
             <span class="k">finally</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">iolet</span><span class="o">.</span><span class="n">close_code</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">WS_1011_INTERNAL_ERROR</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">iolet</span><span class="o">.</span><span class="n">close_message</span><span class="p">)</span>
-                <span class="k">await</span> <span class="n">receive_task</span></div>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">await</span> <span class="n">receive_task</span>
+                <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">exception_raised</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">exception_raised</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span></div>
 </pre></div>
                 </article>
             </div>
@@ -570,7 +579,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 07, 2022</div>
+                            Last updated on Oct 10, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

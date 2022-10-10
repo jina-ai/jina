@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.10.2 Documentation" />
   
-<meta property="og:description" content="When building a complex solution, unfortunately things go wrong sometimes. Jina does its best to recover from failures, handle them gracefully, and report useful failure information to the user. The following outlines a number of (more or less) common failure cases, and explains how Jina responds..." />
+<meta property="og:description" content="When building a complex solution, things sometimes go wrong. Jina does its best to recover from failures, handle them gracefully, and report useful failure information to the user. The following outlines (more or less) common failure cases, and explains how Jina responds to each. Executor errors:..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -157,13 +157,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="fast">Learn more about Lightning</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -260,7 +254,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Flow</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../create-flow/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../monitoring-flow/">Monitor</a></li>
@@ -393,56 +387,56 @@
                 <article role="main">
                     <section id="handle-exceptions">
 <span id="flow-error-handling"></span><h1>Handle exceptions<a class="headerlink" href="#handle-exceptions" title="Permalink to this heading">#</a></h1>
-<p>When building a complex solution, unfortunately things go wrong sometimes.
+<p>When building a complex solution, things sometimes go wrong.
 Jina does its best to recover from failures, handle them gracefully, and report useful failure information to the user.</p>
-<p>The following outlines a number of (more or less) common failure cases, and explains how Jina responds to each one of them.</p>
+<p>The following outlines (more or less) common failure cases, and explains how Jina responds to each.</p>
 <section id="executor-errors">
 <h2>Executor errors<a class="headerlink" href="#executor-errors" title="Permalink to this heading">#</a></h2>
-<p>In general there are two places where an Executor level error can be introduced.</p>
-<p>If an <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>’s <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method raises and Exception, the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> cannot start.
-In this case this Exception is gets raised by the Executor runtime, and the Flow throws a <code class="docutils literal notranslate"><span class="pre">RuntimeFailToStart</span></code> Exception.</p>
-<p>If one of the Executor’s <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> methods raises and Exception, the offending error message gets added to the response
-and is sent back to the client.
-If the gRPC or WebSocket protocols are used, the networking stream is not interrupted and can accept further requests.</p>
-<p>In all cases, the <a class="reference internal" href="../../client/client/#client"><span class="std std-ref">Jina Client</span></a> will raise an Exception.</p>
+<p>In general there are two places where an Executor level error can be introduced:</p>
+<ul class="simple">
+<li><p>If an <a class="reference internal" href="../../../api/jina/#jina.Executor" title="jina.Executor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Executor</span></code></a>’s <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method raises an Exception, the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> cannot start.
+In this case this Executor runtime raises the Exception, and the Flow throws a <code class="docutils literal notranslate"><span class="pre">RuntimeFailToStart</span></code> Exception.</p></li>
+<li><p>If one of the Executor’s <code class="docutils literal notranslate"><span class="pre">&#64;requests</span></code> methods raises an Exception, the error message is added to the response
+and sent back to the client. If the gRPC or WebSockets protocols are used, the networking stream is not interrupted and can accept further requests.</p></li>
+</ul>
+<p>In both cases, the <a class="reference internal" href="../../client/client/#client"><span class="std std-ref">Jina Client</span></a> raises an Exception.</p>
 </section>
 <section id="exit-on-exceptions">
 <h2>Exit on exceptions<a class="headerlink" href="#exit-on-exceptions" title="Permalink to this heading">#</a></h2>
-<p>Some exceptions like network errors or request timeouts can be transient and can recover automatically. In some cases there
-can be fatal errors or user defined errors that can put the Executor in an unuseable state. The executor can be restarted to recover from such a
-state. Locally the flow must to be re-run manually to restore the Executor availability.</p>
-<p>On Kubernetes deployments, the process can be automated by terminating the Exeuctor process which will cause the pod to terminate. The availability
-is restored by the autoscaler by creating a new pod to replace the terminated pod. The termination can be enabled for one or more errors by using the <code class="docutils literal notranslate"><span class="pre">exit_on_exceptions</span></code> argument when creating the Executor in a Flow. Upon matching the caught exception, the Executor will perform a gracefull termination.</p>
-<p>A sample Flow can be <code class="docutils literal notranslate"><span class="pre">Flow().add(uses=MyExecutor,</span> <span class="pre">exit_on_exceptions:</span> <span class="pre">['Exception',</span> <span class="pre">'RuntimeException'])</span></code>. The <code class="docutils literal notranslate"><span class="pre">exit_on_exceptions</span></code> argument accepts a list of python or user defined custom Exception or Error class names.</p>
+<p>Some exceptions like network errors or request timeouts can be transient and can recover automatically. Sometimes
+fatal errors or user-defined errors put the Executor in an unusable state, in which case it can be restarted. Locally the Flow must be re-run manually to restore Executor availability.</p>
+<p>On Kubernetes deployments, this can be automated by terminating the Executor process, causing the Pod to terminate. The autoscaler restores availability
+by creating a new Pod to replace the terminated one. Termination can be enabled for one or more errors by using the <code class="docutils literal notranslate"><span class="pre">exit_on_exceptions</span></code> argument when adding the Executor to a Flow. When it matches the caught exception, the Executor terminates gracefully.</p>
+<p>A sample Flow can be <code class="docutils literal notranslate"><span class="pre">Flow().add(uses=MyExecutor,</span> <span class="pre">exit_on_exceptions:</span> <span class="pre">['Exception',</span> <span class="pre">'RuntimeException'])</span></code>. The <code class="docutils literal notranslate"><span class="pre">exit_on_exceptions</span></code> argument accepts a list of Python or user-defined Exception or Error class names.</p>
 </section>
 <section id="network-errors">
 <h2>Network errors<a class="headerlink" href="#network-errors" title="Permalink to this heading">#</a></h2>
-<p>When an <a class="reference internal" href="../../architecture-overview/#architecture-overview"><span class="std std-ref">Executor or Head</span></a> can’t be reached by the <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>’s gateway, it attempts to re-connect
+<p>When a <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a>’s gateway can’t reach an <a class="reference internal" href="../../architecture-overview/#architecture-overview"><span class="std std-ref">Executor or Head</span></a>, the Flow attempts to re-connect
 to the faulty deployment according to a retry policy.
 The same applies to calls to Executors that time out.
-The specifics of this policy depend on the environment the Flow find itself in, and are outlined below.</p>
+The specifics of this policy depend on the Flow’s environment, as outlined below.</p>
 <div class="hint admonition">
 <p class="admonition-title">Hint: Prevent Executor timeouts</p>
-<p>If you regularly experience timouts on Executor calls, you may want to consider setting the Flow’s <code class="docutils literal notranslate"><span class="pre">timeout_send</span></code> attribute to a larger value.
-You can do this by setting <code class="docutils literal notranslate"><span class="pre">Flow(timeout_send=time_in_ms)</span></code> in Python
+<p>If you regularly experience Executor call timeouts, set the Flow’s <code class="docutils literal notranslate"><span class="pre">timeout_send</span></code> attribute to a larger value
+by setting <code class="docutils literal notranslate"><span class="pre">Flow(timeout_send=time_in_ms)</span></code> in Python
 or <code class="docutils literal notranslate"><span class="pre">timeout_send:</span> <span class="pre">time_in_ms</span></code> in your Flow YAML with-block.</p>
-<p>Especially neural network forward passes on CPU (and other unusually expensive operations) can lead to timeouts with the default setting.</p>
+<p>Neural network forward passes on CPU (and other unusually expensive operations) commonly lead to timeouts with the default setting.</p>
 </div>
 <div class="hint admonition">
 <p class="admonition-title">Hint: Custom retry policy</p>
-<p>You can override the default retry policy and instead choose a number of retries performed for each Executor.
-To perform <code class="docutils literal notranslate"><span class="pre">n</span></code> retries, set <code class="docutils literal notranslate"><span class="pre">Flow(retries=n)</span></code> in Python, or <code class="docutils literal notranslate"><span class="pre">retries:</span> <span class="pre">n</span></code> in the Flow
+<p>You can override the default retry policy and instead choose a number of retries performed for each Executor
+with <code class="docutils literal notranslate"><span class="pre">Flow(retries=n)</span></code> in Python, or <code class="docutils literal notranslate"><span class="pre">retries:</span> <span class="pre">n</span></code> in the Flow
 YAML <code class="docutils literal notranslate"><span class="pre">with</span></code> block.</p>
 </div>
-<p>If, during the complete execution of this policy, no successful call to any Executor replica could be made, the request is aborted
+<p>If, during the complete execution of this policy, no successful call to any Executor replica can be made, the request is aborted
 and the failure is <a class="reference internal" href="#failure-reporting"><span class="std std-ref">reported to the client</span></a>.</p>
 <section id="request-retries-local-deployment">
 <h3>Request retries: Local deployment<a class="headerlink" href="#request-retries-local-deployment" title="Permalink to this heading">#</a></h3>
 <p>If a Flow is deployed locally (with or without <a class="reference internal" href="../../executor/containerize-executor/#dockerize-exec"><span class="std std-ref">containerized Executors</span></a>), the following policy
 for failed requests applies on a per-Executor basis:</p>
 <ul class="simple">
-<li><p>If there are multiple replicas of the target Executor, try each replica at least once, or until the request succeeds</p></li>
-<li><p>Irrespective of the number of replicas, try the request at least 3 times, or until it succeeds. If there are fewer than 3 replicas, try them in a round-robin fashion</p></li>
+<li><p>If there are multiple replicas of the target Executor, try each replica at least once, or until the request succeeds.</p></li>
+<li><p>Irrespective of the number of replicas, try the request at least three times, or until it succeeds. If there are fewer than three replicas, try them in a round-robin fashion.</p></li>
 </ul>
 </section>
 <section id="request-retries-deployment-with-kubernetes">
@@ -451,24 +445,24 @@ for failed requests applies on a per-Executor basis:</p>
 <div class="seealso admonition">
 <p class="admonition-title">See Also</p>
 <p>The impossibility of retries across different replicas is a limitation of Kubernetes in combination with gRPC.
-If you want to learn more about this limitation, see <a class="reference external" href="https://kubernetes.io/blog/2018/11/07/grpc-load-balancing-on-kubernetes-without-tears/">this</a> Kubernetes Blog post.</p>
+If you want to learn more about this limitation, see <a class="reference external" href="https://kubernetes.io/blog/2018/11/07/grpc-load-balancing-on-kubernetes-without-tears/">this</a> Kubernetes blog post.</p>
 <p>An easy way to overcome this limitation is to use a service mesh like <a class="reference external" href="https://linkerd.io/">Linkerd</a>.</p>
 </div>
 <p>Concretely, this results in the following per-Executor retry policy:</p>
 <ul class="simple">
-<li><p>Try the request 3 times, or until it succeeds, always on the same replica of the Executor</p></li>
+<li><p>Try the request three times, or until it succeeds, always on the same replica of the Executor</p></li>
 </ul>
 </section>
 <section id="request-retries-deployment-with-kubernetes-and-service-mesh">
 <h3>Request retries: Deployment with Kubernetes and service mesh<a class="headerlink" href="#request-retries-deployment-with-kubernetes-and-service-mesh" title="Permalink to this heading">#</a></h3>
-<p>A Kubernetes service mesh can enable load balancing, and thus retries, between replicas of an Executor.</p>
+<p>A Kubernetes service mesh can enable load balancing, and thus retries, between an Executor’s replicas.</p>
 <div class="hint admonition">
 <p class="admonition-title">Hint</p>
 <p>While Jina supports any service mesh, the output of <code class="docutils literal notranslate"><span class="pre">f.to_kubernetes_yaml()</span></code> already includes the necessary annotations for <a class="reference external" href="https://linkerd.io/">Linkerd</a>.</p>
 </div>
 <p>If a service mesh is installed alongside Jina in the Kubernetes cluster, the following retry policy applies for each Executor:</p>
 <ul class="simple">
-<li><p>Try the request at least 3 times, or until it succeeds</p></li>
+<li><p>Try the request at least three times, or until it succeeds</p></li>
 <li><p>Distribute the requests to the replicas according to the service mesh’s configuration</p></li>
 </ul>
 <div class="caution admonition">
@@ -483,28 +477,28 @@ YAML <code class="docutils literal notranslate"><span class="pre">with</span></c
 <section id="failure-reporting">
 <span id="id1"></span><h3>Failure reporting<a class="headerlink" href="#failure-reporting" title="Permalink to this heading">#</a></h3>
 <p>If the retry policy is exhausted for a given request, the error is reported back to the corresponding client.</p>
-<p>The resulting error message will contain the <em>network address</em> of the failing Executor.
-If multiple replicas are present, all addresses will be reported - unless the Flow is deployed using Kubernetes, in which
-case the replicas are managed by k8s and only a single address is available.</p>
-<p>Depending on the client-to-gateway protocol, and they type of error, the error message will be returned in one of the following ways:</p>
+<p>The resulting error message contains the <em>network address</em> of the failing Executor.
+If multiple replicas are present, all addresses are reported - unless the Flow is deployed using Kubernetes, in which
+case the replicas are managed by Kubernetes and only a single address is available.</p>
+<p>Depending on the client-to-gateway protocol, and the type of error, the error message is returned in one of the following ways:</p>
 <p><strong>Could not connect to Executor:</strong></p>
 <ul class="simple">
-<li><p><strong>gRPC</strong>: A response with the gRPC status code 14 (<em>UNAVAILABLE</em>) is issued, and the error message is contained in the <code class="docutils literal notranslate"><span class="pre">details</span></code> field</p></li>
-<li><p><strong>HTTP</strong>: A response with the HTTP status code 503 (<em>SERVICE_UNAVAILABLE</em>) is issued, and the error message is contained in <code class="docutils literal notranslate"><span class="pre">response['header']['status']['description']</span></code></p></li>
-<li><p><strong>WebSocket</strong>: The stream closes with close code 1011 (<em>INTERNAL_ERROR</em>) and the message is contained in the WS close message</p></li>
+<li><p><strong>gRPC</strong>: A response with the gRPC status code 14 (<em>UNAVAILABLE</em>) is issued, and the error message is contained in the <code class="docutils literal notranslate"><span class="pre">details</span></code> field.</p></li>
+<li><p><strong>HTTP</strong>: A response with the HTTP status code 503 (<em>SERVICE_UNAVAILABLE</em>) is issued, and the error message is contained in <code class="docutils literal notranslate"><span class="pre">response['header']['status']['description']</span></code>.</p></li>
+<li><p><strong>WebSockets</strong>: The stream closes with close code 1011 (<em>INTERNAL_ERROR</em>) and the message is contained in the WebSocket close message.</p></li>
 </ul>
 <p><strong>Call to Executor timed out:</strong></p>
 <ul class="simple">
-<li><p><strong>gRPC</strong>: A response with the gRPC status code 4 (<em>DEADLINE_EXCEEDED</em>) is issued, and the error message is contained in the <code class="docutils literal notranslate"><span class="pre">details</span></code> field</p></li>
-<li><p><strong>HTTP</strong>: A response with the HTTP status code 504 (<em>GATEWAY_TIMEOUT</em>) is issued, and the error message is contained in <code class="docutils literal notranslate"><span class="pre">response['header']['status']['description']</span></code></p></li>
-<li><p><strong>WebSocket</strong>: The stream closes with close code 1011 (<em>INTERNAL_ERROR</em>) and the message is contained in the WS close message</p></li>
+<li><p><strong>gRPC</strong>: A response with the gRPC status code 4 (<em>DEADLINE_EXCEEDED</em>) is issued, and the error message is contained in the <code class="docutils literal notranslate"><span class="pre">details</span></code> field.</p></li>
+<li><p><strong>HTTP</strong>: A response with the HTTP status code 504 (<em>GATEWAY_TIMEOUT</em>) is issued, and the error message is contained in <code class="docutils literal notranslate"><span class="pre">response['header']['status']['description']</span></code>.</p></li>
+<li><p><strong>WebSockets</strong>: The stream closes with close code 1011 (<em>INTERNAL_ERROR</em>) and the message is contained in the WebSockets close message.</p></li>
 </ul>
-<p>For any of these scenarios, the <a class="reference internal" href="../../client/client/#client"><span class="std std-ref">Jina Client</span></a> will raise a <code class="docutils literal notranslate"><span class="pre">ConnectionError</span></code> containing the error message.</p>
+<p>For any of these scenarios, the <a class="reference internal" href="../../client/client/#client"><span class="std std-ref">Jina Client</span></a> raises a <code class="docutils literal notranslate"><span class="pre">ConnectionError</span></code> containing the error message.</p>
 </section>
 </section>
 <section id="debug-via-breakpoint">
 <h2>Debug via breakpoint<a class="headerlink" href="#debug-via-breakpoint" title="Permalink to this heading">#</a></h2>
-<p>Standard Python breakpoints will not work inside <code class="docutils literal notranslate"><span class="pre">Executor</span></code> methods when called inside a Flow context manager. Nevertheless, <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">epdb;</span> <span class="pre">epdb.set_trace()</span></code> will work just as a native python breakpoint. Note that you need to <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">epdb</span></code> to have access to this type of breakpoints.</p>
+<p>Standard Python breakpoints don’t work inside <code class="docutils literal notranslate"><span class="pre">Executor</span></code> methods when called inside a Flow context manager. Nevertheless, <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">epdb;</span> <span class="pre">epdb.set_trace()</span></code> works just like a native Python breakpoint. Note that you need to <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">epdb</span></code> to access this type of breakpoints.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">✅ Do</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span><span class="p">,</span> <span class="n">Executor</span><span class="p">,</span> <span class="n">requests</span>
@@ -581,7 +575,7 @@ case the replicas are managed by k8s and only a single address is available.</p>
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 07, 2022</div>
+                            Last updated on Oct 10, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

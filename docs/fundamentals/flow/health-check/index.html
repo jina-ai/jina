@@ -12,7 +12,7 @@
   
 <meta property="og:site_name" content="Jina 3.10.2 Documentation" />
   
-<meta property="og:description" content="A Jina Flow consists of a Gateway and Executors, each of which have to be healthy before the Flow is ready to receive requests. A Flow is marked as “ready”, when all its Executors and its Gateway are fully loaded and ready. Each Executor provides a health check in the form of a standardized gRPC ..." />
+<meta property="og:description" content="A Jina Flow consists of a Gateway and Executors, all of which have to be healthy before the Flow is ready to receive requests. A Flow is marked as “ready”, when all its Executors and its Gateway are fully loaded and ready. Each Executor provides a health check in the form of a standardized gRPC e..." />
   
 <meta property="og:image" content="https://docs.jina.ai/_static/banner.png" />
   
@@ -157,13 +157,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="fast">Learn more about Lightning</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -260,7 +254,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../">Flow</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../create-flow/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../monitoring-flow/">Monitor</a></li>
@@ -394,17 +388,17 @@
                     <section id="readiness-health-check">
 <h1>Readiness &amp; health check<a class="headerlink" href="#readiness-health-check" title="Permalink to this heading">#</a></h1>
 <p>A Jina <a class="reference internal" href="../../../api/jina/#jina.Flow" title="jina.Flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">Flow</span></code></a> consists of <a class="reference internal" href="../../architecture-overview/#architecture-overview"><span class="std std-ref">a Gateway and Executors</span></a>,
-each of which have to be healthy before the Flow is ready to receive requests.</p>
+all of which have to be healthy before the Flow is ready to receive requests.</p>
 <p>A Flow is marked as “ready”, when all its Executors and its Gateway are fully loaded and ready.</p>
 <p>Each Executor provides a health check in the form of a <a class="reference external" href="https://github.com/grpc/grpc/blob/master/doc/health-checking.md">standardized gRPC endpoint</a> that exposes this information to the outside world.
-This means that health checks can automatically be performed by Jina itself as well as external tools like Docker Compose, Kubernetes service meshes, or load balancers.</p>
-<section id="readiness-of-a-flow">
-<h2>Readiness of a Flow<a class="headerlink" href="#readiness-of-a-flow" title="Permalink to this heading">#</a></h2>
-<p>In most cases, it is most useful to check if an entire Flow is ready to accept requests.
+This means health checks can be automatically performed by Jina itself, as well as external tools like Docker Compose, Kubernetes service meshes, or load balancers.</p>
+<section id="flow-readiness">
+<h2>Flow Readiness<a class="headerlink" href="#flow-readiness" title="Permalink to this heading">#</a></h2>
+<p>In most cases, it is useful to check if an entire Flow is ready to accept requests.
 To enable this readiness check, the Jina Gateway can aggregate health check information from all services and provides
 a readiness check endpoint for the complete Flow.</p>
 <!-- start flow-ready -->
-<p><a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> offer a convenient API to query these readiness endpoints. You can call <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin.is_flow_ready" title="jina.clients.mixin.HealthCheckMixin.is_flow_ready"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_flow_ready()</span></code></a> or <a class="reference internal" href="../../../api/jina/#jina.Flow.is_flow_ready" title="jina.Flow.is_flow_ready"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_flow_ready()</span></code></a>, it will return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the Flow is ready, and <code class="docutils literal notranslate"><span class="pre">False</span></code> when it is not.</p>
+<p><a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> offers an API to query these readiness endpoints. You can call <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin.is_flow_ready" title="jina.clients.mixin.HealthCheckMixin.is_flow_ready"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_flow_ready()</span></code></a> or <a class="reference internal" href="../../../api/jina/#jina.Flow.is_flow_ready" title="jina.Flow.is_flow_ready"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_flow_ready()</span></code></a>. It returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the Flow is ready, and <code class="docutils literal notranslate"><span class="pre">False</span></code> if it is not.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--0-input--1" name="tab-set--0" type="radio"><label class="tab-label" for="tab-set--0-input--1">via Flow</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -500,7 +494,7 @@ WARNI… JINA@92986 message lost 100% (3/3)
 <!-- end flow-ready -->
 <section id="flow-status-using-third-party-clients">
 <h3>Flow status using third-party clients<a class="headerlink" href="#flow-status-using-third-party-clients" title="Permalink to this heading">#</a></h3>
-<p>You can check the status of a Flow using any gRPC/HTTP/Websocket client, not just Jina’s Client implementation.</p>
+<p>You can check the status of a Flow using any gRPC/HTTP/WebSockets client, not just Jina’s Client implementation.</p>
 <p>To see how this works, first instantiate the Flow with its corresponding protocol and block it for serving:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -530,7 +524,7 @@ DEBUG  Flow@19059 2 Deployments (i.e. 2 Pods) are running in this Flow
 </div>
 <section id="using-grpc">
 <h4>Using gRPC<a class="headerlink" href="#using-grpc" title="Permalink to this heading">#</a></h4>
-<p>When using grpc, you can use <a class="reference external" href="https://github.com/fullstorydev/grpcurl">grpcurl</a> to hit the Gateway’s gRPC service that is responsible for reporting the Flow status.</p>
+<p>When using grpc, use <a class="reference external" href="https://github.com/fullstorydev/grpcurl">grpcurl</a> to access the Gateway’s gRPC service that is responsible for reporting the Flow status.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker pull fullstorydev/grpcurl:latest
 docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12345 jina.JinaGatewayDryRunRPC/dry_run
 </pre></div>
@@ -543,7 +537,7 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">kill</span> -9 <span class="nv">$EXECUTOR_PID</span> <span class="c1"># in this case we can see in the logs that it is 19059</span>
 </pre></div>
 </div>
-<p>Then by doing the same check, you will see that it returns an error:</p>
+<p>Then by doing the same check, you can see that it returns an error:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12345 jina.JinaGatewayDryRunRPC/dry_run
 </pre></div>
 </div>
@@ -589,34 +583,33 @@ Error output<div class="sd-summary-down docutils">
 </div>
 </div>
 </details></section>
-<section id="using-http-or-websocket">
-<h4>Using HTTP or Websocket<a class="headerlink" href="#using-http-or-websocket" title="Permalink to this heading">#</a></h4>
-<p>When using HTTP or Websocket as the Gateway protocol, you can use curl to target the <code class="docutils literal notranslate"><span class="pre">/dry_run</span></code> endpoint and get the status of the Flow.</p>
+<section id="using-http-or-websockets">
+<h4>Using HTTP or WebSockets<a class="headerlink" href="#using-http-or-websockets" title="Permalink to this heading">#</a></h4>
+<p>When using HTTP or WebSockets as the Gateway protocol, use curl to target the <code class="docutils literal notranslate"><span class="pre">/dry_run</span></code> endpoint and get the status of the Flow.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>curl http://localhost:12345/dry_run
 </pre></div>
 </div>
-<p>The error-free output below signifies a correctly running Flow:</p>
+<p>Error-free output signifies a correctly running Flow:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="nt">&quot;exception&quot;</span><span class="p">:</span><span class="kc">null</span><span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-<p>You can simulate an Executor going offline by killing its process.</p>
+<p>You can simulate an Executor going offline by killing its process:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">kill</span> -9 <span class="nv">$EXECUTOR_PID</span> <span class="c1"># in this case we can see in the logs that it is 19059</span>
 </pre></div>
 </div>
-<p>Then by doing the same check, you will see that the call returns an error:</p>
+<p>Then by doing the same check, you can see that the call returns an error:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="s2">&quot;failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {&#39;0.0.0.0:12346&#39;}. Head or worker(s) may be down.&quot;</span><span class="p">,</span><span class="nt">&quot;exception&quot;</span><span class="p">:{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;InternalNetworkError&quot;</span><span class="p">,</span><span class="nt">&quot;args&quot;</span><span class="p">:[</span><span class="s2">&quot;failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {&#39;0.0.0.0:12346&#39;}. Head or worker(s) may be down.&quot;</span><span class="p">],</span><span class="nt">&quot;stacks&quot;</span><span class="p">:[</span><span class="s2">&quot;Traceback (most recent call last):\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 726, in task_wrapper\n    timeout=timeout,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 241, in send_requests\n    await call_result,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/.local/lib/python3.7/site-packages/grpc/aio/_call.py\&quot;, line 291, in __await__\n    self._cython_call._status)\n&quot;</span><span class="p">,</span><span class="s2">&quot;grpc.aio._call.AioRpcError: &lt;AioRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \&quot;failed to connect to all addresses\&quot;\n\tdebug_error_string = \&quot;{\&quot;created\&quot;:\&quot;@1654074272.702044542\&quot;,\&quot;description\&quot;:\&quot;Failed to pick subchannel\&quot;,\&quot;file\&quot;:\&quot;src/core/ext/filters/client_channel/client_channel.cc\&quot;,\&quot;file_line\&quot;:3134,\&quot;referenced_errors\&quot;:[{\&quot;created\&quot;:\&quot;@1654074272.702043378\&quot;,\&quot;description\&quot;:\&quot;failed to connect to all addresses\&quot;,\&quot;file\&quot;:\&quot;src/core/lib/transport/error_utils.cc\&quot;,\&quot;file_line\&quot;:163,\&quot;grpc_status\&quot;:14}]}\&quot;\n&gt;\n&quot;</span><span class="p">,</span><span class="s2">&quot;\nDuring handling of the above exception, another exception occurred:\n\n&quot;</span><span class="p">,</span><span class="s2">&quot;Traceback (most recent call last):\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/http/app.py\&quot;, line 142, in _flow_health\n    data_type=DataInputType.DOCUMENT,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/http/app.py\&quot;, line 399, in _get_singleton_result\n    async for k in streamer.stream(request_iterator=request_iterator):\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/stream/__init__.py\&quot;, line 78, in stream\n    async for response in async_iter:\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/stream/__init__.py\&quot;, line 154, in _stream_requests\n    response = self._result_handler(future.result())\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/request_handling.py\&quot;, line 148, in _process_results_at_end_gateway\n    partial_responses = await asyncio.gather(*tasks)\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\&quot;, line 128, in _wait_previous_and_send\n    self._handle_internalnetworkerror(err)\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\&quot;, line 70, in _handle_internalnetworkerror\n    raise err\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/runtimes/gateway/graph/topology_graph.py\&quot;, line 125, in _wait_previous_and_send\n    timeout=self._timeout_send,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 734, in task_wrapper\n    num_retries=num_retries,\n&quot;</span><span class="p">,</span><span class="s2">&quot;  File \&quot;/home/joan/jina/jina/jina/serve/networking.py\&quot;, line 697, in _handle_aiorpcerror\n    details=e.details(),\n&quot;</span><span class="p">,</span><span class="s2">&quot;jina.excepts.InternalNetworkError: failed to connect to all addresses |Gateway: Communication error with deployment executor0 at address(es) {&#39;0.0.0.0:12346&#39;}. Head or worker(s) may be down.\n&quot;</span><span class="p">],</span><span class="nt">&quot;executor&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">}}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
 </section>
 </section>
-<section id="health-check-of-an-executor">
-<span id="health-check-microservices"></span><h2>Health check of an Executor<a class="headerlink" href="#health-check-of-an-executor" title="Permalink to this heading">#</a></h2>
-<p>In addition to a performing a readiness check for the entire Flow, it is also possible to check every individual Executor in said Flow,
-by utilizing a <a class="reference external" href="https://github.com/grpc/grpc/blob/master/doc/health-checking.md">standardized gRPC health check endpoint</a>.
+<section id="executor-health-check">
+<span id="health-check-microservices"></span><h2>Executor health check<a class="headerlink" href="#executor-health-check" title="Permalink to this heading">#</a></h2>
+<p>You can check every individual Executor in a Flow, by using a <a class="reference external" href="https://github.com/grpc/grpc/blob/master/doc/health-checking.md">standard gRPC health check endpoint</a>.
 In most cases this is not necessary, since such checks are performed by Jina, a Kubernetes service mesh or a load balancer under the hood.
-Nevertheless, it is possible to perform these checks as a user.</p>
-<p>When performing these checks, you can expect on of the following <code class="docutils literal notranslate"><span class="pre">ServingStatus</span></code> responses:</p>
+Nevertheless, you can perform these checks yourself.</p>
+<p>When performing these checks, you can expect one of the following <code class="docutils literal notranslate"><span class="pre">ServingStatus</span></code> responses:</p>
 <ul class="simple">
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">UNKNOWN</span></code> (0)</strong>: The health of the Executor could not be determined</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">SERVING</span></code> (1)</strong>: The Executor is healthy and ready to receive requests</p></li>
@@ -635,7 +628,7 @@ Nevertheless, it is possible to perform these checks as a user.</p>
     <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>On another terminal, you can use <a class="reference external" href="https://github.com/fullstorydev/grpcurl">grpcurl</a> to send RPC requests to your services.</p>
+<p>In another terminal, you can use <a class="reference external" href="https://github.com/fullstorydev/grpcurl">grpcurl</a> to send gRPC requests to your services.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>docker pull fullstorydev/grpcurl:latest
 docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12346 grpc.health.v1.Health/Check
 </pre></div>
@@ -646,14 +639,14 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
 </pre></div>
 </div>
 </section>
-<section id="health-check-of-the-gateway">
-<span id="health-check-gateway"></span><h2>Health check of the Gateway<a class="headerlink" href="#health-check-of-the-gateway" title="Permalink to this heading">#</a></h2>
-<p>Just like each individual Executor, the Gateway also exposes a health check endpoint.</p>
-<p>In contrast to Executors however, a Gateway can use gRPC, HTTP, or Websocket, and the health check endpoint changes accordingly.</p>
+<section id="gateway-health-check">
+<span id="health-check-gateway"></span><h2>Gateway health check<a class="headerlink" href="#gateway-health-check" title="Permalink to this heading">#</a></h2>
+<p>Just like each individual Executors, the Gateway also exposes a health check endpoint.</p>
+<p>In contrast to Executors however, a Gateway can use gRPC, HTTP, or WebSocketss, and the health check endpoint changes accordingly.</p>
 <section id="gateway-health-check-with-grpc">
 <h3>Gateway health check with gRPC<a class="headerlink" href="#gateway-health-check-with-grpc" title="Permalink to this heading">#</a></h3>
-<p>When using gRPC as the protocol to communicate with the Gateway, the Gateway uses the exact same mechanism as Executors to expose its health status: It exposes the <a class="reference external" href="https://github.com/grpc/grpc/blob/master/doc/health-checking.md"> standard gRPC health check</a> to the outside world.</p>
-<p>With the same Flow as described before, you can use the same way to check the Gateway status:</p>
+<p>When using gRPC as the protocol to communicate with the Gateway, the Gateway uses the exact same mechanism as Executors to expose its health status: It exposes the <a class="reference external" href="https://github.com/grpc/grpc/blob/master/doc/health-checking.md">standard gRPC health check</a> to the outside world.</p>
+<p>With the same Flow as before, you can use the same way to check the Gateway status:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</span> fullstorydev/grpcurl -plaintext <span class="m">127</span>.0.0.1:12345 grpc.health.v1.Health/Check
 </pre></div>
 </div>
@@ -663,15 +656,15 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
 </pre></div>
 </div>
 </section>
-<section id="gateway-health-check-with-http-or-websocket">
-<h3>Gateway health check with HTTP or Websocket<a class="headerlink" href="#gateway-health-check-with-http-or-websocket" title="Permalink to this heading">#</a></h3>
+<section id="gateway-health-check-with-http-or-websockets">
+<h3>Gateway health check with HTTP or WebSockets<a class="headerlink" href="#gateway-health-check-with-http-or-websockets" title="Permalink to this heading">#</a></h3>
 <div class="caution admonition">
 <p class="admonition-title">Caution</p>
-<p>For Gateways running with HTTP or Websocket, the gRPC health check response codes outlined <a class="reference internal" href="#health-check-microservices"><span class="std std-ref">above</span></a> do not apply.</p>
+<p>For Gateways running with HTTP or WebSockets, the gRPC health check response codes outlined <a class="reference internal" href="#health-check-microservices"><span class="std std-ref">above</span></a> do not apply.</p>
 <p>Instead, an error free response signifies healthiness.</p>
 </div>
-<p>When using HTTP or Websocket as the protocol for the Gateway, it exposes the endpoint <code class="docutils literal notranslate"><span class="pre">'/'</span></code> that one can query to check the status.</p>
-<p>First, crate a Flow with HTTP or Websocket protocol:</p>
+<p>When using HTTP or WebSockets as the protocol for the Gateway, you can query the endpoint <code class="docutils literal notranslate"><span class="pre">'/'</span></code> to check the status.</p>
+<p>First, crate a Flow with HTTP or WebSockets protocol:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
@@ -679,44 +672,44 @@ docker run --network<span class="o">=</span><span class="s1">&#39;host&#39;</spa
     <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Then, you can query the “empty” endpoint:</p>
+<p>Then query the “empty” endpoint:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl http://localhost:12345
 </pre></div>
 </div>
-<p>And you will get a valid empty response indicating the Gateway’s ability to serve.</p>
+<p>You get a valid empty response indicating the Gateway’s ability to serve:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{}</span><span class="w"></span>
 </pre></div>
 </div>
 </section>
 </section>
-<section id="use-jina-ping-to-do-health-checks">
-<h2>Use jina ping to do health checks<a class="headerlink" href="#use-jina-ping-to-do-health-checks" title="Permalink to this heading">#</a></h2>
-<p>Once a Flow is running, you can use <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">ping</span></code> CLI  <span class="xref std std-ref">CLI</span> to run readiness check of the complete Flow or of individual Executors or Gateway.</p>
-<p>Let’s start a Flow in the terminal by executing the following python code:</p>
+<section id="use-jina-ping-for-health-checks">
+<h2>Use jina ping for health checks<a class="headerlink" href="#use-jina-ping-for-health-checks" title="Permalink to this heading">#</a></h2>
+<p>Once a Flow is running, you can use <code class="docutils literal notranslate"><span class="pre">jina</span> <span class="pre">ping</span></code> CLI  <span class="xref std std-ref">CLI</span> to run a readiness check of the complete Flow or of individual Executors or Gateway.</p>
+<p>Start a Flow in Python:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
 
 <span class="k">with</span> <span class="n">Flow</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;grpc&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">12345</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">12346</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>We can check the readiness of the Flow:</p>
+<p>Check the readiness of the Flow:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina ping flow grpc://localhost:12345
 </pre></div>
 </div>
-<p>Also we can check the readiness of an Executor:</p>
+<p>You can also check the readiness of an Executor:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina ping executor localhost:12346
 </pre></div>
 </div>
-<p>or the readiness of the Gateway service:</p>
+<p>…or the readiness of the Gateway service:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jina ping gateway  grpc://localhost:12345
 </pre></div>
 </div>
-<p>When these commands succeed, you will see something like:</p>
+<p>When these commands succeed, you should see something like:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>INFO   JINA@28600 readiness check succeeded 1 times!!! 
 </pre></div>
 </div>
 <div class="highlight-admonition notranslate"><div class="highlight"><pre><span></span>:class: note
-This CLI exits with code 1 when the readiness check is not successful, which makes it a good choice to be used as readinessProbe for Executor and Gateway when
+The CLI exits with code 1 when the readiness check is not successful, which makes it a good choice to be used as readinessProbe for Executor and Gateway when
 deployed in Kubernetes.
 </pre></div>
 </div>
@@ -754,7 +747,7 @@ deployed in Kubernetes.
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 07, 2022</div>
+                            Last updated on Oct 10, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
@@ -787,21 +780,21 @@ deployed in Kubernetes.
                     <div class="toc-tree">
                         <ul>
 <li><a class="reference internal" href="#">Readiness &amp; health check</a><ul>
-<li><a class="reference internal" href="#readiness-of-a-flow">Readiness of a Flow</a><ul>
+<li><a class="reference internal" href="#flow-readiness">Flow Readiness</a><ul>
 <li><a class="reference internal" href="#flow-status-using-third-party-clients">Flow status using third-party clients</a><ul>
 <li><a class="reference internal" href="#using-grpc">Using gRPC</a></li>
-<li><a class="reference internal" href="#using-http-or-websocket">Using HTTP or Websocket</a></li>
+<li><a class="reference internal" href="#using-http-or-websockets">Using HTTP or WebSockets</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#health-check-of-an-executor">Health check of an Executor</a></li>
-<li><a class="reference internal" href="#health-check-of-the-gateway">Health check of the Gateway</a><ul>
+<li><a class="reference internal" href="#executor-health-check">Executor health check</a></li>
+<li><a class="reference internal" href="#gateway-health-check">Gateway health check</a><ul>
 <li><a class="reference internal" href="#gateway-health-check-with-grpc">Gateway health check with gRPC</a></li>
-<li><a class="reference internal" href="#gateway-health-check-with-http-or-websocket">Gateway health check with HTTP or Websocket</a></li>
+<li><a class="reference internal" href="#gateway-health-check-with-http-or-websockets">Gateway health check with HTTP or WebSockets</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#use-jina-ping-to-do-health-checks">Use jina ping to do health checks</a></li>
+<li><a class="reference internal" href="#use-jina-ping-for-health-checks">Use jina ping for health checks</a></li>
 </ul>
 </li>
 </ul>

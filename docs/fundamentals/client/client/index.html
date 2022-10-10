@@ -157,13 +157,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="fast">Learn more about Lightning</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -260,7 +254,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../flow/create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../flow/create-flow/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../flow/monitoring-flow/">Monitor</a></li>
@@ -520,7 +514,7 @@ For instance, if you’re building a web server, you can introduce multi-process
 </section>
 <section id="test-readiness-of-the-flow">
 <h2>Test readiness of the Flow<a class="headerlink" href="#test-readiness-of-the-flow" title="Permalink to this heading">#</a></h2>
-<p><a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> offer a convenient API to query these readiness endpoints. You can call <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin.is_flow_ready" title="jina.clients.mixin.HealthCheckMixin.is_flow_ready"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_flow_ready()</span></code></a> or <a class="reference internal" href="../../../api/jina/#jina.Flow.is_flow_ready" title="jina.Flow.is_flow_ready"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_flow_ready()</span></code></a>, it will return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the Flow is ready, and <code class="docutils literal notranslate"><span class="pre">False</span></code> when it is not.</p>
+<p><a class="reference internal" href="../../../api/jina/#jina.Client" title="jina.Client"><code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code></a> offers an API to query these readiness endpoints. You can call <a class="reference internal" href="../../../api/jina.clients.mixin/#jina.clients.mixin.HealthCheckMixin.is_flow_ready" title="jina.clients.mixin.HealthCheckMixin.is_flow_ready"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_flow_ready()</span></code></a> or <a class="reference internal" href="../../../api/jina/#jina.Flow.is_flow_ready" title="jina.Flow.is_flow_ready"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_flow_ready()</span></code></a>. It returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the Flow is ready, and <code class="docutils literal notranslate"><span class="pre">False</span></code> if it is not.</p>
 <div class="tab-set docutils">
 <input checked="True" class="tab-input" id="tab-set--3-input--1" name="tab-set--3" type="radio"><label class="tab-label" for="tab-set--3-input--1">via Flow</label><div class="tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jina</span> <span class="kn">import</span> <span class="n">Flow</span>
@@ -1182,7 +1176,7 @@ set the Client’s <code class="docutils literal notranslate"><span class="pre">
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 07, 2022</div>
+                            Last updated on Oct 10, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">

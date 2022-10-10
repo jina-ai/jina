@@ -124,13 +124,7 @@
     <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
 
-<div class="announcement">
-    <aside class="announcement-content">
-         
-    <a href="fast">Learn more about Lightning</a>
-     
-    </aside>
-</div>
+
 
 <div class="page">
     <header class="mobile-header">
@@ -227,7 +221,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../fundamentals/flow/">Flow</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/create-flow/">Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/create-flow/">Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/add-executors/">Add Executors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/topologies/">Topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../fundamentals/flow/monitoring-flow/">Monitor</a></li>
@@ -473,6 +467,9 @@
         <span class="k">async</span> <span class="k">def</span> <span class="nf">end_future</span><span class="p">():</span>
             <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">_EndOfStreaming</span>
 
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">exception_raise</span><span class="p">(</span><span class="n">exception</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exception</span>
+
         <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">future</span><span class="p">:</span> <span class="s1">&#39;asyncio.Future&#39;</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;callback to be run after future is completed.</span>
 <span class="sd">            1. Put the future in the result queue.</span>
@@ -548,7 +545,7 @@
                 <span class="k">except</span> <span class="bp">self</span><span class="o">.</span><span class="n">_EndOfStreaming</span><span class="p">:</span>
                     <span class="k">pass</span>
 
-        <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">iterate_requests</span><span class="p">())</span>
+        <span class="n">iterate_requests_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">iterate_requests</span><span class="p">())</span>
         <span class="n">handle_floating_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">handle_floating_responses</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">total_num_floating_tasks_alive</span> <span class="o">+=</span> <span class="mi">1</span>
 
@@ -556,6 +553,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">total_num_floating_tasks_alive</span> <span class="o">-=</span> <span class="mi">1</span>
 
         <span class="n">handle_floating_task</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="n">floating_task_done</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">iterating_task_done</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">all_requests_handled</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+                <span class="n">future_cancel</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">exception_raise</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">exception</span><span class="p">()))</span>
+                <span class="n">result_queue</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">(</span><span class="n">future_cancel</span><span class="p">)</span>
+
+        <span class="n">iterate_requests_task</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="n">iterating_task_done</span><span class="p">)</span>
 
         <span class="k">while</span> <span class="ow">not</span> <span class="n">all_requests_handled</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="n">future</span> <span class="o">=</span> <span class="k">await</span> <span class="n">result_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
@@ -587,7 +592,7 @@
                         <div class="copyright">
                             Copyright &#169; Jina AI Limited. All rights reserved.
                         </div><div class="last-updated">
-                            Last updated on Oct 07, 2022</div>
+                            Last updated on Oct 10, 2022</div>
                     </div>
                     <div class="right-details">
                         <div class="social-btns">
