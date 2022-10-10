@@ -120,6 +120,7 @@ def test_encoder_name_env_replace():
 
 
 def test_encoder_name_dict_replace():
+    os.environ['BE_TEST_NAME'] = 'hello123'
     d = {'BE_TEST_NAME': 'hello123'}
     with BaseExecutor.load_config('yaml/test-encoder-env.yml', context=d) as be:
         assert be.metas.name == 'hello123'
