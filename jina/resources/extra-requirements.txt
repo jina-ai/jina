@@ -77,3 +77,4 @@ bs4:                        cicd
 jsonschema:                 cicd
 portforward>=0.2.4:         cicd
 tensorflow>=2.0:            cicd
+pytest-forked>=1.4.0:       test
