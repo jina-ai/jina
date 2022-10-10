@@ -113,13 +113,20 @@ def test_expand_env():
     assert expand_env_var('$PATH-${AA}') != '$PATH-${AA}'
 
 
-def test_encoder_name_env_replace():
+@pytest.fixture
+def set_test_encoder_env_var():
+    os.environ['BE_TEST_NAME'] = 'hello123'
+    yield
+    del os.environ['BE_TEST_NAME']
+
+
+def test_encoder_name_env_replace(set_test_encoder_env_var):
     os.environ['BE_TEST_NAME'] = 'hello123'
     with BaseExecutor.load_config('yaml/test-encoder-env.yml') as be:
         assert be.metas.name == 'hello123'
 
 
-def test_encoder_name_dict_replace():
+def test_encoder_name_dict_replace(set_test_encoder_env_var):
     os.environ['BE_TEST_NAME'] = 'hello123'
     d = {'BE_TEST_NAME': 'hello123'}
     with BaseExecutor.load_config('yaml/test-encoder-env.yml', context=d) as be:
