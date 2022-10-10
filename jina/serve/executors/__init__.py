@@ -180,8 +180,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._metrics_buffer = None
 
     def _init_instrumentation(self, _runtime_args: Optional[Dict] = None):
-        from opentelemetry import metrics, trace
-
         if not _runtime_args:
             _runtime_args = {}
 
@@ -190,16 +188,18 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         args_tracer_provider = _runtime_args.get('tracer_provider', None)
         if args_tracer_provider:
             self.tracer_provider = args_tracer_provider
+            self.tracer = self.tracer_provider.get_tracer(instrumenting_module_name)
         else:
-            self.tracer_provider = trace.NoOpTracerProvider()
-        self.tracer = self.tracer_provider.get_tracer(instrumenting_module_name)
+            self.tracer_provider = None
+            self.tracer = None
 
         args_meter_provider = _runtime_args.get('meter_provider', None)
         if args_meter_provider:
             self.meter_provider = args_meter_provider
+            self.meter = self.meter_provider.get_meter(instrumenting_module_name)
         else:
-            self.meter_provider = metrics.NoOpMeterProvider()
-        self.meter = self.meter_provider.get_meter(instrumenting_module_name)
+            self.meter_provider = None
+            self.meter = None
 
     def _add_requests(self, _requests: Optional[Dict]):
         if not hasattr(self, 'requests'):

@@ -89,12 +89,12 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, AB
 
     def _teardown_instrumentation(self):
         try:
-            if self.tracing:
+            if self.tracing and self.tracer_provider:
                 if hasattr(self.tracer_provider, 'force_flush'):
                     self.tracer_provider.force_flush()
                 if hasattr(self.tracer_provider, 'shutdown'):
                     self.tracer_provider.shutdown()
-            if self.metrics:
+            if self.metrics and self.meter_provider:
                 if hasattr(self.meter_provider, 'force_flush'):
                     self.meter_provider.force_flush()
                 if hasattr(self.meter_provider, 'shutdown'):

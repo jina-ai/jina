@@ -52,7 +52,6 @@ def partition_spans_by_kind(traces):
 class ExecutorTestWithTracing(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.docs_counter = self.meter.create_counter(name='docs_counter')
 
     @requests(on='/index')
     def empty(self, docs: 'DocumentArray', tracing_context: Context, **kwargs):
@@ -60,7 +59,6 @@ class ExecutorTestWithTracing(Executor):
             'dummy', context=tracing_context
         ) as span:
             span.set_attribute('len_docs', len(docs))
-            self.docs_counter.add(len(docs))
             return docs
 
 

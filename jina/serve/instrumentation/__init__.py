@@ -25,7 +25,6 @@ class InstrumentationMixin:
         self.metrics = metrics
 
         if tracing:
-            from opentelemetry import trace
             from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
                 OTLPSpanExporter,
             )
@@ -44,13 +43,10 @@ class InstrumentationMixin:
             self.tracer_provider = provider
             self.tracer = provider.get_tracer(name)
         else:
-            from opentelemetry import trace
-
-            self.tracer_provider = trace.NoOpTracerProvider()
-            self.tracer = trace.NoOpTracer()
+            self.tracer_provider = None
+            self.tracer = None
 
         if metrics:
-            from opentelemetry import metrics as opentelmetry_metrics
             from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import (
                 OTLPMetricExporter,
             )
@@ -72,10 +68,8 @@ class InstrumentationMixin:
             self.meter_provider = meter_provider
             self.meter = self.meter_provider.get_meter(name)
         else:
-            from opentelemetry import metrics as opentelmetry_metrics
-
-            self.meter_provider = opentelmetry_metrics.NoOpMeterProvider()
-            self.meter = opentelmetry_metrics.NoOpMeter(name='no-op')
+            self.meter_provider = None
+            self.meter = None
 
     def aio_tracing_server_interceptor(self) -> Optional[Sequence['ServerInterceptor']]:
         '''Create a gRPC aio server interceptor.
