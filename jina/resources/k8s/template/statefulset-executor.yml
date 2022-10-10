@@ -59,8 +59,8 @@ spec:
       - metadata:
           name: {name}-volume
         spec:
-          accessModes: $JINA_K8S_ACCESS_MODES # best default accessModes
-          storageClassName: $JINA_K8S_STORAGE_CLASS # best storage class
+          accessModes: {accessModes} # best default accessModes
+          storageClassName: {storageClassName} # best storage class
           resources:
             requests:
-              storage: $JINA_K8S_STORAGE_CAPACITY # best storage class
+              storage: {storageCapacity} # best storage class
