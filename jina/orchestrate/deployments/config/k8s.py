@@ -55,8 +55,6 @@ class K8sDeploymentConfig:
         def get_gateway_yamls(
             self,
         ) -> List[Dict]:
-            import os
-
             cargs = copy.copy(self.deployment_args)
             cargs.deployments_addresses = self.k8s_deployments_addresses
             from jina.helper import ArgNamespace
@@ -189,7 +187,7 @@ class K8sDeploymentConfig:
                     uses_after_cargs, PodRoleType.WORKER
                 )
 
-            return kubernetes_deployment.get_deployment_yamls(
+            return kubernetes_deployment.get_template_yamls(
                 self.dns_name,
                 namespace=self.k8s_namespace,
                 image_name=image_name,
@@ -210,7 +208,9 @@ class K8sDeploymentConfig:
                 gpus=cargs.gpus if hasattr(cargs, 'gpus') else None,
                 monitoring=cargs.monitoring,
                 port_monitoring=cargs.port_monitoring,
+                volumes=getattr(cargs, "volumes", None)
             )
+
 
     def __init__(
         self,

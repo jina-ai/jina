@@ -6,7 +6,7 @@ from jina.orchestrate.deployments.config.k8slib import kubernetes_tools
 from jina.serve.networking import GrpcConnectionPool
 
 
-def get_deployment_yamls(
+def get_template_yamls(
         name: str,
         namespace: str,
         image_name: str,
@@ -28,7 +28,8 @@ def get_deployment_yamls(
         container_args_uses_after: Optional[str] = None,
         monitoring: bool = False,
         port_monitoring: Optional[int] = None,
-        protocol: Optional[str] = None
+        protocol: Optional[str] = None,
+        volumes: Optional[List[str]] = None,
 ) -> List[Dict]:
     """Get the yaml description of a service on Kubernetes
 
@@ -54,6 +55,7 @@ def get_deployment_yamls(
     :param monitoring: enable monitoring on the deployment
     :param port_monitoring: port which will be exposed, for the prometheus server, by the deployed containers
     :param protocol: In case of being a Gateway, the protocol used to expose its server
+    :param volumes: If volumes are passed to Executors, we will try to dump to StatefulSet
     :return: Return a dictionary with all the yaml configuration needed for a deployment
     """
     # we can always assume the ports are the same for all executors since they run on different k8s pods
@@ -64,7 +66,7 @@ def get_deployment_yamls(
     if not port_monitoring:
         port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
 
-    deployment_params = {
+    template_params = {
         'name': name,
         'namespace': namespace,
         'image': image_name,
@@ -85,14 +87,17 @@ def get_deployment_yamls(
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
         'pod_type': pod_type,
         'protocol': str(protocol).lower() if protocol is not None else '',
+        'volumes': volumes,
     }
 
     if gpus:
-        deployment_params['device_plugins'] = {'nvidia.com/gpu': gpus}
+        template_params['device_plugins'] = {'nvidia.com/gpu': gpus}
 
     template_name = 'deployment-executor' if name != 'gateway' else 'deployment-gateway'
 
-    if image_name_uses_before and image_name_uses_after:
+    if volumes is not None:
+        template_name = 'stateful-executor'
+    elif image_name_uses_before and image_name_uses_after:
         template_name = 'deployment-uses-before-after'
     elif image_name_uses_before:
         template_name = 'deployment-uses-before'
@@ -143,7 +148,7 @@ def get_deployment_yamls(
             },
         ),
         service_yaml,
-        kubernetes_tools.get_yaml(template_name, deployment_params),
+        kubernetes_tools.get_yaml(template_name, template_params),
     ]
 
     if service_monitor_yaml:
