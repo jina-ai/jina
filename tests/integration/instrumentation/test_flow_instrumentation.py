@@ -40,10 +40,7 @@ def test_gateway_instrumentation(
     with f:
         from jina import DocumentArray
 
-        f.post(
-            f'/index',
-            DocumentArray.empty(2),
-        )
+        f.post(f'/index', DocumentArray.empty(2), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
         time.sleep(8)
@@ -75,13 +72,7 @@ def test_executor_instrumentation(otlp_collector):
     with f:
         from jina import DocumentArray
 
-        try:
-            f.post(
-                f'/index',
-                DocumentArray.empty(2),
-            )
-        except:
-            pass
+        f.post(f'/index', DocumentArray.empty(2), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
         time.sleep(8)
