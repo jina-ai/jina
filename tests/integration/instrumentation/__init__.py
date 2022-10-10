@@ -73,3 +73,35 @@ def get_services():
     response_json = response.json()
     services = response_json.get('data', []) or []
     return [service for service in services if service != 'jaeger-query']
+
+
+class ExecutorFailureWithTracing(Executor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.failure_counter = 0
+
+    @requests(on='/index')
+    def empty(
+        self, docs: 'DocumentArray', tracing_context: Optional[Context], **kwargs
+    ):
+        if self.tracer:
+            with self.tracer.start_span('dummy', context=tracing_context) as span:
+                span.set_attribute('len_docs', len(docs))
+                if not self.failure_counter:
+                    self.failure_counter += 1
+                    raise NotImplementedError
+                else:
+                    return docs
+        else:
+            return docs
+
+
+def spans_with_error(spans):
+    error_spans = []
+    for span in spans:
+        for tag in span['tags']:
+            if 'otel.status_code' == tag.get('key', '') and 'ERROR' == tag.get(
+                'value', ''
+            ):
+                error_spans.append(span)
+    return error_spans
