@@ -93,7 +93,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             runtime_name=self.args.name,
             tracing=self.tracing,
             tracer_provider=self.tracer_provider,
-            grpc_tracing_server_interceptors=self.aio_tracing_server_interceptor(),
+            grpc_tracing_server_interceptors=self.aio_tracing_server_interceptors(),
             aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
             tracing_client_interceptor=self.tracing_client_interceptor(),
         )

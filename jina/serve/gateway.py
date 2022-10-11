@@ -94,7 +94,7 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         :param timeout_send: grpc connection timeout
         :param metrics_registry: metric registry when monitoring is enabled
         :param runtime_name: name of the runtime providing the streamer
-        :param tracing: Enables tracing is set to True.
+        :param tracing: Enables tracing if set to True.
         :param tracer_provider: If tracing is enabled the tracer_provider will be used to instrument the code.
         :param grpc_tracing_server_interceptors: List of async io gprc server tracing interceptors for tracing requests.
         :param aio_tracing_client_interceptors: List of async io gprc client tracing interceptors for tracing requests if asycnio is True.

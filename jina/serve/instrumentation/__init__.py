@@ -71,7 +71,9 @@ class InstrumentationMixin:
             self.meter_provider = None
             self.meter = None
 
-    def aio_tracing_server_interceptor(self) -> Optional[Sequence['ServerInterceptor']]:
+    def aio_tracing_server_interceptors(
+        self,
+    ) -> Optional[Sequence['ServerInterceptor']]:
         '''Create a gRPC aio server interceptor.
         :returns: A service-side aio interceptor object.
         '''
