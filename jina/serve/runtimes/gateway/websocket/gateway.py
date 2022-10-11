@@ -49,6 +49,8 @@ class WebSocketGateway(BaseGateway):
             get_fastapi_app(
                 streamer=self.streamer,
                 logger=self.logger,
+                tracing=self.tracing,
+                tracer_provider=self.tracer_provider,
             )
         )
 

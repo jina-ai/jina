@@ -13,11 +13,12 @@ from jina.helper import ArgNamespace, T, iscoroutinefunction, typename
 from jina.importer import ImportExtensions
 from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
-from jina.serve.executors.decorators import avoid_concurrent_lock_cls, requests
-from jina.serve.executors.metas import get_default_metas, get_executor_taboo
+from jina.serve.executors.decorators import avoid_concurrent_lock_cls
+from jina.serve.executors.metas import get_executor_taboo
 from jina.serve.helper import store_init_kwargs, wrap_func
 
 if TYPE_CHECKING:
+    from opentelemetry.context.context import Context
     from prometheus_client import Summary
 
 __dry_run_endpoint__ = '_jina_dry_run_'
@@ -133,6 +134,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._add_requests(requests)
         self._add_runtime_args(runtime_args)
         self._init_monitoring()
+        self._init_instrumentation(runtime_args)
         self._init_workspace = workspace
         self.logger = JinaLogger(self.__class__.__name__)
         if __dry_run_endpoint__ not in self.requests:
@@ -177,6 +179,28 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         else:
             self._summary_method = None
             self._metrics_buffer = None
+
+    def _init_instrumentation(self, _runtime_args: Optional[Dict] = None):
+        if not _runtime_args:
+            _runtime_args = {}
+
+        instrumenting_module_name = _runtime_args.get('name', self.__class__.__name__)
+
+        args_tracer_provider = _runtime_args.get('tracer_provider', None)
+        if args_tracer_provider:
+            self.tracer_provider = args_tracer_provider
+            self.tracer = self.tracer_provider.get_tracer(instrumenting_module_name)
+        else:
+            self.tracer_provider = None
+            self.tracer = None
+
+        args_meter_provider = _runtime_args.get('meter_provider', None)
+        if args_meter_provider:
+            self.meter_provider = args_meter_provider
+            self.meter = self.meter_provider.get_meter(instrumenting_module_name)
+        else:
+            self.meter_provider = None
+            self.meter = None
 
     def _add_requests(self, _requests: Optional[Dict]):
         if not hasattr(self, 'requests'):
@@ -292,7 +316,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         elif __default_endpoint__ in self.requests:
             return await self.__acall_endpoint__(__default_endpoint__, **kwargs)
 
-    async def __acall_endpoint__(self, req_endpoint, **kwargs):
+    async def __acall_endpoint__(
+        self, req_endpoint, tracing_context: Optional['Context'], **kwargs
+    ):
+        async def exec_func(summary, tracing_context):
+            with summary:
+                if iscoroutinefunction(func):
+                    return await func(self, tracing_context=tracing_context, **kwargs)
+                else:
+                    return func(self, tracing_context=tracing_context, **kwargs)
+
         func = self.requests[req_endpoint]
 
         runtime_name = (
@@ -307,11 +340,18 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             else contextlib.nullcontext()
         )
 
-        with _summary:
-            if iscoroutinefunction(func):
-                return await func(self, **kwargs)
-            else:
-                return func(self, **kwargs)
+        if self.tracer:
+            with self.tracer.start_span(req_endpoint, context=tracing_context) as _:
+                from opentelemetry.propagate import extract
+                from opentelemetry.trace.propagation.tracecontext import (
+                    TraceContextTextMapPropagator,
+                )
+
+                tracing_carrier_context = {}
+                TraceContextTextMapPropagator().inject(tracing_carrier_context)
+                return await exec_func(_summary, extract(tracing_carrier_context))
+        else:
+            return await exec_func(_summary, None)
 
     @property
     def workspace(self) -> Optional[str]:

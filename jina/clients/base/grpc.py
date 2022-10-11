@@ -1,8 +1,8 @@
 import asyncio
+import json
 from typing import TYPE_CHECKING, Optional
 
 import grpc
-import json
 
 from jina.clients.base import BaseClient
 from jina.clients.helper import callback_exec
@@ -82,19 +82,27 @@ class GRPCBaseClient(BaseClient):
             # while loop with retries, check in which state the `iterator` remains after failure
             options = GrpcConnectionPool.get_default_grpc_options()
             if max_attempts > 1:
-                service_config_json = json.dumps({
-                                "methodConfig": [{
-                                    # To apply retry to all methods, put [{}] in the "name" field
-                                    "name": [{}],
-                                    "retryPolicy": {
-                                        "maxAttempts": max_attempts,
-                                        "initialBackoff": f"{initial_backoff}s",
-                                        "maxBackoff": f"{max_backoff}s",
-                                        "backoffMultiplier": {backoff_multiplier},
-                                        "retryableStatusCodes": ["UNAVAILABLE", "DEADLINE_EXCEEDED", "INTERNAL"],
-                                    },
-                                }]
-                            })
+                service_config_json = json.dumps(
+                    {
+                        "methodConfig": [
+                            {
+                                # To apply retry to all methods, put [{}] in the "name" field
+                                "name": [{}],
+                                "retryPolicy": {
+                                    "maxAttempts": max_attempts,
+                                    "initialBackoff": f"{initial_backoff}s",
+                                    "maxBackoff": f"{max_backoff}s",
+                                    "backoffMultiplier": {backoff_multiplier},
+                                    "retryableStatusCodes": [
+                                        "UNAVAILABLE",
+                                        "DEADLINE_EXCEEDED",
+                                        "INTERNAL",
+                                    ],
+                                },
+                            }
+                        ]
+                    }
+                )
                 # NOTE: the retry feature will be enabled by default >=v1.40.0
                 options.append(("grpc.enable_retries", 1))
                 options.append(("grpc.service_config", service_config_json))
@@ -104,6 +112,7 @@ class GRPCBaseClient(BaseClient):
                 options=options,
                 asyncio=True,
                 tls=self.args.tls,
+                aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
             ) as channel:
                 stub = jina_pb2_grpc.JinaRPCStub(channel)
                 self.logger.debug(f'connected to {self.args.host}:{self.args.port}')
@@ -146,11 +155,13 @@ class GRPCBaseClient(BaseClient):
                             )
                             raise ConnectionError(my_details)
                         elif my_code == grpc.StatusCode.INTERNAL:
-                            self.logger.error(f'{msg}\ninternal error on the server side')
+                            self.logger.error(
+                                f'{msg}\ninternal error on the server side'
+                            )
                             raise err
                         elif (
-                                my_code == grpc.StatusCode.UNKNOWN
-                                and 'asyncio.exceptions.TimeoutError' in my_details
+                            my_code == grpc.StatusCode.UNKNOWN
+                            and 'asyncio.exceptions.TimeoutError' in my_details
                         ):
                             raise BadClientInput(
                                 f'{msg}\n'

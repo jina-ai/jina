@@ -8,9 +8,8 @@ from jina import __default_host__
 from jina.helper import get_full_version
 from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.gateway import BaseGateway
+from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.types.request.status import StatusMessage
-
-from ...helper import _get_grpc_server_options
 
 
 class GRPCGateway(BaseGateway):
@@ -36,15 +35,17 @@ class GRPCGateway(BaseGateway):
         self.grpc_server_options = grpc_server_options
         self.ssl_keyfile = ssl_keyfile
         self.ssl_certfile = ssl_certfile
-        self.server = grpc.aio.server(
-            options=_get_grpc_server_options(self.grpc_server_options)
-        )
         self.health_servicer = health.HealthServicer(experimental_non_blocking=True)
 
     async def setup_server(self):
         """
         setup GRPC server
         """
+        self.server = grpc.aio.server(
+            options=_get_grpc_server_options(self.grpc_server_options),
+            interceptors=self.grpc_tracing_server_interceptors,
+        )
+
         jina_pb2_grpc.add_JinaRPCServicer_to_server(
             self.streamer._streamer, self.server
         )

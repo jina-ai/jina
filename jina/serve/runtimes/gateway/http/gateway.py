@@ -80,6 +80,8 @@ class HTTPGateway(BaseGateway):
                 expose_graphql_endpoint=self.expose_graphql_endpoint,
                 cors=self.cors,
                 logger=self.logger,
+                tracing=self.tracing,
+                tracer_provider=self.tracer_provider,
             )
         )
 

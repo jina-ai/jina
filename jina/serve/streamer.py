@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Union
 
 from docarray import DocumentArray
 
@@ -11,6 +11,10 @@ from jina.serve.stream import RequestStreamer
 __all__ = ['GatewayStreamer']
 
 if TYPE_CHECKING:
+    from grpc.aio._interceptor import ClientInterceptor
+    from opentelemetry.instrumentation.grpc._client import (
+        OpenTelemetryClientInterceptor,
+    )
     from prometheus_client import CollectorRegistry
 
 
@@ -32,6 +36,8 @@ class GatewayStreamer:
         prefetch: int = 0,
         logger: Optional['JinaLogger'] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
+        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
+        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
     ):
         """
         :param graph_representation: A dictionary describing the topology of the Deployments. 2 special nodes are expected, the name `start-gateway` and `end-gateway` to
@@ -47,6 +53,8 @@ class GatewayStreamer:
         :param prefetch: How many Requests are processed from the Client at the same time.
         :param logger: Optional logger that can be used for logging
         :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics
+        :param aio_tracing_client_interceptors: Optional list of aio grpc tracing server interceptors.
+        :param tracing_client_interceptor: Optional gprc tracing server interceptor.
         """
         topology_graph = self._create_topology_graph(
             graph_representation,
@@ -56,9 +64,16 @@ class GatewayStreamer:
             retries,
         )
         self.runtime_name = runtime_name
+        self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
+        self.tracing_client_interceptor = tracing_client_interceptor
 
         self._connection_pool = self._create_connection_pool(
-            executor_addresses, compression, metrics_registry, logger
+            executor_addresses,
+            compression,
+            metrics_registry,
+            logger,
+            aio_tracing_client_interceptors,
+            tracing_client_interceptor,
         )
         request_handler = RequestHandler(metrics_registry, runtime_name)
 
@@ -90,7 +105,13 @@ class GatewayStreamer:
         )
 
     def _create_connection_pool(
-        self, deployments_addresses, compression, metrics_registry, logger
+        self,
+        deployments_addresses,
+        compression,
+        metrics_registry,
+        logger,
+        aio_tracing_client_interceptors,
+        tracing_client_interceptor,
     ):
         # add the connections needed
         connection_pool = GrpcConnectionPool(
@@ -98,6 +119,8 @@ class GatewayStreamer:
             logger=logger,
             compression=compression,
             metrics_registry=metrics_registry,
+            aio_tracing_client_interceptors=aio_tracing_client_interceptors,
+            tracing_client_interceptor=tracing_client_interceptor,
         )
         for deployment_name, addresses in deployments_addresses.items():
             for address in addresses:
