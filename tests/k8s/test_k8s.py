@@ -2,7 +2,6 @@
 # You need to install linkerd cli on your local machine if you want to run the k8s tests https://linkerd.io/2.11/getting-started/#step-1-install-the-cli
 import asyncio
 import os
-import re
 
 import pytest
 import requests as req
@@ -16,7 +15,6 @@ from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
 from jina.parsers import set_deployment_parser
 from jina.serve.networking import GrpcConnectionPool
 from tests.helper import (
-    _validate_custom_gateway_process,
     _validate_dummy_custom_gateway_response,
 )
 
@@ -24,13 +22,13 @@ cluster.KIND_VERSION = 'v0.11.1'
 
 
 async def create_all_flow_deployments_and_wait_ready(
-    flow_dump_path,
-    namespace,
-    api_client,
-    app_client,
-    core_client,
-    deployment_replicas_expected,
-    logger,
+        flow_dump_path,
+        namespace,
+        api_client,
+        app_client,
+        core_client,
+        deployment_replicas_expected,
+        logger,
 ):
     from kubernetes import utils
 
@@ -76,8 +74,8 @@ async def create_all_flow_deployments_and_wait_ready(
     while True:
         namespaced_pods = core_client.list_namespaced_pod(namespace)
         if (
-            namespaced_pods.items is not None
-            and len(namespaced_pods.items) == expected_deployments
+                namespaced_pods.items is not None
+                and len(namespaced_pods.items) == expected_deployments
         ):
             break
         logger.info(
@@ -97,8 +95,8 @@ async def create_all_flow_deployments_and_wait_ready(
             )
             expected_num_replicas = deployment_replicas_expected[deployment_name]
             if (
-                api_response.status.ready_replicas is not None
-                and api_response.status.ready_replicas == expected_num_replicas
+                    api_response.status.ready_replicas is not None
+                    and api_response.status.ready_replicas == expected_num_replicas
             ):
                 logger.info(f'Deployment {deployment_name} is now ready')
                 deployments_ready.append(deployment_name)
@@ -121,14 +119,14 @@ async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_si
         core_client.list_namespaced_pod(
             namespace=namespace, label_selector='app=gateway'
         )
-        .items[0]
-        .metadata.name
+            .items[0]
+            .metadata.name
     )
     config_path = os.environ['KUBECONFIG']
     import portforward
 
     with portforward.forward(
-        namespace, gateway_pod_name, int(flow.port), int(flow.port), config_path
+            namespace, gateway_pod_name, int(flow.port), int(flow.port), config_path
     ):
         client_kwargs = dict(
             host='localhost',
@@ -141,10 +139,10 @@ async def run_test(flow, core_client, namespace, endpoint, n_docs=10, request_si
         client.show_progress = True
         responses = []
         async for resp in client.post(
-            endpoint,
-            inputs=[Document() for _ in range(n_docs)],
-            request_size=request_size,
-            return_responses=True,
+                endpoint,
+                inputs=[Document() for _ in range(n_docs)],
+                request_size=request_size,
+                return_responses=True,
         ):
             responses.append(resp)
 
@@ -215,25 +213,43 @@ def k8s_flow_with_needs(docker_images):
             port=9090,
             protocol='http',
         )
-        .add(
+            .add(
             name='segmenter',
             uses=f'docker://{docker_images[0]}',
         )
-        .add(
+            .add(
             name='textencoder',
             uses=f'docker://{docker_images[0]}',
             needs='segmenter',
         )
-        .add(
+            .add(
             name='imageencoder',
             uses=f'docker://{docker_images[0]}',
             needs='segmenter',
         )
-        .add(
+            .add(
             name='merger',
             uses=f'docker://{docker_images[1]}',
             needs=['imageencoder', 'textencoder'],
             disable_reduce=True,
+        )
+    )
+    return flow
+
+
+@pytest.fixture
+def k8s_flow_with_volumes(docker_images, workspace_path):
+    flow = (
+        Flow(
+            name='test-flow-with-volumes',
+            port=9090,
+            protocol='http',
+        )
+            .add(
+            name='test-stateful-executor',
+            uses=f'docker://{docker_images[0]}',
+            workspace=workspace_path,
+            volumes=workspace_path
         )
     )
     return flow
@@ -281,16 +297,16 @@ async def test_flow_with_monitoring(logger, tmpdir, docker_images, port_generato
         core_client.list_namespaced_pod(
             namespace=namespace, label_selector='app=gateway'
         )
-        .items[0]
-        .metadata.name
+            .items[0]
+            .metadata.name
     )
 
     executor_pod_name = (
         core_client.list_namespaced_pod(
             namespace=namespace, label_selector='app=segmenter'
         )
-        .items[0]
-        .metadata.name
+            .items[0]
+            .metadata.name
     )
 
     port_monitoring = GrpcConnectionPool.K8S_PORT_MONITORING
@@ -298,7 +314,7 @@ async def test_flow_with_monitoring(logger, tmpdir, docker_images, port_generato
 
     for pod_name in [gateway_pod_name, executor_pod_name]:
         with portforward.forward(
-            namespace, pod_name, port, port_monitoring, config_path
+                namespace, pod_name, port, port_monitoring, config_path
         ):
             resp = req.get(f'http://localhost:{port}/')
             assert resp.status_code == 200
@@ -808,14 +824,14 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
         core_client.list_namespaced_pod(
             namespace=namespace, label_selector='app=gateway'
         )
-        .items[0]
-        .metadata.name
+            .items[0]
+            .metadata.name
     )
     config_path = os.environ['KUBECONFIG']
     import portforward
 
     with portforward.forward(
-        namespace, gateway_pod_name, flow.port, flow.port, config_path
+            namespace, gateway_pod_name, flow.port, flow.port, config_path
     ):
         _validate_dummy_custom_gateway_response(
             flow.port, {'arg1': 'hello', 'arg2': 'world', 'arg3': 'default-arg3'}
@@ -830,3 +846,63 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
         assert tags['shard_id'] == 0
 
     core_client.delete_namespace(namespace)
+
+
+@pytest.mark.timeout(3600)
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    'docker_images', [['test-stateful-executor', 'jinaai/jina']], indirect=True
+)
+@pytest.mark.parametrize('workspace_path', ['workspace_path'])
+async def test_flow_with_stateful_executor(k8s_flow_with_volumes, docker_images, tmpdir, logger):
+    dump_path = os.path.join(str(tmpdir), 'test-flow-with-volumes')
+    namespace = f'test-flow-with-volumes'.lower()
+    k8s_flow_configmap.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+    await create_all_flow_deployments_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'test-stateful-executor': 1,
+        },
+        logger=logger,
+    )
+    _ = await run_test(
+        flow=k8s_flow_configmap,
+        namespace=namespace,
+        core_client=core_client,
+        endpoint='/index',
+    )
+
+    core_client.delete_namespace(namespace)
+
+    await create_all_flow_deployments_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+            'test-stateful-executor': 1,
+        },
+        logger=logger,
+    )
+
+    resp = await run_test(
+        flow=k8s_flow_configmap,
+        namespace=namespace,
+        core_client=core_client,
+        endpoint='/index',
+    )
+
+    print(f' JOAN RESP {resp}')
