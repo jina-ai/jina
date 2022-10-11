@@ -151,14 +151,14 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
     )
 
     parser.add_argument(
-        '--span-exporter-host',
+        '--traces-exporter-host',
         type=str,
         default=None,
         help='If tracing is enabled, this hostname will be used to configure the trace exporter agent.',
     )
 
     parser.add_argument(
-        '--span-exporter-port',
+        '--traces-exporter-port',
         type=int,
         default=None,
         help='If tracing is enabled, this port will be used to configure the trace exporter agent.',

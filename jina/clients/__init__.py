@@ -26,9 +26,9 @@ def Client(
     port: Optional[int] = None,
     protocol: Optional[str] = 'GRPC',
     proxy: Optional[bool] = False,
-    span_exporter_host: Optional[str] = None,
-    span_exporter_port: Optional[int] = None,
     tls: Optional[bool] = False,
+    traces_exporter_host: Optional[str] = None,
+    traces_exporter_port: Optional[int] = None,
     tracing: Optional[bool] = False,
     **kwargs
 ) -> Union[
@@ -49,9 +49,9 @@ def Client(
     :param port: The port of the Gateway, which the client should connect to.
     :param protocol: Communication protocol between server and client.
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
-    :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
-    :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
     :param tls: If set, connect to gateway using tls encryption
+    :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+    :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
     :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
     :return: the new Client object
 
@@ -99,9 +99,9 @@ def Client(
     :param port: The port of the Gateway, which the client should connect to.
     :param protocol: Communication protocol between server and client.
     :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
-    :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
-    :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
     :param tls: If set, connect to gateway using tls encryption
+    :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+    :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
     :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
     :return: the new Client object
 

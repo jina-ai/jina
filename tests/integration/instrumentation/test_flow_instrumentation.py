@@ -28,13 +28,13 @@ def test_gateway_instrumentation(
     f = Flow(
         protocol=protocol,
         tracing=True,
-        span_exporter_host='localhost',
-        span_exporter_port=4317,
+        traces_exporter_host='localhost',
+        traces_exporter_port=4317,
     ).add(
         uses=ExecutorTestWithTracing,
         tracing=True,
-        span_exporter_host='localhost',
-        span_exporter_port=4317,
+        traces_exporter_host='localhost',
+        traces_exporter_port=4317,
     )
 
     with f:
@@ -65,8 +65,8 @@ def test_gateway_instrumentation(
 def test_executor_instrumentation(otlp_collector):
     f = Flow(
         tracing=True,
-        span_exporter_host='localhost',
-        span_exporter_port=4317,
+        traces_exporter_host='localhost',
+        traces_exporter_port=4317,
     ).add(uses=ExecutorFailureWithTracing)
 
     with f:

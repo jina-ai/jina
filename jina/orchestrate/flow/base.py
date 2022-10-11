@@ -124,9 +124,9 @@ class Flow(
         port: Optional[int] = None,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
-        span_exporter_host: Optional[str] = None,
-        span_exporter_port: Optional[int] = None,
         tls: Optional[bool] = False,
+        traces_exporter_host: Optional[str] = None,
+        traces_exporter_port: Optional[int] = None,
         tracing: Optional[bool] = False,
         **kwargs,
     ):
@@ -140,9 +140,9 @@ class Flow(
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
-        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
-        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param tls: If set, connect to gateway using tls encryption
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
 
         .. # noqa: DAR202
@@ -199,14 +199,14 @@ class Flow(
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'GatewayRuntime',
         shards: Optional[int] = 1,
-        span_exporter_host: Optional[str] = None,
-        span_exporter_port: Optional[int] = None,
         ssl_certfile: Optional[str] = None,
         ssl_keyfile: Optional[str] = None,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
         title: Optional[str] = None,
+        traces_exporter_host: Optional[str] = None,
+        traces_exporter_port: Optional[int] = None,
         tracing: Optional[bool] = False,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_with: Optional[dict] = None,
@@ -296,14 +296,14 @@ class Flow(
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
-        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
-        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param uses: The config of the gateway, it could be one of the followings:
                   * the string literal of an Gateway class name
@@ -416,9 +416,9 @@ class Flow(
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
-        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
-        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param tls: If set, connect to gateway using tls encryption
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
@@ -499,14 +499,14 @@ class Flow(
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
-        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
-        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param ssl_certfile: the path to the certificate file
         :param ssl_keyfile: the path to the key file
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param uses: The config of the gateway, it could be one of the followings:
                   * the string literal of an Gateway class name
@@ -907,12 +907,12 @@ class Flow(
         retries: Optional[int] = -1,
         runtime_cls: Optional[str] = 'WorkerRuntime',
         shards: Optional[int] = 1,
-        span_exporter_host: Optional[str] = None,
-        span_exporter_port: Optional[int] = None,
         timeout_ctrl: Optional[int] = 60,
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
         tls: Optional[bool] = False,
+        traces_exporter_host: Optional[str] = None,
+        traces_exporter_port: Optional[int] = None,
         tracing: Optional[bool] = False,
         upload_files: Optional[List[str]] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
@@ -999,12 +999,12 @@ class Flow(
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
-        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
-        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param tls: If set, connect to deployment using tls encryption
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param upload_files: The files on the host to be uploaded to the remote
           workspace. This can be useful when your Deployment has more
@@ -1154,12 +1154,12 @@ class Flow(
         :param retries: Number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :param runtime_cls: The runtime class to run inside the Pod
         :param shards: The number of shards in the deployment running at the same time. For more details check https://docs.jina.ai/fundamentals/flow/create-flow/#complex-flow-topologies
-        :param span_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
-        :param span_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param timeout_ctrl: The timeout in milliseconds of the control request, -1 for waiting forever
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param tls: If set, connect to deployment using tls encryption
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
         :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param upload_files: The files on the host to be uploaded to the remote
           workspace. This can be useful when your Deployment has more

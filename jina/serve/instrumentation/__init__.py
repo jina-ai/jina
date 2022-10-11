@@ -14,8 +14,8 @@ class InstrumentationMixin:
         self,
         name: str,
         tracing: Optional[bool] = False,
-        span_exporter_host: Optional[str] = '0.0.0.0',
-        span_exporter_port: Optional[int] = 6831,
+        traces_exporter_host: Optional[str] = '0.0.0.0',
+        traces_exporter_port: Optional[int] = 6831,
         metrics: Optional[bool] = False,
         metrics_exporter_host: Optional[str] = '0.0.0.0',
         metrics_exporter_port: Optional[int] = 6831,
@@ -36,7 +36,8 @@ class InstrumentationMixin:
             provider = TracerProvider(resource=resource)
             processor = BatchSpanProcessor(
                 OTLPSpanExporter(
-                    endpoint=f'{span_exporter_host}:{span_exporter_port}', insecure=True
+                    endpoint=f'{traces_exporter_host}:{traces_exporter_port}',
+                    insecure=True,
                 )
             )
             provider.add_span_processor(processor)
