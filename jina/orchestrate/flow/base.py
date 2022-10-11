@@ -118,20 +118,32 @@ class Flow(
         *,
         asyncio: Optional[bool] = False,
         host: Optional[str] = '0.0.0.0',
+        metrics: Optional[bool] = False,
+        metrics_exporter_host: Optional[str] = None,
+        metrics_exporter_port: Optional[int] = None,
         port: Optional[int] = None,
         protocol: Optional[str] = 'GRPC',
         proxy: Optional[bool] = False,
         tls: Optional[bool] = False,
+        traces_exporter_host: Optional[str] = None,
+        traces_exporter_port: Optional[int] = None,
+        tracing: Optional[bool] = False,
         **kwargs,
     ):
         """Create a Flow. Flow is how Jina streamlines and scales Executors. This overloaded method provides arguments from `jina client` CLI.
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
+        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param tls: If set, connect to gateway using tls encryption
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
 
         .. # noqa: DAR202
         .. # noqa: DAR101
@@ -165,6 +177,9 @@ class Flow(
         host: Optional[str] = '0.0.0.0',
         host_in: Optional[str] = '0.0.0.0',
         log_config: Optional[str] = None,
+        metrics: Optional[bool] = False,
+        metrics_exporter_host: Optional[str] = None,
+        metrics_exporter_port: Optional[int] = None,
         monitoring: Optional[bool] = False,
         name: Optional[str] = 'gateway',
         native: Optional[bool] = False,
@@ -190,6 +205,9 @@ class Flow(
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
         title: Optional[str] = None,
+        traces_exporter_host: Optional[str] = None,
+        traces_exporter_port: Optional[int] = None,
+        tracing: Optional[bool] = False,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
         uses_with: Optional[dict] = None,
         uvicorn_kwargs: Optional[dict] = None,
@@ -229,6 +247,9 @@ class Flow(
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
+        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
+        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
@@ -281,6 +302,9 @@ class Flow(
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param uses: The config of the gateway, it could be one of the followings:
                   * the string literal of an Gateway class name
                   * a Gateway YAML file (.yml, .yaml, .jaml)
@@ -386,10 +410,16 @@ class Flow(
 
         :param asyncio: If set, then the input and output of this Client work in an asynchronous manner.
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
+        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
+        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param port: The port of the Gateway, which the client should connect to.
         :param protocol: Communication protocol between server and client.
         :param proxy: If set, respect the http_proxy and https_proxy environment variables. otherwise, it will unset these proxy variables before start. gRPC seems to prefer no proxy
         :param tls: If set, connect to gateway using tls encryption
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param compression: The compression mechanism used when sending requests from the Head to the WorkerRuntimes. For more details, check https://grpc.github.io/grpc/python/grpc.html#compression.
         :param cors: If set, a CORS middleware is added to FastAPI frontend to allow cross-origin access.
         :param deployments_addresses: dictionary JSON with the input addresses of each Deployment
@@ -420,6 +450,9 @@ class Flow(
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param log_config: The YAML config of the logger used in this object.
+        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
+        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
@@ -472,6 +505,9 @@ class Flow(
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param title: The title of this HTTP server. It will be used in automatics docs such as Swagger UI.
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param uses: The config of the gateway, it could be one of the followings:
                   * the string literal of an Gateway class name
                   * a Gateway YAML file (.yml, .yaml, .jaml)
@@ -853,6 +889,9 @@ class Flow(
         host_in: Optional[str] = '0.0.0.0',
         install_requirements: Optional[bool] = False,
         log_config: Optional[str] = None,
+        metrics: Optional[bool] = False,
+        metrics_exporter_host: Optional[str] = None,
+        metrics_exporter_port: Optional[int] = None,
         monitoring: Optional[bool] = False,
         name: Optional[str] = None,
         native: Optional[bool] = False,
@@ -872,6 +911,9 @@ class Flow(
         timeout_ready: Optional[int] = 600000,
         timeout_send: Optional[int] = None,
         tls: Optional[bool] = False,
+        traces_exporter_host: Optional[str] = None,
+        traces_exporter_port: Optional[int] = None,
+        tracing: Optional[bool] = False,
         upload_files: Optional[List[str]] = None,
         uses: Optional[Union[str, Type['BaseExecutor'], dict]] = 'BaseExecutor',
         uses_after: Optional[Union[str, Type['BaseExecutor'], dict]] = None,
@@ -915,6 +957,9 @@ class Flow(
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
+        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
+        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
@@ -958,6 +1003,9 @@ class Flow(
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param tls: If set, connect to deployment using tls encryption
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param upload_files: The files on the host to be uploaded to the remote
           workspace. This can be useful when your Deployment has more
           file dependencies beyond a single YAML file, e.g.
@@ -1064,6 +1112,9 @@ class Flow(
         :param host_in: The host address for binding to, by default it is 0.0.0.0
         :param install_requirements: If set, install `requirements.txt` in the Hub Executor bundle to local
         :param log_config: The YAML config of the logger used in this object.
+        :param metrics: If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. Otherwise a no-op implementation will be provided.
+        :param metrics_exporter_host: If tracing is enabled, this hostname will be used to configure the metrics exporter agent.
+        :param metrics_exporter_port: If tracing is enabled, this port will be used to configure the metrics exporter agent.
         :param monitoring: If set, spawn an http server with a prometheus endpoint to expose metrics
         :param name: The name of this object.
 
@@ -1107,6 +1158,9 @@ class Flow(
         :param timeout_ready: The timeout in milliseconds of a Pod waits for the runtime to be ready, -1 for waiting forever
         :param timeout_send: The timeout in milliseconds used when sending data requests to Executors, -1 means no timeout, disabled by default
         :param tls: If set, connect to deployment using tls encryption
+        :param traces_exporter_host: If tracing is enabled, this hostname will be used to configure the trace exporter agent.
+        :param traces_exporter_port: If tracing is enabled, this port will be used to configure the trace exporter agent.
+        :param tracing: If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. Otherwise a no-op implementation will be provided.
         :param upload_files: The files on the host to be uploaded to the remote
           workspace. This can be useful when your Deployment has more
           file dependencies beyond a single YAML file, e.g.

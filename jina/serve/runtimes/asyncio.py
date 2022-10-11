@@ -11,6 +11,7 @@ from grpc import RpcError
 from jina import __windows__
 from jina.helper import send_telemetry_event
 from jina.importer import ImportExtensions
+from jina.serve.instrumentation import InstrumentationMixin
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.base import BaseRuntime
 from jina.serve.runtimes.monitoring import MonitoringMixin
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
     import threading
 
 
-class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
+class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, InstrumentationMixin, ABC):
     """
     The async runtime to start a new event loop.
     """
@@ -65,6 +66,15 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
             )
 
         self._setup_monitoring()
+        self._setup_instrumentation(
+            name=self.args.name,
+            tracing=self.args.tracing,
+            traces_exporter_host=self.args.traces_exporter_host,
+            traces_exporter_port=self.args.traces_exporter_port,
+            metrics=self.args.metrics,
+            metrics_exporter_host=self.args.metrics_exporter_host,
+            metrics_exporter_port=self.args.metrics_exporter_port,
+        )
         send_telemetry_event(event='start', obj=self, entity_id=self._entity_id)
         self._start_time = time.time()
         self._loop.run_until_complete(self.async_setup())
@@ -77,8 +87,24 @@ class AsyncNewLoopRuntime(BaseRuntime, MonitoringMixin, ABC):
         """
         self._loop.run_until_complete(self._loop_body())
 
+    def _teardown_instrumentation(self):
+        try:
+            if self.tracing and self.tracer_provider:
+                if hasattr(self.tracer_provider, 'force_flush'):
+                    self.tracer_provider.force_flush()
+                if hasattr(self.tracer_provider, 'shutdown'):
+                    self.tracer_provider.shutdown()
+            if self.metrics and self.meter_provider:
+                if hasattr(self.meter_provider, 'force_flush'):
+                    self.meter_provider.force_flush()
+                if hasattr(self.meter_provider, 'shutdown'):
+                    self.meter_provider.shutdown()
+        except Exception as ex:
+            self.logger.warning(f'Exception during instrumentation teardown, {str(ex)}')
+
     def teardown(self):
         """Call async_teardown() and stop and close the event loop."""
+        self._teardown_instrumentation()
         self._loop.run_until_complete(self.async_teardown())
         self._loop.stop()
         self._loop.close()

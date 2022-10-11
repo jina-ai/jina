@@ -13,13 +13,16 @@ from jina.helper import is_port_free
 from jina.parsers.helper import _set_gateway_uses
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
-from jina.serve.runtimes.gateway.grpc import GRPCGateway
-from jina.serve.runtimes.gateway.http import HTTPGateway
-from jina.serve.runtimes.gateway.websocket import WebSocketGateway
 
 if TYPE_CHECKING:
     import multiprocessing
     import threading
+
+
+# Keep these imports even if not used, since YAML parser needs to find them in imported modules
+from jina.serve.runtimes.gateway.grpc import GRPCGateway
+from jina.serve.runtimes.gateway.http import HTTPGateway
+from jina.serve.runtimes.gateway.websocket import WebSocketGateway
 
 
 class GatewayRuntime(AsyncNewLoopRuntime):
@@ -83,11 +86,16 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             extra_search_paths=self.args.extra_search_paths,
         )
 
-        self.gateway.set_streamer(
+        self.gateway.inject_dependencies(
             args=self.args,
             timeout_send=self.timeout_send,
             metrics_registry=self.metrics_registry,
             runtime_name=self.args.name,
+            tracing=self.tracing,
+            tracer_provider=self.tracer_provider,
+            grpc_tracing_server_interceptors=self.aio_tracing_server_interceptors(),
+            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
+            tracing_client_interceptor=self.tracing_client_interceptor(),
         )
         await self.gateway.setup_server()
 

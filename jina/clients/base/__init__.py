@@ -17,9 +17,10 @@ if TYPE_CHECKING:
 
     InputType = Union[GeneratorSourceType, Callable[..., GeneratorSourceType]]
     CallbackFnType = Optional[Callable[[Response], None]]
+from jina.serve.instrumentation import InstrumentationMixin
 
 
-class BaseClient(ABC):
+class BaseClient(InstrumentationMixin, ABC):
     """A base client for connecting to the Flow Gateway.
 
     :param args: the Namespace from argparse
@@ -46,6 +47,17 @@ class BaseClient(ABC):
             os.unsetenv('http_proxy')
             os.unsetenv('https_proxy')
         self._inputs = None
+        self._setup_instrumentation(
+            name=self.args.name
+            if hasattr(self.args, 'name')
+            else self.__class__.__name__,
+            tracing=self.args.tracing,
+            traces_exporter_host=self.args.traces_exporter_host,
+            traces_exporter_port=self.args.traces_exporter_port,
+            metrics=self.args.metrics,
+            metrics_exporter_host=self.args.metrics_exporter_host,
+            metrics_exporter_port=self.args.metrics_exporter_port,
+        )
         send_telemetry_event(event='start', obj=self)
 
     @staticmethod

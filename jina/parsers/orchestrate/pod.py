@@ -141,3 +141,47 @@ def mixin_pod_parser(parser, pod_type: str = 'worker'):
         help='If set, the current Pod/Deployment can not be further chained, '
         'and the next `.add()` will chain after the last Pod/Deployment not this current one.',
     )
+
+    gp.add_argument(
+        '--tracing',
+        action='store_true',
+        default=False,
+        help='If set, the sdk implementation of the OpenTelemetry tracer will be available and will be enabled for automatic tracing of requests and customer span creation. '
+        'Otherwise a no-op implementation will be provided.',
+    )
+
+    parser.add_argument(
+        '--traces-exporter-host',
+        type=str,
+        default=None,
+        help='If tracing is enabled, this hostname will be used to configure the trace exporter agent.',
+    )
+
+    parser.add_argument(
+        '--traces-exporter-port',
+        type=int,
+        default=None,
+        help='If tracing is enabled, this port will be used to configure the trace exporter agent.',
+    )
+
+    parser.add_argument(
+        '--metrics',
+        action='store_true',
+        default=False,
+        help='If set, the sdk implementation of the OpenTelemetry metrics will be available for default monitoring and custom measurements. '
+        'Otherwise a no-op implementation will be provided.',
+    )
+
+    parser.add_argument(
+        '--metrics-exporter-host',
+        type=str,
+        default=None,
+        help='If tracing is enabled, this hostname will be used to configure the metrics exporter agent.',
+    )
+
+    parser.add_argument(
+        '--metrics-exporter-port',
+        type=int,
+        default=None,
+        help='If tracing is enabled, this port will be used to configure the metrics exporter agent.',
+    )
