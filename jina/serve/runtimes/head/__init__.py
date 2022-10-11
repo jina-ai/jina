@@ -16,7 +16,6 @@ from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
-from jina.serve.instrumentation import InstrumentationMixin
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
@@ -52,6 +51,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             logger=self.logger,
             compression=args.compression,
             metrics_registry=self.metrics_registry,
+            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
+            tracing_client_interceptor=self.tracing_client_interceptor(),
         )
         self._retries = self.args.retries
 
