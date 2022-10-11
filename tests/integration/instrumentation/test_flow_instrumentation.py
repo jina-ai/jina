@@ -90,3 +90,42 @@ def test_executor_instrumentation(otlp_collector):
 
     trace_ids = get_trace_ids(client_traces)
     assert len(trace_ids) == 1
+
+
+def test_head_instrumentation(otlp_collector):
+    f = Flow(
+        tracing=True,
+        traces_exporter_host='localhost',
+        traces_exporter_port=4317,
+    ).add(uses=ExecutorTestWithTracing, shards=2)
+
+    with f:
+        from jina import DocumentArray
+
+        f.post(f'/index', DocumentArray.empty(2), continue_on_error=True)
+        # give some time for the tracing and metrics exporters to finish exporting.
+        # the client is slow to export the data
+        time.sleep(8)
+
+    client_type = 'GRPCClient'
+    client_traces = get_traces(client_type)
+    (server_spans, client_spans, internal_spans) = partition_spans_by_kind(
+        client_traces
+    )
+    assert len(server_spans) == 9
+    assert len(client_spans) == 9
+    assert len(internal_spans) == 2
+
+    services = get_services()
+    expected_services = [
+        'executor0/shard-0/rep-0',
+        'executor0/shard-1/rep-0',
+        'gateway/rep-0',
+        'executor0/head',
+        client_type,
+    ]
+    assert len(services) == 5
+    assert set(services).issubset(expected_services)
+
+    trace_ids = get_trace_ids(client_traces)
+    assert len(trace_ids) == 1
