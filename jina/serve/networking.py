@@ -433,7 +433,10 @@ class GrpcConnectionPool:
                         self._histograms.histogram_metric_labels,
                     ):
                         async for response in self.stream_stub.Call(
-                            iter(requests), compression=compression, timeout=timeout
+                            iter(requests),
+                            compression=compression,
+                            timeout=timeout,
+                            metadata=metadata,
                         ):
                             if self._metrics.received_response_bytes:
                                 self._metrics.received_response_bytes.observe(
