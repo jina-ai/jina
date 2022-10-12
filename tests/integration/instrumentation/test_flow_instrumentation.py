@@ -6,6 +6,10 @@ from jina import Flow
 from tests.integration.instrumentation import (
     ExecutorFailureWithTracing,
     ExecutorTestWithTracing,
+    get_all_metric_labels,
+    get_exported_jobs,
+    get_histogram_rate_and_exported_jobs_by_name,
+    get_metrics_by_name,
     get_services,
     get_trace_ids,
     get_traces,
@@ -129,3 +133,62 @@ def test_head_instrumentation(otlp_collector):
 
     trace_ids = get_trace_ids(client_traces)
     assert len(trace_ids) == 1
+
+
+def test_flow_metrics(otlp_collector, set_metrics_export_interval):
+    f = Flow(
+        metrics=True,
+        metrics_exporter_host='localhost',
+        metrics_exporter_port=4317,
+    ).add(
+        uses=ExecutorTestWithTracing,
+        shards=2,
+        metrics=True,
+        metrics_exporter_host='localhost',
+        metrics_exporter_port=4317,
+    )
+
+    with f:
+        from jina import DocumentArray
+
+        f.post(f'/index', DocumentArray.empty(2), continue_on_error=True)
+        # give some time for the tracing and metrics exporters to finish exporting.
+        # the client is slow to export the data
+        time.sleep(8)
+
+    exported_jobs = get_exported_jobs()
+    assert set(exported_jobs).issubset(
+        [
+            'gateway/rep-0',
+            'executor0/shard-0/rep-0',
+            'executor0/shard-1/rep-0',
+            'executor0/head',
+        ]
+    )
+
+    request_counter_metrics = get_metrics_by_name('request_counter')
+    metric_names = [metric['metric']['__name__'] for metric in request_counter_metrics]
+    assert 'request_counter' in metric_names
+
+    # (
+    #     sending_requests_time_metrics,
+    #     sending_requests_time_exported_jobs,
+    # ) = get_histogram_rate_and_exported_jobs_by_name('sending_request_seconds')
+    # assert len(sending_requests_time_metrics) == 0
+    # assert sending_requests_time_exported_jobs.issubset(['gateway/rep-0', 'executor0/head'])
+    (
+        received_response_bytes_metrics,
+        received_response_bytes_exported_jobs,
+    ) = get_histogram_rate_and_exported_jobs_by_name('received_response_bytes')
+    assert len(received_response_bytes_metrics) > 0
+    assert received_response_bytes_exported_jobs.issubset(
+        ['gateway/rep-0', 'executor0/head']
+    )
+    (
+        sent_requests_bytes_metrics,
+        sent_requests_bytes_exported_jobs,
+    ) = get_histogram_rate_and_exported_jobs_by_name('sent_request_bytes')
+    assert len(sent_requests_bytes_metrics) > 0
+    assert sent_requests_bytes_exported_jobs.issubset(
+        ['gateway/rep-0', 'executor0/head']
+    )

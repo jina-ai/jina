@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
     )
+    from opentelemetry.metrics import Meter
     from prometheus_client import CollectorRegistry
 
 
@@ -79,6 +80,7 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         args: 'argparse.Namespace' = None,
         timeout_send: Optional[float] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
+        meter: Optional['Meter'] = None,
         runtime_name: Optional[str] = None,
         tracing: Optional[bool] = False,
         tracer_provider: Optional['trace.TracerProvider'] = None,
@@ -93,6 +95,7 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
         :param args: runtime args
         :param timeout_send: grpc connection timeout
         :param metrics_registry: metric registry when monitoring is enabled
+        :param meter: optional OpenTelemetry meter that can provide instruments for collecting metrics
         :param runtime_name: name of the runtime providing the streamer
         :param tracing: Enables tracing if set to True.
         :param tracer_provider: If tracing is enabled the tracer_provider will be used to instrument the code.
@@ -124,6 +127,7 @@ class BaseGateway(JAMLCompatible, metaclass=GatewayType):
             prefetch=args.prefetch,
             logger=self.logger,
             metrics_registry=metrics_registry,
+            meter=meter,
             aio_tracing_client_interceptors=aio_tracing_client_interceptors,
             tracing_client_interceptor=tracing_client_interceptor,
         )

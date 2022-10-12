@@ -1,5 +1,14 @@
 version: "3"
 services:
+  # prometheus
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus-config.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
   # Jaeger
   jaeger:
     image: jaegertracing/all-in-one:latest
@@ -21,4 +30,5 @@ services:
       - "4317:4317" # OTLP gRPC receiver
       - "4318:4318" # OTLP http receiver
     depends_on:
+      - prometheus
       - jaeger

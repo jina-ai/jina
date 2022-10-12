@@ -51,6 +51,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             logger=self.logger,
             compression=args.compression,
             metrics_registry=self.metrics_registry,
+            meter=self.meter,
             aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
             tracing_client_interceptor=self.tracing_client_interceptor(),
         )

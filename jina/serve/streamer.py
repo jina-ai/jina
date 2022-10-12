@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
     )
+    from opentelemetry.metrics import Meter
     from prometheus_client import CollectorRegistry
 
 
@@ -36,6 +37,7 @@ class GatewayStreamer:
         prefetch: int = 0,
         logger: Optional['JinaLogger'] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
+        meter: Optional['Meter'] = None,
         aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
         tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
     ):
@@ -53,6 +55,7 @@ class GatewayStreamer:
         :param prefetch: How many Requests are processed from the Client at the same time.
         :param logger: Optional logger that can be used for logging
         :param metrics_registry: optional metrics registry for prometheus used if we need to expose metrics
+        :param meter: optional OpenTelemetry meter that can provide instruments for collecting metrics
         :param aio_tracing_client_interceptors: Optional list of aio grpc tracing server interceptors.
         :param tracing_client_interceptor: Optional gprc tracing server interceptor.
         """
@@ -71,6 +74,7 @@ class GatewayStreamer:
             executor_addresses,
             compression,
             metrics_registry,
+            meter,
             logger,
             aio_tracing_client_interceptors,
             tracing_client_interceptor,
@@ -109,6 +113,7 @@ class GatewayStreamer:
         deployments_addresses,
         compression,
         metrics_registry,
+        meter,
         logger,
         aio_tracing_client_interceptors,
         tracing_client_interceptor,
@@ -119,6 +124,7 @@ class GatewayStreamer:
             logger=logger,
             compression=compression,
             metrics_registry=metrics_registry,
+            meter=meter,
             aio_tracing_client_interceptors=aio_tracing_client_interceptors,
             tracing_client_interceptor=tracing_client_interceptor,
         )

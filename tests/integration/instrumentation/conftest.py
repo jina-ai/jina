@@ -15,3 +15,10 @@ def otlp_collector():
     os.system(
         f"docker-compose -f {os.path.join(file_dir, 'docker-compose.yml')} down --remove-orphans"
     )
+
+
+@pytest.fixture()
+def set_metrics_export_interval():
+    os.environ['OTEL_METRIC_EXPORT_INTERVAL'] = '500'  # milliseconds
+    yield
+    del os.environ['OTEL_METRIC_EXPORT_INTERVAL']

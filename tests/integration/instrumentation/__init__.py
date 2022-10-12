@@ -1,5 +1,6 @@
-from typing import Dict, Optional
+from typing import Optional
 
+import requests as http_requests
 from docarray import DocumentArray
 from opentelemetry.context.context import Context
 
@@ -7,9 +8,7 @@ from jina import Executor, requests
 
 
 def get_traces(service):
-    import requests
-
-    response = requests.get(f'http://localhost:16686/api/traces?service={service}')
+    response = http_requests.get(f'http://localhost:16686/api/traces?service={service}')
     response.raise_for_status()
     return response.json().get('data', []) or []
 
@@ -52,11 +51,18 @@ def partition_spans_by_kind(traces):
 class ExecutorTestWithTracing(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if self.meter:
+            self.request_counter = self.meter.create_counter('request_counter')
+        else:
+            self.request_counter = None
 
     @requests(on='/index')
     def empty(
         self, docs: 'DocumentArray', tracing_context: Optional[Context], **kwargs
     ):
+        if self.request_counter:
+            self.request_counter.add(1)
+
         if self.tracer:
             with self.tracer.start_span('dummy', context=tracing_context) as span:
                 span.set_attribute('len_docs', len(docs))
@@ -66,9 +72,7 @@ class ExecutorTestWithTracing(Executor):
 
 
 def get_services():
-    import requests
-
-    response = requests.get('http://localhost:16686/api/services')
+    response = http_requests.get('http://localhost:16686/api/services')
     response.raise_for_status()
     response_json = response.json()
     services = response_json.get('data', []) or []
@@ -105,3 +109,35 @@ def spans_with_error(spans):
             ):
                 error_spans.append(span)
     return error_spans
+
+
+def get_metrics_by_name(metric_name: str):
+    response = http_requests.get(
+        f'http://localhost:9090/api/v1/query?query={metric_name}'
+    )
+    response.raise_for_status()
+    return response.json().get('data', {}).get('result', []) or []
+
+
+def get_all_metric_labels():
+    response = http_requests.get('http://localhost:9090/api/v1/label/__name__/values')
+    response.raise_for_status()
+    return response.json().get('data', []) or []
+
+
+def get_histogram_rate_and_exported_jobs_by_name(metric_name: str):
+    response = http_requests.get(
+        f'http://localhost:9090/api/v1/query?query=rate({metric_name}_bucket[1m])'
+    )
+    response.raise_for_status()
+    metrics = response.json().get('data', {}).get('result', []) or []
+    exported_jobs = set([metric['metric']['exported_job'] for metric in metrics])
+    return metrics, exported_jobs
+
+
+def get_exported_jobs():
+    response = http_requests.get(
+        'http://localhost:9090/api/v1/label/exported_job/values'
+    )
+    response.raise_for_status()
+    return response.json().get('data', []) or []
