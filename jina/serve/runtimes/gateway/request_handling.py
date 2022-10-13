@@ -335,7 +335,7 @@ class RequestHandler(MonitoringRequestMixin):
                     partial_responses = await asyncio.gather(*tasks)
                 except Exception as e:
                     # update here failed request
-                    self._update_end_failed_requests_metrics(request)
+                    self._update_end_failed_requests_metrics()
                     raise
                 partial_responses, metadatas = zip(*partial_responses)
                 filtered_partial_responses = list(
