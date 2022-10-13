@@ -57,7 +57,7 @@ class ExecutorTestWithTracing(Executor):
         else:
             self.request_counter = None
 
-    @requests(on='/index')
+    @requests(on='/search')
     def empty(
         self, docs: 'DocumentArray', tracing_context: Optional[Context], **kwargs
     ):
@@ -85,7 +85,7 @@ class ExecutorFailureWithTracing(Executor):
         super().__init__(*args, **kwargs)
         self.failure_counter = 0
 
-    @requests(on='/index')
+    @requests(on='/search')
     def empty(
         self, docs: 'DocumentArray', tracing_context: Optional[Context], **kwargs
     ):

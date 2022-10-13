@@ -44,7 +44,7 @@ def test_gateway_instrumentation(
     with f:
         from jina import DocumentArray
 
-        f.post(f'/index', DocumentArray.empty(2), continue_on_error=True)
+        f.post(f'/search', DocumentArray.empty(), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
         time.sleep(8)
@@ -76,7 +76,7 @@ def test_executor_instrumentation(otlp_collector):
     with f:
         from jina import DocumentArray
 
-        f.post(f'/index', DocumentArray.empty(2), continue_on_error=True)
+        f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
         time.sleep(8)
@@ -106,7 +106,7 @@ def test_head_instrumentation(otlp_collector):
     with f:
         from jina import DocumentArray
 
-        f.post(f'/index', DocumentArray.empty(2), continue_on_error=True)
+        f.post(f'/search', DocumentArray.empty(), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
         time.sleep(8)
@@ -116,9 +116,9 @@ def test_head_instrumentation(otlp_collector):
     (server_spans, client_spans, internal_spans) = partition_spans_by_kind(
         client_traces
     )
-    assert len(server_spans) == 9
-    assert len(client_spans) == 9
-    assert len(internal_spans) == 2
+    assert len(server_spans) == 11
+    assert len(client_spans) == 11
+    assert len(internal_spans) == 4
 
     services = get_services()
     expected_services = [
@@ -157,12 +157,8 @@ def test_flow_metrics(
     with f:
         from jina import DocumentArray
 
-        f.post(
-            f'/index', DocumentArray.empty(2), request_size=1, continue_on_error=True
-        )
-        f.post(
-            f'/index', DocumentArray.empty(2), request_size=1, continue_on_error=True
-        )
+        f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
+        f.post(f'/search', DocumentArray.empty(2), continue_on_error=True)
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
         time.sleep(8)
