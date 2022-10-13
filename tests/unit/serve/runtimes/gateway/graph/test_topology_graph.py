@@ -551,6 +551,7 @@ class DummyMockConnectionPool:
         requests: List[Request],
         deployment: str,
         head: bool,
+        metadata: dict = None,
         endpoint: str = None,
         timeout: float = 1.0,
         retries: int = -1,
