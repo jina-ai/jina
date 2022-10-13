@@ -79,7 +79,7 @@ class GatewayStreamer:
             aio_tracing_client_interceptors,
             tracing_client_interceptor,
         )
-        request_handler = RequestHandler(metrics_registry, runtime_name)
+        request_handler = RequestHandler(metrics_registry, meter, runtime_name)
 
         self._streamer = RequestStreamer(
             request_handler=request_handler.handle_request(

@@ -6,10 +6,10 @@ from jina import Flow
 from tests.integration.instrumentation import (
     ExecutorFailureWithTracing,
     ExecutorTestWithTracing,
-    get_all_metric_labels,
     get_exported_jobs,
+    get_flow_metric_labels,
     get_histogram_rate_and_exported_jobs_by_name,
-    get_metrics_by_name,
+    get_metrics_and_exported_jobs_by_name,
     get_services,
     get_trace_ids,
     get_traces,
@@ -135,13 +135,19 @@ def test_head_instrumentation(otlp_collector):
     assert len(trace_ids) == 1
 
 
-def test_flow_metrics(otlp_collector, set_metrics_export_interval):
+def test_flow_metrics(
+    otlp_collector,
+    prometheus_client,
+    set_metrics_export_interval,
+    expected_flow_metric_labels,
+    instrumented_services_sharded,
+):
     f = Flow(
         metrics=True,
         metrics_exporter_host='localhost',
         metrics_exporter_port=4317,
     ).add(
-        uses=ExecutorTestWithTracing,
+        uses=ExecutorFailureWithTracing,
         shards=2,
         metrics=True,
         metrics_exporter_host='localhost',
@@ -151,44 +157,105 @@ def test_flow_metrics(otlp_collector, set_metrics_export_interval):
     with f:
         from jina import DocumentArray
 
-        f.post(f'/index', DocumentArray.empty(2), continue_on_error=True)
+        f.post(
+            f'/index', DocumentArray.empty(2), request_size=1, continue_on_error=True
+        )
+        f.post(
+            f'/index', DocumentArray.empty(2), request_size=1, continue_on_error=True
+        )
         # give some time for the tracing and metrics exporters to finish exporting.
         # the client is slow to export the data
         time.sleep(8)
 
-    exported_jobs = get_exported_jobs()
-    assert set(exported_jobs).issubset(
-        [
-            'gateway/rep-0',
-            'executor0/shard-0/rep-0',
-            'executor0/shard-1/rep-0',
-            'executor0/head',
-        ]
+    exported_jobs = get_exported_jobs(prometheus_client)
+    assert exported_jobs.issubset(instrumented_services_sharded)
+
+    flow_metric_labels = get_flow_metric_labels(prometheus_client)
+    assert flow_metric_labels.issubset(expected_flow_metric_labels)
+
+    (
+        sending_requests_seconds_metrics,
+        sending_requests_seconds_exported_jobs,
+    ) = get_histogram_rate_and_exported_jobs_by_name(
+        prometheus_client, 'sending_request_seconds'
     )
+    # TODO
+    # assert len(sending_requests_seconds_metrics) == 0
+    # assert sending_requests_seconds_exported_jobs.issubset(['gateway/rep-0', 'executor0/head'])
 
-    request_counter_metrics = get_metrics_by_name('request_counter')
-    metric_names = [metric['metric']['__name__'] for metric in request_counter_metrics]
-    assert 'request_counter' in metric_names
+    (
+        receiving_request_seconds_metrics,
+        receiving_request_seconds_exported_jobs,
+    ) = get_histogram_rate_and_exported_jobs_by_name(
+        prometheus_client, 'receiving_request_seconds'
+    )
+    # TODO
+    # assert len(receiving_request_seconds_metrics) == 0
+    # assert receiving_request_seconds_exported_jobs.issubset(['gateway/rep-0', 'executor0/head'])
 
-    # (
-    #     sending_requests_time_metrics,
-    #     sending_requests_time_exported_jobs,
-    # ) = get_histogram_rate_and_exported_jobs_by_name('sending_request_seconds')
-    # assert len(sending_requests_time_metrics) == 0
-    # assert sending_requests_time_exported_jobs.issubset(['gateway/rep-0', 'executor0/head'])
     (
         received_response_bytes_metrics,
         received_response_bytes_exported_jobs,
-    ) = get_histogram_rate_and_exported_jobs_by_name('received_response_bytes')
+    ) = get_histogram_rate_and_exported_jobs_by_name(
+        prometheus_client, 'received_response_bytes'
+    )
     assert len(received_response_bytes_metrics) > 0
     assert received_response_bytes_exported_jobs.issubset(
         ['gateway/rep-0', 'executor0/head']
     )
+
     (
         sent_requests_bytes_metrics,
         sent_requests_bytes_exported_jobs,
-    ) = get_histogram_rate_and_exported_jobs_by_name('sent_request_bytes')
+    ) = get_histogram_rate_and_exported_jobs_by_name(
+        prometheus_client, 'sent_request_bytes'
+    )
     assert len(sent_requests_bytes_metrics) > 0
     assert sent_requests_bytes_exported_jobs.issubset(
+        ['gateway/rep-0', 'executor0/head']
+    )
+
+    (
+        sent_response_bytes_metrics,
+        sent_response_bytes_exported_jobs,
+    ) = get_histogram_rate_and_exported_jobs_by_name(
+        prometheus_client, 'sent_response_bytes'
+    )
+    assert len(sent_response_bytes_metrics) > 0
+    assert sent_response_bytes_exported_jobs.issubset(
+        ['gateway/rep-0', 'executor0/head']
+    )
+
+    (
+        number_of_pending_requests_metrics,
+        number_of_pending_requests_exported_jobs,
+    ) = get_metrics_and_exported_jobs_by_name(
+        prometheus_client, 'number_of_pending_requests'
+    )
+    assert len(number_of_pending_requests_metrics) > 0
+    assert number_of_pending_requests_exported_jobs.issubset(['gateway/rep-0'])
+
+    (
+        failed_requests_metrics,
+        failed_requests_exported_jobs,
+    ) = get_metrics_and_exported_jobs_by_name(prometheus_client, 'failed_requests')
+    assert len(failed_requests_metrics) > 0
+    assert failed_requests_exported_jobs.issubset(['gateway/rep-0'])
+
+    (
+        successful_requests_metrics,
+        successful_requests_exported_jobs,
+    ) = get_metrics_and_exported_jobs_by_name(prometheus_client, 'successful_requests')
+    assert len(successful_requests_metrics) > 0
+    assert successful_requests_exported_jobs.issubset(['gateway/rep-0'])
+
+    (
+        received_request_bytes_metrics,
+        received_request_bytes_exported_jobs,
+    ) = get_histogram_rate_and_exported_jobs_by_name(
+        prometheus_client, 'received_request_bytes'
+    )
+    assert len(received_request_bytes_metrics) > 0
+    assert received_request_bytes_exported_jobs.issubset(
         ['gateway/rep-0', 'executor0/head']
     )

@@ -1,8 +1,9 @@
-from typing import Optional
+from typing import Dict, Optional
 
 import requests as http_requests
 from docarray import DocumentArray
 from opentelemetry.context.context import Context
+from prometheus_api_client import PrometheusConnect
 
 from jina import Executor, requests
 
@@ -96,6 +97,12 @@ class ExecutorFailureWithTracing(Executor):
                     raise NotImplementedError
                 else:
                     return docs
+        elif self.meter:
+            if not self.failure_counter:
+                self.failure_counter += 1
+                raise NotImplementedError
+            else:
+                return docs
         else:
             return docs
 
@@ -111,33 +118,47 @@ def spans_with_error(spans):
     return error_spans
 
 
-def get_metrics_by_name(metric_name: str):
-    response = http_requests.get(
-        f'http://localhost:9090/api/v1/query?query={metric_name}'
+def get_metrics_by_name(
+    prometheus_client: PrometheusConnect,
+    metric_name: str,
+    label_config: Optional[Dict] = {},
+):
+    metrics_data = prometheus_client.get_current_metric_value(
+        metric_name, label_config=label_config
     )
-    response.raise_for_status()
-    return response.json().get('data', {}).get('result', []) or []
+    return metrics_data
 
 
-def get_all_metric_labels():
-    response = http_requests.get('http://localhost:9090/api/v1/label/__name__/values')
-    response.raise_for_status()
-    return response.json().get('data', []) or []
-
-
-def get_histogram_rate_and_exported_jobs_by_name(metric_name: str):
-    response = http_requests.get(
-        f'http://localhost:9090/api/v1/query?query=rate({metric_name}_bucket[1m])'
+def get_flow_metric_labels(prometheus_client: PrometheusConnect):
+    labels = set(prometheus_client.get_label_values(label_name='__name__'))
+    return set(
+        [
+            label
+            for label in labels
+            if not (label.startswith('otelcol') or label.startswith('scrape'))
+        ]
     )
-    response.raise_for_status()
-    metrics = response.json().get('data', {}).get('result', []) or []
-    exported_jobs = set([metric['metric']['exported_job'] for metric in metrics])
-    return metrics, exported_jobs
 
 
-def get_exported_jobs():
-    response = http_requests.get(
-        'http://localhost:9090/api/v1/label/exported_job/values'
-    )
-    response.raise_for_status()
-    return response.json().get('data', []) or []
+def _extract_exported_jobs(metrics):
+    return set([metric['metric']['exported_job'] for metric in metrics])
+
+
+def get_histogram_rate_and_exported_jobs_by_name(
+    prometheus_client: PrometheusConnect, metric_name: str
+):
+    metrics_data = prometheus_client.custom_query(f'rate({metric_name}_bucket[1m])')
+    exported_jobs = _extract_exported_jobs(metrics_data)
+    return metrics_data, exported_jobs
+
+
+def get_exported_jobs(prometheus_client):
+    return set(prometheus_client.get_label_values(label_name='exported_job'))
+
+
+def get_metrics_and_exported_jobs_by_name(
+    prometheus_client: PrometheusConnect, metric_name: str
+):
+    metrics_data = get_metrics_by_name(prometheus_client, metric_name)
+    exported_jobs = _extract_exported_jobs(metrics_data)
+    return metrics_data, exported_jobs
