@@ -770,7 +770,7 @@ class Flow(
         graph_dict = {}
 
         for node, v in self._deployment_nodes.items():
-            if v.external and v.args.grpc_metadata:
+            if v.args.grpc_metadata:
                 graph_dict[node] = v.args.grpc_metadata
 
         return graph_dict or None
@@ -978,7 +978,7 @@ class Flow(
               - To access specified gpus based on device id, use `--gpus device=[YOUR-GPU-DEVICE-ID]`
               - To access specified gpus based on multiple device id, use `--gpus device=[YOUR-GPU-DEVICE-ID1],device=[YOUR-GPU-DEVICE-ID2]`
               - To specify more parameters, use `--gpus device=[YOUR-GPU-DEVICE-ID],runtime=nvidia,capabilities=display
-        :param grpc_metadata: The metadata to be passed to the gRPC request. This argument only applies for external Deployments.
+        :param grpc_metadata: Dictionary of metadata that will be passed to the gRPC calls, example: {'agent': 'jina/3.10.x'}
         :param grpc_server_options: Dictionary of kwargs arguments that will be passed to the grpc server as options when starting the server, example : {'grpc.max_send_message_length': -1}
         :param host: The host address of the runtime, by default it is 0.0.0.0. In the case of an external Executor (`--external` or `external=True`) this can be a list of hosts, separated by commas. Then, every resulting address will be considered as one replica of the Executor.
         :param host_in: The host address for binding to, by default it is 0.0.0.0
