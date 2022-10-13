@@ -704,9 +704,9 @@ class Flow(
         :return: a dictionary of deployment name and its metadata
         """
         return {
-            name: deployment.args.grpc_metadata
+            name: deployment.grpc_metadata
             for name, deployment in self._deployment_nodes.items()
-            if deployment.args.grpc_metadata
+            if deployment.grpc_metadata
         }
 
     def _get_deployments_addresses(self) -> Dict[str, List[str]]:
@@ -770,8 +770,8 @@ class Flow(
         graph_dict = {}
 
         for node, v in self._deployment_nodes.items():
-            if v.args.grpc_metadata:
-                graph_dict[node] = v.args.grpc_metadata
+            if v.grpc_metadata:
+                graph_dict[node] = v.grpc_metadata
 
         return graph_dict or None
 

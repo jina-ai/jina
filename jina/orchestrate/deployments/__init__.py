@@ -422,6 +422,14 @@ class Deployment(BaseDeployment):
         return getattr(self.args, 'external', False) or self.is_sandbox
 
     @property
+    def grpc_metadata(self):
+        """
+        Get the grpc metadata for this deployment.
+        :return: The grpc metadata for this deployment. If the deployment is gateway, will return None.
+        """
+        return getattr(self.args, 'grpc_metadata', None)
+
+    @property
     def protocol(self):
         """
         :return: the protocol of this deployment

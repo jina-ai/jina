@@ -148,6 +148,16 @@ def test_pod_context_shards_replicas(shards):
     Deployment(args).start().close()
 
 
+@pytest.mark.parametrize('metadata', [{'key1': 'value1', 'key2': 'value2'}])
+def test_pod_context_grpc_metadata(metadata):
+    args_list = []
+    for k, v in metadata.items():
+        args_list.extend(['--grpc-metadata', f'{k}:{v}'])
+    args = set_deployment_parser().parse_args(args_list)
+    with Deployment(args) as bp:
+        assert bp.grpc_metadata == metadata
+
+
 class AppendNameExecutor(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
