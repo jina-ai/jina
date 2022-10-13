@@ -154,17 +154,17 @@ Because not all Pods have the same role, they expose different kinds of metrics:
 
 ### Gateway Pods
 
-| Metrics name                        | Metrics type                                                           | Description                                                                                                        |
-|-------------------------------------|------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|
-| `jina_receiving_request_seconds`    | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)   | Measures time elapsed between receiving a request from the client and sending back the response.               |
+| Metrics name                        | Metrics type                                                           | Description                                                                                                     |
+|-------------------------------------|------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| `jina_receiving_request_seconds`    | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)   | Measures time elapsed between receiving a request from the client and sending back the response.                |
 | `jina_sending_request_seconds`      | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)   | Measures time elapsed between sending a downstream request to an Executor/Head and receiving the response back. |
-| `jina_number_of_pending_requests`   | [Gauge](https://prometheus.io/docs/concepts/metric_types/#gauge)       | Counts the number of pending requests.                                                                              |
-| `jina_successful_requests`    | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter)   | Counts the number of successful requests returned by the Gateway.                                                   |
-| `jina_failed_requests`        | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter)   | Counts the number of failed requests returned by the Gateway.                                                       |
-| `jina_sent_request_bytes`           | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)   | Measures the size in bytes of the request sent by the Gateway to the Executor or the Head.                    |
-| `jina_received_response_bytes`         | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)   | Measures the size in bytes of the request returned by the Executor.                                           |
-| `jina_received_request_bytes`           | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)   | Measures the size of the request in bytes received at the Gateway level.                                            |
-| `jina_sent_response_bytes`  | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)   | Measures the size in bytes of the response returned from the Gateway to the Client.                                    |
+| `jina_number_of_pending_requests`   | [Gauge](https://prometheus.io/docs/concepts/metric_types/#gauge)       | Counts the number of pending requests.                                                                          |
+| `jina_successful_requests`    | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter)   | Counts the number of successful requests returned by the Gateway.                                               |
+| `jina_failed_requests`        | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter)   | Counts the number of failed requests returned by the Gateway.                                                   |
+| `jina_sent_request_bytes`           | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)   | Measures the size in bytes of the request sent by the Gateway to the Executor or to the Head.                   |
+| `jina_received_response_bytes`         | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)   | Measures the size in bytes of the request returned by the Executor.                                             |
+| `jina_received_request_bytes`           | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)   | Measures the size of the request in bytes received at the Gateway level.                                        |
+| `jina_sent_response_bytes`  | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)   | Measures the size in bytes of the response returned from the Gateway to the Client.                             |
 
 ```{seealso} 
 You can find more information on the different type of metrics in Prometheus [here](https://prometheus.io/docs/concepts/metric_types/#metric-types)
@@ -174,12 +174,12 @@ You can find more information on the different type of metrics in Prometheus [he
 
 | Metric name                            | Metric type                                                            | Description                                                                                                   |
 |-----------------------------------------|-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
-| `jina_receiving_request_seconds`        | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)    | Measures the time elapsed between receiving a request from the Gateway and sending back the response.          |
+| `jina_receiving_request_seconds`        | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)    | Measures the time elapsed between receiving a request from the Gateway and sending back the response.         |
 | `jina_sending_request_seconds`          | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)    | Measures the time elapsed between sending a downstream request to an Executor and receiving the response back. |
-| `jina_sending_request_bytes`            | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)    | Measures the size of the downstream requests send to an Executor in bytes.                                      |
-| `jina_failed_requests`            | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter)    | Counts the number of failed requests returned by the Gateway.                                                  |
-| `jina_sent_request_bytes`               | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)    | Measures the size in bytes of the request sent by the Head to the Executor.                                    |
-| `jina_received_response_bytes`          | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)    | Measures the size in bytes of the response returned by the Executor.                                           |
+| `jina_sent_request_bytes`            | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)    | Measures the size in bytes of the request sent by the Head to the Executor.                     |
+| `jina_failed_requests`            | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter)    | Counts the number of failed requests returned by the Gateway.                                                 |
+| `jina_sent_request_bytes`               | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)    | Measures the size in bytes of the request sent by the Head to the Executor.                                   |
+| `jina_received_response_bytes`          | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)    | Measures the size in bytes of the response returned by the Executor.                                          |
 
 ### Executor Pods
 
