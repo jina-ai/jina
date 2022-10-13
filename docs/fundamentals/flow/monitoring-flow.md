@@ -177,7 +177,6 @@ You can find more information on the different type of metrics in Prometheus [he
 | `jina_receiving_request_seconds`        | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)    | Measures the time elapsed between receiving a request from the Gateway and sending back the response.         |
 | `jina_sending_request_seconds`          | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)    | Measures the time elapsed between sending a downstream request to an Executor and receiving the response back. |
 | `jina_sent_request_bytes`            | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)    | Measures the size in bytes of the request sent by the Head to the Executor.                     |
-| `jina_failed_requests`            | [Counter](https://prometheus.io/docs/concepts/metric_types/#counter)    | Counts the number of failed requests returned by the Gateway.                                                 |
 | `jina_sent_request_bytes`               | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)    | Measures the size in bytes of the request sent by the Head to the Executor.                                   |
 | `jina_received_response_bytes`          | [Summary](https://prometheus.io/docs/concepts/metric_types/#summary)    | Measures the size in bytes of the response returned by the Executor.                                          |
 
