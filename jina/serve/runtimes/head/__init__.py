@@ -51,6 +51,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             logger=self.logger,
             compression=args.compression,
             metrics_registry=self.metrics_registry,
+            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors(),
+            tracing_client_interceptor=self.tracing_client_interceptor(),
         )
         self._retries = self.args.retries
 
@@ -144,7 +146,8 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
     async def async_setup(self):
         """Wait for the GRPC server to start"""
         self._grpc_server = grpc.aio.server(
-            options=_get_grpc_server_options(self.args.grpc_server_options)
+            options=_get_grpc_server_options(self.args.grpc_server_options),
+            interceptors=self.aio_tracing_server_interceptors(),
         )
 
         jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(

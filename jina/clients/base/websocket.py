@@ -33,7 +33,12 @@ class WebSocketBaseClient(BaseClient):
                 proto = 'wss' if self.args.tls else 'ws'
                 url = f'{proto}://{self.args.host}:{self.args.port}/dry_run'
                 iolet = await stack.enter_async_context(
-                    WebsocketClientlet(url=url, logger=self.logger, **kwargs)
+                    WebsocketClientlet(
+                        url=url,
+                        logger=self.logger,
+                        tracer_provider=self.tracer_provider,
+                        **kwargs,
+                    )
                 )
 
                 async def _receive():
@@ -72,16 +77,16 @@ class WebSocketBaseClient(BaseClient):
             return False
 
     async def _get_results(
-            self,
-            inputs: 'InputType',
-            on_done: 'CallbackFnType',
-            on_error: Optional['CallbackFnType'] = None,
-            on_always: Optional['CallbackFnType'] = None,
-            max_attempts: int = 1,
-            initial_backoff: float = 0.5,
-            max_backoff: float = 0.1,
-            backoff_multiplier: float = 1.5,
-            **kwargs,
+        self,
+        inputs: 'InputType',
+        on_done: 'CallbackFnType',
+        on_error: Optional['CallbackFnType'] = None,
+        on_always: Optional['CallbackFnType'] = None,
+        max_attempts: int = 1,
+        initial_backoff: float = 0.5,
+        max_backoff: float = 0.1,
+        backoff_multiplier: float = 1.5,
+        **kwargs,
     ):
         """
         :param inputs: the callable
@@ -110,9 +115,16 @@ class WebSocketBaseClient(BaseClient):
             proto = 'wss' if self.args.tls else 'ws'
             url = f'{proto}://{self.args.host}:{self.args.port}/'
             iolet = await stack.enter_async_context(
-                WebsocketClientlet(url=url, logger=self.logger, max_attempts=max_attempts,
-                                   initial_backoff=initial_backoff,
-                                   max_backoff=max_backoff, backoff_multiplier=backoff_multiplier, **kwargs)
+                WebsocketClientlet(
+                    url=url,
+                    logger=self.logger,
+                    tracer_provider=self.tracer_provider,
+                    max_attempts=max_attempts,
+                    initial_backoff=initial_backoff,
+                    max_backoff=max_backoff,
+                    backoff_multiplier=backoff_multiplier,
+                    **kwargs,
+                )
             )
 
             request_buffer: Dict[
@@ -150,7 +162,7 @@ class WebSocketBaseClient(BaseClient):
                 asyncio.create_task(iolet.send_eoi())
 
             def _request_handler(
-                    request: 'Request',
+                request: 'Request',
             ) -> 'Tuple[asyncio.Future, Optional[asyncio.Future]]':
                 """
                 For each request in the iterator, we send the `Message` using `iolet.send_message()`.

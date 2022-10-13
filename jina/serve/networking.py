@@ -3,7 +3,7 @@ import ipaddress
 import os
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Set, Tuple, Union
 from urllib.parse import urlparse
 
 import grpc
@@ -27,6 +27,10 @@ TLS_PROTOCOL_SCHEMES = ['grpcs', 'https', 'wss']
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from grpc.aio._interceptor import ClientInterceptor
+    from opentelemetry.instrumentation.grpc._client import (
+        OpenTelemetryClientInterceptor,
+    )
     from prometheus_client import CollectorRegistry, Summary
 
 
@@ -58,6 +62,8 @@ class ReplicaList:
         metrics: _NetworkingMetrics,
         logger,
         runtine_name: str,
+        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
+        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
     ):
         self.runtime_name = runtine_name
         self._connections = []
@@ -67,6 +73,8 @@ class ReplicaList:
         self._metrics = metrics
         self._logger = logger
         self._destroyed_event = asyncio.Event()
+        self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
+        self.tracing_client_interceptors = tracing_client_interceptor
 
     async def reset_connection(self, address: str) -> Union[grpc.aio.Channel, None]:
         """
@@ -111,7 +119,9 @@ class ReplicaList:
         """
         if address not in self._address_to_connection_idx:
             self._address_to_connection_idx[address] = len(self._connections)
-            stubs, channel = self._create_connection(address)
+            stubs, channel = self._create_connection(
+                address,
+            )
             self._address_to_channel[address] = channel
             self._connections.append(stubs)
 
@@ -159,6 +169,7 @@ class ReplicaList:
             address,
             metrics=self._metrics,
             tls=use_tls,
+            aio_tracing_client_interceptors=self.aio_tracing_client_interceptors,
         )
         return stubs, channel
 
@@ -417,6 +428,12 @@ class GrpcConnectionPool:
             runtime_name: str,
             logger: Optional[JinaLogger],
             metrics: _NetworkingMetrics,
+            aio_tracing_client_interceptors: Optional[
+                Sequence['ClientInterceptor']
+            ] = None,
+            tracing_client_interceptor: Optional[
+                'OpenTelemetryClientInterceptor'
+            ] = None,
         ):
             self._logger = logger
             # this maps deployments to shards or heads
@@ -428,6 +445,8 @@ class GrpcConnectionPool:
             if os.name != 'nt':
                 os.unsetenv('http_proxy')
                 os.unsetenv('https_proxy')
+            self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
+            self.tracing_client_interceptor = tracing_client_interceptor
 
         def add_replica(self, deployment: str, shard_id: int, address: str):
             self._add_connection(deployment, shard_id, address, 'shards')
@@ -528,7 +547,11 @@ class GrpcConnectionPool:
             self._add_deployment(deployment)
             if entity_id not in self._deployments[deployment][type]:
                 connection_list = ReplicaList(
-                    self._metrics, self._logger, self.runtime_name
+                    self._metrics,
+                    self._logger,
+                    self.runtime_name,
+                    self.aio_tracing_client_interceptors,
+                    self.tracing_client_interceptor,
                 )
                 self._deployments[deployment][type][entity_id] = connection_list
 
@@ -576,6 +599,8 @@ class GrpcConnectionPool:
         logger: Optional[JinaLogger] = None,
         compression: Optional[str] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
+        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
+        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
     ):
         self._logger = logger or JinaLogger(self.__class__.__name__)
 
@@ -626,8 +651,14 @@ class GrpcConnectionPool:
             send_requests_bytes_metrics,
         )
 
+        self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
+        self.tracing_client_interceptor = tracing_client_interceptor
         self._connections = self._ConnectionPoolMap(
-            runtime_name, self._logger, self._metrics
+            runtime_name,
+            self._logger,
+            self._metrics,
+            self.aio_tracing_client_interceptors,
+            self.tracing_client_interceptor,
         )
         self._deployment_address_map = {}
 
@@ -988,12 +1019,56 @@ class GrpcConnectionPool:
         return asyncio.create_task(task_wrapper())
 
     @staticmethod
+    def __aio_channel_with_tracing_interceptor(
+        address,
+        credentials=None,
+        options=None,
+        interceptors=None,
+    ) -> grpc.aio.Channel:
+        if credentials:
+            return grpc.aio.secure_channel(
+                address,
+                credentials,
+                options=options,
+                interceptors=interceptors,
+            )
+        return grpc.aio.insecure_channel(
+            address,
+            options=options,
+            interceptors=interceptors,
+        )
+
+    @staticmethod
+    def __channel_with_tracing_interceptor(
+        address,
+        credentials=None,
+        options=None,
+        interceptor=None,
+    ) -> grpc.Channel:
+        if credentials:
+            channel = grpc.secure_channel(address, credentials, options=options)
+        else:
+            channel = grpc.insecure_channel(address, options=options)
+
+        if interceptor:
+            from opentelemetry.instrumentation.grpc.grpcext import intercept_channel
+
+            return intercept_channel(
+                channel,
+                interceptor,
+            )
+        else:
+            return channel
+
+    @staticmethod
     def get_grpc_channel(
         address: str,
         options: Optional[list] = None,
         asyncio: bool = False,
         tls: bool = False,
         root_certificates: Optional[str] = None,
+        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
+        tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
     ) -> grpc.Channel:
         """
         Creates a grpc channel to the given address
@@ -1003,28 +1078,28 @@ class GrpcConnectionPool:
         :param asyncio: If True, use the asyncio implementation of the grpc channel
         :param tls: If True, use tls encryption for the grpc channel
         :param root_certificates: The path to the root certificates for tls, only used if tls is True
-
+        :param aio_tracing_client_interceptors: List of async io gprc client tracing interceptors for tracing requests if asycnio is True
+        :param tracing_client_interceptor: A gprc client tracing interceptor for tracing requests if asyncio is False
         :return: A grpc channel or an asyncio channel
         """
-
-        secure_channel = grpc.secure_channel
-        insecure_channel = grpc.insecure_channel
-
-        if asyncio:
-            secure_channel = grpc.aio.secure_channel
-            insecure_channel = grpc.aio.insecure_channel
 
         if options is None:
             options = GrpcConnectionPool.get_default_grpc_options()
 
+        credentials = None
         if tls:
             credentials = grpc.ssl_channel_credentials(
                 root_certificates=root_certificates
             )
 
-            return secure_channel(address, credentials, options)
+        if asyncio:
+            return GrpcConnectionPool.__aio_channel_with_tracing_interceptor(
+                address, credentials, options, aio_tracing_client_interceptors
+            )
 
-        return insecure_channel(address, options)
+        return GrpcConnectionPool.__channel_with_tracing_interceptor(
+            address, credentials, options, tracing_client_interceptor
+        )
 
     @staticmethod
     def send_request_sync(
@@ -1202,6 +1277,7 @@ class GrpcConnectionPool:
         metrics: _NetworkingMetrics,
         tls=False,
         root_certificates: Optional[str] = None,
+        aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
     ) -> Tuple[ConnectionStubs, grpc.aio.Channel]:
         """
         Creates an async GRPC Channel. This channel has to be closed eventually!
@@ -1210,6 +1286,7 @@ class GrpcConnectionPool:
         :param tls: if True, use tls for the grpc channel
         :param root_certificates: the path to the root certificates for tls, only u
         :param metrics: NetworkingMetrics object that contain optional metrics
+        :param aio_tracing_client_interceptors: List of async io gprc client tracing interceptors for tracing requests for asycnio channel
         :returns: DataRequest stubs and an async grpc channel
         """
         channel = GrpcConnectionPool.get_grpc_channel(
@@ -1217,6 +1294,7 @@ class GrpcConnectionPool:
             asyncio=True,
             tls=tls,
             root_certificates=root_certificates,
+            aio_tracing_client_interceptors=aio_tracing_client_interceptors,
         )
 
         return (

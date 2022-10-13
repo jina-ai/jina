@@ -1,7 +1,7 @@
 import asyncio
 import random
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from aiohttp import WSMsgType
 
@@ -12,19 +12,25 @@ from jina.types.request.data import DataRequest
 from jina.types.request.status import StatusMessage
 
 if TYPE_CHECKING:
+    from opentelemetry import trace
+
     from jina.logging.logger import JinaLogger
 
 
 class AioHttpClientlet(ABC):
     """aiohttp session manager"""
 
-    def __init__(self, url: str,
-                 logger: 'JinaLogger',
-                 max_attempts: int = 1,
-                 initial_backoff: float = 0.5,
-                 max_backoff: float = 0.1,
-                 backoff_multiplier: float = 1.5,
-                 **kwargs) -> None:
+    def __init__(
+        self,
+        url: str,
+        logger: 'JinaLogger',
+        max_attempts: int = 1,
+        initial_backoff: float = 0.5,
+        max_backoff: float = 0.1,
+        backoff_multiplier: float = 1.5,
+        tracer_provider: Optional['trace.TraceProvider'] = None,
+        **kwargs,
+    ) -> None:
         """HTTP Client to be used with the streamer
 
         :param url: url to send http/websocket request to
@@ -33,12 +39,19 @@ class AioHttpClientlet(ABC):
         :param initial_backoff: The first retry will happen with a delay of random(0, initial_backoff)
         :param max_backoff: The maximum accepted backoff after the exponential incremental delay
         :param backoff_multiplier: The n-th attempt will occur at random(0, min(initialBackoff*backoffMultiplier**(n-1), maxBackoff))
+        :param tracer_provider: Optional tracer_provider that will be used to configure aiohttp tracing.
         :param kwargs: kwargs  which will be forwarded to the `aiohttp.Session` instance. Used to pass headers to requests
         """
         self.url = url
         self.logger = logger
         self.msg_recv = 0
         self.msg_sent = 0
+        if tracer_provider:
+            from opentelemetry.instrumentation.aiohttp_client import create_trace_config
+
+            self._trace_config = [create_trace_config(tracer_provider=tracer_provider)]
+        else:
+            self._trace_config = None
         self.session = None
         self._session_kwargs = {}
         if kwargs.get('headers', None):
@@ -90,7 +103,9 @@ class AioHttpClientlet(ABC):
         with ImportExtensions(required=True):
             import aiohttp
 
-        self.session = aiohttp.ClientSession(**self._session_kwargs)
+        self.session = aiohttp.ClientSession(
+            **self._session_kwargs, trace_configs=self._trace_config
+        )
         await self.session.__aenter__()
         return self
 
@@ -125,7 +140,14 @@ class HTTPClientlet(AioHttpClientlet):
                 if retry == self.max_attempts:
                     raise
                 else:
-                    wait_time = random.uniform(0, min(self.initial_backoff*self.backoff_multiplier**(retry-1), self.max_backoff))
+                    wait_time = random.uniform(
+                        0,
+                        min(
+                            self.initial_backoff
+                            * self.backoff_multiplier ** (retry - 1),
+                            self.max_backoff,
+                        ),
+                    )
                     await asyncio.sleep(wait_time)
 
     async def send_dry_run(self, **kwargs):
@@ -194,7 +216,14 @@ class WebsocketClientlet(AioHttpClientlet):
                     self.logger.critical(f'server connection closed already!')
                     raise
                 else:
-                    wait_time = random.uniform(0, min(self.initial_backoff*self.backoff_multiplier**(retry-1), self.max_backoff))
+                    wait_time = random.uniform(
+                        0,
+                        min(
+                            self.initial_backoff
+                            * self.backoff_multiplier ** (retry - 1),
+                            self.max_backoff,
+                        ),
+                    )
                     await asyncio.sleep(wait_time)
 
     async def send_dry_run(self, **kwargs):

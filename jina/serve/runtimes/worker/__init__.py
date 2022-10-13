@@ -1,7 +1,7 @@
 import argparse
 import contextlib
 from abc import ABC
-from typing import List
+from typing import TYPE_CHECKING, List
 
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
@@ -15,6 +15,9 @@ from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.serve.runtimes.request_handlers.data_request_handler import DataRequestHandler
 from jina.types.request.data import DataRequest
+
+if TYPE_CHECKING:
+    from opentelemetry.propagate import Context
 
 
 class WorkerRuntime(AsyncNewLoopRuntime, ABC):
@@ -79,7 +82,11 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         # otherwise readiness check is not valid
         # The DataRequestHandler needs to be started BEFORE the grpc server
         self._data_request_handler = DataRequestHandler(
-            self.args, self.logger, self.metrics_registry
+            self.args,
+            self.logger,
+            self.metrics_registry,
+            self.tracer_provider,
+            self.meter_provider,
         )
         await self._async_setup_grpc_server()
 
@@ -89,7 +96,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         """
 
         self._grpc_server = grpc.aio.server(
-            options=_get_grpc_server_options(self.args.grpc_server_options)
+            options=_get_grpc_server_options(self.args.grpc_server_options),
+            interceptors=self.aio_tracing_server_interceptors(),
         )
 
         jina_pb2_grpc.add_JinaSingleDataRequestRPCServicer_to_server(
@@ -165,6 +173,13 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
         )
         return endpointsProto
 
+    @staticmethod
+    def _extract_tracing_context(metadata: grpc.aio.Metadata) -> 'Context':
+        from opentelemetry.propagate import extract
+
+        context = extract(dict(metadata))
+        return context
+
     async def process_data(self, requests: List[DataRequest], context) -> DataRequest:
         """
         Process the received requests and return the result as a new request
@@ -179,7 +194,12 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 if self.logger.debug_enabled:
                     self._log_data_request(requests[0])
 
-                result = await self._data_request_handler.handle(requests=requests)
+                tracing_context = WorkerRuntime._extract_tracing_context(
+                    context.invocation_metadata()
+                )
+                result = await self._data_request_handler.handle(
+                    requests=requests, tracing_context=tracing_context
+                )
                 if self._successful_requests_metrics:
                     self._successful_requests_metrics.inc()
                 return result
