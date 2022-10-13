@@ -78,6 +78,21 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
             self._summary_time = contextlib.nullcontext()
             self._failed_requests_metrics = None
             self._successful_requests_metrics = None
+
+        if self.meter:
+            self._failed_requests_counter = self.meter.create_counter(
+                name='failed_requests',
+                description='Number of failed requests',
+            )
+
+            self._successful_requests_counter = self.meter.create_counter(
+                name='successful_requests',
+                description='Number of successful requests',
+            )
+        else:
+            self._failed_requests_counter = None
+            self._successful_requests_counter = None
+
         # Keep this initialization order
         # otherwise readiness check is not valid
         # The DataRequestHandler needs to be started BEFORE the grpc server
@@ -202,6 +217,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 )
                 if self._successful_requests_metrics:
                     self._successful_requests_metrics.inc()
+                if self._successful_requests_counter:
+                    self._successful_requests_counter.add(1)
                 return result
             except (RuntimeError, Exception) as ex:
                 self.logger.error(
@@ -216,6 +233,8 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
                 context.set_trailing_metadata((('is-error', 'true'),))
                 if self._failed_requests_metrics:
                     self._failed_requests_metrics.inc()
+                if self._failed_requests_counter:
+                    self._failed_requests_counter.add(1)
 
                 if (
                     self.args.exit_on_exceptions

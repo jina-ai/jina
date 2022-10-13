@@ -64,4 +64,5 @@ def expected_flow_metric_labels():
         'target_info',  # otel or prometheus related
         'up',  # otel or prometheus related
         'failed_requests',
+        'document_processed',
     ]

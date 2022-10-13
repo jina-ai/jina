@@ -219,7 +219,11 @@ def test_flow_metrics(
     )
     assert len(sent_response_bytes_metrics) > 0
     assert sent_response_bytes_exported_jobs.issubset(
-        ['gateway/rep-0', 'executor0/head']
+        [
+            'gateway/rep-0',
+            'executor0/shard-0/rep-0',
+            'executor0/shard-1/rep-0',
+        ]
     )
 
     (
@@ -236,14 +240,18 @@ def test_flow_metrics(
         failed_requests_exported_jobs,
     ) = get_metrics_and_exported_jobs_by_name(prometheus_client, 'failed_requests')
     assert len(failed_requests_metrics) > 0
-    assert failed_requests_exported_jobs.issubset(['gateway/rep-0'])
+    assert failed_requests_exported_jobs.issubset(
+        ['gateway/rep-0', 'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0']
+    )
 
     (
         successful_requests_metrics,
         successful_requests_exported_jobs,
     ) = get_metrics_and_exported_jobs_by_name(prometheus_client, 'successful_requests')
     assert len(successful_requests_metrics) > 0
-    assert successful_requests_exported_jobs.issubset(['gateway/rep-0'])
+    assert successful_requests_exported_jobs.issubset(
+        ['gateway/rep-0', 'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0']
+    )
 
     (
         received_request_bytes_metrics,
@@ -253,5 +261,9 @@ def test_flow_metrics(
     )
     assert len(received_request_bytes_metrics) > 0
     assert received_request_bytes_exported_jobs.issubset(
-        ['gateway/rep-0', 'executor0/head']
+        [
+            'gateway/rep-0',
+            'executor0/shard-0/rep-0',
+            'executor0/shard-1/rep-0',
+        ]
     )
