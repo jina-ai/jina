@@ -747,6 +747,7 @@ class GrpcConnectionPool:
         shard_id: Optional[int] = None,
         polling_type: PollingType = PollingType.ANY,
         endpoint: Optional[str] = None,
+        metadata: Optional[Dict[str, str]] = None,
         timeout: Optional[float] = None,
         retries: Optional[int] = -1,
     ) -> List[asyncio.Task]:
@@ -757,6 +758,7 @@ class GrpcConnectionPool:
         :param shard_id: Send to a specific shard of the deployment, ignored for polling ALL
         :param polling_type: defines if the message should be send to any or all pooled connections for the target
         :param endpoint: endpoint to target with the request
+        :param metadata: metadata to send with the request
         :param timeout: timeout for sending the requests
         :param retries: number of retries per gRPC call. If <0 it defaults to max(3, num_replicas)
         :return: list of asyncio.Task items for each send call
@@ -768,6 +770,7 @@ class GrpcConnectionPool:
             shard_id=shard_id,
             polling_type=polling_type,
             endpoint=endpoint,
+            metadata=metadata,
             timeout=timeout,
             retries=retries,
         )
