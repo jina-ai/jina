@@ -48,7 +48,7 @@ def mixin_base_deployment_parser(parser):
         action=KVAppendAction,
         metavar='KEY: VALUE',
         nargs='*',
-        help='The metadata to be passed to the gRPC request. This argument only applies for external Deployments.',
+        help='The metadata to be passed to the gRPC request.',
     )
 
     # hidden CLI used for internal only
