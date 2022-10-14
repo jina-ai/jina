@@ -57,4 +57,4 @@ jobs:
         with:
           github_token: ${{ secrets.JINA_DEV_BOT }}
           tags: true
-          branch: master
+          branch: ${{ github.ref }}
