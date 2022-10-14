@@ -181,6 +181,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._metrics_buffer = None
 
         if self.meter:
+            print(f'--->creating process_request_histogram')
             self._process_request_histogram = self.meter.create_histogram(
                 name='process_request_seconds',
                 description='Time spent when calling the executor request method',
@@ -189,6 +190,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 'process_request_seconds': self._process_request_histogram
             }
         else:
+            print(f'--->NOT creating process_request_histogram')
             self._process_request_histogram = None
             self._histogram_buffer = None
 
@@ -333,6 +335,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     ):
         async def exec_func(summary, histogram, tracing_context):
             with MetricsTimer(summary, histogram):
+                print(
+                    f'--->measuring process request seconds with summary: {summary}, histogram: {histogram}'
+                )
                 if iscoroutinefunction(func):
                     return await func(self, tracing_context=tracing_context, **kwargs)
                 else:
@@ -582,7 +587,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
     def monitor(
         self, name: Optional[str] = None, documentation: Optional[str] = None
-    ) -> Optional['Summary']:
+    ) -> Optional[MetricsTimer]:
         """
         Get a given prometheus metric, if it does not exist yet, it will create it and store it in a buffer.
         :param name: the name of the metrics
@@ -590,18 +595,30 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: the given prometheus metrics or None if monitoring is not enable.
         """
+        _summary = None
+        _histogram = None
 
         if self._metrics_buffer:
             if name not in self._metrics_buffer:
                 from prometheus_client import Summary
 
-                self._metrics_buffer[name] = Summary(
+                _summary = Summary(
                     name,
                     documentation,
                     registry=self.runtime_args.metrics_registry,
                     namespace='jina',
                     labelnames=('runtime_name',),
                 ).labels(self.runtime_args.name)
-            return self._metrics_buffer[name].time()
-        else:
-            return contextlib.nullcontext()
+                self._metrics_buffer[name] = _summary
+
+        if self._histogram_buffer:
+            if name not in self._histogram_buffer:
+                _histogram = self.meter.create_histogram(
+                    name=name, description=documentation
+                )
+            self._histogram_buffer[name] = _histogram
+
+        if _summary or _histogram:
+            return MetricsTimer(_summary, _histogram)
+
+        return contextlib.nullcontext()
