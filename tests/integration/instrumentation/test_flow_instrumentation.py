@@ -175,9 +175,10 @@ def test_flow_metrics(
     ) = get_histogram_rate_and_exported_jobs_by_name(
         prometheus_client, 'sending_request_seconds'
     )
-    # TODO
-    # assert len(sending_requests_seconds_metrics) == 0
-    # assert sending_requests_seconds_exported_jobs.issubset(['gateway/rep-0', 'executor0/head'])
+    assert len(sending_requests_seconds_metrics) > 0
+    assert sending_requests_seconds_exported_jobs.issubset(
+        ['gateway/rep-0', 'executor0/head']
+    )
 
     (
         receiving_request_seconds_metrics,
@@ -185,9 +186,15 @@ def test_flow_metrics(
     ) = get_histogram_rate_and_exported_jobs_by_name(
         prometheus_client, 'receiving_request_seconds'
     )
-    # TODO
-    # assert len(receiving_request_seconds_metrics) == 0
-    # assert receiving_request_seconds_exported_jobs.issubset(['gateway/rep-0', 'executor0/head'])
+    assert len(receiving_request_seconds_metrics) > 0
+    assert receiving_request_seconds_exported_jobs.issubset(
+        [
+            'gateway/rep-0',
+            'executor0/head',
+            'executor0/shard-0/rep-0',
+            'executor0/shard-1/rep-0',
+        ]
+    )
 
     (
         received_response_bytes_metrics,
@@ -241,7 +248,12 @@ def test_flow_metrics(
     ) = get_metrics_and_exported_jobs_by_name(prometheus_client, 'failed_requests')
     assert len(failed_requests_metrics) > 0
     assert failed_requests_exported_jobs.issubset(
-        ['gateway/rep-0', 'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0']
+        [
+            'gateway/rep-0',
+            'executor0/head',
+            'executor0/shard-0/rep-0',
+            'executor0/shard-1/rep-0',
+        ]
     )
 
     (
@@ -261,9 +273,16 @@ def test_flow_metrics(
     )
     assert len(received_request_bytes_metrics) > 0
     assert received_request_bytes_exported_jobs.issubset(
-        [
-            'gateway/rep-0',
-            'executor0/shard-0/rep-0',
-            'executor0/shard-1/rep-0',
-        ]
+        ['gateway/rep-0', 'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0']
+    )
+
+    (
+        process_requests_seconds_metrics,
+        process_requests_seconds_exported_jobs,
+    ) = get_histogram_rate_and_exported_jobs_by_name(
+        prometheus_client, 'process_request_seconds'
+    )
+    assert len(process_requests_seconds_metrics) > 0
+    assert process_requests_seconds_exported_jobs.issubset(
+        ['executor0/shard-0/rep-0', 'executor0/shard-1/rep-0']
     )

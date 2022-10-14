@@ -15,7 +15,7 @@ from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
 from jina.serve.executors.decorators import avoid_concurrent_lock_cls
 from jina.serve.executors.metas import get_executor_taboo
-from jina.serve.helper import store_init_kwargs, wrap_func
+from jina.serve.helper import MetricsTimer, store_init_kwargs, wrap_func
 
 if TYPE_CHECKING:
     from opentelemetry.context.context import Context
@@ -133,8 +133,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         self._add_metas(metas)
         self._add_requests(requests)
         self._add_runtime_args(runtime_args)
-        self._init_monitoring()
         self._init_instrumentation(runtime_args)
+        self._init_monitoring()
         self._init_workspace = workspace
         self.logger = JinaLogger(self.__class__.__name__)
         if __dry_run_endpoint__ not in self.requests:
@@ -179,6 +179,18 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         else:
             self._summary_method = None
             self._metrics_buffer = None
+
+        if self.meter:
+            self._process_request_histogram = self.meter.create_histogram(
+                name='process_request_seconds',
+                description='Time spent when calling the executor request method',
+            )
+            self._histogram_buffer = {
+                'process_request_seconds': self._process_request_histogram
+            }
+        else:
+            self._process_request_histogram = None
+            self._histogram_buffer = None
 
     def _init_instrumentation(self, _runtime_args: Optional[Dict] = None):
         if not _runtime_args:
@@ -319,8 +331,8 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     async def __acall_endpoint__(
         self, req_endpoint, tracing_context: Optional['Context'], **kwargs
     ):
-        async def exec_func(summary, tracing_context):
-            with summary:
+        async def exec_func(summary, histogram, tracing_context):
+            with MetricsTimer(summary, histogram):
                 if iscoroutinefunction(func):
                     return await func(self, tracing_context=tracing_context, **kwargs)
                 else:
@@ -335,9 +347,9 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         _summary = (
             self._summary_method.labels(
                 self.__class__.__name__, req_endpoint, runtime_name
-            ).time()
+            )
             if self._summary_method
-            else contextlib.nullcontext()
+            else None
         )
 
         if self.tracer:
@@ -349,9 +361,13 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
                 tracing_carrier_context = {}
                 TraceContextTextMapPropagator().inject(tracing_carrier_context)
-                return await exec_func(_summary, extract(tracing_carrier_context))
+                return await exec_func(
+                    _summary,
+                    self._process_request_histogram,
+                    extract(tracing_carrier_context),
+                )
         else:
-            return await exec_func(_summary, None)
+            return await exec_func(_summary, self._process_request_histogram, None)
 
     @property
     def workspace(self) -> Optional[str]:

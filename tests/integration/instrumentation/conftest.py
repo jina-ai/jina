@@ -65,4 +65,13 @@ def expected_flow_metric_labels():
         'up',  # otel or prometheus related
         'failed_requests',
         'document_processed',
+        'receiving_request_seconds_bucket',
+        'receiving_request_seconds_count',
+        'receiving_request_seconds_sum',
+        'sending_request_seconds_bucket',
+        'sending_request_seconds_count',
+        'sending_request_seconds_sum',
+        'process_request_seconds_bucket',
+        'process_request_seconds_count',
+        'process_request_seconds_sum',
     ]

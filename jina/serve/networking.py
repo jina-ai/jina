@@ -18,7 +18,7 @@ from jina.excepts import EstablishGrpcConnectionError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2, jina_pb2_grpc
-from jina.serve.helper import _get_summary_time_context_or_null
+from jina.serve.helper import MetricsTimer
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
 
@@ -385,8 +385,9 @@ class GrpcConnectionPool:
                         self._histograms.send_requests_bytes_metrics.record(
                             requests[0].nbytes
                         )
-                    with _get_summary_time_context_or_null(
-                        self._metrics.sending_requests_time_metrics
+                    with MetricsTimer(
+                        self._metrics.sending_requests_time_metrics,
+                        self._histograms.sending_requests_time_metrics,
                     ):
                         metadata, response = (
                             await call_result.trailing_metadata(),
@@ -414,8 +415,9 @@ class GrpcConnectionPool:
                                 response.nbytes
                             )
 
-                    with _get_summary_time_context_or_null(
-                        self._metrics.sending_requests_time_metrics
+                    with MetricsTimer(
+                        self._metrics.sending_requests_time_metrics,
+                        self._histograms.sending_requests_time_metrics,
                     ):
                         async for response in self.stream_stub.Call(
                             iter(requests), compression=compression, timeout=timeout
@@ -438,8 +440,9 @@ class GrpcConnectionPool:
                         compression=compression,
                         timeout=timeout,
                     )
-                    with _get_summary_time_context_or_null(
-                        self._metrics.sending_requests_time_metrics
+                    with MetricsTimer(
+                        self._metrics.sending_requests_time_metrics,
+                        self._histograms.sending_requests_time_metrics,
                     ):
                         metadata, response = (
                             await call_result.trailing_metadata(),
