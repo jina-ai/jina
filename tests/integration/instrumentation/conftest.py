@@ -74,4 +74,7 @@ def expected_flow_metric_labels():
         'process_request_seconds_bucket',
         'process_request_seconds_count',
         'process_request_seconds_sum',
+        'executor',
+        'executor_endpoint',
+        'runtime_name',
     ]

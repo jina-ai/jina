@@ -181,7 +181,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._metrics_buffer = None
 
         if self.meter:
-            print(f'--->creating process_request_histogram')
             self._process_request_histogram = self.meter.create_histogram(
                 name='process_request_seconds',
                 description='Time spent when calling the executor request method',
@@ -190,7 +189,6 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 'process_request_seconds': self._process_request_histogram
             }
         else:
-            print(f'--->NOT creating process_request_histogram')
             self._process_request_histogram = None
             self._histogram_buffer = None
 
@@ -333,11 +331,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
     async def __acall_endpoint__(
         self, req_endpoint, tracing_context: Optional['Context'], **kwargs
     ):
-        async def exec_func(summary, histogram, tracing_context):
-            with MetricsTimer(summary, histogram):
-                print(
-                    f'--->measuring process request seconds with summary: {summary}, histogram: {histogram}'
-                )
+        async def exec_func(
+            summary, histogram, histogram_metric_labels, tracing_context
+        ):
+            with MetricsTimer(summary, histogram, histogram_metric_labels):
                 if iscoroutinefunction(func):
                     return await func(self, tracing_context=tracing_context, **kwargs)
                 else:
@@ -356,6 +353,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             if self._summary_method
             else None
         )
+        _histogram_metric_labels = {
+            'executor': self.__class__.__name__,
+            'executor_endpoint': req_endpoint,
+            'runtime_name': runtime_name,
+        }
 
         if self.tracer:
             with self.tracer.start_span(req_endpoint, context=tracing_context) as _:
@@ -369,10 +371,16 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
                 return await exec_func(
                     _summary,
                     self._process_request_histogram,
+                    _histogram_metric_labels,
                     extract(tracing_carrier_context),
                 )
         else:
-            return await exec_func(_summary, self._process_request_histogram, None)
+            return await exec_func(
+                _summary,
+                self._process_request_histogram,
+                _histogram_metric_labels,
+                None,
+            )
 
     @property
     def workspace(self) -> Optional[str]:
@@ -619,6 +627,10 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             self._histogram_buffer[name] = _histogram
 
         if _summary or _histogram:
-            return MetricsTimer(_summary, _histogram)
+            return MetricsTimer(
+                _summary,
+                _histogram,
+                histogram_metric_labels={'runtime_name': self.runtime_args.name},
+            )
 
         return contextlib.nullcontext()

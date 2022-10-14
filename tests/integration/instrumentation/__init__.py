@@ -145,9 +145,23 @@ def _extract_exported_jobs(metrics):
 
 
 def get_histogram_rate_and_exported_jobs_by_name(
-    prometheus_client: PrometheusConnect, metric_name: str
+    prometheus_client: PrometheusConnect, metric_name: str, labels: Dict[str, str] = {}
 ):
-    metrics_data = prometheus_client.custom_query(f'rate({metric_name}_bucket[1m])')
+    query = f'rate({metric_name}_bucket[1m])'
+    if labels:
+        label_list = [str(key + "=" + "'" + labels[key] + "'") for key in labels]
+        query = (
+            'rate('
+            + metric_name
+            + '_bucket'
+            + '{'
+            + ','.join(label_list)
+            + '}'
+            + '[1m]'
+            + ')'
+        )
+
+    metrics_data = prometheus_client.custom_query(query=query)
     exported_jobs = _extract_exported_jobs(metrics_data)
     return metrics_data, exported_jobs
 

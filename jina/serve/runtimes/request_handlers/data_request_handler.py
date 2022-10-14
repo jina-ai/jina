@@ -175,6 +175,14 @@ class DataRequestHandler:
 
         return parsed_params
 
+    @staticmethod
+    def _metric_attributes(executor_endpoint, executor, runtime_name):
+        return {
+            'executor_endpoint': executor_endpoint,
+            'executor': executor,
+            'runtime_name': runtime_name,
+        }
+
     async def handle(
         self, requests: List['DataRequest'], tracing_context: 'Context' = None
     ) -> DataRequest:
@@ -202,7 +210,12 @@ class DataRequestHandler:
                     self.args.name,
                 ).observe(req.nbytes)
             if self._request_size_histogram:
-                self._request_size_histogram.record(req.nbytes)
+                attributes = DataRequestHandler._metric_attributes(
+                    requests[0].header.exec_endpoint,
+                    self._executor.__class__.__name__,
+                    self.args.name,
+                )
+                self._request_size_histogram.record(req.nbytes, attributes=attributes)
 
         params = self._parse_params(requests[0].parameters, self._executor.metas.name)
 
@@ -249,7 +262,12 @@ class DataRequestHandler:
                 self.args.name,
             ).inc(len(docs))
         if self._document_processed_counter:
-            self._document_processed_counter.add(len(docs))
+            attributes = DataRequestHandler._metric_attributes(
+                requests[0].header.exec_endpoint,
+                self._executor.__class__.__name__,
+                self.args.name,
+            )
+            self._document_processed_counter.add(len(docs), attributes=attributes)
 
         DataRequestHandler.replace_docs(requests[0], docs, self.args.output_array_type)
 
@@ -260,7 +278,14 @@ class DataRequestHandler:
                 self.args.name,
             ).observe(requests[0].nbytes)
         if self._sent_response_size_histogram:
-            self._sent_response_size_histogram.record(requests[0].nbytes)
+            attributes = DataRequestHandler._metric_attributes(
+                requests[0].header.exec_endpoint,
+                self._executor.__class__.__name__,
+                self.args.name,
+            )
+            self._sent_response_size_histogram.record(
+                requests[0].nbytes, attributes=attributes
+            )
 
         return requests[0]
 

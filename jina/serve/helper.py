@@ -3,7 +3,7 @@ import inspect
 import typing
 from dataclasses import dataclass
 from timeit import default_timer
-from typing import Optional, Union
+from typing import Dict, Optional, Union
 
 from jina.helper import convert_tuple_to_list
 
@@ -84,10 +84,14 @@ class MetricsTimer:
     '''
 
     def __init__(
-        self, summary_metric: Optional['Summary'], histogram: Optional['Histogram']
+        self,
+        summary_metric: Optional['Summary'],
+        histogram: Optional['Histogram'],
+        histogram_metric_labels: Dict[str, str] = {},
     ) -> None:
         self._summary_metric = summary_metric
         self._histogram = histogram
+        self._histogram_metric_labels = histogram_metric_labels
 
     def _new_timer(self):
         return self.__class__(self._summary_metric, self._histogram)
@@ -101,7 +105,7 @@ class MetricsTimer:
         if self._summary_metric:
             self._summary_metric.observe(duration)
         if self._histogram:
-            self._histogram.record(duration)
+            self._histogram.record(duration, attributes=self._histogram_metric_labels)
 
     def __call__(self, f):
         '''function that gets called when this dataclass is used as a decortor

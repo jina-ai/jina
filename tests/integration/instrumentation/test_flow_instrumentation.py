@@ -286,3 +286,63 @@ def test_flow_metrics(
     assert process_requests_seconds_exported_jobs.issubset(
         ['executor0/shard-0/rep-0', 'executor0/shard-1/rep-0']
     )
+
+    # filter by attributes/labels
+    (
+        process_requests_seconds_search_endpoint,
+        process_requests_seconds_search_endpoint_exported_jobs,
+    ) = get_histogram_rate_and_exported_jobs_by_name(
+        prometheus_client, 'process_request_seconds', {'executor_endpoint': '/search'}
+    )
+    assert len(process_requests_seconds_search_endpoint) > 0
+    assert process_requests_seconds_search_endpoint_exported_jobs.issubset(
+        ['executor0/shard-0/rep-0', 'executor0/shard-1/rep-0']
+    )
+
+    (
+        process_requests_seconds_executor,
+        process_requests_seconds_executor_exported_jobs,
+    ) = get_histogram_rate_and_exported_jobs_by_name(
+        prometheus_client,
+        'process_request_seconds',
+        {'executor': 'ExecutorFailureWithTracing'},
+    )
+    assert len(process_requests_seconds_executor) > 0
+    assert process_requests_seconds_executor_exported_jobs == set(
+        {'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0'}
+    )
+
+    (
+        process_requests_seconds_runtime,
+        process_requests_seconds_runtime_exported_jobs,
+    ) = get_histogram_rate_and_exported_jobs_by_name(
+        prometheus_client,
+        'process_request_seconds',
+        {'runtime_name': 'executor0/shard-0/rep-0'},
+    )
+    assert len(process_requests_seconds_runtime) > 0
+    assert process_requests_seconds_runtime_exported_jobs == set(
+        {'executor0/shard-0/rep-0'}
+    )
+
+    (
+        sending_request_seconds_runtime,
+        sending_request_seconds_runtime_exported_jobs,
+    ) = get_histogram_rate_and_exported_jobs_by_name(
+        prometheus_client,
+        'sending_request_seconds',
+        {'runtime_name': 'gateway/rep-0'},
+    )
+    assert len(sending_request_seconds_runtime) > 0
+    assert sending_request_seconds_runtime_exported_jobs == set({'gateway/rep-0'})
+
+    (
+        sending_request_seconds_runtime,
+        sending_request_seconds_runtime_exported_jobs,
+    ) = get_histogram_rate_and_exported_jobs_by_name(
+        prometheus_client,
+        'sending_request_seconds',
+        {'runtime_name': 'executor0/head'},
+    )
+    assert len(sending_request_seconds_runtime) > 0
+    assert sending_request_seconds_runtime_exported_jobs == set({'executor0/head'})

@@ -16,6 +16,7 @@ from jina.excepts import InternalNetworkError
 from jina.helper import get_full_version
 from jina.importer import ImportExtensions
 from jina.proto import jina_pb2, jina_pb2_grpc
+from jina.serve.helper import MetricsTimer
 from jina.serve.networking import GrpcConnectionPool
 from jina.serve.runtimes.asyncio import AsyncNewLoopRuntime
 from jina.serve.runtimes.helper import _get_grpc_server_options
@@ -64,19 +65,24 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
             ):
                 from prometheus_client import Summary
 
-            self._summary = (
-                Summary(
-                    'receiving_request_seconds',
-                    'Time spent processing request',
-                    registry=self.metrics_registry,
-                    namespace='jina',
-                    labelnames=('runtime_name',),
-                )
-                .labels(self.args.name)
-                .time()
+            self._summary = Summary(
+                'receiving_request_seconds',
+                'Time spent processing request',
+                registry=self.metrics_registry,
+                namespace='jina',
+                labelnames=('runtime_name',),
+            ).labels(self.args.name)
+        else:
+            self._summary = None
+
+        if self.meter:
+            self._receiving_reqeust_seconds_metric = self.meter.create_histogram(
+                name='receiving_request_seconds',
+                description='Time spent processing request',
             )
         else:
-            self._summary = contextlib.nullcontext()
+            self._receiving_reqeust_seconds_metric = None
+        self._metric_lables = {'runtime_name': self.args.name}
 
         polling = getattr(args, 'polling', self.DEFAULT_POLLING.name)
         try:
@@ -231,7 +237,11 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
         :returns: the response request
         """
         try:
-            with self._summary:
+            with MetricsTimer(
+                self._summary,
+                self._receiving_reqeust_seconds_metric,
+                self._metric_lables,
+            ):
                 endpoint = dict(context.invocation_metadata()).get('endpoint')
                 response, metadata = await self._handle_data_request(requests, endpoint)
                 context.set_trailing_metadata(metadata.items())

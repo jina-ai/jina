@@ -144,12 +144,15 @@ class MonitoringRequestMixin:
             self._successful_requests_counter = None
             self._request_size_histogram = None
             self._sent_response_bytes_histogram = None
+        self._metric_labels = {'runtime_name': runtime_name}
 
     def _update_start_request_metrics(self, request: 'Request'):
         if self._request_size_metrics:
             self._request_size_metrics.observe(request.nbytes)
         if self._request_size_histogram:
-            self._request_size_histogram.record(request.nbytes)
+            self._request_size_histogram.record(
+                request.nbytes, attributes=self._metric_labels
+            )
 
         if self._receiving_request_metrics:
             self._request_init_time[request.request_id] = time.time()
@@ -159,7 +162,9 @@ class MonitoringRequestMixin:
         if self._pending_requests_metrics:
             self._pending_requests_metrics.inc()
         if self._pending_requests_up_down_counter:
-            self._pending_requests_up_down_counter.add(1)
+            self._pending_requests_up_down_counter.add(
+                1, attributes=self._metric_labels
+            )
 
     def _update_end_successful_requests_metrics(self, result: 'Request'):
         if (
@@ -175,33 +180,41 @@ class MonitoringRequestMixin:
             init_time = self._meter_request_init_time.pop(
                 result.request_id
             )  # need to pop otherwise it stays in memory forever
-            self._receiving_request_histogram.record(time.time() - init_time)
+            self._receiving_request_histogram.record(
+                time.time() - init_time, attributes=self._metric_labels
+            )
 
         if self._pending_requests_metrics:
             self._pending_requests_metrics.dec()
         if self._pending_requests_up_down_counter:
-            self._pending_requests_up_down_counter.add(-1)
+            self._pending_requests_up_down_counter.add(
+                -1, attributes=self._metric_labels
+            )
 
         if self._successful_requests_metrics:
             self._successful_requests_metrics.inc()
         if self._successful_requests_counter:
-            self._successful_requests_counter.add(1)
+            self._successful_requests_counter.add(1, attributes=self._metric_labels)
 
         if self._sent_response_bytes:
             self._sent_response_bytes.observe(result.nbytes)
         if self._sent_response_bytes_histogram:
-            self._sent_response_bytes_histogram.record(result.nbytes)
+            self._sent_response_bytes_histogram.record(
+                result.nbytes, attributes=self._metric_labels
+            )
 
     def _update_end_failed_requests_metrics(self):
         if self._pending_requests_metrics:
             self._pending_requests_metrics.dec()
         if self._pending_requests_up_down_counter:
-            self._pending_requests_up_down_counter.add(-1)
+            self._pending_requests_up_down_counter.add(
+                -1, attributes=self._metric_labels
+            )
 
         if self._failed_requests_metrics:
             self._failed_requests_metrics.inc()
         if self._failed_requests_counter:
-            self._failed_requests_counter.add(1)
+            self._failed_requests_counter.add(1, attributes=self._metric_labels)
 
     def _update_end_request_metrics(self, result: 'Request'):
 

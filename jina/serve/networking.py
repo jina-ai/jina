@@ -62,6 +62,21 @@ class _NetworkingHistograms:
     sending_requests_time_metrics: Optional['Histogram'] = None
     received_response_bytes: Optional['Histogram'] = None
     send_requests_bytes_metrics: Optional['Histogram'] = None
+    histogram_metric_labels: Dict[str, str] = None
+
+    def record_sending_requests_time_metrics(self, value: int):
+        if self.sending_requests_time_metrics:
+            self.sending_requests_time_metrics.record(
+                value, self.histogram_metric_labels
+            )
+
+    def record_received_response_bytes(self, value: int):
+        if self.received_response_bytes:
+            self.received_response_bytes.record(value, self.histogram_metric_labels)
+
+    def record_send_requests_bytes_metrics(self, value: int):
+        if self.send_requests_bytes_metrics:
+            self.send_requests_bytes_metrics.record(value, self.histogram_metric_labels)
 
 
 class ReplicaList:
@@ -381,13 +396,13 @@ class GrpcConnectionPool:
                         self._metrics.send_requests_bytes_metrics.observe(
                             requests[0].nbytes
                         )
-                    if self._histograms.send_requests_bytes_metrics:
-                        self._histograms.send_requests_bytes_metrics.record(
-                            requests[0].nbytes
-                        )
+                    self._histograms.record_send_requests_bytes_metrics(
+                        requests[0].nbytes
+                    )
                     with MetricsTimer(
                         self._metrics.sending_requests_time_metrics,
                         self._histograms.sending_requests_time_metrics,
+                        self._histograms.histogram_metric_labels,
                     ):
                         metadata, response = (
                             await call_result.trailing_metadata(),
@@ -398,10 +413,7 @@ class GrpcConnectionPool:
                             self._metrics.received_response_bytes.observe(
                                 response.nbytes
                             )
-                        if self._histograms.received_response_bytes:
-                            self._histograms.received_response_bytes.record(
-                                response.nbytes
-                            )
+                        self._histograms.record_received_response_bytes(response.nbytes)
                     return response, metadata
 
                 elif self.stream_stub:
@@ -410,14 +422,14 @@ class GrpcConnectionPool:
                             self._metrics.send_requests_bytes_metrics.observe(
                                 response.nbytes
                             )
-                        if self._histograms.send_requests_bytes_metrics:
-                            self._histograms.send_requests_bytes_metrics.record(
-                                response.nbytes
-                            )
+                        self._histograms.record_send_requests_bytes_metrics(
+                            response.nbytes
+                        )
 
                     with MetricsTimer(
                         self._metrics.sending_requests_time_metrics,
                         self._histograms.sending_requests_time_metrics,
+                        self._histograms.histogram_metric_labels,
                     ):
                         async for response in self.stream_stub.Call(
                             iter(requests), compression=compression, timeout=timeout
@@ -426,10 +438,9 @@ class GrpcConnectionPool:
                                 self._metrics.received_response_bytes.observe(
                                     response.nbytes
                                 )
-                            if self._histograms.received_response_bytes:
-                                self._histograms.received_response_bytes.record(
-                                    response.nbytes
-                                )
+                            self._histograms.record_received_response_bytes(
+                                response.nbytes
+                            )
 
                             return response, None
             if request_type == DataRequest and len(requests) > 1:
@@ -443,6 +454,7 @@ class GrpcConnectionPool:
                     with MetricsTimer(
                         self._metrics.sending_requests_time_metrics,
                         self._histograms.sending_requests_time_metrics,
+                        self._histograms.histogram_metric_labels,
                     ):
                         metadata, response = (
                             await call_result.trailing_metadata(),
@@ -706,6 +718,7 @@ class GrpcConnectionPool:
                     unit='By',
                     description='Size in bytes of the request sent to the Head/Executor',
                 ),
+                histogram_metric_labels={'runtime_name': runtime_name},
             )
         else:
             self._histograms = _NetworkingHistograms()
