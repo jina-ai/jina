@@ -16,10 +16,10 @@ def metrics_setup():
     meter_provider = meter_provider
     meter = meter_provider.get_meter('test')
     yield metric_reader, meter
-    if hasattr(meter, 'forceflush'):
-        meter.forceflush()
-    if hasattr(meter, 'shutdown'):
-        meter.shutdown()
+    if hasattr(meter_provider, 'force_flush'):
+        metric_reader.force_flush()
+    if hasattr(meter_provider, 'shutdown'):
+        meter_provider.shutdown()
 
 
 def test_timer_context(metrics_setup):
