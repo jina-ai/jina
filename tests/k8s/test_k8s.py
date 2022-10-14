@@ -6,9 +6,9 @@ import os
 import pytest
 import requests as req
 import yaml
-from docarray import DocumentArray
 from pytest_kind import cluster
 
+from docarray import DocumentArray
 from jina import Document, Executor, Flow, requests
 from jina.orchestrate.deployments import Deployment
 from jina.orchestrate.deployments.config.k8s import K8sDeploymentConfig
@@ -623,7 +623,14 @@ async def test_flow_with_external_native_deployment(logger, docker_images, tmpdi
     [['test-executor', 'jinaai/jina']],
     indirect=True,
 )
-async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
+@pytest.mark.parametrize(
+    'grpc_metadata',
+    [{}, {"key1": "value1"}],
+    indirect=True,
+)
+async def test_flow_with_external_k8s_deployment(
+    logger, docker_images, grpc_metadata, tmpdir
+):
     namespace = 'test-flow-with-external-k8s-deployment'
     from kubernetes import client
 
@@ -638,6 +645,7 @@ async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
         external=True,
         host='external-deployment.external-deployment-ns.svc',
         port=GrpcConnectionPool.K8S_PORT,
+        grpc_metadata=grpc_metadata,
     )
 
     dump_path = os.path.join(str(tmpdir), namespace)
