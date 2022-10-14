@@ -623,9 +623,7 @@ async def test_flow_with_external_native_deployment(logger, docker_images, tmpdi
     [['test-executor', 'jinaai/jina']],
     indirect=True,
 )
-async def test_flow_with_external_k8s_deployment(
-    logger, docker_images, grpc_metadata, tmpdir
-):
+async def test_flow_with_external_k8s_deployment(logger, docker_images, tmpdir):
     namespace = 'test-flow-with-external-k8s-deployment'
     from kubernetes import client
 
@@ -640,7 +638,6 @@ async def test_flow_with_external_k8s_deployment(
         external=True,
         host='external-deployment.external-deployment-ns.svc',
         port=GrpcConnectionPool.K8S_PORT,
-        grpc_metadata=grpc_metadata,
     )
 
     dump_path = os.path.join(str(tmpdir), namespace)
