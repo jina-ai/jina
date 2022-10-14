@@ -623,14 +623,64 @@ async def test_flow_with_external_native_deployment(logger, docker_images, tmpdi
     [['test-executor', 'jinaai/jina']],
     indirect=True,
 )
+async def test_flow_with_external_k8s_deployment(
+    logger, docker_images, grpc_metadata, tmpdir
+):
+    namespace = 'test-flow-with-external-k8s-deployment'
+    from kubernetes import client
+
+    api_client = client.ApiClient()
+    core_client = client.CoreV1Api(api_client=api_client)
+    app_client = client.AppsV1Api(api_client=api_client)
+
+    await _create_external_deployment(api_client, app_client, docker_images, tmpdir)
+
+    flow = Flow(name='k8s_flow-with_external_deployment', port=9090).add(
+        name='external_executor',
+        external=True,
+        host='external-deployment.external-deployment-ns.svc',
+        port=GrpcConnectionPool.K8S_PORT,
+        grpc_metadata=grpc_metadata,
+    )
+
+    dump_path = os.path.join(str(tmpdir), namespace)
+    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+
+    await create_all_flow_deployments_and_wait_ready(
+        dump_path,
+        namespace=namespace,
+        api_client=api_client,
+        app_client=app_client,
+        core_client=core_client,
+        deployment_replicas_expected={
+            'gateway': 1,
+        },
+        logger=logger,
+    )
+
+    resp = await run_test(
+        flow=flow,
+        namespace=namespace,
+        core_client=core_client,
+        endpoint='/workspace',
+    )
+    docs = resp[0].docs
+    for doc in docs:
+        assert 'workspace' in doc.tags
+
+
+@pytest.mark.asyncio
+@pytest.mark.timeout(3600)
 @pytest.mark.parametrize(
     'grpc_metadata',
     [{}, {"key1": "value1"}],
     indirect=True,
 )
-async def test_flow_with_external_k8s_deployment(
-    logger, docker_images, grpc_metadata, tmpdir
+async def test_flow_with_metadata_external_k8s_deployment(
+    logger, grpc_metadata, tmpdir
 ):
+    docker_images = ['test-executor', 'jinaai/jina']
+
     namespace = 'test-flow-with-external-k8s-deployment'
     from kubernetes import client
 
