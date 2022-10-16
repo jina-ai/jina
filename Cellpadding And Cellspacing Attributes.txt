@@ -1,0 +1,21 @@
+<html>
+<head>
+<title>HTML TABLE</title>
+</head>
+<body>
+<table border="1" cellpadding="20"cellspacing="20">
+<tr>
+<th>Name
+Age
+</tr>
+<tr>
+<td>ANKUSH</td>
+<td>25</td>
+</tr>
+<tr>
+<td>Raman</td>
+<td>35</td>
+</tr>
+</table>
+</body>
+</html>
