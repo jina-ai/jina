@@ -77,7 +77,6 @@ def store_init_kwargs(
     return arg_wrapper
 
 
-@dataclass
 class MetricsTimer:
     '''Helper dataclass that accepts optional Summary or Histogram recorders which are used to record the time take to execute
     the decorated or context managed function
@@ -108,7 +107,7 @@ class MetricsTimer:
             self._histogram.record(duration, attributes=self._histogram_metric_labels)
 
     def __call__(self, f):
-        '''function that gets called when this dataclass is used as a decortor
+        '''function that gets called when this class is used as a decortor
         :param f: function that is decorated
         :return: wrapped function
         '''
