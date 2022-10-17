@@ -603,27 +603,29 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         :return: the given prometheus metrics or None if monitoring is not enable.
         """
-        _summary = None
-        _histogram = None
+        _summary = (
+            self._metrics_buffer.get(name, None) if self._metrics_buffer else None
+        )
+        _histogram = (
+            self._histogram_buffer.get(name, None) if self._histogram_buffer else None
+        )
 
-        if self._metrics_buffer:
-            if name not in self._metrics_buffer:
-                from prometheus_client import Summary
+        if self._metrics_buffer and not _summary:
+            from prometheus_client import Summary
 
-                _summary = Summary(
-                    name,
-                    documentation,
-                    registry=self.runtime_args.metrics_registry,
-                    namespace='jina',
-                    labelnames=('runtime_name',),
-                ).labels(self.runtime_args.name)
-                self._metrics_buffer[name] = _summary
+            _summary = Summary(
+                name,
+                documentation,
+                registry=self.runtime_args.metrics_registry,
+                namespace='jina',
+                labelnames=('runtime_name',),
+            ).labels(self.runtime_args.name)
+            self._metrics_buffer[name] = _summary
 
-        if self._histogram_buffer:
-            if name not in self._histogram_buffer:
-                _histogram = self.meter.create_histogram(
-                    name=name, description=documentation
-                )
+        if self._histogram_buffer and not _histogram:
+            _histogram = self.meter.create_histogram(
+                name=name, description=documentation
+            )
             self._histogram_buffer[name] = _histogram
 
         if _summary or _histogram:
