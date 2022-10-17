@@ -2,31 +2,23 @@
 # Scale out with replicas and shards
 
 A Jina {class}`~jina.Flow` orchestrates multiple {class}`~jina.Executor`s.
-By default, a Jina Executor runs with a single `replica` and `shard`.
-Some Executor in the Flow might be less performant than others,
-this could turn into a performance bottleneck in your Jina application.
+By default, an Executor runs with a single `replica` and `shard`.
+Some Executors in the Flow may be less performant than others,
+which could cause performance bottlenecks in an application.
 
-To solve this, Jina Flow allows you to config the number of `replicas` and `shards`.
-`replica` is used to increase Executor throughput and availability.
-`shard` is used for data partitioning.
+To solve this, you can configure the number of `replicas` and `shards`.
 
-In this chapter, we'll dive into these two concepts and see how you can make use of `replicas` and `shards` to scale out your Executor.
+- `replica`s increase Executor throughput and availability.
+- `shard`s partition data in different storage locations.
 
-## Before you start
-<!-- Delete this section if your readers can go to the steps without requiring any prerequisite knowledge. -->
-Before you begin, make sure you meet these prerequisites:
-
-* You have a good understanding of Jina [Flow](../fundamentals/flow/index.md).
-* You have a good understanding of Jina [Executor](../fundamentals/executor/index.md)
-* Please install the following dependencies if you haven't:
-
+Before you start, ensure you understand [Flows](../fundamentals/flow/index.md) and [Executors](../fundamentals/executor/index.md)
 
 ## Speed up a slow Executor: Replicas
 
 ### Context
 
-Imagine you are building a text-based search system and you have an {class}`~jina.Executor` to transform text to its [tf-idf](https://en.wikipedia.org/wiki/Tf-idf) vector representation.
-This could become a performance bottleneck to your search system.
+Imagine you're building a text-based search system and you have an {class}`~jina.Executor` to transform text to a [tf-idf](https://en.wikipedia.org/wiki/Tf-idf) vector representation. This could become a performance bottleneck in the search system.
+
 The Executor looks like this:
 
 ```python
@@ -60,7 +52,7 @@ class MyVectorizer(Executor):
         docs.embeddings = X
 ```
 
-And we create a Flow and make use this Executor:
+Let's create a Flow and use this Executor:
 
 ```python
 from jina import Flow
@@ -70,16 +62,16 @@ f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyVectorizer
 
 ### Scale up an Executor
 
-When you start your {class}`~jina.Flow`, you might discover to process all the text corpus, this process takes a while:
+When you start the {class}`~jina.Flow`, you may find it takes a while to process the whole text corpus:
 
 ```python
 with f:
     f.post('/foo', news_generator, show_progress=True)
 ```
 
-As Jina reported, it takes around 6 seconds to accomplish the task.
-6 seconds sounds reasonable (at index time), but bear in mind that this is just a test corpus.
-What if you need to index millions of documents?
+As Jina reports, it takes around six seconds to complete the task.
+This sounds reasonable (at index time), but bear in mind that this is just a test corpus.
+What if you need to index millions of Documents?
 
 ```shell
            Flow@2011375[I]:🎉 Flow is ready to use!                                        
@@ -90,14 +82,14 @@ What if you need to index millions of documents?
 ⠇       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━ 0:00:06 18.1 step/s . 115 steps done in 6 seconds
 ```
 
-Jina allows you to scale your {class}`~jina.Executor` very easily, with only one parameter change:
+To do this, you can scale a {class}`~jina.Executor` with just one parameter change:
 
 ```diff
 + f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyVectorizer, replicas=2)
 - f = Flow().add(name='fast_executor').add(name='slow_executor', uses=MyVectorizer)
 ```
 
-Let's see how it performs given 2 `Replicas`:
+Let's see how it performs given two `replicas`:
 
 ```shell
            Flow@2011375[I]:🎉 Flow is ready to use!                                        
@@ -108,19 +100,16 @@ Let's see how it performs given 2 `Replicas`:
 ⠇       DONE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸━━━━━ 0:00:03 37.0 step/s . 115 steps done in 3 seconds
 ```
 
-As you can see, now it only takes 3 seconds to finish the task.
-Quite intuitive, right?
-If you are deploying Jina with K8s, you can consider this `Executor` as a K8s `Deployment` and each `replica` as a K8s `Pod`.
+As you can see, it now only takes three seconds to finish the task. If you deploy Jina with Kubernetes, you can consider this `Executor` as a Kubernetes `Deployment` and each `replica` as a `Pod`.
 
 ## Split data into partitions: Shards
 
 ### Context
 
-Now with your text corpus encoded as TF-IDF embeddings,
-it's time to save the results.
-We'll use Jina's [ANNLiteIndexer](https://hub.jina.ai/executor/7yypg8qk) to persist our embeddings for fast Approximate Nearest Neighbor Search.
+Now with the text corpus encoded as TF-IDF embeddings, it's time to save the results.
+We'll use Jina's [ANNLiteIndexer](https://hub.jina.ai/executor/7yypg8qk) to persist the embeddings for fast Approximate Nearest Neighbor Search.
 
-And you add this `ANNLiteIndexer` to your Flow:
+Let's add `ANNLiteIndexer` to the Flow:
 
 ```python
 from jina import Flow
@@ -144,17 +133,16 @@ f = (
 
 ### Partitioning the data
 
-Now let's run the {class}`~jina.Flow`to index your data:
+Let's run the {class}`~jina.Flow`to index the data:
 ```python
 with f:
     f.post(on='/index', inputs=news_generator, show_progress=True)
 ```
 
-The `ANNLiteIndexer` will save your indexed Documents to your specified `workspace` (directory).
-Since the default number of shards is one.
-All the data will be saved to `YOUR-WORKSPACE-DIR/ANNLiteIndexer/0/` where `0` is the shard id.
+`ANNLiteIndexer` saves the indexed Documents to the specified `workspace` (directory).
+Since the default number of shards is one, all data is saved to `YOUR-WORKSPACE-DIR/ANNLiteIndexer/0/` where `0` is the shard id.
 
-If you want to distribute your data to different places, Jina allows you to use `shards` to specify the number of shards.
+To distribute data to different places, use `shards` to specify the number of shards.
 
 ```python
 f = (
@@ -172,27 +160,27 @@ f = (
 )
 ```
 
-Now open your workspace directory, you'll find we created 2 shards to store your indexed Documents:
+Now open the workspace directory. You'll see we created two shards to store the indexed Documents:
 `YOUR-WORKSPACE-DIR/ANNLiteIndexer/0/` and `YOUR-WORKSPACE-DIR/ANNLiteIndexer/1/`.
 
-### Different polling strategies
+### Polling strategies
 
-When you have multiple shards, the default `polling` strategy is `any`.
 Jina supports two `polling` strategies:
 
-1. `any`: requests will be randomly assigned to one shard.
-2. `all`: requests will be handled by all shards.
+1. `any`: requests are randomly assigned to one shard. (Default for multiple shards)
+2. `all`: requests are handled by all shards.
 
-In practice, when you are indexing your Documents,
-it's better to set `polling='any'` to only store the Documents into one shard to avoid duplicates.
-On the other hand, at search time, the search requests should be across all shards.
-Thus we should set `polling='all''`.
+In practice, when you are indexing Documents,
+it's better to set `polling='any'` to store them in only one shard to avoid duplicates.
+On the other hand, at search time, search requests should be made across all shards,
+so we should set `polling='all'`.
 
-As a result, we need to config our `Flow` definition with a different `polling` strategy:
+As a result, we need to configure the `Flow` with a different `polling` strategy:
+
 The new `Flow`:
 
 ```python
-# Config your polling strategy based on endpoints
+# Config polling strategy based on endpoints
 # At index time, use ALL, at search time use ANY, the rest use ALL.
 polling_config = {'/index': 'ANY', '/search': 'ALL', '*': 'ALL'}
 
@@ -212,13 +200,12 @@ f = (
 )
 ```
 
-It should be noted that Jina will automatically *reduce* your results given multiple shards.
+Note that Jina automatically *reduces* the results given multiple shards.
 For instance, when you are searching across multiple shards,
-Jina will collect `matches` from all `shards` and return the reduced results.
+Jina collects `matches` from all `shards` and returns the reduced results.
 
 ## Conclusion
 
-Jina can help you scale out your applications easily and effectively.
-Depending on your needs, if you want to increase the `Executor` throughput, use the `replicas` argument.
-If you want to partition your data across multiple places,
-use the `shards` with the `polling` strategy you want.
+Jina can help you scale out applications easily and effectively.
+Depending on your needs, you can increase `Executor` throughput using the `replicas` argument.
+If you want to partition data across multiple places, use the `shards` with the `polling` strategy you want.
