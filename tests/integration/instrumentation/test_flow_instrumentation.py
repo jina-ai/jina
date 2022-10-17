@@ -27,18 +27,23 @@ from tests.integration.instrumentation import (
     ],
 )
 def test_gateway_instrumentation(
-    otlp_collector, protocol, client_type, num_internal_spans
+    jaeger_port,
+    otlp_collector,
+    otlp_receiver_port,
+    protocol,
+    client_type,
+    num_internal_spans,
 ):
     f = Flow(
         protocol=protocol,
         tracing=True,
         traces_exporter_host='localhost',
-        traces_exporter_port=4317,
+        traces_exporter_port=otlp_receiver_port,
     ).add(
         uses=ExecutorTestWithTracing,
         tracing=True,
         traces_exporter_host='localhost',
-        traces_exporter_port=4317,
+        traces_exporter_port=otlp_receiver_port,
     )
 
     with f:
@@ -49,12 +54,12 @@ def test_gateway_instrumentation(
         # the client is slow to export the data
         time.sleep(8)
 
-    services = get_services()
+    services = get_services(jaeger_port)
     expected_services = ['executor0/rep-0', 'gateway/rep-0', client_type]
     assert len(services) == 3
     assert set(services).issubset(expected_services)
 
-    client_traces = get_traces(client_type)
+    client_traces = get_traces(jaeger_port, client_type)
     (server_spans, client_spans, internal_spans) = partition_spans_by_kind(
         client_traces
     )
@@ -66,11 +71,11 @@ def test_gateway_instrumentation(
     assert len(trace_ids) == 1
 
 
-def test_executor_instrumentation(otlp_collector):
+def test_executor_instrumentation(jaeger_port, otlp_collector, otlp_receiver_port):
     f = Flow(
         tracing=True,
         traces_exporter_host='localhost',
-        traces_exporter_port=4317,
+        traces_exporter_port=otlp_receiver_port,
     ).add(uses=ExecutorFailureWithTracing)
 
     with f:
@@ -82,7 +87,7 @@ def test_executor_instrumentation(otlp_collector):
         time.sleep(8)
 
     client_type = 'GRPCClient'
-    client_traces = get_traces(client_type)
+    client_traces = get_traces(jaeger_port, client_type)
     (server_spans, client_spans, internal_spans) = partition_spans_by_kind(
         client_traces
     )
@@ -96,11 +101,11 @@ def test_executor_instrumentation(otlp_collector):
     assert len(trace_ids) == 1
 
 
-def test_head_instrumentation(otlp_collector):
+def test_head_instrumentation(jaeger_port, otlp_collector, otlp_receiver_port):
     f = Flow(
         tracing=True,
         traces_exporter_host='localhost',
-        traces_exporter_port=4317,
+        traces_exporter_port=otlp_receiver_port,
     ).add(uses=ExecutorTestWithTracing, shards=2)
 
     with f:
@@ -112,7 +117,7 @@ def test_head_instrumentation(otlp_collector):
         time.sleep(8)
 
     client_type = 'GRPCClient'
-    client_traces = get_traces(client_type)
+    client_traces = get_traces(jaeger_port, client_type)
     (server_spans, client_spans, internal_spans) = partition_spans_by_kind(
         client_traces
     )
@@ -120,7 +125,7 @@ def test_head_instrumentation(otlp_collector):
     assert len(client_spans) == 11
     assert len(internal_spans) == 4
 
-    services = get_services()
+    services = get_services(jaeger_port)
     expected_services = [
         'executor0/shard-0/rep-0',
         'executor0/shard-1/rep-0',
@@ -137,6 +142,7 @@ def test_head_instrumentation(otlp_collector):
 
 def test_flow_metrics(
     otlp_collector,
+    otlp_receiver_port,
     prometheus_client,
     set_metrics_export_interval,
     expected_flow_metric_labels,
@@ -145,13 +151,13 @@ def test_flow_metrics(
     f = Flow(
         metrics=True,
         metrics_exporter_host='localhost',
-        metrics_exporter_port=4317,
+        metrics_exporter_port=otlp_receiver_port,
     ).add(
         uses=ExecutorFailureWithTracing,
         shards=2,
         metrics=True,
         metrics_exporter_host='localhost',
-        metrics_exporter_port=4317,
+        metrics_exporter_port=otlp_receiver_port,
     )
 
     with f:

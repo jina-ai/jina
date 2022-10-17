@@ -8,8 +8,10 @@ from prometheus_api_client import PrometheusConnect
 from jina import Executor, requests
 
 
-def get_traces(service):
-    response = http_requests.get(f'http://localhost:16686/api/traces?service={service}')
+def get_traces(jaeger_port, service):
+    response = http_requests.get(
+        f'http://localhost:{jaeger_port}/api/traces?service={service}'
+    )
     response.raise_for_status()
     return response.json().get('data', []) or []
 
@@ -72,8 +74,8 @@ class ExecutorTestWithTracing(Executor):
             return docs
 
 
-def get_services():
-    response = http_requests.get('http://localhost:16686/api/services')
+def get_services(jaeger_port):
+    response = http_requests.get(f'http://localhost:{jaeger_port}/api/services')
     response.raise_for_status()
     response_json = response.json()
     services = response_json.get('data', []) or []

@@ -4,9 +4,35 @@ import time
 import pytest
 from prometheus_api_client import PrometheusConnect
 
+from jina.helper import random_port
+
 
 @pytest.fixture()
-def otlp_collector():
+def jaeger_port():
+    port = random_port()
+    os.environ['JAEGER_PORT'] = str(port)
+    yield port
+    del os.environ['JAEGER_PORT']
+
+
+@pytest.fixture()
+def prometheus_backend_port():
+    port = random_port()
+    os.environ['PROMETHEUS_BACKEND_PORT'] = str(port)
+    yield port
+    del os.environ['PROMETHEUS_BACKEND_PORT']
+
+
+@pytest.fixture()
+def otlp_receiver_port():
+    port = random_port()
+    os.environ['OTLP_RECEIVER_PORT'] = str(port)
+    yield port
+    del os.environ['OTLP_RECEIVER_PORT']
+
+
+@pytest.fixture()
+def otlp_collector(jaeger_port, prometheus_backend_port, otlp_receiver_port):
     file_dir = os.path.dirname(__file__)
     os.system(
         f"docker-compose -f {os.path.join(file_dir, 'docker-compose.yml')} up -d --remove-orphans"
@@ -19,8 +45,10 @@ def otlp_collector():
 
 
 @pytest.fixture()
-def prometheus_client(otlp_collector):
-    return PrometheusConnect(url='http://localhost:9090', disable_ssl=True)
+def prometheus_client(prometheus_backend_port, otlp_collector):
+    return PrometheusConnect(
+        url=f'http://localhost:{prometheus_backend_port}', disable_ssl=True
+    )
 
 
 @pytest.fixture()
