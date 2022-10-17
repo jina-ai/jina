@@ -54,13 +54,13 @@ spec:
             timeoutSeconds: 10
           volumeMounts:
             - name: {name}-volume
-              mountPath: {volume_path}
+              mountPath: "{volume_path}"
     volumeClaimTemplates:
       - metadata:
           name: {name}-volume
         spec:
-          accessModes: {accessModes} # best default accessModes
-          storageClassName: {storageClassName} # best storage class
+          accessModes: "{accessModes}" # best default accessModes
+          storageClassName: "{storageClassName}" # best storage class
           resources:
             requests:
-              storage: {storageCapacity} # best storage class
+              storage: "{storageCapacity}" # best storage class

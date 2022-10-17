@@ -29,6 +29,7 @@ async def create_all_flow_deployments_and_wait_ready(
         core_client,
         deployment_replicas_expected,
         logger,
+        persistent_volume_path=None,
 ):
     from kubernetes import utils
 
@@ -51,6 +52,22 @@ async def create_all_flow_deployments_and_wait_ready(
             break
         logger.info(f'waiting for Namespace {namespace}')
         await asyncio.sleep(1.0)
+
+    if persistent_volume_path:
+        try:
+            logger.info(f'create PersistentVolume {namespace}')
+            from kubernetes import client
+            meta_data = client.V1ObjectMeta(name='test-volume', labels={'type': 'local'})
+            pv_spec = client.V1PersistentVolumeSpec(access_modes=['ReadWriteOnce'], capacity='2Gi',
+                                                    storage_class_name='standard',
+                                                    host_path=client.V1HostPathVolumeSource(
+                                                        path=persistent_volume_path))
+            core_client.create_persistent_volume(
+                body=client.V1PersistentVolume(api_version='v1', spec=pv_spec, metadata=meta_data,
+                                               kind='PersistentVolume'))
+        except Exception as e:
+            print(f' Exception raised {repr(e)}')
+            pass
 
     deployment_set = set(os.listdir(flow_dump_path))
     for deployment_name in deployment_set:
@@ -246,8 +263,8 @@ def k8s_flow_with_volumes(docker_images, workspace_path):
             protocol='http',
         )
             .add(
-            name='test-stateful-executor',
-            uses=f'docker://{docker_images[0]}',
+            name='statefulexecutor',
+            uses=f'docker://{docker_images[1]}',
             workspace=workspace_path,
             volumes=workspace_path
         )
@@ -854,10 +871,23 @@ async def test_flow_with_custom_gateway(logger, docker_images, tmpdir):
     'docker_images', [['test-stateful-executor', 'jinaai/jina']], indirect=True
 )
 @pytest.mark.parametrize('workspace_path', ['workspace_path'])
-async def test_flow_with_stateful_executor(k8s_flow_with_volumes, docker_images, tmpdir, logger):
+async def test_flow_with_stateful_executor(docker_images, tmpdir, logger, workspace_path):
     dump_path = os.path.join(str(tmpdir), 'test-flow-with-volumes')
     namespace = f'test-flow-with-volumes'.lower()
-    k8s_flow_configmap.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
+    flow = (
+        Flow(
+            name='test-flow-with-volumes',
+            port=9090,
+            protocol='http',
+        )
+            .add(
+            name='statefulexecutor',
+            uses=f'docker://{docker_images[1]}',
+            workspace=f'{str(tmpdir)}/workspace_path',
+            volumes=str(tmpdir)
+        )
+    )
+    flow.to_kubernetes_yaml(dump_path, k8s_namespace=namespace)
 
     from kubernetes import client
 
@@ -872,9 +902,10 @@ async def test_flow_with_stateful_executor(k8s_flow_with_volumes, docker_images,
         core_client=core_client,
         deployment_replicas_expected={
             'gateway': 1,
-            'test-stateful-executor': 1,
+            'statefulexecutor': 1,
         },
         logger=logger,
+        persistent_volume_path=str(tmpdir)
     )
     _ = await run_test(
         flow=k8s_flow_configmap,
@@ -893,7 +924,7 @@ async def test_flow_with_stateful_executor(k8s_flow_with_volumes, docker_images,
         core_client=core_client,
         deployment_replicas_expected={
             'gateway': 1,
-            'test-stateful-executor': 1,
+            'statefulexecutor': 1,
         },
         logger=logger,
     )

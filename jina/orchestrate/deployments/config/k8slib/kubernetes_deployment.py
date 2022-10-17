@@ -99,7 +99,7 @@ def get_template_yamls(
     if volumes is not None:
         template_name = 'statefulset-executor'
         template_params['accessModes'] = os.environ.get('JINA_K8S_ACCESS_MODES', 'ReadWriteOnce')
-        template_params['storageClassName'] = os.environ.get('JINA_K8S_STORAGE_CLASS', None)
+        template_params['storageClassName'] = os.environ.get('JINA_K8S_STORAGE_CLASS', 'standard')
         template_params['storageCapacity'] = os.environ.get('JINA_K8S_STORAGE_CAPACITY', '10G')
     elif image_name_uses_before and image_name_uses_after:
         template_name = 'deployment-uses-before-after'
@@ -143,10 +143,6 @@ def get_template_yamls(
         service_monitor_yaml = None
 
     template_yaml = kubernetes_tools.get_yaml(template_name, template_params)
-    if volumes is not None:
-        sclass_name = template_yaml['spec']['template']['volumeClaimTemplates'][0]['spec']['storageClassName']
-        if sclass_name == 'None':
-            del template_yaml['spec']['template']['volumeClaimTemplates'][0]['spec']['storageClassName']
 
     yamls = [
         kubernetes_tools.get_yaml(
