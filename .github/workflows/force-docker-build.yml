@@ -61,18 +61,24 @@ jobs:
           if [ -n "${PIP_TAG}" ]; then
               PIP_TAG=-${PIP_TAG}
           fi
+          
+          LAST_VER_TAG=$(git tag -l | sort -V | tail -n1)
+          PRE_VERSION=-dev$(git rev-list $LAST_VER_TAG..HEAD --count)
 
           if [[ "${{ github.event.inputs.triggered_by }}" == "CD" ]]; then
 
             if [[ "${{ matrix.py_version }}" == "$DEFAULT_PY_VERSION" ]]; then
               echo "TAG_ALIAS=\
                               jinaai/jina:master${PY_TAG}${PIP_TAG}, \
-                              jinaai/jina:master${PIP_TAG}" \
+                              jinaai/jina:master${PIP_TAG} \
+                              jinaai/jina:${JINA_VERSION}${PRE_VERSION}${PIP_TAG} \
+                              jinaai/jina:${JINA_VERSION}${PRE_VERSION}${PY_TAG}${PIP_TAG}" \
                               >> $GITHUB_ENV
             else
               # on every CD
               echo "TAG_ALIAS=\
-                              jinaai/jina:master${PY_TAG}${PIP_TAG}" \
+                              jinaai/jina:master${PY_TAG}${PIP_TAG} \
+                              jinaai/jina:${JINA_VERSION}${PRE_VERSION}${PY_TAG}${PIP_TAG}" \
                               >> $GITHUB_ENV
             fi
 
