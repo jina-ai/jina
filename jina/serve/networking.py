@@ -18,7 +18,7 @@ from jina.excepts import EstablishGrpcConnectionError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2, jina_pb2_grpc
-from jina.serve.helper import MetricsTimer
+from jina.serve.instrumentation import MetricsTimer
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
 

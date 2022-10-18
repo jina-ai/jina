@@ -15,11 +15,11 @@ from jina.jaml import JAML, JAMLCompatible, env_var_regex, internal_var_regex
 from jina.logging.logger import JinaLogger
 from jina.serve.executors.decorators import avoid_concurrent_lock_cls
 from jina.serve.executors.metas import get_executor_taboo
-from jina.serve.helper import MetricsTimer, store_init_kwargs, wrap_func
+from jina.serve.helper import store_init_kwargs, wrap_func
+from jina.serve.instrumentation import MetricsTimer
 
 if TYPE_CHECKING:
     from opentelemetry.context.context import Context
-    from prometheus_client import Summary
 
 __dry_run_endpoint__ = '_jina_dry_run_'
 

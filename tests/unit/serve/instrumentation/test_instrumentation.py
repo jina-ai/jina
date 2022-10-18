@@ -6,7 +6,7 @@ from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import InMemoryMetricReader
 from prometheus_client import Summary
 
-from jina.serve.helper import MetricsTimer
+from jina.serve.instrumentation import MetricsTimer
 
 
 @pytest.fixture

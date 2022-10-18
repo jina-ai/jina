@@ -1,10 +1,14 @@
-from typing import TYPE_CHECKING, Optional, Sequence
+import functools
+from timeit import default_timer
+from typing import TYPE_CHECKING, Dict, Optional, Sequence
 
 if TYPE_CHECKING:
     from grpc.aio._interceptor import ClientInterceptor, ServerInterceptor
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
     )
+    from opentelemetry.metrics import Histogram
+    from prometheus_client import Summary
 
 
 class InstrumentationMixin:
@@ -123,3 +127,48 @@ class InstrumentationMixin:
             return grpc_client_interceptor(self.tracer_provider)
         else:
             return None
+
+
+class MetricsTimer:
+    '''Helper dataclass that accepts optional Summary or Histogram recorders which are used to record the time take to execute
+    the decorated or context managed function
+    '''
+
+    def __init__(
+        self,
+        summary_metric: Optional['Summary'],
+        histogram: Optional['Histogram'],
+        histogram_metric_labels: Dict[str, str] = {},
+    ) -> None:
+        self._summary_metric = summary_metric
+        self._histogram = histogram
+        self._histogram_metric_labels = histogram_metric_labels
+
+    def _new_timer(self):
+        return self.__class__(self._summary_metric, self._histogram)
+
+    def __enter__(self):
+        self._start = default_timer()
+        return self
+
+    def __exit__(self, *exc):
+        duration = max(default_timer() - self._start, 0)
+        if self._summary_metric:
+            self._summary_metric.observe(duration)
+        if self._histogram:
+            self._histogram.record(duration, attributes=self._histogram_metric_labels)
+
+    def __call__(self, f):
+        '''function that gets called when this class is used as a decortor
+        :param f: function that is decorated
+        :return: wrapped function
+        '''
+
+        @functools.wraps(f)
+        def wrapped(*args, **kwargs):
+            # Obtaining new instance of timer every time
+            # ensures thread safety and reentrancy.
+            with self._new_timer():
+                return f(*args, **kwargs)
+
+        return wrapped

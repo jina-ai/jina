@@ -1,16 +1,13 @@
 import functools
 import inspect
 import typing
-from dataclasses import dataclass
-from timeit import default_timer
-from typing import Dict, Optional, Union
+from typing import Optional, Union
 
 from jina.helper import convert_tuple_to_list
 
 if typing.TYPE_CHECKING:
     from prometheus_client.context_managers import Timer
     from prometheus_client import Summary
-    from opentelemetry.metrics import Histogram
 
 from contextlib import nullcontext
 
@@ -75,48 +72,3 @@ def store_init_kwargs(
         return f
 
     return arg_wrapper
-
-
-class MetricsTimer:
-    '''Helper dataclass that accepts optional Summary or Histogram recorders which are used to record the time take to execute
-    the decorated or context managed function
-    '''
-
-    def __init__(
-        self,
-        summary_metric: Optional['Summary'],
-        histogram: Optional['Histogram'],
-        histogram_metric_labels: Dict[str, str] = {},
-    ) -> None:
-        self._summary_metric = summary_metric
-        self._histogram = histogram
-        self._histogram_metric_labels = histogram_metric_labels
-
-    def _new_timer(self):
-        return self.__class__(self._summary_metric, self._histogram)
-
-    def __enter__(self):
-        self._start = default_timer()
-        return self
-
-    def __exit__(self, *exc):
-        duration = max(default_timer() - self._start, 0)
-        if self._summary_metric:
-            self._summary_metric.observe(duration)
-        if self._histogram:
-            self._histogram.record(duration, attributes=self._histogram_metric_labels)
-
-    def __call__(self, f):
-        '''function that gets called when this class is used as a decortor
-        :param f: function that is decorated
-        :return: wrapped function
-        '''
-
-        @functools.wraps(f)
-        def wrapped(*args, **kwargs):
-            # Obtaining new instance of timer every time
-            # ensures thread safety and reentrancy.
-            with self._new_timer():
-                return f(*args, **kwargs)
-
-        return wrapped
