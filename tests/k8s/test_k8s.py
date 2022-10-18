@@ -29,7 +29,6 @@ async def create_all_flow_deployments_and_wait_ready(
         core_client,
         deployment_replicas_expected,
         logger,
-        persistent_volume_path=None,
 ):
     from kubernetes import utils
 
@@ -52,22 +51,6 @@ async def create_all_flow_deployments_and_wait_ready(
             break
         logger.info(f'waiting for Namespace {namespace}')
         await asyncio.sleep(1.0)
-
-    if persistent_volume_path:
-        try:
-            logger.info(f'create PersistentVolume {namespace}')
-            from kubernetes import client
-            meta_data = client.V1ObjectMeta(name='test-volume', labels={'type': 'local'})
-            pv_spec = client.V1PersistentVolumeSpec(access_modes=['ReadWriteOnce'], capacity='2Gi',
-                                                    storage_class_name='standard',
-                                                    host_path=client.V1HostPathVolumeSource(
-                                                        path=persistent_volume_path))
-            core_client.create_persistent_volume(
-                body=client.V1PersistentVolume(api_version='v1', spec=pv_spec, metadata=meta_data,
-                                               kind='PersistentVolume'))
-        except Exception as e:
-            print(f' Exception raised {repr(e)}')
-            pass
 
     deployment_set = set(os.listdir(flow_dump_path))
     for deployment_name in deployment_set:
@@ -102,14 +85,22 @@ async def create_all_flow_deployments_and_wait_ready(
 
     # wait for all the pods to be up
     resp = app_client.list_namespaced_deployment(namespace=namespace)
+    resp2 = app_client.list_namespaced_stateful_set(namespace=namespace)
     deployment_names = set([item.metadata.name for item in resp.items])
-    assert deployment_names == set(deployment_replicas_expected.keys())
-    while len(deployment_names) > 0:
+    sset_names = set([item.metadata.name for item in resp2.items])
+    all_execs_names = deployment_names.union(sset_names)
+    assert all_execs_names == set(deployment_replicas_expected.keys())
+    while len(all_execs_names) > 0:
         deployments_ready = []
-        for deployment_name in deployment_names:
-            api_response = app_client.read_namespaced_deployment(
-                name=deployment_name, namespace=namespace
-            )
+        for deployment_name in all_execs_names:
+            if deployment_name in deployment_names:
+                api_response = app_client.read_namespaced_deployment(
+                    name=deployment_name, namespace=namespace
+                )
+            elif deployment_name in sset_names:
+                api_response = app_client.read_namespaced_stateful_set(
+                    name=deployment_name, namespace=namespace
+                )
             expected_num_replicas = deployment_replicas_expected[deployment_name]
             if (
                     api_response.status.ready_replicas is not None
@@ -123,8 +114,8 @@ async def create_all_flow_deployments_and_wait_ready(
                 )
 
         for deployment_name in deployments_ready:
-            deployment_names.remove(deployment_name)
-        logger.info(f'Waiting for {deployment_names} to be ready')
+            all_execs_names.remove(deployment_name)
+        logger.info(f'Waiting for {all_execs_names} to be ready')
         await asyncio.sleep(1.0)
 
 
@@ -882,7 +873,7 @@ async def test_flow_with_stateful_executor(docker_images, tmpdir, logger, worksp
         )
             .add(
             name='statefulexecutor',
-            uses=f'docker://{docker_images[1]}',
+            uses=f'docker://{docker_images[0]}',
             workspace=f'{str(tmpdir)}/workspace_path',
             volumes=str(tmpdir)
         )
@@ -905,10 +896,9 @@ async def test_flow_with_stateful_executor(docker_images, tmpdir, logger, worksp
             'statefulexecutor': 1,
         },
         logger=logger,
-        persistent_volume_path=str(tmpdir)
     )
     _ = await run_test(
-        flow=k8s_flow_configmap,
+        flow=flow,
         namespace=namespace,
         core_client=core_client,
         endpoint='/index',
@@ -930,10 +920,11 @@ async def test_flow_with_stateful_executor(docker_images, tmpdir, logger, worksp
     )
 
     resp = await run_test(
-        flow=k8s_flow_configmap,
+        flow=flow,
         namespace=namespace,
         core_client=core_client,
-        endpoint='/index',
+        endpoint='/len',
     )
 
-    print(f' JOAN RESP {resp}')
+    assert len(resp) == 1
+    assert resp[0].parameters == {'__results__': {'statefulexecutor': {'length': 10.0}}}

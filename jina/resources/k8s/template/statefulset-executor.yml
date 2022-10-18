@@ -55,12 +55,12 @@ spec:
           volumeMounts:
             - name: {name}-volume
               mountPath: "{volume_path}"
-    volumeClaimTemplates:
-      - metadata:
-          name: {name}-volume
-        spec:
-          accessModes: "{accessModes}" # best default accessModes
-          storageClassName: "{storageClassName}" # best storage class
-          resources:
-            requests:
-              storage: "{storageCapacity}" # best storage class
+  volumeClaimTemplates:
+    - metadata:
+        name: {name}-volume
+      spec:
+        accessModes: {accessModes} # best default accessModes
+        storageClassName: {storageClassName} # best storage class
+        resources:
+          requests:
+            storage: {storageCapacity} # best storage class
