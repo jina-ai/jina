@@ -1,15 +1,17 @@
 from typing import Dict, Optional
 
+import requests as http_requests
 from docarray import DocumentArray
 from opentelemetry.context.context import Context
+from prometheus_api_client import PrometheusConnect
 
 from jina import Executor, requests
 
 
-def get_traces(service):
-    import requests
-
-    response = requests.get(f'http://localhost:16686/api/traces?service={service}')
+def get_traces(jaeger_port, service):
+    response = http_requests.get(
+        f'http://localhost:{jaeger_port}/api/traces?service={service}'
+    )
     response.raise_for_status()
     return response.json().get('data', []) or []
 
@@ -52,11 +54,18 @@ def partition_spans_by_kind(traces):
 class ExecutorTestWithTracing(Executor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if self.meter:
+            self.request_counter = self.meter.create_counter('request_counter')
+        else:
+            self.request_counter = None
 
-    @requests(on='/index')
+    @requests(on='/search')
     def empty(
         self, docs: 'DocumentArray', tracing_context: Optional[Context], **kwargs
     ):
+        if self.request_counter:
+            self.request_counter.add(1)
+
         if self.tracer:
             with self.tracer.start_span('dummy', context=tracing_context) as span:
                 span.set_attribute('len_docs', len(docs))
@@ -65,10 +74,8 @@ class ExecutorTestWithTracing(Executor):
             return docs
 
 
-def get_services():
-    import requests
-
-    response = requests.get('http://localhost:16686/api/services')
+def get_services(jaeger_port):
+    response = http_requests.get(f'http://localhost:{jaeger_port}/api/services')
     response.raise_for_status()
     response_json = response.json()
     services = response_json.get('data', []) or []
@@ -80,7 +87,7 @@ class ExecutorFailureWithTracing(Executor):
         super().__init__(*args, **kwargs)
         self.failure_counter = 0
 
-    @requests(on='/index')
+    @requests(on='/search')
     def empty(
         self, docs: 'DocumentArray', tracing_context: Optional[Context], **kwargs
     ):
@@ -92,6 +99,12 @@ class ExecutorFailureWithTracing(Executor):
                     raise NotImplementedError
                 else:
                     return docs
+        elif self.meter:
+            if not self.failure_counter:
+                self.failure_counter += 1
+                raise NotImplementedError
+            else:
+                return docs
         else:
             return docs
 
@@ -105,3 +118,63 @@ def spans_with_error(spans):
             ):
                 error_spans.append(span)
     return error_spans
+
+
+def get_metrics_by_name(
+    prometheus_client: PrometheusConnect,
+    metric_name: str,
+    label_config: Optional[Dict] = {},
+):
+    metrics_data = prometheus_client.get_current_metric_value(
+        metric_name, label_config=label_config
+    )
+    return metrics_data
+
+
+def get_flow_metric_labels(prometheus_client: PrometheusConnect):
+    labels = set(prometheus_client.get_label_values(label_name='__name__'))
+    return set(
+        [
+            label
+            for label in labels
+            if not (label.startswith('otelcol') or label.startswith('scrape'))
+        ]
+    )
+
+
+def _extract_exported_jobs(metrics):
+    return set([metric['metric']['exported_job'] for metric in metrics])
+
+
+def get_histogram_rate_and_exported_jobs_by_name(
+    prometheus_client: PrometheusConnect, metric_name: str, labels: Dict[str, str] = {}
+):
+    query = f'rate({metric_name}_bucket[1m])'
+    if labels:
+        label_list = [str(key + "=" + "'" + labels[key] + "'") for key in labels]
+        query = (
+            'rate('
+            + metric_name
+            + '_bucket'
+            + '{'
+            + ','.join(label_list)
+            + '}'
+            + '[1m]'
+            + ')'
+        )
+
+    metrics_data = prometheus_client.custom_query(query=query)
+    exported_jobs = _extract_exported_jobs(metrics_data)
+    return metrics_data, exported_jobs
+
+
+def get_exported_jobs(prometheus_client):
+    return set(prometheus_client.get_label_values(label_name='exported_job'))
+
+
+def get_metrics_and_exported_jobs_by_name(
+    prometheus_client: PrometheusConnect, metric_name: str
+):
+    metrics_data = get_metrics_by_name(prometheus_client, metric_name)
+    exported_jobs = _extract_exported_jobs(metrics_data)
+    return metrics_data, exported_jobs
