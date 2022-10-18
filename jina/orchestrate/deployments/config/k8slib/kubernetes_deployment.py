@@ -98,7 +98,7 @@ def get_template_yamls(
 
     if volumes is not None:
         template_name = 'statefulset-executor'
-        template_params['accessModes'] = [os.environ.get('JINA_K8S_ACCESS_MODES', 'ReadWriteOnce')]
+        template_params['accessModes'] = json.loads(os.environ.get('JINA_K8S_ACCESS_MODES', '["ReadWriteOnce"]'))
         template_params['storageClassName'] = os.environ.get('JINA_K8S_STORAGE_CLASS', 'standard')
         template_params['storageCapacity'] = os.environ.get('JINA_K8S_STORAGE_CAPACITY', '10G')
     elif image_name_uses_before and image_name_uses_after:

@@ -245,24 +245,6 @@ def k8s_flow_with_needs(docker_images):
     return flow
 
 
-@pytest.fixture
-def k8s_flow_with_volumes(docker_images, workspace_path):
-    flow = (
-        Flow(
-            name='test-flow-with-volumes',
-            port=9090,
-            protocol='http',
-        )
-            .add(
-            name='statefulexecutor',
-            uses=f'docker://{docker_images[1]}',
-            workspace=workspace_path,
-            volumes=workspace_path
-        )
-    )
-    return flow
-
-
 @pytest.mark.asyncio
 @pytest.mark.timeout(3600)
 @pytest.mark.parametrize(
