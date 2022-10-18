@@ -154,10 +154,8 @@ jina hub pull jinahub://<UUID>[:<SECRET>][/<TAG>]
 
 The source code of the Executor will be stored at `~/.jina/hub-packages`.
 
-### list the local location of executors
+### List locations of local Executors
 
 ```bash
 jina hub list
 ```
-
-Show the local location of Jina executors.
