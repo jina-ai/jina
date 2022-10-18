@@ -109,32 +109,32 @@ class MonitoringRequestMixin:
 
         if meter:
             self._receiving_request_histogram = meter.create_histogram(
-                name='receiving_request_seconds',
+                name='jina_receiving_request_seconds',
                 description='Time spent processing successful request',
             )
 
             self._pending_requests_up_down_counter = meter.create_up_down_counter(
-                name='number_of_pending_requests',
+                name='jina_number_of_pending_requests',
                 description='Number of pending requests',
             )
 
             self._failed_requests_counter = meter.create_counter(
-                name='failed_requests',
+                name='jina_failed_requests',
                 description='Number of failed requests',
             )
 
             self._successful_requests_counter = meter.create_counter(
-                name='successful_requests',
+                name='jina_successful_requests',
                 description='Number of successful requests',
             )
 
             self._request_size_histogram = meter.create_histogram(
-                name='received_request_bytes',
+                name='jina_received_request_bytes',
                 description='The size in bytes of the request returned to the client',
             )
 
             self._sent_response_bytes_histogram = meter.create_histogram(
-                name='sent_response_bytes',
+                name='jina_sent_response_bytes',
                 description='The size in bytes of the request returned to the client',
             )
         else:

@@ -105,17 +105,17 @@ class DataRequestHandler:
 
         if meter:
             self._document_processed_counter = meter.create_counter(
-                name='document_processed',
+                name='jina_document_processed',
                 description='Number of Documents that have been processed by the executor',
             )
 
             self._request_size_histogram = meter.create_histogram(
-                name='received_request_bytes',
+                name='jina_received_request_bytes',
                 description='The size in bytes of the request returned to the gateway',
             )
 
             self._sent_response_size_histogram = meter.create_histogram(
-                name='sent_response_bytes',
+                name='jina_sent_response_bytes',
                 description='The size in bytes of the response sent to the gateway',
             )
         else:

@@ -77,16 +77,16 @@ class WorkerRuntime(AsyncNewLoopRuntime, ABC):
 
         if self.meter:
             self._receiving_request_seconds = self.meter.create_histogram(
-                name='receiving_request_seconds',
+                name='jina_receiving_request_seconds',
                 description='Time spent processing request',
             )
             self._failed_requests_counter = self.meter.create_counter(
-                name='failed_requests',
+                name='jina_failed_requests',
                 description='Number of failed requests',
             )
 
             self._successful_requests_counter = self.meter.create_counter(
-                name='successful_requests',
+                name='jina_successful_requests',
                 description='Number of successful requests',
             )
         else:

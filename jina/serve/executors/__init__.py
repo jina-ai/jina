@@ -182,11 +182,11 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         if self.meter:
             self._process_request_histogram = self.meter.create_histogram(
-                name='process_request_seconds',
+                name='jina_process_request_seconds',
                 description='Time spent when calling the executor request method',
             )
             self._histogram_buffer = {
-                'process_request_seconds': self._process_request_histogram
+                'jina_process_request_seconds': self._process_request_histogram
             }
         else:
             self._process_request_histogram = None
@@ -624,7 +624,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
 
         if self._histogram_buffer and not _histogram:
             _histogram = self.meter.create_histogram(
-                name=name, description=documentation
+                name=f'jina_{name}', description=documentation
             )
             self._histogram_buffer[name] = _histogram
 

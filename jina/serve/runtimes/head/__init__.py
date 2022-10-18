@@ -77,7 +77,7 @@ class HeadRuntime(AsyncNewLoopRuntime, ABC):
 
         if self.meter:
             self._receiving_reqeust_seconds_metric = self.meter.create_histogram(
-                name='receiving_request_seconds',
+                name='jina_receiving_request_seconds',
                 description='Time spent processing request',
             )
         else:

@@ -179,7 +179,7 @@ def test_flow_metrics(
         sending_requests_seconds_metrics,
         sending_requests_seconds_exported_jobs,
     ) = get_histogram_rate_and_exported_jobs_by_name(
-        prometheus_client, 'sending_request_seconds'
+        prometheus_client, 'jina_sending_request_seconds'
     )
     assert len(sending_requests_seconds_metrics) > 0
     assert sending_requests_seconds_exported_jobs.issubset(
@@ -190,7 +190,7 @@ def test_flow_metrics(
         receiving_request_seconds_metrics,
         receiving_request_seconds_exported_jobs,
     ) = get_histogram_rate_and_exported_jobs_by_name(
-        prometheus_client, 'receiving_request_seconds'
+        prometheus_client, 'jina_receiving_request_seconds'
     )
     assert len(receiving_request_seconds_metrics) > 0
     assert receiving_request_seconds_exported_jobs.issubset(
@@ -206,7 +206,7 @@ def test_flow_metrics(
         received_response_bytes_metrics,
         received_response_bytes_exported_jobs,
     ) = get_histogram_rate_and_exported_jobs_by_name(
-        prometheus_client, 'received_response_bytes'
+        prometheus_client, 'jina_received_response_bytes'
     )
     assert len(received_response_bytes_metrics) > 0
     assert received_response_bytes_exported_jobs.issubset(
@@ -217,7 +217,7 @@ def test_flow_metrics(
         sent_requests_bytes_metrics,
         sent_requests_bytes_exported_jobs,
     ) = get_histogram_rate_and_exported_jobs_by_name(
-        prometheus_client, 'sent_request_bytes'
+        prometheus_client, 'jina_sent_request_bytes'
     )
     assert len(sent_requests_bytes_metrics) > 0
     assert sent_requests_bytes_exported_jobs.issubset(
@@ -228,7 +228,7 @@ def test_flow_metrics(
         sent_response_bytes_metrics,
         sent_response_bytes_exported_jobs,
     ) = get_histogram_rate_and_exported_jobs_by_name(
-        prometheus_client, 'sent_response_bytes'
+        prometheus_client, 'jina_sent_response_bytes'
     )
     assert len(sent_response_bytes_metrics) > 0
     assert sent_response_bytes_exported_jobs.issubset(
@@ -243,7 +243,7 @@ def test_flow_metrics(
         number_of_pending_requests_metrics,
         number_of_pending_requests_exported_jobs,
     ) = get_metrics_and_exported_jobs_by_name(
-        prometheus_client, 'number_of_pending_requests'
+        prometheus_client, 'jina_number_of_pending_requests'
     )
     assert len(number_of_pending_requests_metrics) > 0
     assert number_of_pending_requests_exported_jobs.issubset(['gateway/rep-0'])
@@ -251,7 +251,7 @@ def test_flow_metrics(
     (
         failed_requests_metrics,
         failed_requests_exported_jobs,
-    ) = get_metrics_and_exported_jobs_by_name(prometheus_client, 'failed_requests')
+    ) = get_metrics_and_exported_jobs_by_name(prometheus_client, 'jina_failed_requests')
     assert len(failed_requests_metrics) > 0
     assert failed_requests_exported_jobs.issubset(
         [
@@ -265,7 +265,9 @@ def test_flow_metrics(
     (
         successful_requests_metrics,
         successful_requests_exported_jobs,
-    ) = get_metrics_and_exported_jobs_by_name(prometheus_client, 'successful_requests')
+    ) = get_metrics_and_exported_jobs_by_name(
+        prometheus_client, 'jina_successful_requests'
+    )
     assert len(successful_requests_metrics) > 0
     assert successful_requests_exported_jobs.issubset(
         ['gateway/rep-0', 'executor0/shard-0/rep-0', 'executor0/shard-1/rep-0']
@@ -275,7 +277,7 @@ def test_flow_metrics(
         received_request_bytes_metrics,
         received_request_bytes_exported_jobs,
     ) = get_histogram_rate_and_exported_jobs_by_name(
-        prometheus_client, 'received_request_bytes'
+        prometheus_client, 'jina_received_request_bytes'
     )
     assert len(received_request_bytes_metrics) > 0
     assert received_request_bytes_exported_jobs.issubset(
@@ -286,7 +288,7 @@ def test_flow_metrics(
         process_requests_seconds_metrics,
         process_requests_seconds_exported_jobs,
     ) = get_histogram_rate_and_exported_jobs_by_name(
-        prometheus_client, 'process_request_seconds'
+        prometheus_client, 'jina_process_request_seconds'
     )
     assert len(process_requests_seconds_metrics) > 0
     assert process_requests_seconds_exported_jobs.issubset(
@@ -298,7 +300,9 @@ def test_flow_metrics(
         process_requests_seconds_search_endpoint,
         process_requests_seconds_search_endpoint_exported_jobs,
     ) = get_histogram_rate_and_exported_jobs_by_name(
-        prometheus_client, 'process_request_seconds', {'executor_endpoint': '/search'}
+        prometheus_client,
+        'jina_process_request_seconds',
+        {'executor_endpoint': '/search'},
     )
     assert len(process_requests_seconds_search_endpoint) > 0
     assert process_requests_seconds_search_endpoint_exported_jobs.issubset(
@@ -310,7 +314,7 @@ def test_flow_metrics(
         process_requests_seconds_executor_exported_jobs,
     ) = get_histogram_rate_and_exported_jobs_by_name(
         prometheus_client,
-        'process_request_seconds',
+        'jina_process_request_seconds',
         {'executor': 'ExecutorFailureWithTracing'},
     )
     assert len(process_requests_seconds_executor) > 0
@@ -323,7 +327,7 @@ def test_flow_metrics(
         process_requests_seconds_runtime_exported_jobs,
     ) = get_histogram_rate_and_exported_jobs_by_name(
         prometheus_client,
-        'process_request_seconds',
+        'jina_process_request_seconds',
         {'runtime_name': 'executor0/shard-0/rep-0'},
     )
     assert len(process_requests_seconds_runtime) > 0
@@ -336,7 +340,7 @@ def test_flow_metrics(
         sending_request_seconds_runtime_exported_jobs,
     ) = get_histogram_rate_and_exported_jobs_by_name(
         prometheus_client,
-        'sending_request_seconds',
+        'jina_sending_request_seconds',
         {'runtime_name': 'gateway/rep-0'},
     )
     assert len(sending_request_seconds_runtime) > 0
@@ -347,7 +351,7 @@ def test_flow_metrics(
         sending_request_seconds_runtime_exported_jobs,
     ) = get_histogram_rate_and_exported_jobs_by_name(
         prometheus_client,
-        'sending_request_seconds',
+        'jina_sending_request_seconds',
         {'runtime_name': 'executor0/head'},
     )
     assert len(sending_request_seconds_runtime) > 0

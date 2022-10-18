@@ -704,17 +704,17 @@ class GrpcConnectionPool:
         if meter:
             self._histograms = _NetworkingHistograms(
                 sending_requests_time_metrics=meter.create_histogram(
-                    name='sending_request_seconds',
+                    name='jina_sending_request_seconds',
                     unit='s',
                     description='Time spent between sending a request to the Executor/Head and receiving the response',
                 ),
                 received_response_bytes=meter.create_histogram(
-                    name='received_response_bytes',
+                    name='jina_received_response_bytes',
                     unit='By',
                     description='Size in bytes of the response returned from the Head/Executor',
                 ),
                 send_requests_bytes_metrics=meter.create_histogram(
-                    name='sent_request_bytes',
+                    name='jina_sent_request_bytes',
                     unit='By',
                     description='Size in bytes of the request sent to the Head/Executor',
                 ),
