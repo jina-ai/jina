@@ -175,7 +175,7 @@ When using Jina on a local machine, most of the functionalities are realized by 
 
 When a Jina {class}`~jina.Flow` contains only one {class}`~jina.Executor`, serving this Flow is basically serving a monolith or a singleton service. You could compare it to other web frameworks like FastAPI, TensorFlow Serving, or NVIDIA Triton Inference Server.
 
-| Feature                            | Jina                           | FastAPI         | TensorFlow Serving | NVIDIA triton                    |
+| Feature                            | Jina                           | FastAPI         | TensorFlow Serving | NVIDIA Triton                    |
 |------------------------------------|--------------------------------|-----------------|--------------------|----------------------------------|
 | Latency                            | Low                            | Moderate        | Low                | Low                              |
 | Ease of use                        | Easy                           | Easy            | Moderate           | Moderate                         |
