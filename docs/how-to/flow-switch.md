@@ -1,24 +1,21 @@
 (flow-switch)=
 # Conditional route request inside a Flow
 
-In this tutorial you will gain a deeper insight into the {class}`~jina.Flow` 's {ref}`filter condition feature<flow-filter>`.
+This tutorial gives a deeper insight into the {class}`~jina.Flow`'s {ref}`filter condition feature<flow-filter>`.
 
-In a nutshell, this feature allows every {class}`~jina.Executor` in a Flow do define a filter that can only be passed by Documents that
-fulfill a specified `condition`.
+In a nutshell, this lets any {class}`~jina.Executor` filter Documents that fulfill a specified `condition`, letting you build *selection control* into your Flow.
 
 ````{admonition} See Also
 :class: seealso
 
-If you are not yet familiar with the basics of the [DocArray query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions) and how it is used to create
-{ref}`filters <flow-filter>`, we recommend that you read the linked documentation pages first.
+If you're not familiar with the basics of the [DocArray query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions) and how it is used to create
+{ref}`filters <flow-filter>`, read the linked documentation pages first.
 ````
 
-Here you will learn where and how to use this feature, and how you can build *selection control* into your Flow.
+## Why use selection control?
 
-## Why do you need a selection control?
-
-{ref}`As you know <flow-complex-topologies>`, Jina Flows can define complex topologies that include multiple Executors,
-both in sequence and on parallel branches.
+Jina Flows can define complex {ref}`topologies <flow-complex-topologies>` that include multiple Executors,
+both in sequence and/or on parallel branches.
 
 A simple Flow with parallel branches could be defined like so:
 
@@ -41,13 +38,13 @@ f.plot()
 Flow with two parallel branches.
 ```
 
-A topology like this means that the Documents do not get processed by `exec1` before they go to `exec2`, and vice vers.
+This kind of topology means that Documents don't get processed by `exec1` before they go to `exec2`, and vice versa.
 However, all Documents still go through all branches and all Executors.
 
-In some scenarios, you might not want all Documents to be processed by all Executors, for example when you index Documents
+Sometimes you may not want all Documents to be processed by all Executors, for example when you index Documents
 representing different kinds of data, like text and images.
 
-One way to achieve this differentiation is to use different Executor endpoints:
+One way to achieve this is to use different Executor endpoints:
 
 ````{tab} Main app
 
@@ -121,19 +118,18 @@ class ImageIndexer(Executor):
  [0.18466062 0.17823904 0.20046065]]
 ```
 
-As you can see, the image data was only processed by the `ImageIndexer`, and the text data was only processed by the `TextIndexer`.
+As you can see, image data was only processed by `ImageIndexer`, and text data was only processed by `TextIndexer`.
 
-However, there is a problem with this approach:
-Sometimes you can't easily control the endpoints of all Executors, for example when you are using the {ref}`Jina Hub <jina-hub>` or {ref}`external Executors <external-executor>`.
+However, there's a problem with this approach:
+Sometimes you can't easily control the endpoints of all Executors, for example when you are using {ref}`Jina Hub <jina-hub>` or {ref}`external Executors <external-executor>`.
 
-To solve that problem, you can leverage filter condition to easily add selection control into your Flow.
+To solve this, filter conditions easily add selection control to your Flow.
 
 ## Define the filter conditions
 
-In a Jina Flow, you can use the [DocArray query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions) to specify a filter condition for every
-Executor.
+You can use the [DocArray query language](https://docarray.jina.ai/fundamentals/documentarray/find/#query-by-conditions) to specify a filter condition for each Executor.
 
-To do this, you pass a condition to the `when` parameter in `flow.add()`:
+To do this, pass a condition to the `when` parameter in `flow.add()`:
 
 ```python
 from jina import Flow
@@ -141,9 +137,9 @@ from jina import Flow
 f = Flow().add(when={'tags__key': {'$eq': 5}})
 ```
 
-Then, Documents that do not satisfy the `when` condition will not reach the associated Executor.
+Then only Documents that satisfy the `when` condition will reach the associated Executor. Any Documents that don't satisfy that condition won't reach the Executor.
 
-In the use case where you are trying to separate Documents according to the data modality they hold, you need to choose
+If you are trying to separate Documents according to the data modality they hold, you need to choose
 a condition accordingly.
 
 ````{admonition} See Also
@@ -163,7 +159,7 @@ These conditions specify that only Documents that hold data of a specific modali
 
 ### Try the filters outside the Flow
 
-You can try the conditions directly on your data, outside the Flow:
+You can use conditions directly on your data, outside the Flow:
 
 ```python
 filtered_text_data = data.find(text_condition)
@@ -183,13 +179,13 @@ print(filtered_image_data.tensors)
   [0.12079661 0.65313938]]]
 ```
 
-As you can see, each filter selects the Documents that contain the desired data fields.
+Each filter selects Documents that contain the desired data fields.
 That's exactly what you want for your filter!
 
 ## Build the Flow
 
-Finally, you can assemble your Flow using these conditions and the Indexers from above.
-This time there is no need to choose different Executor endpoints for the Indexers, since the filters take care of the
+Finally, assemble your Flow using these conditions and the indexers from above.
+This time you don't need to choose different Executor endpoints, since the filters take care of 
 selection control logic.
 
 ````{tab} Flow
@@ -248,12 +244,12 @@ class ImageIndexer(Executor):
 ```
 ````
 
-Here you simply tell each Executor to filter its inputs according to the conditions that you specified above:
+Here you tell each Executor to filter its inputs according to the conditions specified above:
 Text and image data should be treated separately.
 
 ## Index the data
 
-If you now send your data to the Flow, you expect that only your image data will be sent to `ImageIndexer`, and only your
+When you send your data to the Flow, you expect that only your image data will be sent to `ImageIndexer`, and only your
 text data will be sent to `TextIndexer`.
 
 Let's take a look:
@@ -283,9 +279,9 @@ And remember, with this solution the Documents don't even get *sent* to the inco
 
 ## What's next
 
-Now that you know how to use filter conditions to add selection control, you can leverage this feature to build all kinds of business logic.
+Now that you know how to use filter conditions to add selection control, you can use this feature to build all kinds of business logic.
 
-You could differentiate between more than just two different data modalities, you could direct requests based on the Client they come from,
+You could differentiate between more than just two different data modalities, direct requests based on the Client they come from,
 ignore Documents that don't meet certain quality criteria, or route data to specialized Executors based on what the data
 itself looks like. Your imagination is the limit!
 

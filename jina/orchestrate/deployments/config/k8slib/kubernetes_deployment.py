@@ -88,7 +88,7 @@ def get_template_yamls(
         'shard_id': f'\"{shard_id}\"' if shard_id is not None else '\"\"',
         'pod_type': pod_type,
         'protocol': str(protocol).lower() if protocol is not None else '',
-        'volume_path': volumes,
+        'volume_path': volumes[0] if volumes is not None else None
     }
 
     if gpus:

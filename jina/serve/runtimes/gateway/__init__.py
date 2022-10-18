@@ -90,6 +90,7 @@ class GatewayRuntime(AsyncNewLoopRuntime):
             args=self.args,
             timeout_send=self.timeout_send,
             metrics_registry=self.metrics_registry,
+            meter=self.meter,
             runtime_name=self.args.name,
             tracing=self.tracing,
             tracer_provider=self.tracer_provider,
