@@ -87,3 +87,4 @@ jsonschema:                 cicd
 portforward>=0.2.4:         cicd
 tensorflow>=2.0:            cicd
 opentelemetry-test-utils>=0.33b0:  test
+prometheus-api-client>=0.5.1:  test

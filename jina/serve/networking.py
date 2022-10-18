@@ -18,7 +18,7 @@ from jina.excepts import EstablishGrpcConnectionError
 from jina.importer import ImportExtensions
 from jina.logging.logger import JinaLogger
 from jina.proto import jina_pb2, jina_pb2_grpc
-from jina.serve.helper import _get_summary_time_context_or_null
+from jina.serve.instrumentation import MetricsTimer
 from jina.types.request import Request
 from jina.types.request.data import DataRequest
 
@@ -31,6 +31,7 @@ if TYPE_CHECKING:
     from opentelemetry.instrumentation.grpc._client import (
         OpenTelemetryClientInterceptor,
     )
+    from opentelemetry.metrics import Histogram, Meter
     from prometheus_client import CollectorRegistry, Summary
 
 
@@ -52,6 +53,32 @@ class _NetworkingMetrics:
     send_requests_bytes_metrics: Optional['Summary']
 
 
+@dataclass
+class _NetworkingHistograms:
+    """
+    Dataclass containing the various OpenTelemetry Histograms for measuring the network level operations.
+    """
+
+    sending_requests_time_metrics: Optional['Histogram'] = None
+    received_response_bytes: Optional['Histogram'] = None
+    send_requests_bytes_metrics: Optional['Histogram'] = None
+    histogram_metric_labels: Dict[str, str] = None
+
+    def record_sending_requests_time_metrics(self, value: int):
+        if self.sending_requests_time_metrics:
+            self.sending_requests_time_metrics.record(
+                value, self.histogram_metric_labels
+            )
+
+    def record_received_response_bytes(self, value: int):
+        if self.received_response_bytes:
+            self.received_response_bytes.record(value, self.histogram_metric_labels)
+
+    def record_send_requests_bytes_metrics(self, value: int):
+        if self.send_requests_bytes_metrics:
+            self.send_requests_bytes_metrics.record(value, self.histogram_metric_labels)
+
+
 class ReplicaList:
     """
     Maintains a list of connections to replicas and uses round robin for selecting a replica
@@ -60,17 +87,19 @@ class ReplicaList:
     def __init__(
         self,
         metrics: _NetworkingMetrics,
+        histograms: _NetworkingHistograms,
         logger,
-        runtine_name: str,
+        runtime_name: str,
         aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
         tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
     ):
-        self.runtime_name = runtine_name
+        self.runtime_name = runtime_name
         self._connections = []
         self._address_to_connection_idx = {}
         self._address_to_channel = {}
         self._rr_counter = 0  # round robin counter
         self._metrics = metrics
+        self._histograms = histograms
         self._logger = logger
         self._destroyed_event = asyncio.Event()
         self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
@@ -119,9 +148,7 @@ class ReplicaList:
         """
         if address not in self._address_to_connection_idx:
             self._address_to_connection_idx[address] = len(self._connections)
-            stubs, channel = self._create_connection(
-                address,
-            )
+            stubs, channel = self._create_connection(address)
             self._address_to_channel[address] = channel
             self._connections.append(stubs)
 
@@ -168,6 +195,7 @@ class ReplicaList:
         stubs, channel = GrpcConnectionPool.create_async_channel_stub(
             address,
             metrics=self._metrics,
+            histograms=self._histograms,
             tls=use_tls,
             aio_tracing_client_interceptors=self.aio_tracing_client_interceptors,
         )
@@ -288,10 +316,12 @@ class GrpcConnectionPool:
             address,
             channel,
             metrics: _NetworkingMetrics,
+            histograms: _NetworkingHistograms,
         ):
             self.address = address
             self.channel = channel
             self._metrics = metrics
+            self._histograms = histograms
             self._initialized = False
 
         # This has to be done lazily, because the target endpoint may not be available
@@ -366,8 +396,13 @@ class GrpcConnectionPool:
                         self._metrics.send_requests_bytes_metrics.observe(
                             requests[0].nbytes
                         )
-                    with _get_summary_time_context_or_null(
-                        self._metrics.sending_requests_time_metrics
+                    self._histograms.record_send_requests_bytes_metrics(
+                        requests[0].nbytes
+                    )
+                    with MetricsTimer(
+                        self._metrics.sending_requests_time_metrics,
+                        self._histograms.sending_requests_time_metrics,
+                        self._histograms.histogram_metric_labels,
                     ):
                         metadata, response = (
                             await call_result.trailing_metadata(),
@@ -378,17 +413,23 @@ class GrpcConnectionPool:
                             self._metrics.received_response_bytes.observe(
                                 response.nbytes
                             )
+                        self._histograms.record_received_response_bytes(response.nbytes)
                     return response, metadata
 
                 elif self.stream_stub:
-                    if self._metrics.send_requests_bytes_metrics:
-                        for response in requests:
+                    for response in requests:
+                        if self._metrics.send_requests_bytes_metrics:
                             self._metrics.send_requests_bytes_metrics.observe(
                                 response.nbytes
                             )
+                        self._histograms.record_send_requests_bytes_metrics(
+                            response.nbytes
+                        )
 
-                    with _get_summary_time_context_or_null(
-                        self._metrics.sending_requests_time_metrics
+                    with MetricsTimer(
+                        self._metrics.sending_requests_time_metrics,
+                        self._histograms.sending_requests_time_metrics,
+                        self._histograms.histogram_metric_labels,
                     ):
                         async for response in self.stream_stub.Call(
                             iter(requests), compression=compression, timeout=timeout
@@ -397,6 +438,9 @@ class GrpcConnectionPool:
                                 self._metrics.received_response_bytes.observe(
                                     response.nbytes
                                 )
+                            self._histograms.record_received_response_bytes(
+                                response.nbytes
+                            )
 
                             return response, None
             if request_type == DataRequest and len(requests) > 1:
@@ -407,8 +451,10 @@ class GrpcConnectionPool:
                         compression=compression,
                         timeout=timeout,
                     )
-                    with _get_summary_time_context_or_null(
-                        self._metrics.sending_requests_time_metrics
+                    with MetricsTimer(
+                        self._metrics.sending_requests_time_metrics,
+                        self._histograms.sending_requests_time_metrics,
+                        self._histograms.histogram_metric_labels,
                     ):
                         metadata, response = (
                             await call_result.trailing_metadata(),
@@ -428,6 +474,7 @@ class GrpcConnectionPool:
             runtime_name: str,
             logger: Optional[JinaLogger],
             metrics: _NetworkingMetrics,
+            histograms: _NetworkingHistograms,
             aio_tracing_client_interceptors: Optional[
                 Sequence['ClientInterceptor']
             ] = None,
@@ -441,6 +488,7 @@ class GrpcConnectionPool:
             # dict stores last entity id used for a particular deployment, used for round robin
             self._access_count: Dict[str, int] = {}
             self._metrics = metrics
+            self._histograms = histograms
             self.runtime_name = runtime_name
             if os.name != 'nt':
                 os.unsetenv('http_proxy')
@@ -548,6 +596,7 @@ class GrpcConnectionPool:
             if entity_id not in self._deployments[deployment][type]:
                 connection_list = ReplicaList(
                     self._metrics,
+                    self._histograms,
                     self._logger,
                     self.runtime_name,
                     self.aio_tracing_client_interceptors,
@@ -599,6 +648,7 @@ class GrpcConnectionPool:
         logger: Optional[JinaLogger] = None,
         compression: Optional[str] = None,
         metrics_registry: Optional['CollectorRegistry'] = None,
+        meter: Optional['Meter'] = None,
         aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
         tracing_client_interceptor: Optional['OpenTelemetryClientInterceptor'] = None,
     ):
@@ -651,12 +701,35 @@ class GrpcConnectionPool:
             send_requests_bytes_metrics,
         )
 
+        if meter:
+            self._histograms = _NetworkingHistograms(
+                sending_requests_time_metrics=meter.create_histogram(
+                    name='jina_sending_request_seconds',
+                    unit='s',
+                    description='Time spent between sending a request to the Executor/Head and receiving the response',
+                ),
+                received_response_bytes=meter.create_histogram(
+                    name='jina_received_response_bytes',
+                    unit='By',
+                    description='Size in bytes of the response returned from the Head/Executor',
+                ),
+                send_requests_bytes_metrics=meter.create_histogram(
+                    name='jina_sent_request_bytes',
+                    unit='By',
+                    description='Size in bytes of the request sent to the Head/Executor',
+                ),
+                histogram_metric_labels={'runtime_name': runtime_name},
+            )
+        else:
+            self._histograms = _NetworkingHistograms()
+
         self.aio_tracing_client_interceptors = aio_tracing_client_interceptors
         self.tracing_client_interceptor = tracing_client_interceptor
         self._connections = self._ConnectionPoolMap(
             runtime_name,
             self._logger,
             self._metrics,
+            self._histograms,
             self.aio_tracing_client_interceptors,
             self.tracing_client_interceptor,
         )
@@ -1275,6 +1348,7 @@ class GrpcConnectionPool:
     def create_async_channel_stub(
         address,
         metrics: _NetworkingMetrics,
+        histograms: _NetworkingHistograms,
         tls=False,
         root_certificates: Optional[str] = None,
         aio_tracing_client_interceptors: Optional[Sequence['ClientInterceptor']] = None,
@@ -1286,6 +1360,7 @@ class GrpcConnectionPool:
         :param tls: if True, use tls for the grpc channel
         :param root_certificates: the path to the root certificates for tls, only u
         :param metrics: NetworkingMetrics object that contain optional metrics
+        :param histograms: NetworkingHistograms object that optionally record metrics
         :param aio_tracing_client_interceptors: List of async io gprc client tracing interceptors for tracing requests for asycnio channel
         :returns: DataRequest stubs and an async grpc channel
         """
@@ -1298,7 +1373,7 @@ class GrpcConnectionPool:
         )
 
         return (
-            GrpcConnectionPool.ConnectionStubs(address, channel, metrics),
+            GrpcConnectionPool.ConnectionStubs(address, channel, metrics, histograms),
             channel,
         )
 
