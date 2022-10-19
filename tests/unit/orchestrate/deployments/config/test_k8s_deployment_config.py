@@ -770,6 +770,6 @@ def test_executor_with_volumes_stateful_set():
 
     sset = list(yaml_configs[0][1])[-1]
     assert sset['kind'] == 'StatefulSet'
-    assert 'volumeClaimTemplates' in list(sset['spec']['template'].keys())
+    assert 'volumeClaimTemplates' in list(sset['spec'].keys())
     assert sset['spec']['template']['spec']['containers'][0]['volumeMounts'][0]['name'] == 'executor-volume'
-    assert sset['spec']['template']['spec']['containers'][0]['volumeMounts'][0]['mountPath'] == ['path/volumes']
+    assert sset['spec']['template']['spec']['containers'][0]['volumeMounts'][0]['mountPath'] == 'path/volumes'
