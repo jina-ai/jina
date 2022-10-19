@@ -54,4 +54,5 @@ external-executor
 docker-compose
 kubernetes
 monitoring
+opentelemetry
 ```
