@@ -56,7 +56,7 @@ def get_template_yamls(
     :param monitoring: enable monitoring on the deployment
     :param port_monitoring: port which will be exposed, for the prometheus server, by the deployed containers
     :param protocol: In case of being a Gateway, the protocol used to expose its server
-    :param volumes: If volumes are passed to Executors, we will try to dump to StatefulSet
+    :param volumes: If volumes are passed to Executors, Jina will create a StatefulSet instead of Deployment and include the first volume in the volume mounts
     :return: Return a dictionary with all the yaml configuration needed for a deployment
     """
     # we can always assume the ports are the same for all executors since they run on different k8s pods

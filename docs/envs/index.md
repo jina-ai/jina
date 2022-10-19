@@ -71,6 +71,6 @@ The following environment variables are used internally in Jina:
 | `JINA_RANDOM_PORT_MIN`          | The min port number used when selecting random ports to apply for Executors or gateway                 |
 | `JINA_LOCKS_ROOT`               | The root folder where file locks for concurrent Executor initialization                                |
 | `JINA_OPTOUT_TELEMETRY`         | If set, disables telemetry                                                                             |
-| `JINA_K8S_ACCESS_MODES`         | If set, when creating a StateFulSet in Kubernetes for an Executor using volumes, controls the access mode for the PersistentVolumeClaim attached to the StatefulSet. Defaults to '["ReadWriteOnce"]'  |
+| `JINA_K8S_ACCESS_MODES`         | Configures the access modes for the PersistentVolumeClaim attached to the StatefulSet, when creating a StatefulSet in Kubernetes for an Executor using volumes. Defaults to '["ReadWriteOnce"]'  |
 | `JINA_K8S_STORAGE_CLASS_NAME`   | Configures the storage class for the PersistentVolumeClaim attached to the StatefulSet, when creating a StatefulSet in Kubernetes for an Executor using volumes. Defaults to 'standard'  |
 | `JINA_K8S_STORAGE_CAPACITY`     | Configures the capacity for the PersistentVolumeClaim attached to the StatefulSet, when creating a StatefulSet in Kubernetes for an Executor using volumes. Defaults to '10G'  |                                                                       |
