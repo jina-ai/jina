@@ -1,5 +1,20 @@
 (instrumenting-executor)=
-# Tracing
+# Instrumentation
+
+Instrumentation consists of [OpenTelemetry](https://opentelemetry.io) Tracing and Metrics. Both features can be enabled independently and allows you to collect various request level and application level metrics for anaylizing the real time behavior of your Executor. 
+
+This section documents the ability to create custom traces and metrics apart from the default ones.
+
+```{admonition} Full detail on Instrumentation
+:class: seealso
+This section describes how to use **custom** tracing spans. To use the Executor's default tracing, refer to {ref}`the Flow Instrumentation <instrumenting-flow>` section.
+```
+
+```{hint}
+The OpenTelemetry collector backend setup is described in the {ref}`OpenTelemetry Setup <opentelemetry>` section.
+```
+
+## Tracing
 
 Every method that is decorated using the {class}`~jina.requests` decorator adds a 
 default tracing span for the defined operation. In addition the operation span context 
@@ -10,18 +25,10 @@ Custom spans can be created to observe the operation individual steps or record 
 
 If tracing is enabled, each executor exports its traces to the configured exporter host via the [Span Exporter](https://opentelemetry.io/docs/reference/specification/trace/sdk/#span-exporter) which are combined by the backend for visualization and alerting purposes.
 
-```{hint}
-The OpenTelemetry collector backend setup is described in the `OpenTelemetry Setup <opentelemetry>` section.
-```
 
-```{admonition} 
-:class: seealso
-This section describes how to use **custom** tracing spans. To use the Executor's default tracing, refer to {ref}`the Flow Instrumentation <instrumenting-flow>` section.
-```
+### Create custom traces
 
-## Create custom spans
-
-A `request` method is the public method used to expose the operation as an api. Depending on the complexity, the method can often be composed of different sub operations that is required to build the final response. 
+A `request` method is the public method used to expose the operation as an API. Depending on the complexity, the method can often be composed of different sub operations that is required to build the final response. 
 
 Each internal step along with its global or request specific attributes can be recorded/observed giving a more finer grained view of the operation at the request level. This helps to quickly identify bottlenecks and isolate request patterns that are causing service degradation or errors.
 
@@ -69,7 +76,7 @@ You should respect OpenTelemetry Tracing [semantic conventions](https://opentele
 If tracing is not enabled by default or enabled per environment basis, its a good practice to check for the existence of the `self.tracer` before usage. If metrics is disabled then `self.tracer` will be None.
 ````
 
-# Metrics
+## Metrics
 
 By default, every method decorated by the {class}`~jina.requests` decorator is monitored and creates a
 [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/data-model/#histogram) which tracks the execution time of 
@@ -85,17 +92,8 @@ your Executor's sub-methods.
 When metrics is enabled, each Executor exposes its 
 own metrics via the [Metric Exporter](https://opentelemetry.io/docs/reference/specification/metrics/sdk/#metricexporter).
 
-```{hint}
-The OpenTelemetry collector backend setup is described in the `OpenTelemetry Setup <opentelemetry>` section.
-```
 
-```{admonition} 
-:class: seealso
-This section describes how to use **custom** metrics. To use the Executor's default metrics, refer to {ref}`the Flow Instrumentation <instrumenting-flow>` section.
-```
-
-
-## Define custom metrics
+### Define custom metrics
 
 Sometimes monitoring the `encoding` method is not enough - you need to break it up into multiple parts that you want to monitor one by one.
 
@@ -104,7 +102,7 @@ image embedding. By using custom metrics on these two tasks you can identify pot
 
 Overall adding custom metrics gives you full flexibility when monitoring your Executor.
 
-### Use context manager
+#### Use context manager
 
 You can use `self.monitor` to monitor the internal blocks of your function:
 
@@ -123,7 +121,7 @@ class MyExecutor(Executor):
 ```
 
 
-### Use the `@monitor` decorator
+#### Use the `@monitor` decorator
 
 Adding custom monitoring to a method can be done by decorating the method with {func}`~jina.monitor`.
 
@@ -155,7 +153,7 @@ def method(self):
 You should respect OpenTelemetry Metrics [semantic conventions](https://opentelemetry.io/docs/reference/specification/metrics/semantic_conventions/).
 ````
 
-### Use OpenTelemetry Meter
+#### Use OpenTelemetry Meter
 
 Under the hood, the Executor's metrics feature is handled by the 
 Python [OpenTelemetry Metrics API](https://opentelemetry.io/docs/concepts/signals/metrics/). The {func}`~jina.monitor` decorator is a convenient tool
@@ -187,7 +185,7 @@ If metrics is not enabled by default or enabled per environment basis, its a goo
 ````
 
 
-## Example
+#### Example
 
 Let's use an example to show custom metrics:
 
