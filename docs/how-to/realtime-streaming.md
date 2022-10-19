@@ -81,7 +81,7 @@ class VideoChatExecutor(Executor):
                 d.tensor = np.concatenate(list(self.last_user_frames.values()), axis=0)
 ```
 
-Save it as `executor.py` and create `executor.yml` with the following content:
+Save it as `executor.py` and create `config.yml` with the following content:
 
 ```yaml
 jtype: VideoChatExecutor

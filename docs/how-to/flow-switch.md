@@ -1,7 +1,7 @@
 (flow-switch)=
 # Conditional route request inside a Flow
 
-This tutorial gives a deeper insight into the {class}`~jina.Flow 's {ref}`filter condition feature<flow-filter>`.
+This tutorial gives a deeper insight into the {class}`~jina.Flow`'s {ref}`filter condition feature<flow-filter>`.
 
 In a nutshell, this lets any {class}`~jina.Executor` filter Documents that fulfill a specified `condition`, letting you build *selection control* into your Flow.
 
