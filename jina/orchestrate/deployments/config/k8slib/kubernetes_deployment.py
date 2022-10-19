@@ -96,7 +96,7 @@ def get_template_yamls(
 
     template_name = 'deployment-executor' if name != 'gateway' else 'deployment-gateway'
 
-    if volumes is not None:
+    if volumes:
         template_name = 'statefulset-executor'
         template_params['accessModes'] = json.loads(os.environ.get('JINA_K8S_ACCESS_MODES', '["ReadWriteOnce"]'))
         template_params['storageClassName'] = os.environ.get('JINA_K8S_STORAGE_CLASS_NAME', 'standard')
