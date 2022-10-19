@@ -1,7 +1,7 @@
 (instrumenting-client)=
 # Instrumentation
 
-The {class}`~jina.Client` also supports Tracing the request which leads to an end-to-end view of a request lifecycle. The **gRPC**, **HTTP** and **WebSocket** protocols are supported.
+The {class}`~jina.Client` supports tracing the request which leads to an end-to-end view of a request lifecycle. The **gRPC**, **HTTP** and **WebSocket** protocols are supported.
 
 ## Example
 

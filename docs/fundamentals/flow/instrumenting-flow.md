@@ -1,9 +1,9 @@
 (instrumenting-flow)=
 # Instrumentation
 
-A Jina {class}`~jina.Flow` exposes a few configuration parameters for leveraging [OpenTelemetry](https://opentelemetry.io) Tracing and Metrics observability features. These tools allow you to instrument and collect various signals which help to analyze real time behavior of your application.
+A {class}`~jina.Flow` exposes configuration parameters for leveraging [OpenTelemetry](https://opentelemetry.io) Tracing and Metrics observability features. These tools let you instrument and collect various signals which help analyze your application's real-time behavior.
 
-A {class}`~jina.Flow` is composed of several Pods, namely the {class}`~jina.serve.runtimes.gateway.GatewayRuntime`, the {class}`~jina.Executor`s, and potentially a {class}`~jina.serve.runtimes.head.HeadRuntime` (see the {ref}`architecture overview <architecture-overview>` for more details). Each of these Pods is its own microservice. These services expose their own metrics using the Python [OpenTelemetry API and SDK](https://opentelemetry-python.readthedocs.io/en/stable/api/trace.html). 
+A {class}`~jina.Flow` is composed of several Pods, namely the {class}`~jina.serve.runtimes.gateway.GatewayRuntime`, {class}`~jina.Executor`s, and potentially a {class}`~jina.serve.runtimes.head.HeadRuntime` (see the {ref}`architecture overview <architecture-overview>`). Each Pod is its own microservice. These services expose their own metrics using the Python [OpenTelemetry API and SDK](https://opentelemetry-python.readthedocs.io/en/stable/api/trace.html). 
 
 Tracing and Metrics can be enabled and configured independently to allow more flexibility in the data collection and visualization setup.
 
@@ -12,7 +12,7 @@ Tracing and Metrics can be enabled and configured independently to allow more fl
 Refer to the {ref}`OpenTelemetry Setup <opentelemetry>` page for a full detail on the OpenTelemetry data collection and visualization setup.
 ```
 
-## Tracing Example
+## Tracing
 
 ````{tab} via Python API
 
@@ -33,7 +33,7 @@ with Flow(
 ````{tab} via YAML
 Start a Flow with Tracing using YAML:
 
-In a `flow.yaml` file
+In `flow.yaml`:
 ```yaml
 jtype: Flow
 with:
@@ -49,14 +49,14 @@ jina flow --uses flow.yaml
 ```
 ````
 
-This Flow creates two Pods: one for the Gateway, and one for the SimpleIndexer Executor. The Flow propagates the Tracing configuration to each Pod so there is no need to duplicate the arguments on each Executor. 
+This Flow creates two Pods: one for the Gateway, and one for the SimpleIndexer Executor. The Flow propagates the Tracing configuration to each Pod so you don't need to duplicate the arguments on each Executor. 
 
-The `traces_exporter_host` and `traces_exporter_port` arguments configure the traces [exporter](https://opentelemetry.io/docs/instrumentation/python/exporters/#trace-1) which is responsible for pushing the collected data to the [collector](https://opentelemetry.io/docs/collector/) backend.
+The `traces_exporter_host` and `traces_exporter_port` arguments configure the traces [exporter](https://opentelemetry.io/docs/instrumentation/python/exporters/#trace-1) which are responsible for pushing collected data to the [collector](https://opentelemetry.io/docs/collector/) backend.
 
 
 ```{hint}
 :class: seealso
-Refer to the {ref}`OpenTelemetry Setup <opentelemetry>` page for more details on the exporter and collector setup and usage.
+Refer to {ref}`OpenTelemetry Setup <opentelemetry>` for more details on exporter and collector setup and usage.
 ```
 
 ### Available Traces
@@ -86,10 +86,10 @@ Because not all Pods have the same role, they expose different kinds of traces:
 | `/endpoint` | Internal operation for the request originating from the Executor request handler to the target `@requests(=/endpoint)` method. The `endpoint` will be `default` if no endpoint name is provided. |
 
 ```{seealso} 
-Beyond the above mentiond default traces, you can define {ref}`custom traces <instrumenting-executor>` for your Executor. 
+Beyond the above-mentioned default traces, you can define {ref}`custom traces <instrumenting-executor>` for your Executor. 
 ```
 
-## Metrics Example
+## Metrics example
 
 ````{tab} via Python API
 
@@ -110,7 +110,7 @@ with Flow(
 ````{tab} via YAML
 Start a Flow with Metrics using YAML:
 
-In a `flow.yaml` file
+In `flow.yaml`:
 ```yaml
 jtype: Flow
 with:
@@ -126,7 +126,7 @@ jina flow --uses flow.yaml
 ```
 ````
 
-As in the above tracing example, the Flow propagates the Metrics configuration to each Pod. The `metrics_exporter_host` and `metrics_exporter_port` arguments configure the metrics [exporter](https://opentelemetry.io/docs/instrumentation/python/exporters/#metrics-1) which is responsible for pushing the collected data to the [collector](https://opentelemetry.io/docs/collector/) backend.
+As in the above tracing example, the Flow propagates the Metrics configuration to each Pod. The `metrics_exporter_host` and `metrics_exporter_port` arguments configure the metrics [exporter](https://opentelemetry.io/docs/instrumentation/python/exporters/#metrics-1) responsible for pushing collected data to the [collector](https://opentelemetry.io/docs/collector/) backend.
 
 
 ```{hint}
@@ -188,10 +188,13 @@ Beyond the above mentiond default metrics, you can define {ref}`custom metrics <
 ```
 
 ```{hint} 
- `jina_receiving_request_seconds` is different from `jina_process_request_seconds` because it includes the gRPC communication overhead whereas `jina_process_request_seconds` is only about the time spend calling the function 
+`jina_process_request_seconds` and `jina_receiving_request_seconds` are different:
+ 
+ -  `jina_process_request_seconds` only tracks time spent calling the function.
+ - `jina_receiving_request_seconds` tracks time spent calling the function **and** the gRPC communication overhead.
 ```
 
-## See further
+## See also
 
 - {ref}`Defining custom traces and metrics in an Executor <instrumenting-executor>`
 - {ref}`How to deploy and use OpenTelemetry in Jina <opentelemetry>`
