@@ -58,7 +58,7 @@ class MyExecutor(Executor):
 The above pieces of instrumentation generate three spans:
  1. Default span with name `foo` for the overall method.
  2. `process_span` that measures the `process` and `update` sub-operations along with a `sampling_rate` attribute that is either a constant or specific to the request/operation.
- 3. `update_span` that measures the `updated` operation along with any exception that might arise during the operation. The exception is recorded and marked on the `update_span` span. Since the exception is swallowed, the request succeeds with successful parent spans.
+ 3. `update_span` that measures the `updated` operation along with any exceptions that might arise during the operation. The exception is recorded and marked on the `update_span` span. Since the exception is swallowed, the request succeeds with successful parent spans.
 
 
 ```{admonition} 

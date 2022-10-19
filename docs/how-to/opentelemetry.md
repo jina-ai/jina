@@ -28,14 +28,14 @@ We recommend using the [OpenTelemetry Collector](https://opentelemetry.io/docs/c
 - [Grafana](https://grafana.com) for visualizing data from Prometheus/Jaeger and/or alerting based on the data queried.
 
 ```{hint}
-The Jaeger provides a comprehensive out of the box tools for end-to-end tracing monitoring, visualization and alerting. Other tools can also be substituted to achieve the necessary goals of observability and perfomance analysis. The same can be said for Prometheus and Grafana.
+The Jaeger provides a comprehensive out of the box tools for end-to-end tracing monitoring, visualization and alerting. Other tools can also be substituted to achieve the necessary goals of observability and performance analysis. The same can be said for Prometheus and Grafana.
 ```
 
 ### Docker Compose
 
 A minimal docker-compose.yml file can look like:
 
-```yml
+```yaml
 version: "3"
 services:
   # Jaeger
@@ -72,7 +72,7 @@ services:
 ```
 
 The corresponding OpenTelemetry Collector configuration below needs to be stored in file *otel-collector-config.yml*.
-```yml
+```yaml
 receivers:
   otlp:
     protocols:
@@ -108,8 +108,8 @@ service:
 
 Briefly, this setup creates a gRPC Collector Receiver on port 4317 that can collect data pushed by the Flow Pods. Collector exporters for Jaeger and Prometheus backends are configured to export tracing and metrics data respectively. The final **service** section creates a collector pipeline combining the receiver (collect data), export (to backend), process (batching) sub components.
 
-The Prometheus minimal configuraton below needs to be stored in file *prometheus-config.yml*.
-```yml
+The Prometheus minimal configuration below needs to be stored in file *prometheus-config.yml*.
+```yaml
 scrape_configs:
   - job_name: 'otel-collector'
     scrape_interval: 500ms
@@ -123,7 +123,7 @@ The Prometheus configuration now need only scrape from the OpenTelemetry Collect
 
 ### Running a Flow locally
 
-Run the Flow and a sample reqeust that we want to instrument locally. If the backends are running successfully the Flow has exported data to the Collector which can be queries and viewed which will be discussed next.
+Run the Flow and a sample request that we want to instrument locally. If the backends are running successfully the Flow has exported data to the Collector which can be queries and viewed which will be discussed next.
 
 ```python
 from jina import Flow, Document, DocumentArray
@@ -157,4 +157,4 @@ The list of available metrics are documented in the {ref}`Flow Instrumentation <
 
 ## JCloud Support
 
-Currenlty OpenTelemetry is not supported by JCloud. The features will be made available soon. Until then the deprecated Promtheus based {ref}`monitoring setup <monitoring-flow>` can be used.
+Currently OpenTelemetry is not supported by JCloud. The features will be made available soon. Until then the deprecated Prometheus based {ref}`monitoring setup <monitoring-flow>` can be used.

@@ -9,30 +9,27 @@ Tracing and Metrics can be enabled and configured independently to allow more fl
 
 ```{hint}
 :class: seealso
-Refer to the {ref}`OpenTelemetry Setup <opentelemetry>` page for a full detail on the OpenTelemetry data collection and visualization setup.
+Refer to {ref}`OpenTelemetry Setup <opentelemetry>` for a full detail on the OpenTelemetry data collection and visualization setup.
 ```
 
 ## Tracing
 
 ````{tab} via Python API
-
-Start a Flow with Tracing using the Python API:
-
 ```python
 from jina import Flow
 
-with Flow(
+f = Flow(
     tracing=True,
     traces_exporter_host='localhost',
     traces_exporter_port=4317,
-).add(uses='jinahub://SimpleIndexer') as f:
+).add(uses='jinahub://SimpleIndexer')
+
+with f:
     f.block()
 ```
 ````
 
 ````{tab} via YAML
-Start a Flow with Tracing using YAML:
-
 In `flow.yaml`:
 ```yaml
 jtype: Flow
@@ -92,24 +89,21 @@ Beyond the above-mentioned default traces, you can define {ref}`custom traces <i
 ## Metrics example
 
 ````{tab} via Python API
-
-Start a Flow with Metrics using the Python API:
-
 ```python
 from jina import Flow
 
-with Flow(
+f = Flow(
     metrics=True,
     metrics_exporter_host='localhost',
     metrics_exporter_port=4317,
-).add(uses='jinahub://SimpleIndexer') as f:
+).add(uses='jinahub://SimpleIndexer')
+
+with f:
     f.block()
 ```
 ````
 
 ````{tab} via YAML
-Start a Flow with Metrics using YAML:
-
 In `flow.yaml`:
 ```yaml
 jtype: Flow
@@ -131,7 +125,7 @@ As in the above tracing example, the Flow propagates the Metrics configuration t
 
 ```{hint}
 :class: seealso
-Refer to the {ref}`OpenTelemetry Setup <opentelemetry>` page for more details on the exporter and collector setup and usage.
+Refer to {ref}`OpenTelemetry Setup <opentelemetry>` for more details on the exporter and collector setup and usage.
 ```
 
 ### Available metrics
@@ -184,7 +178,7 @@ The Executor additionally adds the Executor class name and the request endpoint 
 
 
 ```{seealso} 
-Beyond the above mentiond default metrics, you can define {ref}`custom metrics <instrumenting-executor>` for your Executor. 
+Beyond the above mentioned default metrics, you can define {ref}`custom metrics <instrumenting-executor>` for your Executor. 
 ```
 
 ```{hint} 
