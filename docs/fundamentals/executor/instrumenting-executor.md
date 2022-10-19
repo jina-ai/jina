@@ -265,3 +265,5 @@ class MyExecutor(Executor):
 
 - {ref}`List of available metrics <instrumenting-flow>`
 - {ref}`How to deploy and use OpenTelemetry in Jina <opentelemetry>`
+- [Tracing in OpenTelemetry](https://opentelemetry.io/docs/concepts/signals/traces/)
+- [Metrics in OpenTelemetry](https://opentelemetry.io/docs/concepts/signals/metrics/)

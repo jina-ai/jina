@@ -195,3 +195,5 @@ Beyond the above mentiond default metrics, you can define {ref}`custom metrics <
 
 - {ref}`Defining custom traces and metrics in an Executor <instrumenting-executor>`
 - {ref}`How to deploy and use OpenTelemetry in Jina <opentelemetry>`
+- [Tracing in OpenTelemetry](https://opentelemetry.io/docs/concepts/signals/traces/)
+- [Metrics in OpenTelemetry](https://opentelemetry.io/docs/concepts/signals/metrics/)
