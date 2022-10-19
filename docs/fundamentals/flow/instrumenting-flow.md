@@ -61,7 +61,7 @@ Refer to the {ref}`OpenTelemetry Setup <opentelemetry>` page for more details on
 
 ### Available Traces
 
-Each Pod supports different default traces out of the box, also letting you define your own custom traces in the Executor.
+Each Pod supports different default traces out of the box, also letting you define your own custom traces in the Executor. The `Runtime` name will be used to create the OpenTelemetry [Service](https://opentelemetry.io/docs/reference/specification/resource/semantic_conventions/#service) [Resource](https://opentelemetry.io/docs/reference/specification/resource/) attribute. The default value for the `name` argument will be the `Runtime` or `Executor` class name.
 
 Because not all Pods have the same role, they expose different kinds of traces:
 
@@ -136,11 +136,9 @@ Refer to the {ref}`OpenTelemetry Setup <opentelemetry>` page for more details on
 
 ### Available metrics
 
-Each Pod supports different default metrics out of the box, also letting you define your own custom metrics in the Executor.
+Each Pod supports different default metrics out of the box, also letting you define your own custom metrics in the Executor. All metrics add the `Runtime` name to the [metric attributes](https://opentelemetry.io/docs/reference/specification/metrics/semantic_conventions/) which can be used to filter data from different Pods. 
 
 Because not all Pods have the same role, they expose different kinds of metrics:
-
-
 
 #### Gateway Pods
 
@@ -172,6 +170,8 @@ You can find more information on the different type of metrics in Prometheus [he
 
 #### Executor Pods
 
+The Executor additionally adds the Executor class name and the request endpoint for the `@requests` or `@monitor` decorated method level metrics.
+
 | Metric name                     | Metric type                                                         | Description                                                                                                 |
 |----------------------------------|----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
 | `jina_receiving_request_seconds` | [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram) | Measures the time elapsed between receiving a request from the Gateway (or the head) and sending back the response. |
@@ -181,7 +181,6 @@ You can find more information on the different type of metrics in Prometheus [he
 | `jina_failed_requests`     | [Counter](https://opentelemetry.io/docs/reference/specification/metrics/api/#counter) | Total count of failed requests returned by the Executor across all endpoints                                |
 | `jina_received_request_bytes`        | [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram) | Measures the size in bytes of the request received at the Executor level                                    |
 | `jina_sent_response_bytes`        | [Histogram](https://opentelemetry.io/docs/reference/specification/metrics/api/#histogram) | Measures the size in bytes of the response returned from the Executor to the Gateway                           |
-
 
 
 ```{seealso} 
