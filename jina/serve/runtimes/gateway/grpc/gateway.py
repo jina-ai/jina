@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import TYPE_CHECKING, List, Optional
 
 import grpc
 from grpc_health.v1 import health, health_pb2, health_pb2_grpc
@@ -10,6 +10,9 @@ from jina.proto import jina_pb2, jina_pb2_grpc
 from jina.serve.gateway import BaseGateway
 from jina.serve.runtimes.helper import _get_grpc_server_options
 from jina.types.request.status import StatusMessage
+
+if TYPE_CHECKING:
+    from grpc.aio._interceptor import ServerInterceptor
 
 
 class GRPCGateway(BaseGateway):
@@ -37,13 +40,25 @@ class GRPCGateway(BaseGateway):
         self.ssl_certfile = ssl_certfile
         self.health_servicer = health.HealthServicer(experimental_non_blocking=True)
 
+    def grpc_extra_server_interceptors(self) -> Optional[List['ServerInterceptor']]:
+        """Return a list of extra server interceptors to be added to the GRPC server.
+
+        :return: a list of extra server interceptors
+        """
+        return None
+
     async def setup_server(self):
         """
         setup GRPC server
         """
+        server_interceptors = self.grpc_tracing_server_interceptors or []
+        extra_interceptors = self.grpc_extra_server_interceptors()
+        if extra_interceptors:
+            server_interceptors.extend(extra_interceptors)
+
         self.server = grpc.aio.server(
             options=_get_grpc_server_options(self.grpc_server_options),
-            interceptors=self.grpc_tracing_server_interceptors,
+            interceptors=server_interceptors,
         )
 
         jina_pb2_grpc.add_JinaRPCServicer_to_server(
@@ -118,7 +133,6 @@ class GRPCGateway(BaseGateway):
         :returns: the response request
         """
         from docarray import DocumentArray
-
         from jina.clients.request import request_generator
         from jina.enums import DataInputType
         from jina.serve.executors import __dry_run_endpoint__

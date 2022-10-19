@@ -2,6 +2,7 @@ import uuid
 
 import pytest
 
+import jina.excepts
 from jina import Document, DocumentArray, Executor, Flow, requests
 from jina.helper import random_port
 from jina.orchestrate.deployments import Deployment
@@ -347,3 +348,68 @@ def test_external_flow_with_target_executor():
             response = f.post(on='/', inputs=d, target_executor='external_executor')
 
     assert response[0].text == 'external'
+
+
+def test_external_flow_with_grpc_metadata():
+    import grpc
+
+    from jina.serve.runtimes.gateway import GRPCGateway
+
+    class DummyInterceptor(grpc.aio.ServerInterceptor):
+        def __init__(self):
+            def deny(_, context):
+                context.abort(grpc.StatusCode.UNAUTHENTICATED, 'Invalid key')
+
+            self._deny = grpc.unary_unary_rpc_method_handler(deny)
+
+        async def intercept_service(self, continuation, handler_call_details):
+            meta = handler_call_details.invocation_metadata
+            method = handler_call_details.method
+            if method != '/jina.JinaRPC/Call':
+                return await continuation(handler_call_details)
+
+            for m in meta:
+                if m == ('authorization', 'valid'):
+                    return await continuation(handler_call_details)
+
+            return self._deny
+
+    class DummyGRPCGateway(GRPCGateway):
+        def __int__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+
+        def grpc_extra_server_interceptors(self):
+            return [DummyInterceptor()]
+
+    class ExtExecutor(Executor):
+        @requests
+        def foo(self, docs, **kwargs):
+            for doc in docs:
+                doc.text = 'external'
+
+    external_flow = Flow(uses=DummyGRPCGateway).add(uses=ExtExecutor)
+
+    with external_flow:
+        d = Document(text='sunset with green landscape by the river')
+        f = Flow().add(
+            port=external_flow.port,
+            external=True,
+            name='external_executor',
+            grpc_metadata={'authorization': 'valid'},
+        )
+        with f:
+            response = f.post(on='/', inputs=d, target_executor='external_executor')
+
+            assert response[0].text == 'external'
+
+        f = Flow().add(
+            port=external_flow.port,
+            external=True,
+            name='external_executor',
+            grpc_metadata={'authorization': 'invalid'},
+        )
+        with f:
+            with pytest.raises(jina.excepts.BadServerFlow) as error_info:
+                response = f.post(on='/', inputs=d, target_executor='external_executor')
+            assert 'Invalid key' in str(error_info.value)
+            # assert response[0].text == 'external'
