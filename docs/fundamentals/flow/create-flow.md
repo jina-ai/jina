@@ -269,7 +269,7 @@ If you do not wish to rebuild the image, set the environment variable `JINA_HUB_
 ```{tip}
 If an Executor requires volumes to be mapped for them to persist data, Jina will create a StateFulSet for it instead of a Deployment.
 You can control the access mode, storage class name and capacity of the attached Persistent Volume Claim by using {ref}`Jina environment variables <jina-env-vars>`  
-`JINA_K8S_ACCESS_MODES`, `JINA_K8S_STORAGE_CLASS` and `JINA_K8S_STORAGE_CAPACITY`.
+`JINA_K8S_ACCESS_MODES`, `JINA_K8S_STORAGE_CLASS_NAME` and `JINA_K8S_STORAGE_CAPACITY`.
 ```
 
 ```{admonition} See also
