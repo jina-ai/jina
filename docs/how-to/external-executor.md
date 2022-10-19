@@ -1,29 +1,27 @@
 (external-executor)=
 # Include external Executors in a Flow
 
-We have seen how {class}`~jina.Flow` ties up {class}`~jina.Executor`s together, and how an Executor lives in the context of a Flow. Sometimes you may want to launch an Executor on its own, and then share it to different Flows. We call this kind of Executor *external*, as its lifecycle is not tied to the Flow.
+We've seen how {class}`~jina.Flow` ties {class}`~jina.Executor`s together, and how an Executor lives in the context of a Flow. Sometimes you may want to launch an Executor on its own, and then share it to different Flows. We call this an *external* Executor as its lifecycle is not tied to the Flow.
 
-
-External Executors can run anywhere from the same environment as the Flow, to a Docker container, or even a remote
+External Executors can run anywhere, from the same environment as the Flow, to a Docker container, or even a remote
 environment, such as {ref}`JCloud <jcloud>`.
 
 ```{tip}
 To deploy external Executors on JCloud, please follow {ref}`this documentation <external-executors>`.
 ```
 
-As the first step in this tutorial, you will learn how to add already running external Executors to your Flow.
-After that, you will see how to create and use an external Executor yourself.
+In this tutorial, we'll add already running external Executors to a Flow,
+and then create and use an external Executor for ourselves.
 
 ## Adding external Executors
 
-If you want to add an external Executor to your Flow, all you really need to know is how to find it.
-You need:
+To add an external Executor to your Flow, all you need to know is how to find it, namely:
 
 - `host`, the host address of the Executor
 - `port`, the port on which the Executor receives information
 
-Then, adding the Executor is a simple call to {meth}`~jina.Flow.add`  with the `external` argument set to True. This tells the Flow that
-it does not need to start the Executor itself.:
+Adding the Executor is a simple call to {meth}`~jina.Flow.add` with the `external` argument set to True. This tells the Flow 
+not to start the Executor itself:
 
 ```python
 from jina import Flow
@@ -32,7 +30,7 @@ exec_host, exec_port = 'localhost', 12345
 f = Flow().add(host=exec_host, port=exec_port, external=True)
 ```
 
-Alternatively, you can pass the entire network address to the `host` parameter:
+Alternatively, you can pass the entire network address as the `host` parameter:
 
 ```python
 from jina import Flow
@@ -40,14 +38,14 @@ from jina import Flow
 f = Flow().add(host='localhost:12345', external=True)
 ```
 
-After that, the external Executor will behave just like an internal one. And you can even add the same Executor to multiple
-Flows!
+After that, the external Executor behaves just like an internal one. You can even add the same Executor to multiple
+Flows.
 
 ````{admonition} Distributed replicas
 :class: hint
 
-In much the same way, you can also add multiple replicas of the same Executor.
-To do this, just specify all the respective hosts and ports:
+Similarly, you can add multiple replicas of the same Executor
+by specifying all the respective hosts and ports:
 
 ```python
 from jina import Flow
@@ -59,7 +57,7 @@ f = Flow().add(host=replica_hosts, port=replica_ports, external=True)
 # f = Flow().add(host='localhost:12345,91.198.174.192:12346', external=True)
 ```
 
-This will connect to `grpc://localhost:12345` and `grpc://91.198.174.192:12346` as two replicas of the same Executor.
+This connects to `grpc://localhost:12345` and `grpc://91.198.174.192:12346` as two replicas of the same Executor.
 
 ````
 
@@ -71,15 +69,14 @@ If an external Executor needs multiple predecessors, reducing needs to be enable
 
 ## Starting shared Executors
 
-The example above assumes that there already is an Executor running, and you just want to access
+The example above assumes there's already an Executor running, and you just want to access
 it from your Flow.
 
-
-You can, however, also start your own standalone Executors, which can then be accessed from anywhere.
-In the following sections we will describe how to run shared Executors via the Jina command line interface (CLI).
+You can, however, start your own standalone Executors, which can then be accessed from anywhere.
+In the following sections we describe how to run shared Executors via the Jina CLI.
 For more options to run your Executor, including in Kubernetes and Docker Compose, please read the {ref}`Executor API section <serve-executor-standalone>`.
 
-Though not part of this how-to, {ref}`served Executors <serve-executor-standalone>` can also be used as external Executors.
+Though not part of this how-to, you can also use {ref}`served Executors <serve-executor-standalone>` as external Executors.
 
 
 ````{admonition} Advanced deployment options
@@ -90,10 +87,10 @@ This tutorial walks through the basics of spawing a standalone (external) Execut
 
 ## Using Jina Hub
 
-The Jina CLI allows you to spawn executors straight from the Hub.
-In this example, we will use `CLIPTextEncoder` to create embeddings for our Documents.
+The Jina CLI lets you spawn Executors straight from Jina Hub.
+In this example, we use `CLIPTextEncoder` to create embeddings for our Documents.
 
-First, we start the Executor from the terminal. All we need to decide is the `port` that will be used by the Executor.
+First, start the Executor from the terminal. All we need to decide is the `port` that will be used by the Executor.
 Here we pick `12345`.
 
 ````{tab} Using Docker
@@ -119,12 +116,12 @@ following message:
 WorkerRuntime@ 1[L]: Executor CLIPTextEncoder started
 ```
 
-And just like that, our Executor is up and running.
+Just like that, our Executor is up and running.
 
 Next, let's access it from a Flow and encode some Documents. You can do this from a different machine, as long you know
 the first machine's host address, or simply from the same machine in a different process using `localhost`.
 
-So, if you are still working on the same machine, hop over to a new terminal or your code editor of choice, and define
+If you're still working on the same machine, open a new terminal or code editor of choice, and define
 the following Flow in a Python file:
 
 ```python
@@ -154,13 +151,13 @@ with f:
 "Embed me please!" has been embedded to shape (512,)
 ```
 
-We obtain embeddings for our Documents, just like we would with a local Executor.
+We have obtained embeddings for our Documents, just like we would with a local Executor.
 
 ## Using a custom Executor
 
-You can achieve the same while using your own, locally defined Executor. Let's walk through it.
+You can achieve the same while using your own, locally defined Executor:
 
-First, we create a file `exec.py`, and in it we define our custom Executor:
+First, create a file `exec.py`, and define a custom Executor:
 
 ```python
 from jina import Executor, requests
@@ -173,10 +170,10 @@ class MyExecutor(Executor):
             print(f'Received: "{doc.text}"')
 ```
 
-Since we can't rely on the Hub this time around, we need to tell Jina how to find the Executor that we just defined.
+Since we don't use Jina Hub this time around, we need to tell Jina how to find the Executor that we just defined.
 We do this using a YAML file.
 
-In a new file called `my-exec.yml` we type:
+Create a new file called `my-exec.yml`:
 
 ```yaml
 jtype: MyExecutor

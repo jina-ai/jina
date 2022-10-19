@@ -10,7 +10,7 @@
 :width: 0 %
 ```
 
-Google Colab provides a easy-to-use Jupyter notebook environment with GPU/TPU support. Jina is fully compatible with Google Colab. You can enjoy the following ways of using Jina:
+Google Colab provides an easy-to-use Jupyter notebook environment with GPU/TPU support. Jina is fully compatible with Google Colab and you can use it in the following ways:
 
 ```{figure} jina-on-colab.svg
 :align: center
@@ -25,9 +25,9 @@ Google Colab provides a easy-to-use Jupyter notebook environment with GPU/TPU su
 {octicon}`link-external` Open the notebook on Google Colab 
 ```
 
-Please follow the walk-through there. Enjoy the free GPU/TPU to build your awesome Jina applications!
+Please follow the walkthrough there and enjoy the free GPU/TPU to build your Jina applications!
 
 
 ```{tip}
-Hosing service on Google Colab is not recommended if you server aims to be long-live or permanent. It is often used for quick experiment, demonstration or leveraging its free GPU/TPU. For stable, secure and free hosting of Jina apps, please check out [Jcloud](https://docs.jina.ai/fundamentals/jcloud/).
+Hosing services on Google Colab is not recommended if your server aims to be long-lived or permanent. It is often used for quick experiments, demonstrations or leveraging its free GPU/TPU. For stable, secure and free hosting of Jina apps, check out [JCloud](https://docs.jina.ai/fundamentals/jcloud/).
 ```
